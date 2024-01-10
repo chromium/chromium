@@ -1505,6 +1505,7 @@
 <translation id="7025533177575372252">Συνδέστε τη συσκευή <ph name="DEVICE_NAME" /> με το τηλέφωνό σας</translation>
 <translation id="7026338066939101231">Μείωση</translation>
 <translation id="7029814467594812963">Έξοδος από συνεδρία</translation>
+<translation id="7031303610220416229">Εμφάνιση όλων των εργασιών στο Google Tasks</translation>
 <translation id="7032161822340700104">Επιτρέπονται μόνο 6 πρότυπα. Αφαιρέστε ένα πρότυπο για να αποθηκευτεί ένα νέο.</translation>
 <translation id="7034025838182392395">Η εφαρμογή <ph name="APP_NAME" /> θέλει να χρησιμοποιήσει τη συσκευή <ph name="DEVICE_NAME" />. Ενεργοποιήστε τον φυσικό διακόπτη της συσκευής <ph name="DEVICE_NAME" />.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Βοηθός Google</translation>
@@ -1817,6 +1818,7 @@
 <translation id="8351131234907093545">Δημιουργία σημείωσης</translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> σε χρήση.</translation>
 <translation id="8369166482916924789">Αποθηκευμένο γραφείο, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
+<translation id="8370414029565771236">Αναζήτηση για <ph name="TEXT" /></translation>
 <translation id="8371779926711439835">Προώθηση ανά γράμμα</translation>
 <translation id="8371991222807690464">Η απόδοση των περιφερειακών ενδέχεται να περιορίζεται στη Λειτουργία επισκέπτη</translation>
 <translation id="8374601332003098278">Πατήστε Enter για εγγραφή μέρους της οθόνης</translation>

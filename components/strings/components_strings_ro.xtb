@@ -272,6 +272,7 @@
 <translation id="1476595624592550506">Schimbă parola</translation>
 <translation id="1482879811280872320">Ciclism</translation>
 <translation id="1483493594462132177">Trimite</translation>
+<translation id="1484632730438126438">Este prea scurt. Scrie cel puțin 3 cuvinte.</translation>
 <translation id="1492194039220927094">Notificări pentru politici:</translation>
 <translation id="14938948731065592">Periferice pentru computere</translation>
 <translation id="1495677929897281669">Înpoi la filă</translation>
@@ -1238,7 +1239,6 @@
 <translation id="3447661539832366887">Proprietarul acestui dispozitiv a dezactivat jocul cu dinozaurul.</translation>
 <translation id="3447884698081792621">Afișează certificatul (emis de <ph name="ISSUER" />)</translation>
 <translation id="3450323514459570273">Poate solicita permisiunea de a controla și a reprograma dispozitivele MIDI</translation>
-<translation id="3452151267620065789">Progresul a fost salvat</translation>
 <translation id="3452404311384756672">Interval de preluare:</translation>
 <translation id="3453962258458347894">Numărul de reîncercări</translation>
 <translation id="3461266716147554923"><ph name="URL" /> dorește să vadă textul și imaginile copiate în clipboard</translation>
@@ -1404,6 +1404,7 @@
 <translation id="3748009735914587286">Metal (foarte lucios)</translation>
 <translation id="3748148204939282805">Atacatorii de pe <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> te pot înșela, determinându-te să faci ceva periculos, cum ar fi să instalezi software sau să îți dezvălui informațiile cu caracter personal (de exemplu, parole, numere de telefon sau date despre cardurile de credit). <ph name="BEGIN_LEARN_MORE_LINK" />Află mai multe<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Domeniul aviației</translation>
+<translation id="3751020515020988516">Solicitarea ta nu a fost înțeleasă. Încearcă altă solicitare.</translation>
 <translation id="3752543821772132562">S-a ignorat deoarece <ph name="POLICY_NAME" /> nu este setat.</translation>
 <translation id="3754210790023674521">Ieși din modul picture-in-picture</translation>
 <translation id="3759461132968374835">Nu există blocări raportate recent. Blocările care au avut loc când raportarea blocărilor era dezactivată nu vor apărea aici.</translation>
@@ -1460,6 +1461,7 @@
 <translation id="3858860766373142691">Nume</translation>
 <translation id="3872834068356954457">Știință</translation>
 <translation id="3875783148670536197">Arată-mi cum</translation>
+<translation id="3877877650871124156">Textul este prea lung. Scurtează-l și încearcă din nou.</translation>
 <translation id="3881478300875776315">Afișează mai puține rânduri</translation>
 <translation id="3883500545751229739">anunțuri deranjante</translation>
 <translation id="3884278016824448484">Identificator de gadget în conflict</translation>
@@ -1537,7 +1539,6 @@
 <translation id="4067098466788473230">Burse de studiu</translation>
 <translation id="4067947977115446013">Adaugă o adresă validă</translation>
 <translation id="4070790659619547722">Cu ajutorul cuantificării anunțurilor, sunt trimise tipuri de date limitate între site-uri, cum ar fi ora la care ți-a fost afișat un anunț, pentru ca acestea să măsoare performanța anunțurilor lor.</translation>
-<translation id="4072193657607981494">Se încarcă politicile</translation>
 <translation id="4072486802667267160">A apărut o eroare la procesarea comenzii. Încearcă din nou.</translation>
 <translation id="4073376909608563327">Nu s-a putut folosi deblocarea dispozitivului</translation>
 <translation id="4073797364926776829">Afișează cardul</translation>
@@ -2568,6 +2569,7 @@
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />Află mai multe despre modul incognito în Chrome<ph name="END_LINK" /></translation>
 <translation id="6133320744616005677">Permite în continuare</translation>
 <translation id="6133984428121856852">Extensia de fișier este goală sau incorectă.</translation>
+<translation id="6139769382153674477">A apărut o eroare. Te-ai conectat?</translation>
 <translation id="6139975341602920272">17 x 22 in</translation>
 <translation id="6146055958333702838">Verifică toate cablurile și repornește routerele, modemurile sau alte
     dispozitive de rețea pe care le folosești.</translation>
@@ -2724,7 +2726,6 @@
 <translation id="6428450836711225518">Confirmă numărul de telefon</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">Schimbă parola Google</translation>
-<translation id="6431119592588449664">Raportul a fost încărcat</translation>
 <translation id="6432297414176614592">Mai multe despre subiectele anunțurilor</translation>
 <translation id="6432831586648556868">Locuri de muncă în vânzări și marketing</translation>
 <translation id="6433490469411711332">Editează informațiile de contact</translation>
@@ -3483,7 +3484,6 @@ Detalii suplimentare:
 <translation id="7871445724586827387">Schimbă parola Contului Google</translation>
 <translation id="7877007680666472091">ID-uri de conținut protejat</translation>
 <translation id="7878562273885520351">Este posibil ca parola să fie compromisă</translation>
-<translation id="7878966190323222027">Redeschide pentru a continua</translation>
 <translation id="7880146494886811634">Salvează adresa</translation>
 <translation id="7882421473871500483">Maro</translation>
 <translation id="7882995332186050355">Autocamioane și remorci</translation>
@@ -4105,7 +4105,6 @@ Detalii suplimentare:
 <translation id="9119042192571987207">Încărcat</translation>
 <translation id="9122954576417194280">Comerțul bunurilor și al mărfurilor la termen</translation>
 <translation id="912327514020027767">Fuste</translation>
-<translation id="9128016270925453879">Politicile s-au încărcat</translation>
 <translation id="9128870381267983090">Conectați-vă la rețea</translation>
 <translation id="9131119348384879525">Capturezi conținut confidențial?</translation>
 <translation id="9133985615769429248">Dacă folosești dispozitivul în comun cu alte persoane, poți folosi blocarea ecranului pentru a-ți confirma identitatea când utilizezi o parolă salvată</translation>

@@ -56,7 +56,6 @@
 <translation id="1279024913354609713">Ungavumeli</translation>
 <translation id="1281818060020671000">Phatha Idatha</translation>
 <translation id="1282311502488501110">Ungangeni ngemvume</translation>
-<translation id="1283039547216852943">Thepha ukuze unwebe</translation>
 <translation id="1283524564873030414">Amahora angu-24 okugcina</translation>
 <translation id="1285320974508926690">Ungalokothi uhumushe leli sayithi</translation>
 <translation id="1291506870746876680"><ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> izimvume zizocishwa kabusha uma ushiya le sayithi.</translation>
@@ -82,7 +81,6 @@
 <translation id="1377255359165588604">Ukuvumelanisa kuyeke ukusebenza.</translation>
 <translation id="1377321085342047638">Inombolo yekhadi</translation>
 <translation id="1377508275003315939">Amaphasiwedi</translation>
-<translation id="1380914240355562929">U-<ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> manje usengasebenzisa igama lomsebenzisi kanye nephasiwedi yakho lapho esebenzisa Umphathi Wephasiwedi Ye-Google ukuze angene ngemvume kokuthi <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK" />Funda kabanzi<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">Sesha</translation>
 <translation id="138618066238211776">Qhubeka njengo-<ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">Amaviki okugcina angu-4</translation>
@@ -406,7 +404,6 @@ Bona imiyalelo yenjini yakho yokusesha yokusula umlando wakho wosesho, uma kuseb
 <translation id="3087734570205094154">Ngaphansi</translation>
 <translation id="3090455602619185166">Ngena Ngemvume Nge-akhawunti Ephethwe</translation>
 <translation id="309710370695886264">Unephasiwedi eyodwa esetshenziswe kabusha. Yilungise manje ukuze uhlale uphephile.</translation>
-<translation id="3109724472072898302">Igoqiwe</translation>
 <translation id="3112556859945124369">Maka...</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Bona Lokho Ongakuvumelanisa<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">Umlando nokuningi</translation>
@@ -775,7 +772,6 @@ Bona imiyalelo yenjini yakho yokusesha yokusula umlando wakho wosesho, uma kuseb
 <translation id="5121618895923301719">Ulandelela kakade lo mkhiqizo. Leli khasi lilondolozwe <ph name="BEGIN_LINK" />Kumabhukhimakhi Eselula<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Unezinkinga eziningana zephasiwedi.</translation>
 <translation id="5126465625664020024">Ngena ngemvume futhi Uvumelanise</translation>
-<translation id="5131062416352684089">Manje amalungu omndeni wakho manje asengasebenzisa igama lomsebenzisi kanye nephasiwedi yakho lapho esebenzisa Umphathi Wephasiwedi Ye-Google ukuze angene ngemvume kokuthi <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK" />Funda kabanzi<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">Vumelanisa amaphasiwedi akho, umlando nokuningi kuwo wonke amadivayisi</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{Iphasiwedi Engaqinile e-{COUNT}}one{Amaphasiwedi Angaqinile angu-{COUNT}}other{Amaphasiwedi Angaqinile angu-{COUNT}}}</translation>
 <translation id="5149188072385105201">Engeza iphasiwedi...</translation>
@@ -924,7 +920,6 @@ I-Handoff futhi kufanele inikwe amandla esigabeni sokuvamile zezilungiselelo, fu
 <translation id="5955891643922670672">Ukubuka inguqulo engaxhunyiwe ku-inthanethi</translation>
 <translation id="5957613098218939406">Izinketho eziningi</translation>
 <translation id="595769230373966252">Sesha nge-<ph name="SEARCH_PROVIDER" /></translation>
-<translation id="5962718611393537961">Thepha ukuze ugoqe</translation>
 <translation id="5963939892571022323">Isixhumanisi sokokugqamisa asikwazi ukudalwa.</translation>
 <translation id="5971872012779224351">{count,plural, =1{Ibhukhimakhi e-1 isuliwe}one{Amabhukhimakhi angu-{count} asusiwe}other{Amabhukhimakhi angu-{count} asusiwe}}</translation>
 <translation id="5979837087407522202">Sesha amaphasiwedi</translation>

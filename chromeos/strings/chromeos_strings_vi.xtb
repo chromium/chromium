@@ -443,6 +443,7 @@
 <translation id="4289849978083912975">Bản trình chiếu</translation>
 <translation id="4297501883039923494">Đã dừng – Lỗi không xác định</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> hình ảnh</translation>
+<translation id="4310735698903592804">Các hình nền mới dựa trên công nghệ AI của Google</translation>
 <translation id="4333390807948134856">Đã nhấn phím <ph name="KEY_NAME" /></translation>
 <translation id="4354430579665871434">phím</translation>
 <translation id="4361257691546579041">APN là loại mặc định.</translation>
@@ -664,6 +665,7 @@
 <translation id="5916664084637901428">Bật</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Tệp của bạn đã được quét thành công và lưu vào <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Các tệp của bạn đã được quét thành công và lưu vào <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Không tìm thấy tệp</translation>
+<translation id="593880865674747800">Tạo thêm hình nền theo phong cách này</translation>
 <translation id="5939518447894949180">Đặt lại</translation>
 <translation id="594552776027197022">Tạo cặp khóa ngẫu nhiên</translation>
 <translation id="5946538341867151940">Bạn chưa kết nối mạng. Nếu nhà mạng di động đề xuất thêm APN tuỳ chỉnh, hãy nhập thông tin APN bằng cách chọn "+ APN mới"</translation>
@@ -925,6 +927,7 @@
 <translation id="7819857487979277519">PSK (WPA hoặc RSN)</translation>
 <translation id="7841134249932030522">Bật chế độ tối</translation>
 <translation id="7846634333498149051">Bàn phím</translation>
+<translation id="7850847810298646851">Hình nền dựa trên công nghệ AI của Google</translation>
 <translation id="7856267634822906833">Màn hình cảm ứng Bluetooth</translation>
 <translation id="7869143217755017858">Tắt chế độ tối</translation>
 <translation id="7881066108824108340">DNS</translation>

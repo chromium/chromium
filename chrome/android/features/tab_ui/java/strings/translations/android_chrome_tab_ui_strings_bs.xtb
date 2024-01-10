@@ -5,6 +5,7 @@
 <translation id="1155815720264022949">Želite zatvoriti stare kartice?</translation>
 <translation id="1215127405478249895">Pregledajte kartice</translation>
 <translation id="125153950246128346">Dodirnite da vidite drugu karticu</translation>
+<translation id="1326271443836399892">Pregled trenutnih postavki organiziranja.</translation>
 <translation id="1499635324672558517">Zatvoriti sve anonimne kartice?</translation>
 <translation id="1657719826150349398">Pomjeranje kartice nadolje</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> kartica}one{<ph name="TABS_COUNT_MANY" /> kartica}few{<ph name="TABS_COUNT_MANY" /> kartice}other{<ph name="TABS_COUNT_MANY" /> kartica}}</translation>
@@ -25,6 +26,7 @@
 <translation id="2977480621796371840">Ukloni iz grupe</translation>
 <translation id="3008554597174452548">Prestanite pratiti proizvod</translation>
 <translation id="3052964831964880138">Pad cijene od <ph name="PRICE_DROP" /> za proizvod <ph name="PRODUCT_NAME" /></translation>
+<translation id="313819129451406482">{TABS_COUNT,plural, =1{Imate <ph name="TABS_COUNT_ONE" /> arhiviranu karticu}one{Imate <ph name="TABS_COUNT_MANY" /> arhiviranu karticu}few{Imate <ph name="TABS_COUNT_MANY" /> arhivirane kartice}other{Imate <ph name="TABS_COUNT_MANY" /> arhiviranih kartica}}</translation>
 <translation id="3194464645767632461">ocjena</translation>
 <translation id="3291470810748040983">Primit ćete obavještenje kada bude niža cijena na otvorenoj kartici</translation>
 <translation id="3328308545011660196">Prijedlog: čini se da su neke kartice povezane (njih <ph name="NUMBER_OF_TABS" />). Grupirati ih?</translation>
@@ -98,5 +100,6 @@
 <translation id="9090098097337832354">Informacije o ovoj trgovini su zatvorene</translation>
 <translation id="9150694013019234766">Prebacivanje između kartica unutar grupe kartica pri dnu ekrana</translation>
 <translation id="9169594135889675189">Dodaj novu karticu u grupu</translation>
+<translation id="955558140275419384">Pregled svih arhiviranih kartica radi organiziranja ulaskom u ovaj uređivač.</translation>
 <translation id="959682366969460160">Postanite organizirani</translation>
 </translationbundle>

@@ -5828,6 +5828,18 @@ Si la inhabilitas o no la estableces, no se habilitarán los widgets de consulta
 <translation id="5790763087505467169">Reducir la cantidad de notificaciones de inicio automático de la sesión de invitado administrada</translation>
 <translation id="5800329278018669527">Inhabilitar el mensaje de configuración de red cuando no haya conexión</translation>
 <translation id="5802931736499687181">Inhabilitar la canalización de informes encriptados</translation>
+<translation id="5803715507113569033">Esta política permite a los administradores configurar la activación de <ph name="MICROSOFT_ONE_DRIVE_NAME" />.
+
+Si estableces la política como "<ph name="ALLOWED_NAME" />", el usuario podrá configurar <ph name="MICROSOFT_ONE_DRIVE_NAME" /> si lo desea.
+Después de completar el proceso de configuración, se activará <ph name="MICROSOFT_ONE_DRIVE_NAME" /> en el administrador de archivos.
+
+Si estableces la política como "<ph name="DISALLOWED_NAME" />", el usuario no podrá configurar <ph name="MICROSOFT_ONE_DRIVE_NAME" />.
+
+Si estableces la política como "<ph name="AUTOMATED_NAME" />", se intentará configurar <ph name="MICROSOFT_ONE_DRIVE_NAME" /> automáticamente. El usuario debe acceder a <ph name="PRODUCT_OS_NAME" /> con una cuenta de Microsoft. En caso de que se produzca una falla, muestra de nuevo el flujo de configuración.
+
+Si no estableces la política, su funcionalidad será equivalente a establecerla como "<ph name="ALLOWED_NAME" />" para los usuarios generales. Para los usuarios empresariales, se establecerá como "<ph name="DISALLOWED_NAME" />" de forma predeterminada.
+
+Se podrán agregar más restricciones de cuentas con la política <ph name="MICROSOFT_ONE_DRIVE_ACCOUNT_RESTRICTIONS" />.</translation>
 <translation id="5804795151506109282">No solicites a los usuarios que migren.</translation>
 <translation id="5806128552675651249">Habilitar la impresión solo sin los gráficos de fondo</translation>
 <translation id="5809210507920527553">Controla la configuración para el contenedor de Linux (Crostini).</translation>
@@ -6309,6 +6321,21 @@ En la versión 114 y en versiones posteriores, esta política es opcional si se 
 <translation id="6244210204546589761">Direcciones URL que se abrirán al iniciar.</translation>
 <translation id="624595269193747921">Se debe limitar la búsqueda de la impresora a un grupo específico.</translation>
 <translation id="6246290059248303618">Mostrar los controles multimedia de las sesiones de <ph name="PRODUCT_NAME" /> que iniciaron otros dispositivos en la red local</translation>
+<translation id="6246420783859339814">Esta política permite que los administradores restrinjan qué cuentas pueden acceder a <ph name="MICROSOFT_ONE_DRIVE_NAME" /> cuando <ph name="MICROSOFT_ONE_DRIVE_MOUNT_POLICY_NAME" /> está habilitada.
+
+Si esta política contiene el valor "<ph name="COMMON_NAME" />", se puede usar cualquier cuenta para acceder.
+
+Si esta política contiene el valor "<ph name="ORGANIZATIONS_NAME" />", se pueden usar cuentas de trabajo o de instituciones educativas para acceder.
+
+Si esta política contiene el valor "<ph name="CONSUMER_NAME" />", se pueden usar cuentas personales de <ph name="MICROSOFT_NAME" /> para acceder.
+
+Si esta política contiene nombres de dominio o IDs de usuario, las cuentas de estos nombres de dominio o IDs de usuario (consulta https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-protocols#endpoints) se pueden usar para acceder.
+
+Si no estableces esta política o si solo contiene un valor vacío, se comportará como si se especificara "<ph name="COMMON_NAME" />" para los usuarios generales. Para los usuarios empresariales, se comporta como si se especificara "<ph name="ORGANIZATIONS_NAME" />".
+
+Si cambias las restricciones, es posible que los usuarios salgan de su cuenta de <ph name="MICROSOFT_ONE_DRIVE_NAME" /> si no cumple con las nuevas restricciones.
+
+Nota: Por el momento, solo se tendrá en cuenta la primera entrada. Las extensiones posteriores admitirán varias entradas.</translation>
 <translation id="6247316685259031374">Esta política controla la zona de pruebas del proceso de audio.
       Si se habilita esta política, se ejecutará el proceso de audio en la zona de pruebas.
       Si se inhabilita, se ejecutará el proceso de audio fuera de la zona de pruebas y se ejecutará el módulo de procesamiento de audio WebRTC en el proceso de renderizado.
@@ -7389,6 +7416,16 @@ Si se selecciona "Inhabilitada", no se proporciona un segundo factor.
 Si se selecciona "U2F", el segundo factor integrado se comportará de acuerdo con la especificación de FIDO U2F.
 
 Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará funciones de U2F además de algunas extensiones para la atestación individual.</translation>
+<translation id="69942621143543910">Esta política permite que los administradores configuren el flujo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="MICROSOFT_ONE_DRIVE_NAME" /> y <ph name="MICROSOFT_365_NAME" /> en <ph name="PRODUCT_OS_NAME" />.
+
+Si estableces la política como "<ph name="ALLOWED_NAME" />", el usuario podrá configurar el flujo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="MICROSOFT_ONE_DRIVE_NAME" /> y <ph name="MICROSOFT_365_NAME" /> si lo desea.
+Después de completar el proceso de configuración, los archivos cuyo formato coincida se moverán a <ph name="MICROSOFT_ONE_DRIVE_NAME" /> de forma predeterminada y la app de <ph name="MICROSOFT_365_NAME" /> los controlará cuando el usuario intente abrirlos.
+
+Si estableces la política como "<ph name="DISALLOWED_NAME" />", el usuario no podrá configurar el flujo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="MICROSOFT_ONE_DRIVE_NAME" /> ni <ph name="MICROSOFT_365_NAME" />, como se describió anteriormente, y se quitará <ph name="MICROSOFT_365_NAME" /> de la lista de posibles controladores de archivos.
+
+Si estableces la política como "<ph name="AUTOMATED_NAME" />", se configurará automáticamente el flujo de <ph name="CLOUD_UPLOAD_NAME" /> para <ph name="MICROSOFT_ONE_DRIVE_NAME" /> y <ph name="MICROSOFT_365_NAME" />, de modo que los archivos cuyos formatos coincidan se moverán a <ph name="MICROSOFT_ONE_DRIVE_NAME" /> de forma predeterminada y la app de <ph name="MICROSOFT_365_NAME" /> los controlará cuando el usuario intente abrirlos.
+
+Si no estableces la política, su función será equivalente a establecerla como "<ph name="ALLOWED_NAME" />" para los usuarios generales. Para los usuarios empresariales, se establecerá como "<ph name="DISALLOWED_NAME" />" de forma predeterminada.</translation>
 <translation id="6999948519306285655">Esta política no está disponible; usa <ph name="PROXY_SETTINGS_POLICY_NAME" /> en su lugar.
 
        Si configuras la política, podrás especificar una dirección URL para el archivo de proxy en formato .pac. Esta política solo tendrá efecto si no se especifica la política <ph name="PROXY_SETTINGS_POLICY_NAME" /> y si seleccionas <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> con <ph name="PROXY_MODE_POLICY_NAME" />.

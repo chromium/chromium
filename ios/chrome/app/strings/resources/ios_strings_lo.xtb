@@ -56,7 +56,6 @@
 <translation id="1279024913354609713">ບໍ່ອະນຸຍາດ</translation>
 <translation id="1281818060020671000">ຈັດການຂໍ້ມູນ</translation>
 <translation id="1282311502488501110">ຢ່າເຂົ້າສູ່ລະບົບ</translation>
-<translation id="1283039547216852943">ແຕະເພື່ອຂະຫຍາຍ</translation>
 <translation id="1283524564873030414">24 ຊົ່ວໂມງຜ່ານມາ</translation>
 <translation id="1285320974508926690">ຢ່າແປເວັບ​ໄຊ​ທ໌ນີ້</translation>
 <translation id="1291506870746876680">ການອະນຸຍາດ <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> ຈະຖືກຣີເຊັດໄປເປັນປິດເມື່ອທ່ານອອກຈາກເວັບໄຊນີ້.</translation>
@@ -82,7 +81,6 @@
 <translation id="1377255359165588604">ການຊິ້ງຂໍ້ມູນໄດ້ຢຸດເຊົາເຮັດວຽກແລ້ວ.</translation>
 <translation id="1377321085342047638">ເລກບັດ</translation>
 <translation id="1377508275003315939">ລະຫັດຜ່ານ</translation>
-<translation id="1380914240355562929">ຕອນນີ້ <ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> ສາມາດໃຊ້ຊື່ຜູ້ໃຊ້ ແລະ ລະຫັດຜ່ານຂອງທ່ານໃນເວລາທີ່ເຂົາເຈົ້າໃຊ້ຕົວຈັດການລະຫັດຜ່ານ Google ເພື່ອເຂົ້າສູ່ລະບົບ <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> ໄດ້ແລ້ວ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">ຊອກຫາ</translation>
 <translation id="138618066238211776">ສືບຕໍ່ເປັນ <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">4 ອາທິດຜ່ານມາ</translation>
@@ -337,6 +335,7 @@
 <translation id="2747003861858887689">ຫ້ອງ​ໃສ່​ຂໍ້​ມູນ​ຜ່ານ​ມາ</translation>
 <translation id="2749231692441336879">ກຳລັງຕິດຕາມ <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">ບັນຊີຢູ່ອຸປະກອນນີ້</translation>
+<translation id="2755595981383829244">ຕອນນີ້ທ່ານຈະໄດ້ຮັບການແຈ້ງເຕືອນເນື້ອຫາ</translation>
 <translation id="2762000892062317888">ຕອນນີ້</translation>
 <translation id="2772667768515195373">ທ່ານສາມາດໃຊ້ທີ່ຢູ່ທີ່ບັນທຶກໄວ້ໃນຜະລິດຕະພັນຕ່າງໆຂອງ Google ໄດ້. ໂດຍທີ່ຢູ່ນີ້ຈະຖືກບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານທີ່ຊື່ວ່າ, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">ການຊອກຫາແບບບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
@@ -406,7 +405,6 @@
 <translation id="3087734570205094154">ດ້ານລຸ່ມ</translation>
 <translation id="3090455602619185166">ເຂົ້າສູ່ລະບົບດ້ວຍບັນຊີທີ່ມີການຈັດການ</translation>
 <translation id="309710370695886264">ທ່ານມີລະຫັດຜ່ານທີ່ໃຊ້ຊ້ຳ 1 ລາຍການ. ແກ້ໄຂດຽວນີ້ເພື່ອຄວາມປອດໄພ.</translation>
-<translation id="3109724472072898302">ຫຍໍ້ລົງ</translation>
 <translation id="3112556859945124369">ໝາຍ...</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />ເບິ່ງວ່າທ່ານສາມາດຊິ້ງຂໍ້ມູນຫຍັງໄດ້ແດ່<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">ປະຫວັດ ແລະ ອື່ນໆ</translation>
@@ -775,7 +773,6 @@
 <translation id="5121618895923301719">ທ່ານກຳລັງຕິດຕາມສິນຄ້ານີ້ຢູ່ກ່ອນແລ້ວ. ໜ້ານີ້ຖືກບັນທຶກໃນ <ph name="BEGIN_LINK" />ບຸກມາກໂທລະສັບມືຖື<ph name="END_LINK" /> ແລ້ວ.</translation>
 <translation id="512533434554095351">ທ່ານມີບັນຫາລະຫັດຜ່ານຫຼາຍລາຍການ.</translation>
 <translation id="5126465625664020024">ເຂົ້າສູ່ລະບົບ ແລະ ຊິ້ງ</translation>
-<translation id="5131062416352684089">ຕອນນີ້ສະມາຊິກຄອບຄົວຂອງທ່ານສາມາດໃຊ້ຊື່ຜູ້ໃຊ້ ແລະ ລະຫັດຜ່ານຂອງທ່ານໃນເວລາທີ່ເຂົາເຈົ້າໃຊ້ຕົວຈັດການລະຫັດຜ່ານ Google ເພື່ອເຂົ້າສູ່ລະບົບ <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> ໄດ້ແລ້ວ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">ຊິ້ງຂໍ້ມູນລະຫັດຜ່ານ, ປະຫວັດຂອງທ່ານ ແລະ ອື່ນໆອີກຢູ່ໃນທຸກອຸປະກອນ</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} ລະຫັດຜ່ານງ່າຍ}other{{COUNT} ລະຫັດຜ່ານງ່າຍ}}</translation>
 <translation id="5149188072385105201">ເພີ່ມລະຫັດຜ່ານ...</translation>
@@ -924,7 +921,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="5955891643922670672">ກຳລັງເບິ່ງເວີຊັນອອບລາຍ</translation>
 <translation id="5957613098218939406">ໂຕ​ເລືອກ​ເພີ່ມ​ເຕີມ</translation>
 <translation id="595769230373966252">ຊອກຫາດ້ວຍ <ph name="SEARCH_PROVIDER" /></translation>
-<translation id="5962718611393537961">ແຕະເພື່ອຫຍໍ້ລົງ</translation>
 <translation id="5963939892571022323">ສ້າງລິ້ງໄປຍັງໄຮໄລ້ບໍ່ໄດ້.</translation>
 <translation id="5971872012779224351">{count,plural, =1{ລຶບບຸກມາກ 1 ລາຍການແລ້ວ}other{ລຶບບຸກມາກ {count} ລາຍການແລ້ວ}}</translation>
 <translation id="5979837087407522202">ຊອກຫາລະຫັດຜ່ານ</translation>

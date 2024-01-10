@@ -810,7 +810,6 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1615433306336820465">Elektron kalitingizda saqlangan kirish maʼlumotlarini boshqarish</translation>
 <translation id="1616206807336925449">Bu kengaytmaga maxsus ruxsatlarni talab qilmaydi.</translation>
 <translation id="1616298854599875024">Umumiy modul hisoblanmagan <ph name="IMPORT_NAME" /> kengaytmasini import qilib bo‘lmadi</translation>
-<translation id="161654560322394775">Rasm <ph name="INDEX" />/<ph name="A" />, uslub: <ph name="B" />, kayfiyat: <ph name="C" />.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Bu maʼlumotlar tashkilotingiz xavfsizlik siyosati asosida tekshirilmoqda...}=1{Bu fayl tashkilotingiz xavfsizlik siyosati asosida tekshirilmoqda...}other{Bu fayllar tashkilotingiz xavfsizlik siyosati asosida tekshirilmoqda...}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">&amp;Yordam markazi</translation>
@@ -4226,7 +4225,6 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer va qurilmadagi operatsion 
 <translation id="4250229828105606438">Skrinshot</translation>
 <translation id="4250680216510889253">Yo‘q</translation>
 <translation id="4251377547188244181">Kiosk va reklama paneli qurilmasini qayd qilish</translation>
-<translation id="4252141040239557279">Rasm <ph name="INDEX" />/<ph name="A" /></translation>
 <translation id="4252828488489674554">Bu guruhni tahrirlash uchun varaq guruhi nomiga oʻng klik bosing, yoyish uchun chap klik bosing.</translation>
 <translation id="4252899949534773101">Bluetooth yoqilmagan</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> – varaqni ko‘rishga ruxsat berildi</translation>
@@ -6564,7 +6562,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
         <ph name="BREAK" />
         Sozlamalarni kartochka menyusidan boshqarishingiz yoki boshqa sozlamalarnini “Chromeni moslash” orqali koʻrishingiz mumkin.</translation>
 <translation id="6121773125605585883"><ph name="WEBSITE" /> saytining <ph name="USERNAME" /> foydalanuvchisi parolini koʻrish</translation>
-<translation id="6122081475643980456">Internet aloqangiz nazorat qilinmoqda</translation>
 <translation id="6122093587541546701">Email (ixtiyoriy):</translation>
 <translation id="6122095009389448667">Saytning klipbordga ruxsati taqiqlanaversin</translation>
 <translation id="6122513630797178831">CVC kodini saqlash</translation>
@@ -7448,7 +7445,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6820079682647046800">Kerberos hisobi tasdiqlanmadi</translation>
 <translation id="6821439254917412979">Yechib olish: <ph name="EXTENSION_NAME" /></translation>
 <translation id="6823174134746916417">Sensorli panelni ohista teginib bosish</translation>
-<translation id="6823429960180594870">Fayllar yuklab olinishini boshqarish va ularni darhol ochish</translation>
 <translation id="6823561724060793716">Manzil qatorida kirayotgan sahifangiz haqida qoʻshimcha maʼlumotlarni koʻrish uchun sahifa maʼlumotlarini ochishingiz mumkin</translation>
 <translation id="6824564591481349393">&amp;E-pochta manzilini nusxalash</translation>
 <translation id="6824584962142919697">&amp;Elementlarni tekshirish</translation>
@@ -7853,7 +7849,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="714301620504747562">Koʻrish va qidirish standart oldindan yuklashga qaraganda tezroq</translation>
 <translation id="7143207342074048698">Ulanmoqda</translation>
 <translation id="7143409552554575716">ChromeOS tajribaviy parametrlari</translation>
-<translation id="714447804011008506">Endi Yuklanmalar asboblar panelida</translation>
 <translation id="7144856456372460176"><ph name="APP" /> ilovasini oʻrnating...</translation>
 <translation id="7144878232160441200">Qayta urinish</translation>
 <translation id="7145413760160421938">Avvalgi seans davom ettirilmadi</translation>
@@ -8504,7 +8499,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7657090467145778067">Kichik tejash</translation>
 <translation id="7657218410916651670">Google hisobingizga kirganingizda <ph name="BEGIN_LINK_GOOGLE" />boshqa shakldagi harakatlaringiz<ph name="END_LINK_GOOGLE" /> hisobingizga saqlanishi mumkin. Ularni istalgan vaqt oʻchirish mumkin.</translation>
 <translation id="7658239707568436148">Bekor qilish</translation>
-<translation id="7658727964021657194">Oxirgi AI mavzusi <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">Inkognito rejimidan baribir chiqilsinmi?</translation>
 <translation id="7659336857671800422">Maxfiylik qoʻllanmasini boshlash</translation>
 <translation id="7659584679870740384">Bu qurilmadan foydalanishga ruxsatingiz yo‘q. Qurilma administratori bilan bog‘laning.</translation>
@@ -8785,7 +8779,6 @@ Tayinlovni bekor qilish uchun belgilangan kalit yoki tugmani bosing.</translatio
 <translation id="7855678561139483478">Varaqni yangi oynaga olish</translation>
 <translation id="7857004848504343806">Kompyuteringizda himoya moduli mavjud. Undan ChromeOS Flex platformasida ko‘plab jiddiy xavfsizlik funksiyalarini amalga oshirishda foydalaniladi. Batafsil ma’lumotni Chromebook yordam markazidan olishingiz mumkin: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Matn takliflari</translation>
-<translation id="7857949311770343000">Bu boshqa tezkor havolalar sahifasimi?</translation>
 <translation id="7858120906780498731">ChromeOS ulangan kiritish qurilmalari</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941"><ph name="EXTENSION_NAME" /> kengaytmasi olib tashlansinmi?</translation>
@@ -8834,7 +8827,6 @@ Tayinlovni bekor qilish uchun belgilangan kalit yoki tugmani bosing.</translatio
 <translation id="789722939441020330">Saytlarga bir nechta faylni avtomatik yuklashni taqiqlash</translation>
 <translation id="7897900149154324287">Kelgusida, olinadigan qurilmani chiqarib olishdan oldin uni Fayllar ilovasida chiqarishni unutmang. Aks holda, ma’lumotlar o‘chib ketishi mumkin.</translation>
 <translation id="7898725031477653577">Har doim tarjima qilinsin</translation>
-<translation id="7899324822972399722">Rasm <ph name="INDEX" />/<ph name="A" />, uslub: <ph name="B" /></translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Brauzer komponentlarini qidiryapsizmi? Bu sahifaga kiring</translation>
 <translation id="7903429136755645827">Oʻyin boshqaruvlarini moslashtirish uchun bosing</translation>
@@ -9115,7 +9107,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8098616321286360457">Internet aloqasi kerak</translation>
 <translation id="8100230553590752325">Saqlangan parollardan istalgan qurilmada foydalanish</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> tanlandi. Bekor qilish uchun Qidiruv va Boʻshliq tugmalarini bosing.</translation>
-<translation id="8100725874569949614">Rasm <ph name="INDEX" />/<ph name="A" />, kayfiyat: <ph name="C" />.</translation>
 <translation id="8101409298456377967">Sayt va ilovalarga osongina kirish uchun parollaringizni yarating, saqlang va boshqaring. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">Maxsus rang</translation>
 <translation id="8101987792947961127">Qurilmani keyingi marta qayta ishga tushirishda Powerwash amali bajarilishi kerak</translation>
@@ -10064,7 +10055,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8846163936679269230">eSIM profillarini asliga qaytarish</translation>
 <translation id="8846239054091760429">Mono audio, boshlanishi, Jonli izoh va boshqalar</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8848963863312877204">Yuklanmalar shu yerda chiqadi</translation>
 <translation id="8849001918648564819">Yashirin</translation>
 <translation id="8849219423513870962"><ph name="PROFILE_NAME" /> nomli eSIM profilini olib tashlashni bekor qilish</translation>
 <translation id="8849262417389398097"><ph name="CHECKED" /> / <ph name="CHECKING" /></translation>

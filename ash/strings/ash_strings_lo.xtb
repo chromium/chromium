@@ -1505,6 +1505,7 @@
 <translation id="7025533177575372252">ເຊື່ອມຕໍ່ <ph name="DEVICE_NAME" /> ຂອງທ່ານກັບໂທລະສັບຂອງທ່ານ</translation>
 <translation id="7026338066939101231">ການຫຼຸດລົງ</translation>
 <translation id="7029814467594812963">ອອກຈາກເຊດຊັນ</translation>
+<translation id="7031303610220416229">ເບິ່ງໜ້າວຽກທັງໝົດໃນ Google Tasks</translation>
 <translation id="7032161822340700104">ອະນຸຍາດໃຫ້ມີແມ່ແບບ 6 ອັນເທົ່ານັ້ນ. ກະລຸນາລຶບແມ່ແບບໃດໜຶ່ງອອກເພື່ອບັນທຶກອັນໃໝ່.</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" /> ຕ້ອງການໃຊ້ <ph name="DEVICE_NAME" />. ເປີດສະວິດ <ph name="DEVICE_NAME" /> ຂອງອຸປະກອນທ່ານ.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, ຜູ້ຊ່ວຍ Google</translation>
@@ -1817,6 +1818,7 @@
 <translation id="8351131234907093545">ສ້າງບັນທຶກ</translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> ກຳລັງນຳໃຊ້ຢູ່.</translation>
 <translation id="8369166482916924789">ໂຕະທີ່ບັນທຶກໄວ້, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
+<translation id="8370414029565771236">ຊອກຫາ <ph name="TEXT" /></translation>
 <translation id="8371779926711439835">ໄປໜ້າເທື່ອລະຕົວໜັງສື</translation>
 <translation id="8371991222807690464">ປະສິດທິພາບຂອງອຸປະກອນຕໍ່ພ່ວງອາດຖືກຈຳກັດໃນໂໝດແຂກ</translation>
 <translation id="8374601332003098278">ກົດ enter ເພື່ອບັນທຶກໜ້າຈໍບາງສ່ວນ</translation>

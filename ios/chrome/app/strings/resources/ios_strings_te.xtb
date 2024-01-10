@@ -56,7 +56,6 @@
 <translation id="1279024913354609713">అనుమతించవద్దు</translation>
 <translation id="1281818060020671000">డేటాను మేనేజ్ చేయండి</translation>
 <translation id="1282311502488501110">సైన్ ఇన్ చేయవద్దు</translation>
-<translation id="1283039547216852943">విస్త‌రించ‌డానికి నొక్కండి</translation>
 <translation id="1283524564873030414">గత 24 గంటలు</translation>
 <translation id="1285320974508926690">ఈ సైట్‌ను ఎప్పటికీ అనువదించవద్దు</translation>
 <translation id="1291506870746876680">మీరు ఈ సైట్‌ను వదిలి వెళ్లినప్పుడు <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> అనుమతులు ఆఫ్‌కు రీసెట్ చేయబడతాయి.</translation>
@@ -82,7 +81,6 @@
 <translation id="1377255359165588604">సింక్‌ పని చేయడం ఆపివేయబడింది.</translation>
 <translation id="1377321085342047638">కార్డ్ నంబర్</translation>
 <translation id="1377508275003315939">పాస్‌వర్డ్‌లు</translation>
-<translation id="1380914240355562929"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> ఇప్పుడు <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />కి సైన్ ఇన్ చేయడానికి Google Password Managerను ఉపయోగించినప్పుడు, వారు ఇప్పుడు మీ యూజర్‌నేమ్‌ను, పాస్‌వర్డ్‌ను ఉపయోగించవచ్చు. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">సెర్చ్</translation>
 <translation id="138618066238211776"><ph name="USER_NAME" />గా కొనసాగించండి</translation>
 <translation id="1400642268715879018">గత 4 వారాలు</translation>
@@ -406,7 +404,6 @@
 <translation id="3087734570205094154">దిగువ</translation>
 <translation id="3090455602619185166">మేనేజ్ చేయబడే ఖాతాతో సైన్ ఇన్ చేయండి</translation>
 <translation id="309710370695886264">మీ వద్ద 1 వేరే చోట వాడిన పాస్‌వర్డ్‌ను ఉంది. సురక్షితంగా ఉండటానికి ఇప్పుడే దాన్ని పరిష్కరించండి.</translation>
-<translation id="3109724472072898302">కుదించబడింది</translation>
 <translation id="3112556859945124369">గుర్తు పెట్టు…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />మీరు వేటిని సింక్ చేయగలరో చూడండి<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">హిస్టరీ, ఇంకా మరెన్నో</translation>
@@ -775,7 +772,6 @@
 <translation id="5121618895923301719">మీరు ఇప్పటికే ఈ ప్రోడక్ట్‌ను ట్రాక్ చేస్తున్నారు. ఈ పేజీ <ph name="BEGIN_LINK" />మొబైల్ బుక్‌మార్క్‌ల<ph name="END_LINK" />‌లో సేవ్ చేయబడింది.</translation>
 <translation id="512533434554095351">మీ వద్ద అనేక పాస్‌వర్డ్ సమస్యలు ఉన్నాయి.</translation>
 <translation id="5126465625664020024">సైన్ ఇన్ చేసి సింక్ చేయండి</translation>
-<translation id="5131062416352684089">మీ ఫ్యామిలీ మెంబర్‌లు <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />‌కు సైన్ ఇన్ చేయడానికి Google Password Managerను ఉపయోగించినప్పుడు, వారు ఇప్పుడు మీ యూజర్‌నేమ్‌ను, పాస్‌వర్డ్‌ను ఉపయోగించవచ్చు. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">అన్ని పరికరాల్లో మీ పాస్‌వర్డ్‌లు, హిస్టరీ, మరిన్నింటిని సింక్ చేయండి</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} బలహీనమైన పాస్‌వర్డ్}other{{COUNT} బలహీనమైన పాస్‌వర్డ్‌లు}}</translation>
 <translation id="5149188072385105201">పాస్‌వర్డ్‌ను జోడించండి...</translation>
@@ -924,7 +920,6 @@
 <translation id="5955891643922670672">ఆఫ్‌లైన్ వెర్షన్‌ను చూస్తున్నారు</translation>
 <translation id="5957613098218939406">మరిన్ని ఆప్షన్‌లు</translation>
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" />తో సెర్చ్ చేస్తోంది</translation>
-<translation id="5962718611393537961">కుదించడానికి నొక్కండి</translation>
 <translation id="5963939892571022323">హైలైట్‌కు లింక్‌ను క్రియేట్ చేయడం సాధ్యం కాదు.</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 బుక్‌మార్క్ తొలగించబడింది}other{{count} బుక్‌మార్క్‌లు తొలగించబడ్డాయి}}</translation>
 <translation id="5979837087407522202">పాస్‌వర్డ్‌లను వెతకండి</translation>

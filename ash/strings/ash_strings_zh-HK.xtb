@@ -1503,6 +1503,7 @@
 <translation id="7025533177575372252">將 <ph name="DEVICE_NAME" /> 連結至您的手機</translation>
 <translation id="7026338066939101231">減少</translation>
 <translation id="7029814467594812963">結束工作階段</translation>
+<translation id="7031303610220416229">查看 Google Tasks 中的所有工作</translation>
 <translation id="7032161822340700104">只允許儲存 6 個範本。移除現有範本即可儲存新範本。</translation>
 <translation id="7034025838182392395">「<ph name="APP_NAME" />」要求使用<ph name="DEVICE_NAME" />。請開啟裝置的實體<ph name="DEVICE_NAME" />開關。</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />，Google 助理</translation>
@@ -1815,6 +1816,7 @@
 <translation id="8351131234907093545">建立筆記</translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" />使用中</translation>
 <translation id="8369166482916924789">儲存咗嘅桌面，<ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
+<translation id="8370414029565771236">搜尋「<ph name="TEXT" />」</translation>
 <translation id="8371779926711439835">往前一個字母</translation>
 <translation id="8371991222807690464">在訪客模式下，周邊裝置效能可能受到限制</translation>
 <translation id="8374601332003098278">㩒 Enter 掣就可以錄部分螢幕畫面</translation>

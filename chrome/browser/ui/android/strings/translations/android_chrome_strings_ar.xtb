@@ -233,6 +233,7 @@
 <translation id="2318045970523081853">انقر لإجراء اتصال.</translation>
 <translation id="2321086116217818302">جارٍ تحضير كلمات المرور…</translation>
 <translation id="2323763861024343754">مساحة تخزين الموقع</translation>
+<translation id="2327226657832576859">‏هل تريد فتح ملفات PDF تلقائيًا؟</translation>
 <translation id="2328985652426384049">تعذر تسجيل الدخول</translation>
 <translation id="2341410551640223969">تعذَّر تثبيت <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">‏إجمالي البيانات المُستخدَمة من قِبل Chrome، بما في ذلك الحسابات والإشارات المرجعية والإعدادات المحفوظة</translation>
@@ -640,6 +641,7 @@
 <translation id="4523326818319942067">آخر ساعة</translation>
 <translation id="452750746583162491">مراجعة البيانات المتزامنة</translation>
 <translation id="4532845899244822526">اختيار مجلد</translation>
+<translation id="4541505619120536051">مفتوح دائمًا</translation>
 <translation id="4543131175509360848">صفحة "ما من مفاتيح مرور"</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{علامة تبويب واحدة (<ph name="TAB_COUNT_ONE" />)}zero{<ph name="TAB_COUNT_MANY" /> علامة تبويب عادية و<ph name="TAB_COUNT_INCOGNITO" /> علامة تبويب في وضع التصفُّح المتخفي}two{علامتا تبويب عاديتان (<ph name="TAB_COUNT_MANY" />) وعلامتا تبويب في وضع التصفُّح المتخفي (<ph name="TAB_COUNT_INCOGNITO" />)}few{<ph name="TAB_COUNT_MANY" /> علامات تبويب عادية و<ph name="TAB_COUNT_INCOGNITO" /> علامات تبويب في وضع التصفُّح المتخفي}many{<ph name="TAB_COUNT_MANY" /> علامة تبويب عادية و<ph name="TAB_COUNT_INCOGNITO" /> علامة تبويب في وضع التصفُّح المتخفي}other{<ph name="TAB_COUNT_MANY" /> علامة تبويب عادية و<ph name="TAB_COUNT_INCOGNITO" /> علامة تبويب في وضع التصفُّح المتخفي}}</translation>
 <translation id="4554077758708533499">‏تم التوصيل باستخدام كابل USB.</translation>
@@ -831,6 +833,7 @@
 <translation id="5486841595534124508">شعار إشعار الخصوصية لمركز إحصاءات الصفحة الذي يعيد التوجيه إلى صفحة "نشاطي"</translation>
 <translation id="5487521232677179737">محو البيانات</translation>
 <translation id="5492637351392383067">التشفير على الجهاز فقط</translation>
+<translation id="5509866835115085009">‏يمكن لمتصفّح Chrome فتح ملف PDF تلقائيًا بمجرد تنزيله.</translation>
 <translation id="5514904542973294328">تم الإيقاف من قبل مشرف هذا الجهاز</translation>
 <translation id="5515439363601853141">فتح القفل لعرض كلمة المرور</translation>
 <translation id="5517095782334947753">تتوفر لديك الإشارات المرجعية، والسجل، وكلمات المرور، والإعدادات الأخرى من <ph name="FROM_ACCOUNT" />.</translation>

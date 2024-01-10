@@ -813,7 +813,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1615433306336820465">Manage sign-in data stored on your security key</translation>
 <translation id="1616206807336925449">This extension requires no special permissions.</translation>
 <translation id="1616298854599875024">Unable to import extension '<ph name="IMPORT_NAME" />' because it is not a shared module</translation>
-<translation id="161654560322394775">Image <ph name="INDEX" /> of <ph name="A" />, in <ph name="B" /> style, with <ph name="C" /> mood.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Checking this data with your organisation's security policies…}=1{Checking this file with your organisation's security policies…}other{Checking these files with your organisation's security policies…}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">Help Centre</translation>
@@ -4234,7 +4233,6 @@ This can include information about installed software, files, your browser and t
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="4250680216510889253">No</translation>
 <translation id="4251377547188244181">Kiosk and signage device enrolment</translation>
-<translation id="4252141040239557279">Image <ph name="INDEX" /> of <ph name="A" /></translation>
 <translation id="4252828488489674554">Right-click on the tab group name to edit this group or click to collapse</translation>
 <translation id="4252899949534773101">Bluetooth is disabled</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> – Tab content shared</translation>
@@ -6566,7 +6564,6 @@ Permissions that you've already given to websites and apps may apply to this acc
         <ph name="BREAK" />
         You can manage settings from the card menu or see more options in Customise Chrome.</translation>
 <translation id="6121773125605585883">View password with username <ph name="USERNAME" /> for <ph name="WEBSITE" /></translation>
-<translation id="6122081475643980456">Your Internet connection is being controlled</translation>
 <translation id="6122093587541546701">Email (optional):</translation>
 <translation id="6122095009389448667">Continue blocking this site from seeing the clipboard</translation>
 <translation id="6122513630797178831">Save CVC</translation>
@@ -7449,7 +7446,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6820079682647046800">Kerberos authentication failed</translation>
 <translation id="6821439254917412979">Unpin <ph name="EXTENSION_NAME" /></translation>
 <translation id="6823174134746916417">Touchpad tap-to-click</translation>
-<translation id="6823429960180594870">Manage files as they download and open them when they're done</translation>
 <translation id="6823561724060793716">From the address bar, you can open page info to see additional info about the page you're visiting</translation>
 <translation id="6824564591481349393">Copy &amp;Email Address</translation>
 <translation id="6824584962142919697">&amp;Inspect elements</translation>
@@ -7855,7 +7851,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="714301620504747562">Browsing and searching is faster than standard preloading.</translation>
 <translation id="7143207342074048698">Connecting</translation>
 <translation id="7143409552554575716">ChromeOS flags</translation>
-<translation id="714447804011008506">Downloads are now in the toolbar</translation>
 <translation id="7144856456372460176">&amp;Install <ph name="APP" />...</translation>
 <translation id="7144878232160441200">Retry</translation>
 <translation id="7145413760160421938">Can't resume previous session</translation>
@@ -8506,7 +8501,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7657090467145778067">Small savings</translation>
 <translation id="7657218410916651670"><ph name="BEGIN_LINK_GOOGLE" />Other forms of activity<ph name="END_LINK_GOOGLE" /> may be saved in your Google Account when you're signed in. You can delete them at any time.</translation>
 <translation id="7658239707568436148">Cancel</translation>
-<translation id="7658727964021657194">Recent AI theme <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">Exit Incognito mode anyway?</translation>
 <translation id="7659336857671800422">Take the privacy guide</translation>
 <translation id="7659584679870740384">You are not authorised to use this device. Please contact the administrator for sign-in permission.</translation>
@@ -8788,7 +8782,6 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7855678561139483478">Move tab to new window</translation>
 <translation id="7857004848504343806">Your computer contains a secure module, which is used to implement many critical security features in Chrome OS Flex. Visit the Chromebook Help Centre to learn more: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Text suggestions</translation>
-<translation id="7857949311770343000">Is this the new tab page that you were expecting?</translation>
 <translation id="7858120906780498731">ChromeOS Connected Input Devices</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941">Remove <ph name="EXTENSION_NAME" /> extension</translation>
@@ -8837,7 +8830,6 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="789722939441020330">Don't allow sites to automatically download multiple files</translation>
 <translation id="7897900149154324287">In the future, make sure that you eject your removable device in the Files app before unplugging it. Otherwise, you might lose data.</translation>
 <translation id="7898725031477653577">Always translate</translation>
-<translation id="7899324822972399722">Image <ph name="INDEX" /> of <ph name="A" />, in <ph name="B" /> style</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Looking for browser components? Visit</translation>
 <translation id="7903429136755645827">Click to customise your game controls</translation>
@@ -9118,7 +9110,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8098616321286360457">Network connection required</translation>
 <translation id="8100230553590752325">Use saved passwords on any device</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> selected. Press 'Search' plus 'Space' to unselect.</translation>
-<translation id="8100725874569949614">Image <ph name="INDEX" /> of <ph name="A" />, with <ph name="C" /> mood.</translation>
 <translation id="8101409298456377967">Create, save and manage your passwords so that you can easily sign in to sites and apps. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" />.</translation>
 <translation id="810185532889603849">Custom colour</translation>
 <translation id="8101987792947961127">Powerwash required on next reboot</translation>
@@ -10065,7 +10056,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8846163936679269230">Reset eSIM profiles</translation>
 <translation id="8846239054091760429">Mono audio, startup, Live Caption and more</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8848963863312877204">Find your downloads here</translation>
 <translation id="8849001918648564819">Hidden</translation>
 <translation id="8849219423513870962">Cancel removal of eSIM profile named <ph name="PROFILE_NAME" /></translation>
 <translation id="8849262417389398097"><ph name="CHECKED" /> of <ph name="CHECKING" /></translation>

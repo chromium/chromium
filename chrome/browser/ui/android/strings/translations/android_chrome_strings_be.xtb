@@ -233,6 +233,7 @@
 <translation id="2318045970523081853">Націсніце, каб зрабіць выклік</translation>
 <translation id="2321086116217818302">Ідзе падрыхтоўка пароляў…</translation>
 <translation id="2323763861024343754">Сховішча сайта</translation>
+<translation id="2327226657832576859">Адкрываць PDF аўтаматычна?</translation>
 <translation id="2328985652426384049">Не ўдалося ўвайсці ў сістэму</translation>
 <translation id="2341410551640223969">Не ўдалося ўсталяваць праграму "<ph name="WEBAPK_NAME" />".</translation>
 <translation id="2349710944427398404">Агульны аб'ём даных Chrome, у тым ліку закладкі, уліковыя запісы і захаваныя налады</translation>
@@ -638,6 +639,7 @@
 <translation id="4523326818319942067">апошнюю гадзіну</translation>
 <translation id="452750746583162491">Праверыць сінхранізаваныя даныя</translation>
 <translation id="4532845899244822526">Выберыце папку</translation>
+<translation id="4541505619120536051">Адкрываць заўсёды</translation>
 <translation id="4543131175509360848">Аркуш з інфармацыяй пра адсутнасць ключоў доступу</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> укладка}one{Укладак: <ph name="TAB_COUNT_MANY" /> (у рэжыме інкогніта: <ph name="TAB_COUNT_INCOGNITO" />)}few{Укладак: <ph name="TAB_COUNT_MANY" /> (у рэжыме інкогніта: <ph name="TAB_COUNT_INCOGNITO" />)}many{Укладак: <ph name="TAB_COUNT_MANY" /> (у рэжыме інкогніта: <ph name="TAB_COUNT_INCOGNITO" />)}other{Укладак: <ph name="TAB_COUNT_MANY" /> (у рэжыме інкогніта: <ph name="TAB_COUNT_INCOGNITO" />)}}</translation>
 <translation id="4554077758708533499">Падключана праз кабель USB</translation>
@@ -829,6 +831,7 @@
 <translation id="5486841595534124508">Лагатып паведамлення аб прыватнасці для раздзела статыстыкі старонкі, які перанакіроўвае на старонку "Мае дзеянні".</translation>
 <translation id="5487521232677179737">Ачысціць даныя</translation>
 <translation id="5492637351392383067">Шыфраванне на прыладзе</translation>
+<translation id="5509866835115085009">Chrome можа аўтаматычна адкрываць спампаваныя PDF.</translation>
 <translation id="5514904542973294328">Выключана адміністратарам гэтай прылады</translation>
 <translation id="5515439363601853141">Каб паглядзець пароль, трэба зняць блакіроўку</translation>
 <translation id="5517095782334947753">У вас ёсць закладкі, гісторыя, паролі і іншыя налады з уліковага запісу <ph name="FROM_ACCOUNT" />.</translation>

@@ -272,6 +272,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1476595624592550506">Passwort ändern</translation>
 <translation id="1482879811280872320">Radfahren</translation>
 <translation id="1483493594462132177">Senden</translation>
+<translation id="1484632730438126438">Der Text ist zu kurz. Gib mindestens drei Wörter ein.</translation>
 <translation id="1492194039220927094">Richtlinien per Push-Benachrichtigung:</translation>
 <translation id="14938948731065592">Computer-Peripheriegeräte</translation>
 <translation id="1495677929897281669">Zurück zum Tab</translation>
@@ -1238,7 +1239,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3447661539832366887">Der Eigentümer dieses Geräts hat das Dinosaurier-Spiel deaktiviert.</translation>
 <translation id="3447884698081792621">Zertifikat anzeigen (ausgestellt von <ph name="ISSUER" />)</translation>
 <translation id="3450323514459570273">Darf darum bitten, meine MIDI-Geräte zu steuern und neu zu programmieren</translation>
-<translation id="3452151267620065789">Fortschritt gespeichert</translation>
 <translation id="3452404311384756672">Abrufintervall: </translation>
 <translation id="3453962258458347894">Anzahl der Wiederholungen</translation>
 <translation id="3461266716147554923"><ph name="URL" /> möchte Texte und Bilder aus der Zwischenablage abrufen</translation>
@@ -1402,6 +1402,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3748009735914587286">Metall (hochglanz)</translation>
 <translation id="3748148204939282805">Hacker könnten auf <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> etwa versuchen, dich zur Installation von Software oder zur Herausgabe von Daten wie Passwörtern, Telefonnummern oder Kreditkartendetails zu bewegen. <ph name="BEGIN_LEARN_MORE_LINK" />Weitere Informationen<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Luftfahrtindustrie</translation>
+<translation id="3751020515020988516">Deine Anfrage wurde nicht verstanden. Versuche es mit einer anderen Anfrage.</translation>
 <translation id="3752543821772132562">Ignoriert, weil <ph name="POLICY_NAME" /> nicht konfiguriert ist.</translation>
 <translation id="3754210790023674521">Bild im Bild beenden</translation>
 <translation id="3759461132968374835">Es liegen keine kürzlich gemeldeten Abstürze vor. Abstürze, die bei deaktivierter Absturzberichtsfunktion aufgetreten sind, werden hier nicht angezeigt.</translation>
@@ -1458,6 +1459,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3858860766373142691">Name</translation>
 <translation id="3872834068356954457">Wissenschaft</translation>
 <translation id="3875783148670536197">Zeigen</translation>
+<translation id="3877877650871124156">Der Text ist zu lang. Kürze ihn und versuche es noch einmal.</translation>
 <translation id="3881478300875776315">Weniger Zeilen anzeigen</translation>
 <translation id="3883500545751229739">aufdringliche Anzeigen</translation>
 <translation id="3884278016824448484">In Konflikt stehende Gerätekennung</translation>
@@ -1535,7 +1537,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4067098466788473230">Stipendien</translation>
 <translation id="4067947977115446013">Gültige Adresse hinzufügen</translation>
 <translation id="4070790659619547722">Ist die Funktion zur Erfolgsmessung von Anzeigen aktiviert, werden zwischen Websites bestimmte Daten übertragen, um die Leistung der auf ihnen präsentierten Werbung zu messen. Unter anderem wird erfasst, zu welcher Uhrzeit welche Werbung eingeblendet wurde.</translation>
-<translation id="4072193657607981494">Richtlinien werden geladen</translation>
 <translation id="4072486802667267160">Bei der Verarbeitung deiner Bestellung ist ein Fehler aufgetreten. Bitte versuche es noch einmal.</translation>
 <translation id="4073376909608563327">Geräteentsperrung kann nicht verwendet werden</translation>
 <translation id="4073797364926776829">Karte ansehen</translation>
@@ -2566,6 +2567,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />Weitere Informationen zum Inkognitomodus in Chrome<ph name="END_LINK" /></translation>
 <translation id="6133320744616005677">Weiter gewähren</translation>
 <translation id="6133984428121856852">Die Dateiendung ist leer oder fehlerhaft.</translation>
+<translation id="6139769382153674477">Ein Fehler ist aufgetreten. Bist du angemeldet?</translation>
 <translation id="6139975341602920272">17 x 22 Zoll</translation>
 <translation id="6146055958333702838">Überprüfe alle Kabel und starte alle verwendeten Router, Modems und
     anderen Netzwerkgeräte neu.</translation>
@@ -2722,7 +2724,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6428450836711225518">Telefonnummer bestätigen</translation>
 <translation id="6429267199680088961">A4-Tab</translation>
 <translation id="643051589346665201">Google-Passwort ändern</translation>
-<translation id="6431119592588449664">Bericht hochgeladen</translation>
 <translation id="6432297414176614592">Weitere Informationen zu Werbethemen</translation>
 <translation id="6432831586648556868">Stellen im Vertrieb und Marketing</translation>
 <translation id="6433490469411711332">Kontaktdaten bearbeiten</translation>
@@ -3481,7 +3482,6 @@ Weitere Details:
 <translation id="7871445724586827387">Passwort des Google-Kontos ändern</translation>
 <translation id="7877007680666472091">geschützte Inhalts-IDs</translation>
 <translation id="7878562273885520351">Dein Passwort könnte gefährdet sein</translation>
-<translation id="7878966190323222027">Zum Fortfahren wieder öffnen</translation>
 <translation id="7880146494886811634">Adresse speichern</translation>
 <translation id="7882421473871500483">Braun</translation>
 <translation id="7882995332186050355">Lastkraftwagen und Anhänger</translation>
@@ -4104,7 +4104,6 @@ Weitere Details:
 <translation id="9119042192571987207">Hochgeladen</translation>
 <translation id="9122954576417194280">Güter- und Terminhandel</translation>
 <translation id="912327514020027767">Röcke</translation>
-<translation id="9128016270925453879">Richtlinien wurden geladen</translation>
 <translation id="9128870381267983090">Mit Netzwerk verbinden</translation>
 <translation id="9131119348384879525">Vertrauliche Inhalte aufnehmen?</translation>
 <translation id="9133985615769429248">Wenn du dieses Gerät gemeinsam mit anderen nutzt, kannst du die Displaysperre verwenden, um deine Identität zu bestätigen, wenn du ein gespeichertes Passwort verwendest</translation>

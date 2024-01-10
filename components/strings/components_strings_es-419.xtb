@@ -272,6 +272,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1476595624592550506">Cambia la contraseña</translation>
 <translation id="1482879811280872320">Ciclismo</translation>
 <translation id="1483493594462132177">Enviar</translation>
+<translation id="1484632730438126438">Es demasiado corto. Escribe al menos 3 palabras.</translation>
 <translation id="1492194039220927094">Notificaciones push de políticas:</translation>
 <translation id="14938948731065592">Periféricos de computadoras</translation>
 <translation id="1495677929897281669">Volver a la pestaña</translation>
@@ -1239,7 +1240,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3447661539832366887">El propietario del dispositivo desactivó el juego de dinosaurios.</translation>
 <translation id="3447884698081792621">Mostrar certificado (emitido por <ph name="ISSUER" />)</translation>
 <translation id="3450323514459570273">Puede solicitar permiso para controlar y reprogramar tus dispositivos MIDI</translation>
-<translation id="3452151267620065789">Se guardó el progreso</translation>
 <translation id="3452404311384756672">Obtener intervalo:</translation>
 <translation id="3453962258458347894">Cantidad de reintentos</translation>
 <translation id="3461266716147554923"><ph name="URL" /> desea ver el texto y las imágenes copiados en el portapapeles</translation>
@@ -1405,6 +1405,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3748009735914587286">Metal (brillo intenso)</translation>
 <translation id="3748148204939282805">Es posible que los atacantes en <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> intenten engañarte para que realices alguna acción peligrosa, como instalar software o revelar información personal (p. ej., contraseñas, números de teléfono o tarjetas de crédito). <ph name="BEGIN_LEARN_MORE_LINK" />Más información<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Industria aeronáutica</translation>
+<translation id="3751020515020988516">No se entendió tu solicitud. Prueba con otra solicitud.</translation>
 <translation id="3752543821772132562">Se ignoró porque no se estableció <ph name="POLICY_NAME" />.</translation>
 <translation id="3754210790023674521">Salir del modo de pantalla en pantalla</translation>
 <translation id="3759461132968374835">No has notificado ningún bloqueo recientemente. Los bloqueos que se hayan producido mientras la función de notificación de bloqueos estaba desactivada no aparecerán en esta página.</translation>
@@ -1461,6 +1462,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3858860766373142691">Nombre</translation>
 <translation id="3872834068356954457">Ciencia</translation>
 <translation id="3875783148670536197">Cómo hacerlo</translation>
+<translation id="3877877650871124156">Es demasiado largo. Acórtalo y vuelve a intentarlo.</translation>
 <translation id="3881478300875776315">Mostrar menos líneas</translation>
 <translation id="3883500545751229739">anuncios intrusivos</translation>
 <translation id="3884278016824448484">Hay un identificador de dispositivo en conflicto.</translation>
@@ -1538,7 +1540,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4067098466788473230">Subsidios y becas para estudiantes</translation>
 <translation id="4067947977115446013">Agregar una dirección válida</translation>
 <translation id="4070790659619547722">Con la medición de anuncios, se comparten algunos tipos de datos entre sitios para medir el rendimiento de sus anuncios, como el momento del día en que se te mostró un anuncio.</translation>
-<translation id="4072193657607981494">Cargando políticas</translation>
 <translation id="4072486802667267160">Se produjo un error al procesar tu pedido. Vuelve a intentarlo.</translation>
 <translation id="4073376909608563327">No se pudo usar el desbloqueo del dispositivo</translation>
 <translation id="4073797364926776829">Ver tarjeta</translation>
@@ -2569,6 +2570,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />Obtén más información sobre el modo Incógnito en Chrome<ph name="END_LINK" /></translation>
 <translation id="6133320744616005677">Seguir permitiendo</translation>
 <translation id="6133984428121856852">La extensión del archivo está vacía o es incorrecta.</translation>
+<translation id="6139769382153674477">Se produjo un error. ¿Accediste a tu cuenta?</translation>
 <translation id="6139975341602920272">43.18 × 55.88 cm</translation>
 <translation id="6146055958333702838">Revisa los cables y reinicia los routers, módems u otros dispositivos
         de red que estés usando.</translation>
@@ -2725,7 +2727,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6428450836711225518">Verifica tu número de teléfono</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">Cambiar la contraseña de Google</translation>
-<translation id="6431119592588449664">Se subió el informe</translation>
 <translation id="6432297414176614592">Obtén más información sobre los temas de anuncios</translation>
 <translation id="6432831586648556868">Trabajos en el sector de ventas y marketing</translation>
 <translation id="6433490469411711332">Editar la información de contacto</translation>
@@ -3484,7 +3485,6 @@ Detalles adicionales:
 <translation id="7871445724586827387">Cambiar la contraseña de tu Cuenta de Google</translation>
 <translation id="7877007680666472091">ID de contenido protegidos</translation>
 <translation id="7878562273885520351">Es posible que tu contraseña esté en peligro</translation>
-<translation id="7878966190323222027">Vuelve a abrir para continuar</translation>
 <translation id="7880146494886811634">Guardar dirección</translation>
 <translation id="7882421473871500483">Marrón</translation>
 <translation id="7882995332186050355">Camiones de carga y remolques</translation>
@@ -4106,7 +4106,6 @@ Detalles adicionales:
 <translation id="9119042192571987207">Subido</translation>
 <translation id="9122954576417194280">Comercialización de activos y futuros</translation>
 <translation id="912327514020027767">Faldas</translation>
-<translation id="9128016270925453879">Se cargaron las políticas</translation>
 <translation id="9128870381267983090">Conectarse a una red</translation>
 <translation id="9131119348384879525">¿Deseas capturar contenido confidencial?</translation>
 <translation id="9133985615769429248">Si compartes este dispositivo con otras personas, puedes usar tu bloqueo de pantalla para verificar tu identidad cada vez que uses una contraseña guardada</translation>

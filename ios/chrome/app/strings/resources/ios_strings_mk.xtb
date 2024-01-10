@@ -56,7 +56,6 @@
 <translation id="1279024913354609713">Не дозволувај</translation>
 <translation id="1281818060020671000">Управувајте со податоците</translation>
 <translation id="1282311502488501110">Не се најавувај</translation>
-<translation id="1283039547216852943">Допрете за да се прошири</translation>
 <translation id="1283524564873030414">Минатите 24 часа</translation>
 <translation id="1285320974508926690">Никогаш не преведувај ја оваа локација</translation>
 <translation id="1291506870746876680">Дозволите за <ph name="BEGIN_BOLD" />„<ph name="SITE_NAME" />“<ph name="END_BOLD" /> ќе се исклучат кога ќе го напуштите сајтов.</translation>
@@ -82,7 +81,6 @@
 <translation id="1377255359165588604">Синхронизацијата престана да работи.</translation>
 <translation id="1377321085342047638">Број на картичка</translation>
 <translation id="1377508275003315939">Лозинки</translation>
-<translation id="1380914240355562929"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> сега може да ги користи вашите корисничко име и лозинка при користење Google Password Manager за најавување на <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">Барај</translation>
 <translation id="138618066238211776">Продолжете како <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">Минатите 4 седмици</translation>
@@ -406,7 +404,6 @@
 <translation id="3087734570205094154">Дно</translation>
 <translation id="3090455602619185166">Најавете се со управувана сметка</translation>
 <translation id="309710370695886264">Имате 1 повторно употребена лозинка. Решете го проблемот со неа сега за да се заштитите.</translation>
-<translation id="3109724472072898302">Собрано</translation>
 <translation id="3112556859945124369">Означи…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Видете што може да синхронизирате<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">Историја и друго</translation>
@@ -775,7 +772,6 @@
 <translation id="5121618895923301719">Веќе го следите производов. Страницава е зачувана во <ph name="BEGIN_LINK" />Мобилни обележувачи<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Имате неколку проблеми со лозинки.</translation>
 <translation id="5126465625664020024">Најавување и синхронизација</translation>
-<translation id="5131062416352684089">Членовите на вашето семејство сега може да ги користат вашите корисничко име и лозинка при користење Google Password Manager за најавување на <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">Синхронизирајте ги лозинките, историјата и друго на сите уреди</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} слаба лозинка}one{{COUNT} слаба лозинка}other{{COUNT} слаби лозинки}}</translation>
 <translation id="5149188072385105201">Додајте лозинка…</translation>
@@ -924,7 +920,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="5955891643922670672">Се прегледува офлајн верзија</translation>
 <translation id="5957613098218939406">Повеќе опции</translation>
 <translation id="595769230373966252">Пребарување со <ph name="SEARCH_PROVIDER" /></translation>
-<translation id="5962718611393537961">Допрете за да се собере</translation>
 <translation id="5963939892571022323">Не може да се создаде линк до нагласената ставка.</translation>
 <translation id="5971872012779224351">{count,plural, =1{Избришан е 1 обележувач}one{Избришани се {count} обележувач}other{Избришани се {count} обележувачи}}</translation>
 <translation id="5979837087407522202">Пребарајте лозинки</translation>

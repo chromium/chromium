@@ -24,7 +24,6 @@
 <translation id="1173916544412572294">አውታረ መረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />፣ <ph name="CONNECTION_STATUS" />፣ የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />%፣ የስልክ ባትሪ <ph name="BATTERY_STATUS" />%፣ ዝርዝሮች</translation>
 <translation id="117624967391683467"><ph name="FILE_NAME" />ን በመቅዳት ላይ</translation>
 <translation id="1178581264944972037">ለአፍታ አቁም</translation>
-<translation id="1190144681599273207">ይህን ፋይል ማምጣት <ph name="FILE_SIZE" /> አካባቢ የተንቀሳቃሽ ውሂብ ይጠቀማል።</translation>
 <translation id="1194390763418645112">በ<ph name="RESTRICTED_DESTINATIONS" /> የፋይል መዳረሻ</translation>
 <translation id="1201402288615127009">ቀጣይ</translation>
 <translation id="1209796539517632982">የራስ-ሰር ስም አገልጋዮች</translation>
@@ -100,7 +99,6 @@
 <translation id="1761091787730831947">ለ<ph name="VM_NAME" /> ያጋሩ</translation>
 <translation id="1773212559869067373">የማረጋገጫ ምስክር ወረቀት በአካባቢው ተቀባይነት አላገኘም</translation>
 <translation id="1775381402323441512">የቪዲዮ መረጃ</translation>
-<translation id="180035236176489073">እነዚህን ፋይሎች ለመድረስ መስመር ላይ መሆን አለብዎት።</translation>
 <translation id="1807938677607439181">ሁሉም ፋይሎች</translation>
 <translation id="1810764548349082891">ምንም ቅድመ-ዕይታ አይገኝም</translation>
 <translation id="1812302367230252929">በአማርኛ ቋንቋ ፊደል መጻፍ</translation>
@@ -161,8 +159,6 @@
 <translation id="2282155092769082568">የራስ-ውቅር ዩአርኤል፦</translation>
 <translation id="2284767815536050991">መወገድ የሚችል ማከማቻ</translation>
 <translation id="2288278176040912387">የሙዚቃ ማጫወቻ</translation>
-<translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> ፋይሎችን በመክፈት ላይ።</translation>
-<translation id="2303301624314357662">ፋይል <ph name="FILE_NAME" />ን በመክፈት ላይ።</translation>
 <translation id="2304820083631266885">ፕላኔት</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> ወጥቷል።</translation>
 <translation id="2307462900900812319">አውታረ መረብ አዋቅር</translation>
@@ -172,7 +168,6 @@
 <translation id="233822363739146957">የእርስዎን ሁሉንም ፋይሎች ለማስመር በቂ የማከማቻ ቦታ የለም</translation>
 <translation id="23721837607121582">የሞባይል መገለጫን ያውርዱ፣ አውታረ መረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />፣ <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">ወደ የዝርዝር ዕይታ ቀይር</translation>
-<translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> አቃፊዎች ለLinux ተጋርተዋል</translation>
 <translation id="2379576081295865700">የማከማቻ ቦታን በመፈተሽ ላይ… 1 ንጥል ተገኝቷል</translation>
 <translation id="2383454254762599978">ወደ መጣያ ውሰድ</translation>
 <translation id="2387458720915042159">የተኪ ግንኙነት ዓይነት</translation>
@@ -396,12 +391,10 @@
 <translation id="4197674956721858839">የጨመቃ ምርጫ</translation>
 <translation id="4202378258276439759">ስፓኒሽ (ላቲን አሜሪካ)</translation>
 <translation id="4202977638116331303">ጆርጂያኛ</translation>
-<translation id="421017592316736757">ይህን ፋይል ለመድረስ መስመር ላይ መሆን አለብዎት።</translation>
 <translation id="4212740939091998969">«<ph name="FOLDER_NAME" />» የሚባል አቃፊ አስቀድሞ አለ። እባክዎ የተለየ ስም ይምረጡ።</translation>
 <translation id="4218274196133425560">ለ<ph name="HOST_NAME" /> ልዩ ሁኔታዎችን አስወግድ</translation>
 <translation id="4261901459838235729">Google ማቅረቢያ</translation>
 <translation id="4277536868133419688"><ph name="FILTER_NAME" /> ማጣሪያ በርቷል።</translation>
-<translation id="4290535918735525311">1 አቃፊ ከLinux ጋር ተጋርቷል</translation>
 <translation id="4299729908419173967">የብራዚል</translation>
 <translation id="4302605047395093221">ይህን መሣሪያ የሚጠቀም ማንኛውም ሰው ከዚህ የተንቀሳቃሽ ስልክ አውታረ መረብ ጋር ለመገናኘት ፒኑን ማስገባት ይኖርበታል</translation>
 <translation id="4303531889494116116">ይህ አውታረ መረብ ሥራ ላይ ነው ቆይተው እንደገና ይሞክሩ።</translation>
@@ -502,8 +495,6 @@
 <translation id="4906580650526544301">አውታረ መረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />፣ <ph name="PROVIDER_NAME" />፣ <ph name="CONNECTION_STATUS" />፣ የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />%፣ የስልክ ባትሪ <ph name="BATTERY_STATUS" />%፣ ዝርዝሮች</translation>
 <translation id="4935975195727477204">የጋንዛኒያ አበባ</translation>
 <translation id="4943368462779413526">የአሜሪካ እግር ኳስ</translation>
-<translation id="4961158930123534723">1 አቃፊ ለParallels ዴስክቶፕ ተጋርቷል</translation>
-<translation id="4965874878399872778">ፋይሎችን ከድርጅትዎ የደህንነት መመሪያዎች ጋር በመፈተሽ ላይ…</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> ወደነበረበት ተመልሷል</translation>
 <translation id="4969785127455456148">አልበም</translation>
 <translation id="4972330214479971536">ፋይል ስምረትን አዋቅሮ መጨረስ አልተቻለም</translation>
@@ -565,7 +556,6 @@
 <translation id="5317780077021120954">አስቀምጥ</translation>
 <translation id="5318819489018851358">ለLinux አጋራ</translation>
 <translation id="5323213332664049067">የላቲን አሜሪካ</translation>
-<translation id="5330145655348521461">እነዚህ ፋይሎች በተለየ ዴስክቶፕ ላይ ተከፍተዋል። ለማየት ወደ <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) ይውሰዱት።</translation>
 <translation id="5330512191124428349">መረጃ ያግኙ</translation>
 <translation id="535792325654997756">ድመቶች ያሉት ሰው</translation>
 <translation id="5358764674931277">የክፈፍ ፍጥነት</translation>
@@ -667,7 +657,6 @@
 <translation id="613750717151263950">ጃፓንኛ በአሜሪካ ቁልፍ ሰሌዳ</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />፣ ምንም አውታረ መረብ የለም</translation>
 <translation id="6146563240635539929">ቪዲዮዎች</translation>
-<translation id="6150853954427645995">ይህን ፋይል ከመስመር ውጭ ለመጠቀም መስመር ላይ ተመልሰው ይሂዱ፣ ፋይሉን በቀኝ ጠቅ ያድርጉትና የ<ph name="OFFLINE_CHECKBOX_NAME" /> አማራጩን ይምረጡ።</translation>
 <translation id="6164412158936057769">ቢራቢሮዎች</translation>
 <translation id="6165508094623778733">የበለጠ ለመረዳት</translation>
 <translation id="6170470584681422115">ሳንድዊች</translation>
@@ -700,7 +689,6 @@
 <translation id="636254897931573416">ልክ ያልሆነ ጎራ ድኅረ ቅጥያ ዝምድና እሴት</translation>
 <translation id="6364301859968397756">የድርጅት ማከማቻ ሞልቷል</translation>
 <translation id="6367976544441405720">ቫን</translation>
-<translation id="637062427944097960">ይህ ፋይል በሌላ ዴስክቶፕ ላይ ተከፍቷል። እሱን ለማየት ወደ <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) ይውሰዱት።</translation>
 <translation id="6394388407447716302">ተነባቢ-ብቻ</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> ንጥሎች</translation>
 <translation id="6407769893376380348"><ph name="FILE_NAME" /> ስለተመሰጠረ ሊንቀሳቀስ አልቻለም።</translation>
@@ -709,7 +697,6 @@
 <translation id="6430271654280079150">1 ቀሪ ሙከራ አለዎት።</translation>
 <translation id="643243556292470964">የተሰረዙ ፋይሎች አሁን ወደ መጣያ ተወስደዋል</translation>
 <translation id="6438480100790416671">የማከማቻ ቦታን በመፈተሽ ላይ…</translation>
-<translation id="6451527188465304418">ፋይሎችን ከድርጅትዎ የደህንነት መመሪያዎች ጋር በመፈተሽ ላይ…</translation>
 <translation id="6485131920355264772">የቦታ መረጃን ማምጣት አልተቻለም</translation>
 <translation id="6495925982925244349">አውታረ መረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />፣ <ph name="NETWORK_NAME" />፣ <ph name="SECURITY_STATUS" />፣ <ph name="CONNECTION_STATUS" />፣ የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />%፣ በእርስዎ አስተዳዳሪ የሚተዳደር፣ ዝርዝሮች</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" />ን ወደ <ph name="FOLDER_NAME" /> በማውጣት ላይ</translation>
@@ -724,7 +711,6 @@
 <translation id="6588648400954570689">የፋይል ማስመር ቅንብሮች</translation>
 <translation id="6594855146910089723">ይህ አቃፊ ለLinux እና ለParallels ዴስክቶፕ ተጋርቷል</translation>
 <translation id="6607272825297743757">የፋይል መረጃ</translation>
-<translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> አቃፊዎች ለParallels ዴስክቶፕ ተጋርተዋል</translation>
 <translation id="6629518321609546825">ቢያንስ 4 ቁጥሮችን ያስገቡ</translation>
 <translation id="6643016212128521049">አጽዳ</translation>
 <translation id="6650726141019353908">ሮዝ ቢራቢሮ</translation>
@@ -891,7 +877,6 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> ቴባ</translation>
 <translation id="7831491651892296503">አውታረ መረብን ማዋቀር ላይ ስህተት</translation>
-<translation id="7839804798877833423">እነዚህን ፋይሎች ማምጣት <ph name="FILE_SIZE" /> ገደማ የተንቀሳቃሽ ስልክ ውሂብ ይጠቀማል።</translation>
 <translation id="7846076177841592234">ምርጫ ሰርዝ</translation>
 <translation id="7853966320808728790">የፈረንሳይኛ BÉPO</translation>
 <translation id="7857117644404132472">ለየት ያሉትን ያክሉ</translation>
@@ -940,7 +925,6 @@
 <translation id="8175799081768705361"><ph name="NUMBER_OF_FILES_SYNCING" /> የDrive ፋይሎችን በማስመር ላይ</translation>
 <translation id="8179976553408161302">አስገባ</translation>
 <translation id="8193175696669055101">የመሳሪያ ሞዴል</translation>
-<translation id="8223479393428528563">እነዚህን ፋይሎች ከመስመር ውጭ ለመጠቀም ለማስቀመጥ ተመልሰው መስመር ላይ ይሂዱ፣ ፋይሎቹን በቀኝ ጠቅ ያድርጉ፣ እና የ<ph name="OFFLINE_CHECKBOX_NAME" /> አማራጩን ይምረጡ።</translation>
 <translation id="8241139360630443550">ማከማቻ ይመልከቱ</translation>
 <translation id="8249296373107784235">አጨንግፍ</translation>
 <translation id="8250690786522693009">ላቲን</translation>

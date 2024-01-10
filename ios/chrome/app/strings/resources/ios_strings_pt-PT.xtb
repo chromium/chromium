@@ -56,7 +56,6 @@
 <translation id="1279024913354609713">Não permitir</translation>
 <translation id="1281818060020671000">Faça a gestão de dados</translation>
 <translation id="1282311502488501110">Não iniciar sessão</translation>
-<translation id="1283039547216852943">Toque para expandir</translation>
 <translation id="1283524564873030414">Últimas 24 horas</translation>
 <translation id="1285320974508926690">Nunca traduzir este site</translation>
 <translation id="1291506870746876680">As autorizações de <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> serão repostas para desativadas quando sair deste site.</translation>
@@ -82,7 +81,6 @@
 <translation id="1377255359165588604">A sincronização deixou de funcionar.</translation>
 <translation id="1377321085342047638">N.º cartão</translation>
 <translation id="1377508275003315939">Palavras-passe</translation>
-<translation id="1380914240355562929"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> já pode usar o seu nome de utilizador e palavra-passe quando usar o Gestor de Palavras-passe da Google para iniciar sessão em <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">Pesquisar</translation>
 <translation id="138618066238211776">Continuar como <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">Últimas 4 semanas</translation>
@@ -337,6 +335,7 @@ O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as 
 <translation id="2747003861858887689">Campo anterior</translation>
 <translation id="2749231692441336879">A seguir o canal <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Contas neste dispositivo</translation>
+<translation id="2755595981383829244">Vai passar a receber notificações de conteúdo</translation>
 <translation id="2762000892062317888">agora mesmo</translation>
 <translation id="2772667768515195373">Pode usar moradas guardadas entre produtos Google. Esta morada está guardada na sua Conta Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Pesquisa anónima</translation>
@@ -406,7 +405,6 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3087734570205094154">Parte inferior</translation>
 <translation id="3090455602619185166">Inicie sessão com uma conta gerida</translation>
 <translation id="309710370695886264">Tem 1 palavra-passe reutilizada. Corrija-a agora para manter a sua segurança.</translation>
-<translation id="3109724472072898302">Fechado</translation>
 <translation id="3112556859945124369">Marcar…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Veja o que pode sincronizar<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">Histórico e muito mais</translation>
@@ -691,6 +689,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="4689564913179979534">Gerir métodos de pagamento</translation>
 <translation id="469300482518076788">Fechar separador</translation>
 <translation id="4697071790493980729">Nenhum resultado encontrado</translation>
+<translation id="470337593714520080">{count,plural, =1{Guarde 1 marcador na sua Conta Google}other{Guarde {count} marcadores na sua Conta Google}}</translation>
 <translation id="470966556546083668">Não ative a sincronização</translation>
 <translation id="4711809265250406889">Quando o modo está ativado</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} e mais 1}other{{website_1}, {website_2} e mais {more_count}}}</translation>
@@ -775,7 +774,6 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="5121618895923301719">Já está a acompanhar este produto. Esta página está guardada nos <ph name="BEGIN_LINK" />Marcadores dos dispositivos móveis<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Tem vários problemas de palavras-passe.</translation>
 <translation id="5126465625664020024">Iniciar sessão e Sincronizar</translation>
-<translation id="5131062416352684089">Os membros da família já podem usar o seu nome de utilizador e palavra-passe quando usarem o Gestor de Palavras-passe da Google para iniciarem sessão em <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">Sincronize as suas palavras-passe, o histórico e muito mais em todos os dispositivos</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} palavra-passe fraca}other{{COUNT} palavras-passe fracas}}</translation>
 <translation id="5149188072385105201">Adicionar palavra-passe…</translation>
@@ -924,7 +922,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5955891643922670672">Ver a versão offline</translation>
 <translation id="5957613098218939406">Mais opções</translation>
 <translation id="595769230373966252">Pesquisar com o <ph name="SEARCH_PROVIDER" /></translation>
-<translation id="5962718611393537961">Toque para reduzir</translation>
 <translation id="5963939892571022323">Não é possível criar um link para o realce.</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 marcador eliminado}other{{count} marcadores eliminados}}</translation>
 <translation id="5979837087407522202">Pesquisar palavras-passe</translation>

@@ -24,7 +24,6 @@
 <translation id="1173916544412572294">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, телефон – <ph name="PHONE_NAME" />, статус подключения – "<ph name="CONNECTION_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, заряд батареи – <ph name="BATTERY_STATUS" /> %, подробная информация</translation>
 <translation id="117624967391683467">Копирование файла "<ph name="FILE_NAME" />"…</translation>
 <translation id="1178581264944972037">Пауза</translation>
-<translation id="1190144681599273207">При загрузке этого файла по мобильному каналу передачи данных будет использовано около <ph name="FILE_SIZE" /> трафика.</translation>
 <translation id="1194390763418645112">Доступ к файлу через <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">Далее</translation>
 <translation id="1209796539517632982">Автоматические серверы имен</translation>
@@ -100,7 +99,6 @@
 <translation id="1761091787730831947">Предоставить <ph name="VM_NAME" /> доступ</translation>
 <translation id="1773212559869067373">Сертификат аутентификации отклонен локально</translation>
 <translation id="1775381402323441512">Информация о видео</translation>
-<translation id="180035236176489073">Для доступа к файлам необходимо подключение к Интернету.</translation>
 <translation id="1807938677607439181">Все файлы</translation>
 <translation id="1810764548349082891">Предпросмотр недоступен</translation>
 <translation id="1812302367230252929">Амхарский, транслитерация</translation>
@@ -135,6 +133,7 @@
 <translation id="2084809735218147718">Человек пишет благодарственное письмо</translation>
 <translation id="2088690981887365033">Сеть VPN</translation>
 <translation id="209653272837065803">Недостаточно места для продолжения синхронизации файлов.</translation>
+<translation id="2099143626019777139">Сайты, которые вы посещаете, видны администратору. Вы можете посмотреть их список.</translation>
 <translation id="2111134541987263231">Включите параметр <ph name="BEGIN_BOLD" />Разрешить использование в режиме инкогнито<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086">Некоторые объекты (<ph name="NUMBER_OF_ITEMS" />) будут удалены, и вы не сможете их восстановить.</translation>
 <translation id="2122305276694332719">Включать этот параметр не рекомендуется, так как при автоматическом подключении к скрытой сети другие пользователи могут увидеть ваше устройство и некоторые сетевые настройки.</translation>
@@ -161,8 +160,6 @@
 <translation id="2282155092769082568">URL автоматической настройки:</translation>
 <translation id="2284767815536050991">съемный накопитель</translation>
 <translation id="2288278176040912387">Патефон</translation>
-<translation id="2291538123825441971">Открываются файлы (<ph name="NUMBER_OF_FILES" />).</translation>
-<translation id="2303301624314357662">Открывается файл <ph name="FILE_NAME" />.</translation>
 <translation id="2304820083631266885">Планета</translation>
 <translation id="2305020378527873881">Том <ph name="VOLUME_NAME" /> извлечен.</translation>
 <translation id="2307462900900812319">Настройка сети</translation>
@@ -172,7 +169,6 @@
 <translation id="233822363739146957">Недостаточно места для синхронизации всех ваших файлов.</translation>
 <translation id="23721837607121582">Скачать мобильный профиль, сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Показать в виде списка</translation>
-<translation id="2377590462528165447">Linux предоставлен доступ к нескольким папкам (<ph name="NUMBER_OF_ITEMS" />)</translation>
 <translation id="2379576081295865700">Проверка хранилища… Найден 1 объект.</translation>
 <translation id="2383454254762599978">Удалить</translation>
 <translation id="2387458720915042159">Тип подключения через прокси-сервер</translation>
@@ -396,12 +392,10 @@
 <translation id="4197674956721858839">Архивировать выбранные элементы</translation>
 <translation id="4202378258276439759">Испанский (Латинская Америка)</translation>
 <translation id="4202977638116331303">Грузинский</translation>
-<translation id="421017592316736757">Для доступа к файлу необходимо подключение к Интернету.</translation>
 <translation id="4212740939091998969">Папка "<ph name="FOLDER_NAME" />" уже существует. Укажите другое название.</translation>
 <translation id="4218274196133425560">Удалить исключение для <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">Презентация Google</translation>
 <translation id="4277536868133419688">Фильтр "<ph name="FILTER_NAME" />" включен.</translation>
-<translation id="4290535918735525311">Linux предоставлен доступ к 1 папке</translation>
 <translation id="4299729908419173967">бразильская</translation>
 <translation id="4302605047395093221">Все пользователи устройства должны будут вводить указанный PIN-код при подключении к этой мобильной сети.</translation>
 <translation id="4303531889494116116">Сеть занята. Повторите попытку позже.</translation>
@@ -502,8 +496,6 @@
 <translation id="4906580650526544301">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, название – "<ph name="PHONE_NAME" />", оператор – <ph name="PROVIDER_NAME" />, статус подключения – "<ph name="CONNECTION_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, заряд батареи – <ph name="BATTERY_STATUS" /> %, подробная информация</translation>
 <translation id="4935975195727477204">Гацания</translation>
 <translation id="4943368462779413526">Футбол</translation>
-<translation id="4961158930123534723">Parallels Desktop предоставлен доступ к 1 папке.</translation>
-<translation id="4965874878399872778">Проверка файлов на соответствие правилам безопасности вашей организации…</translation>
 <translation id="496656650103537022">Файл <ph name="FILE_NAME" /> восстановлен</translation>
 <translation id="4969785127455456148">Альбом</translation>
 <translation id="4972330214479971536">Не удалось завершить настройку синхронизации файлов</translation>
@@ -565,7 +557,6 @@
 <translation id="5317780077021120954">Сохранить</translation>
 <translation id="5318819489018851358">Предоставить доступ Linux</translation>
 <translation id="5323213332664049067">Латинская Америка</translation>
-<translation id="5330145655348521461">Эти файлы открыты на другом рабочем столе. Чтобы увидеть их, переключитесь на профиль пользователя <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="5330512191124428349">Сведения о файле</translation>
 <translation id="535792325654997756">Человек с кошками</translation>
 <translation id="5358764674931277">Частота кадров</translation>
@@ -667,7 +658,6 @@
 <translation id="613750717151263950">Японский, американская раскладка</translation>
 <translation id="6138894911715675297">Сеть <ph name="NETWORK_TYPE" />, нет доступа</translation>
 <translation id="6146563240635539929">Видео</translation>
-<translation id="6150853954427645995">Чтобы работать с этим файлом в офлайн-режиме, подключитесь к Интернету, нажмите правой кнопкой мыши на документ и выберите вариант "<ph name="OFFLINE_CHECKBOX_NAME" />".</translation>
 <translation id="6164412158936057769">Бабочки</translation>
 <translation id="6165508094623778733">Подробнее</translation>
 <translation id="6170470584681422115">Сэндвич</translation>
@@ -700,7 +690,6 @@
 <translation id="636254897931573416">Недопустимое значение совпадения с доменным суффиксом</translation>
 <translation id="6364301859968397756">Хранилище организации заполнено</translation>
 <translation id="6367976544441405720">Грузовик</translation>
-<translation id="637062427944097960">Этот файл открыт на другом рабочем столе. Чтобы увидеть его, переключитесь на профиль пользователя <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="6394388407447716302">Только чтение</translation>
 <translation id="6395575651121294044">Объектов: <ph name="NUMBER_OF_FILES" /></translation>
 <translation id="6407769893376380348">Не удалось переместить файл "<ph name="FILE_NAME" />", так как он зашифрован.</translation>
@@ -709,7 +698,6 @@
 <translation id="6430271654280079150">Осталась одна попытка.</translation>
 <translation id="643243556292470964">Удаленные файлы теперь перемещаются в корзину</translation>
 <translation id="6438480100790416671">Проверка хранилища…</translation>
-<translation id="6451527188465304418">Проверка файла на соответствие правилам безопасности вашей организации…</translation>
 <translation id="6485131920355264772">Не удалось получить информацию о свободном месте.</translation>
 <translation id="6495925982925244349">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, название – "<ph name="NETWORK_NAME" />", статус защиты – "<ph name="SECURITY_STATUS" />", статус подключения – "<ph name="CONNECTION_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, под управлением администратора, подробная информация</translation>
 <translation id="649877868557234318">Извлечение <ph name="FILE_NAME" /> в папку "<ph name="FOLDER_NAME" />"…</translation>
@@ -724,7 +712,6 @@
 <translation id="6588648400954570689">Настройки синхронизации файлов</translation>
 <translation id="6594855146910089723">Доступ к этой папке предоставлен Linux и Parallels Desktop.</translation>
 <translation id="6607272825297743757">Информация о файле</translation>
-<translation id="6609332149380188670">Parallels Desktop предоставлен доступ к нескольким папкам (<ph name="NUMBER_OF_ITEMS" />).</translation>
 <translation id="6629518321609546825">Введите не менее четырех цифр.</translation>
 <translation id="6643016212128521049">Удалить</translation>
 <translation id="6650726141019353908">Розовая бабочка</translation>
@@ -891,7 +878,6 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> ТБ</translation>
 <translation id="7831491651892296503">Ошибка при настройке сети</translation>
-<translation id="7839804798877833423">При загрузке этих файлов по мобильному каналу передачи данных будет использовано около <ph name="FILE_SIZE" /> трафика.</translation>
 <translation id="7846076177841592234">Отменить выбор</translation>
 <translation id="7853966320808728790">Французская (BÉPO)</translation>
 <translation id="7857117644404132472">Добавить исключение</translation>
@@ -939,7 +925,6 @@
 <translation id="8175799081768705361">Синхронизация файлов (<ph name="NUMBER_OF_FILES_SYNCING" />) на Диске…</translation>
 <translation id="8179976553408161302">ВВОД</translation>
 <translation id="8193175696669055101">Модель устройства</translation>
-<translation id="8223479393428528563">Чтобы работать с этими файлами в офлайн-режиме, подключитесь к Интернету, нажмите правой кнопкой мыши на каждый документ и выберите вариант "<ph name="OFFLINE_CHECKBOX_NAME" />".</translation>
 <translation id="8241139360630443550">Проверить хранилище</translation>
 <translation id="8249296373107784235">Отмена</translation>
 <translation id="8250690786522693009">Латиница</translation>
@@ -966,6 +951,7 @@
 <translation id="83651606385705612"><ph name="VM_NAME" /> получит доступ к файлам в папке "<ph name="FOLDER_NAME" />".</translation>
 <translation id="8372369524088641025">Недопустимый ключ WEP</translation>
 <translation id="8372852072747894550">Греческий</translation>
+<translation id="8377269993083688872">Макеты писем</translation>
 <translation id="8386903983509584791">Поиск завершен</translation>
 <translation id="8387733224523483503">Файл "<ph name="FILE_NAME" />" извлечен.</translation>
 <translation id="8395901698320285466">Размеры</translation>

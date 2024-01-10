@@ -816,7 +816,6 @@
 <translation id="1615433306336820465">គ្រប់គ្រង​ទិន្នន័យ​សម្រាប់​ចូលគណនី ដែលបាន​រក្សាទុក​នៅក្នុង​សោសុវត្ថិភាព​របស់អ្នក</translation>
 <translation id="1616206807336925449">កម្មវិធីបន្ថែមនេះមិនតម្រូវឲ្យមានការអនុញ្ញាតពិសេសអ្វីទេ។</translation>
 <translation id="1616298854599875024">មិនអាច​នាំចូល​កម្មវិធីបន្ថែម "<ph name="IMPORT_NAME" />" បាន​ទេ ដោយសារ​វា​មិនមែន​ជា​ម៉ូឌុល​ដែលបានចែករំលែក</translation>
-<translation id="161654560322394775">រូបភាពទី <ph name="INDEX" /> នៃ <ph name="A" /> ក្នុងរចនាប័ទ្ម <ph name="B" /> ជាមួយនឹងអារម្មណ៍ <ph name="C" />។</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{កំពុងពិនិត្យទិន្នន័យនេះដោយប្រើគោលការណ៍សុវត្ថិភាពរបស់ស្ថាប័នអ្នក...}=1{កំពុងពិនិត្យឯកសារនេះដោយប្រើគោលការណ៍សុវត្ថិភាពរបស់ស្ថាប័នអ្នក...}other{កំពុងពិនិត្យឯកសារទាំងនេះដោយប្រើគោលការណ៍សុវត្ថិភាពរបស់ស្ថាប័នអ្នក...}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">មជ្ឈមណ្ឌលជំនួយ</translation>
@@ -1785,6 +1784,7 @@
 <translation id="2322318151094136999">សួរ​នៅពេល​គេហទំព័រណាមួយ​ចង់​ចូលប្រើ​រន្ធ​ស៊េរី (បានណែនាំ)</translation>
 <translation id="2322622365472107569">ពេល​បញ្ចប់ម៉ោង <ph name="TIME" /></translation>
 <translation id="2323018538045954000">បណ្ដាញ Wi-Fi ដែលបាន​រក្សាទុក</translation>
+<translation id="232390938549590851">កំពុង​រកមើល​ទំព័រ​ប្រព័ន្ធ​កម្មវិធីរុករក​តាមអ៊ីនធឺណិតឬ? សូម​ចូលទៅកាន់ <ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" />។</translation>
 <translation id="2325444234681128157">ចងចាំ​ពាក្យ​សម្ងាត់</translation>
 <translation id="2326188115274135041">បញ្ជាក់កូដ PIN ដើម្បីបើកការដោះសោដោយស្វ័យប្រវត្តិ</translation>
 <translation id="2326906096734221931">បើក​ការកំណត់​កម្មវិធី</translation>
@@ -4242,7 +4242,6 @@
 <translation id="4250229828105606438">ថតអេក្រង់</translation>
 <translation id="4250680216510889253">ទេ</translation>
 <translation id="4251377547188244181">ការចុះឈ្មោះ​ឧបករណ៍ Kiosk និង signage</translation>
-<translation id="4252141040239557279">រូបភាពទី <ph name="INDEX" /> នៃ <ph name="A" /></translation>
 <translation id="4252828488489674554">ចុចកណ្ដុរ​ខាងស្ដាំ​លើឈ្មោះ​ក្រុមផ្ទាំង ដើម្បីកែ​ក្រុមនេះ ឬចុច​ដើម្បី​បង្រួម</translation>
 <translation id="4252899949534773101">បានបិទប៊្លូធូស</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - បានចែករំលែកមាតិការបស់ផ្ទាំង</translation>
@@ -5373,6 +5372,7 @@
 <translation id="5145876360421795017">កុំចុះឈ្មោះ​ឧបករណ៍</translation>
 <translation id="5146235736676876345">ជ្រើសរើស​ពាក្យសម្ងាត់របស់អ្នក​ផ្ទាល់</translation>
 <translation id="5146896637028965135">សំឡេង​របស់​ប្រព័ន្ធ</translation>
+<translation id="5147097165869384760">កំពុង​រកមើល​ទំព័រ​ប្រព័ន្ធ​ប្រតិបត្តិការឬ? សូម​ចូលទៅកាន់ <ph name="BEGIN_LINK" /><ph name="CHROME_ABOUT_SYS_LINK" /><ph name="END_LINK" />។</translation>
 <translation id="5147516217412920887">អនុវត្តតាម​ការណែនាំ​នៅលើ​ទូរសព្ទ​របស់អ្នក ដើម្បី​ផ្ទៀងផ្ទាត់​កូដ</translation>
 <translation id="5147992672778369947">ប្រើ​ពាក្យសម្ងាត់​ដែលបានណែនាំ</translation>
 <translation id="5148277445782867161">សេវាកម្ម​ទីតាំង​របស់ Google ប្រើប្រាស់​ប្រភព​ដូចជា Wi-Fi, បណ្ដាញ​ទូរសព្ទ​ចល័ត និង​ឧបករណ៍​ចាប់​សញ្ញា​ផ្សេងៗ ដើម្បី​ជួយ​ប៉ាន់ស្មាន​ទីតាំងរបស់​ឧបករណ៍​អ្នក។</translation>
@@ -6586,7 +6586,6 @@
         <ph name="BREAK" />
         អ្នកអាចគ្រប់គ្រងការកំណត់ពីម៉ឺនុយកាត ឬមើលជម្រើសច្រើនទៀតនៅក្នុង Customize Chrome។</translation>
 <translation id="6121773125605585883">មើលពាក្យសម្ងាត់ជាមួយឈ្មោះអ្នកប្រើប្រាស់ <ph name="USERNAME" /> សម្រាប់ <ph name="WEBSITE" /></translation>
-<translation id="6122081475643980456">ការភ្ជាប់អ៊ីនធឺណិតរបស់អ្នកកំពុងត្រូវបានគ្រប់គ្រង</translation>
 <translation id="6122093587541546701">អ៊ីម៉ែល (ស្រេចចិត្ត)៖</translation>
 <translation id="6122095009389448667">បន្ត​ទប់ស្កាត់​ទំព័រ​នេះ​មិនឱ្យ​មើលអង្គ​ចងចាំ</translation>
 <translation id="6122513630797178831">រក្សាទុក CVC</translation>
@@ -7472,7 +7471,6 @@
 <translation id="6820079682647046800">ការផ្ទៀងផ្ទាត់ Kerberos មិនបានសម្រេចទេ</translation>
 <translation id="6821439254917412979">ដកខ្ទាស់ <ph name="EXTENSION_NAME" /></translation>
 <translation id="6823174134746916417">ការប៉ះ​ដើម្បីចុច​នៅលើ​ផ្ទាំងប៉ះ</translation>
-<translation id="6823429960180594870">គ្រប់គ្រងឯកសារនៅពេលទាញយក រួចបើកឯកសារទាំងនោះនៅពេលរួចរាល់</translation>
 <translation id="6823561724060793716">ពីរបារអាសយដ្ឋាន អ្នកអាចបើកព័ត៌មានទំព័រ ដើម្បីមើលព័ត៌មានបន្ថែមអំពីទំព័រដែលអ្នកកំពុងចូលមើល</translation>
 <translation id="6824564591481349393">ចម្លងអាសយដ្ឋានអ៊ីម៉ែល</translation>
 <translation id="6824584962142919697">ត្រួតពិនិត្យ​ធាតុ</translation>
@@ -7878,7 +7876,6 @@
 <translation id="714301620504747562">ការរុករក និងការស្វែងរក​មានល្បឿនលឿន​ជាង​ការផ្ទុក​ជា​មុន​ស្តង់ដារ</translation>
 <translation id="7143207342074048698">កំពុងភ្ជាប់...</translation>
 <translation id="7143409552554575716">ទង់ ChromeOS</translation>
-<translation id="714447804011008506">ឥឡូវនេះឯកសារដែលបានទាញយកមាននៅក្នុងរបារឧបករណ៍</translation>
 <translation id="7144856456372460176">&amp;ដំឡើង <ph name="APP" />...</translation>
 <translation id="7144878232160441200">ព្យាយាមម្តងទៀត</translation>
 <translation id="7145413760160421938">មិនអាច​បន្ត​វគ្គមុន​បានទេ</translation>
@@ -8529,7 +8526,6 @@
 <translation id="7657090467145778067">ការសន្សំសំចៃតិចតួច</translation>
 <translation id="7657218410916651670"><ph name="BEGIN_LINK_GOOGLE" />ទម្រង់​ផ្សេងទៀត​នៃសកម្មភាព<ph name="END_LINK_GOOGLE" />អាចត្រូវបាន​រក្សាទុក​នៅក្នុង​គណនី Google របស់អ្នក នៅពេលអ្នក​ចូលគណនី​។ អ្នកអាច​លុបវា​បានគ្រប់ពេល។</translation>
 <translation id="7658239707568436148">បដិសេធ</translation>
-<translation id="7658727964021657194">ទម្រង់រចនា AI ថ្មីៗទី <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">នៅតែចង់​ចាកចេញពី​មុខងារ​ឯកជនឬ?</translation>
 <translation id="7659336857671800422">ពិនិត្យមើល​ការណែនាំអំពី​ឯកជនភាព</translation>
 <translation id="7659584679870740384">អ្នកមិនត្រូវបានអនុញ្ញាតឲ្យប្រើឧបករណ៍នេះទេ។ សូមទាក់ទងអ្នកគ្រប់គ្រងសម្រាប់ការអនុញ្ញាតចូល។</translation>
@@ -8811,7 +8807,6 @@
 <translation id="7855678561139483478">ផ្លាស់ទី​ផ្ទាំង​ទៅ​វិនដូ​ថ្មី</translation>
 <translation id="7857004848504343806">កុំព្យូទ័ររបស់អ្នកមានម៉ូឌុលសុវត្ថិភាព ដែលត្រូវបានប្រើដើម្បីប្រតិបត្តិការមុខងារសុវត្ថិភាពសំខាន់ៗជាច្រើននៅក្នុង ChromeOS Flex។ សូមចូលទៅកាន់មជ្ឈមណ្ឌលជំនួយ Chromebook ដើម្បីស្វែងយល់បន្ថែម៖ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">ការណែនាំ​អំពីពាក្យឬឃ្លា</translation>
-<translation id="7857949311770343000">តើនេះគឺជាទំព័រផ្ទាំងថ្មីដែលអ្នកបានចង់បាន?</translation>
 <translation id="7858120906780498731">ឧបករណ៍បញ្ចូល​ដែលបានភ្ជាប់​ជាមួយ ChromeOS</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941">ដក​កម្មវិធីបន្ថែម <ph name="EXTENSION_NAME" /> ចេញ</translation>
@@ -8860,7 +8855,6 @@
 <translation id="789722939441020330">មិនអនុញ្ញាតឱ្យ​គេហទំព័រ​ទាញយក​ឯកសារច្រើន​ដោយស្វ័យប្រវត្តិទេ</translation>
 <translation id="7897900149154324287">នាពេលអនាគត ត្រូវប្រាកដថាដកឧបករណ៍ដែលអាចដកចេញបាននៅក្នុងកម្មវិធីឯកសារ មុនពេលដកវាចេញ។ បើមិនដូច្នេះទេ អ្នកអាចបាត់បង់ទិន្នន័យ។</translation>
 <translation id="7898725031477653577">បកប្រែជានិច្ច</translation>
-<translation id="7899324822972399722">រូបភាពទី <ph name="INDEX" /> នៃ <ph name="A" /> ក្នុងរចនាប័ទ្ម <ph name="B" /></translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">កំពុងរកមើល​សមាសភាគ​កម្មវិធីរុករកតាមអ៊ីនធឺណិត​ឬ? ចូលមើល</translation>
 <translation id="7903429136755645827">ចុច ដើម្បីប្ដូរ​ការបញ្ជា​ហ្គេម​របស់អ្នក​តាមបំណង</translation>
@@ -9141,7 +9135,6 @@
 <translation id="8098616321286360457">តម្រូវឱ្យមានការតភ្ជាប់បណ្ដាញ</translation>
 <translation id="8100230553590752325">ប្រើ​ពាក្យសម្ងាត់​ដែលបានរក្សាទុកនៅលើឧបករណ៍ណាក៏បាន</translation>
 <translation id="810068641062493918">បាន​ជ្រើស​រើស <ph name="LANGUAGE" />។ សូមចុច "ស្វែងរក" រួមជាមួយ "ដកឃ្លា" ដើម្បីដក​ការ​ជ្រើសរើស។</translation>
-<translation id="8100725874569949614">រូបភាពទី <ph name="INDEX" /> នៃ <ph name="A" /> ដែលមានអារម្មណ៍ <ph name="C" />។</translation>
 <translation id="8101409298456377967">បង្កើត រក្សាទុក និងគ្រប់គ្រងពាក្យសម្ងាត់របស់អ្នក ដើម្បីឱ្យអ្នកអាចចូលគេហទំព័រ និងកម្មវិធីបានយ៉ាងងាយស្រួល។ <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">ពណ៌ផ្ទាល់ខ្លួន</translation>
 <translation id="8101987792947961127">តម្រូវឲ្យមាន Powerwash នៅលើពេលបិទបើកដំណើរការឡើងវិញនៅពេលបន្ទាប់</translation>
@@ -10092,7 +10085,6 @@
 <translation id="8846163936679269230">កំណត់កម្រងព័ត៌មាន eSIM ឡើងវិញ</translation>
 <translation id="8846239054091760429">សំឡេង​ម៉ូណូ សំឡេង​ពេលចាប់ផ្ដើម អក្សររត់ក្នុងពេលជាក់ស្ដែង និង​អ្វីៗ​ជាច្រើន​ទៀត</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8848963863312877204">ស្វែងរកអ្វីដែលអ្នកបានទាញយកនៅទីនេះ</translation>
 <translation id="8849001918648564819">លាក់</translation>
 <translation id="8849219423513870962">បោះបង់​ការលុបកម្រងព័ត៌មាន eSIM ដែលមានឈ្មោះ <ph name="PROFILE_NAME" /></translation>
 <translation id="8849262417389398097"><ph name="CHECKED" /> នៃ <ph name="CHECKING" /></translation>

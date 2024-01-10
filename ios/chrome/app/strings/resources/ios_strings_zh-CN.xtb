@@ -56,7 +56,6 @@
 <translation id="1279024913354609713">不允许</translation>
 <translation id="1281818060020671000">管理数据</translation>
 <translation id="1282311502488501110">不登录</translation>
-<translation id="1283039547216852943">点按即可展开</translation>
 <translation id="1283524564873030414">过去 24 小时</translation>
 <translation id="1285320974508926690">一律不翻译此网站</translation>
 <translation id="1291506870746876680">您离开<ph name="BEGIN_BOLD" />“<ph name="SITE_NAME" />”<ph name="END_BOLD" />后，这个网站的权限将重置为停用。</translation>
@@ -82,7 +81,6 @@
 <translation id="1377255359165588604">同步功能已停止工作。</translation>
 <translation id="1377321085342047638">卡号</translation>
 <translation id="1377508275003315939">密码</translation>
-<translation id="1380914240355562929">现在，<ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" />可在使用 Google 密码管理工具登录 <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> 时使用您的用户名和密码。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">搜索</translation>
 <translation id="138618066238211776">继续以<ph name="USER_NAME" />的身份登录</translation>
 <translation id="1400642268715879018">过去 4 周</translation>
@@ -406,7 +404,6 @@
 <translation id="3087734570205094154">底部</translation>
 <translation id="3090455602619185166">使用受管理的账号登录</translation>
 <translation id="309710370695886264">您有 1 个重复使用的密码。请立即修正它以确保安全。</translation>
-<translation id="3109724472072898302">已收起</translation>
 <translation id="3112556859945124369">标为…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />查看您可同步的内容<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">历史记录和其他内容</translation>
@@ -775,7 +772,6 @@
 <translation id="5121618895923301719">您已在跟踪此商品。该网页已保存在<ph name="BEGIN_LINK" />移动设备书签<ph name="END_LINK" />中。</translation>
 <translation id="512533434554095351">您有多个密码问题。</translation>
 <translation id="5126465625664020024">登录并同步</translation>
-<translation id="5131062416352684089">现在，您的家庭成员可在使用 Google 密码管理工具登录 <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> 时使用您的用户名和密码。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">将您的密码、历史记录等信息同步到所有设备上</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{有 {COUNT} 个安全系数低的密码}other{有 {COUNT} 个安全系数低的密码}}</translation>
 <translation id="5149188072385105201">添加密码…</translation>
@@ -924,7 +920,6 @@
 <translation id="5955891643922670672">正在查看离线版本</translation>
 <translation id="5957613098218939406">更多选项</translation>
 <translation id="595769230373966252">使用 <ph name="SEARCH_PROVIDER" /> 进行搜索</translation>
-<translation id="5962718611393537961">点按即可收起</translation>
 <translation id="5963939892571022323">无法创建指向突出显示的内容的链接。</translation>
 <translation id="5971872012779224351">{count,plural, =1{已删除 1 个书签}other{已删除 {count} 个书签}}</translation>
 <translation id="5979837087407522202">搜索密码</translation>

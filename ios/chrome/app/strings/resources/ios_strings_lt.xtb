@@ -56,7 +56,6 @@
 <translation id="1279024913354609713">Neleisti</translation>
 <translation id="1281818060020671000">Duomenų tvarkymas</translation>
 <translation id="1282311502488501110">Neprisijungti</translation>
-<translation id="1283039547216852943">Palieskite ir išskleiskite</translation>
 <translation id="1283524564873030414">Pastarosios 24 valandos</translation>
 <translation id="1285320974508926690">Niekada neversti šios svetainės</translation>
 <translation id="1291506870746876680"><ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> leidimai bus iš naujo nustatyti kaip išjungti, kai išeisite iš šios svetainės.</translation>
@@ -82,7 +81,6 @@
 <translation id="1377255359165588604">Sinchronizavimas nebeveikia.</translation>
 <translation id="1377321085342047638">Kort. Nr.</translation>
 <translation id="1377508275003315939">Slaptažodžiai</translation>
-<translation id="1380914240355562929"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> dabar gali naudoti jūsų naudotojo vardą ir slaptažodį, kai naudoja „Google“ slaptažodžių tvarkyklę, kad prisijungtų prie <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">Ieškoti</translation>
 <translation id="138618066238211776">Tęsti kaip <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">Pastarosios 4 savaitės</translation>
@@ -337,6 +335,7 @@ Jūsų paieškos variklis yra „<ph name="DSE_NAME" />“. Peržiūrėkite jo i
 <translation id="2747003861858887689">Ankstesnis laukas</translation>
 <translation id="2749231692441336879">Stebima: <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Šiame įrenginyje naudojamos paskyros</translation>
+<translation id="2755595981383829244">Dabar gausite pranešimus apie turinį</translation>
 <translation id="2762000892062317888">ką tik</translation>
 <translation id="2772667768515195373">Išsaugotus adresus galite naudoti „Google“ produktuose. Šis adresas išsaugomas jūsų „Google“ paskyroje (<ph name="USER_EMAIL" />).</translation>
 <translation id="2773292004659987824">Paieška inkognito režimu</translation>
@@ -406,7 +405,6 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="3087734570205094154">Apačia</translation>
 <translation id="3090455602619185166">Prisijungimas naudojant valdomą paskyrą</translation>
 <translation id="309710370695886264">Turite vieną pakartotinai naudojamą slaptažodį. Pataisykite dabar, kad užtikrintumėte saugą.</translation>
-<translation id="3109724472072898302">Suskleista</translation>
 <translation id="3112556859945124369">Pažymėti…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Žr., ką galite sinchronizuoti<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">Istorija ir daugiau</translation>
@@ -775,7 +773,6 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="5121618895923301719">Jau stebite šį produktą. Šis puslapis išsaugotas skiltyje <ph name="BEGIN_LINK" />„Žymės mobiliesiems“<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Iškilo kelios slaptažodžio problemos.</translation>
 <translation id="5126465625664020024">Prisijungti ir sinchronizuoti</translation>
-<translation id="5131062416352684089">Šeimos grupės nariai dabar gali naudoti jūsų naudotojo vardą ir slaptažodį, kai naudoja „Google“ slaptažodžių tvarkyklę, kad prisijungtų prie <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">Sinchronizuokite slaptažodžius, istoriją ir daugiau visuose įrenginiuose</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} nesudėtingas slaptažodis}one{{COUNT} nesudėtingas slaptažodis}few{{COUNT} nesudėtingi slaptažodžiai}many{{COUNT} nesudėtingo slaptažodžio}other{{COUNT} nesudėtingų slaptažodžių}}</translation>
 <translation id="5149188072385105201">Pridėti slaptažodį...</translation>
@@ -924,7 +921,6 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="5955891643922670672">Peržiūros neprisijungus versija</translation>
 <translation id="5957613098218939406">Daugiau parinkčių</translation>
 <translation id="595769230373966252">Ieškoti naudojant „<ph name="SEARCH_PROVIDER" />“</translation>
-<translation id="5962718611393537961">Palieskite ir sutraukite</translation>
 <translation id="5963939892571022323">Nepavyko sukurti nuorodos į paryškintą tekstą.</translation>
 <translation id="5971872012779224351">{count,plural, =1{Ištrinta 1 žymė}one{Ištrinta {count} žymė}few{Ištrintos {count} žymės}many{Ištrinta {count} žymės}other{Ištrinta {count} žymių}}</translation>
 <translation id="5979837087407522202">Ieškoti slaptažodžių</translation>

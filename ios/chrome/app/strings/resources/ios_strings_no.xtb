@@ -56,7 +56,6 @@
 <translation id="1279024913354609713">Ikke tillat</translation>
 <translation id="1281818060020671000">Administrer data</translation>
 <translation id="1282311502488501110">Ikke logg på</translation>
-<translation id="1283039547216852943">Trykk for å vise</translation>
 <translation id="1283524564873030414">Siste døgn</translation>
 <translation id="1285320974508926690">Oversett aldri dette nettstedet</translation>
 <translation id="1291506870746876680">Tillatelsene for <ph name="BEGIN_BOLD" />«<ph name="SITE_NAME" />»<ph name="END_BOLD" /> blir tilbakestilt til å være avslått når du forlater dette nettstedet.</translation>
@@ -82,7 +81,6 @@
 <translation id="1377255359165588604">Synkroniseringen har sluttet å fungere.</translation>
 <translation id="1377321085342047638">Kortnummer</translation>
 <translation id="1377508275003315939">Passord</translation>
-<translation id="1380914240355562929"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> kan nå bruke brukernavnet og passordet ditt når hen bruker Google Passordlagring til å logge på <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">Søk</translation>
 <translation id="138618066238211776">Fortsett som <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">De siste 4 ukene</translation>
@@ -337,6 +335,7 @@ Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om
 <translation id="2747003861858887689">Forrige felt</translation>
 <translation id="2749231692441336879">Følger <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Kontoer på denne enheten</translation>
+<translation id="2755595981383829244">Nå får du varsler om innhold</translation>
 <translation id="2762000892062317888">akkurat nå</translation>
 <translation id="2772667768515195373">Du kan bruke lagrede adresser i flere Google-produkter. Denne adressen er lagret i Google-kontoen din <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Inkognitosøk</translation>
@@ -406,7 +405,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3087734570205094154">Bunn</translation>
 <translation id="3090455602619185166">Logg på med administrert konto</translation>
 <translation id="309710370695886264">Du har ett gjenbrukt passord. Løs problemet nå for å ivareta sikkerheten.</translation>
-<translation id="3109724472072898302">Skjult</translation>
 <translation id="3112556859945124369">Merk…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Se hva du kan synkronisere<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">Logg med mer</translation>
@@ -775,7 +773,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="5121618895923301719">Du sporer allerede dette produktet. Denne siden er lagret i <ph name="BEGIN_LINK" />Bokmerker for mobil<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Du har flere passordproblemer.</translation>
 <translation id="5126465625664020024">Pålogging og synkronisering</translation>
-<translation id="5131062416352684089">Nå kan familiemedlemmene dine bruke brukernavnet og passordet ditt når de bruker Google Passordlagring til å logge på <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">Synkroniser passordene dine, loggen din med mer på alle enheter</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} svakt passord}other{{COUNT} svake passord}}</translation>
 <translation id="5149188072385105201">Legg til et passord…</translation>
@@ -924,7 +921,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5955891643922670672">Du ser en versjon uten nett</translation>
 <translation id="5957613098218939406">Flere alternativer</translation>
 <translation id="595769230373966252">Søk med <ph name="SEARCH_PROVIDER" /></translation>
-<translation id="5962718611393537961">Trykk for å skjule</translation>
 <translation id="5963939892571022323">Kan ikke opprette noen link til den markerte teksten.</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 bokmerke er slettet}other{{count} bokmerker er slettet}}</translation>
 <translation id="5979837087407522202">Søk etter passord</translation>

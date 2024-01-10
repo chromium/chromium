@@ -1236,7 +1236,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3447661539832366887">Az eszköz tulajdonosa kikapcsolta a dinoszauruszos játékot.</translation>
 <translation id="3447884698081792621">Tanúsítvány megjelenítése (kibocsátó: <ph name="ISSUER" />)</translation>
 <translation id="3450323514459570273">Engedélyt kérhet a MIDI-eszközök vezérlésére és átprogramozására</translation>
-<translation id="3452151267620065789">Előrehaladás mentve</translation>
 <translation id="3452404311384756672">Lekérési intervallum:</translation>
 <translation id="3453962258458347894">Újrapróbálkozások száma</translation>
 <translation id="3461266716147554923">A(z) <ph name="URL" /> webhely szeretné megtekinteni a vágólapra másolt szövegeket és képeket</translation>
@@ -1535,7 +1534,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4067098466788473230">Tanulási ösztöndíjak</translation>
 <translation id="4067947977115446013">Érvényes címet adjon meg</translation>
 <translation id="4070790659619547722">A hirdetésméréssel korlátozott adattípusokat osztanak meg egymással a webhelyek a hirdetéseik teljesítményének mérése érdekében (ilyen adat például az a napszak, amikor egy adott hirdetés megjelent Önnek).</translation>
-<translation id="4072193657607981494">Házirendek betöltése…</translation>
 <translation id="4072486802667267160">Hiba történt a rendelés feldolgozása közben. Kérjük, próbálja újra.</translation>
 <translation id="4073376909608563327">Nem sikerült az eszköz feloldási módszerének használata</translation>
 <translation id="4073797364926776829">Kártya megtekintése</translation>
@@ -2722,7 +2720,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6428450836711225518">Telefonszám ellenőrzése</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">Google-jelszó módosítása</translation>
-<translation id="6431119592588449664">A jelentés feltöltése megtörtént</translation>
 <translation id="6432297414176614592">További információ a hirdetéstémákról</translation>
 <translation id="6432831586648556868">Értékesítési és marketingállások</translation>
 <translation id="6433490469411711332">Kapcsolattartási adatok szerkesztése</translation>
@@ -3481,7 +3478,6 @@ További részletek:
 <translation id="7871445724586827387">Google-fiók jelszavának módosítása</translation>
 <translation id="7877007680666472091">a védett tartalmak azonosítói</translation>
 <translation id="7878562273885520351">Előfordultat, hogy jelszava már nem biztonságos</translation>
-<translation id="7878966190323222027">A folytatáshoz nyissa meg újra</translation>
 <translation id="7880146494886811634">Cím mentése</translation>
 <translation id="7882421473871500483">Barna</translation>
 <translation id="7882995332186050355">Áruszállító teherautók és kamionok</translation>
@@ -4103,7 +4099,6 @@ További részletek:
 <translation id="9119042192571987207">Feltöltve</translation>
 <translation id="9122954576417194280">Árukereskedelem és árutőzsde</translation>
 <translation id="912327514020027767">Szoknyák</translation>
-<translation id="9128016270925453879">Házirendek betöltve</translation>
 <translation id="9128870381267983090">Csatlakozás hálózathoz</translation>
 <translation id="9131119348384879525">Biztosan rögzíti a bizalmas tartalmat?</translation>
 <translation id="9133985615769429248">Ha másokkal is megosztja ezt az eszközt, a képernyőzár segítségével igazolhatja személyazonosságát, amikor mentett jelszót használ.</translation>

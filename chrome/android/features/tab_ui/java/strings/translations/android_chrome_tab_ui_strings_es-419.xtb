@@ -5,6 +5,7 @@
 <translation id="1155815720264022949">¿Quieres cerrar las pestañas anteriores?</translation>
 <translation id="1215127405478249895">Revisar las pestañas</translation>
 <translation id="125153950246128346">Presiona para ver otra pestaña</translation>
+<translation id="1326271443836399892">Revisa la configuración actual de limpieza.</translation>
 <translation id="1499635324672558517">¿Quieres cerrar todas las pestañas de incógnito?</translation>
 <translation id="1657719826150349398">Mover la pestaña hacia abajo</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> pestaña}other{<ph name="TABS_COUNT_MANY" /> pestañas}}</translation>
@@ -25,6 +26,7 @@
 <translation id="2977480621796371840">Quitar del grupo</translation>
 <translation id="3008554597174452548">Dejar de seguir el precio del producto</translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> de descuento en <ph name="PRODUCT_NAME" /></translation>
+<translation id="313819129451406482">{TABS_COUNT,plural, =1{Tienes <ph name="TABS_COUNT_ONE" /> pestaña archivada}other{Tienes <ph name="TABS_COUNT_MANY" /> pestañas archivadas}}</translation>
 <translation id="3194464645767632461">calificación</translation>
 <translation id="3291470810748040983">Recibirás una alerta cuando baje el precio de uno de los artículos de las pestañas abiertas.</translation>
 <translation id="3328308545011660196">Sugerencia: <ph name="NUMBER_OF_TABS" /> pestañas parecen estar relacionadas. ¿Deseas agruparlas?</translation>
@@ -98,5 +100,6 @@
 <translation id="9090098097337832354">La hoja de información sobre esta tienda está cerrada</translation>
 <translation id="9150694013019234766">Alterna entre las pestañas que aparecen en el grupo de pestañas cerca de la parte inferior de la pantalla</translation>
 <translation id="9169594135889675189">Agrega una pestaña nueva al grupo</translation>
+<translation id="955558140275419384">Si quieres revisar todas las pestañas archivadas para ordenarlas, ingresa a este editor.</translation>
 <translation id="959682366969460160">Organízate</translation>
 </translationbundle>

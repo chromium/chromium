@@ -56,7 +56,6 @@
 <translation id="1279024913354609713">வேண்டாம்</translation>
 <translation id="1281818060020671000">தரவை நிர்வகித்தல்</translation>
 <translation id="1282311502488501110">உள்நுழைய வேண்டாம்</translation>
-<translation id="1283039547216852943">விரிவாக்க, தட்டவும்</translation>
 <translation id="1283524564873030414">கடந்த 24 மணிநேரம்</translation>
 <translation id="1285320974508926690">இந்த தளத்தை எப்போதும் மொழிபெயர்க்க வேண்டாம்</translation>
 <translation id="1291506870746876680"><ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> தளத்தில் இருந்து வெளியேறினால் அதற்கான அனுமதிகள் முடக்கப்படும்.</translation>
@@ -82,7 +81,6 @@
 <translation id="1377255359165588604">ஒத்திசைவு நிறுத்தப்பட்டது.</translation>
 <translation id="1377321085342047638">கார்டு எண்</translation>
 <translation id="1377508275003315939">கடவுச்சொற்கள்</translation>
-<translation id="1380914240355562929"><ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> தளத்தில் இனி Google Password Managerரைப் பயன்படுத்தி உள்நுழையும்போது உங்கள் பயனர்பெயரையும் கடவுச்சொல்லையும் <ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> பயன்படுத்தலாம். <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="138618066238211776"><ph name="USER_NAME" /> ஆகத் தொடர்க</translation>
 <translation id="1400642268715879018">கடந்த 4 வாரங்கள்</translation>
@@ -406,7 +404,6 @@
 <translation id="3087734570205094154">கீழே</translation>
 <translation id="3090455602619185166">நிர்வகிக்கப்படும் கணக்கு மூலம் உள்நுழைதல்</translation>
 <translation id="309710370695886264">ஏற்கெனவே பயன்படுத்திய ஒரு கடவுச்சொல் உள்ளது. பாதுகாப்பாக இருக்க அதை இப்போதே மாற்றுங்கள்.</translation>
-<translation id="3109724472072898302">சுருக்கப்பட்டது</translation>
 <translation id="3112556859945124369">குறி…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />எதையெல்லாம் ஒத்திசைக்கலாம் என அறிந்துகொள்ளுங்கள்<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">பதிவுகள் மற்றும் பல</translation>
@@ -775,7 +772,6 @@
 <translation id="5121618895923301719">இந்தத் தயாரிப்பை ஏற்கெனவே கண்காணிக்கிறீர்கள். இந்தப் பக்கம் <ph name="BEGIN_LINK" />மொபைல் புக்மார்க்குகளில்<ph name="END_LINK" /> சேமிக்கப்பட்டுள்ளது.</translation>
 <translation id="512533434554095351">கடவுச்சொல் சிக்கல்கள் பல உள்ளன.</translation>
 <translation id="5126465625664020024">உள்நுழைந்து ஒத்திசைக்கவும்</translation>
-<translation id="5131062416352684089"><ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> தளத்தில் இனி Google Password Managerரைப் பயன்படுத்தி உங்கள் குடும்ப உறுப்பினர்கள் உள்நுழையும்போது உங்கள் பயனர்பெயரையும் கடவுச்சொல்லையும் அவர்கள் பயன்படுத்தலாம். <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">எல்லாச் சாதனங்களிலும் உங்கள் கடவுச்சொற்கள், இதுவரையான செயல்பாடுகள் மற்றும் பலவற்றை ஒத்திசைக்கலாம்</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} வலுவற்ற கடவுச்சொல்}other{{COUNT} வலுவற்ற கடவுச்சொற்கள்}}</translation>
 <translation id="5149188072385105201">கடவுச்சொல்லைச் சேர்...</translation>
@@ -924,7 +920,6 @@
 <translation id="5955891643922670672">ஆஃப்லைன் பதிப்பைப் பார்க்கிறீர்கள்</translation>
 <translation id="5957613098218939406">கூடுதல் விருப்பங்கள்</translation>
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> மூலம் தேடு</translation>
-<translation id="5962718611393537961">சுருக்க, தட்டவும்</translation>
 <translation id="5963939892571022323">ஹைலைட் செய்யப்பட்ட உரைக்கான இணைப்பை உருவாக்க முடியவில்லை.</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 புக்மார்க் நீக்கப்பட்டது}other{{count} புக்மார்க்குகள் நீக்கப்பட்டன}}</translation>
 <translation id="5979837087407522202">கடவுச்சொற்களைத் தேடு</translation>

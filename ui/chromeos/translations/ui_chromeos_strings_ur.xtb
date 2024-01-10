@@ -24,7 +24,6 @@
 <translation id="1173916544412572294"><ph name="NETWORK_COUNT" /> میں سے نیٹ ورک <ph name="NETWORK_INDEX" />، <ph name="PHONE_NAME" />، <ph name="CONNECTION_STATUS" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />%، فون کی بیٹری <ph name="BATTERY_STATUS" />%، تفصیلات</translation>
 <translation id="117624967391683467"><ph name="FILE_NAME" /> کو کاپی کیا جا رہا ہے…</translation>
 <translation id="1178581264944972037">موقوف کریں</translation>
-<translation id="1190144681599273207">اس فائل کو بازیافت کرنے میں تقریباً <ph name="FILE_SIZE" /> موبائل ڈیٹا استعمال ہوگا۔</translation>
 <translation id="1194390763418645112"><ph name="RESTRICTED_DESTINATIONS" /> کے ذریعے فائل تک رسائی</translation>
 <translation id="1201402288615127009">اگلا</translation>
 <translation id="1209796539517632982">خود کار نام سرورز</translation>
@@ -100,7 +99,6 @@
 <translation id="1761091787730831947"><ph name="VM_NAME" /> کے ساتھ اشتراک کریں</translation>
 <translation id="1773212559869067373">توثیق کا سرٹیفکیٹ مقامی طور پر مسترد کر دیا گیا</translation>
 <translation id="1775381402323441512">ویڈیو کی معلومات</translation>
-<translation id="180035236176489073">ان فائلوں تک رسائی کیلئے آپ کا آن لائن ہونا ضروری ہے۔</translation>
 <translation id="1807938677607439181">سبھی فائلیں</translation>
 <translation id="1810764548349082891">کوئی پیش منظر دستیاب نہیں ہے</translation>
 <translation id="1812302367230252929">امہاری نقل حرفی</translation>
@@ -161,8 +159,6 @@
 <translation id="2282155092769082568">‏خودکار کنفیگریشن URL:</translation>
 <translation id="2284767815536050991">ہٹائے جانے کے قابل اسٹوریج</translation>
 <translation id="2288278176040912387">ریکارڈ پلیئر</translation>
-<translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> فائلیں کھل رہی ہیں۔</translation>
-<translation id="2303301624314357662">فائل <ph name="FILE_NAME" /> کھل رہی ہے۔</translation>
 <translation id="2304820083631266885">سیارہ</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> کو خارج کر دیا گیا ہے۔</translation>
 <translation id="2307462900900812319">نیٹ ورک کنفیگر کریں</translation>
@@ -172,7 +168,6 @@
 <translation id="233822363739146957">آپ کی تمام فائلز کو مطابقت پذیر بنانے کے لیے اسٹوریج کی کافی جگہ نہیں ہے</translation>
 <translation id="23721837607121582">موبائل پروفائل ڈاؤن لوڈ کریں، نیٹ ورک <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">فہرست والے منظر پر سوئچ کریں</translation>
-<translation id="2377590462528165447">‏<ph name="NUMBER_OF_ITEMS" /> فولڈرز کا Linux کے ساتھ اشتراک کیا گیا</translation>
 <translation id="2379576081295865700">اسٹوریج کی جگہ چیک کی جا رہی ہے… 1 آئٹم ملا</translation>
 <translation id="2383454254762599978">کوڑے دان میں منتقل کریں</translation>
 <translation id="2387458720915042159">پراکسی کنکشن کی قسم</translation>
@@ -396,12 +391,10 @@
 <translation id="4197674956721858839">زپ کا انتخاب</translation>
 <translation id="4202378258276439759">ہسپانوی (لاطینی امریکی)</translation>
 <translation id="4202977638116331303">جارجی</translation>
-<translation id="421017592316736757">اس فائل تک رسائی کیلئے آپ کا آن لائن ہونا ضروری ہے۔</translation>
 <translation id="4212740939091998969">"<ph name="FOLDER_NAME" />" نام کا فولڈر پہلے سے موجود ہے۔ براہ کرم ایک مختلف نام منتخب کریں۔</translation>
 <translation id="4218274196133425560"><ph name="HOST_NAME" /> کے لیے استثناء ہٹائیں</translation>
 <translation id="4261901459838235729">‏Google پیشکش</translation>
 <translation id="4277536868133419688"><ph name="FILTER_NAME" /> فلٹر آن ہے۔</translation>
-<translation id="4290535918735525311">‏Linux کے ساتھ 1 فولڈر کا اشتراک کیا گیا</translation>
 <translation id="4299729908419173967">برازیلی</translation>
 <translation id="4302605047395093221">‏اس آلے کا استعمال کرنے والے کسی بھی شخص کو اس موبائل نیٹ ورک سے منسلک ہونے کے لیے PIN درج کرنا ہوگا</translation>
 <translation id="4303531889494116116">یہ نیٹ ورک مصروف ہے۔ بعد میں دوبارہ کوشش کریں۔</translation>
@@ -502,8 +495,6 @@
 <translation id="4906580650526544301"><ph name="NETWORK_COUNT" /> میں سے نیٹ ورک <ph name="NETWORK_INDEX" />، <ph name="PHONE_NAME" />، <ph name="PROVIDER_NAME" />، <ph name="CONNECTION_STATUS" />، سگنل کی مضبوطی %<ph name="SIGNAL_STRENGTH" />، فون کی بیٹری %<ph name="BATTERY_STATUS" />، تفصیلات</translation>
 <translation id="4935975195727477204">گزانیہ پھول</translation>
 <translation id="4943368462779413526">فٹبال</translation>
-<translation id="4961158930123534723">‏Parallels ڈیسک ٹاپ کے ساتھ اشتراک کردہ 1 فولڈر</translation>
-<translation id="4965874878399872778">یہ دیکھنے کے لیے چیک کیا جا رہا ہے کہ آیا فائلز آپ کی تنظیم کی سیکیورٹی پالیسیوں کی تعمیل کرتی ہیں...</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> بحال ہوگئے</translation>
 <translation id="4969785127455456148">البم</translation>
 <translation id="4972330214479971536">فائل کی مطابقت پذیری کا سیٹ اپ مکمل نہیں کیا جا سکا</translation>
@@ -565,7 +556,6 @@
 <translation id="5317780077021120954">محفوظ کریں</translation>
 <translation id="5318819489018851358">‏Linux کے ساتھ اشتراک کریں</translation>
 <translation id="5323213332664049067">لاطینی امریکی</translation>
-<translation id="5330145655348521461">یہ فائلیں ایک مختلف ڈیسک ٹاپ پر کھولی گئیں۔ اسے دیکھنے کیلئے <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) پر جائیں۔</translation>
 <translation id="5330512191124428349">معلومات حاصل کریں</translation>
 <translation id="535792325654997756">بلیوں کے ساتھ شخص</translation>
 <translation id="5358764674931277">فریم ریٹ</translation>
@@ -667,7 +657,6 @@
 <translation id="613750717151263950">امریکی کی بورڈ کے ساتھ جاپانی</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />، کوئی نیٹ ورک نہیں</translation>
 <translation id="6146563240635539929">ویڈیوز</translation>
-<translation id="6150853954427645995">آف لائن استعمال کیلئے یہ فائل محفوظ کرنے کیلئے، پھر سے آن لائن ہوں، فائل پر دایاں کلک کریں اور <ph name="OFFLINE_CHECKBOX_NAME" /> اختیار منتخب کریں۔</translation>
 <translation id="6164412158936057769">تتلیاں</translation>
 <translation id="6165508094623778733">مزید جانیں</translation>
 <translation id="6170470584681422115">سینڈوچ</translation>
@@ -700,7 +689,6 @@
 <translation id="636254897931573416">ڈومین لاحقہ سے مماثل قدر غلط ہے</translation>
 <translation id="6364301859968397756">تنظیم کی اسٹوریج بھری ہوئی ہے</translation>
 <translation id="6367976544441405720">وین</translation>
-<translation id="637062427944097960">یہ فائل ایک مختلف ڈیسک ٹاپ پر کھولی گئی ہے۔ اسے دیکھنے کیلئے <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) پر منتقل ہوں۔</translation>
 <translation id="6394388407447716302">صرف پڑھنے کے لیے</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> آئٹمز</translation>
 <translation id="6407769893376380348"><ph name="FILE_NAME" /> کو منتقل نہیں کیا جا سکا کیونکہ یہ مرموز کردہ ہے</translation>
@@ -709,7 +697,6 @@
 <translation id="6430271654280079150">آپ کے پاس 1 کوشش بچی ہے۔</translation>
 <translation id="643243556292470964">حذف کردہ فائلیں اب کوڑے دان میں منتقل کر دی گئی ہیں</translation>
 <translation id="6438480100790416671">اسٹوریج کی جگہ چیک کی جا رہی ہے…</translation>
-<translation id="6451527188465304418">یہ دیکھنے کے لیے چیک کیا جا رہا ہے کہ آیا فائل آپ کی تنظیم کی سیکیورٹی پالیسیوں کی تعمیل کرتی ہے...</translation>
 <translation id="6485131920355264772">اسپیس کی معلومات کی بازيابی میں ناکام ہوگیا</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_COUNT" /> میں سے <ph name="NETWORK_INDEX" /> نیٹ ورک، <ph name="NETWORK_NAME" />، <ph name="SECURITY_STATUS" />، <ph name="CONNECTION_STATUS" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />%، آپ کے منتظم کے زیر انتظام ہے، تفصیلات</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> کو <ph name="FOLDER_NAME" /> میں اخذ کیا جا رہا ہے</translation>
@@ -724,7 +711,6 @@
 <translation id="6588648400954570689">فائل کو مطابقت پذیر بنانے کی ترتیبات</translation>
 <translation id="6594855146910089723">‏یہ فولڈر Linux اورParallels Desktop کے ساتھ اشتراک کردہ ہے</translation>
 <translation id="6607272825297743757">فائل کی معلومات</translation>
-<translation id="6609332149380188670">‏Parallels ڈیسک ٹاپ کے ساتھ اشتراک کردہ <ph name="NUMBER_OF_ITEMS" /> فولڈرز</translation>
 <translation id="6629518321609546825">کم از کم 4 نمبرز درج کریں</translation>
 <translation id="6643016212128521049">صاف کریں</translation>
 <translation id="6650726141019353908">گلابی تتلی</translation>
@@ -891,7 +877,6 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">نیٹ ورک کو ترتیب دینے میں خرابی</translation>
-<translation id="7839804798877833423">ان فائلوں کو بازیافت کرنے میں تقریباً <ph name="FILE_SIZE" /> موبائل ڈیٹا استعمال ہوگا۔</translation>
 <translation id="7846076177841592234">انتخاب منسوخ کریں</translation>
 <translation id="7853966320808728790">‏فرانسیسی BÉPO</translation>
 <translation id="7857117644404132472">استثناء شامل کریں</translation>
@@ -933,13 +918,13 @@
 <translation id="813913629614996137">آغاز کیا جا رہا ہے…</translation>
 <translation id="8147028810663464959">حرف کی چوڑائی پوری ہے</translation>
 <translation id="8151638057146502721">کنفیگر کریں</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 خرابی۔}other{# خرابیاں۔}}</translation>
 <translation id="8154842056504218462">تمام اندراجات منتخب کئے گئے۔</translation>
 <translation id="8157684860301034423">ایپ کی معلومات دوبارہ حاصل کرنے میں ناکام ہو گئے۔</translation>
 <translation id="8175731104491895765">فرانسیسی (بیلجیم)</translation>
 <translation id="8175799081768705361">‏<ph name="NUMBER_OF_FILES_SYNCING" /> Drive فائلز کی مطابقت پذیری کی جا رہی ہے</translation>
 <translation id="8179976553408161302">انٹر</translation>
 <translation id="8193175696669055101">آلے کا ماڈل</translation>
-<translation id="8223479393428528563">آف لائن استعمال کیلئے یہ فائلیں محفوظ کرنے کیلئے، پھر سے آن لائن ہو جائیں، فائلوں پر دایاں کلک کریں اور <ph name="OFFLINE_CHECKBOX_NAME" /> اختیار منتخب کریں۔</translation>
 <translation id="8241139360630443550">اسٹوریج ملاحظہ کریں</translation>
 <translation id="8249296373107784235">منسوخ کریں</translation>
 <translation id="8250690786522693009">لاطينی</translation>
@@ -1024,6 +1009,7 @@
 <translation id="8787254343425541995">مشترکہ نیٹ ورکس کیلئے پراکسیز کی اجازت دیں</translation>
 <translation id="8790981080411996443">پودوں کو پانی دیتا ہوا شخص</translation>
 <translation id="8798099450830957504">ڈیفالٹ</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 وارننگ۔}other{# وارننگز۔}}</translation>
 <translation id="8808686172382650546">بلی</translation>
 <translation id="8810671769985673465">زپ بنانے کا عمل ناکام ہو گیا، آئٹم موجود ہے: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">ہسپانوی (اسپین)</translation>

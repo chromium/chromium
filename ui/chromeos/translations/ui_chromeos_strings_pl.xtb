@@ -24,7 +24,6 @@
 <translation id="1173916544412572294">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />%, bateria telefonu: <ph name="BATTERY_STATUS" />%, szczegóły</translation>
 <translation id="117624967391683467">Kopiuję <ph name="FILE_NAME" />...</translation>
 <translation id="1178581264944972037">Wstrzymaj</translation>
-<translation id="1190144681599273207">Pobranie tego pliku spowoduje przesłanie <ph name="FILE_SIZE" /> przy użyciu komórkowej transmisji danych.</translation>
 <translation id="1194390763418645112">Dostęp do pliku dla: <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">Dalej</translation>
 <translation id="1209796539517632982">Automatyczny wybór serwerów nazw</translation>
@@ -100,7 +99,6 @@
 <translation id="1761091787730831947">Udostępnij maszynie wirtualnej <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">Certyfikat uwierzytelniania został odrzucony lokalnie</translation>
 <translation id="1775381402323441512">Informacje o pliku wideo</translation>
-<translation id="180035236176489073">Musisz być w trybie online, by uzyskać dostęp do tych plików.</translation>
 <translation id="1807938677607439181">Wszystkie pliki</translation>
 <translation id="1810764548349082891">Podgląd niedostępny</translation>
 <translation id="1812302367230252929">Amharski – transliteracja</translation>
@@ -135,6 +133,7 @@
 <translation id="2084809735218147718">Osoba śpiewająca, aby wyrazić podziękowanie</translation>
 <translation id="2088690981887365033">Sieć VPN</translation>
 <translation id="209653272837065803">Za mało miejsca – nie można kontynuować synchronizacji plików</translation>
+<translation id="2099143626019777139">Strony, które odwiedzasz, są widoczne dla administratora. Możesz wyświetlić listę widocznych stron.</translation>
 <translation id="2111134541987263231">Włącz opcję <ph name="BEGIN_BOLD" />Zezwalaj w trybie incognito<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086">Elementy (<ph name="NUMBER_OF_ITEMS" />) zostaną usunięte i nie będzie można ich przywrócić.</translation>
 <translation id="2122305276694332719">Automatyczne łączenie się z ukrytą siecią pozwala innym widzieć Twoje urządzenie wraz z niektórymi ustawieniami sieci. Nie zalecamy korzystania z tej funkcji.</translation>
@@ -161,8 +160,6 @@
 <translation id="2282155092769082568">URL automatycznej konfiguracji:</translation>
 <translation id="2284767815536050991">pamięć wymienna</translation>
 <translation id="2288278176040912387">Gramofon</translation>
-<translation id="2291538123825441971">Otwieram pliki (<ph name="NUMBER_OF_FILES" />).</translation>
-<translation id="2303301624314357662">Otwieram plik <ph name="FILE_NAME" />.</translation>
 <translation id="2304820083631266885">Planeta</translation>
 <translation id="2305020378527873881">Odłączono <ph name="VOLUME_NAME" />.</translation>
 <translation id="2307462900900812319">Skonfiguruj sieć</translation>
@@ -172,7 +169,6 @@
 <translation id="233822363739146957">Za mało miejsca na synchronizację wszystkich plików</translation>
 <translation id="23721837607121582">Pobierz profil mobilny: sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Przełącz na widok listy</translation>
-<translation id="2377590462528165447">Foldery (<ph name="NUMBER_OF_ITEMS" />) zostały udostępnione na Linuksie</translation>
 <translation id="2379576081295865700">Sprawdzam dostępne miejsce… Znaleziono 1 element</translation>
 <translation id="2383454254762599978">Przenieś do kosza</translation>
 <translation id="2387458720915042159">Typ połączenia z serwerem proxy</translation>
@@ -396,12 +392,10 @@
 <translation id="4197674956721858839">Spakuj wybrane do pliku ZIP</translation>
 <translation id="4202378258276439759">Hiszpański (Ameryka Łacińska)</translation>
 <translation id="4202977638116331303">Gruziński</translation>
-<translation id="421017592316736757">Musisz być w trybie online, by uzyskać dostęp do tego pliku.</translation>
 <translation id="4212740939091998969">Istnieje już folder „<ph name="FOLDER_NAME" />”. Wybierz inną nazwę.</translation>
 <translation id="4218274196133425560">Usuń wyjątek dla hosta <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">Prezentacja Google</translation>
 <translation id="4277536868133419688">Filtr <ph name="FILTER_NAME" /> jest włączony.</translation>
-<translation id="4290535918735525311">Folder udostępniono Linuksowi</translation>
 <translation id="4299729908419173967">brazylijski</translation>
 <translation id="4302605047395093221">Aby połączyć się z tą siecią komórkową, każda osoba używająca tego urządzenia będzie musiała wpisać kod PIN</translation>
 <translation id="4303531889494116116">Ta sieć jest zajęta. Spróbuj ponownie później.</translation>
@@ -502,8 +496,6 @@
 <translation id="4906580650526544301">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />%, bateria telefonu: <ph name="BATTERY_STATUS" />%, szczegóły</translation>
 <translation id="4935975195727477204">Kwiat gazanii</translation>
 <translation id="4943368462779413526">Piłka futbolowa</translation>
-<translation id="4961158930123534723">Udostępniono 1 folder aplikacji Parallels Desktop</translation>
-<translation id="4965874878399872778">Sprawdzam zgodność plików z zasadami bezpieczeństwa obowiązującymi w Twojej organizacji…</translation>
 <translation id="496656650103537022">Plik <ph name="FILE_NAME" /> został przywrócony</translation>
 <translation id="4969785127455456148">Album</translation>
 <translation id="4972330214479971536">Nie udało się dokończyć konfigurowania synchronizacji plików</translation>
@@ -565,7 +557,6 @@
 <translation id="5317780077021120954">Zapisz</translation>
 <translation id="5318819489018851358">Udostępnij Linuksowi</translation>
 <translation id="5323213332664049067">Ameryka Łacińska</translation>
-<translation id="5330145655348521461">Te pliki zostały otwarte na innym pulpicie. Przejdź do <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />), aby je zobaczyć.</translation>
 <translation id="5330512191124428349">Więcej informacji</translation>
 <translation id="535792325654997756">Osoba z kotami</translation>
 <translation id="5358764674931277">Liczba klatek</translation>
@@ -667,7 +658,6 @@
 <translation id="613750717151263950">Japoński z klawiaturą amerykańską</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, brak sieci</translation>
 <translation id="6146563240635539929">Filmy</translation>
-<translation id="6150853954427645995">Aby zapisać ten plik i używać go offline, przejdź do trybu online, kliknij plik prawym przyciskiem myszy i wybierz opcję <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Motyle</translation>
 <translation id="6165508094623778733">Dowiedz się więcej</translation>
 <translation id="6170470584681422115">Kanapka</translation>
@@ -700,7 +690,6 @@
 <translation id="636254897931573416">Nieprawidłowa wartość dopasowania sufiksu domeny</translation>
 <translation id="6364301859968397756">Brak miejsca na dane w organizacji</translation>
 <translation id="6367976544441405720">Furgonetka</translation>
-<translation id="637062427944097960">Ten plik został otwarty na innym pulpicie. Przejdź do <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />), aby go zobaczyć.</translation>
 <translation id="6394388407447716302">Tylko do odczytu</translation>
 <translation id="6395575651121294044">Elementy: <ph name="NUMBER_OF_FILES" /></translation>
 <translation id="6407769893376380348">Nie udało się przenieść pliku <ph name="FILE_NAME" />, bo jest on zaszyfrowany.</translation>
@@ -709,7 +698,6 @@
 <translation id="6430271654280079150">Pozostała 1 próba.</translation>
 <translation id="643243556292470964">Usunięte pliki zostały przeniesione do kosza</translation>
 <translation id="6438480100790416671">Sprawdzam dostępne miejsce…</translation>
-<translation id="6451527188465304418">Sprawdzam zgodność pliku z zasadami bezpieczeństwa obowiązującymi w Twojej organizacji…</translation>
 <translation id="6485131920355264772">Pobieranie informacji o wolnym miejscu nie powiodło się</translation>
 <translation id="6495925982925244349">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />%, zarządzana przez administratora, szczegóły</translation>
 <translation id="649877868557234318">Rozpakowuję plik <ph name="FILE_NAME" /> do folderu <ph name="FOLDER_NAME" /></translation>
@@ -724,7 +712,6 @@
 <translation id="6588648400954570689">Ustawienia synchronizacji plików</translation>
 <translation id="6594855146910089723">Ten folder jest udostępniany systemowi Linux i Parallels Desktop</translation>
 <translation id="6607272825297743757">Informacje o pliku</translation>
-<translation id="6609332149380188670">Udostępniono foldery (<ph name="NUMBER_OF_ITEMS" />) aplikacji Parallels Desktop</translation>
 <translation id="6629518321609546825">Wpisz co najmniej 4 cyfry</translation>
 <translation id="6643016212128521049">Wyczyść</translation>
 <translation id="6650726141019353908">Różowy motyl</translation>
@@ -891,7 +878,6 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Podczas konfigurowania sieci wystąpił błąd</translation>
-<translation id="7839804798877833423">Pobranie tych plików spowoduje przesłanie <ph name="FILE_SIZE" /> przy użyciu komórkowej transmisji danych.</translation>
 <translation id="7846076177841592234">Anuluj wybór</translation>
 <translation id="7853966320808728790">Francuska BÉPO</translation>
 <translation id="7857117644404132472">Dodaj wyjątek</translation>
@@ -940,7 +926,6 @@
 <translation id="8175799081768705361">Synchronizuję pliki (<ph name="NUMBER_OF_FILES_SYNCING" />) na Dysku</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Model urządzenia</translation>
-<translation id="8223479393428528563">Aby zapisać te pliki i używać ich offline, przejdź do trybu online, kliknij pliki prawym przyciskiem myszy i wybierz opcję <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8241139360630443550">Pokaż miejsce na dane</translation>
 <translation id="8249296373107784235">Przerwij</translation>
 <translation id="8250690786522693009">łacina</translation>
@@ -967,6 +952,7 @@
 <translation id="83651606385705612">Przyznaj maszynie wirtualnej <ph name="VM_NAME" /> uprawnienia dostępu do plików w folderze <ph name="FOLDER_NAME" /></translation>
 <translation id="8372369524088641025">Błędny klucz WEP</translation>
 <translation id="8372852072747894550">Grecki</translation>
+<translation id="8377269993083688872">Układy e-maili</translation>
 <translation id="8386903983509584791">Skanowanie ukończone</translation>
 <translation id="8387733224523483503">Element <ph name="FILE_NAME" /> został wyodrębniony.</translation>
 <translation id="8395901698320285466">Wymiary</translation>

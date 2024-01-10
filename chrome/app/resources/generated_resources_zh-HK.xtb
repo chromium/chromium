@@ -470,6 +470,7 @@
 <translation id="1363585519747660921">USB 列印機需要設定</translation>
 <translation id="136378536198524553">「慳電模式」已開啟</translation>
 <translation id="136522805455656552">為保障裝置安全，請只執行並安裝來自可信任來源和開發人員的軟件。<ph name="LEARN_MORE" /></translation>
+<translation id="1367817137674340530">已生成 <ph name="COUNT" /> 張圖片</translation>
 <translation id="1368603372088757436"><ph name="DEVICE_TYPE" /> 不支援 Linux。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="1370249617397887619">如要在其他裝置上使用，請儲存到 Google 帳戶</translation>
 <translation id="1370384480654163477">查看和編輯上次瀏覽此網站時的檔案：</translation>
@@ -814,7 +815,6 @@
 <translation id="1615433306336820465">管理儲存在安全密鑰上的登入資料</translation>
 <translation id="1616206807336925449">這個擴充功能不需任何特殊權限。</translation>
 <translation id="1616298854599875024">「<ph name="IMPORT_NAME" />」擴充程式並非共用模組，因此無法匯入。</translation>
-<translation id="161654560322394775"><ph name="A" />嘅第 <ph name="INDEX" /> 張圖，樣式係<ph name="B" />，情境係<ph name="C" />。</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{正在檢查此資料是否符合您機構的安全性政策…}=1{正在檢查此檔案是否符合您機構的安全性政策…}other{正在檢查這些檔案是否符合您機構的安全性政策…}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">說明中心(&amp;E)</translation>
@@ -3248,6 +3248,7 @@
 <translation id="3480612136143976912">自訂「即時字幕」的文字大小和樣式。部分應用程式和網站亦將會使用此設定。</translation>
 <translation id="3480827850068960424">搵到 <ph name="NUM" /> 個分頁</translation>
 <translation id="3481268647794498892">將於 <ph name="COUNTDOWN_SECONDS" /> 秒後在 <ph name="ALTERNATIVE_BROWSER_NAME" /> 中開啟</translation>
+<translation id="348247802372410699">選擇樣式</translation>
 <translation id="348268549820508141">語音識別</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> 可查看以下檔案</translation>
 <translation id="3484595034894304035">根據個人喜好設定桌布、螢幕保護程式、深色主題背景等項目</translation>
@@ -4233,7 +4234,6 @@
 <translation id="4250229828105606438">螢幕截圖</translation>
 <translation id="4250680216510889253">否</translation>
 <translation id="4251377547188244181">註冊 Kiosk 或標牌裝置</translation>
-<translation id="4252141040239557279"><ph name="A" />嘅第 <ph name="INDEX" /> 張圖</translation>
 <translation id="4252828488489674554">在分頁群組名稱上按一下右鍵可編輯群組，按一下左鍵即可收合</translation>
 <translation id="4252899949534773101">已停用藍牙</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - 已分享分頁內容</translation>
@@ -6105,6 +6105,7 @@
 <translation id="5756163054456765343">說明中心(&amp;E)</translation>
 <translation id="5757187557809630523">下一首歌</translation>
 <translation id="5758631781033351321">您可在此查看閱讀清單</translation>
+<translation id="5759397201362801675">選擇情境</translation>
 <translation id="5759728514498647443">您透過「<ph name="APP_NAME" />」傳送列印的文件可使用「<ph name="APP_NAME" />」讀取。</translation>
 <translation id="5762787084360227629">輸入 Google 帳戶資料</translation>
 <translation id="5763751966069581670">找不到 USB 裝置</translation>
@@ -6396,6 +6397,7 @@
 <translation id="5979421442488174909">翻譯成<ph name="LANGUAGE" />(&amp;T)</translation>
 <translation id="5979469435153841984">如要將網頁加入書籤，請按一下網址列中的星號</translation>
 <translation id="5982578203375898585">下載完成後顯示下載檔案</translation>
+<translation id="5983716913605894570">生成中...</translation>
 <translation id="5984222099446776634">最近瀏覽的網站</translation>
 <translation id="5985458664595100876">網址格式無效。支援的格式為 \\server\share 和 smb://server/share。</translation>
 <translation id="598810097218913399">移除指派</translation>
@@ -6568,7 +6570,6 @@
         <ph name="BREAK" />
         您可透過資訊卡選單管理設定，或前往「自訂 Chrome」查看更多選項。</translation>
 <translation id="6121773125605585883">睇下使用者名稱「<ph name="USERNAME" />」喺 <ph name="WEBSITE" /> 嘅密碼</translation>
-<translation id="6122081475643980456">您的互聯網連線目前受到控制</translation>
 <translation id="6122093587541546701">電郵 (選擇性)：</translation>
 <translation id="6122095009389448667">繼續禁止此網站查看剪貼簿</translation>
 <translation id="6122513630797178831">儲存 CVC</translation>
@@ -7453,7 +7454,6 @@
 <translation id="6820079682647046800">Kerberos 驗證失敗</translation>
 <translation id="6821439254917412979">取消固定「<ph name="EXTENSION_NAME" />」</translation>
 <translation id="6823174134746916417">觸控板輕按點撃功能</translation>
-<translation id="6823429960180594870">管理下載中的檔案，並在下載完成後開啟</translation>
 <translation id="6823561724060793716">你可以透過網址列開啟網頁資料，查看目前所在網頁的其他資料</translation>
 <translation id="6824564591481349393">複製電郵地址(&amp;E)</translation>
 <translation id="6824584962142919697">檢查元素 (&amp;I)</translation>
@@ -7860,7 +7860,6 @@
 <translation id="714301620504747562">瀏覽和搜尋比標準預先載入更快捷</translation>
 <translation id="7143207342074048698">正在連接</translation>
 <translation id="7143409552554575716">ChromeOS 標記</translation>
-<translation id="714447804011008506">下載檔案宜家會喺工具列顯示</translation>
 <translation id="7144856456372460176">安裝(&amp;I) <ph name="APP" />…</translation>
 <translation id="7144878232160441200">重試</translation>
 <translation id="7145413760160421938">無法恢復上一個工作階段</translation>
@@ -8510,7 +8509,6 @@
 <translation id="7657090467145778067">節省少量記憶體</translation>
 <translation id="7657218410916651670">在您登入後，<ph name="BEGIN_LINK_GOOGLE" />其他形式的活動<ph name="END_LINK_GOOGLE" />可能會儲存至您的 Google 帳戶。您可以隨時刪除這些資料。</translation>
 <translation id="7658239707568436148">取消</translation>
-<translation id="7658727964021657194">最近使用的 AI 主題：<ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">仍要結束無痕模式嗎？</translation>
 <translation id="7659336857671800422">查看私隱權指南</translation>
 <translation id="7659584679870740384">您無權使用這部裝置。如需登入權限，請與管理員聯絡。</translation>
@@ -8792,7 +8790,6 @@
 <translation id="7855678561139483478">把分頁移至新視窗</translation>
 <translation id="7857004848504343806">您的電腦具有安全模組，ChromeOS Flex 需要透過該模組來執行許多重要的安全防護功能。如要瞭解詳情，請瀏覽 Chromebook 說明中心：https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">文字建議</translation>
-<translation id="7857949311770343000">這是您想要的新分頁嗎？</translation>
 <translation id="7858120906780498731">ChromeOS 已連接的輸入裝置</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941">移除 <ph name="EXTENSION_NAME" /> 擴充程式</translation>
@@ -8841,7 +8838,6 @@
 <translation id="789722939441020330">不允許網站自動下載多個檔案</translation>
 <translation id="7897900149154324287">以後請務必先從「檔案」應用程式中退出卸除式裝置，然後再拔出，以免遺失數據。</translation>
 <translation id="7898725031477653577">永遠翻譯</translation>
-<translation id="7899324822972399722"><ph name="A" />嘅第 <ph name="INDEX" /> 張圖，樣式係<ph name="B" /></translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">要查看瀏覽器組件嗎？請前往</translation>
 <translation id="7903429136755645827">按一下即可自訂遊戲控制項</translation>
@@ -9122,7 +9118,6 @@
 <translation id="8098616321286360457">需要網絡連線</translation>
 <translation id="8100230553590752325">在任何裝置上使用已儲存的密碼</translation>
 <translation id="810068641062493918">揀咗「<ph name="LANGUAGE" />」。㩒搜尋鍵加空白鍵就可以取消選取揀咗嘅語言。</translation>
-<translation id="8100725874569949614"><ph name="A" />嘅第 <ph name="INDEX" /> 張圖，情境係<ph name="C" />。</translation>
 <translation id="8101409298456377967">建立、儲存及管理密碼，讓您輕鬆登入網站和應用程式。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">自訂顏色</translation>
 <translation id="8101987792947961127">必須在下次重新啟動時執行 Powerwash</translation>
@@ -10070,7 +10065,6 @@
 <translation id="8846163936679269230">重設 eSIM 設定檔</translation>
 <translation id="8846239054091760429">單聲道音效、啟動、即時字幕等等</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8848963863312877204">在這裡查看下載的檔案</translation>
 <translation id="8849001918648564819">隱藏</translation>
 <translation id="8849219423513870962">取消移除叫做「<ph name="PROFILE_NAME" />」嘅 eSIM 卡設定檔</translation>
 <translation id="8849262417389398097"><ph name="CHECKED" />/<ph name="CHECKING" /></translation>
@@ -10448,6 +10442,7 @@
 <translation id="9114663181201435112">輕鬆登入</translation>
 <translation id="9115675100829699941">書籤(&amp;B)</translation>
 <translation id="9115932142612197835">此設定不會影響「Google 翻譯」或「Google 智能鏡頭」的可用性</translation>
+<translation id="9116366756388192417">選擇主題</translation>
 <translation id="9116799625073598554">筆記應用程式</translation>
 <translation id="9117030152748022724">管理應用程式</translation>
 <translation id="9120362425083889527">無法完成安裝。請再試一次或關閉此視窗</translation>

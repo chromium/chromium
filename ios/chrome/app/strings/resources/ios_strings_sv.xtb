@@ -56,7 +56,6 @@
 <translation id="1279024913354609713">Tillåt inte</translation>
 <translation id="1281818060020671000">Hantera data</translation>
 <translation id="1282311502488501110">Logga inte in</translation>
-<translation id="1283039547216852943">Tryck och utöka</translation>
 <translation id="1283524564873030414">Senaste 24 timmarna</translation>
 <translation id="1285320974508926690">Översätt aldrig den här webbplatsen</translation>
 <translation id="1291506870746876680">Behörigheterna för <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> inaktiveras igen när du lämnar webbplatsen.</translation>
@@ -82,7 +81,6 @@
 <translation id="1377255359165588604">Synkronisering har slutat fungera.</translation>
 <translation id="1377321085342047638">Kortnummer</translation>
 <translation id="1377508275003315939">Lösenord</translation>
-<translation id="1380914240355562929"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> kan nu använda ditt användarnamn och lösenord när hen loggar in på <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> med Google Lösenordshantering. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">Sök</translation>
 <translation id="138618066238211776">Fortsätt som <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">Senaste fyra veckorna</translation>
@@ -406,7 +404,6 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3087734570205094154">Nederst</translation>
 <translation id="3090455602619185166">Logga in med ett hanterat konto</translation>
 <translation id="309710370695886264">Du har 1 återanvänt lösenord. Åtgärda det nu för att hålla dig säker.</translation>
-<translation id="3109724472072898302">Komprimerat</translation>
 <translation id="3112556859945124369">Markera …</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Se vad du kan synkronisera<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">Historik med mera</translation>
@@ -775,7 +772,6 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="5121618895923301719">Du bevakar redan den här produkten. Den här sidan har sparats i <ph name="BEGIN_LINK" />bokmärken på telefonen<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Du har flera problem med lösenord.</translation>
 <translation id="5126465625664020024">Logga in och synkronisera</translation>
-<translation id="5131062416352684089">Dina familjemedlemmar kan nu använda ditt användarnamn och lösenord när de loggar in på <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> med Google Lösenordshantering. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">Synkronisera lösenord, historik med mera på alla dina enheter</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} svagt lösenord}other{{COUNT} svaga lösenord}}</translation>
 <translation id="5149188072385105201">Lägg till lösenord …</translation>
@@ -924,7 +920,6 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="5955891643922670672">Offlineversionen visas</translation>
 <translation id="5957613098218939406">Fler alternativ</translation>
 <translation id="595769230373966252">Sök med <ph name="SEARCH_PROVIDER" /></translation>
-<translation id="5962718611393537961">Tryck här om du vill komprimera</translation>
 <translation id="5963939892571022323">Det gick inte att skapa en länk till markeringen.</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 bokmärke har raderats}other{{count} bokmärken har raderats}}</translation>
 <translation id="5979837087407522202">Sök efter lösenord</translation>

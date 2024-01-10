@@ -1504,6 +1504,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="7025533177575372252">Połącz urządzenie <ph name="DEVICE_NAME" /> z telefonem</translation>
 <translation id="7026338066939101231">Zmniejsz</translation>
 <translation id="7029814467594812963">Zakończ sesję</translation>
+<translation id="7031303610220416229">Zobacz wszystkie zadania na Liście zadań Google</translation>
 <translation id="7032161822340700104">Dozwolonych jest tylko 6 szablonów. Usuń szablon, aby zapisać nowy.</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" /> chce użyć urządzenia <ph name="DEVICE_NAME" />. Włącz je przełącznikiem fizycznym (<ph name="DEVICE_NAME" />).</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Asystent Google</translation>
@@ -1816,6 +1817,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8351131234907093545">Utwórz notatkę</translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> jest w użyciu.</translation>
 <translation id="8369166482916924789">Zapisane biurko, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
+<translation id="8370414029565771236">Wyszukaj: <ph name="TEXT" /></translation>
 <translation id="8371779926711439835">Do przodu o jedną literę</translation>
 <translation id="8371991222807690464">W trybie gościa urządzenia peryferyjne mogą działać mniej wydajnie.</translation>
 <translation id="8374601332003098278">Aby nagrać fragment ekranu, naciśnij Enter</translation>

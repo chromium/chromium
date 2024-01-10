@@ -24,7 +24,6 @@
 <translation id="1173916544412572294">நெட்வொர்க்: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />%, மொபைல் பேட்டரி: <ph name="BATTERY_STATUS" />%, விவரங்கள்</translation>
 <translation id="117624967391683467"><ph name="FILE_NAME" /> ஐ நகலெடுக்கிறது...</translation>
 <translation id="1178581264944972037">இடைநிறுத்து</translation>
-<translation id="1190144681599273207">இந்த ஃபைலைப் பெற்றால், மொபைல் டேட்டாவில் தோராயமாக <ph name="FILE_SIZE" /> ஐப் பயன்படுத்தும்.</translation>
 <translation id="1194390763418645112">ஃபைலை அணுகுவது: <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">அடுத்து</translation>
 <translation id="1209796539517632982">தானியங்கி பெயர் சேவையகங்கள்</translation>
@@ -100,7 +99,6 @@
 <translation id="1761091787730831947"><ph name="VM_NAME" /> உடன் பகிர்</translation>
 <translation id="1773212559869067373">அடையாளச் சான்றிதழ் பயனரின் கம்ப்யூட்டரில் நிராகரிக்கப்பட்டது</translation>
 <translation id="1775381402323441512">வீடியோ தகவல்</translation>
-<translation id="180035236176489073">இந்த ஃபைல்களை அணுக ஆன்லைனில் இருக்க வேண்டும்.</translation>
 <translation id="1807938677607439181">எல்லா கோப்புகளும்</translation>
 <translation id="1810764548349082891">மாதிரிக்காட்சி இல்லை</translation>
 <translation id="1812302367230252929">அம்ஹரிக் ஒலிபெயர்ப்பு</translation>
@@ -161,8 +159,6 @@
 <translation id="2282155092769082568">தானியங்கு உள்ளமைவு URL:</translation>
 <translation id="2284767815536050991">அகற்றக்கூடிய சேமிப்பகம்</translation>
 <translation id="2288278176040912387">பதிவு பிளேயர்</translation>
-<translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> ஃபைல்களைத் திறக்கிறது.</translation>
-<translation id="2303301624314357662"><ph name="FILE_NAME" /> ஃபைலைத் திறக்கிறது.</translation>
 <translation id="2304820083631266885">கோள்</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> வெளியேற்றப்பட்டது.</translation>
 <translation id="2307462900900812319">நெட்வொர்க்கை உள்ளமை</translation>
@@ -172,7 +168,6 @@
 <translation id="233822363739146957">உங்கள் ஃபைல்கள் அனைத்தையும் ஒத்திசைக்க போதுமான சேமிப்பிடம் இல்லை</translation>
 <translation id="23721837607121582">இந்த மொபைல் சுயவிவரத்தைப் பதிவிறக்கும்: நெட்வொர்க் <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">பட்டியல் காட்சிக்கு மாறு</translation>
-<translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> ஃபோல்டர்கள் Linuxஸுடன் பகிரப்பட்டன</translation>
 <translation id="2379576081295865700">சேமிப்பிடத்தைச் சரிபார்க்கிறது… 1 ஆவணம் கண்டறியப்பட்டது</translation>
 <translation id="2383454254762599978">‘நீக்கியவை’ ஃபோல்டருக்கு நகர்த்து</translation>
 <translation id="2387458720915042159">ப்ராக்ஸி இணைப்பு வகை</translation>
@@ -396,12 +391,10 @@
 <translation id="4197674956721858839">ஜிப் தேர்வு</translation>
 <translation id="4202378258276439759">ஸ்பானிஷ் (லத்தீன் அமெரிக்கா)</translation>
 <translation id="4202977638116331303">ஜார்ஜியன்</translation>
-<translation id="421017592316736757">இந்த ஃபைலை அணுக ஆன்லைனில் இருக்க வேண்டும்.</translation>
 <translation id="4212740939091998969">"<ph name="FOLDER_NAME" />" என்ற பெயருள்ள ஃபோல்டர் ஏற்கனவே உள்ளது. வேறொரு பெயரைத் தேர்வுசெய்யவும்.</translation>
 <translation id="4218274196133425560"><ph name="HOST_NAME" /> க்கான விதிவிலக்கை அகற்றும்</translation>
 <translation id="4261901459838235729">Google விளக்கக்காட்சி</translation>
 <translation id="4277536868133419688"><ph name="FILTER_NAME" /> வடிப்பான் இயக்கப்பட்டுள்ளது.</translation>
-<translation id="4290535918735525311">Linuxஸுடன் 1 ஃபோல்டர் பகிரப்பட்டது</translation>
 <translation id="4299729908419173967">பிரேசிலியன்</translation>
 <translation id="4302605047395093221">இந்த மொபைல் நெட்வொர்க்குடன் இணைக்க இந்தச் சாதனத்தைப் பயன்படுத்தும் எவரும் பின்னை (PIN) உள்ளிட வேண்டும்</translation>
 <translation id="4303531889494116116">நெட்வொர்க் பிஸியாக உள்ளது. பிறகு மீண்டும் முயலவும்.</translation>
@@ -502,8 +495,6 @@
 <translation id="4906580650526544301">நெட்வொர்க்: <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />%, மொபைல் பேட்டரி <ph name="BATTERY_STATUS" />%, விவரங்கள்</translation>
 <translation id="4935975195727477204">கஸானியா பூ</translation>
 <translation id="4943368462779413526">கால்பந்து</translation>
-<translation id="4961158930123534723">1 ஃபோல்டர் Parallels Desktop உடன் பகிரப்பட்டது</translation>
-<translation id="4965874878399872778">உங்கள் நிறுவனத்தின் பாதுகாப்புக் கொள்கைகளுக்கு ஏற்ப பைல்கள் உள்ளனவா என்று சரிபார்க்கிறது...</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> மீட்டெடுக்கப்பட்டது</translation>
 <translation id="4969785127455456148">ஆல்பம்</translation>
 <translation id="4972330214479971536">ஃபைல் ஒத்திசைவிற்கான அமைவை நிறைவுசெய்ய முடியவில்லை</translation>
@@ -565,7 +556,6 @@
 <translation id="5317780077021120954">சேமி</translation>
 <translation id="5318819489018851358">Linuxஸுடன் பகிர்</translation>
 <translation id="5323213332664049067">லத்தீன் அமெரிக்கன்</translation>
-<translation id="5330145655348521461">இந்த ஃபைல்கள் மற்றொரு டெஸ்க்டாப்பில் திறக்கப்பட்டன. இதைப் பார்க்க, <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) க்கு நகர்த்தவும்.</translation>
 <translation id="5330512191124428349">தகவலைப் பெறு</translation>
 <translation id="535792325654997756">பூனைகளுடன் இருக்கும் நபர்</translation>
 <translation id="5358764674931277">ஃபிரேம் வீதம்</translation>
@@ -667,7 +657,6 @@
 <translation id="613750717151263950">ஜாப்பனீஸ் - யூஎஸ் கீபோர்டு</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, நெட்வொர்க் இல்லை</translation>
 <translation id="6146563240635539929">வீடியோக்கள்</translation>
-<translation id="6150853954427645995">இந்த ஃபைலை ஆஃப்லைனில் பயன்படுத்துவதற்காகச் சேமிப்பதற்கு, இணைய இணைப்பை இயக்கி, ஃபைலில் வலது கிளிக் செய்து, பின்னர் <ph name="OFFLINE_CHECKBOX_NAME" /> விருப்பத்தைத் தேர்ந்தெடுக்கவும்.</translation>
 <translation id="6164412158936057769">வண்ணத்துப்பூச்சிகள்</translation>
 <translation id="6165508094623778733">மேலும் அறிக</translation>
 <translation id="6170470584681422115">சாண்ட்விச்</translation>
@@ -700,7 +689,6 @@
 <translation id="636254897931573416">டொமைனின் பிற்பாதிக்கான பொருத்தத்தின் மதிப்பு தவறாக உள்ளது</translation>
 <translation id="6364301859968397756">நிறுவனச் சேமிப்பகம் நிரம்பிவிட்டது</translation>
 <translation id="6367976544441405720">வேன்</translation>
-<translation id="637062427944097960">இந்த ஃபைல் மற்றொரு டெஸ்க்டாப்பில் திறக்கப்பட்டது. இதைப் பார்க்க, <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) க்கு நகர்த்தவும்.</translation>
 <translation id="6394388407447716302">படிக்க மட்டும்</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> ஃபைல்கள் </translation>
 <translation id="6407769893376380348"><ph name="FILE_NAME" /> என்க்ரிப்ஷன் செய்யப்பட்டுள்ளதால் அதை நகர்த்த முடியவில்லை.</translation>
@@ -709,7 +697,6 @@
 <translation id="6430271654280079150">1 வாய்ப்பு மீதமுள்ளது.</translation>
 <translation id="643243556292470964">நீக்கிய ஃபைல்கள் இப்போது ‘நீக்கியவை’ பிரிவுக்கு நகர்த்தப்படும்</translation>
 <translation id="6438480100790416671">சேமிப்பிடம் உள்ளதா என்று பார்க்கிறது…</translation>
-<translation id="6451527188465304418">உங்கள் நிறுவனத்தின் பாதுகாப்புக் கொள்கைகளுக்கு ஏற்ப ஃபைல் உள்ளதா என்று சரிபார்க்கிறது...</translation>
 <translation id="6485131920355264772">இடத் தகவலை மீட்டெடுப்பதில் தோல்வி</translation>
 <translation id="6495925982925244349">நெட்வொர்க்: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />%, உங்கள் நிர்வாகி நிர்வகிக்கிறார், விவரங்கள்</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> ஃபைல் <ph name="FOLDER_NAME" /> ஃபோல்டருக்குப் பிரித்தெடுக்கப்படுகிறது</translation>
@@ -724,7 +711,6 @@
 <translation id="6588648400954570689">ஃபைல் ஒத்திசைவு அமைப்புகள்</translation>
 <translation id="6594855146910089723">Linux, Parallels Desktop ஆகியவற்றுடன் இந்த ஃபோல்டர் பகிரப்பட்டது</translation>
 <translation id="6607272825297743757">ஃபைல் தகவல்</translation>
-<translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> ஃபோல்டர்கள் Parallels Desktop உடன் பகிரப்பட்டன</translation>
 <translation id="6629518321609546825">குறைந்தது 4 எண்களை உள்ளிடவும்</translation>
 <translation id="6643016212128521049">அழி</translation>
 <translation id="6650726141019353908">பிங்க் நிறப் பட்டாம்பூச்சி</translation>
@@ -891,7 +877,6 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> டெ.பை.</translation>
 <translation id="7831491651892296503">நெட்வொர்க்கை உள்ளமைப்பதில் பிழை</translation>
-<translation id="7839804798877833423">இந்த ஃபைல்களைப் பெற்றால், மொபைல் டேட்டாவில் தோராயமாக <ph name="FILE_SIZE" /> ஐப் பயன்படுத்தும்.</translation>
 <translation id="7846076177841592234">தேர்வை ரத்துசெய்</translation>
 <translation id="7853966320808728790">ஃபிரஞ்ச் பீபோ</translation>
 <translation id="7857117644404132472">விதிவிலக்கைச் சேர்</translation>
@@ -939,7 +924,6 @@
 <translation id="8175799081768705361"><ph name="NUMBER_OF_FILES_SYNCING" /> Drive ஃபைல்களை ஒத்திசைக்கிறது</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">சாதனத்தின் மாடல்</translation>
-<translation id="8223479393428528563">இந்த ஃபைல்களை ஆஃப்லைனில் பயன்படுத்துவதற்காகச் சேமிக்க, ஆன்லைனிற்கு சென்று, ஃபைல்களில் வலது-கிளிக் செய்து, <ph name="OFFLINE_CHECKBOX_NAME" /> விருப்பத்தைத் தேர்தெடுக்கவும்.</translation>
 <translation id="8241139360630443550">சேமிப்பகத்தைக் காட்டு</translation>
 <translation id="8249296373107784235">கைவிடு</translation>
 <translation id="8250690786522693009">லத்தீன்</translation>

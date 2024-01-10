@@ -56,7 +56,6 @@
 <translation id="1279024913354609713">İzin Verme</translation>
 <translation id="1281818060020671000">Veri Yönetimi</translation>
 <translation id="1282311502488501110">Oturum Açma</translation>
-<translation id="1283039547216852943">Genişletmek için dokunun</translation>
 <translation id="1283524564873030414">Son 24 Saat</translation>
 <translation id="1285320974508926690">Bu siteyi asla çevirme</translation>
 <translation id="1291506870746876680">Bu siteden ayrıldığınızda <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> izinleri kapalı ayarına sıfırlanır.</translation>
@@ -82,7 +81,6 @@
 <translation id="1377255359165588604">Senkronizasyonun çalışması durdu.</translation>
 <translation id="1377321085342047638">Kart Numarası</translation>
 <translation id="1377508275003315939">Şifreler</translation>
-<translation id="1380914240355562929"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> artık Google Şifre Yöneticisi'nin yardımıyla <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> sitesinde oturum açarken kullanıcı adınızı ve şifrenizi kullanabilir. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">Ara</translation>
 <translation id="138618066238211776"><ph name="USER_NAME" /> olarak devam et</translation>
 <translation id="1400642268715879018">Son 4 Hafta</translation>
@@ -406,7 +404,6 @@ Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatların�
 <translation id="3087734570205094154">Alt</translation>
 <translation id="3090455602619185166">Yönetilen Hesapla Oturum Açın</translation>
 <translation id="309710370695886264">Yeniden kullanılan 1 şifreniz var. Güvende kalmak için sorunu hemen giderin.</translation>
-<translation id="3109724472072898302">Daraltılmış</translation>
 <translation id="3112556859945124369">İşaretle…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Neleri Senkronize Edebileceğinizi Görün<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">Geçmiş ve daha fazlası</translation>
@@ -775,7 +772,6 @@ Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatların�
 <translation id="5121618895923301719">Bu ürünü zaten takip ediyorsunuz. Bu sayfa <ph name="BEGIN_LINK" />Mobil Yer İşaretleri<ph name="END_LINK" />'ne kaydedildi.</translation>
 <translation id="512533434554095351">Birkaç şifre sorununuz var.</translation>
 <translation id="5126465625664020024">Oturum aç ve Senkronize et</translation>
-<translation id="5131062416352684089">Aile üyeleriniz artık Google Şifre Yöneticisi'nin yardımıyla <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> sitesinde oturum açarken kullanıcı adınızı ve şifrenizi kullanabilir. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">Tüm cihazlardaki şifreleriniz, geçmişiniz ve diğer öğelerinizi senkronize edin</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} Zayıf Şifre}other{{COUNT} Zayıf Şifre}}</translation>
 <translation id="5149188072385105201">Şifre Ekleyin..</translation>
@@ -924,7 +920,6 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="5955891643922670672">Çevrimdışı Sürüm Gösteriliyor</translation>
 <translation id="5957613098218939406">Diğer Seçenekler</translation>
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> ile ara</translation>
-<translation id="5962718611393537961">Daraltmak için dokunun</translation>
 <translation id="5963939892571022323">Seçili metin için bağlantı oluşturulamıyor.</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 yer işareti silindi}other{{count} yer işareti silindi}}</translation>
 <translation id="5979837087407522202">Şifrelerde Ara</translation>

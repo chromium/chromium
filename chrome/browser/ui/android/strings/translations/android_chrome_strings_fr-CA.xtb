@@ -233,6 +233,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2318045970523081853">Touchez ici pour faire un appel</translation>
 <translation id="2321086116217818302">Préparation des mots de passe en cours…</translation>
 <translation id="2323763861024343754">Stockage des sites</translation>
+<translation id="2327226657832576859">Ouvrir automatiquement les fichiers PDF?</translation>
 <translation id="2328985652426384049">Impossible de se connecter</translation>
 <translation id="2341410551640223969">Impossible d'installer <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Le total des données utilisées par Chrome, comprenant les comptes, les favoris et les paramètres enregistrés</translation>
@@ -638,6 +639,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="4523326818319942067">dernière heure</translation>
 <translation id="452750746583162491">Examiner vos données synchronisées</translation>
 <translation id="4532845899244822526">Sélectionner un dossier</translation>
+<translation id="4541505619120536051">Toujours ouvert</translation>
 <translation id="4543131175509360848">Aucune feuille de clé d'accès</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> onglet}one{<ph name="TAB_COUNT_MANY" /> onglet, <ph name="TAB_COUNT_INCOGNITO" /> onglet de navigation privée}other{<ph name="TAB_COUNT_MANY" /> onglets, <ph name="TAB_COUNT_INCOGNITO" /> onglets de navigation privée}}</translation>
 <translation id="4554077758708533499">Connecté à l'aide d'un câble USB</translation>
@@ -829,6 +831,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5486841595534124508">Logo de l'avis de confidentialité pour le Centre des statistiques de la page qui redirige vers la page Mon activité.</translation>
 <translation id="5487521232677179737">Effacer les données</translation>
 <translation id="5492637351392383067">Chiffrement sur l'appareil</translation>
+<translation id="5509866835115085009">Chrome peut ouvrir automatiquement un fichier PDF lorsque vous le téléchargez.</translation>
 <translation id="5514904542973294328">Option désactivée par l'administrateur de cet appareil</translation>
 <translation id="5515439363601853141">Déverrouillez pour afficher votre mot de passe</translation>
 <translation id="5517095782334947753">Vous avez les favoris, l'historique, les mots de passe et d'autres paramètres de <ph name="FROM_ACCOUNT" />.</translation>

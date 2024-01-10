@@ -1017,6 +1017,7 @@
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab да бисте прегледали доступне радње, па Enter да бисте извршили изабрану радњу.</translation>
 <translation id="3013291976881901233">MIDI уређаји</translation>
 <translation id="3014553260345122294">Пословне вести</translation>
+<translation id="3014726756341138577">Напредне функције штампача</translation>
 <translation id="301521992641321250">Аутоматски је блокирано</translation>
 <translation id="3016780570757425217">зна вашу локацију</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, притисните Tab, па Enter да бисте уклонили предлог.</translation>
@@ -1166,6 +1167,7 @@
 <translation id="33073482541490531">Лозинка коју сте управо користили је пронађена при повреди података. Менаџер лозинки препоручује да одмах промените ову лозинку.</translation>
 <translation id="3307649904964670439">Дугме Прилагоди Chrome, активирајте га да бисте прилагодили изглед прегледача</translation>
 <translation id="3308006649705061278">Организациона јединица (OU)</translation>
+<translation id="3324223664999044166">3 или више речи као резиме својих мисли</translation>
 <translation id="3324687287337751929">4×6 in</translation>
 <translation id="3324983252691184275">Јаркоцрвена</translation>
 <translation id="3325027355611702542">Кампери и рекреативна возила</translation>
@@ -1239,7 +1241,6 @@
 <translation id="3447661539832366887">Власник овог уређаја је искључио ову застарелу игру.</translation>
 <translation id="3447884698081792621">Прикажи сертификат (издаје <ph name="ISSUER" />)</translation>
 <translation id="3450323514459570273">Може да тражи да контролише и репрограмира MIDI уређаје</translation>
-<translation id="3452151267620065789">Напредак је сачуван</translation>
 <translation id="3452404311384756672">Интервал учитавања:</translation>
 <translation id="3453962258458347894">Број поновних покушаја</translation>
 <translation id="3461266716147554923"><ph name="URL" /> жели да види текст и слике који су копирани у привремену меморију</translation>
@@ -1540,7 +1541,6 @@
 <translation id="4067098466788473230">Новчана помоћ за студирање и стипендије</translation>
 <translation id="4067947977115446013">Додајте важећу адресу</translation>
 <translation id="4070790659619547722">Помоћу функције мерења огласа ограничени типови података, као што је доба дана када вам је неки оглас приказан, деле се између сајтова ради мерења учинка огласа.</translation>
-<translation id="4072193657607981494">Смернице се учитавају</translation>
 <translation id="4072486802667267160">Дошло је до грешке при обради поруџбине. Пробајте поново.</translation>
 <translation id="4073376909608563327">Откључавање уређаја није успело</translation>
 <translation id="4073797364926776829">Прикажи картицу</translation>
@@ -2170,6 +2170,7 @@
 <translation id="5292714443869769806">Иди у подешавања система <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="5293919335876685914">Купеи</translation>
 <translation id="5296589789433599000">Кување и рецепти</translation>
+<translation id="5298618990685278995">прва радна верзија</translation>
 <translation id="5299298092464848405">Грешка при рашчлањивању смерница</translation>
 <translation id="5299638840995777423">Роботика</translation>
 <translation id="5300062471671636390">Сакриј листу уређаја за пребацивање</translation>
@@ -2286,6 +2287,7 @@
 <translation id="5541086400771735334">7. поштанско сандуче</translation>
 <translation id="5541546772353173584">Додајте имејл</translation>
 <translation id="5543722831081909240">180 степени</translation>
+<translation id="555037537507405574">напредне функције штампача</translation>
 <translation id="555128936272638662">Додатна опрема за мобилне и бежичне уређаје</translation>
 <translation id="5551890439174915351">100×200 mm</translation>
 <translation id="5552137475244467770">Chrome повремено упоређује ваше лозинке са листама које су објављене онлајн. Док то ради, ваше лозинке и корисничка имена су шифровани, па нико не може да их прочита, укључујући Google.</translation>
@@ -2727,7 +2729,6 @@
 <translation id="6428450836711225518">Верификујте број телефона</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">Промените Google лозинку</translation>
-<translation id="6431119592588449664">Извештај је отпремљен</translation>
 <translation id="6432297414176614592">Више о темама огласа</translation>
 <translation id="6432831586648556868">Послови у продаји и маркетингу</translation>
 <translation id="6433490469411711332">Измените контакт информације</translation>
@@ -3206,6 +3207,7 @@
 <translation id="7378877318020334501">ТВ комедије</translation>
 <translation id="7380398842872229465">10×15 in</translation>
 <translation id="738439098860678026">Предшколско образовање</translation>
+<translation id="7388071710882496863">захтеве као што је „напишите рецензију са 5 звездица за овај ресторан“</translation>
 <translation id="7388594495505979117">{0,plural, =1{Уређај ће се рестартовати за 1 минут}one{Уређај ће се рестартовати за # минут}few{Уређај ће се рестартовати за # минута}other{Уређај ће се рестартовати за # минута}}</translation>
 <translation id="7390545607259442187">Потврдите картицу</translation>
 <translation id="7392089738299859607">Ажурирајте адресу</translation>
@@ -3486,7 +3488,6 @@
 <translation id="7871445724586827387">Промените лозинку за Google налог</translation>
 <translation id="7877007680666472091">ИД-ови заштићеног садржаја</translation>
 <translation id="7878562273885520351">Лозинка је можда компромитована</translation>
-<translation id="7878966190323222027">Поново отворите да бисте наставили</translation>
 <translation id="7880146494886811634">Сачувајте адресу</translation>
 <translation id="7882421473871500483">Браон</translation>
 <translation id="7882995332186050355">Теретни камиони и приколице</translation>
@@ -4108,7 +4109,6 @@
 <translation id="9119042192571987207">Отпремљено</translation>
 <translation id="9122954576417194280">Трговина робом и фјучерсима</translation>
 <translation id="912327514020027767">Сукње</translation>
-<translation id="9128016270925453879">Смернице су учитане</translation>
 <translation id="9128870381267983090">Повезивање са мрежом</translation>
 <translation id="9131119348384879525">Желите да снимате поверљив садржај?</translation>
 <translation id="9133985615769429248">Ако делите овај уређај са другима, можете да користите закључавање екрана да бисте потврдили да сте то ви када год користите сачувану лозинку</translation>
@@ -4122,6 +4122,7 @@
 <translation id="9144951720726881238">Датум истека:</translation>
 <translation id="9148507642005240123">&amp;Опозови измену</translation>
 <translation id="9148599396704355100">Цена је ниска</translation>
+<translation id="9150025764986957246">Можете да уносите ствари попут следећих:</translation>
 <translation id="9150045010208374699">Коришћење камере</translation>
 <translation id="9150685862434908345">Администратор може даљински да промени подешавање прегледача. Активностима на овом уређају се можда управља и ван Chrome-а. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">Ажурирано</translation>
@@ -4132,6 +4133,7 @@
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Сајтови које посећујете такође могу да одреде шта вам се допада на основу ваших активности на сајту. На пример, ако посетите сајт који продаје патике за трчање на дуге стазе, тај сајт може да да закључи да сте заинтересовани за трчање маратона.</translation>
 <translation id="9166851138617700776">Више о огласима које предлажу сајтови и мерењу огласа</translation>
+<translation id="9167594211215946097">Обезбедите директан приступ штампачима</translation>
 <translation id="9168814207360376865">Дозволи сајтовима да проверавају да ли имам сачуване начине плаћања</translation>
 <translation id="9169664750068251925">Увек блокирај на овом сајту</translation>
 <translation id="9169931577761441333">Додајте <ph name="APP_NAME" /> на почетни екран</translation>

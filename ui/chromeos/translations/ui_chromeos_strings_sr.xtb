@@ -24,7 +24,6 @@
 <translation id="1173916544412572294"><ph name="NETWORK_INDEX" />. мрежа од <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, јачина сигнала <ph name="SIGNAL_STRENGTH" />%, батерија телефона <ph name="BATTERY_STATUS" />%, детаљи</translation>
 <translation id="117624967391683467">Копирање датотеке <ph name="FILE_NAME" />...</translation>
 <translation id="1178581264944972037">Паузирај</translation>
-<translation id="1190144681599273207">Преузимање ове датотеке ће искористити око <ph name="FILE_SIZE" /> података за мобилне уређаје.</translation>
 <translation id="1194390763418645112">Приступ фајлу са <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">Даље</translation>
 <translation id="1209796539517632982">Аутоматски сервери назива</translation>
@@ -100,7 +99,6 @@
 <translation id="1761091787730831947">Делите помоћу услуге <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">Сертификат за потврду аутентичности је одбијен локално</translation>
 <translation id="1775381402323441512">Информације о видео датотеци</translation>
-<translation id="180035236176489073">Морате да будете на мрежи да бисте приступили овим датотекама.</translation>
 <translation id="1807938677607439181">Све датотеке</translation>
 <translation id="1810764548349082891">Преглед није доступан</translation>
 <translation id="1812302367230252929">транслитерација амхарског</translation>
@@ -162,8 +160,6 @@
 <translation id="2282155092769082568">URL за аутоматску конфигурацију:</translation>
 <translation id="2284767815536050991">преносива меморија</translation>
 <translation id="2288278176040912387">Грамофон</translation>
-<translation id="2291538123825441971">Отварају се датотеке (<ph name="NUMBER_OF_FILES" />).</translation>
-<translation id="2303301624314357662">Отвара се датотека <ph name="FILE_NAME" />.</translation>
 <translation id="2304820083631266885">Планета</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> је избачен.</translation>
 <translation id="2307462900900812319">Конфигуриши мрежу</translation>
@@ -173,7 +169,6 @@
 <translation id="233822363739146957">Нема довољно меморијског простора да бисте синхронизовали све фајлове</translation>
 <translation id="23721837607121582">Преузмите профил за мобилне уређаје, <ph name="NETWORK_INDEX" />. мрежа од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Пређи на приказ листе</translation>
-<translation id="2377590462528165447">Директоријуми (<ph name="NUMBER_OF_ITEMS" />) се деле са Linux-ом</translation>
 <translation id="2379576081295865700">Проверава се меморијски простор… пронађена је 1 ставка</translation>
 <translation id="2383454254762599978">Премести у отпад</translation>
 <translation id="2387458720915042159">Тип везе са проксијем</translation>
@@ -397,12 +392,10 @@
 <translation id="4197674956721858839">Избор за додавање у zip датотеку</translation>
 <translation id="4202378258276439759">шпански (Латинска Америка)</translation>
 <translation id="4202977638116331303">грузијски</translation>
-<translation id="421017592316736757">Морате да будете на мрежи да бисте приступили овој датотеци.</translation>
 <translation id="4212740939091998969">Фолдер „<ph name="FOLDER_NAME" />“ већ постоји. Одаберите други назив.</translation>
 <translation id="4218274196133425560">Уклони изузетак за <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">Google презентација</translation>
 <translation id="4277536868133419688">Филтер <ph name="FILTER_NAME" /> је укључен.</translation>
-<translation id="4290535918735525311">1 фолдер се дели са Linux-ом</translation>
 <translation id="4299729908419173967">португалски (Бразил)</translation>
 <translation id="4302605047395093221">Свако ко користи овај уређај мора да унесе PIN да би се повезао на ову мобилну мрежу</translation>
 <translation id="4303531889494116116">Ова мрежа је заузета. Пробајте поново касније.</translation>
@@ -503,8 +496,6 @@
 <translation id="4906580650526544301"><ph name="NETWORK_INDEX" />. мрежа од <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, јачина сигнала <ph name="SIGNAL_STRENGTH" />%, батерија телефона <ph name="BATTERY_STATUS" />%, детаљи</translation>
 <translation id="4935975195727477204">Цвет газаније</translation>
 <translation id="4943368462779413526">Фудбалска лопта</translation>
-<translation id="4961158930123534723">1 фолдер се дели са Parallels Desktop-ом</translation>
-<translation id="4965874878399872778">Проверава се да ли су фајлови у складу са безбедносним смерницама организације…</translation>
 <translation id="496656650103537022">Враћен је фајл <ph name="FILE_NAME" /></translation>
 <translation id="4969785127455456148">Албум</translation>
 <translation id="4972330214479971536">Завршавање подешавања синхронизације фајлова није успело</translation>
@@ -566,7 +557,6 @@
 <translation id="5317780077021120954">Сачувај</translation>
 <translation id="5318819489018851358">Дели са Linux-ом</translation>
 <translation id="5323213332664049067">Латинска Америка</translation>
-<translation id="5330145655348521461">Ове датотеке су отворене на другом профилу. Пређите на <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) да бисте их погледали.</translation>
 <translation id="5330512191124428349">Преузми податке</translation>
 <translation id="535792325654997756">Особа са мачкама</translation>
 <translation id="5358764674931277">Брзина кадрова</translation>
@@ -668,7 +658,6 @@
 <translation id="613750717151263950">јапански са америчком тастатуром</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, нема мреже</translation>
 <translation id="6146563240635539929">Видео снимци</translation>
-<translation id="6150853954427645995">Да бисте сачували ову датотеку за офлајн коришћење, повежите се поново на интернет, кликните десним тастером на датотеку и изаберите опцију <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Лептири</translation>
 <translation id="6165508094623778733">Сазнајте више</translation>
 <translation id="6170470584681422115">Сендвич</translation>
@@ -701,7 +690,6 @@
 <translation id="636254897931573416">Неважећа вредност подударања суфикса домена</translation>
 <translation id="6364301859968397756">Меморијски простор организације је попуњен</translation>
 <translation id="6367976544441405720">Комби</translation>
-<translation id="637062427944097960">Ова датотека је отворена на другом профилу. Пређите на <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) да бисте је погледали.</translation>
 <translation id="6394388407447716302">Само за читање</translation>
 <translation id="6395575651121294044">Ставки: <ph name="NUMBER_OF_FILES" /></translation>
 <translation id="6407769893376380348">Премештање фајла <ph name="FILE_NAME" /> није успело зато што је шифрован.</translation>
@@ -710,7 +698,6 @@
 <translation id="6430271654280079150">Имате још 1 покушај.</translation>
 <translation id="643243556292470964">Избрисани фајлови су сада премештени у отпад</translation>
 <translation id="6438480100790416671">Проверава се меморијски простор…</translation>
-<translation id="6451527188465304418">Проверава се да ли је фајл у складу са безбедносним смерницама организације…</translation>
 <translation id="6485131920355264772">Преузимање информација о простору није успело</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_INDEX" />. мрежа од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, јачина сигнала <ph name="SIGNAL_STRENGTH" />%, управља администратор, детаљи</translation>
 <translation id="649877868557234318">Издваја се <ph name="FILE_NAME" /> у <ph name="FOLDER_NAME" /></translation>
@@ -725,7 +712,6 @@
 <translation id="6588648400954570689">Подешавања синхронизације фајлова</translation>
 <translation id="6594855146910089723">Овај фолдер се дели помоћу Linux-а и Parallels Desktop-а</translation>
 <translation id="6607272825297743757">Информације о датотеци</translation>
-<translation id="6609332149380188670">Директоријуми (<ph name="NUMBER_OF_ITEMS" />) се деле са Parallels Desktop-ом</translation>
 <translation id="6629518321609546825">Унесите бар 4 броја</translation>
 <translation id="6643016212128521049">Обриши</translation>
 <translation id="6650726141019353908">Ружичасти лептир</translation>
@@ -892,7 +878,6 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Грешка при конфигурацији мреже</translation>
-<translation id="7839804798877833423">Преузимање ових датотека ће искористити око <ph name="FILE_SIZE" /> података за мобилне уређаје.</translation>
 <translation id="7846076177841592234">Откажи избор</translation>
 <translation id="7853966320808728790">Француска BÉPO</translation>
 <translation id="7857117644404132472">Додај изузетак</translation>
@@ -934,13 +919,13 @@
 <translation id="813913629614996137">Покреће се…</translation>
 <translation id="8147028810663464959">Ширина знакова је пуна</translation>
 <translation id="8151638057146502721">Конфигуриши</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 грешка.}one{# грешка.}few{# грешке.}other{# грешака.}}</translation>
 <translation id="8154842056504218462">Изабрали сте све ставке.</translation>
 <translation id="8157684860301034423">Преузимање информација о апликацији није успело.</translation>
 <translation id="8175731104491895765">француски (Белгија)</translation>
 <translation id="8175799081768705361">Број фајлова на Диску који се синхронизује је <ph name="NUMBER_OF_FILES_SYNCING" /></translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Модел уређаја</translation>
-<translation id="8223479393428528563">Да бисте сачували ове датотеке за офлајн коришћење, повежите се поново на интернет, кликните десним тастером на датотеке и изаберите опцију <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8241139360630443550">Прикажи меморијски простор</translation>
 <translation id="8249296373107784235">Откажи</translation>
 <translation id="8250690786522693009">латиница</translation>
@@ -1026,6 +1011,7 @@
 <translation id="8787254343425541995">Дозволи проксије за дељене мреже</translation>
 <translation id="8790981080411996443">Особа залива биљке</translation>
 <translation id="8798099450830957504">Подразумевано</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 упозорење.}one{# упозорење.}few{# упозорења.}other{# упозорења.}}</translation>
 <translation id="8808686172382650546">Мачка</translation>
 <translation id="8810671769985673465">Додавање у zip датотеку није успело, ставка постоји: „<ph name="FILE_NAME" />“</translation>
 <translation id="8813284582615685103">шпански (Шпанија)</translation>

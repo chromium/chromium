@@ -806,7 +806,6 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1615433306336820465">Təhlükəsizlik açarında saxlanılan giriş datasını idarə edin</translation>
 <translation id="1616206807336925449">Bu artırma xüsusi icazələr tələb etmir.</translation>
 <translation id="1616298854599875024">"<ph name="IMPORT_NAME" />" artırmasını import etmək olmur, çünki o paylaşılmış modul deyil</translation>
-<translation id="161654560322394775"><ph name="C" /> əhvalı ilə <ph name="B" /> üslubunda <ph name="INDEX" /> indeksli <ph name="A" /> şəkli.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Bu data təşkilatınızın Güvənlik siyasətlərinə əsasən yoxlanılır...}=1{Bu fayl təşkilatınızın Güvənlik siyasətlərinə əsasən yoxlanılır...}other{Bu fayllar təşkilatınızın Güvənlik siyasətlərinə əsasən yoxlanılır...}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">Yardım mərkəzi</translation>
@@ -4216,7 +4215,6 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4250229828105606438">Skrinşot</translation>
 <translation id="4250680216510889253">Yox</translation>
 <translation id="4251377547188244181">Köşk və işarə cihazının qeydiyyatı</translation>
-<translation id="4252141040239557279"><ph name="INDEX" /> indeksli <ph name="A" /> şəkli</translation>
 <translation id="4252828488489674554">Bu qrupu redaktə etmək üçün tab qrupu üzərinə sağ düymə ilə toxunun, yaxud klikləyərək yığcamlaşdırın</translation>
 <translation id="4252899949534773101">Bluetooth deaktivdir</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - Panel məzmunu paylaşıldı</translation>
@@ -6545,7 +6543,6 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
         <ph name="BREAK" />
         Ayarları kart menyusundan idarə edə və ya Chrome'u Fərdiləşdirin bölməsində digər seçimləri görə bilərsiniz.</translation>
 <translation id="6121773125605585883"><ph name="WEBSITE" /> üçün <ph name="USERNAME" /> istifadəçi adı ilə parola baxın</translation>
-<translation id="6122081475643980456">İnternet bağlantınıza nəzarət olunur</translation>
 <translation id="6122093587541546701">E-poçt (istəyə bağlı):</translation>
 <translation id="6122095009389448667">Bu saytın buferə girişini bloklamağa davam edin</translation>
 <translation id="6122513630797178831">CVC-ni yadda saxlayın</translation>
@@ -7428,7 +7425,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6820079682647046800">Kerberos identifikasiyası alınmadı</translation>
 <translation id="6821439254917412979">Çıxarın: <ph name="EXTENSION_NAME" /></translation>
 <translation id="6823174134746916417">Taçpedin toxunaraq klikləmə funksiyası</translation>
-<translation id="6823429960180594870">Endirilən kimi faylları idarə edin və hazır olduqda açın</translation>
 <translation id="6823561724060793716">Ünvan panelində daxil olduğunuz səhifə haqqında əlavə məlumatı aça bilərsiniz</translation>
 <translation id="6824564591481349393">E-poçt Ünvanını Kopyalayın</translation>
 <translation id="6824584962142919697">&amp;Elementləri yoxlayın</translation>
@@ -7833,7 +7829,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="714301620504747562">Baxış və axtarış əvvəlcədən yükləmənin standart versiyasından sürətlidir</translation>
 <translation id="7143207342074048698">Qoşulur</translation>
 <translation id="7143409552554575716">ChromeOS bayraqları</translation>
-<translation id="714447804011008506">Endirmələr artıq alətlər panelindədir</translation>
 <translation id="7144856456372460176"><ph name="APP" /> tətbiqini quraşdırın...</translation>
 <translation id="7144878232160441200">Yenidən cəhd edin</translation>
 <translation id="7145413760160421938">Əvvəlki sessiyanı bərpa etmək olmur</translation>
@@ -8484,7 +8479,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7657090467145778067">Kiçik qənaət</translation>
 <translation id="7657218410916651670"><ph name="BEGIN_LINK_GOOGLE" />Digər fəaliyyət formaları<ph name="END_LINK_GOOGLE" /> daxil olduğunuz zaman Google Hesabınızda saxlanıla bilər. İstənilən zaman onları silə bilərsiniz.</translation>
 <translation id="7658239707568436148">Ləğv edin</translation>
-<translation id="7658727964021657194">Son AI teması: <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">İstənilən halda Anonim rejimdən çıxılsın?</translation>
 <translation id="7659336857671800422">Məxfilik Bələdçisini əldə edin</translation>
 <translation id="7659584679870740384">Bu cihazı istifadə etmək icazəniz yoxdur. Giriş icazəsi üçün administrator ilə əlaqə saxlayın.</translation>
@@ -8766,7 +8760,6 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7855678561139483478">Tabı yeni pəncərəyə daşıyın</translation>
 <translation id="7857004848504343806">Kompüter ChromeOS Flex'də bir çox kritik təhlükəsizlik funksiyalarının tətbiqi üçün istifadə olunan təhlükəsizlik modulundan ibarətdir. Ətraflı məlumat üçün Chromebook Yardım Mərkəzinə daxil olun: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Mətn təklifləri</translation>
-<translation id="7857949311770343000">Gözlədiyiniz yeni tab səhifəsi budur?</translation>
 <translation id="7858120906780498731">ChromeOS qoşulu daxiletmə cihazları</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941"><ph name="EXTENSION_NAME" /> artırmasını silin</translation>
@@ -8815,7 +8808,6 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="789722939441020330">Saytlara çoxsaylı faylları avtomatik endirmək icazəsi verməyin</translation>
 <translation id="7897900149154324287">Gələcəkdə, Fayllar tətbiqindəki çıxarıla bilən cihazınızı ayırmadan öncə əlaqəsini kəsin. Əks halda data itirə bilərsiniz.</translation>
 <translation id="7898725031477653577">Həmişə tərcümə edin</translation>
-<translation id="7899324822972399722"><ph name="B" /> üslubunda <ph name="INDEX" /> indeksli <ph name="A" /> şəkli</translation>
 <translation id="7901405293566323524">Telefon Habı</translation>
 <translation id="7903290522161827520">Brauzer komponentləri axtarırsınız? Ziyarət edin</translation>
 <translation id="7903429136755645827">Oyun nəzarətlərinizi fərdiləşdirmək üçün klikləyin</translation>
@@ -9095,7 +9087,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8098616321286360457">Şəbəkə bağlantısı tələb olunur</translation>
 <translation id="8100230553590752325">İstənilən cihazda saxlanmış parolları istifadə edin</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> seçilib. Seçimi ləğv etmək üçün Axtarış və Boşluq seçiminə basın.</translation>
-<translation id="8100725874569949614"><ph name="C" /> əhvalı ilə <ph name="INDEX" /> indeksli <ph name="A" /> şəkli.</translation>
 <translation id="8101409298456377967">Saytlara və tətbiqlərə asanlıqla daxil olmaq üçün parollarınızı yaradın, saxlayın və idarə edin/ <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">Fərdi rəng</translation>
 <translation id="8101987792947961127">Növbəti yenidən yüklənmə zamanı zavod sıfırlaması tələb olunur</translation>
@@ -10040,7 +10031,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8846163936679269230">eSIM profillərini sıfırlayın</translation>
 <translation id="8846239054091760429">Mono audio, başlanğıc, Canlı Altyazı və s</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8848963863312877204">Endirmələr buradadır</translation>
 <translation id="8849001918648564819">Gizli</translation>
 <translation id="8849219423513870962"><ph name="PROFILE_NAME" /> adlı eSIM profilinin silinməsini ləğv edin</translation>
 <translation id="8849262417389398097"><ph name="CHECKED" />/<ph name="CHECKING" /></translation>

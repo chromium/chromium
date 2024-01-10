@@ -56,7 +56,6 @@
 <translation id="1279024913354609713">अनुमती देऊ नका</translation>
 <translation id="1281818060020671000">डेटा व्यवस्थापित करा</translation>
 <translation id="1282311502488501110">साइन इन करू नका</translation>
-<translation id="1283039547216852943">विस्तृत करण्यासाठी टॅप करा</translation>
 <translation id="1283524564873030414">मागील २४ तासांचा</translation>
 <translation id="1285320974508926690">या साइटचा कधीही भाषांतर करु नका</translation>
 <translation id="1291506870746876680">तुम्ही या साइटमधून बाहेर पडाल, तेव्हा <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> संबंधित परवानग्या बंदवर रीसेट केल्या जातील.</translation>
@@ -82,7 +81,6 @@
 <translation id="1377255359165588604">संकालनाने कार्य करणे थांबविले आहे.</translation>
 <translation id="1377321085342047638">कार्ड नंबर</translation>
 <translation id="1377508275003315939">पासवर्ड</translation>
-<translation id="1380914240355562929"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> हे <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> मध्ये साइन इन करण्यासाठी Google Password Manager वापरतात, तेव्हा ते आता तुमचे वापरकर्ता नाव आणि पासवर्ड वापरू शकतात. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">शोधा</translation>
 <translation id="138618066238211776"><ph name="USER_NAME" /> म्हणून पुढे सुरू ठेवा</translation>
 <translation id="1400642268715879018">मागील 4 आठवडे</translation>
@@ -337,6 +335,7 @@
 <translation id="2747003861858887689">मागील फील्ड</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> ला फॉलो करत आहे</translation>
 <translation id="2754492786623500387">या डिव्हाइस वरील खाती</translation>
+<translation id="2755595981383829244">तुम्हाला आता आशयाशी संबंधित सूचना मिळतील</translation>
 <translation id="2762000892062317888">आत्ताच</translation>
 <translation id="2772667768515195373">तुम्ही संपूर्ण Google उत्पादनांवर सेव्ह केलेले पत्ते वापरू शकता. हा अ‍ॅड्रेस तुमच्या Google खाते (<ph name="USER_EMAIL" />) मध्ये सेव्ह केला आहे.</translation>
 <translation id="2773292004659987824">गुप्त शोध</translation>
@@ -406,7 +405,6 @@
 <translation id="3087734570205094154">तळाकडील</translation>
 <translation id="3090455602619185166">व्यवस्थापित केलेले खाते वापरून साइन इन करा</translation>
 <translation id="309710370695886264">तुमच्याकडे पुन्हा वापरलेला १ पासवर्ड आहे. सुरक्षित राहण्यासाठी त्याचे आता निराकरण करा.</translation>
-<translation id="3109724472072898302">संकुचित केलेले</translation>
 <translation id="3112556859945124369">चिन्हांकित करा…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />तुम्ही काय सिंक करू शकता ते पहा<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">इतिहास आणि आणखी बरेच काही</translation>
@@ -775,7 +773,6 @@
 <translation id="5121618895923301719">तुम्ही आधीच या उत्पादनाचा माग ठेवत आहात. हे पेज <ph name="BEGIN_LINK" />मोबाइल बुकमार्क<ph name="END_LINK" /> मध्ये सेव्ह केले आहे.</translation>
 <translation id="512533434554095351">तुमच्याकडे पासवर्डसंबंधित अनेक समस्या आहेत.</translation>
 <translation id="5126465625664020024">साइन इन करा आणि समक्रमीत करा</translation>
-<translation id="5131062416352684089">तुमचे कुटुंब सदस्य हे <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> मध्ये साइन इन करण्यासाठी Google Password Manager वापरतात, तेव्हा ते आता तुमचे वापरकर्ता नाव आणि पासवर्ड वापरू शकतात. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">सर्व डिव्हाइसवर तुमचे पासवर्ड, इतिहास आणि बरेच काही सिंक करा</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} कमकुवत पासवर्ड}other{{COUNT} कमकुवत पासवर्ड}}</translation>
 <translation id="5149188072385105201">पासवर्ड जोडा…</translation>
@@ -924,7 +921,6 @@
 <translation id="5955891643922670672">ऑफलाइन आवृत्ती पाहत आहे</translation>
 <translation id="5957613098218939406">अधिक पर्याय</translation>
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> वापरून शोधा</translation>
-<translation id="5962718611393537961">संकुचित करण्‍यासाठी टॅप करा</translation>
 <translation id="5963939892571022323">हायलाइट करण्यासाठीची लिंक तयार करू शकत नाही.</translation>
 <translation id="5971872012779224351">{count,plural, =1{१ बुकमार्क हटवला}other{{count} बुकमार्क हटवले}}</translation>
 <translation id="5979837087407522202">पासवर्ड शोधा</translation>
@@ -991,6 +987,7 @@
 <translation id="6255097610484507482">क्रेडिट कार्ड संपादित करा</translation>
 <translation id="6266039999629596120">लक्ष देणे आवश्यक आहे</translation>
 <translation id="6277426346321820595">संरक्षण नाही</translation>
+<translation id="628251768213143684">तुमच्या Google खाते मध्ये सेव्ह केलेल्या गोष्टी तुम्ही कधीही व्यवस्थापित करू शकता</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> भाषांतरित करण्यासाठी ऑफर</translation>
 <translation id="6289501276895392862"><ph name="CHANNEL_NAME" /> ला अनफॉलो करा</translation>
 <translation id="6293101329759844770">सुरक्षित ब्राउझिंग सुरू करण्यासाठी, <ph name="BEGIN_LINK" />Google सेवा<ph name="END_LINK" /> उघडा आणि सुरक्षित ब्राउझिंग वर टॅप

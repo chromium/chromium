@@ -24,7 +24,6 @@
 <translation id="1173916544412572294">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" /> %, baterie telefonu:<ph name="BATTERY_STATUS" /> %, podrobnosti</translation>
 <translation id="117624967391683467">Kopírování souboru <ph name="FILE_NAME" />...</translation>
 <translation id="1178581264944972037">Pozastavit</translation>
-<translation id="1190144681599273207">Načtení souboru spotřebuje přibližně <ph name="FILE_SIZE" /> mobilních dat.</translation>
 <translation id="1194390763418645112">Přístup k souborům ze zařízení <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">Další</translation>
 <translation id="1209796539517632982">Automatické názvové servery</translation>
@@ -100,7 +99,6 @@
 <translation id="1761091787730831947">Sdílet s nástrojem <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">Ověřovací certifikát byl místně odmítnut</translation>
 <translation id="1775381402323441512">Informace o videu</translation>
-<translation id="180035236176489073">Pro přístup k souborům musíte být online.</translation>
 <translation id="1807938677607439181">Všechny soubory</translation>
 <translation id="1810764548349082891">Náhled není k dispozici</translation>
 <translation id="1812302367230252929">amharština (přepis)</translation>
@@ -161,8 +159,6 @@
 <translation id="2282155092769082568">Adresa URL automatické konfigurace:</translation>
 <translation id="2284767815536050991">vyměnitelné úložiště</translation>
 <translation id="2288278176040912387">Gramofon</translation>
-<translation id="2291538123825441971">Otevírání <ph name="NUMBER_OF_FILES" /> souborů.</translation>
-<translation id="2303301624314357662">Otevírání souboru <ph name="FILE_NAME" />.</translation>
 <translation id="2304820083631266885">Planeta</translation>
 <translation id="2305020378527873881">Svazek <ph name="VOLUME_NAME" /> byl odpojen.</translation>
 <translation id="2307462900900812319">Konfigurovat síť</translation>
@@ -172,7 +168,6 @@
 <translation id="233822363739146957">K synchronizaci všech vašich souborů není k dispozici dostatek úložného prostoru</translation>
 <translation id="23721837607121582">Stáhněte si mobilní profil, síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Přepnout na zobrazení seznamu</translation>
-<translation id="2377590462528165447">Počet složek sdílených s Linuxem: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="2379576081295865700">Kontrola úložného prostoru… Nalezena 1 položka</translation>
 <translation id="2383454254762599978">Přesunout do koše</translation>
 <translation id="2387458720915042159">Typ připojení k proxy serveru</translation>
@@ -396,12 +391,10 @@
 <translation id="4197674956721858839">Výběr souborů pro komprimaci</translation>
 <translation id="4202378258276439759">španělština (Latinská Amerika)</translation>
 <translation id="4202977638116331303">gruzínština</translation>
-<translation id="421017592316736757">Pro přístup k souboru musíte být online.</translation>
 <translation id="4212740939091998969">Složka s názvem „<ph name="FOLDER_NAME" />“ již existuje. Zvolte jiný název.</translation>
 <translation id="4218274196133425560">Odstranit výjimku pro web <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">Prezentace Google</translation>
 <translation id="4277536868133419688">Filtr <ph name="FILTER_NAME" /> je zapnutý.</translation>
-<translation id="4290535918735525311">1 složka je sdílena se systémem Linux</translation>
 <translation id="4299729908419173967">portugalština (Brazílie)</translation>
 <translation id="4302605047395093221">K připojení k této mobilní síti budou muset všichni uživatelé tohoto zařízení zadat PIN.</translation>
 <translation id="4303531889494116116">Tato síť je zaneprázdněná. Zkuste to později.</translation>
@@ -502,8 +495,6 @@
 <translation id="4906580650526544301">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />síla signálu: <ph name="SIGNAL_STRENGTH" /> %, baterie telefonu: <ph name="BATTERY_STATUS" /> %, podrobnosti</translation>
 <translation id="4935975195727477204">Květina gazánie</translation>
 <translation id="4943368462779413526">Americký fotbal</translation>
-<translation id="4961158930123534723">1 soubor sdílen s nástrojem Parallels Desktop</translation>
-<translation id="4965874878399872778">Kontroluje se, zda soubory odpovídají bezpečnostním zásadám vaší organizace…</translation>
 <translation id="496656650103537022">Soubor <ph name="FILE_NAME" /> byl obnoven</translation>
 <translation id="4969785127455456148">Album</translation>
 <translation id="4972330214479971536">Nastavení synchronizace souborů se nepodařilo dokončit</translation>
@@ -564,7 +555,6 @@
 <translation id="5317780077021120954">Uložit</translation>
 <translation id="5318819489018851358">Sdílet s Linuxem</translation>
 <translation id="5323213332664049067">Latinská Amerika</translation>
-<translation id="5330145655348521461">Tyto soubory jsou otevřeny na jiné ploše. Chcete-li je zobrazit, přejděte do profilu <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="5330512191124428349">Zobrazit informace</translation>
 <translation id="535792325654997756">Člověk s kočkami</translation>
 <translation id="5358764674931277">Snímková frekvence</translation>
@@ -666,7 +656,6 @@
 <translation id="613750717151263950">japonština s americkou klávesnicí</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, žádná síť</translation>
 <translation id="6146563240635539929">Videa</translation>
-<translation id="6150853954427645995">Chcete-li tento soubor uložit pro použití offline, přejděte zpět online, klikněte na soubor pravým tlačítkem a vyberte možnost <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Motýli</translation>
 <translation id="6165508094623778733">Další informace</translation>
 <translation id="6170470584681422115">Sendvič</translation>
@@ -699,7 +688,6 @@
 <translation id="636254897931573416">Neplatná hodnota shody přípony domény</translation>
 <translation id="6364301859968397756">Úložiště organizace je plné</translation>
 <translation id="6367976544441405720">Dodávka</translation>
-<translation id="637062427944097960">Tento soubor je otevřen na jiné ploše. Chcete-li jej zobrazit, přejděte do profilu <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="6394388407447716302">Pouze pro čtení</translation>
 <translation id="6395575651121294044">Počet položek: <ph name="NUMBER_OF_FILES" /></translation>
 <translation id="6407769893376380348">Soubor <ph name="FILE_NAME" /> nelze přesunout, protože je zašifrovaný.</translation>
@@ -708,7 +696,6 @@
 <translation id="6430271654280079150">Zbývá vám jeden pokus.</translation>
 <translation id="643243556292470964">Smazané soubory byly přesunuty do koše</translation>
 <translation id="6438480100790416671">Kontrola úložného prostoru…</translation>
-<translation id="6451527188465304418">Kontroluje se, zda soubor odpovídá bezpečnostním zásadám vaší organizace…</translation>
 <translation id="6485131920355264772">Informace o volném místě se nepodařilo načíst</translation>
 <translation id="6495925982925244349">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" /> síla signálu: <ph name="SIGNAL_STRENGTH" /> %, spravováno administrátorem, podrobnosti</translation>
 <translation id="649877868557234318">Rozbalování souboru <ph name="FILE_NAME" /> do složky <ph name="FOLDER_NAME" /></translation>
@@ -723,7 +710,6 @@
 <translation id="6588648400954570689">Nastavení synchronizace souborů</translation>
 <translation id="6594855146910089723">Tato složka je sdílena se systémem Linux a nástrojem Parallels Desktop</translation>
 <translation id="6607272825297743757">Informace o souboru</translation>
-<translation id="6609332149380188670">Složky sdílené s nástrojem Parallels Desktop: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="6629518321609546825">Zadejte alespoň čtyři číslice</translation>
 <translation id="6643016212128521049">Vymazat</translation>
 <translation id="6650726141019353908">Růžový motýl</translation>
@@ -890,7 +876,6 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Chyba při konfiguraci sítě</translation>
-<translation id="7839804798877833423">Načtení souborů spotřebuje přibližně <ph name="FILE_SIZE" /> mobilních dat.</translation>
 <translation id="7846076177841592234">Zrušit výběr</translation>
 <translation id="7853966320808728790">Francouzská klávesnice BÉPO</translation>
 <translation id="7857117644404132472">Přidat výjimku</translation>
@@ -938,7 +923,6 @@
 <translation id="8175799081768705361">Synchronizace <ph name="NUMBER_OF_FILES_SYNCING" /> souborů na Disku</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Model zařízení</translation>
-<translation id="8223479393428528563">Chcete-li tyto soubory uložit pro používání offline, vraťte se zpět online, klikněte na ně pravým tlačítkem a vyberte možnost <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8241139360630443550">Zobrazit úložiště</translation>
 <translation id="8249296373107784235">Zrušit</translation>
 <translation id="8250690786522693009">Latinka</translation>

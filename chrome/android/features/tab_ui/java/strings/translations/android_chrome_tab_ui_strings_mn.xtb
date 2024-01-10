@@ -5,6 +5,7 @@
 <translation id="1155815720264022949">Хуучин табуудыг хаахыг хүсэж байна уу?</translation>
 <translation id="1215127405478249895">Табуудыг шалгах</translation>
 <translation id="125153950246128346">Өөр табыг харахын тулд товшино уу</translation>
+<translation id="1326271443836399892">Одоогийн устгах тохиргоог шалгах.</translation>
 <translation id="1499635324672558517">Бүх Нууцлалтай табыг хаах уу?</translation>
 <translation id="1657719826150349398">Табыг доош зөөх</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> таб}other{<ph name="TABS_COUNT_MANY" /> таб}}</translation>
@@ -25,6 +26,7 @@
 <translation id="2977480621796371840">Бүлгээс хасах</translation>
 <translation id="3008554597174452548">Бүтээгдэхүүн хянахаа зогсоох</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />-н үнэ <ph name="PRICE_DROP" />-р буурсан</translation>
+<translation id="313819129451406482">{TABS_COUNT,plural, =1{Танд <ph name="TABS_COUNT_ONE" /> архивласан таб байна}other{Танд <ph name="TABS_COUNT_MANY" /> архивласан таб байна}}</translation>
 <translation id="3194464645767632461">үнэлгээ</translation>
 <translation id="3291470810748040983">Та нээлттэй табд илүү хямд үнэ байгаа тохиолдолд сэрэмжлүүлэг авна</translation>
 <translation id="3328308545011660196">Зөвлөмж: <ph name="NUMBER_OF_TABS" /> таб холбоотой бололтой. Эдгээрийг бүлэглэх үү?</translation>
@@ -98,5 +100,6 @@
 <translation id="9090098097337832354">Энэ дэлгүүрийн талаарх мэдээллийг хаасан</translation>
 <translation id="9150694013019234766">Дэлгэцийн доод хэсгийн ойролцоо байгаа табын бүлгээсээ таб хооронд сэлгэнэ үү</translation>
 <translation id="9169594135889675189">Бүлэгт шинэ таб нэмэх</translation>
+<translation id="955558140275419384">Энэ засварлагчид орсноор архивласан бүх табд устгавал зохих табууд байгаа эсэхийг нь шалгана уу.</translation>
 <translation id="959682366969460160">Зохион байгуулалттай болох</translation>
 </translationbundle>

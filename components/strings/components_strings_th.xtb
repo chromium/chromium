@@ -1017,6 +1017,7 @@
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab เพื่อเรียกดูการดำเนินการที่ใช้ได้ จากนั้นกด Enter เพื่อเรียกใช้การดำเนินการที่เลือก</translation>
 <translation id="3013291976881901233">อุปกรณ์ MIDI</translation>
 <translation id="3014553260345122294">ข่าวธุรกิจ</translation>
+<translation id="3014726756341138577">ฟีเจอร์เครื่องพิมพ์ขั้นสูง</translation>
 <translation id="301521992641321250">ถูกบล็อกโดยอัตโนมัติ</translation>
 <translation id="3016780570757425217">ทราบตำแหน่งของคุณ</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" /> กด Tab ตามด้วย Enter เพื่อนำคำแนะนำออก</translation>
@@ -1166,6 +1167,7 @@
 <translation id="33073482541490531">ระบบพบว่ารหัสผ่านที่คุณเพิ่งใช้มีการรั่วไหลในการละเมิดข้อมูลครั้งหนึ่ง เครื่องมือจัดการรหัสผ่านแนะนำให้เปลี่ยนรหัสผ่านนี้ทันที</translation>
 <translation id="3307649904964670439">ปุ่มปรับแต่ง Chrome เปิดใช้งานเพื่อปรับแต่งรูปลักษณ์ของเบราว์เซอร์</translation>
 <translation id="3308006649705061278">หน่วยองค์กร (OU)</translation>
+<translation id="3324223664999044166">สรุปความคิดของคุณอย่างน้อย 3 คำ</translation>
 <translation id="3324687287337751929">4 x 6 นิ้ว</translation>
 <translation id="3324983252691184275">แดงเข้ม</translation>
 <translation id="3325027355611702542">รถสำหรับตั้งแคมป์และรถบ้าน</translation>
@@ -1239,7 +1241,6 @@
 <translation id="3447661539832366887">เจ้าของอุปกรณ์นี้ปิดเกมไดโนเสาร์</translation>
 <translation id="3447884698081792621">แสดงใบรับรอง (ออกโดย <ph name="ISSUER" />)</translation>
 <translation id="3450323514459570273">ขอควบคุมและตั้งโปรแกรมอุปกรณ์ MIDI ใหม่ได้</translation>
-<translation id="3452151267620065789">บันทึกความคืบหน้าแล้ว</translation>
 <translation id="3452404311384756672">ช่วงการดึงข้อมูล:</translation>
 <translation id="3453962258458347894">จำนวนการลองใหม่</translation>
 <translation id="3461266716147554923"><ph name="URL" /> ต้องการดูข้อความและรูปภาพที่คัดลอกไปยังคลิปบอร์ด</translation>
@@ -1539,7 +1540,6 @@
 <translation id="4067098466788473230">ทุนการศึกษา</translation>
 <translation id="4067947977115446013">เพิ่มที่อยู่ที่ถูกต้อง</translation>
 <translation id="4070790659619547722">เมื่อเปิดใช้การวัดผลโฆษณา ระบบจะแชร์เฉพาะข้อมูลบางประเภทระหว่างเว็บไซต์เพื่อวัดประสิทธิภาพของโฆษณา เช่น ช่วงเวลาของวันที่มีการแสดงโฆษณาแก่คุณ</translation>
-<translation id="4072193657607981494">กำลังโหลดนโยบาย</translation>
 <translation id="4072486802667267160">เกิดข้อผิดพลาดในการประมวลผลคำสั่งซื้อของคุณ โปรดลองอีกครั้ง</translation>
 <translation id="4073376909608563327">ใช้การปลดล็อกอุปกรณ์ไม่ได้</translation>
 <translation id="4073797364926776829">ดูบัตร</translation>
@@ -2169,6 +2169,7 @@
 <translation id="5292714443869769806">ไปที่การตั้งค่า <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="5293919335876685914">รถคูเป้</translation>
 <translation id="5296589789433599000">การทำอาหารและสูตรอาหาร</translation>
+<translation id="5298618990685278995">ร่างข้อความแรก</translation>
 <translation id="5299298092464848405">ข้อผิดพลาดในการแยกวิเคราะห์นโยบาย</translation>
 <translation id="5299638840995777423">หุ่นยนต์</translation>
 <translation id="5300062471671636390">ซ่อนรายการอุปกรณ์สําหรับการแคสต์</translation>
@@ -2285,6 +2286,7 @@
 <translation id="5541086400771735334">กล่องจดหมาย 7</translation>
 <translation id="5541546772353173584">เพิ่มอีเมล</translation>
 <translation id="5543722831081909240">180 องศา</translation>
+<translation id="555037537507405574">ฟีเจอร์เครื่องพิมพ์ขั้นสูง</translation>
 <translation id="555128936272638662">โทรศัพท์มือถือและอุปกรณ์ไร้สาย</translation>
 <translation id="5551890439174915351">100 x 200 มม.</translation>
 <translation id="5552137475244467770">Chrome ตรวจสอบรหัสผ่านของคุณเป็นระยะโดยเทียบกับรายการที่มีการเผยแพร่ออนไลน์ เราเข้ารหัสชื่อผู้ใช้และรหัสผ่านเมื่อทำการตรวจสอบเพื่อไม่ให้ผู้ใดอ่านข้อมูลดังกล่าวได้ รวมถึง Google</translation>
@@ -2727,7 +2729,6 @@
 <translation id="6428450836711225518">ยืนยันเบอร์โทรศัพท์</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">เปลี่ยนรหัสผ่าน Google</translation>
-<translation id="6431119592588449664">อัปโหลดรายงานแล้ว</translation>
 <translation id="6432297414176614592">ข้อมูลเพิ่มเติมเกี่ยวกับหัวข้อโฆษณา</translation>
 <translation id="6432831586648556868">งานด้านการขายและการตลาด</translation>
 <translation id="6433490469411711332">แก้ไขข้อมูลติดต่อ</translation>
@@ -3206,6 +3207,7 @@
 <translation id="7378877318020334501">รายการตลกทางทีวี</translation>
 <translation id="7380398842872229465">10 x 15 นิ้ว</translation>
 <translation id="738439098860678026">การศึกษาปฐมวัย</translation>
+<translation id="7388071710882496863">คำขอ เช่น "เขียนรีวิว 5 ดาวสำหรับร้านอาหารนี้"</translation>
 <translation id="7388594495505979117">{0,plural, =1{อุปกรณ์จะรีสตาร์ทใน 1 นาที}other{อุปกรณ์จะรีสตาร์ทใน # นาที}}</translation>
 <translation id="7390545607259442187">ยืนยันบัตร</translation>
 <translation id="7392089738299859607">อัปเดตที่อยู่</translation>
@@ -3486,7 +3488,6 @@
 <translation id="7871445724586827387">เปลี่ยนรหัสผ่านของบัญชี Google</translation>
 <translation id="7877007680666472091">รหัสเนื้อหาที่มีการคุ้มครอง</translation>
 <translation id="7878562273885520351">รหัสผ่านของคุณอาจถูกขโมยได้</translation>
-<translation id="7878966190323222027">เปิดอีกครั้งเพื่อดำเนินการต่อ</translation>
 <translation id="7880146494886811634">บันทึกที่อยู่</translation>
 <translation id="7882421473871500483">น้ำตาล</translation>
 <translation id="7882995332186050355">รถบรรทุกและรถพ่วง</translation>
@@ -4108,7 +4109,6 @@
 <translation id="9119042192571987207">อัปโหลดแล้ว</translation>
 <translation id="9122954576417194280">การค้าโภคภัณฑ์และการซื้อขายล่วงหน้า</translation>
 <translation id="912327514020027767">กระโปรง</translation>
-<translation id="9128016270925453879">โหลดนโยบายแล้ว</translation>
 <translation id="9128870381267983090">เชื่อมต่อกับเครือข่าย</translation>
 <translation id="9131119348384879525">จับภาพเนื้อหาที่เป็นความลับไหม</translation>
 <translation id="9133985615769429248">หากแชร์อุปกรณ์นี้กับผู้อื่น คุณสามารถใช้การล็อกหน้าจอเพื่อยืนยันตัวตนทุกครั้งที่ใช้รหัสผ่านที่บันทึกไว้</translation>
@@ -4122,6 +4122,7 @@
 <translation id="9144951720726881238">วันหมดอายุ:</translation>
 <translation id="9148507642005240123">&amp;เลิกทำการแก้ไข</translation>
 <translation id="9148599396704355100">ราคาต่ำ</translation>
+<translation id="9150025764986957246">คุณป้อนข้อมูลต่อไปนี้ได้</translation>
 <translation id="9150045010208374699">ใช้กล้องถ่ายรูปของคุณ</translation>
 <translation id="9150685862434908345">ผู้ดูแลระบบจะเปลี่ยนการตั้งค่าเบราว์เซอร์จากระยะไกลได้ กิจกรรมในอุปกรณ์นี้อาจมีการจัดการภายนอก Chrome ได้ด้วย <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">อัปเดตแล้ว</translation>
@@ -4132,6 +4133,7 @@
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">นอกจากนี้ เว็บไซต์ที่คุณเข้าชมยังระบุสิ่งที่คุณชอบโดยอิงจากกิจกรรมที่คุณทำในเว็บไซต์ได้ด้วย ตัวอย่างเช่น หากคุณเข้าชมเว็บไซต์ที่ขายรองเท้าวิ่งระยะไกล เว็บไซต์นั้นอาจเข้าใจว่าคุณสนใจการวิ่งมาราธอน</translation>
 <translation id="9166851138617700776">ข้อมูลเพิ่มเติมเกี่ยวกับโฆษณาที่เว็บไซต์แนะนำและการวัดผลโฆษณา</translation>
+<translation id="9167594211215946097">มีสิทธิ์เข้าถึงเครื่องพิมพ์โดยตรง</translation>
 <translation id="9168814207360376865">อนุญาตให้เว็บไซต์ตรวจสอบว่าคุณได้บันทึกวิธีการชำระเงินไว้ไหม</translation>
 <translation id="9169664750068251925">บล็อกบนไซต์นี้เสมอ</translation>
 <translation id="9169931577761441333">เพิ่ม <ph name="APP_NAME" /> ในหน้าจอหลัก</translation>

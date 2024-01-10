@@ -1507,6 +1507,7 @@
 <translation id="7025533177575372252">يمكنك ربط الجهاز <ph name="DEVICE_NAME" /> بهاتفك</translation>
 <translation id="7026338066939101231">تناقص</translation>
 <translation id="7029814467594812963">إنهاء الجلسة</translation>
+<translation id="7031303610220416229">‏الاطّلاع على جميع المهام في تطبيق "مهام Google"</translation>
 <translation id="7032161822340700104">يجب ألا يزيد عدد النماذج عن 6 نماذج. يُرجى إزالة أحدها لحفظ نموذج جديد.</translation>
 <translation id="7034025838182392395">‫"<ph name="APP_NAME" />" بحاجة إلى استخدام <ph name="DEVICE_NAME" />. عليك تشغيل <ph name="DEVICE_NAME" /> باستخدام الزر اليدوي على جهازك.</translation>
 <translation id="703425375924687388">‏<ph name="QUERY_NAME" />، "مساعد Google"</translation>
@@ -1820,6 +1821,7 @@
 <translation id="8351131234907093545">إنشاء ملاحظة</translation>
 <translation id="8367948981300340152">يتم حاليًا استخدام <ph name="CAPTURE_MEDIUM" />.</translation>
 <translation id="8369166482916924789">سطح المكتب المحفوظ <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
+<translation id="8370414029565771236">البحث عن "<ph name="TEXT" />"</translation>
 <translation id="8371779926711439835">نقل للأمام بمقدار حرف واحد</translation>
 <translation id="8371991222807690464">قد يكون أداء الجهاز الملحق محدودًا في وضع الضيف.</translation>
 <translation id="8374601332003098278">‏اضغط على المفتاح Enter لتسجيل فيديو لجزء من الشاشة</translation>

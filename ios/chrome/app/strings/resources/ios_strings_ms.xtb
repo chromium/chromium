@@ -56,7 +56,6 @@
 <translation id="1279024913354609713">Jangan Benarkan</translation>
 <translation id="1281818060020671000">Urus Data</translation>
 <translation id="1282311502488501110">Jangan Log Masuk</translation>
-<translation id="1283039547216852943">Ketik untuk kembangkan</translation>
 <translation id="1283524564873030414">24 Jam Yang Lalu</translation>
 <translation id="1285320974508926690">Jangan sekali-kali menterjemahkan tapak ini</translation>
 <translation id="1291506870746876680">Kebenaran <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> akan ditetapkan semula kepada dimatikan apabila anda meninggalkan laman ini.</translation>
@@ -82,7 +81,6 @@
 <translation id="1377255359165588604">Penyegerakan telah berhenti berfungsi.</translation>
 <translation id="1377321085342047638">Nombor Kad</translation>
 <translation id="1377508275003315939">Kata laluan</translation>
-<translation id="1380914240355562929">Kini <ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> boleh menggunakan nama pengguna dan kata laluan anda apabila mereka menggunakan Google Password Manager untuk log masuk ke <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">Carian</translation>
 <translation id="138618066238211776">Teruskan sebagai <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">4 Minggu Yang Lalu</translation>
@@ -253,6 +251,7 @@
 <translation id="2326302612031521902">Pemilih unit</translation>
 <translation id="2348630484974447747">Pakej</translation>
 <translation id="2351097562818989364">Tetapan terjemahan anda telah ditetapkan semula.</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{Anda boleh menyimpan kata laluan anda untuk {DOMAIN_ONE} dalam Google Account, {EMAIL}.}=2{Anda boleh menyimpan kata laluan anda untuk {DOMAIN_ONE} dan{DOMAIN_TWO} dalam Google Account anda, {EMAIL}.}=3{Anda boleh menyimpan kata laluan anda untuk {DOMAIN_ONE}, {DOMAIN_TWO} dan {OTHER_DOMAINS_COUNT} yang lain dalam Google Account anda {EMAIL}.}other{Anda boleh menyimpan kata laluan anda untuk {DOMAIN_ONE}, {DOMAIN_TWO} dan {OTHER_DOMAINS_COUNT} yang lain dalam Google Account anda {EMAIL}.}}</translation>
 <translation id="235789365079050412">Dasar Privasi Google</translation>
 <translation id="2359043044084662842">Terjemah</translation>
 <translation id="2359808026110333948">Teruskan</translation>
@@ -407,7 +406,6 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="3087734570205094154">Bawah</translation>
 <translation id="3090455602619185166">Log Masuk dengan Akaun Terurus</translation>
 <translation id="309710370695886264">Anda mempunyai 1 kata laluan yang digunakan semula. Betulkan sekarang untuk kekal selamat.</translation>
-<translation id="3109724472072898302">Diruntuhkan</translation>
 <translation id="3112556859945124369">Tandakan...</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Lihat Item Yang Boleh Anda Segerakkan<ph name="END_LINK" />.</translation>
 <translation id="3130863904455712965">Sejarah dan pelbagai lagi</translation>
@@ -692,6 +690,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="4689564913179979534">Urus Kaedah Pembayaran...</translation>
 <translation id="469300482518076788">Tutup Tab</translation>
 <translation id="4697071790493980729">Tiada Hasil Carian Ditemukan</translation>
+<translation id="470337593714520080">{count,plural, =1{Simpan 1 Penanda Halaman dalam Google Account Anda}other{Simpan {count} Penanda Halaman dalam Google Account Anda}}</translation>
 <translation id="470966556546083668">Jangan Hidupkan Penyegerakan</translation>
 <translation id="4711809265250406889">Apabila Dihidupkan</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} dan 1 lagi}other{{website_1}, {website_2} dan {more_count} lagi}}</translation>
@@ -776,7 +775,6 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="5121618895923301719">Anda telah menjejaki produk ini. Halaman ini disimpan pada <ph name="BEGIN_LINK" />Penanda Halaman Mudah Alih<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Anda mempunyai beberapa masalah kata laluan.</translation>
 <translation id="5126465625664020024">Log masuk dan Penyegerakan</translation>
-<translation id="5131062416352684089">Kini ahli keluarga anda boleh menggunakan nama pengguna dan kata laluan anda apabila mereka menggunakan Google Password Manager untuk log masuk ke <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">Segerakkan kata laluan, sejarah &amp; pelbagai lagi pada semua peranti</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} Kata Laluan Lemah}other{{COUNT} Kata Laluan Lemah}}</translation>
 <translation id="5149188072385105201">Tambah Kata Laluan...</translation>
@@ -925,7 +923,6 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="5955891643922670672">Melihat Versi Luar Talian</translation>
 <translation id="5957613098218939406">Lebih Banyak Pilihan</translation>
 <translation id="595769230373966252">Cari dengan <ph name="SEARCH_PROVIDER" /></translation>
-<translation id="5962718611393537961">Ketik untuk runtuhkan</translation>
 <translation id="5963939892571022323">Pautan kepada serlahan tidak dapat dibuat.</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 penanda halaman dipadamkan}other{{count} penanda halaman dipadamkan}}</translation>
 <translation id="5979837087407522202">Cari Kata Laluan</translation>

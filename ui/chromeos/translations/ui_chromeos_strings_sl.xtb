@@ -24,7 +24,6 @@
 <translation id="1173916544412572294">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, moč signala je <ph name="SIGNAL_STRENGTH" /> %, stanje baterije telefona je <ph name="BATTERY_STATUS" /> %, podrobnosti</translation>
 <translation id="117624967391683467">Kopiranje datoteke <ph name="FILE_NAME" /> ...</translation>
 <translation id="1178581264944972037">Prekini</translation>
-<translation id="1190144681599273207">Za prenos te datoteke bo porabljenih približno <ph name="FILE_SIZE" /> MB mobilnih podatkov.</translation>
 <translation id="1194390763418645112">Dostop do datotek teh ciljev: <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">Naprej</translation>
 <translation id="1209796539517632982">Samodejni imenski strežniki</translation>
@@ -100,7 +99,6 @@
 <translation id="1761091787730831947">Deli z: <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">Potrdilo za preverjanje pristnosti je bilo zavrnjeno lokalno</translation>
 <translation id="1775381402323441512">Podatki o videoposnetku</translation>
-<translation id="180035236176489073">Če želite dostopati do datotek, mora biti vzpostavljena povezava z internetom.</translation>
 <translation id="1807938677607439181">Vse datoteke</translation>
 <translation id="1810764548349082891">Predogled ni na voljo</translation>
 <translation id="1812302367230252929">amharščina (transkripcija)</translation>
@@ -135,6 +133,7 @@
 <translation id="2084809735218147718">Oseba, ki se podpisuje v zahvalo</translation>
 <translation id="2088690981887365033">Omrežje VPN</translation>
 <translation id="209653272837065803">Ni dovolj prostora za shranjevanje, da bi se sinhronizacija datotek nadaljevala</translation>
+<translation id="2099143626019777139">Spletna mesta, ki jih obiščete, so vidna skrbniku. Ogledate si lahko seznam vidnih spletnih mest.</translation>
 <translation id="2111134541987263231">Vklopite <ph name="BEGIN_BOLD" />Omogoči v anonimnem načinu<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> elementov bo izbrisanih in ne boste jih mogli obnoviti.</translation>
 <translation id="2122305276694332719">Samodejna povezava s skritim omrežjem omogoča drugim, da vidijo vašo napravo in nekatere nastavitve omrežja, zato tega ne priporočamo.</translation>
@@ -161,8 +160,6 @@
 <translation id="2282155092769082568">Spletni naslov samodejne konfiguracije:</translation>
 <translation id="2284767815536050991">izmenljiva shramba</translation>
 <translation id="2288278176040912387">Gramofon</translation>
-<translation id="2291538123825441971">Odpiranje toliko datotek: <ph name="NUMBER_OF_FILES" />.</translation>
-<translation id="2303301624314357662">Odpiranje datoteke <ph name="FILE_NAME" />.</translation>
 <translation id="2304820083631266885">Planet</translation>
 <translation id="2305020378527873881">Pogon <ph name="VOLUME_NAME" /> je bil izvržen.</translation>
 <translation id="2307462900900812319">Konfiguriranje omrežja</translation>
@@ -172,7 +169,6 @@
 <translation id="233822363739146957">Ni dovolj prostora za shranjevanje, da bi lahko sinhronizirali vse datoteke</translation>
 <translation id="23721837607121582">Profil za prenos v mobilni napravi, omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Preklop na pogled seznama</translation>
-<translation id="2377590462528165447">Št. map, deljenih z Linuxom: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="2379576081295865700">Preverjanje prostora za shranjevanje … najden je bil 1 element</translation>
 <translation id="2383454254762599978">Premakni v smetnjak</translation>
 <translation id="2387458720915042159">Vrsta povezave strežnika proxy</translation>
@@ -396,12 +392,10 @@
 <translation id="4197674956721858839">Stisni izbor v datoteko zip</translation>
 <translation id="4202378258276439759">španščina (Latinska Amerika)</translation>
 <translation id="4202977638116331303">gruzinščina</translation>
-<translation id="421017592316736757">Če želite dostopati do datoteke, mora biti vzpostavljena povezava z internetom.</translation>
 <translation id="4212740939091998969">Mapa z imenom »<ph name="FOLDER_NAME" />« že obstaja. Izberite drugo ime.</translation>
 <translation id="4218274196133425560">Odstranitev izjeme za gostitelja <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">Googlova predstavitev</translation>
 <translation id="4277536868133419688">Filter <ph name="FILTER_NAME" /> je vklopljen.</translation>
-<translation id="4290535918735525311">1 mapa v skupni rabi z Linuxom</translation>
 <translation id="4299729908419173967">portugalščina (Brazilija)</translation>
 <translation id="4302605047395093221">Kdor koli bo uporabljal to napravo, bo moral vnesti kodo PIN, če se bo želel povezati z mobilnim omrežjem.</translation>
 <translation id="4303531889494116116">To omrežje je zasedeno. Poskusite znova pozneje.</translation>
@@ -502,8 +496,6 @@
 <translation id="4906580650526544301">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, moč signala je <ph name="SIGNAL_STRENGTH" /> %, stanje baterije telefona je <ph name="BATTERY_STATUS" /> %, podrobnosti</translation>
 <translation id="4935975195727477204">Roža</translation>
 <translation id="4943368462779413526">Žoga</translation>
-<translation id="4961158930123534723">1 mapa je deljena s programom Parallels Desktop</translation>
-<translation id="4965874878399872778">Preverjamo, ali so datoteke v skladu z varnostnimi pravilniki organizacije …</translation>
 <translation id="496656650103537022">Datoteka <ph name="FILE_NAME" /> je obnovljena.</translation>
 <translation id="4969785127455456148">Album</translation>
 <translation id="4972330214479971536">Nastavitve sinhronizacije datotek ni bilo mogoče dokončati</translation>
@@ -565,7 +557,6 @@
 <translation id="5317780077021120954">Shrani</translation>
 <translation id="5318819489018851358">Deljenje z Linuxom</translation>
 <translation id="5323213332664049067">Latinskoameriško</translation>
-<translation id="5330145655348521461">Te datoteke so odprte na drugem namizju. Če si jih želite ogledati, preklopite na uporabnika <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="5330512191124428349">Pridobi podatke</translation>
 <translation id="535792325654997756">Oseba z mačkami</translation>
 <translation id="5358764674931277">Število sličic v sekundi</translation>
@@ -667,7 +658,6 @@
 <translation id="613750717151263950">japonščina z angleško tipkovnico (ZDA)</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, ni omrežja</translation>
 <translation id="6146563240635539929">Videoposnetki</translation>
-<translation id="6150853954427645995">Če želite to datoteko shraniti za uporabo brez povezave, vzpostavite povezavo, z desnim gumbom miške kliknite datoteko in izberite možnost <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Metulji</translation>
 <translation id="6165508094623778733">Več o tem</translation>
 <translation id="6170470584681422115">Sendvič</translation>
@@ -700,7 +690,6 @@
 <translation id="636254897931573416">Neveljavna vrednost za ujemanje pripone domene</translation>
 <translation id="6364301859968397756">Shramba organizacije je polna</translation>
 <translation id="6367976544441405720">Kombi</translation>
-<translation id="637062427944097960">Ta datoteka je odprta na drugem namizju. Če si jo želite ogledati, preklopite na uporabnika <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="6394388407447716302">Samo za branje</translation>
 <translation id="6395575651121294044">Št. datotek: <ph name="NUMBER_OF_FILES" /></translation>
 <translation id="6407769893376380348">Datoteke <ph name="FILE_NAME" /> ni bilo mogoče premakniti, ker je šifrirana.</translation>
@@ -709,7 +698,6 @@
 <translation id="6430271654280079150">Imate še 1 poskus.</translation>
 <translation id="643243556292470964">Izbrisane datoteke so zdaj premaknjene v smetnjak.</translation>
 <translation id="6438480100790416671">Preverjanje prostora za shranjevanje …</translation>
-<translation id="6451527188465304418">Preverjamo, ali je datoteka v skladu z varnostnimi pravilniki organizacije …</translation>
 <translation id="6485131920355264772">Podatkov o prostoru ni bilo mogoče prenesti</translation>
 <translation id="6495925982925244349">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, moč signala je <ph name="SIGNAL_STRENGTH" /> %, upravlja ga vaš skrbnik, podrobnosti</translation>
 <translation id="649877868557234318">Razširjanje datoteke <ph name="FILE_NAME" /> v mapo <ph name="FOLDER_NAME" /></translation>
@@ -724,7 +712,6 @@
 <translation id="6588648400954570689">Nastavitve sinhronizacije datotek</translation>
 <translation id="6594855146910089723">Ta mapa je deljena z Linuxom in programom Parallels Desktop</translation>
 <translation id="6607272825297743757">Podatki o datoteki</translation>
-<translation id="6609332149380188670">Št. map, deljenih s programom Parallels Desktop: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="6629518321609546825">Vnesite vsaj 4 številke.</translation>
 <translation id="6643016212128521049">Izbriši</translation>
 <translation id="6650726141019353908">Rožnat metulj</translation>
@@ -891,7 +878,6 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Napaka pri konfiguriranju omrežja</translation>
-<translation id="7839804798877833423">Za prenos teh datotek bo porabljenih približno <ph name="FILE_SIZE" /> MB mobilnih podatkov.</translation>
 <translation id="7846076177841592234">Prekliči izbor</translation>
 <translation id="7853966320808728790">francoščina – BÉPO</translation>
 <translation id="7857117644404132472">Dodaj izjemo</translation>
@@ -933,13 +919,13 @@
 <translation id="813913629614996137">Inicializiranje ...</translation>
 <translation id="8147028810663464959">Širina znaka je zapolnjena</translation>
 <translation id="8151638057146502721">Konfiguriraj</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 napaka.}one{# napaka.}two{# napaki.}few{# napake.}other{# napak.}}</translation>
 <translation id="8154842056504218462">Izbrani so vsi vnosi.</translation>
 <translation id="8157684860301034423">Prenos podatkov aplikacije ni uspel.</translation>
 <translation id="8175731104491895765">francoščina (Belgija)</translation>
 <translation id="8175799081768705361">Sinhroniziranje tega števila datotek v Googlu Drive: <ph name="NUMBER_OF_FILES_SYNCING" /></translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Model naprave</translation>
-<translation id="8223479393428528563">Če želite te datoteke shraniti za uporabo brez povezave, vzpostavite povezavo, z desnim gumbom miške kliknite datoteke in izberite možnost <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8241139360630443550">Ogled shrambe</translation>
 <translation id="8249296373107784235">Prekini</translation>
 <translation id="8250690786522693009">Latinščina</translation>
@@ -966,6 +952,7 @@
 <translation id="83651606385705612">Temu omogočite dostop do datotek v mapi <ph name="FOLDER_NAME" />: <ph name="VM_NAME" /></translation>
 <translation id="8372369524088641025">Napačen ključ WEP</translation>
 <translation id="8372852072747894550">grščina</translation>
+<translation id="8377269993083688872">Postavitev e-sporočil</translation>
 <translation id="8386903983509584791">Iskanje je končano</translation>
 <translation id="8387733224523483503">Razširjeno: <ph name="FILE_NAME" />.</translation>
 <translation id="8395901698320285466">Mere</translation>
@@ -1024,6 +1011,7 @@
 <translation id="8787254343425541995">Dovoli proxyje za omrežja v skupni rabi</translation>
 <translation id="8790981080411996443">Oseba, ki zaliva rože</translation>
 <translation id="8798099450830957504">Privzeto</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 opozorilo.}one{# opozorilo.}two{# opozorili.}few{# opozorila.}other{# opozoril.}}</translation>
 <translation id="8808686172382650546">Mačka</translation>
 <translation id="8810671769985673465">Ustvarjanje datoteke zip ni uspelo, obstoječi element: »<ph name="FILE_NAME" />«</translation>
 <translation id="8813284582615685103">španščina (Španija)</translation>

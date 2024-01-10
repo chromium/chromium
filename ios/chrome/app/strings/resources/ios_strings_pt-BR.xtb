@@ -56,7 +56,6 @@
 <translation id="1279024913354609713">Não permitir</translation>
 <translation id="1281818060020671000">Gerenciar dados</translation>
 <translation id="1282311502488501110">Não fazer login</translation>
-<translation id="1283039547216852943">Toque para expandir</translation>
 <translation id="1283524564873030414">Últimas 24 horas</translation>
 <translation id="1285320974508926690">Nunca traduzir este site</translation>
 <translation id="1291506870746876680">As permissões de <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> serão redefinidas como desativadas quando você sair desse site.</translation>
@@ -82,7 +81,6 @@
 <translation id="1377255359165588604">A sincronização parou de funcionar.</translation>
 <translation id="1377321085342047638">Número do cartão</translation>
 <translation id="1377508275003315939">Senhas</translation>
-<translation id="1380914240355562929"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> agora pode usar seu nome de usuário e sua senha ao fazer login em <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> com o Gerenciador de senhas do Google. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">Pesquisar</translation>
 <translation id="138618066238211776">Continuar como <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">Últimas quatro semanas</translation>
@@ -406,7 +404,6 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3087734570205094154">Parte inferior</translation>
 <translation id="3090455602619185166">Fazer login com uma conta gerenciada</translation>
 <translation id="309710370695886264">Você tem uma senha reutilizada. Corrija o problema agora para se proteger.</translation>
-<translation id="3109724472072898302">Recolhido</translation>
 <translation id="3112556859945124369">Marcar...</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Veja o que pode ser sincronizado<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">Histórico e mais</translation>
@@ -775,7 +772,6 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="5121618895923301719">Você já está acompanhando este produto. Esta página fica salva nos <ph name="BEGIN_LINK" />Favoritos nos dispositivos móveis<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Você tem vários problemas de senha.</translation>
 <translation id="5126465625664020024">Fazer login e sincronizar</translation>
-<translation id="5131062416352684089">Os membros da sua família agora podem usar seu nome de usuário e sua senha ao fazer login em <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> com o Gerenciador de senhas do Google. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">Sincronize suas senhas, seu histórico e muito mais em todos os dispositivos</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} senha fraca}one{{COUNT} senha fraca}other{{COUNT} senhas fracas}}</translation>
 <translation id="5149188072385105201">Adicionar senha…</translation>
@@ -924,7 +920,6 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5955891643922670672">Exibindo a versão off-line</translation>
 <translation id="5957613098218939406">Mais opções</translation>
 <translation id="595769230373966252">Pesquisar com o <ph name="SEARCH_PROVIDER" /></translation>
-<translation id="5962718611393537961">Toque para recolher</translation>
 <translation id="5963939892571022323">Não é possível criar um link para o conteúdo destacado.</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 favorito excluído}one{{count} favorito excluído}other{{count} favoritos excluídos}}</translation>
 <translation id="5979837087407522202">Pesquisar senhas</translation>

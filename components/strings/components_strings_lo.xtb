@@ -272,6 +272,7 @@
 <translation id="1476595624592550506">ປ່ຽນລະຫັດຜ່ານຂອງທ່ານ</translation>
 <translation id="1482879811280872320">ຖີບລົດ</translation>
 <translation id="1483493594462132177">ສົ່ງ</translation>
+<translation id="1484632730438126438">ຂໍ້ມູນນີ້ສັ້ນເກີນໄປ. ໃຫ້ຂຽນຢ່າງໜ້ອຍ 3 ຄຳ.</translation>
 <translation id="1492194039220927094">ການແຈ້ງເຕືອນນະໂຍບາຍ:</translation>
 <translation id="14938948731065592">ອຸປະກອນຕໍ່ພ່ວງຄອມພິວເຕີ</translation>
 <translation id="1495677929897281669">ກັບຄືນຫາແຖບ</translation>
@@ -1238,7 +1239,6 @@
 <translation id="3447661539832366887">ເຈົ້າ​ຂອງ​ອຸ​ປະ​ກອນ​ນີ້​ປິດ​ເກມ​ໄດ​ໂນ​ເສົາ​ໄວ້.</translation>
 <translation id="3447884698081792621">ສະແດງໃບຮັບຮອງ (ທີ່ອອກໃຫ້ໂດຍ <ph name="ISSUER" />)</translation>
 <translation id="3450323514459570273">ສາມາດຂໍໃຫ້ຄວບຄຸມ ແລະ ຂຽນໂປຣແກຣມອຸປະກອນ MIDI ຂອງທ່ານຄືນໃໝ່ໄດ້</translation>
-<translation id="3452151267620065789">ບັນທຶກຄວາມຄືບໜ້າແລ້ວ</translation>
 <translation id="3452404311384756672">ເອົາໄລຍະ​ຫ່າງ​:</translation>
 <translation id="3453962258458347894">ຈຳນວນການລອງໃໝ່</translation>
 <translation id="3461266716147554923"><ph name="URL" /> ຕ້ອງການເຫັນຂໍ້ຄວາມ ແລະ ຮູບພາບທີ່ສຳເນົາໄວ້ໃນຄລິບບອດ</translation>
@@ -1404,6 +1404,7 @@
 <translation id="3748009735914587286">ໂລຫະ (ມັນວາວຫຼາຍ)</translation>
 <translation id="3748148204939282805">ຜູ້ໂຈມຕີໃນ <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ອາດຈະຫຼອກໃຫ້ທ່ານເຮັດບາງຢ່າງທີ່ອັນຕະລາຍ ເຊັ່ນວ່າ ຕິດຕັ້ງຊອບແວ ຫຼື ເປີດເຜີຍຂໍ້ມູນສ່ວນຕົວຂອງທ່ານ (ຕົວຢ່າງ: ລະຫັດຜ່ານ, ເບີໂທລະສັບ ຫຼື ບັດເຄຣດິດ). <ph name="BEGIN_LEARN_MORE_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">ອຸດສາຫະກຳການບິນ</translation>
+<translation id="3751020515020988516">ບໍ່ເຂົ້າໃຈຄຳຮ້ອງຂໍຂອງທ່ານ. ໃຫ້ລອງໃຊ້ຄຳຮ້ອງຂໍອື່ນ.</translation>
 <translation id="3752543821772132562">ຖືກປະຕິເສດຍ້ອນວ່າບໍ່ໄດ້ຕັ້ງ <ph name="POLICY_NAME" />.</translation>
 <translation id="3754210790023674521">ອອກຈາກໂໝດສະແດງຜົນຊ້ອນກັນ</translation>
 <translation id="3759461132968374835">ທ່ານບໍ່ໄດ້ລາຍງານກາ​ນຂັດຂ້ອງເມື່ອບໍ່ດົນມານີ້. ການ​ຂັດຂ້ອງທີ່ເກີດຂຶ້ນເມື່ອການລາຍງານກາ​ນຂັດຂ້ອງຖືກປິດໃຊ້ງານ ຈະບໍ່ປະກົດຂຶ້ນທີ່ນີ້.</translation>
@@ -1460,6 +1461,7 @@
 <translation id="3858860766373142691">ຊື່</translation>
 <translation id="3872834068356954457">ວິທະຍາສາດ</translation>
 <translation id="3875783148670536197">ສະແດງວິທີໃຫ້ຂ້ອຍເບິ່ງ</translation>
+<translation id="3877877650871124156">ຂໍ້ມູນນີ້ຍາວເກີນໄປ. ກະລຸນາຫຍໍ້ໃຫ້ສັ້ນລົງແລ້ວລອງໃໝ່.</translation>
 <translation id="3881478300875776315">ສະແດງແຖວໜ້ອຍລົງ</translation>
 <translation id="3883500545751229739">ໂຄສະນາແບບບຸກລຸກ</translation>
 <translation id="3884278016824448484">ຕົວລະບຸອຸປະກອນທີ່ຂັດກັນ</translation>
@@ -1537,7 +1539,6 @@
 <translation id="4067098466788473230">ການຊ່ວຍເຫຼືອດ້ານການສຶກສາ ແລະ ທຶນການສຶກສາ</translation>
 <translation id="4067947977115446013">ເພີ່ມທີ່ຢູ່ທີ່ຖືກຕ້ອງ</translation>
 <translation id="4070790659619547722">ເມື່ອໃຊ້ການວັດແທກຜົນໂຄສະນາ, ລະບົບຈະແບ່ງປັນປະເພດຂອງຂໍ້ມູນທີ່ຈຳກັດລະຫວ່າງເວັບໄຊເພື່ອວັດແທກປະສິດທິພາບຂອງໂຄສະນາຂອງເຂົາເຈົ້າ, ເຊັ່ນ: ຊ່ວງເວລາຂອງມື້ທີ່ມີການສະແດງໂຄສະນາໃຫ້ທ່ານເຫັນ.</translation>
-<translation id="4072193657607981494">ກຳລັງໂຫຼດນະໂຍບາຍ</translation>
 <translation id="4072486802667267160">ມີຄວາມຜິດພາດໃນການດຳເນີນຄຳສັ່ງຊື້ຂອງທ່ານ, ກະລຸນາລອງອີກຄັ້ງ.</translation>
 <translation id="4073376909608563327">ບໍ່ສາມາດໃຊ້ການປົດລັອກອຸປະກອນໄດ້</translation>
 <translation id="4073797364926776829">ເບິ່ງບັດ</translation>
@@ -2568,6 +2569,7 @@
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມກ່ຽວກັບໂໝດບໍ່ເປີດເຜີຍຕົວຕົນໃນ Chrome<ph name="END_LINK" /></translation>
 <translation id="6133320744616005677">ສືບຕໍ່ການອະນຸຍາດ</translation>
 <translation id="6133984428121856852">ນາມສະກຸນໄຟລ໌ຫວ່າງເປົ່າ ຫຼື ມີຮູບແບບບໍ່ຖືກຕ້ອງ.</translation>
+<translation id="6139769382153674477">ມີບາງຢ່າງຜິດພາດເກີດຂຶ້ນ. ທ່ານເຂົ້າສູ່ລະບົບຢູ່ບໍ່?</translation>
 <translation id="6139975341602920272">17 x 22 ນິ້ວ</translation>
 <translation id="6146055958333702838">ກວດເບິ່ງສາຍໄຟ ແລະປິດເປີດເຣົາເຕີ, ໂມເດັມ, ຫຼືອຸປະກອນເຄືອຂ່າຍ
     ທີ່ທ່ານອາດກຳລັງໃຊ້ຢູ່ຄືນໃໝ່.</translation>
@@ -2724,7 +2726,6 @@
 <translation id="6428450836711225518">ຢັ້ງຢືນເບີໂທລະສັບຂອງທ່ານ</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">ປ່ຽນລະຫັດຜ່ານ Google</translation>
-<translation id="6431119592588449664">ອັບໂຫຼດລາຍງານແລ້ວ</translation>
 <translation id="6432297414176614592">ຂໍ້ມູນເພີ່ມເຕີມກ່ຽວກັບຫົວຂໍ້ໂຄສະນາ</translation>
 <translation id="6432831586648556868">ວຽກຂາຍ ແລະ ການຕະຫຼາດ</translation>
 <translation id="6433490469411711332">ແກ້ໄຂຂໍ້ມູນລາຍຊື່ຜູ້ຕິດຕໍ່</translation>
@@ -3483,7 +3484,6 @@
 <translation id="7871445724586827387">ປ່ຽນລະຫັດຜ່ານບັນຊີ Google ຂອງທ່ານ</translation>
 <translation id="7877007680666472091">Content ID ທີ່ມີການປົກປ້ອງ</translation>
 <translation id="7878562273885520351">ອາດຈະມີການລັກໃຊ້ລະຫັດຜ່ານຂອງທ່ານ</translation>
-<translation id="7878966190323222027">ເປີດຄືນໃໝ່ເພື່ອສືບຕໍ່</translation>
 <translation id="7880146494886811634">ບັນທຶກທີ່ຢູ່</translation>
 <translation id="7882421473871500483">ສີນ້ຳຕານ</translation>
 <translation id="7882995332186050355">ລົດບັນທຸກ ແລະ ລົດພ່ວງ</translation>
@@ -4104,7 +4104,6 @@
 <translation id="9119042192571987207">ອັບໂຫລດແລ້ວ</translation>
 <translation id="9122954576417194280">ສິນຄ້າເຄື່ອງໃຊ້ ແລະ ການຂາຍລ່ວງໜ້າ</translation>
 <translation id="912327514020027767">ກະໂປງ</translation>
-<translation id="9128016270925453879">ໂຫຼດນະໂຍບາຍແລ້ວ</translation>
 <translation id="9128870381267983090">ເຊື່ອມ​ຕໍ່ກັບ​ເຄືອ​ຂ່າຍ</translation>
 <translation id="9131119348384879525">ບັນທຶກເນື້ອຫາທີ່ເປັນຄວາມລັບບໍ?</translation>
 <translation id="9133985615769429248">ຫາກທ່ານແບ່ງປັນອຸປະກອນນີ້ກັບຄົນອື່ນ, ທ່ານສາມາດໃຊ້ການລັອກໜ້າຈໍຂອງທ່ານເພື່ອຢັ້ງຢືນວ່າແມ່ນທ່ານເມື່ອທ່ານໃຊ້ລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ໄດ້</translation>

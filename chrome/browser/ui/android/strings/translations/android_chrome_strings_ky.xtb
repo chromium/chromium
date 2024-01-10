@@ -233,6 +233,7 @@
 <translation id="2318045970523081853">Чалуу үчүн басыңыз</translation>
 <translation id="2321086116217818302">Сырсөздөр даярдалууда…</translation>
 <translation id="2323763861024343754">Сайт дайындары</translation>
+<translation id="2327226657832576859">PDF файлдар автоматтык түрдө ачылсынбы?</translation>
 <translation id="2328985652426384049">Аккаунтка кирүү мүмкүн эмес</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> орнотулган жок.</translation>
 <translation id="2349710944427398404">Chrome пайдаланган жалпы дайындардын, анын ичинде каттоо эсептери, кыстармалар жана сакталган параметрлердин жалпы өлчөмү</translation>
@@ -638,6 +639,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="4523326818319942067">акыркы бир саатта</translation>
 <translation id="452750746583162491">Шайкештирилген маалыматты карап чыгуу</translation>
 <translation id="4532845899244822526">Куржун тандаңыз</translation>
+<translation id="4541505619120536051">Ар дайым ачылсын</translation>
 <translation id="4543131175509360848">Киргизүүчү ачкычтардын бир да бети жок</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> өтмөк}other{<ph name="TAB_COUNT_MANY" /> өтмөк, <ph name="TAB_COUNT_INCOGNITO" /> жашыруун}}</translation>
 <translation id="4554077758708533499">USB кабели аркылуу туташты</translation>
@@ -829,6 +831,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="5486841595534124508">Менин аракеттерим барагына багыттаган барактын статистика борбору үчүн купуялык билдирмесинин логотиби.</translation>
 <translation id="5487521232677179737">Маалыматты өчүрүү</translation>
 <translation id="5492637351392383067">Түзмөктө шифрлөө</translation>
+<translation id="5509866835115085009">Chrome жүктөлүп алынган PDF файлдарын автоматтык түрдө ача алат.</translation>
 <translation id="5514904542973294328">Түзмөктүн администратору өчүрүп койгон</translation>
 <translation id="5515439363601853141">Сырсөзүңүздү көрүү үчүн кулпусун ачыңыз</translation>
 <translation id="5517095782334947753">Сизде <ph name="FROM_ACCOUNT" /> аккаунтунун кыстармалары, таржымалдары, сырсөздөрү жана башка параметрлери бар.</translation>

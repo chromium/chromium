@@ -1505,6 +1505,7 @@
 <translation id="7025533177575372252">നിങ്ങളുടെ ഫോണുമായി <ph name="DEVICE_NAME" /> കണക്‌റ്റ് ചെയ്യുക</translation>
 <translation id="7026338066939101231">കുറവ്</translation>
 <translation id="7029814467594812963">സെഷൻ എക്സിറ്റ്</translation>
+<translation id="7031303610220416229">Google Tasks-ൽ എല്ലാ ടാസ്ക്കുകളും കാണുക</translation>
 <translation id="7032161822340700104">6 ടെംപ്ലേറ്റുകൾ മാത്രമേ അനുവദിക്കൂ. പുതിയൊരെണ്ണം സംരക്ഷിക്കാൻ ഒരു ടെംപ്ലേറ്റ് നീക്കം ചെയ്യുക.</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" /> നിങ്ങളുടെ <ph name="DEVICE_NAME" /> ഉപയോഗിക്കാൻ ആഗ്രഹിക്കുന്നു. നിങ്ങളുടെ ഉപകരണത്തിന്റെ ഫിസിക്കൽ <ph name="DEVICE_NAME" /> സ്വിച്ച് ഓണാക്കുക.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google അസിസ്‌റ്റന്റ്</translation>
@@ -1818,6 +1819,7 @@
 <translation id="8351131234907093545">കുറിപ്പ് സൃഷ്‌ടിക്കുക</translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> ഉപയോഗത്തിലാണ്.</translation>
 <translation id="8369166482916924789">സംരക്ഷിച്ച ഡെസ്‌ക്, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
+<translation id="8370414029565771236"><ph name="TEXT" /> തിരയുക</translation>
 <translation id="8371779926711439835">ഒരക്ഷരം മുന്നിലേക്ക് പോവുക</translation>
 <translation id="8371991222807690464">അതിഥി മോഡിൽ പെരിഫറൽ പ്രകടനം പരിമിതപ്പെട്ടേക്കാം</translation>
 <translation id="8374601332003098278">ഭാഗിക സ്ക്രീൻ റെക്കോർഡ് ചെയ്യാൻ Enter അമർത്തുക</translation>

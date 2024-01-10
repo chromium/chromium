@@ -1504,6 +1504,7 @@ Nouvelle installation</translation>
 <translation id="7025533177575372252">Connectez votre <ph name="DEVICE_NAME" /> à votre téléphone</translation>
 <translation id="7026338066939101231">Diminuer</translation>
 <translation id="7029814467594812963">Fermer la session</translation>
+<translation id="7031303610220416229">Afficher toutes les tâches dans Google Tâches</translation>
 <translation id="7032161822340700104">Vous pouvez utiliser jusqu'à six modèles. Retirez un modèle pour en enregistrer un nouveau.</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" /> souhaite utiliser votre <ph name="DEVICE_NAME" />. Mettez votre <ph name="DEVICE_NAME" /> en fonction à l'aide de l'interrupteur.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Assistant Google</translation>
@@ -1816,6 +1817,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="8351131234907093545">Créer une note</translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> en cours d'utilisation.</translation>
 <translation id="8369166482916924789">Bureau enregistré, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
+<translation id="8370414029565771236">Rechercher ce qui suit : <ph name="TEXT" /></translation>
 <translation id="8371779926711439835">Déplacer une lettre vers l'avant</translation>
 <translation id="8371991222807690464">Les performances du périphérique peuvent être limitées en mode Invité</translation>
 <translation id="8374601332003098278">Appuyez sur Entrée pour enregistrer une partie de l'écran</translation>

@@ -56,7 +56,6 @@
 <translation id="1279024913354609713">Neatļaut</translation>
 <translation id="1281818060020671000">Datu pārvaldība</translation>
 <translation id="1282311502488501110">Nepierakstīties</translation>
-<translation id="1283039547216852943">Pieskarties, lai izvērstu</translation>
 <translation id="1283524564873030414">Pēdējās 24 stundas</translation>
 <translation id="1285320974508926690">Nekad netulkot šo vietni</translation>
 <translation id="1291506870746876680">Kad iziesiet no vietnes <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" />, šīs vietnes atļaujas tiks atkal izslēgtas.</translation>
@@ -82,7 +81,6 @@
 <translation id="1377255359165588604">Sinhronizācija vairs nedarbojas.</translation>
 <translation id="1377321085342047638">Kartes numurs</translation>
 <translation id="1377508275003315939">Paroles</translation>
-<translation id="1380914240355562929"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> tagad var izmantot jūsu lietotājvārdu un paroli, ar Google paroļu pārvaldnieku pierakstoties vietnē <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="1383876407941801731">Meklēt</translation>
 <translation id="138618066238211776">Turpināt ar lietotāja <ph name="USER_NAME" /> kontu</translation>
 <translation id="1400642268715879018">Pēdējās 4 nedēļas</translation>
@@ -406,7 +404,6 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="3087734570205094154">Apakšā</translation>
 <translation id="3090455602619185166">Pierakstīšanās, izmantojot pārvaldītu kontu</translation>
 <translation id="309710370695886264">Jums ir viena atkārtoti izmantota parole. Labojiet to tūlīt, lai gādātu par savu drošību.</translation>
-<translation id="3109724472072898302">Sakļauts</translation>
 <translation id="3112556859945124369">Atzīmēt…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Skatiet, kādu saturu varat sinhronizēt<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">Vēsture un cits saturs</translation>
@@ -775,7 +772,6 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="5121618895923301719">Jūs jau sekojat līdzi šī produkta informācijai. Šī lapa ir saglabāta sadaļā <ph name="BEGIN_LINK" />Mobilās grāmatzīmes<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Jums ir vairākas ar parolēm saistītas problēmas.</translation>
 <translation id="5126465625664020024">Pierakstīties un sinhronizēt</translation>
-<translation id="5131062416352684089">Jūsu ģimenes locekļi tagad var izmantot jūsu lietotājvārdu un paroli, ar Google paroļu pārvaldnieku pierakstoties vietnē <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="5132942445612118989">Sinhronizējiet paroles, vēsturi un citu saturu visās ierīcēs</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} nedroša parole}zero{{COUNT} nedrošu paroļu}one{{COUNT} nedroša parole}other{{COUNT} nedrošas paroles}}</translation>
 <translation id="5149188072385105201">Pievienot paroli…</translation>
@@ -924,7 +920,6 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="5955891643922670672">Tiek skatīta bezsaistes versija</translation>
 <translation id="5957613098218939406">Citas opcijas</translation>
 <translation id="595769230373966252">Meklēt, izmantojot meklētājprogramu <ph name="SEARCH_PROVIDER" /></translation>
-<translation id="5962718611393537961">Pieskarties, lai sakļautu</translation>
 <translation id="5963939892571022323">Nevar izveidot saiti uz atzīmēto tekstu.</translation>
 <translation id="5971872012779224351">{count,plural, =1{Izdzēsta viena grāmatzīme}zero{Izdzēstas {count} grāmatzīmes}one{Izdzēsta {count} grāmatzīme}other{Izdzēstas {count} grāmatzīmes}}</translation>
 <translation id="5979837087407522202">Meklēt paroles</translation>

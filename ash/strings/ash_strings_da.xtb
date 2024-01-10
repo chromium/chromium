@@ -1505,6 +1505,7 @@ Installeret for nylig</translation>
 <translation id="7025533177575372252">Slut <ph name="DEVICE_NAME" /> til din telefon</translation>
 <translation id="7026338066939101231">Reducer</translation>
 <translation id="7029814467594812963">Afslut session</translation>
+<translation id="7031303610220416229">Se alle opgaver i Google Huskeliste</translation>
 <translation id="7032161822340700104">Der kan højst være 6 skabeloner. Fjern en skabelon for at gemme en ny.</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" /> vil bruge <ph name="DEVICE_NAME" />. Aktivér din enheds fysiske <ph name="DEVICE_NAME" />-kontakt.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistent</translation>
@@ -1817,6 +1818,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="8351131234907093545">Opret note</translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> er i brug.</translation>
 <translation id="8369166482916924789">Gemt skrivebord, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
+<translation id="8370414029565771236">Søg efter <ph name="TEXT" /></translation>
 <translation id="8371779926711439835">Et bogstav frem</translation>
 <translation id="8371991222807690464">Din eksterne enheds ydeevne kan være begrænset i Gæstetilstand</translation>
 <translation id="8374601332003098278">Tryk på Enter for at optage delvis skærm</translation>

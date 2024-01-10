@@ -24,7 +24,6 @@
 <translation id="1173916544412572294"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, फोन बॅटरी <ph name="BATTERY_STATUS" />%, तपशील</translation>
 <translation id="117624967391683467"><ph name="FILE_NAME" /> कॉपी करत आहे...</translation>
 <translation id="1178581264944972037">विराम द्या</translation>
-<translation id="1190144681599273207">ही फाइल प्राप्त करताना अंदाजे <ph name="FILE_SIZE" /> मोबाइल डेटा वापरला जाईल.</translation>
 <translation id="1194390763418645112"><ph name="RESTRICTED_DESTINATIONS" /> वरून फाइलचा ॲक्सेस</translation>
 <translation id="1201402288615127009">पुढील</translation>
 <translation id="1209796539517632982">स्वयंचलित नाव सर्व्हर</translation>
@@ -100,7 +99,6 @@
 <translation id="1761091787730831947"><ph name="VM_NAME" /> सह शेअर करा</translation>
 <translation id="1773212559869067373">ऑथेंटिकेशन प्रमाणपत्र स्थानिक पातळीवर नाकारले</translation>
 <translation id="1775381402323441512">व्हिडिओ माहिती</translation>
-<translation id="180035236176489073">या फाइल ॲक्सेस करण्‍यासाठी तुम्ही ऑनलाइन असणे आवश्यक आहे.</translation>
 <translation id="1807938677607439181">सर्व फाइल</translation>
 <translation id="1810764548349082891">कोणतेही पूर्वावलोकन उपलब्ध नाही</translation>
 <translation id="1812302367230252929">अम्हारिक लिप्यंतरण</translation>
@@ -135,6 +133,7 @@
 <translation id="2084809735218147718">सांकेतिक भाषेत धन्यवाद म्हणणारी व्यक्ती</translation>
 <translation id="2088690981887365033">VPN नेटवर्क</translation>
 <translation id="209653272837065803">फाइल सिंक करणे पुढे सुरू ठेवण्यासाठी पुरेशी जागा नाही</translation>
+<translation id="2099143626019777139">तुम्ही भेट दिलेल्या वेबसाइट तुमच्या अ‍ॅडमिनिस्ट्रेटरला दृश्यमान असतात. तुम्ही दृश्यमान वेबसाइटची सूची पाहू शकता.</translation>
 <translation id="2111134541987263231"><ph name="BEGIN_BOLD" />गुप्त मोडमध्ये अनुमती द्या<ph name="END_BOLD" /> सुरू करा</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> आयटम हटवले जातील आणि तुम्ही ते रिस्टोअर करू शकणार नाही.</translation>
 <translation id="2122305276694332719">लपलेल्या नेटवर्कवर आपोआप कनेक्ट केल्याने इतरांना तुमचे डिव्हाइस आणि काही नेटवर्क सेटिंग्ज पाहण्याची अनुमती मिळते आणि याची शिफारस केली जात नाही.</translation>
@@ -161,8 +160,6 @@
 <translation id="2282155092769082568">स्वयंकॉन्फिगरेशन URL:</translation>
 <translation id="2284767815536050991">काढून टाकण्यायोग्य स्टोरेज</translation>
 <translation id="2288278176040912387">रेकॉर्ड प्लेयर</translation>
-<translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> फाइल उघडत आहे</translation>
-<translation id="2303301624314357662">फाइल <ph name="FILE_NAME" /> उघडत आहे.</translation>
 <translation id="2304820083631266885">ग्रह</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> बाहेर काढले गेले आहे.</translation>
 <translation id="2307462900900812319">नेटवर्क कॉंफिगर करा</translation>
@@ -172,7 +169,6 @@
 <translation id="233822363739146957">तुमच्या सर्व फाइल सिंक करण्यासाठी पुरेशी स्टोरेज जागा नाही</translation>
 <translation id="23721837607121582">मोबाइल प्रोफाइल डाउनलोड करा, <ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">सूची व्‍ह्यूवर स्विच करा</translation>
-<translation id="2377590462528165447">Linux सोबत शेअर केलेली <ph name="NUMBER_OF_ITEMS" /> फोल्डर</translation>
 <translation id="2379576081295865700">स्टोरेज जागा तपासत आहे… १ आयटम सापडला</translation>
 <translation id="2383454254762599978">ट्रॅशमध्ये हलवा</translation>
 <translation id="2387458720915042159">प्रॉक्सी कनेक्शन प्रकार</translation>
@@ -396,12 +392,10 @@
 <translation id="4197674956721858839">झिप निवड</translation>
 <translation id="4202378258276439759">स्पॅनिश (लॅटिन अमेरिका)</translation>
 <translation id="4202977638116331303">जॉर्जियन</translation>
-<translation id="421017592316736757">या फाइल ॲक्सेस करण्‍यासाठी तुम्ही ऑनलाइन असणे आवश्यक आहे.</translation>
 <translation id="4212740939091998969">"<ph name="FOLDER_NAME" />" नावाचे फोल्डर आधीच अस्तित्वात आहे. कृपया वेगळे नाव निवडा.</translation>
 <translation id="4218274196133425560"><ph name="HOST_NAME" /> साठी एक्सेप्शन काढा</translation>
 <translation id="4261901459838235729">Google प्रेझेंटेशन</translation>
 <translation id="4277536868133419688"><ph name="FILTER_NAME" /> फिल्टर सुरू आहे.</translation>
-<translation id="4290535918735525311">Linux सह एक फोल्डर शेअर केला</translation>
 <translation id="4299729908419173967">ब्राझिलियन</translation>
 <translation id="4302605047395093221">या मोबाइल नेटवर्कशी कनेक्ट करण्यासाठी, हे डिव्हाइस वापरणाऱ्या कोणालाही पासवर्ड एंटर करण्याची आवश्यकता असेल</translation>
 <translation id="4303531889494116116">हे नेटवर्क व्यस्त आहे. नंतर पुन्हा प्रयत्न करा.</translation>
@@ -502,8 +496,6 @@
 <translation id="4906580650526544301"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, फोन बॅटरी <ph name="BATTERY_STATUS" />%, तपशील</translation>
 <translation id="4935975195727477204">गॅझानियाचे फूल</translation>
 <translation id="4943368462779413526">फूटबॉल</translation>
-<translation id="4961158930123534723">Parallels Desktop सोबत एक फोल्डर शेअर केले</translation>
-<translation id="4965874878399872778">तुमच्या संस्थेच्या सुरक्षा धोरणांनुसार फाइल तपासत आहे…</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> रिस्टोअर केली</translation>
 <translation id="4969785127455456148">अल्बम</translation>
 <translation id="4972330214479971536">फाइल सिंक करणे पूर्ण करता आले नाही</translation>
@@ -565,7 +557,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="5317780077021120954">सेव्ह करा</translation>
 <translation id="5318819489018851358">Linux वापरून शेअर करा</translation>
 <translation id="5323213332664049067">लॅटिन अमेरिकन</translation>
-<translation id="5330145655348521461">या फाइल एका भिन्न डेस्कटॉपवर उघडलेल्या आहेत. या पाहण्यासाठी <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) वर हलवा.</translation>
 <translation id="5330512191124428349">माहिती मिळवा</translation>
 <translation id="535792325654997756">मांजरींसह व्यक्ती</translation>
 <translation id="5358764674931277">फ्रेम दर</translation>
@@ -667,7 +658,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="613750717151263950">यूएस कीबोर्डसह जपानी</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, कोणतेही नेटवर्क नाही</translation>
 <translation id="6146563240635539929">व्हिडिओ</translation>
-<translation id="6150853954427645995">ऑफलाइन वापराकरिता ही फाइल सेव्ह करण्‍यासाठी, परत ऑनलाइन व्‍हा, फाइलवर राइट-क्लिक करा आणि <ph name="OFFLINE_CHECKBOX_NAME" /> पर्याय निवडा.</translation>
 <translation id="6164412158936057769">फुलपाखरे</translation>
 <translation id="6165508094623778733">अधिक जाणून घ्या</translation>
 <translation id="6170470584681422115">सँडविच</translation>
@@ -700,7 +690,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="636254897931573416">डोमेन सफिक्स जुळणीचे मूल्य चुकीचे आहे</translation>
 <translation id="6364301859968397756">संस्थेचे स्टोरेज पूर्ण भरले आहे</translation>
 <translation id="6367976544441405720">व्हॅन</translation>
-<translation id="637062427944097960">ही फाइल एका भिन्न डेस्कटॉपवर उघडलेली आहे. ती पाहण्यासाठी <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) वर हलवा.</translation>
 <translation id="6394388407447716302">रीड-ओन्ली</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> आयटम</translation>
 <translation id="6407769893376380348"><ph name="FILE_NAME" /> हलवता आली नाही, कारण ती एन्क्रिप्ट केलेली आहे.</translation>
@@ -709,7 +698,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="6430271654280079150">तुमच्याकडे एक प्रयत्न शिल्लक आहे.</translation>
 <translation id="643243556292470964">हटवलेल्या फाइल आता ट्रॅशमध्ये हलवल्या जातात</translation>
 <translation id="6438480100790416671">स्टोरेज जागा तपासत आहे…</translation>
-<translation id="6451527188465304418">तुमच्या संस्थेच्या सुरक्षा धोरणांनुसार फाइल तपासत आहे...</translation>
 <translation id="6485131920355264772">स्थान माहिती पुनर्प्राप्त करण्यात अयशस्वी</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, तुमच्या अ‍ॅडमिनिस्ट्रेटरने व्यवस्थापित केलेले, तपशील</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> ही <ph name="FOLDER_NAME" /> मध्ये एक्स्ट्रॅक्ट करत आहे</translation>
@@ -724,7 +712,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="6588648400954570689">फाइल सिंक सेटिंग्ज</translation>
 <translation id="6594855146910089723">हे फोल्डर Linux आणि Parallels Desktop सोबत शेअर केलेले आहे</translation>
 <translation id="6607272825297743757">फाईल माहिती</translation>
-<translation id="6609332149380188670">Parallels Desktop सोबत शेअर केलेली<ph name="NUMBER_OF_ITEMS" /> फोल्डर</translation>
 <translation id="6629518321609546825">किमान चार अंक एंटर करा</translation>
 <translation id="6643016212128521049">साफ करा</translation>
 <translation id="6650726141019353908">गुलाबी फुलपाखरू</translation>
@@ -891,7 +878,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">नेटवर्क कॉंफिगर करताना एरर आली</translation>
-<translation id="7839804798877833423">या फाइल प्राप्त करताना अंदाजे <ph name="FILE_SIZE" /> मोबाइल डेटा वापरला जाईल.</translation>
 <translation id="7846076177841592234">निवड रद्द करा</translation>
 <translation id="7853966320808728790">फ्रेंच बेपो</translation>
 <translation id="7857117644404132472">एक्सेप्शन जोडा</translation>
@@ -933,13 +919,13 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="813913629614996137">सुरू करत आहे…</translation>
 <translation id="8147028810663464959">वर्णाची रुंदी पूर्ण आहे</translation>
 <translation id="8151638057146502721">कॉंफिगर करा</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{१ एरर.}other{# एरर.}}</translation>
 <translation id="8154842056504218462">सर्व नोंदी निवडल्या आहेत.</translation>
 <translation id="8157684860301034423">ॲप माहिती पुन्हा मिळवता आली नाही.</translation>
 <translation id="8175731104491895765">फ्रेंच (बेल्जियम)</translation>
 <translation id="8175799081768705361"><ph name="NUMBER_OF_FILES_SYNCING" /> Drive फाइल सिंक करत आहे</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">डिव्हाइस मॉडेल</translation>
-<translation id="8223479393428528563">ऑफलाइन वापराकरिता या फाइल सेव्ह करण्यासाठी, परत ऑनलाइन व्‍हा, फाइलंवर राइट-क्लिक करा आणि <ph name="OFFLINE_CHECKBOX_NAME" /> पर्याय निवडा.</translation>
 <translation id="8241139360630443550">स्टोरेज पहा</translation>
 <translation id="8249296373107784235">रद्द करा</translation>
 <translation id="8250690786522693009">लॅटिन</translation>
@@ -966,6 +952,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="83651606385705612"><ph name="VM_NAME" /> ला <ph name="FOLDER_NAME" /> फोल्डरमधील फाइल ॲक्सेस करण्याची परवानगी द्या</translation>
 <translation id="8372369524088641025">खराब WEP की</translation>
 <translation id="8372852072747894550">ग्रीक</translation>
+<translation id="8377269993083688872">ईमेल लेआउट्स</translation>
 <translation id="8386903983509584791">स्कॅन पूर्ण झाले</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> काढली आहे.</translation>
 <translation id="8395901698320285466">परिमाण</translation>
@@ -1024,6 +1011,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="8787254343425541995">शेअर नेटवर्कसाठी प्रॉक्सीला अनुमती द्या</translation>
 <translation id="8790981080411996443">झाडांना पाणी देत असलेली व्यक्ती</translation>
 <translation id="8798099450830957504">डीफॉल्ट</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{१ चेतावणी.}other{# चेतावण्या.}}</translation>
 <translation id="8808686172382650546">मांजर</translation>
 <translation id="8810671769985673465">झिप करता आले नाही, आयटम अस्तित्वात आहे: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">स्पॅनिश (स्पेन)</translation>

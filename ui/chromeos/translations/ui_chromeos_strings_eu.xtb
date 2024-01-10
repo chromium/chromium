@@ -24,7 +24,6 @@
 <translation id="1173916544412572294"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea, <ph name="PHONE_NAME" />. <ph name="CONNECTION_STATUS" />. Seinalearen indarra: % <ph name="SIGNAL_STRENGTH" />. Telefonoaren bateria: % <ph name="BATTERY_STATUS" />. Xehetasunak.</translation>
 <translation id="117624967391683467"><ph name="FILE_NAME" /> kopiatzen…</translation>
 <translation id="1178581264944972037">Pausatu</translation>
-<translation id="1190144681599273207">Fitxategi hau eskuratzeko datu-konexioaren <ph name="FILE_SIZE" /> beharko dira gutxi gorabehera.</translation>
 <translation id="1194390763418645112"><ph name="RESTRICTED_DESTINATIONS" /> URLak atzi dezake fitxategia</translation>
 <translation id="1201402288615127009">Hurrengoa</translation>
 <translation id="1209796539517632982">Izen-zerbitzari automatikoak</translation>
@@ -100,7 +99,6 @@
 <translation id="1761091787730831947">Partekatu <ph name="VM_NAME" /> makina birtualarekin</translation>
 <translation id="1773212559869067373">Autentifikazio-ziurtagiria lokalki baztertu da</translation>
 <translation id="1775381402323441512">Bideoari buruzko informazioa</translation>
-<translation id="180035236176489073">Konektatuta egon behar zara fitxategiak atzitzeko.</translation>
 <translation id="1807938677607439181">Fitxategi guztiak</translation>
 <translation id="1810764548349082891">Ez dago aurrebistarik</translation>
 <translation id="1812302367230252929">Amhareraren transliterazioa</translation>
@@ -161,8 +159,6 @@
 <translation id="2282155092769082568">Konfigurazio automatikoaren URLa:</translation>
 <translation id="2284767815536050991">memoria aldagarria</translation>
 <translation id="2288278176040912387">Disko-jogailua</translation>
-<translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> fitxategi irekitzen.</translation>
-<translation id="2303301624314357662"><ph name="FILE_NAME" /> fitxategia irekitzen.</translation>
 <translation id="2304820083631266885">Planeta</translation>
 <translation id="2305020378527873881">Kanporatu da <ph name="VOLUME_NAME" />.</translation>
 <translation id="2307462900900812319">Konfiguratu sarea</translation>
@@ -172,7 +168,6 @@
 <translation id="233822363739146957">Ez dago fitxategi guztiak sinkronizatzeko behar adina toki biltegian</translation>
 <translation id="23721837607121582">Deskargatu mugikorreko profila, <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" /> sare, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Aldatu zerrenda-ikuspegira</translation>
-<translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> karpeta partekatu dira Linux-ekin</translation>
 <translation id="2379576081295865700">Biltegiratzeko tokia egiaztatzen… 1 elementu aurkitu da.</translation>
 <translation id="2383454254762599978">Eraman zaborrontzira</translation>
 <translation id="2387458720915042159">Proxy konexio mota</translation>
@@ -396,12 +391,10 @@
 <translation id="4197674956721858839">Konprimatu hautatutako fitxategiak</translation>
 <translation id="4202378258276439759">Espainiarra (Latinoamerika)</translation>
 <translation id="4202977638116331303">Georgiarra</translation>
-<translation id="421017592316736757">Fitxategia atzitzeko, konektatuta egon behar duzu.</translation>
 <translation id="4212740939091998969">"<ph name="FOLDER_NAME" />" izena duen karpeta bazegoen lehendik ere. Aukeratu beste izen bat.</translation>
 <translation id="4218274196133425560">Kendu <ph name="HOST_NAME" /> webgunearen salbuespena</translation>
 <translation id="4261901459838235729">Google aurkezpena</translation>
 <translation id="4277536868133419688"><ph name="FILTER_NAME" /> iragazkia aktibo dago.</translation>
-<translation id="4290535918735525311">Karpeta bat partekatu da Linux erabilita</translation>
 <translation id="4299729908419173967">Brasildarra</translation>
 <translation id="4302605047395093221">Gailua erabiltzen duten guztiek PINa idatzi beharko dute gailua sare mugikorrera konektatzeko</translation>
 <translation id="4303531889494116116">Sarea lanpetuta dago. Saiatu berriro geroago.</translation>
@@ -502,8 +495,6 @@
 <translation id="4906580650526544301"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea, <ph name="PHONE_NAME" />. <ph name="PROVIDER_NAME" />. <ph name="CONNECTION_STATUS" />. Seinalearen indarra: % <ph name="SIGNAL_STRENGTH" />. Telefonoaren bateria: % <ph name="BATTERY_STATUS" />. Xehetasunak.</translation>
 <translation id="4935975195727477204">Lorea</translation>
 <translation id="4943368462779413526">Futboleko baloia</translation>
-<translation id="4961158930123534723">Karpeta bat partekatu da Parallels Desktop aplikazioarekin</translation>
-<translation id="4965874878399872778">Fitxategiak zure erakundeko segurtasun-gidalerroekin egiaztatzen…</translation>
 <translation id="496656650103537022">Leheneratu da <ph name="FILE_NAME" /></translation>
 <translation id="4969785127455456148">Albuma</translation>
 <translation id="4972330214479971536">Ezin izan da amaitu konfiguratzen fitxategiak sinkronizatzeko aukera</translation>
@@ -565,7 +556,6 @@
 <translation id="5317780077021120954">Gorde</translation>
 <translation id="5318819489018851358">Partekatu Linux erabilita</translation>
 <translation id="5323213332664049067">Latinoamerikarra</translation>
-<translation id="5330145655348521461">Fitxategi hauek beste profil bateko mahaigainean ireki dira. Ikusteko, joan <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) profilera.</translation>
 <translation id="5330512191124428349">Lortu informazioa</translation>
 <translation id="535792325654997756">Pertsona bat katuekin</translation>
 <translation id="5358764674931277">Irudi-abiadura</translation>
@@ -667,7 +657,6 @@
 <translation id="613750717151263950">Japoniarra, teklatu estatubatuarrarekin</translation>
 <translation id="6138894911715675297">Ez dago sarerik (<ph name="NETWORK_TYPE" />)</translation>
 <translation id="6146563240635539929">Bideoak</translation>
-<translation id="6150853954427645995">Fitxategia gordetzeko eta konexiorik gabe erabili ahal izateko, konekta zaitez berriro, egin klik eskuineko botoiarekin fitxategiaren gainean eta hautatu <ph name="OFFLINE_CHECKBOX_NAME" /> aukera.</translation>
 <translation id="6164412158936057769">Tximeletak</translation>
 <translation id="6165508094623778733">Lortu informazio gehiago</translation>
 <translation id="6170470584681422115">Ogitartekoa</translation>
@@ -700,7 +689,6 @@
 <translation id="636254897931573416">Domeinuaren atzizkiaren bat-etortzearen balioa ez da zuzena</translation>
 <translation id="6364301859968397756">Erakundearen biltegia beteta dago</translation>
 <translation id="6367976544441405720">Furgoneta</translation>
-<translation id="637062427944097960">Fitxategi hau beste mahaigain batean ireki da. Ikusteko, joan <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) kontura.</translation>
 <translation id="6394388407447716302">Irakurtzeko soilik</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> elementu</translation>
 <translation id="6407769893376380348"><ph name="FILE_NAME" /> ezin izan da mugitu, enkriptatuta dagoelako.</translation>
@@ -709,7 +697,6 @@
 <translation id="6430271654280079150">Saiakera bat gelditzen zaizu.</translation>
 <translation id="643243556292470964">Ezabatutako fitxategiak zaborrontzira eramaten dira</translation>
 <translation id="6438480100790416671">Biltegiratzeko tokia egiaztatzen…</translation>
-<translation id="6451527188465304418">Fitxategia zure erakundeko segurtasun-gidalerroekin egiaztatzen…</translation>
 <translation id="6485131920355264772">Ezin izan da berreskuratu zuriuneei buruzko informazioa</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea. <ph name="NETWORK_NAME" /> (<ph name="SECURITY_STATUS" />; <ph name="CONNECTION_STATUS" />). Seinalearen indarra % <ph name="SIGNAL_STRENGTH" />. Administratzaileak kudeatua. Xehetasunak.</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> <ph name="FOLDER_NAME" /> karpetara ateratzen</translation>
@@ -724,7 +711,6 @@
 <translation id="6588648400954570689">Fitxategiak sinkronizatzeko ezarpenak</translation>
 <translation id="6594855146910089723">Linux eta Parallels Desktop aplikazioarekin partekatuta dago karpeta hau</translation>
 <translation id="6607272825297743757">Fitxategiari buruzko informazioa</translation>
-<translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> karpeta partekatu dira Parallels Desktop aplikazioarekin</translation>
 <translation id="6629518321609546825">Idatzi lau zenbaki gutxienez</translation>
 <translation id="6643016212128521049">Garbitu</translation>
 <translation id="6650726141019353908">Tximeleta arrosa</translation>
@@ -891,7 +877,6 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Errore bat gertatu da sarea konfiguratzean</translation>
-<translation id="7839804798877833423">Fitxategi horiek eskuratzeko, mugikorreko datuen <ph name="FILE_SIZE" /> erabiliko dira.</translation>
 <translation id="7846076177841592234">Utzi hautapena bertan behera</translation>
 <translation id="7853966320808728790">BÉPO teklatu frantsesa</translation>
 <translation id="7857117644404132472">Gehitu salbuespena</translation>
@@ -933,13 +918,13 @@
 <translation id="813913629614996137">Hasieratzen…</translation>
 <translation id="8147028810663464959">Karaktere-zabalera osoa da</translation>
 <translation id="8151638057146502721">Konfiguratu</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 errore.}other{# errore.}}</translation>
 <translation id="8154842056504218462">Hautatu dira sarrera guztiak.</translation>
 <translation id="8157684860301034423">Ezin izan da eskuratu aplikazioaren informazioa.</translation>
 <translation id="8175731104491895765">Frantsesa (Belgika)</translation>
 <translation id="8175799081768705361">Drive-ko <ph name="NUMBER_OF_FILES_SYNCING" /> fitxategi sinkronizatzen</translation>
 <translation id="8179976553408161302">Sartu</translation>
 <translation id="8193175696669055101">Gailuaren modeloa</translation>
-<translation id="8223479393428528563">Fitxategi horiek gordetzeko eta konexiorik gabe erabili ahal izateko, konekta zaitez berriro, egin klik eskuineko botoiarekin fitxategien gainean eta hautatu <ph name="OFFLINE_CHECKBOX_NAME" /> aukera.</translation>
 <translation id="8241139360630443550">Ikusi biltegia</translation>
 <translation id="8249296373107784235">Utzi bertan behera</translation>
 <translation id="8250690786522693009">Latindarra</translation>
@@ -1024,6 +1009,7 @@
 <translation id="8787254343425541995">Baimendu proxyak sare partekatuetan</translation>
 <translation id="8790981080411996443">Landareak ureztatzen ari den pertsona</translation>
 <translation id="8798099450830957504">Lehenetsia</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 abisu.}other{# abisu.}}</translation>
 <translation id="8808686172382650546">Katua</translation>
 <translation id="8810671769985673465">Ezin izan da konprimitu; elementua bazegoen lehendik ere: “<ph name="FILE_NAME" />”</translation>
 <translation id="8813284582615685103">Espainiarra (Espainia)</translation>

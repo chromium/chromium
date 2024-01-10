@@ -518,6 +518,7 @@ Ist die Richtlinie deaktiviert, wird die Seite mit dem Header „<ph name="CACHE
 <translation id="143649776386947790">Standardeinstellung verwenden</translation>
 <translation id="1438739959477268107">Standardeinstellung für die Schlüsselgenerierung</translation>
 <translation id="1440408958042020947">Zulassen, dass Nutzer, die der Verwendung von Phone Hub zugestimmt haben, auf Fotos und Videos zugreifen können, die kürzlich mit ihrem Smartphone aufgenommen wurden</translation>
+<translation id="1443532790824582949">Touch-Bildschirmtastatur aktivieren</translation>
 <translation id="1449083855104537880">Wenn du die Richtlinie auf "True" setzt, werden die Optionen für Bedienungshilfen im Taskleistenmenü angezeigt. Wenn die Richtlinie auf "False" gesetzt ist, werden die Optionen nicht im Taskleistenmenü angezeigt.
 
       Wenn du diese Richtlinie konfigurierst, kann sie von Nutzern nicht geändert werden. Wird sie nicht konfiguriert, erscheinen keine Optionen für Bedienungshilfen im Taskleistenmenü, die Nutzer können sie auf der Seite "Einstellungen" jedoch anzeigen lassen.
@@ -1164,6 +1165,7 @@ Ist die Richtlinie deaktiviert, schließt <ph name="PRODUCT_NAME" /> den Tab nac
 <translation id="1954612656043024615">Die Funktion „Geteilte Zwischenablage“ aktivieren</translation>
 <translation id="1955063069502242812">Ton bei niedrigem Akkustand aktivieren</translation>
 <translation id="1955806069704957172">Legt die Einstellungen für die Desk Connector API fest.</translation>
+<translation id="1957093168333856467">Bedienungshilfe „Bildschirmtastatur“ deaktivieren</translation>
 <translation id="1960059835237529462">Nutzern wird die Werbung für Bewertungen im App Store von <ph name="IOS_NAME" /> angezeigt</translation>
 <translation id="1960416154405676350"><ph name="GOOGLE_LENS_PRODUCT_NAME" />-Ausschnittsuche aktivieren.</translation>
 <translation id="1961091374249454164">Die Richtlinie wird nur auf verwaltete Gastsitzungen angewendet.
@@ -1266,6 +1268,7 @@ Diese Richtlinie wird nicht angewendet, wenn die Richtlinie <ph name="DEVICE_SCR
 <translation id="2029985289397958781">Kameragestützte Suche mit <ph name="GOOGLE_LENS_PRODUCT_NAME" /> für Unternehmensnutzer deaktivieren</translation>
 <translation id="2030905906517501646">Suchbegriff der Standardsuchmaschine</translation>
 <translation id="203096360153626918">Diese Richtlinie hat keine Auswirkungen auf die Android-Apps. Der Vollbildmodus kann aktiviert werden, auch wenn diese Richtlinie auf <ph name="FALSE" /> gesetzt ist.</translation>
+<translation id="2031074619942406753">Touch-Bildschirmtastatur deaktivieren</translation>
 <translation id="2032848225007871645">Durch die Konfiguration der Richtlinie wird festgelegt, mit welchen Modi für das schnelle Entsperren der Sperrbildschirm entsperrt werden kann.
 
       * Alle Modi für das schnelle Entsperren zulassen: ["all"] (umfasst auch zukünftige Modi).
@@ -2378,6 +2381,7 @@ Wenn diese Richtlinie aktiviert ist, kann das Verhalten von Funktionstasten mit 
       Genaue Informationen zu gültigen URL-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="2971096666394658693">Das Kontextmenü enthält einen Menüpunkt zum Teilen von Bildern mit <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" />.</translation>
 <translation id="2973972555495515337">Wenn die Richtlinie aktiviert ist, können Webanwendungen von Drittanbietern die <ph name="DESK_API_NAME" /> verwenden, um <ph name="PRODUCT_OS_NAME" />-Desktops zu speichern und freizugeben. Ist die Richtlinie deaktiviert, können Nutzer keine Desktopdaten über die <ph name="DESK_API_NAME" /> speichern und freigeben. Ist die Richtlinie nicht konfiguriert, entspricht das Verhalten der Einstellung „Deaktiviert“. Die Richtlinie wird nur auf registrierten Geräten angewendet.</translation>
+<translation id="2976033779241323433">Touch-Bildschirmtastatur basierend auf der standardmäßigen Systemheuristik aktivieren</translation>
 <translation id="2976429807269247880">Einstellungen für das Verhalten des alten „<ph name="ATTRIBUTE_SAMESITE_NAME" />“-Cookies</translation>
 <translation id="2979696534869541158">Alte Implementierung erzwingen</translation>
 <translation id="2985927503455169394">Standardmodus für das Einrichten von Assistant verwenden</translation>
@@ -2484,6 +2488,7 @@ Ist sie aktiviert oder nicht konfiguriert, kann der Nutzer das Avatarbild über 
       Ist die Richtlinie deaktiviert, wird die Mediensteuerung auf dem Sperrbildschirm ausgeschaltet.</translation>
 <translation id="3072847235228302527">Nutzungsbedingungen für ein lokales Gerätekonto festlegen</translation>
 <translation id="3074032542020543133">Langzeitsupport-Kanal</translation>
+<translation id="3074886258920642791">Bedienungshilfe „Bildschirmtastatur“ auf dem Anmeldebildschirm aktivieren</translation>
 <translation id="3077650998740742747">Standardverhalten (Richtlinie nicht konfiguriert)
 Wenn im Inhaltsbereich ein Konto hinzugefügt wird, wird der Nutzer möglicherweise über ein kleines Dialogfeld gebeten, ein neues Profil zu erstellen. Dieses Dialogfeld kann geschlossen werden.
 
@@ -3801,6 +3806,7 @@ Wenn die Richtlinie auf <ph name="DISABLE_UNPUBLISHED" /> (1) gesetzt ist, sind
 
       Wird diese Richtlinie von einer cloudbasierten Quelle konfiguriert, kann sie nicht auf bestimmte einzelne Nutzer ausgerichtet werden.</translation>
 <translation id="416817811987180750">Die Funktion „Einkaufsliste“ ist für Nutzer verfügbar.</translation>
+<translation id="4168880975307014079">Touch-Bildschirmtastatur aktivieren</translation>
 <translation id="4169094969938998854">Sperren des Bildschirms nicht zulassen</translation>
 <translation id="4169692397912242417">Hiermit wird die Bedienungshilfe "gesprochenes Feedback" auf dem Anmeldebildschirm aktiviert.
 
@@ -4772,6 +4778,7 @@ Diese Richtlinie wird nur angewendet, wenn das Gerät für <ph name="PRODUCT_NAM
       Hinweis: Dieser Liste können auch über die Richtlinie "<ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" />" Elemente hinzugefügt werden.</translation>
 <translation id="5063480226653192405">Verwendung</translation>
 <translation id="5067143124345820993">Zulassungsliste für Nutzer bei der Anmeldung</translation>
+<translation id="50689955292091946">Bedienungshilfe „Bildschirmtastatur“ auf dem Anmeldebildschirm aktivieren</translation>
 <translation id="5069522005630249098">Mit dieser Einstellung wird festgelegt, wie viele Nutzerdaten nach der Deaktivierung von <ph name="LACROS_NAME" /> gespeichert werden.
 
       Wenn die Richtlinie auf „<ph name="LACROS_BACKWARD_MIGRATION_NONE" />“ gesetzt oder nicht konfiguriert ist, wird keine umgekehrte Datenmigration ausgeführt.
@@ -5102,6 +5109,7 @@ Ist die Richtlinie deaktiviert, können der Browser‑ und der Downloadverlauf n
 <translation id="5331746669335642668">Cloud-Richtlinie von <ph name="PRODUCT_NAME" /> überschreibt Plattformrichtlinie.</translation>
 <translation id="5334501839642146593">Messwerte nie an Google senden</translation>
 <translation id="5335910979215357815">Save and Share API für die <ph name="PRODUCT_OS_NAME" />-Steuerung durch Drittanbieter aktivieren.</translation>
+<translation id="5339096331970464266">Bedienungshilfe „Bildschirmtastatur“ aktivieren</translation>
 <translation id="5340008866815063393">Erfassen von Richtliniendaten aktivieren</translation>
 <translation id="5345910753471481870">Schaltfläche „Google Lens“ nicht im Suchfeld auf der Seite „Neuer Tab“ anzeigen.</translation>
 <translation id="5346587320074666194">Den Zugriff auf Sensoren für diese Websites sperren</translation>
@@ -5274,6 +5282,7 @@ Ist die Richtlinie deaktiviert oder nicht konfiguriert, wird anhand der Einstell
 <translation id="5475361623548884387">Drucken aktivieren</translation>
 <translation id="547601067149622666">Werbung auf Websites mit aufdringlichen Werbeanzeigen nicht zulassen</translation>
 <translation id="5476152378885134514">Zwischenablage für diese Websites blockieren</translation>
+<translation id="5479841110985196412">Bedienungshilfe „Bildschirmtastatur“ aktivieren</translation>
 <translation id="5480380613778757009">Wenn diese Richtlinie deaktiviert oder nicht eingerichtet ist, werden alle in der verwalteten Gastsitzung festgelegten Anzeigeeinstellungen zurückgesetzt, sobald die Sitzung beendet ist. Ist diese Richtlinie auf „True“ gesetzt, bleiben Anzeigeeigenschaften nach dem Beenden der verwalteten Gastsitzung bestehen.</translation>
 <translation id="5483012943408894695">Ursprünge oder Hostnamenmuster, für die Einschränkungen für unsichere Ursprünge nicht gelten sollen</translation>
 <translation id="5483065054530244863">SHA-1-signierte Zertifikate zulassen, die von lokalen Vertrauensankern ausgestellt werden</translation>
@@ -5635,6 +5644,18 @@ Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, sind Glanceables 
 <translation id="5790763087505467169">Benachrichtigungen zum automatischen Start bei verwalteten Gastsitzungen reduzieren</translation>
 <translation id="5800329278018669527">Eingabeaufforderung zur Netzwerkkonfiguration im Offlinemodus deaktivieren</translation>
 <translation id="5802931736499687181">Verschlüsselte Pipeline für die Berichterstellung deaktivieren</translation>
+<translation id="5803715507113569033">Mit dieser Richtlinie können Administratoren die Bereitstellung von <ph name="MICROSOFT_ONE_DRIVE_NAME" /> konfigurieren.
+
+Wenn die Richtlinie auf „<ph name="ALLOWED_NAME" />“ gesetzt ist, kann der Nutzer bei Bedarf <ph name="MICROSOFT_ONE_DRIVE_NAME" /> einrichten.
+Nach Abschluss der Einrichtung wird <ph name="MICROSOFT_ONE_DRIVE_NAME" /> im Dateimanager bereitgestellt.
+
+Wenn die Richtlinie auf „<ph name="DISALLOWED_NAME" />“ gesetzt ist, kann der Nutzer <ph name="MICROSOFT_ONE_DRIVE_NAME" /> nicht einrichten.
+
+Wenn die Richtlinie auf „<ph name="AUTOMATED_NAME" />“ gesetzt ist, wird versucht, <ph name="MICROSOFT_ONE_DRIVE_NAME" /> automatisch einzurichten. Dazu muss sich der Nutzer mit einem Microsoft-Konto bei <ph name="PRODUCT_OS_NAME" /> anmelden. Wird ein Fehler festgestellt, wird stattdessen der Einrichtungsvorgang angezeigt.
+
+Ist die Richtlinie nicht konfiguriert, entspricht dies der Einstellung „<ph name="ALLOWED_NAME" />“ für normale Nutzer. Für Unternehmensnutzer gilt bei nicht konfigurierter Richtlinie die Einstellung „<ph name="DISALLOWED_NAME" />“.
+
+Mit der Richtlinie „<ph name="MICROSOFT_ONE_DRIVE_ACCOUNT_RESTRICTIONS" />“ kann eine weitere Kontoeinschränkung festgelegt werden.</translation>
 <translation id="5804795151506109282">Nutzer nicht zur Migration auffordern.</translation>
 <translation id="5806128552675651249">Drucken nur ohne Hintergrundgrafiken zulassen</translation>
 <translation id="5809210507920527553">Legt die Einstellungen für den Linux-Container (Crostini) fest.</translation>
@@ -6108,6 +6129,21 @@ In Version 114 und höher ist diese Richtlinie optional, wenn die Richtlinie �
 <translation id="6244210204546589761">Beim Start zu öffnende URLs</translation>
 <translation id="624595269193747921">Gibt an, ob die Suche nach dem passenden Drucker auf eine bestimmte Gruppe von Druckern beschränkt werden soll.</translation>
 <translation id="6246290059248303618">Mediensteuerelemente für <ph name="PRODUCT_NAME" />-Sitzungen anzeigen, die von anderen Geräten im lokalen Netzwerk gestartet wurden</translation>
+<translation id="6246420783859339814">Mit dieser Richtlinie können Administratoren einschränken, welche Konten sich für <ph name="MICROSOFT_ONE_DRIVE_NAME" /> anmelden dürfen, wenn die Richtlinie „<ph name="MICROSOFT_ONE_DRIVE_MOUNT_POLICY_NAME" />“ aktiviert ist.
+
+Wenn diese Richtlinie den Wert „<ph name="COMMON_NAME" />“ enthält, kann jedes Konto zur Anmeldung verwendet werden.
+
+Wenn sie den Wert „<ph name="ORGANIZATIONS_NAME" />“ enthält, können zur Anmeldung Arbeitskonten oder Konten einer Bildungseinrichtung verwendet werden.
+
+Wenn sie den Wert „<ph name="CONSUMER_NAME" />“ enthält, können private <ph name="MICROSOFT_NAME" />-Konten zur Anmeldung verwendet werden.
+
+Wenn diese Richtlinie Domainnamen oder Mandanten-IDs enthält, können Konten mit diesen Domainnamen oder Mandanten-IDs (siehe https://learn.microsoft.com/de-de/azure/active-directory/develop/v2-protocols#endpoints) zur Anmeldung verwendet werden.
+
+Ist die Richtlinie nicht konfiguriert oder enthält nur einen leeren Wert, verhält sie sich so, als wäre für normale Nutzer „<ph name="COMMON_NAME" />“ angegeben. Für Unternehmensnutzer verhält sie sich so, als wäre „<ph name="ORGANIZATIONS_NAME" />“ angegeben.
+
+Werden die Einschränkungen geändert, werden Nutzer möglicherweise aus ihrem <ph name="MICROSOFT_ONE_DRIVE_NAME" />-Konto abgemeldet, wenn es nicht den neuen Einschränkungen entspricht.
+
+Hinweis: Derzeit wird nur der erste Eintrag berücksichtigt. Erweiterungen werden in Zukunft mehrere Einträge unterstützen.</translation>
 <translation id="6247316685259031374">Mit dieser Richtlinie kann die Sandbox für den Audioprozess konfiguriert werden.
       Wenn die Richtlinie aktiviert ist, wird der Audioprozess in einer Sandbox ausgeführt.
       Wird sie deaktiviert, erfolgt die Ausführung nicht in einer Sandbox und das WebRTC-Audioverarbeitungsmodul wird im Renderer-Prozess ausgeführt.
@@ -6115,6 +6151,17 @@ In Version 114 und höher ist diese Richtlinie optional, wenn die Richtlinie �
       Wenn die Richtlinie nicht konfiguriert wird, kommt die Standardkonfiguration für die Audio-Sandbox zum Einsatz, die je nach Plattform variiert.
       Mit dieser Richtlinie sollen Unternehmen die Möglichkeit erhalten, die Audio-Sandbox zu deaktivieren, falls sie Softwarekonfigurationen für die Sicherheit einsetzen, die mit der Sandbox in Konflikt stehen könnten.</translation>
 <translation id="624818583115864448">Port 554 (Blockierung kann bis 15.10.2021 aufgehoben werden)</translation>
+<translation id="6249912382559535329">Aktiviert die Bedienungshilfe „Bildschirmtastatur“ auf dem Anmeldebildschirm.
+
+          Wenn diese Richtlinie auf „true“ gesetzt ist, ist die Bedienungshilfe „Bildschirmtastatur“ auf dem Anmeldebildschirm immer aktiviert.
+
+          Ist diese Richtlinie auf „false“ gesetzt, ist die Bedienungshilfe „Bildschirmtastatur“ auf dem Anmeldebildschirm immer deaktiviert.
+
+          Wenn diese Richtlinie konfiguriert ist, kann sie vom Nutzer nicht geändert oder überschrieben werden.
+
+          Ist diese Richtlinie nicht konfiguriert, ist die Bedienungshilfe „Bildschirmtastatur“ auf dem Anmeldebildschirm anfangs deaktiviert, kann aber vom Nutzer jederzeit in den Einstellungen für Bedienungshilfen aktiviert werden.
+
+          Diese Richtlinie hat keinen Einfluss darauf, ob die Touch-Bildschirmtastatur aktiviert ist. Beispielsweise wird die Touch-Bildschirmtastatur weiterhin auf Tablets angezeigt, auch wenn diese Richtlinie auf „false“ gesetzt ist.</translation>
 <translation id="6254498834449523938">Nicht zulassen, dass Nutzer Safe Browsing-Warnungen umgehen</translation>
 <translation id="625580680776945310">Der Modus für hohe Effizienz wird aktiviert.</translation>
 <translation id="6258658183356534534">Steuert die Funktion zur Aktualisierung des GREASE-Algorithmus für Client-Hinweise in „User-Agent“-Headern.</translation>
@@ -6336,6 +6383,16 @@ ACHTUNG: Du musst vorsichtig sein, wenn du diese Einstellung änderst, da dadurc
       Wenn diese Richtlinie nicht konfiguriert ist, wird der Standardwert für Unternehmensnutzer deaktiviert. Für nicht verwaltete Konten wird er aktiviert.</translation>
 <translation id="6401669939808766804">Nutzer abmelden</translation>
 <translation id="640244877779556713">Emoji-Vorschläge aktivieren</translation>
+<translation id="6403114173011456561">Steuert die Touch-Bildschirmtastatur und ist eine Ergänzung zur Richtlinie <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />.
+
+      Wenn die Bedienungshilfe „Bildschirmtastatur“ aktiviert ist, hat diese Richtlinie keine Auswirkungen.
+
+      Anderenfalls hat sie folgende Auswirkungen:
+      Wenn diese Richtlinie nicht konfiguriert ist, wird die Bildschirmtastatur auf Grundlage der standardmäßigen Systemheuristik angezeigt, z. B. je nachdem, ob Tastaturen angeschlossen sind.
+      Wenn diese Richtlinie auf „True“ gesetzt ist, wird die Bildschirmtastatur immer angezeigt.
+      Wenn sie auf „False“ gesetzt ist, wird die Bildschirmtastatur nie angezeigt.
+
+      Je nach Eingabemethode wird die Bildschirmtastatur möglicherweise in einem kompakten Layout angezeigt.</translation>
 <translation id="6404064917675764807">Ereignisse in CRD-Sitzungen nicht melden</translation>
 <translation id="6404360891305375004">Netzwerkfreigaben erlauben</translation>
 <translation id="6407093060083181305">Sperrliste für Installation von Erweiterungen konfigurieren</translation>
@@ -7110,6 +7167,16 @@ Diese Richtlinie wird entfernt, nachdem die Funktion für Out-of-Process-Drucker
       Wenn "U2F" ausgewählt ist, verhält sich die integrierte Hardware gemäß der FIDO U2F-Spezifikation.
 
       Wenn "U2F_EXTENDED" ausgewählt ist, sind durch die integrierte Hardware die U2F-Funktionen plus einige Erweiterungen zur individuellen Bestätigung verfügbar.</translation>
+<translation id="69942621143543910">Mit dieser Richtlinie können Administratoren den <ph name="CLOUD_UPLOAD_NAME" />-Ablauf für <ph name="MICROSOFT_ONE_DRIVE_NAME" /> und <ph name="MICROSOFT_365_NAME" /> unter <ph name="PRODUCT_OS_NAME" /> konfigurieren.
+
+Wenn die Richtlinie auf „<ph name="ALLOWED_NAME" />“ gesetzt ist, kann der Nutzer bei Bedarf den <ph name="CLOUD_UPLOAD_NAME" />-Ablauf für <ph name="MICROSOFT_ONE_DRIVE_NAME" /> und <ph name="MICROSOFT_365_NAME" /> einrichten.
+Nach Abschluss der Einrichtung werden Dateien mit passenden Dateiformaten standardmäßig in <ph name="MICROSOFT_ONE_DRIVE_NAME" /> verschoben und in der <ph name="MICROSOFT_365_NAME" />-App verarbeitet, wenn der Nutzer versucht, sie zu öffnen.
+
+Wenn die Richtlinie auf „<ph name="DISALLOWED_NAME" />“ gesetzt ist, kann der Nutzer den <ph name="CLOUD_UPLOAD_NAME" />-Ablauf für <ph name="MICROSOFT_ONE_DRIVE_NAME" /> und <ph name="MICROSOFT_365_NAME" /> nicht wie oben beschrieben einrichten und <ph name="MICROSOFT_365_NAME" /> wird aus der Liste der möglichen Datei-Handler entfernt.
+
+Wenn die Richtlinie auf „<ph name="AUTOMATED_NAME" />“ gesetzt ist, wird der <ph name="CLOUD_UPLOAD_NAME" />-Ablauf für <ph name="MICROSOFT_ONE_DRIVE_NAME" /> und <ph name="MICROSOFT_365_NAME" /> automatisch so eingerichtet, dass Dateien mit passenden Dateiformaten standardmäßig in <ph name="MICROSOFT_ONE_DRIVE_NAME" /> verschoben und in der <ph name="MICROSOFT_365_NAME" />-App verarbeitet werden, wenn der Nutzer versucht, sie zu öffnen.
+
+Ist die Richtlinie nicht konfiguriert, entspricht dies der Einstellung „<ph name="ALLOWED_NAME" />“ für normale Nutzer. Für Unternehmensnutzer gilt bei nicht konfigurierter Richtlinie die Einstellung „<ph name="DISALLOWED_NAME" />“.</translation>
 <translation id="6999948519306285655">Diese Richtlinie wurde eingestellt. Bitte verwende stattdessen die Richtlinie "<ph name="PROXY_SETTINGS_POLICY_NAME" />".
 
        Durch Festlegen der Richtlinie kannst du die URL zu einer PAC-Proxydatei angeben. Diese Richtlinie ist nur dann wirksam, wenn die Richtlinie "<ph name="PROXY_SETTINGS_POLICY_NAME" />" nicht konfiguriert ist und du "<ph name="PROXY_MODE_ENUM_PAC_SCRIPT" />" mit "<ph name="PROXY_MODE_POLICY_NAME" />" ausgewählt hast.
@@ -8740,6 +8807,17 @@ Zertifikate müssen mit Base64 codiert sein.</translation>
 
 Ist die Richtlinie nicht konfiguriert oder auf 0 gesetzt, wird eine bestimmte aufgerufene URL sofort in einem alternativen Browser geöffnet.</translation>
 <translation id="8402079500086185021">PDF-Dateien immer extern öffnen</translation>
+<translation id="8402357110539568621">Aktiviert die Bedienungshilfe „Bildschirmtastatur“.
+
+          Wenn diese Richtlinie auf „true“ gesetzt ist, ist die Bedienungshilfe „Bildschirmtastatur“ immer aktiviert.
+
+          Ist diese Richtlinie auf „false“ gesetzt, ist die Bedienungshilfe „Bildschirmtastatur“ immer deaktiviert.
+
+          Wenn diese Richtlinie konfiguriert ist, kann sie vom Nutzer nicht geändert oder überschrieben werden.
+
+          Ist diese Richtlinie nicht konfiguriert, ist die Bedienungshilfe „Bildschirmtastatur“ anfangs deaktiviert, kann jedoch vom Nutzer jederzeit in den Einstellungen für Bedienungshilfen aktiviert werden.
+
+          Diese Richtlinie hat keinen Einfluss darauf, ob die Touch-Bildschirmtastatur aktiviert ist. Beispielsweise wird die Touch-Bildschirmtastatur weiterhin auf Tablets angezeigt, auch wenn diese Richtlinie auf „false“ gesetzt ist. Das Verhalten der Touch-Bildschirmtastatur lässt sich mit der Richtlinie „<ph name="TOUCH_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />“ steuern.</translation>
 <translation id="8410477879938914253">Die Richtlinie wird nur auf verwaltete Gastsitzungen angewendet.
       Wenn die Richtlinie auf „True“ gesetzt oder nicht konfiguriert ist, wird ein Dialogfeld angezeigt, über das der Nutzer dazu aufgefordert wird, die Abmeldung zu bestätigen oder abzulehnen, wenn das letzte Fenster geschlossen wird.
       Ist die Richtlinie auf „False“ gesetzt, wird das Dialogfeld nicht angezeigt und dadurch auch die automatische Abmeldung nach dem Schließen des letzten Fensters deaktiviert.</translation>
@@ -8794,6 +8872,7 @@ Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, werden nur die re
 <translation id="8470317291588703478">Eingeschränkten Modus für YouTube nicht erzwingen</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>
 <translation id="8479032202539686055">WebRTC verwendet bei der Suche nach dem besten Pfad alle verfügbaren Schnittstellen.</translation>
+<translation id="8479496880635054740">Bedienungshilfe „Bildschirmtastatur“ auf dem Anmeldebildschirm deaktivieren</translation>
 <translation id="8482518340010585741">App-Wiederherstellung bei der Anmeldung konfigurieren</translation>
 <translation id="8483004350080020634">Entfernt datenschutz- und sicherheitsrelevante Teile aus https://-URLs, bevor diese an PAC-Scripts (Proxy Auto Config) übergeben werden, die <ph name="PRODUCT_NAME" /> während der Proxy-Auflösung verwendet.
 

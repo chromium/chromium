@@ -810,7 +810,6 @@
 <translation id="1615433306336820465">Управление на данните за вход, съхранявани в ключа ви за сигурност</translation>
 <translation id="1616206807336925449">Това разширение не изисква специални разрешения.</translation>
 <translation id="1616298854599875024">Разширението <ph name="IMPORT_NAME" /> не може да бъде импортирано, защото не е споделен модул</translation>
-<translation id="161654560322394775">Изображение <ph name="INDEX" /> от <ph name="A" /> в стил „<ph name="B" />“ и настроение „<ph name="C" />“.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Тези данни се проверяват за съответствие с правилата за сигурност на организацията ви...}=1{Този файл се проверява за съответствие с правилата за сигурност на организацията ви...}other{Тези файлове се проверяват за съответствие с правилата за сигурност на организацията ви...}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">П&amp;омощен център</translation>
@@ -4231,7 +4230,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4250229828105606438">Eкранна снимка</translation>
 <translation id="4250680216510889253">Не</translation>
 <translation id="4251377547188244181">Регистриране на устройство за павилионен режим или режим за дигитални знаци и надписи</translation>
-<translation id="4252141040239557279">Изображение <ph name="INDEX" /> от <ph name="A" /></translation>
 <translation id="4252828488489674554">Кликнете с десния бутон върху името на групата раздели, за да я редактирате, или кликнете с левия бутон за свиване</translation>
 <translation id="4252899949534773101">Функцията за Bluetooth е деактивирана</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> – съдържанието на раздела се споделя</translation>
@@ -6564,7 +6562,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <ph name="BREAK" />
 Можете да управлявате настройките от менюто на картата или да видите още опции в „Персонализиране на Chrome“.</translation>
 <translation id="6121773125605585883">Преглед на паролата, свързана с потребителското име <ph name="USERNAME" />, за <ph name="WEBSITE" /></translation>
-<translation id="6122081475643980456">Връзката ви с интернет се контролира</translation>
 <translation id="6122093587541546701">Имейл адрес (по избор):</translation>
 <translation id="6122095009389448667">Този сайт да продължи да няма достъп за преглед на буферната памет</translation>
 <translation id="6122513630797178831">Запазване на кода за проверка</translation>
@@ -7447,7 +7444,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6820079682647046800">Удостоверяването с Kerberos не бе успешно</translation>
 <translation id="6821439254917412979">Освобождаване на <ph name="EXTENSION_NAME" /></translation>
 <translation id="6823174134746916417">Кликване с докосване на сензорния панел</translation>
-<translation id="6823429960180594870">Управлявайте файловете, докато се изтеглят, и ги отваряйте, когато са готови</translation>
 <translation id="6823561724060793716">От адресната лента можете да отворите информацията за страницата, за да видите допълнителни подробности за страницата, която посещавате</translation>
 <translation id="6824564591481349393">Копиране на име&amp;йл адреса</translation>
 <translation id="6824584962142919697">&amp;Инспектиране на елементите</translation>
@@ -7853,7 +7849,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="714301620504747562">Можете да сърфирате и търсите по-бързо, отколкото при стандартното предварително зареждане.</translation>
 <translation id="7143207342074048698">Свързва се</translation>
 <translation id="7143409552554575716">Флагове за ChromeOS</translation>
-<translation id="714447804011008506">Изтеглянията вече са в лентата с инструменти</translation>
 <translation id="7144856456372460176">&amp;Инсталиране на <ph name="APP" />...</translation>
 <translation id="7144878232160441200">Повторен опит</translation>
 <translation id="7145413760160421938">Предишната сесия не може да бъде възобновена</translation>
@@ -8504,7 +8499,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7657090467145778067">Малка икономия</translation>
 <translation id="7657218410916651670">Възможно е <ph name="BEGIN_LINK_GOOGLE" />други видове активност<ph name="END_LINK_GOOGLE" /> да се запазват в профила ви в Google, когато сте влезли в него. Можете да изтриете съответните данни по всяко време.</translation>
 <translation id="7658239707568436148">Отказ</translation>
-<translation id="7658727964021657194">Наскоро създадена от AI тема <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">Да се излезе ли от режим „инкогнито“ въпреки това?</translation>
 <translation id="7659336857671800422">Преглед на ръководството за поверителност</translation>
 <translation id="7659584679870740384">Не сте упълномощени да използвате това устройство. За разрешение за вход се свържете с администратора.</translation>
@@ -8786,7 +8780,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7855678561139483478">Преместване на раздела в нов прозорец</translation>
 <translation id="7857004848504343806">Компютърът ви съдържа модул за сигурност, който служи за реализиране на множество критични защитни функции в ChromeOS Flex. За да научите повече, посетете Помощния център на Chromebook: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Текстови предложения</translation>
-<translation id="7857949311770343000">Това очакваният от вас нов раздел ли е?</translation>
 <translation id="7858120906780498731">Входни устройства, свързани с ChromeOS</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941">Премахване на разширението <ph name="EXTENSION_NAME" /></translation>
@@ -8835,7 +8828,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="789722939441020330">Да не се разрешава на сайтовете да изтеглят автоматично няколко файла</translation>
 <translation id="7897900149154324287">В бъдеще изваждайте премахващото се устройство от приложението Файлове, преди да го изключите. В противен случай може да загубите данни.</translation>
 <translation id="7898725031477653577">Винаги да се превежда</translation>
-<translation id="7899324822972399722">Изображение <ph name="INDEX" /> от <ph name="A" /> в стил „<ph name="B" />“</translation>
 <translation id="7901405293566323524">Център за телефоните</translation>
 <translation id="7903290522161827520">Търсите компонентите на браузъра? Посетете</translation>
 <translation id="7903429136755645827">Кликнете, за да персонализирате контролите си за игри</translation>
@@ -9116,7 +9108,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8098616321286360457">Изисква се връзка с мрежата</translation>
 <translation id="8100230553590752325">Използване на запазените пароли на всяко устройство</translation>
 <translation id="810068641062493918">Избрахте „<ph name="LANGUAGE" />“. За отмяна на избора натиснете клавиша „търсене“ + интервал.</translation>
-<translation id="8100725874569949614">Изображение <ph name="INDEX" /> от <ph name="A" /> в настроение „<ph name="C" />“.</translation>
 <translation id="8101409298456377967">Създавайте, запазвайте и управлявайте паролите си, така че лесно да можете да влизате в сайтовете и приложенията. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">Персонализиран цвят</translation>
 <translation id="8101987792947961127">При следващото рестартиране се изисква Powerwash</translation>
@@ -10063,7 +10054,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8846163936679269230">Нулиране на потребителските профили на електронната SIM карта</translation>
 <translation id="8846239054091760429">Монозвук, стартиране, „Надписи на живо“ и др.</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8848963863312877204">Изтеглянията ви ще се показват тук</translation>
 <translation id="8849001918648564819">Скрито</translation>
 <translation id="8849219423513870962">Анулиране на премахването на потребителския профил (<ph name="PROFILE_NAME" />) на електронната SIM карта</translation>
 <translation id="8849262417389398097"><ph name="CHECKED" /> от <ph name="CHECKING" /></translation>

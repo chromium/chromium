@@ -56,7 +56,6 @@
 <translation id="1279024913354609713">Չթույլատրել</translation>
 <translation id="1281818060020671000">Տվյալների կառավարում</translation>
 <translation id="1282311502488501110">Մուտք չգործել</translation>
-<translation id="1283039547216852943">Հպեք՝ ընդարձակելու համար</translation>
 <translation id="1283524564873030414">Վերջին 24 ժամվա</translation>
 <translation id="1285320974508926690">Երբեք չթարգմանել այս կայքը</translation>
 <translation id="1291506870746876680">Երբ դուրս գաք <ph name="BEGIN_BOLD" />«<ph name="SITE_NAME" />»<ph name="END_BOLD" /> կայքից, դրա բոլոր թույլտվությունները կանջատվեն։</translation>
@@ -82,7 +81,6 @@
 <translation id="1377255359165588604">Չհաջողվեց համաժամացնել:</translation>
 <translation id="1377321085342047638">Քարտի համարը</translation>
 <translation id="1377508275003315939">Գաղտնաբառեր</translation>
-<translation id="1380914240355562929">Այժմ <ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> օգտատերը կարող է օգտագործել ձեր օգտանունն ու գաղտնաբառը, երբ Google գաղտնաբառերի կառավարչի օգնությամբ մուտք է գործում <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> կայքում։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">Որոնում</translation>
 <translation id="138618066238211776">Շարունակել <ph name="USER_NAME" /> հաշվով</translation>
 <translation id="1400642268715879018">Վերջին 4 շաբաթվա</translation>
@@ -406,7 +404,6 @@
 <translation id="3087734570205094154">Ներքև</translation>
 <translation id="3090455602619185166">Մուտք գործել կառավարվող հաշիվ</translation>
 <translation id="309710370695886264">Դուք ունեք 1 կրկնվող գաղտնաբառ։ Փոխեք այն՝ ձեր տվյալները պաշտպանելու համար։</translation>
-<translation id="3109724472072898302">Կոծկված</translation>
 <translation id="3112556859945124369">Նշել…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Ինչ տվյալներ կարող եք համաժամացնել<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">Պատմություն և այլ տվյալներ</translation>
@@ -775,7 +772,6 @@
 <translation id="5121618895923301719">Դուք արդեն հետագծում եք այս ապրանքը։ Այս էջը պահված է <ph name="BEGIN_LINK" />Mobile Bookmarks<ph name="END_LINK" />-ում։</translation>
 <translation id="512533434554095351">Դուք ունեք մի քանի ոչ հուսալի գաղտնաբառ։</translation>
 <translation id="5126465625664020024">Մուտք և համաժամացում</translation>
-<translation id="5131062416352684089">Այժմ ձեր ընտանիքի անդամները կարող են օգտագործել ձեր օգտանունն ու գաղտնաբառը, երբ Google գաղտնաբառերի կառավարչի օգնությամբ մուտք են գործում <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> կայքում։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">Համաժամացրեք ձեր գաղտնաբառերը, պատմությունն ու մյուս կարգավորումները ձեր բոլոր սարքերում</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} թույլ գաղտնաբառ}one{{COUNT} թույլ գաղտնաբառ}other{{COUNT} թույլ գաղտնաբառ}}</translation>
 <translation id="5149188072385105201">Ավելացնել գաղտնաբառ…</translation>
@@ -924,7 +920,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="5955891643922670672">Անցանց տարբերակի դիտում</translation>
 <translation id="5957613098218939406">Լրացուցիչ ընտրանքներ</translation>
 <translation id="595769230373966252">Որոնել <ph name="SEARCH_PROVIDER" />-ում</translation>
-<translation id="5962718611393537961">Հպեք՝ կոծկելու համար</translation>
 <translation id="5963939892571022323">Չհաջողվեց ստեղծել ընդգծված տեքստի հղումը։</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 էջանիշ ջնջվեց}one{{count} էջանիշ ջնջվեց}other{{count} էջանիշ ջնջվեց}}</translation>
 <translation id="5979837087407522202">Գաղտնաբառերի որոնում</translation>

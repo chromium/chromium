@@ -471,6 +471,7 @@
 <translation id="1363585519747660921">USB ಪ್ರಿಂಟರ್ ಅನ್ನು ಕಾನ್ಫಿಗರ್ ಮಾಡಬೇಕಾಗಿದೆ</translation>
 <translation id="136378536198524553">ಎನರ್ಜಿ ಸೇವರ್ ಆನ್ ಆಗಿದೆ</translation>
 <translation id="136522805455656552">ನಿಮ್ಮ ಸಾಧನವನ್ನು ಸುರಕ್ಷಿತವಾಗಿರಿಸಲು, ನೀವು ವಿಶ್ವಾಸಾರ್ಹ ಮೂಲಗಳು ಮತ್ತು ಡೆವಲಪರ್‌ಗಳಿಂದ ಮಾತ್ರ ಸಾಫ್ಟ್‌ವೇರ್ ಅನ್ನು ರನ್ ಮಾಡಬೇಕು ಮತ್ತು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಬೇಕು. <ph name="LEARN_MORE" /></translation>
+<translation id="1367817137674340530"><ph name="COUNT" /> ಚಿತ್ರಗಳನ್ನು ಜನರೇಟ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1368603372088757436">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಲ್ಲಿ Linux ಬೆಂಬಲಿಸುವುದಿಲ್ಲ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="1370384480654163477">ನೀವು ಈ ಸೈಟ್‌ಗೆ ಕೊನೆಯ ಬಾರಿ ಭೇಟಿ ನೀಡಿದ ಫೈಲ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಿ ಮತ್ತು ಎಡಿಟ್ ಮಾಡಿ:</translation>
 <translation id="1372841398847029212">ನಿಮ್ಮ ಖಾತೆಗೆ ಸಿಂಕ್ ಮಾಡಿ</translation>
@@ -816,7 +817,6 @@
 <translation id="1615433306336820465">ನಿಮ್ಮ ಭದ್ರತೆ ಕೀಯಲ್ಲಿ ಸಂಗ್ರಹವಾಗಿರುವ ಸೈನ್-ಇನ್ ಡೇಟಾವನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="1616206807336925449">ಈ ವಿಸ್ತರಣೆಗೆ ಯಾವುದೇ ವಿಶೇಷ ಅನುಮತಿಗಳ ಅಗತ್ಯವಿಲ್ಲ.</translation>
 <translation id="1616298854599875024">"<ph name="IMPORT_NAME" />" ವಿಸ್ತರಣೆಯು ಹಂಚಿಕೊಂಡ ಮಾಡ್ಯೂಲ್ ಆಗಿಲ್ಲದಿರುವ ಕಾರಣ ಅದನ್ನು ಆಮದು ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
-<translation id="161654560322394775"><ph name="A" /> ನ ಚಿತ್ರ <ph name="INDEX" />, <ph name="B" /> ಶೈಲಿಯಲ್ಲಿದೆ, <ph name="C" /> ಮೂಡ್ ಹೊಂದಿದೆ.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ಭದ್ರತೆ ನೀತಿಗಳ ಜೊತೆಗೆ ಈ ಡೇಟಾವನ್ನು ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ...}=1{ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ಭದ್ರತೆ ನೀತಿಗಳ ಜೊತೆಗೆ ಈ ಫೈಲ್ ಅನ್ನು ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ...}one{ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ಭದ್ರತೆ ನೀತಿಗಳ ಜೊತೆಗೆ ಈ ಫೈಲ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ...}other{ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ಭದ್ರತೆ ನೀತಿಗಳ ಜೊತೆಗೆ ಈ ಫೈಲ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ...}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">ಸ&amp;ಹಾಯ ಕೇಂದ್ರ</translation>
@@ -3241,6 +3241,7 @@
 <translation id="3480612136143976912">ಲೈವ್ ಕ್ಯಾಪ್ಶನ್‌ಗಾಗಿ ಶೀರ್ಷಿಕೆ ಗಾತ್ರ ಮತ್ತು ಶೈಲಿಯನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ. ಕೆಲವೊಂದು ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ಸೈಟ್‌ಗಳು ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಸಹ ಬಳಸುತ್ತವೆ.</translation>
 <translation id="3480827850068960424"><ph name="NUM" /> ಟ್ಯಾಬ್‌ಗಳು ಕಂಡುಬಂದಿವೆ</translation>
 <translation id="3481268647794498892"><ph name="COUNTDOWN_SECONDS" /> ಸೆಕೆಂಡುಗಳಲ್ಲಿ <ph name="ALTERNATIVE_BROWSER_NAME" /> ನಲ್ಲಿ ತೆರೆಯಲಾಗುತ್ತದೆ</translation>
+<translation id="348247802372410699">ಶೈಲಿಯನ್ನು ಆರಿಸಿ</translation>
 <translation id="348268549820508141">ಧ್ವನಿ ಗುರುತಿಸುವಿಕೆ</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" />, ಈ ಕೆಳಗಿನ ಫೈಲ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಬಹುದು</translation>
 <translation id="3484595034894304035">ವಾಲ್‌ಪೇಪರ್, ಸ್ಕ್ರೀನ್ ಸೇವರ್, ಡಾರ್ಕ್ ಥೀಮ್ ಮತ್ತು ಇನ್ನಷ್ಟನ್ನು ವೈಯಕ್ತೀಕರಿಸಿ</translation>
@@ -4231,7 +4232,6 @@
 <translation id="4250229828105606438">ಸ್ಕ್ರೀನ್‌ಶಾಟ್</translation>
 <translation id="4250680216510889253">ಇಲ್ಲ</translation>
 <translation id="4251377547188244181">ಕಿಯೋಸ್ಕ್ ಮತ್ತು ಸೈನೇಜ್ ಸಾಧನಗಳ ನೋಂದಣಿ</translation>
-<translation id="4252141040239557279"><ph name="A" /> ನ ಚಿತ್ರ <ph name="INDEX" /></translation>
 <translation id="4252828488489674554">ಈ ಗುಂಪನ್ನು ಎಡಿಟ್ ಮಾಡಲು ಟ್ಯಾಬ್ ಗುಂಪಿನ ಹೆಸರಿನ ಮೇಲೆ ಬಲ ಕ್ಲಿಕ್ ಮಾಡಿ ಅಥವಾ ಕುಗ್ಗಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="4252899949534773101">ಬ್ಲೂಟೂತ್ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - ಟ್ಯಾಬ್ ವಿಷಯವನ್ನು ಹಂಚಿಕೊಳ್ಳಲಾಗಿದೆ</translation>
@@ -6104,6 +6104,7 @@
 <translation id="5756163054456765343">ಸ&amp;ಹಾಯ ಕೇಂದ್ರ</translation>
 <translation id="5757187557809630523">ಮುಂದಿನ ಟ್ರ್ಯಾಕ್</translation>
 <translation id="5758631781033351321">ನಿಮ್ಮ ಓದುವ ಪಟ್ಟಿಯನ್ನು ಇಲ್ಲಿ ಕಾಣಬಹುದು</translation>
+<translation id="5759397201362801675">ಮೂಡ್ ಅನ್ನು ಆರಿಸಿ</translation>
 <translation id="5759728514498647443">ನೀವು <ph name="APP_NAME" /> ಮೂಲಕ ಪ್ರಿಂಟ್ ಮಾಡಲು ಕಳುಹಿಸುವ ಡಾಕ್ಯುಮೆಂಟ್‌ಗಳನ್ನು <ph name="APP_NAME" /> ಮೂಲಕ ಓದಬಹುದಾಗಿದೆ.</translation>
 <translation id="5762787084360227629">Google ಖಾತೆಯ ಮಾಹಿತಿಯನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="5763751966069581670">ಯಾವುದೇ USB ಸಾಧನಗಳು ಕಂಡುಬಂದಿಲ್ಲ</translation>
@@ -6396,6 +6397,7 @@
 <translation id="5979421442488174909"><ph name="LANGUAGE" /> ಗೆ &amp;ಭಾಷಾಂತರಿಸಿ</translation>
 <translation id="5979469435153841984">ಪುಟಗಳನ್ನು ಬುಕ್‌ಮಾರ್ಕ್‌ ಮಾಡಲು, ವಿಳಾಸಪಟ್ಟಿಯಲ್ಲಿರುವ ನಕ್ಷತ್ರವನ್ನು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="5982578203375898585">ಡೌನ್‌ಲೋಡ್‌ಗಳು ಪೂರ್ಣಗೊಂಡಾಗ ಅವುಗಳನ್ನು ತೋರಿಸಿ</translation>
+<translation id="5983716913605894570">ಜನರೇಟ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="5984222099446776634">ಇತ್ತೀಚೆಗೆ ಭೇಟಿ ನೀಡಿದವು</translation>
 <translation id="5985458664595100876">ಅಮಾನ್ಯ URL ಫಾರ್ಮ್ಯಾಟ್. \\server\share ಮತ್ತು smb://server/share ಫಾರ್ಮ್ಯಾಟ್‍ಗಳಿಗೆ ಬೆಂಬಲವಿದೆ.</translation>
 <translation id="598810097218913399">ಕಾರ್ಯನಿಯೋಜನೆಯನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
@@ -6568,7 +6570,6 @@
         <ph name="BREAK" />
         ನೀವು ಕಾರ್ಡ್ ಮೆನುವಿನಿಂದ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಬಹುದು ಅಥವಾ Chrome ಅನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ ಎಂಬಲ್ಲಿ ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳನ್ನು ನೋಡಬಹುದು.</translation>
 <translation id="6121773125605585883"><ph name="WEBSITE" /> ಗೆ ಸಂಬಂಧಿಸಿದ <ph name="USERNAME" /> ಬಳಕೆದಾರರ ಹೆಸರಿನ ಜೊತೆಗೆ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ವೀಕ್ಷಿಸಿ</translation>
-<translation id="6122081475643980456">ನಿಮ್ಮ ಇಂಟರ್ನೆಟ್ ಸಂಪರ್ಕವನ್ನು ನಿಯಂತ್ರಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="6122093587541546701">ಇಮೇಲ್ (ಐಚ್ಛಿಕ):</translation>
 <translation id="6122095009389448667">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್ ಅನ್ನು ನೋಡದಂತೆ ಈ ಸೈಟ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸುವುದನ್ನು ಮುಂದುವರಿಸಿ</translation>
 <translation id="6122513630797178831">CVC ಸೇವ್ ಮಾಡಿ</translation>
@@ -7454,7 +7455,6 @@
 <translation id="6820079682647046800">Kerberos ಪ್ರಮಾಣೀಕರಣವು ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="6821439254917412979"><ph name="EXTENSION_NAME" /> ಅನ್ನು ಅನ್‌ಪಿನ್ ಮಾಡಿ</translation>
 <translation id="6823174134746916417">ಟಚ್‌ಪ್ಯಾಡ್ ಕ್ಲಿಕ್‌ - ಮಾಡಲು - ಟ್ಯಾಪ್‌ ಮಾಡಿ</translation>
-<translation id="6823429960180594870">ಫೈಲ್‌ಗಳನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಿದಂತೆ ಅವುಗಳನ್ನು ನಿರ್ವಹಿಸಿ ಮತ್ತು ಅವುಗಳು ಮುಗಿದ ನಂತರ ತೆರೆಯಿರಿ</translation>
 <translation id="6823561724060793716">ವಿಳಾಸ ಪಟ್ಟಿಯಿಂದ, ನೀವು ಭೇಟಿ ನೀಡುತ್ತಿರುವ ಪುಟದ ಕುರಿತು ಹೆಚ್ಚುವರಿ ಮಾಹಿತಿಯನ್ನು ನೋಡಲು ನೀವು ಪುಟದ ಮಾಹಿತಿಯನ್ನು ತೆರೆಯಬಹುದು</translation>
 <translation id="6824564591481349393">ಇಮೇಲ್ &amp;ವಿಳಾಸವನ್ನು ನಕಲು ಮಾಡಿ</translation>
 <translation id="6824584962142919697">&amp;ಅಂಶಗಳನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
@@ -7861,7 +7861,6 @@
 <translation id="714301620504747562">ಬ್ರೌಸಿಂಗ್ ಮತ್ತು ಹುಡುಕಾಟವು ಸ್ಟ್ಯಾಂಡರ್ಡ್ ಪ್ರಿಲೋಡಿಂಗ್‌ಗಿಂತ ವೇಗವಾಗಿರುತ್ತದೆ</translation>
 <translation id="7143207342074048698">ಕನೆಕ್ಟ್...</translation>
 <translation id="7143409552554575716">ChromeOS ಫ್ಲ್ಯಾಗ್‌ಗಳು</translation>
-<translation id="714447804011008506">ಡೌನ್‌ಲೋಡ್‌ಗಳು ಈಗ ಟೂಲ್‌ಬಾರ್‌ನಲ್ಲಿವೆ</translation>
 <translation id="7144856456372460176"><ph name="APP" /> ಅನ್ನು &amp;ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ...</translation>
 <translation id="7144878232160441200">ಮರುಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="7145413760160421938">ಹಿಂದಿನ ಸೆಶನ್ ಅನ್ನು ಪುನರಾರಂಭಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
@@ -8511,7 +8510,6 @@
 <translation id="7657090467145778067">ಸಣ್ಣ ಉಳಿತಾಯಗಳು</translation>
 <translation id="7657218410916651670">ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿರುವಾಗ, ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ <ph name="BEGIN_LINK_GOOGLE" />ಚಟುವಟಿಕೆಯ ಇತರ ವಿಧಾನಗಳನ್ನು<ph name="END_LINK_GOOGLE" /> ಉಳಿಸಬಹುದು. ನೀವು ಅವುಗಳನ್ನು ಯಾವಾಗ ಬೇಕಾದರೂ ಅಳಿಸಬಹುದು.</translation>
 <translation id="7658239707568436148">ರದ್ದುಮಾಡಿ</translation>
-<translation id="7658727964021657194">ಇತ್ತೀಚಿನ AI ಥೀಮ್ <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">ಹೇಗಾದರೂ ಅಜ್ಞಾತ ಮೋಡ್‌ ಅನ್ನು ಮುಚ್ಚುವುದೇ?</translation>
 <translation id="7659336857671800422">ಗೌಪ್ಯತೆ ಮಾರ್ಗದರ್ಶಿಯನ್ನು ತೆಗೆದುಕೊಳ್ಳಿ</translation>
 <translation id="7659584679870740384">ನೀವು ಈ ಸಾಧನವನ್ನು ಬಳಸಲು ಪ್ರಮಾಣಿತರಾಗಿಲ್ಲ. ಸೈನ್-ಇನ್ ಅನುಮತಿಗಾಗಿ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
@@ -8792,7 +8790,6 @@
 <translation id="7855678561139483478">ಟ್ಯಾಬ್ ಅನ್ನು ಹೊಸ ವಿಂಡೋಗೆ ಸರಿಸಿ</translation>
 <translation id="7857004848504343806">ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್, ಸುಭದ್ರ ಮಾಡ್ಯೂಲ್ ಅನ್ನು ಹೊಂದಿದೆ. ChromeOS Flex ನಲ್ಲಿ ಹಲವು ಪ್ರಮುಖ ಭದ್ರತಾ ವೈಶಿಷ್ಟ್ಯಗಳನ್ನು ಕಾರ್ಯಗತಗೊಳಿಸಲು ಇದನ್ನು ಬಳಸಲಾಗುತ್ತದೆ. ಇದರ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿದುಕೊಳ್ಳಲು Chromebook ಸಹಾಯ ಕೇಂದ್ರಕ್ಕೆ ಭೇಟಿ ನೀಡಿ: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">ಪಠ್ಯ ಸಲಹೆಗಳು</translation>
-<translation id="7857949311770343000">ನೀವು ನಿರೀಕ್ಷಿಸುತ್ತಿರುವುದು ಈ ಹೊಸ ಟ್ಯಾಬ್ ಪುಟವೇ?</translation>
 <translation id="7858120906780498731">ChromeOS ಕನೆಕ್ಟೆಡ್ ಇನ್‌ಪುಟ್ ಸಾಧನಗಳು</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941"><ph name="EXTENSION_NAME" /> ಎಕ್ಸ್‌ಟೆನ್ಶನ್ ಅನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
@@ -8841,7 +8838,6 @@
 <translation id="789722939441020330">ಅನೇಕ ಫೈಲ್‌ಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಬೇಡಿ</translation>
 <translation id="7897900149154324287">ಇನ್ನು ಮುಂದೆ, ನಿಮ್ಮ ತೆಗೆದುಹಾಕುವಂತಹ ಸಾಧನಗಳನ್ನು ಹೊರತೆಗೆಯುವ ಮೊದಲು ಅದನ್ನು ಇಜೆಕ್ಟ್ ಮಾಡಲು ಖಚಿತವಾಗಿರಿ. ಇಲ್ಲದಿದ್ದರೆ, ನೀವು ಡೇಟಾವನ್ನು ಕಳೆದುಕೊಳ್ಳಬಹುದು.</translation>
 <translation id="7898725031477653577">ಯಾವಾಗಲೂ ಅನುವಾದಿಸು</translation>
-<translation id="7899324822972399722"><ph name="A" /> ನ ಚಿತ್ರ <ph name="INDEX" />, <ph name="B" /> ಶೈಲಿಯಲ್ಲಿದೆ</translation>
 <translation id="7901405293566323524">ಫೋನ್ ಹಬ್</translation>
 <translation id="7903290522161827520">ಬ್ರೌಸರ್ ಕಾಂಪೊನೆಂಟ್‌ಗಳಿಗಾಗಿ ಹುಡುಕುತ್ತಿರುವಿರಾ? ಭೇಟಿ ನೀಡಿ</translation>
 <translation id="7903429136755645827">ನಿಮ್ಮ ಗೇಮ್ ನಿಯಂತ್ರಣಗಳನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಲು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
@@ -9120,7 +9116,6 @@
 <translation id="8098616321286360457">ನೆಟ್‌ವರ್ಕ್ ಕನೆಕ್ಷನ್‌ನ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="8100230553590752325">ಯಾವುದೇ ಸಾಧನದಲ್ಲಿ ಉಳಿಸಿದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಬಳಸಿ</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> ಅನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ. ಆಯ್ಕೆ ರದ್ದುಮಾಡಲು, Search ಜೊತೆಗೆ Space ಅನ್ನು ಒತ್ತಿರಿ.</translation>
-<translation id="8100725874569949614"><ph name="A" /> ನ ಚಿತ್ರ <ph name="INDEX" />, <ph name="C" /> ಮೂಡ್ ಹೊಂದಿದೆ.</translation>
 <translation id="8101409298456377967">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ರಚಿಸಿ, ಉಳಿಸಿ ಹಾಗೂ ನಿರ್ವಹಿಸಿ ಇದರಿಂದ ನೀವು ಸೈಟ್‌ಗಳು ಮತ್ತು ಆ್ಯಪ್‌ಗಳಿಗೆ ಸುಲಭವಾಗಿ ಸೈನ್ ಇನ್ ಮಾಡಬಹುದು. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">ಕಸ್ಟಮ್ ಬಣ್ಣ</translation>
 <translation id="8101987792947961127">ಮುಂದಿನ ರೀಬೂಟ್‌ನಲ್ಲಿ ಪವರ್‌ವಾಷ್ ಅಗತ್ಯವಿದೆ</translation>
@@ -10070,7 +10065,6 @@
 <translation id="8846163936679269230">eSIM ಪ್ರೊಫೈಲ್‌ಗಳನ್ನು ರೀಸೆಟ್ ಮಾಡಿ</translation>
 <translation id="8846239054091760429">ಮೊನೊ ಆಡಿಯೊ, ಸ್ಟಾರ್ಟ್‌ಅಪ್, ಲೈವ್ ಶೀರ್ಷಿಕೆ ಮತ್ತು ಇನ್ನಷ್ಟು</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8848963863312877204">ನಿಮ್ಮ ಡೌನ್‌ಲೋಡ್‌ಗಳನ್ನು ಇಲ್ಲಿ ಕಾಣಬಹುದು</translation>
 <translation id="8849001918648564819">ಮರೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="8849219423513870962"><ph name="PROFILE_NAME" /> ಹೆಸರಿನ eSIM ಪ್ರೊಫೈಲ್ ತೆಗೆದುಹಾಕುವುದನ್ನು ರದ್ದುಗೊಳಿಸಿ</translation>
 <translation id="8849262417389398097"><ph name="CHECKING" /> ರಲ್ಲಿ <ph name="CHECKED" /></translation>
@@ -10448,6 +10442,7 @@
 <translation id="9114663181201435112">ಸುಲಭವಾಗಿ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="9115675100829699941">&amp;ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು</translation>
 <translation id="9115932142612197835">ಈ ಸೆಟ್ಟಿಂಗ್ Google Translate ಅಥವಾ Lens ನ ಲಭ್ಯತೆಯನ್ನು ಬದಲಾಯಿಸುವುದಿಲ್ಲ</translation>
+<translation id="9116366756388192417">ವಿಷಯವನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="9116799625073598554">ಟಿಪ್ಪಣಿ ತೆಗೆದುಕೊಳ್ಳುವಿಕೆ ಅಪ್ಲಿಕೇಶನ್</translation>
 <translation id="9117030152748022724">ನಿಮ್ಮ ಆ್ಯಪ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="9120362425083889527">ಇನ್‌ಸ್ಟಾಲೇಶನ್ ಅನ್ನು ಪೂರ್ಣಗೊಳಿಸಲಾಗಲಿಲ್ಲ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ ಈ ವಿಂಡೋವನ್ನು ಮುಚ್ಚಿ</translation>

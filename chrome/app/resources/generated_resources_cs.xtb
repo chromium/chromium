@@ -812,7 +812,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1615433306336820465">Spravovat přihlašovací údaje uložené na bezpečnostním klíči</translation>
 <translation id="1616206807336925449">Toto rozšíření vyžaduje speciální oprávnění.</translation>
 <translation id="1616298854599875024">Rozšíření <ph name="IMPORT_NAME" /> nelze importovat, protože se nejedná o sdílený modul</translation>
-<translation id="161654560322394775">Obrázek <ph name="INDEX" /> z <ph name="A" /> ve stylu <ph name="B" /> s náladou <ph name="C" />.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Kontroluje se, zda tato data odpovídají bezpečnostním zásadám organizace…}=1{Kontroluje se, zda tento soubor odpovídá bezpečnostním zásadám organizace…}few{Kontroluje se, zda tyto soubory odpovídají bezpečnostním zásadám organizace…}many{Kontroluje se, zda tyto soubory odpovídají bezpečnostním zásadám organizace…}other{Kontroluje se, zda tyto soubory odpovídají bezpečnostním zásadám organizace…}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">C&amp;entrum nápovědy</translation>
@@ -4220,7 +4219,6 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4250229828105606438">Snímek obrazovky</translation>
 <translation id="4250680216510889253">Ne</translation>
 <translation id="4251377547188244181">Registrace zařízení pro veřejný terminál a k signalizaci</translation>
-<translation id="4252141040239557279">Obrázek <ph name="INDEX" /> z <ph name="A" /></translation>
 <translation id="4252828488489674554">Kliknutím pravým tlačítkem na název skupiny karet tuto skupinu upravíte a kliknutím ji sbalíte</translation>
 <translation id="4252899949534773101">Rozhraní Bluetooth je zakázáno</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> – obsah karty se sdílí</translation>
@@ -6548,7 +6546,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
         <ph name="BREAK" />
         Nastavení můžete spravovat v nabídce karty. Další možnosti zobrazíte v sekci Přizpůsobit Chrome.</translation>
 <translation id="6121773125605585883">Zobrazit heslo pro uživatelské jméno <ph name="USERNAME" /> pro web <ph name="WEBSITE" /></translation>
-<translation id="6122081475643980456">Vaše připojení k internetu je ovládáno</translation>
 <translation id="6122093587541546701">E-mail (nepovinné):</translation>
 <translation id="6122095009389448667">Tomuto webu přístup ke schránce i nadále blokovat</translation>
 <translation id="6122513630797178831">Uložit kód CVC</translation>
@@ -7435,7 +7432,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6820079682647046800">Ověření Kerberos selhalo</translation>
 <translation id="6821439254917412979">Odepnout rozšíření <ph name="EXTENSION_NAME" /></translation>
 <translation id="6823174134746916417">Kliknutí klepnutím na touchpadu</translation>
-<translation id="6823429960180594870">Spravujte soubory při stahování a po dokončení je otevřete</translation>
 <translation id="6823561724060793716">Z adresního řádku můžete otevřít informace o stránce a zobrazit tak další informace o stránce, kterou si právě prohlížíte</translation>
 <translation id="6824564591481349393">Kopírovat &amp;e-mailovou adresu</translation>
 <translation id="6824584962142919697">&amp;Prozkoumat prvky</translation>
@@ -7841,7 +7837,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="714301620504747562">Procházení a vyhledávání je rychlejší než standardní předběžné načítání</translation>
 <translation id="7143207342074048698">Připojování</translation>
 <translation id="7143409552554575716">Příznaky ChromeOS</translation>
-<translation id="714447804011008506">Stahování je nyní na liště</translation>
 <translation id="7144856456372460176">&amp;Instalovat aplikaci <ph name="APP" />…</translation>
 <translation id="7144878232160441200">Opakovat</translation>
 <translation id="7145413760160421938">Nelze obnovit předchozí relaci</translation>
@@ -8491,7 +8486,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7657090467145778067">Malá úspora</translation>
 <translation id="7657218410916651670"><ph name="BEGIN_LINK_GOOGLE" />Další typy aktivity<ph name="END_LINK_GOOGLE" /> se mohou ukládat do vašeho účtu Google, když jste přihlášeni. Můžete je kdykoli smazat.</translation>
 <translation id="7658239707568436148">Zrušit</translation>
-<translation id="7658727964021657194">Nedávný motiv vygenerovaný umělou inteligencí <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">Přesto anonymní režim ukončit?</translation>
 <translation id="7659336857671800422">Spustit průvodce ochranou soukromí</translation>
 <translation id="7659584679870740384">Nemáte oprávnění používat toto zařízení. Kontaktujte administrátora a požádejte jej o oprávnění k přihlášení.</translation>
@@ -8773,7 +8767,6 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7855678561139483478">Přesunout kartu do nového okna</translation>
 <translation id="7857004848504343806">Ve vašem počítači je bezpečnostní modul, jehož pomocí je do systému ChromeOS Flex implementováno mnoho důležitých bezpečnostních prvků. Další informace najdete v centru nápovědy k Chromebookům: http://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Textové návrhy</translation>
-<translation id="7857949311770343000">Je toto stránka nové karty, kterou jste očekávali?</translation>
 <translation id="7858120906780498731">Připojená vstupní zařízení ChromeOS</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941">Odstranit rozšíření <ph name="EXTENSION_NAME" /></translation>
@@ -8822,7 +8815,6 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="789722939441020330">Nepovolovat webům stahovat automaticky několik souborů</translation>
 <translation id="7897900149154324287">V budoucnu vyměnitelné zařízení nezapomínejte před vyjmutím odpojit v aplikaci Soubory. Jinak byste mohli přijít o data.</translation>
 <translation id="7898725031477653577">Vždy překládat</translation>
-<translation id="7899324822972399722">Obrázek <ph name="INDEX" /> z <ph name="A" /> ve stylu <ph name="B" /></translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Hledáte součásti prohlížeče? Přejděte na stránku</translation>
 <translation id="7903429136755645827">Kliknutím upravíte ovládací prvky hry</translation>
@@ -9103,7 +9095,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8098616321286360457">Je vyžadováno připojení k síti</translation>
 <translation id="8100230553590752325">Používejte uložená hesla na libovolném zařízení</translation>
 <translation id="810068641062493918">Jazyk <ph name="LANGUAGE" /> je vybrán. Jeho výběr zrušíte stisknutím tlačítka Hledat a mezerníku.</translation>
-<translation id="8100725874569949614">Obrázek <ph name="INDEX" /> z <ph name="A" /> s náladou <ph name="C" />.</translation>
 <translation id="8101409298456377967">Vytváření, ukládání a správa hesel pro snadné přihlašování na weby a do aplikací. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">Vlastní barva</translation>
 <translation id="8101987792947961127">Je vyžadováno použití funkce Powerwash při dalším restartu</translation>
@@ -10051,7 +10042,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8846163936679269230">Resetovat profily eSIM karet</translation>
 <translation id="8846239054091760429">Zvuk mono, spuštění, živý přepis a další</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8848963863312877204">Zde najdete stažené soubory</translation>
 <translation id="8849001918648564819">Skryté</translation>
 <translation id="8849219423513870962">Zrušit odstraňování profilu eSIM karty s názvem <ph name="PROFILE_NAME" /></translation>
 <translation id="8849262417389398097"><ph name="CHECKED" /> z <ph name="CHECKING" /></translation>

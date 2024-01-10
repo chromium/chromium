@@ -813,7 +813,6 @@
 <translation id="1615433306336820465">Διαχειριστείτε δεδομένα σύνδεσης που είναι αποθηκευμένα στο κλειδί ασφαλείας σας.</translation>
 <translation id="1616206807336925449">Αυτή η επέκταση δεν απαιτεί ειδικά δικαιώματα.</translation>
 <translation id="1616298854599875024">Δεν είναι δυνατή η εισαγωγή της επέκτασης "<ph name="IMPORT_NAME" />", επειδή δεν είναι κοινόχρηστη λειτουργική μονάδα</translation>
-<translation id="161654560322394775">Εικόνα <ph name="INDEX" /> από <ph name="A" />, σε στιλ <ph name="B" />, με διάθεση <ph name="C" />.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Έλεγχος αυτών των δεδομένων σε σχέση με τις πολιτικές ασφαλείας του οργανισμού σας…}=1{Έλεγχος αυτού του αρχείου σε σχέση με τις πολιτικές ασφαλείας του οργανισμού σας…}other{Έλεγχος αυτών των αρχείων σε σχέση με τις πολιτικές ασφαλείας του οργανισμού σας…}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">Κέντρο βοήθειας</translation>
@@ -4234,7 +4233,6 @@
 <translation id="4250229828105606438">Στιγμιότυπο οθόνης</translation>
 <translation id="4250680216510889253">Όχι</translation>
 <translation id="4251377547188244181">Εγγραφή συσκευής kiosk και σήμανσης</translation>
-<translation id="4252141040239557279">Εικόνα <ph name="INDEX" /> από <ph name="A" /></translation>
 <translation id="4252828488489674554">Κάντε δεξί κλικ στο όνομα της ομάδας καρτελών για να επεξεργαστείτε αυτή την ομάδα ή κάντε κλικ για σύμπτυξη</translation>
 <translation id="4252899949534773101">Το Bluetooth είναι απενεργοποιημένο</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - Το περιεχόμενο της καρτέλας είναι κοινόχρηστο</translation>
@@ -6567,7 +6565,6 @@
         <ph name="BREAK" />
         Μπορείτε να διαχειριστείτε τις ρυθμίσεις από το μενού κάρτας ή να δείτε περισσότερες επιλογές στην ενότητα Προσαρμογή του Chrome.</translation>
 <translation id="6121773125605585883">Προβολή κωδικού πρόσβασης με όνομα χρήστη <ph name="USERNAME" /> για τον ιστότοπο <ph name="WEBSITE" /></translation>
-<translation id="6122081475643980456">Η σύνδεσή σας στο διαδίκτυο παρακολουθείται</translation>
 <translation id="6122093587541546701">Διεύθυνση ηλεκτρονικού ταχυδρομείου (προαιρετικά):</translation>
 <translation id="6122095009389448667">Συνέχεια αποκλεισμού αυτού του ιστοτόπου από την προβολή του πρόχειρου</translation>
 <translation id="6122513630797178831">Αποθήκευση CVC</translation>
@@ -7450,7 +7447,6 @@
 <translation id="6820079682647046800">Ο έλεγχος ταυτότητας Kerberos απέτυχε</translation>
 <translation id="6821439254917412979">Ξεκαρφίτσωμα <ph name="EXTENSION_NAME" /></translation>
 <translation id="6823174134746916417">Άγγιγμα για κλικ οθόνης αφής</translation>
-<translation id="6823429960180594870">Διαχειριστείτε αρχεία κατά τη διάρκεια της λήψης και ανοίξτε τα όταν ολοκληρωθεί η λήψη</translation>
 <translation id="6823561724060793716">Από τη γραμμή διευθύνσεων, μπορείτε να ανοίξετε τις πληροφορίες σελίδας για να δείτε επιπλέον πληροφορίες σχετικά με τη σελίδα που επισκέπτεστε</translation>
 <translation id="6824564591481349393">Αντιγραφή Διεύθυνσης &amp;Ηλεκτρονικού Ταχυδρομείου</translation>
 <translation id="6824584962142919697">&amp;Inspect elements</translation>
@@ -7856,7 +7852,6 @@
 <translation id="714301620504747562">Η περιήγηση και η αναζήτηση γίνονται πιο γρήγορα σε σχέση με τη βασική προφόρτωση</translation>
 <translation id="7143207342074048698">Σύνδεση</translation>
 <translation id="7143409552554575716">Επισημάνσεις ChromeOS</translation>
-<translation id="714447804011008506">Οι λήψεις εμφανίζονται πλέον στη γραμμή εργαλείων</translation>
 <translation id="7144856456372460176">&amp;Εγκατάσταση <ph name="APP" />…</translation>
 <translation id="7144878232160441200">Επανάληψη</translation>
 <translation id="7145413760160421938">Δεν είναι δυνατή η συνέχιση της προηγούμενης περιόδου σύνδεσης</translation>
@@ -8507,7 +8502,6 @@
 <translation id="7657090467145778067">Μικρή εξοικονόμηση</translation>
 <translation id="7657218410916651670">Ενδέχεται να αποθηκεύονται στον Λογαριασμό σας Google <ph name="BEGIN_LINK_GOOGLE" />άλλες μορφές δραστηριότητας<ph name="END_LINK_GOOGLE" /> όταν είστε συνδεδεμένοι. Μπορείτε να τις διαγράψετε ανά πάσα στιγμή.</translation>
 <translation id="7658239707568436148">Ακύρωση</translation>
-<translation id="7658727964021657194">Πρόσφατο θέμα AI <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">Θέλετε να εξέλθετε από την κατάσταση ανώνυμης περιήγησης;</translation>
 <translation id="7659336857671800422">Ακολουθήστε τον Οδηγό απορρήτου</translation>
 <translation id="7659584679870740384">Δεν έχετε εξουσιοδότηση για χρήση αυτής της συσκευής. Για να λάβετε άδεια σύνδεσης, επικοινωνήστε με το διαχειριστή της συσκευής.</translation>
@@ -8789,7 +8783,6 @@
 <translation id="7855678561139483478">Μετακίνηση καρτέλας σε νέο παράθυρο</translation>
 <translation id="7857004848504343806">Ο υπολογιστής σας περιέχει μια μονάδα ασφαλείας, η οποία χρησιμοποιείται για την εφαρμογή πολλών κρίσιμων λειτουργιών ασφαλείας στο ChromeOS Flex. Επισκεφτείτε το Κέντρο βοήθειας του Chromebook, για να μάθετε περισσότερα: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Προτάσεις κειμένου</translation>
-<translation id="7857949311770343000">Είναι αυτή η σελίδα νέας καρτέλας που περιμένατε να δείτε;</translation>
 <translation id="7858120906780498731">Συνδεδεμένες συσκευές εισόδου ChromeOS</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941">Κατάργηση επέκτασης <ph name="EXTENSION_NAME" /></translation>
@@ -8838,7 +8831,6 @@
 <translation id="789722939441020330">Να μην επιτρέπεται στους ιστοτόπους να κατεβάζουν αυτόματα πολλά αρχεία</translation>
 <translation id="7897900149154324287">Στο μέλλον, βεβαιωθείτε ότι έχετε αφαιρέσει την αφαιρούμενη συσκευή σας στην εφαρμογή Αρχεία προτού την αποσυνδέσετε. Διαφορετικά, ενδέχεται να χάσετε δεδομένα.</translation>
 <translation id="7898725031477653577">Να μεταφράζονται πάντα</translation>
-<translation id="7899324822972399722">Εικόνα <ph name="INDEX" /> από <ph name="A" />, σε στιλ <ph name="B" /></translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Αναζητάτε στοιχεία του προγράμματος περιήγησης; Επισκεφτείτε τη σελίδα</translation>
 <translation id="7903429136755645827">Κάντε κλικ για να προσαρμόσετε τα στοιχεία ελέγχου του παιχνιδιού</translation>
@@ -9119,7 +9111,6 @@
 <translation id="8098616321286360457">Απαιτείται σύνδεση δικτύου</translation>
 <translation id="8100230553590752325">Χρήση αποθηκευμένων κωδικών πρόσβασης σε οποιαδήποτε συσκευή</translation>
 <translation id="810068641062493918">Η γλώσσα <ph name="LANGUAGE" /> είναι επιλεγμένη. Πατήστε το πλήκτρο αναζήτησης και το πλήκτρο διαστήματος για να την αποεπιλέξετε.</translation>
-<translation id="8100725874569949614">Εικόνα <ph name="INDEX" /> από <ph name="A" />, με διάθεση <ph name="C" />.</translation>
 <translation id="8101409298456377967">Δημιουργήστε, αποθηκεύστε και διαχειριστείτε τους κωδικούς πρόσβασής σας, ώστε να μπορείτε να συνδεθείτε εύκολα σε ιστοτόπους και εφαρμογές. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">Προσαρμοσμένο χρώμα</translation>
 <translation id="8101987792947961127">Απαιτείται Powerwash στην επόμενη επανεκκίνηση</translation>
@@ -10064,7 +10055,6 @@
 <translation id="8846163936679269230">Επαναφορά προφίλ eSIM</translation>
 <translation id="8846239054091760429">Μονοφωνικός ήχος, εκκίνηση, Ζωντανοί υπότιτλοι και άλλα</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8848963863312877204">Βρείτε εδώ τις λήψεις σας</translation>
 <translation id="8849001918648564819">Κρυφή</translation>
 <translation id="8849219423513870962">Ακύρωση της κατάργησης του προφίλ eSIM <ph name="PROFILE_NAME" /></translation>
 <translation id="8849262417389398097"><ph name="CHECKED" /> από <ph name="CHECKING" /></translation>

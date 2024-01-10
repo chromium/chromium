@@ -1505,6 +1505,7 @@ Nova instalação</translation>
 <translation id="7025533177575372252">Ligue o dispositivo <ph name="DEVICE_NAME" /> ao telemóvel.</translation>
 <translation id="7026338066939101231">Diminuir</translation>
 <translation id="7029814467594812963">Sair da sessão</translation>
+<translation id="7031303610220416229">Ver todas as tarefas no Google Tasks</translation>
 <translation id="7032161822340700104">Apenas são permitidos 6 modelos. Remova um modelo para guardar um novo.</translation>
 <translation id="7034025838182392395">A app <ph name="APP_NAME" /> quer usar o(a) <ph name="DEVICE_NAME" />. Ative o interruptor físico do(a) <ph name="DEVICE_NAME" /> do seu dispositivo.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Assistente Google</translation>
@@ -1817,6 +1818,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8351131234907093545">Criar nota</translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> em utilização.</translation>
 <translation id="8369166482916924789">Espaço de trabalho guardado, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
+<translation id="8370414029565771236">Pesquisar <ph name="TEXT" /></translation>
 <translation id="8371779926711439835">Avançar por letra</translation>
 <translation id="8371991222807690464">O desempenho periférico pode estar limitado no Modo convidado.</translation>
 <translation id="8374601332003098278">Prima Enter para gravar o ecrã parcial</translation>

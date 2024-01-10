@@ -1238,7 +1238,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3447661539832366887">Seadme omanik lülitas dinosaurusemängu välja.</translation>
 <translation id="3447884698081792621">Kuva sertifikaat (väljastas <ph name="ISSUER" />)</translation>
 <translation id="3450323514459570273">Sait saab küsida luba teie MIDI-seadmete juhtimiseks ja ümber programmeerimiseks</translation>
-<translation id="3452151267620065789">Edenemine on salvestatud</translation>
 <translation id="3452404311384756672">Hankimise intervall:</translation>
 <translation id="3453962258458347894">Uuesti proovimiste arv</translation>
 <translation id="3461266716147554923"><ph name="URL" /> soovib näha lõikelauale kopeeritud teksti ja kujutisi</translation>
@@ -1537,7 +1536,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4067098466788473230">Õppetoetused ja stipendiumid</translation>
 <translation id="4067947977115446013">Sobiva aadressi lisamine</translation>
 <translation id="4070790659619547722">Reklaamide mõõtmisel jagatakse saitide vahel piiratud tüüpi andmeid, et mõõta nende reklaamide toimivust (nt millal päeva jooksul teile reklaami näidati).</translation>
-<translation id="4072193657607981494">Reeglite laadimine</translation>
 <translation id="4072486802667267160">Teie tellimuse töötlemisel ilmnes viga. Proovige uuesti.</translation>
 <translation id="4073376909608563327">Seadmega avamist ei saanud kasutada</translation>
 <translation id="4073797364926776829">Kuva kaart</translation>
@@ -2724,7 +2722,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6428450836711225518">Kinnitage oma telefoninumber</translation>
 <translation id="6429267199680088961">A4 tabloid</translation>
 <translation id="643051589346665201">Muuda Google'i parooli</translation>
-<translation id="6431119592588449664">Aruannet laaditakse üles</translation>
 <translation id="6432297414176614592">Lisateave reklaamiteemade kohta</translation>
 <translation id="6432831586648556868">Müügi- ja turundusvaldkonna töökohad</translation>
 <translation id="6433490469411711332">Kontaktandmete muutmine</translation>
@@ -3483,7 +3480,6 @@ Lisateave:
 <translation id="7871445724586827387">Google'i konto parooli muutmine</translation>
 <translation id="7877007680666472091">kaitstud sisu ID-d</translation>
 <translation id="7878562273885520351">Teie parool võib olla ohus</translation>
-<translation id="7878966190323222027">Jätkamiseks avage uuesti</translation>
 <translation id="7880146494886811634">Aadressi salvestamine</translation>
 <translation id="7882421473871500483">Pruun</translation>
 <translation id="7882995332186050355">Kaubaveokid ja haagised</translation>
@@ -4104,7 +4100,6 @@ Lisateave:
 <translation id="9119042192571987207">Üles laaditud</translation>
 <translation id="9122954576417194280">Kaupade ja futuuridega kauplemine</translation>
 <translation id="912327514020027767">Seelikud</translation>
-<translation id="9128016270925453879">Reeglid on laaditud</translation>
 <translation id="9128870381267983090">Ühendumine Internetiga</translation>
 <translation id="9131119348384879525">Kas jäädvustada konfidentsiaalne sisu?</translation>
 <translation id="9133985615769429248">Kui jagate seda seadet teistega, saate kasutada ekraanilukku, et salvestatud parooli kasutades oma isik kinnitada</translation>

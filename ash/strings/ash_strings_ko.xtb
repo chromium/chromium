@@ -1505,6 +1505,7 @@
 <translation id="7025533177575372252">휴대전화와 <ph name="DEVICE_NAME" /> 연결</translation>
 <translation id="7026338066939101231">줄이기</translation>
 <translation id="7029814467594812963">세션 종료</translation>
+<translation id="7031303610220416229">Google Tasks의 모든 할 일 보기</translation>
 <translation id="7032161822340700104">템플릿은 6개만 사용할 수 있습니다. 새 템플릿을 저장하려면 이전 템플릿을 삭제하세요.</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" />에서 <ph name="DEVICE_NAME" /> 기기를 사용하려고 합니다. 기기의 물리적 <ph name="DEVICE_NAME" /> 스위치를 켜세요.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google 어시스턴트</translation>
@@ -1817,6 +1818,7 @@
 <translation id="8351131234907093545">메모 만들기</translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> 앱을 사용 중입니다.</translation>
 <translation id="8369166482916924789">저장된 데스크, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
+<translation id="8370414029565771236"><ph name="TEXT" /> 검색</translation>
 <translation id="8371779926711439835">한 글자 앞으로 이동</translation>
 <translation id="8371991222807690464">게스트 모드에서 주변기기 성능이 제한될 수 있습니다.</translation>
 <translation id="8374601332003098278">화면의 일부만 녹화하려면 Enter를 누르세요</translation>

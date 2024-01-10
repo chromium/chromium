@@ -56,7 +56,6 @@
 <translation id="1279024913354609713">Не дазваляць</translation>
 <translation id="1281818060020671000">Кіраванне данымі</translation>
 <translation id="1282311502488501110">Не ўваходзіць</translation>
-<translation id="1283039547216852943">Дакраніцеся, каб разгарнуць</translation>
 <translation id="1283524564873030414">За апошнія 24 гадзіны</translation>
 <translation id="1285320974508926690">Ніколі не перакладаць гэты сайт</translation>
 <translation id="1291506870746876680">Пасля пераходу з сайта <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> яго дазволы будуць скінуты.</translation>
@@ -82,7 +81,6 @@
 <translation id="1377255359165588604">Сінхранізацыя перастала працаваць.</translation>
 <translation id="1377321085342047638">Нумар карткі</translation>
 <translation id="1377508275003315939">Паролі</translation>
-<translation id="1380914240355562929">Цяпер <ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> можа ўваходзіць на сайт <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> з выкарыстаннем вашых імені карыстальніка і пароля, якія захоўваюцца ў Менеджары пароляў Google. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">Пошук</translation>
 <translation id="138618066238211776">Працягнуць як <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">За апошнія 4 тыдні</translation>
@@ -314,6 +312,7 @@
 <translation id="2664621323652615289">Спыніць</translation>
 <translation id="2666092431469916601">Зверху</translation>
 <translation id="2669454659051515572">Усе, хто карыстаецца гэтай прыладай, могуць бачыць спампаваныя файлы</translation>
+<translation id="2681158575552244226">Ідзе захаванне на Дыску для карыстальніка <ph name="USER_EMAIL" />.</translation>
 <translation id="2690858294534178585">Камера выкарыстоўваецца</translation>
 <translation id="2691653761409724435">Недаступна ў пазасеткавым рэжыме</translation>
 <translation id="2695507686909505111">Старонка перакладзена</translation>
@@ -405,7 +404,6 @@
 <translation id="3087734570205094154">Знізу</translation>
 <translation id="3090455602619185166">Уваход праз уліковы запіс пад кіраваннем</translation>
 <translation id="309710370695886264">У вас ёсць 1 ужыты раней пароль. У мэтах бяспекі выправіце гэта.</translation>
-<translation id="3109724472072898302">Згорнута</translation>
 <translation id="3112556859945124369">Пазначыць…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Паказаць, якія тыпы даных можна сінхранізаваць<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">Гісторыя і іншыя даныя</translation>
@@ -774,7 +772,6 @@
 <translation id="5121618895923301719">Вы ўжо сочыце за гэтым таварам. Гэта старонка захавана ў <ph name="BEGIN_LINK" />мабільных закладках<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">У вас некалькі праблем з паролямі.</translation>
 <translation id="5126465625664020024">Уваход і сінхранізацыя</translation>
-<translation id="5131062416352684089">Цяпер удзельнікі вашай сямейнай групы могуць уваходзіць на сайт <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> з выкарыстаннем вашых імені карыстальніка і пароля, якія захоўваюцца ў Менеджары пароляў Google. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">Сінхранізуйце паролі, гісторыю і іншыя даныя на ўсіх прыладах</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} ненадзейны пароль}one{{COUNT} ненадзейны пароль}few{{COUNT} ненадзейныя паролі}many{{COUNT} ненадзейных пароляў}other{{COUNT} ненадзейнага пароля}}</translation>
 <translation id="5149188072385105201">Дадаць пароль...</translation>
@@ -923,7 +920,6 @@
 <translation id="5955891643922670672">Паказваецца пазасеткавая версія</translation>
 <translation id="5957613098218939406">Дадатковыя параметры</translation>
 <translation id="595769230373966252">Пошук праз сэрвіс "<ph name="SEARCH_PROVIDER" />"</translation>
-<translation id="5962718611393537961">Каб згарнуць, націсніце тут</translation>
 <translation id="5963939892571022323">Не ўдалося стварыць спасылку на вылучаны тэкст.</translation>
 <translation id="5971872012779224351">{count,plural, =1{Выдалена 1 закладка}one{Выдалена {count} закладка}few{Выдалена {count} закладкі}many{Выдалена {count} закладак}other{Выдалена {count} закладак}}</translation>
 <translation id="5979837087407522202">Пошук пароляў</translation>
@@ -990,6 +986,7 @@
 <translation id="6255097610484507482">Рэдагаванне крэдытнай карткі</translation>
 <translation id="6266039999629596120">Патрабуе ўвагі</translation>
 <translation id="6277426346321820595">Без абароны</translation>
+<translation id="628251768213143684">Вы можаце кантраляваць, якія даныя захоўваюцца ў вашым Уліковым запісе Google</translation>
 <translation id="6284652193729350524">Прапаноўваць перакласці з мовы: <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Вы адпісаліся ад канала "<ph name="CHANNEL_NAME" />"</translation>
 <translation id="6293101329759844770">Каб уключыць Бяспечны прагляд, адкрыйце старонку <ph name="BEGIN_LINK" />Сэрвісы Google<ph name="END_LINK" /> і націсніце на пункт "Бяспечны прагляд".</translation>
@@ -1091,6 +1088,7 @@
 <translation id="6685259053455152195">Спалучэнні клавіш, з дапамогай якіх можна хутка змяняць налады і выкарыстоўваць функцыі з адраснага радка.</translation>
 <translation id="6710079714193676716">Пад кіраваннем вашай арганізацыі. Некаторыя функцыі могуць быць недаступныя. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Праграмы Google</translation>
+<translation id="6716730056313760676">Захавана на Дыску для карыстальніка <ph name="USER_EMAIL" />.</translation>
 <translation id="672735642903863329">Выкарыстоўвайце свае закладкі, паролі і іншае на ўсіх сваіх прыладах.</translation>
 <translation id="6730682669179532099">Не ўдалося экспартаваць паролі</translation>
 <translation id="6732087373923685049">камера</translation>
@@ -1165,6 +1163,7 @@
 <translation id="7102005569666697658">Ідзе спампоўванне… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Схаваць</translation>
 <translation id="7108762695052995889">Наведаць сайт</translation>
+<translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7133798577887235672">Поўнае імя</translation>
 <translation id="7136892417564438900">Камера недаступная</translation>
 <translation id="7141960840225504692">Укладкі будуць закрыты, а даныя пра работу ў браўзеры – выдалены</translation>

@@ -24,7 +24,6 @@
 <translation id="1173916544412572294">第 <ph name="NETWORK_INDEX" /> 個網路 (共 <ph name="NETWORK_COUNT" /> 個)，<ph name="PHONE_NAME" />，<ph name="CONNECTION_STATUS" />，訊號強度 <ph name="SIGNAL_STRENGTH" />%，手機電量：<ph name="BATTERY_STATUS" />%，詳細資料</translation>
 <translation id="117624967391683467">正在複製 <ph name="FILE_NAME" />...</translation>
 <translation id="1178581264944972037">暫停</translation>
-<translation id="1190144681599273207">擷取這個檔案大約會使用 <ph name="FILE_SIZE" /> 行動數據流量。</translation>
 <translation id="1194390763418645112"><ph name="RESTRICTED_DESTINATIONS" /> 可存取檔案</translation>
 <translation id="1201402288615127009">繼續</translation>
 <translation id="1209796539517632982">自動名稱伺服器</translation>
@@ -100,7 +99,6 @@
 <translation id="1761091787730831947">與 <ph name="VM_NAME" /> 共用</translation>
 <translation id="1773212559869067373">本機已拒絕驗證憑證</translation>
 <translation id="1775381402323441512">影片資訊</translation>
-<translation id="180035236176489073">你必須連上網路才能存取這些檔案。</translation>
 <translation id="1807938677607439181">所有檔案</translation>
 <translation id="1810764548349082891">無法預覽</translation>
 <translation id="1812302367230252929">阿姆哈拉文 (音譯)</translation>
@@ -135,6 +133,7 @@
 <translation id="2084809735218147718">表達感謝</translation>
 <translation id="2088690981887365033">VPN 網路</translation>
 <translation id="209653272837065803">儲存空間不足，無法繼續同步處理檔案</translation>
+<translation id="2099143626019777139">系統管理員可以看到你的網站造訪記錄，你可以查看造訪記錄清單中有哪些網站。</translation>
 <translation id="2111134541987263231">開啟「允許在無痕模式中執行」<ph name="BEGIN_BOLD" /><ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> 個項目將遭刪除且無法還原。</translation>
 <translation id="2122305276694332719">自動連線至隱藏網路會讓其他人可以查看你的裝置和部分網路設定，建議你不要啟用這項設定。</translation>
@@ -161,8 +160,6 @@
 <translation id="2282155092769082568">自動設定網址：</translation>
 <translation id="2284767815536050991">外接儲存裝置</translation>
 <translation id="2288278176040912387">唱機</translation>
-<translation id="2291538123825441971">正在開啟 <ph name="NUMBER_OF_FILES" /> 個檔案。</translation>
-<translation id="2303301624314357662">正在開啟「<ph name="FILE_NAME" />」。</translation>
 <translation id="2304820083631266885">行星</translation>
 <translation id="2305020378527873881">「<ph name="VOLUME_NAME" />」已退出。</translation>
 <translation id="2307462900900812319">設定網路</translation>
@@ -172,7 +169,6 @@
 <translation id="233822363739146957">儲存空間不足，無法同步處理所有檔案</translation>
 <translation id="23721837607121582">下載行動裝置設定檔，<ph name="NETWORK_COUNT" /> 個網路中的第 <ph name="NETWORK_INDEX" /> 個，名稱為 <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">切換為清單檢視</translation>
-<translation id="2377590462528165447">已與 Linux 共用 <ph name="NUMBER_OF_ITEMS" /> 個資料夾</translation>
 <translation id="2379576081295865700">正在檢查儲存空間… 目前找到 1 個項目</translation>
 <translation id="2383454254762599978">移至垃圾桶</translation>
 <translation id="2387458720915042159">Proxy 連線類型</translation>
@@ -396,12 +392,10 @@
 <translation id="4197674956721858839">壓縮選取的項目</translation>
 <translation id="4202378258276439759">西班牙文 (拉丁美洲)</translation>
 <translation id="4202977638116331303">喬治亞文</translation>
-<translation id="421017592316736757">你必須連上網路才能存取這個檔案。</translation>
 <translation id="4212740939091998969">名稱為「<ph name="FOLDER_NAME" />」的資料夾已經存在，請選擇其他名稱。</translation>
 <translation id="4218274196133425560">移除 <ph name="HOST_NAME" /> 的例外項目</translation>
 <translation id="4261901459838235729">Google 簡報</translation>
 <translation id="4277536868133419688"><ph name="FILTER_NAME" /> 篩選器已開啟。</translation>
-<translation id="4290535918735525311">已與 Linux 共用 1 個資料夾</translation>
 <translation id="4299729908419173967">巴西語系</translation>
 <translation id="4302605047395093221">使用這部裝置的所有使用者都必須輸入 PIN 碼才能連上行動網路</translation>
 <translation id="4303531889494116116">這個網路忙碌中，請稍後再試。</translation>
@@ -502,8 +496,6 @@
 <translation id="4906580650526544301">第 <ph name="NETWORK_INDEX" /> 個網路 (共 <ph name="NETWORK_COUNT" /> 個)，<ph name="PHONE_NAME" />，<ph name="PROVIDER_NAME" />，<ph name="CONNECTION_STATUS" />，訊號強度 <ph name="SIGNAL_STRENGTH" />%，手機電量 <ph name="BATTERY_STATUS" />%，詳細資料</translation>
 <translation id="4935975195727477204">勳章菊花</translation>
 <translation id="4943368462779413526">足球</translation>
-<translation id="4961158930123534723">已與 Parallels Desktop 共用 1 個資料夾</translation>
-<translation id="4965874878399872778">正在檢查檔案是否符合貴機構的安全性政策...</translation>
 <translation id="496656650103537022">已還原 <ph name="FILE_NAME" /></translation>
 <translation id="4969785127455456148">相簿</translation>
 <translation id="4972330214479971536">無法完成檔案同步處理設定</translation>
@@ -565,7 +557,6 @@
 <translation id="5317780077021120954">儲存</translation>
 <translation id="5318819489018851358">與 Linux 共用</translation>
 <translation id="5323213332664049067">拉丁美洲</translation>
-<translation id="5330145655348521461">這些檔案已在其他電腦上開啟。前往 <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) 查看。</translation>
 <translation id="5330512191124428349">取得資訊</translation>
 <translation id="535792325654997756">人與貓</translation>
 <translation id="5358764674931277">影格速率</translation>
@@ -667,7 +658,6 @@
 <translation id="613750717151263950">日文搭配美式鍵盤</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />，沒有網路連線</translation>
 <translation id="6146563240635539929">影片</translation>
-<translation id="6150853954427645995">如要儲存這個檔案以供離線使用，請重新上網，在檔案上按一下滑鼠右鍵，然後選取 [<ph name="OFFLINE_CHECKBOX_NAME" />] 選項。</translation>
 <translation id="6164412158936057769">蝴蝶</translation>
 <translation id="6165508094623778733">瞭解詳情</translation>
 <translation id="6170470584681422115">三明治</translation>
@@ -700,7 +690,6 @@
 <translation id="636254897931573416">網域字尾比對值無效</translation>
 <translation id="6364301859968397756">機構儲存空間已滿</translation>
 <translation id="6367976544441405720">廂型車</translation>
-<translation id="637062427944097960">這個檔案已在其他電腦上開啟。前往 <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) 查看。</translation>
 <translation id="6394388407447716302">唯讀</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> 個項目</translation>
 <translation id="6407769893376380348"><ph name="FILE_NAME" /> 已加密，因此無法移動。</translation>
@@ -709,7 +698,6 @@
 <translation id="6430271654280079150">你只剩 1 次重試機會。</translation>
 <translation id="643243556292470964">已刪除的檔案現在會移到垃圾桶</translation>
 <translation id="6438480100790416671">正在檢查儲存空間…</translation>
-<translation id="6451527188465304418">正在檢查檔案是否符合貴機構的安全性政策...</translation>
 <translation id="6485131920355264772">無法擷取空間資訊</translation>
 <translation id="6495925982925244349">第 <ph name="NETWORK_INDEX" /> 個網路 (共 <ph name="NETWORK_COUNT" /> 個)，<ph name="NETWORK_NAME" />，<ph name="SECURITY_STATUS" />，<ph name="CONNECTION_STATUS" />，訊號強度 <ph name="SIGNAL_STRENGTH" />%，由系統管理員管理，詳細資料</translation>
 <translation id="649877868557234318">將 <ph name="FILE_NAME" /> 解壓縮至 <ph name="FOLDER_NAME" /></translation>
@@ -724,7 +712,6 @@
 <translation id="6588648400954570689">檔案同步設定</translation>
 <translation id="6594855146910089723">已與 Linux 和 Parallels Desktop 共用這個資料夾</translation>
 <translation id="6607272825297743757">檔案資訊</translation>
-<translation id="6609332149380188670">已與 Parallels Desktop 共用 <ph name="NUMBER_OF_ITEMS" /> 個資料夾</translation>
 <translation id="6629518321609546825">請輸入至少 4 位數</translation>
 <translation id="6643016212128521049">清除</translation>
 <translation id="6650726141019353908">粉紅蝴蝶</translation>
@@ -891,7 +878,6 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">網路設定錯誤</translation>
-<translation id="7839804798877833423">擷取這些檔案大約會使用 <ph name="FILE_SIZE" /> 行動數據流量。</translation>
 <translation id="7846076177841592234">全部取消選取</translation>
 <translation id="7853966320808728790">法文 BÉPO</translation>
 <translation id="7857117644404132472">新增例外狀況</translation>
@@ -939,7 +925,6 @@
 <translation id="8175799081768705361">正在同步處理 <ph name="NUMBER_OF_FILES_SYNCING" /> 個雲端硬碟檔案</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">裝置型號</translation>
-<translation id="8223479393428528563">如要儲存這些檔案以供離線使用，請重新上網，在檔案上按一下滑鼠右鍵，然後選取 [<ph name="OFFLINE_CHECKBOX_NAME" />] 選項。</translation>
 <translation id="8241139360630443550">查看儲存空間</translation>
 <translation id="8249296373107784235">取消</translation>
 <translation id="8250690786522693009">拉丁文</translation>
@@ -966,6 +951,7 @@
 <translation id="83651606385705612">授權 <ph name="VM_NAME" /> 存取「<ph name="FOLDER_NAME" />」資料夾中的檔案</translation>
 <translation id="8372369524088641025">WEP 金鑰有誤</translation>
 <translation id="8372852072747894550">希臘文</translation>
+<translation id="8377269993083688872">電子郵件版面配置</translation>
 <translation id="8386903983509584791">掃描完成</translation>
 <translation id="8387733224523483503">已擷取「<ph name="FILE_NAME" />」。</translation>
 <translation id="8395901698320285466">尺寸</translation>

@@ -1239,7 +1239,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3447661539832366887">Tämän laitteen omistaja on poistanut dinosauruspelin käytöstä.</translation>
 <translation id="3447884698081792621">Näytä varmenne (myöntäjä: <ph name="ISSUER" />)</translation>
 <translation id="3450323514459570273">Saa pyytää lupaa ohjata ja uudelleenohjelmoida MIDI-laitteita</translation>
-<translation id="3452151267620065789">Edistyminen tallennettu</translation>
 <translation id="3452404311384756672">Hakuväli:</translation>
 <translation id="3453962258458347894">Uudelleenyritysten määrä</translation>
 <translation id="3461266716147554923"><ph name="URL" /> haluaa nähdä leikepöydälle kopioidun tekstin ja kuvat.</translation>
@@ -1538,7 +1537,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4067098466788473230">Opiskeluapurahat ja ‑stipendit</translation>
 <translation id="4067947977115446013">Lisää kelvollinen osoite</translation>
 <translation id="4070790659619547722">Jos mainosten mittaus on käytössä, sivustojen välillä jaetaan rajoitetusti tietyntyyppistä dataa (esim. kellonaika, jolloin mainos näkyi) mainostulosten mittaamiseksi.</translation>
-<translation id="4072193657607981494">Ladataan käytäntöjä</translation>
 <translation id="4072486802667267160">Virhe tilausta käsiteltäessä. Yritä uudelleen.</translation>
 <translation id="4073376909608563327">Laitteen lukituksen avaustapaa ei voitu käyttää</translation>
 <translation id="4073797364926776829">Katso kortti</translation>
@@ -2725,7 +2723,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6428450836711225518">Vahvista puhelinnumerosi</translation>
 <translation id="6429267199680088961">A4-välilehti</translation>
 <translation id="643051589346665201">Vaihda Google-salasana</translation>
-<translation id="6431119592588449664">Raportti on ladattu</translation>
 <translation id="6432297414176614592">Lue lisää mainosten aiheista</translation>
 <translation id="6432831586648556868">Myynti- ja markkinointityöt</translation>
 <translation id="6433490469411711332">Muokkaa yhteystietoja</translation>
@@ -3484,7 +3481,6 @@ Lisätietoja:
 <translation id="7871445724586827387">Vaihda Google-tilin salasana</translation>
 <translation id="7877007680666472091">suojatun sisällön tunnukset</translation>
 <translation id="7878562273885520351">Salasanasi on saattanut vaarantua.</translation>
-<translation id="7878966190323222027">Jatka avaamalla uudelleen</translation>
 <translation id="7880146494886811634">Tallenna osoite</translation>
 <translation id="7882421473871500483">Ruskea</translation>
 <translation id="7882995332186050355">Kuorma-autot ja perävaunut</translation>
@@ -4106,7 +4102,6 @@ Lisätietoja:
 <translation id="9119042192571987207">Lähetetty</translation>
 <translation id="9122954576417194280">Hyödyke- ja futuurikauppa</translation>
 <translation id="912327514020027767">Hameet</translation>
-<translation id="9128016270925453879">Käytännöt on ladattu</translation>
 <translation id="9128870381267983090">Yhdistä verkkoon</translation>
 <translation id="9131119348384879525">Otetaanko luottamuksellisesta sisällöstä kuvakaappaus?</translation>
 <translation id="9133985615769429248">Jos muutkin käyttävät tätä laitetta, vahvistaa henkilöllisyytesi näytön lukituksen avaustavalla, kun käytät tallennettua salasanaa</translation>

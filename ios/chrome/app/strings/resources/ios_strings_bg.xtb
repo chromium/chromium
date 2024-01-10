@@ -56,7 +56,6 @@
 <translation id="1279024913354609713">Без разрешаване</translation>
 <translation id="1281818060020671000">Управление на данните</translation>
 <translation id="1282311502488501110">Без влизане в профила</translation>
-<translation id="1283039547216852943">Докоснете за разгъване</translation>
 <translation id="1283524564873030414">Последните 24 часа</translation>
 <translation id="1285320974508926690">Този сайт да не се превежда никога</translation>
 <translation id="1291506870746876680">Разрешенията за сайта <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> ще бъдат изключени, когато го напуснете.</translation>
@@ -82,7 +81,6 @@
 <translation id="1377255359165588604">Синхронизирането спря да работи.</translation>
 <translation id="1377321085342047638">№ на картата</translation>
 <translation id="1377508275003315939">Пароли</translation>
-<translation id="1380914240355562929"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> вече може да използва потребителското име и паролата ви, когато ползва Google Мениджър на пароли за вход в(ъв) <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">Търсене</translation>
 <translation id="138618066238211776">Продължаване като <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">Последните 4 седмици</translation>
@@ -337,6 +335,7 @@
 <translation id="2747003861858887689">Предишното поле</translation>
 <translation id="2749231692441336879">Следите <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Профили на това устройство</translation>
+<translation id="2755595981383829244">Вече ще получавате известия за съдържание</translation>
 <translation id="2762000892062317888">току-що</translation>
 <translation id="2772667768515195373">Можете да използвате запазените адреси в различни продукти на Google. Този адрес е запазен в профила ви в Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="2773292004659987824">Търсене в режим „инкогнито“</translation>
@@ -406,7 +405,6 @@
 <translation id="3087734570205094154">Най-долу</translation>
 <translation id="3090455602619185166">Вход с управляван профил</translation>
 <translation id="309710370695886264">Имате 1 повторно използвана парола. Коригирайте я сега, за да сте в безопасност.</translation>
-<translation id="3109724472072898302">Свито</translation>
 <translation id="3112556859945124369">Означаване…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Вижте какво можете да синхронизирате<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">История и др.</translation>
@@ -775,7 +773,6 @@
 <translation id="5121618895923301719">Вече проследявате този продукт. Тази страница е запазена в <ph name="BEGIN_LINK" />Мобилни отметки<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Имате няколко проблема с паролите.</translation>
 <translation id="5126465625664020024">Вход и синхронизиране</translation>
-<translation id="5131062416352684089">Членовете на семейството ви вече могат да използват потребителското име и паролата ви, когато ползват Google Мениджър на пароли за вход в(ъв) <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">Синхронизиране на паролите, историята ви и др. на всички устройства</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} ненадеждна парола}other{{COUNT} ненадеждни пароли}}</translation>
 <translation id="5149188072385105201">Добавяне на парола...</translation>
@@ -924,7 +921,6 @@
 <translation id="5955891643922670672">Гледате офлайн версията</translation>
 <translation id="5957613098218939406">Още опции</translation>
 <translation id="595769230373966252">Търсене с(ъс) <ph name="SEARCH_PROVIDER" /></translation>
-<translation id="5962718611393537961">Докоснете за свиване</translation>
 <translation id="5963939892571022323">Не може да се създаде връзка към откроения текст.</translation>
 <translation id="5971872012779224351">{count,plural, =1{Изтрихте 1 отметка}other{Изтрихте {count} отметки}}</translation>
 <translation id="5979837087407522202">Търсене в паролите</translation>

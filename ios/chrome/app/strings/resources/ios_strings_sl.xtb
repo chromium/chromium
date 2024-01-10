@@ -56,7 +56,6 @@
 <translation id="1279024913354609713">Ne dovoli</translation>
 <translation id="1281818060020671000">Upravljanje podatkov</translation>
 <translation id="1282311502488501110">Brez prijave</translation>
-<translation id="1283039547216852943">Dotaknite se za razširitev</translation>
 <translation id="1283524564873030414">Zadnjih 24 ur</translation>
 <translation id="1285320974508926690">Nikoli ne prevedi tega spletnega mesta</translation>
 <translation id="1291506870746876680">Dovoljenja za spletno mesto <ph name="BEGIN_BOLD" />»<ph name="SITE_NAME" />«<ph name="END_BOLD" /> bodo ponastavljena na izklopljena, ko zapustite to spletno mesto.</translation>
@@ -82,7 +81,6 @@
 <translation id="1377255359165588604">Sync has stopped working.</translation>
 <translation id="1377321085342047638">Card Number</translation>
 <translation id="1377508275003315939">Gesla</translation>
-<translation id="1380914240355562929"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> lahko zdaj uporabi vaše uporabniško ime in geslo pri uporabi Googlovega upravitelja gesel za prijavo na <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">Išči</translation>
 <translation id="138618066238211776">Nadaljuj kot <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">Last 4 Weeks</translation>
@@ -337,6 +335,7 @@ Vaš iskalnik je <ph name="DSE_NAME" />. Oglejte si navodila iskalnika za brisan
 <translation id="2747003861858887689">Prejšnje polje</translation>
 <translation id="2749231692441336879">Spremljate <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Računi v tej napravi</translation>
+<translation id="2755595981383829244">Prejemali boste obvestila o vsebini</translation>
 <translation id="2762000892062317888">pravkar</translation>
 <translation id="2772667768515195373">Shranjene naslove lahko uporabite v Googlovih izdelkih. Ta naslov je shranjen v računu Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Anonimno iskanje</translation>
@@ -406,7 +405,6 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="3087734570205094154">Na dno</translation>
 <translation id="3090455602619185166">Prijava z upravljanim računom</translation>
 <translation id="309710370695886264">Imate 1 znova uporabljeno geslo. Popravite ga, če se želite zavarovati.</translation>
-<translation id="3109724472072898302">Strnjeno</translation>
 <translation id="3112556859945124369">Označi …</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Oglejte si, kaj lahko sinhronizirate.<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">Zgodovina in drugo</translation>
@@ -775,7 +773,6 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="5121618895923301719">Ta izdelek že spremljate. Ta stran je shranjena v <ph name="BEGIN_LINK" />Zaznamkih v mobilni napravi<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Imate več težav z gesli.</translation>
 <translation id="5126465625664020024">Prijavite se in sinhronizirajte</translation>
-<translation id="5131062416352684089">Družinski člani lahko zdaj uporabijo vaše uporabniško ime in geslo pri uporabi Googlovega upravitelja gesel za prijavo na <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">Sinhronizirajte gesla, zgodovino in drugo v vseh napravah</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} šibko geslo}one{{COUNT} šibko geslo}two{{COUNT} šibki gesli}few{{COUNT} šibka gesla}other{{COUNT} šibkih gesel}}</translation>
 <translation id="5149188072385105201">Dodaj geslo …</translation>
@@ -924,7 +921,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5955891643922670672">Ogled različice brez povezave</translation>
 <translation id="5957613098218939406">Več možnosti</translation>
 <translation id="595769230373966252">Iskanje z iskalnikom <ph name="SEARCH_PROVIDER" /></translation>
-<translation id="5962718611393537961">Dotik za strnitev</translation>
 <translation id="5963939892571022323">Povezave do označitve ni bilo mogoče ustvariti.</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 zaznamek je izbrisan}one{{count} zaznamek je izbrisan}two{{count} zaznamka sta izbrisana}few{{count} zaznamki so izbrisani}other{{count} zaznamkov je izbrisanih}}</translation>
 <translation id="5979837087407522202">Iskanje gesel</translation>
@@ -991,6 +987,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6255097610484507482">Urejanje kreditne kartice</translation>
 <translation id="6266039999629596120">Potrebno je ukrepanje</translation>
 <translation id="6277426346321820595">Brez zaščite</translation>
+<translation id="628251768213143684">Kadar koli lahko upravljate, kaj se shranjuje v računu Google</translation>
 <translation id="6284652193729350524">Ponudi prevajanje iz jezika <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Spremljanje <ph name="CHANNEL_NAME" /> je preklicano.</translation>
 <translation id="6293101329759844770">Če želite vklopiti Varno brskanje, odprite <ph name="BEGIN_LINK" />Google storitve<ph name="END_LINK" /> in se dotaknite »Varno brskanje«.</translation>

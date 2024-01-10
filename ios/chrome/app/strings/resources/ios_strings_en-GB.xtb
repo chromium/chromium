@@ -56,7 +56,6 @@
 <translation id="1279024913354609713">Don't allow</translation>
 <translation id="1281818060020671000">Manage data</translation>
 <translation id="1282311502488501110">Don't sign in</translation>
-<translation id="1283039547216852943">Tap to expand</translation>
 <translation id="1283524564873030414">Last 24 hours</translation>
 <translation id="1285320974508926690">Never translate this site</translation>
 <translation id="1291506870746876680"><ph name="BEGIN_BOLD" />'<ph name="SITE_NAME" />'<ph name="END_BOLD" /> permissions will reset to off when you leave this site.</translation>
@@ -82,7 +81,6 @@
 <translation id="1377255359165588604">Sync has stopped working.</translation>
 <translation id="1377321085342047638">Card number</translation>
 <translation id="1377508275003315939">Passwords</translation>
-<translation id="1380914240355562929"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> can now use your username and password when they use Google Password Manager to sign in to <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="138618066238211776">Continue as <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">Last 4 Weeks</translation>
@@ -406,7 +404,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3087734570205094154">Bottom</translation>
 <translation id="3090455602619185166">Sign In with managed account</translation>
 <translation id="309710370695886264">You have one reused password. Fix it now to stay safe.</translation>
-<translation id="3109724472072898302">Collapsed</translation>
 <translation id="3112556859945124369">Mark…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />See what you can sync<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">History and more</translation>
@@ -775,7 +772,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="5121618895923301719">You're already tracking this product. This page is saved in <ph name="BEGIN_LINK" />Mobile bookmarks<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">You have several password issues.</translation>
 <translation id="5126465625664020024">Sign in and Sync</translation>
-<translation id="5131062416352684089">Your family members can now use your username and password when they use Google Password Manager to sign in to <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">Sync your passwords, history and more on all devices</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} weak password}other{{COUNT} weak passwords}}</translation>
 <translation id="5149188072385105201">Add password…</translation>
@@ -924,7 +920,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5955891643922670672">Viewing Offline Version</translation>
 <translation id="5957613098218939406">More Options</translation>
 <translation id="595769230373966252">Search with <ph name="SEARCH_PROVIDER" /></translation>
-<translation id="5962718611393537961">Tap to collapse</translation>
 <translation id="5963939892571022323">A link to the highlight cannot be created.</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 bookmark deleted}other{{count} bookmarks deleted}}</translation>
 <translation id="5979837087407522202">Search passwords</translation>

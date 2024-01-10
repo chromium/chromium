@@ -56,7 +56,6 @@
 <translation id="1279024913354609713">Ne dopusti</translation>
 <translation id="1281818060020671000">Upravljanje podacima</translation>
 <translation id="1282311502488501110">Ne prijavljuj se</translation>
-<translation id="1283039547216852943">Dodirnite za proširivanje</translation>
 <translation id="1283524564873030414">Posljednja 24 sata</translation>
 <translation id="1285320974508926690">Nikad nemoj prevoditi ovu web-lokaciju</translation>
 <translation id="1291506870746876680">Dopuštenja <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> vratit će se na isključeno kad napustite ovu web-lokaciju.</translation>
@@ -82,7 +81,6 @@
 <translation id="1377255359165588604">Sinkronizacija je prekinuta.</translation>
 <translation id="1377321085342047638">Broj kartice</translation>
 <translation id="1377508275003315939">Zaporke</translation>
-<translation id="1380914240355562929"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> sada može koristiti vaše korisničko ime i zaporku kad upotrebljava Google upravitelj zaporki za prijavu na <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">Traži</translation>
 <translation id="138618066238211776">Nastavite kao <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">Protekla 4 tjedna</translation>
@@ -407,7 +405,6 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="3087734570205094154">Donji</translation>
 <translation id="3090455602619185166">Prijavite se upravljanim računom</translation>
 <translation id="309710370695886264">Imate jednu višestruko korištenu zaporku. Riješite problem odmah da biste se zaštitili.</translation>
-<translation id="3109724472072898302">Sažeto</translation>
 <translation id="3112556859945124369">Označi...</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Pogledajte što možete sinkronizirati<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">Povijest i drugo</translation>
@@ -692,6 +689,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="4689564913179979534">Upravljajte načinima plaćanja...</translation>
 <translation id="469300482518076788">Zatvori karticu</translation>
 <translation id="4697071790493980729">Nema rezultata</translation>
+<translation id="470337593714520080">{count,plural, =1{Spremite jednu oznaku na svoj Google račun}one{Spremite {count} oznaku na svoj Google račun}few{Spremite {count} oznake na svoj Google račun}other{Spremite {count} oznaka na svoj Google račun}}</translation>
 <translation id="470966556546083668">Ne uključuj sinkronizaciju</translation>
 <translation id="4711809265250406889">Kad je značajka uključena</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} i još 1}one{{website_1}, {website_2} i još {more_count}}few{{website_1}, {website_2} i još {more_count}}other{{website_1}, {website_2} i još {more_count}}}</translation>
@@ -776,7 +774,6 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="5121618895923301719">Već pratite ovaj proizvod. Ova je stranica spremljena u <ph name="BEGIN_LINK" />Mobilne oznake<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Imate nekoliko problema sa zaporkama.</translation>
 <translation id="5126465625664020024">Prijava i sinkronizacija</translation>
-<translation id="5131062416352684089">Članovi obitelji sada mogu koristiti vaše korisničko ime i zaporku kad upotrebljavaju Google upravitelj zaporki za prijavu na <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">Sinkronizirajte svoje zaporke, povijest i drugo na svim uređajima</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} slaba zaporka}one{{COUNT} slaba zaporka}few{{COUNT} slabe zaporke}other{{COUNT} slabih zaporki}}</translation>
 <translation id="5149188072385105201">Dodaj zaporku...</translation>
@@ -925,7 +922,6 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="5955891643922670672">Prikaz offline verzije</translation>
 <translation id="5957613098218939406">Više opcija</translation>
 <translation id="595769230373966252">Pretraživanje pomoću usluge <ph name="SEARCH_PROVIDER" /></translation>
-<translation id="5962718611393537961">Dodirnite da biste saželi</translation>
 <translation id="5963939892571022323">Izrada veze na istaknuti tekst nije uspjela.</translation>
 <translation id="5971872012779224351">{count,plural, =1{Izbrisana je jedna oznaka}one{Izbrisana je {count} oznaka}few{Izbrisane su {count} oznake}other{Izbrisano je {count} oznaka}}</translation>
 <translation id="5979837087407522202">Pretraživanje zaporki</translation>

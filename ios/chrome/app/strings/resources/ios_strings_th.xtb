@@ -56,7 +56,6 @@
 <translation id="1279024913354609713">ไม่อนุญาต</translation>
 <translation id="1281818060020671000">จัดการข้อมูล</translation>
 <translation id="1282311502488501110">ไม่ต้องลงชื่อเข้าใช้</translation>
-<translation id="1283039547216852943">แตะเพื่อขยาย</translation>
 <translation id="1283524564873030414">24 ชั่วโมงที่ผ่านมา</translation>
 <translation id="1285320974508926690">ไม่ต้องแปลเว็บไซต์นี้</translation>
 <translation id="1291506870746876680">สิทธิ์ของ <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> จะรีเซ็ตเป็นปิดเมื่อคุณออกจากเว็บไซต์นี้</translation>
@@ -82,7 +81,6 @@
 <translation id="1377255359165588604">การซิงค์หยุดทำงานแล้ว</translation>
 <translation id="1377321085342047638">หมายเลขบัตร</translation>
 <translation id="1377508275003315939">รหัสผ่าน</translation>
-<translation id="1380914240355562929">ตอนนี้ <ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> ใช้ชื่อผู้ใช้และรหัสผ่านของคุณเมื่อใช้เครื่องมือจัดการรหัสผ่านบน Google เพื่อลงชื่อเข้าใช้ <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> ได้ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">ค้นหา</translation>
 <translation id="138618066238211776">ดำเนินการต่อในชื่อ <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">4 สัปดาห์ที่ผ่านมา</translation>
@@ -253,6 +251,7 @@
 <translation id="2326302612031521902">ตัวเลือกหน่วย</translation>
 <translation id="2348630484974447747">พัสดุ</translation>
 <translation id="2351097562818989364">รีเซ็ตการตั้งค่าการแปลภาษาของคุณแล้ว</translation>
+<translation id="2353784052777482798">{COUNT,plural, =1{คุณบันทึกรหัสผ่านสำหรับ {DOMAIN_ONE} ไว้ในบัญชี Google {EMAIL} ได้}=2{คุณบันทึกรหัสผ่านสำหรับ {DOMAIN_ONE} และ {DOMAIN_TWO} ไว้ในบัญชี Google {EMAIL} ได้}=3{คุณบันทึกรหัสผ่านสำหรับ {DOMAIN_ONE}, {DOMAIN_TWO} และอีก {OTHER_DOMAINS_COUNT} โดเมนไว้ในบัญชี Google {EMAIL} ได้}other{คุณบันทึกรหัสผ่านสำหรับ {DOMAIN_ONE}, {DOMAIN_TWO} และอีก {OTHER_DOMAINS_COUNT} โดเมนไว้ในบัญชี Google {EMAIL} ได้}}</translation>
 <translation id="235789365079050412">นโยบายความเป็นส่วนตัวของ Google</translation>
 <translation id="2359043044084662842">แปล</translation>
 <translation id="2359808026110333948">ต่อไป</translation>
@@ -407,7 +406,6 @@
 <translation id="3087734570205094154">ด้านล่าง</translation>
 <translation id="3090455602619185166">ลงชื่อเข้าใช้ด้วยบัญชีที่จัดการ</translation>
 <translation id="309710370695886264">คุณมีรหัสผ่านที่ใช้ซ้ำ 1 รายการ แก้ไขเลยเพื่อความปลอดภัย</translation>
-<translation id="3109724472072898302">ยุบแล้ว</translation>
 <translation id="3112556859945124369">ทำเครื่องหมาย…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />ดูสิ่งที่คุณซิงค์ได้<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">ประวัติการเข้าชมและอื่นๆ</translation>
@@ -692,6 +690,7 @@
 <translation id="4689564913179979534">จัดการวิธีการชำระเงิน...</translation>
 <translation id="469300482518076788">ปิดแท็บ</translation>
 <translation id="4697071790493980729">ไม่พบผลการค้นหา</translation>
+<translation id="470337593714520080">{count,plural, =1{บันทึกบุ๊กมาร์ก 1 รายการในบัญชี Google}other{บันทึกบุ๊กมาร์ก {count} รายการในบัญชี Google}}</translation>
 <translation id="470966556546083668">ไม่ต้องเปิดการซิงค์</translation>
 <translation id="4711809265250406889">เมื่อเปิด</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} และอีก 1 เว็บไซต์}other{{website_1}, {website_2} และอีก {more_count} เว็บไซต์}}</translation>
@@ -776,7 +775,6 @@
 <translation id="5121618895923301719">คุณติดตามผลิตภัณฑ์นี้อยู่แล้ว บันทึกหน้านี้ไว้ใน<ph name="BEGIN_LINK" />บุ๊กมาร์กอุปกรณ์เคลื่อนที่<ph name="END_LINK" />แล้ว</translation>
 <translation id="512533434554095351">คุณมีปัญหารหัสผ่านหลายรายการ</translation>
 <translation id="5126465625664020024">ลงชื่อเข้าใช้และซิงค์</translation>
-<translation id="5131062416352684089">ตอนนี้สมาชิกในครอบครัวใช้ชื่อผู้ใช้และรหัสผ่านของคุณเมื่อใช้เครื่องมือจัดการรหัสผ่านบน Google เพื่อลงชื่อเข้าใช้ <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> ได้ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">ซิงค์รหัสผ่าน ประวัติการเข้าชม และอื่นๆ ในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{มีรหัสผ่านที่ไม่รัดกุม {COUNT} รหัส}other{มีรหัสผ่านที่ไม่รัดกุม {COUNT} รหัส}}</translation>
 <translation id="5149188072385105201">เพิ่มรหัสผ่าน...</translation>
@@ -925,7 +923,6 @@
 <translation id="5955891643922670672">การดูเวอร์ชันออฟไลน์</translation>
 <translation id="5957613098218939406">ตัวเลือกเพิ่มเติม</translation>
 <translation id="595769230373966252">ค้นหาด้วย <ph name="SEARCH_PROVIDER" /></translation>
-<translation id="5962718611393537961">แตะเพื่อยุบ</translation>
 <translation id="5963939892571022323">สร้างลิงก์ไปยังไฮไลต์ไม่ได้</translation>
 <translation id="5971872012779224351">{count,plural, =1{ลบบุ๊กมาร์ก 1 รายการแล้ว}other{ลบบุ๊กมาร์ก {count} รายการแล้ว}}</translation>
 <translation id="5979837087407522202">ค้นหารหัสผ่าน</translation>
@@ -992,6 +989,7 @@
 <translation id="6255097610484507482">แก้ไขบัตรเครดิต</translation>
 <translation id="6266039999629596120">ต้องดำเนินการ</translation>
 <translation id="6277426346321820595">ไม่มีการปกป้อง</translation>
+<translation id="628251768213143684">คุณจัดการข้อมูลที่บันทึกไว้ในบัญชี Google ได้ทุกเมื่อ</translation>
 <translation id="6284652193729350524">เสนอการแปล <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">เลิกติดตาม <ph name="CHANNEL_NAME" /> แล้ว</translation>
 <translation id="6293101329759844770">หากต้องการเปิด Google Safe Browsing ให้เปิด<ph name="BEGIN_LINK" />บริการของ Google<ph name="END_LINK" /> จากนั้นแตะ Google Safe Browsing</translation>

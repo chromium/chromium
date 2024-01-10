@@ -56,7 +56,6 @@
 <translation id="1279024913354609713">অনুমতি দেবেন না</translation>
 <translation id="1281818060020671000">ডেটা ম্যানেজ করুন</translation>
 <translation id="1282311502488501110">সাইন-ইন করতে চাই না</translation>
-<translation id="1283039547216852943">প্রসারিত করতে আলতো চাপুন</translation>
 <translation id="1283524564873030414">গত ২৪ ঘণ্টা</translation>
 <translation id="1285320974508926690">কখনই এই সাইটটিকে অনুবাদ করবেন না</translation>
 <translation id="1291506870746876680">আপনি এই সাইট বন্ধ করে দিলে, <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> এর সাথে সম্পর্কিত অনুমতি রিসেট হয়ে বন্ধ হয়ে যাবে।</translation>
@@ -82,7 +81,6 @@
 <translation id="1377255359165588604">সিঙ্ক কাজ করা বন্ধ করে দিয়েছে।</translation>
 <translation id="1377321085342047638">কার্ড নম্বর</translation>
 <translation id="1377508275003315939">পাসওয়ার্ড</translation>
-<translation id="1380914240355562929">Google Password Manager ব্যবহার করে <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />-এ সাইন-ইন করার সময় <ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> এখন আপনার ইউজারনেম ও পাসওয়ার্ড ব্যবহার করতে পারবেন। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="138618066238211776"><ph name="USER_NAME" /> হিসেবে চালিয়ে যান</translation>
 <translation id="1400642268715879018">গত ৪ সপ্তাহ</translation>
@@ -406,7 +404,6 @@
 <translation id="3087734570205094154">নিচে</translation>
 <translation id="3090455602619185166">ম্যানেজ করা অ্যাকাউন্ট ব্যবহার করে সাইন-ইন করুন</translation>
 <translation id="309710370695886264">আপনার কাছে ১টি একই পাসওয়ার্ড আছে যা আবার ব্যবহার করা হয়েছে। নিরাপদ থাকতে এই সমস্যার সমাধান করুন।</translation>
-<translation id="3109724472072898302">সঙ্কুচিত</translation>
 <translation id="3112556859945124369">চিহ্নিত করুন…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />আপনি কী সিঙ্ক করতে পারবেন তা দেখুন<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">ইতিহাস ও আরও অনেক কিছু</translation>
@@ -775,7 +772,6 @@
 <translation id="5121618895923301719">আপনি আগে থেকেই এই প্রোডাক্টটি ট্র্যাক করছেন। এই পৃষ্ঠাটি <ph name="BEGIN_LINK" />মোবাইল বুকমার্কে<ph name="END_LINK" /> সেভ করা আছে।</translation>
 <translation id="512533434554095351">আপনার পাসওয়ার্ডের ক্ষেত্রে বিভিন্ন ধরনের সমস্যা আছে।</translation>
 <translation id="5126465625664020024">প্রবেশ করুন এবং সিঙ্ক করুন</translation>
-<translation id="5131062416352684089">Google Password Manager ব্যবহার করে <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />-এ সাইন-ইন করার সময় আপনার পরিবারের সদস্যরা এখন আপনার ইউজারনেম ও পাসওয়ার্ড ব্যবহার করতে পারবেন। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">সমস্ত ডিভাইসে আপনার পাসওয়ার্ড, ইতিহাস ও আরও অনেক কিছু সিঙ্ক করুন</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT}টি দুর্বল পাসওয়ার্ড}one{{COUNT}টি দুর্বল পাসওয়ার্ড}other{{COUNT}টি দুর্বল পাসওয়ার্ড}}</translation>
 <translation id="5149188072385105201">পাসওয়ার্ড যোগ করুন...</translation>
@@ -925,7 +921,6 @@
 <translation id="5955891643922670672">অফলাইন ভার্সন দেখছেন</translation>
 <translation id="5957613098218939406">আরও বিকল্পগুলি</translation>
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> ব্যবহার করে সার্চ করুন</translation>
-<translation id="5962718611393537961">সঙ্কুচিত করতে আলতো চাপুন</translation>
 <translation id="5963939892571022323">হাইলাইট করা টেক্সটের লিঙ্ক তৈরি করা যায়নি।</translation>
 <translation id="5971872012779224351">{count,plural, =1{১টি বুকমার্ক মুছে ফেলা হয়েছে}one{{count}টি বুকমার্ক মুছে ফেলা হয়েছে}other{{count}টি বুকমার্ক মুছে ফেলা হয়েছে}}</translation>
 <translation id="5979837087407522202">পাসওয়ার্ড খুঁজুন</translation>

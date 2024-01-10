@@ -5,6 +5,7 @@
 <translation id="1155815720264022949">می‌خواهید برگه‌های قدیمی را ببندید؟</translation>
 <translation id="1215127405478249895">مرور برگه‌ها</translation>
 <translation id="125153950246128346">برای دیدن برگه دیگر ضربه بزنید</translation>
+<translation id="1326271443836399892">تنظیمات فعلی مرتب کردن را مرور کنید.</translation>
 <translation id="1499635324672558517">همه «برگه‌های ناشناس» بسته شود؟</translation>
 <translation id="1657719826150349398">انتقال برگه به پایین</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> برگه}one{<ph name="TABS_COUNT_MANY" /> برگه}other{<ph name="TABS_COUNT_MANY" /> برگه}}</translation>
@@ -25,6 +26,7 @@
 <translation id="2977480621796371840">برداشتن از گروه</translation>
 <translation id="3008554597174452548">توقف پیگیری محصول</translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> کاهش قیمت <ph name="PRODUCT_NAME" /></translation>
+<translation id="313819129451406482">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> برگه بایگانی‌شده دارید}one{<ph name="TABS_COUNT_MANY" /> برگه بایگانی‌شده دارید}other{<ph name="TABS_COUNT_MANY" /> برگه بایگانی‌شده دارید}}</translation>
 <translation id="3194464645767632461">رده‌بندی</translation>
 <translation id="3291470810748040983">وقتی در یکی از برگه‌های باز، قیمت کمتری وجود داشت، اعلان دریافت خواهید کرد</translation>
 <translation id="3328308545011660196">پیشنهاد: به نظر می‌رسد <ph name="NUMBER_OF_TABS" /> برگه مرتبط باشند. گروه‌بندی شوند؟</translation>
@@ -98,5 +100,6 @@
 <translation id="9090098097337832354">اطلاعات مربوط به این فروشگاه بسته شد</translation>
 <translation id="9150694013019234766">جابه‌جایی بین برگه‌ها در گروه برگه شما واقع در نزدیک پایین صفحه‌نمایش</translation>
 <translation id="9169594135889675189">افزودن برگه جدید به گروه</translation>
+<translation id="955558140275419384">با وارد کردن این ویرایشگر، همه برگه‌های بایگانی‌شده را برای مرتب کردن مرور کنید</translation>
 <translation id="959682366969460160">سازمان‌دهی شوید</translation>
 </translationbundle>

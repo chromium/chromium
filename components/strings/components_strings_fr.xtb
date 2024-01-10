@@ -272,6 +272,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1476595624592550506">Modifiez votre mot de passe</translation>
 <translation id="1482879811280872320">Cyclisme</translation>
 <translation id="1483493594462132177">Envoyer</translation>
+<translation id="1484632730438126438">C'est trop court. Écrivez au moins trois mots.</translation>
 <translation id="1492194039220927094">Diffusion push des règles : </translation>
 <translation id="14938948731065592">Périphériques pour ordinateur</translation>
 <translation id="1495677929897281669">Retour à l'onglet</translation>
@@ -1238,7 +1239,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3447661539832366887">Le propriétaire de cet appareil a désactivé le jeu avec le dinosaure.</translation>
 <translation id="3447884698081792621">Afficher le certificat (émis par <ph name="ISSUER" />)</translation>
 <translation id="3450323514459570273">Peut demander à contrôler et à reprogrammer vos appareils MIDI</translation>
-<translation id="3452151267620065789">Progression enregistrée</translation>
 <translation id="3452404311384756672">Intervalle de récupération : </translation>
 <translation id="3453962258458347894">Nombre de nouvelles tentatives</translation>
 <translation id="3461266716147554923"><ph name="URL" /> souhaite voir le texte et les images copiés dans le presse-papiers</translation>
@@ -1404,6 +1404,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3748009735914587286">Métal (haute brillance)</translation>
 <translation id="3748148204939282805">Des individus malveillants à l'œuvre sur le site <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> pourraient vous inciter à effectuer des opérations dangereuses, comme installer des logiciels ou divulguer des informations personnelles (mots de passe, numéros de téléphone ou numéros de carte de crédit, par exemple). <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Secteur aéronautique</translation>
+<translation id="3751020515020988516">Votre requête n'a pas été comprise. Formulez-en une autre.</translation>
 <translation id="3752543821772132562">Ignorée, car <ph name="POLICY_NAME" /> n'est pas définie.</translation>
 <translation id="3754210790023674521">Quitter le mode PIP (Picture-in-picture)</translation>
 <translation id="3759461132968374835">Aucune erreur n'a été signalée récemment. Les erreurs n'apparaissent ici que lorsque l'envoi de rapports d'erreur est activé.</translation>
@@ -1460,6 +1461,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3858860766373142691">Nom</translation>
 <translation id="3872834068356954457">Sciences</translation>
 <translation id="3875783148670536197">Démonstration</translation>
+<translation id="3877877650871124156">C'est trop long. Faites plus court et réessayez.</translation>
 <translation id="3881478300875776315">Afficher moins de lignes</translation>
 <translation id="3883500545751229739">annonces intrusives</translation>
 <translation id="3884278016824448484">Identifiant de l'appareil en conflit.</translation>
@@ -1537,7 +1539,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4067098466788473230">Bourses d'études</translation>
 <translation id="4067947977115446013">Ajouter une adresse valide</translation>
 <translation id="4070790659619547722">Avec la mesure des annonces, seuls quelques types de données sont partagés entre les sites, comme l'heure à laquelle une annonce vous a été présentée.</translation>
-<translation id="4072193657607981494">Chargement des règles…</translation>
 <translation id="4072486802667267160">Une erreur s'est produite lors du traitement de votre commande. Veuillez réessayer.</translation>
 <translation id="4073376909608563327">Impossible d'utiliser le déverrouillage</translation>
 <translation id="4073797364926776829">Afficher la carte</translation>
@@ -2568,6 +2569,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />En savoir plus sur la navigation privée dans Chrome<ph name="END_LINK" /></translation>
 <translation id="6133320744616005677">Maintenir l'autorisation</translation>
 <translation id="6133984428121856852">L'extension de fichier est vide ou incorrecte.</translation>
+<translation id="6139769382153674477">Un problème est survenu. Êtes-vous connecté ?</translation>
 <translation id="6139975341602920272">17 x 22 pouces</translation>
 <translation id="6146055958333702838">Vérifiez les câbles et redémarrez votre routeur, votre modem
     ou tout autre périphérique réseau utilisé.</translation>
@@ -2724,7 +2726,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6428450836711225518">Validez votre numéro de téléphone</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">Changer de mot de passe Google</translation>
-<translation id="6431119592588449664">Le rapport est importé</translation>
 <translation id="6432297414176614592">En savoir plus sur les thèmes des annonces</translation>
 <translation id="6432831586648556868">Emplois dans le domaine de la vente et du marketing</translation>
 <translation id="6433490469411711332">Modifier les coordonnées</translation>
@@ -3484,7 +3485,6 @@ Informations supplémentaires :
 <translation id="7871445724586827387">Changez le mot de passe de votre compte Google</translation>
 <translation id="7877007680666472091">ID de contenus protégés</translation>
 <translation id="7878562273885520351">Votre mot de passe a peut-être été piraté</translation>
-<translation id="7878966190323222027">Rouvrir pour continuer</translation>
 <translation id="7880146494886811634">Enregistrer l'adresse</translation>
 <translation id="7882421473871500483">Marron</translation>
 <translation id="7882995332186050355">Poids lourds et semi-remorques</translation>
@@ -4105,7 +4105,6 @@ Informations supplémentaires :
 <translation id="9119042192571987207">Importation terminée</translation>
 <translation id="9122954576417194280">Transactions sur matières premières et opérations à terme</translation>
 <translation id="912327514020027767">Jupes</translation>
-<translation id="9128016270925453879">Les règles sont chargées</translation>
 <translation id="9128870381267983090">Connectez-vous au réseau</translation>
 <translation id="9131119348384879525">Capturer le contenu confidentiel ?</translation>
 <translation id="9133985615769429248">Si vous partagez cet appareil, vous pouvez utiliser le verrouillage de l'écran pour confirmer votre identité chaque fois que vous utilisez un mot de passe enregistré</translation>

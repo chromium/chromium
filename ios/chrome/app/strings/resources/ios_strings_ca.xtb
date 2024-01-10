@@ -56,7 +56,6 @@
 <translation id="1279024913354609713">No permetis</translation>
 <translation id="1281818060020671000">Gestiona les dades</translation>
 <translation id="1282311502488501110">No iniciïs la sessió</translation>
-<translation id="1283039547216852943">Toca per desplegar</translation>
 <translation id="1283524564873030414">24 darreres hores</translation>
 <translation id="1285320974508926690">No tradueixis mai aquest lloc</translation>
 <translation id="1291506870746876680">Els permisos per a <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> es restabliran a l'estat desactivat quan surtis d'aquest lloc web.</translation>
@@ -82,7 +81,6 @@
 <translation id="1377255359165588604">La sincronització ha deixat de funcionar.</translation>
 <translation id="1377321085342047638">Número de targeta</translation>
 <translation id="1377508275003315939">Contrasenyes</translation>
-<translation id="1380914240355562929">Ara, <ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> pot fer servir el teu nom d'usuari i la teva contrasenya quan utilitzi el gestor de contrasenyes de Google per iniciar la sessió a <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">Cerca</translation>
 <translation id="138618066238211776">Continua com a <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">Quatre darreres setmanes</translation>
@@ -406,7 +404,6 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3087734570205094154">Part inferior</translation>
 <translation id="3090455602619185166">Inicia la sessió amb un compte gestionat</translation>
 <translation id="309710370695886264">Tens 1 contrasenya reutilitzada. Corregeix el problema per protegir-te.</translation>
-<translation id="3109724472072898302">Reduït</translation>
 <translation id="3112556859945124369">Marca com a…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Consulta què pots sincronitzar<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">Historial i més</translation>
@@ -775,7 +772,6 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="5121618895923301719">Ja estàs fent el seguiment d'aquest producte. Aquesta pàgina s'ha desat a <ph name="BEGIN_LINK" />Adreces d'interès per a mòbils<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Tens diversos problemes relacionats amb les contrasenyes.</translation>
 <translation id="5126465625664020024">Inicia la sessió i sincronitza</translation>
-<translation id="5131062416352684089">Ara, els membres de la família poden fer servir el teu nom d'usuari i la teva contrasenya quan utilitzin el gestor de contrasenyes de Google per iniciar la sessió a <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">Sincronitza les contrasenyes, l'historial i altres elements en tots els dispositius</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} contrasenya poc segura}other{{COUNT} contrasenyes poc segures}}</translation>
 <translation id="5149188072385105201">Afegeix una contrasenya...</translation>
@@ -924,7 +920,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5955891643922670672">Se n'està mostrant la versió sense connexió</translation>
 <translation id="5957613098218939406">Més opcions</translation>
 <translation id="595769230373966252">Cerca amb <ph name="SEARCH_PROVIDER" /></translation>
-<translation id="5962718611393537961">Toca per replegar</translation>
 <translation id="5963939892571022323">No es pot crear un enllaç al text marcat.</translation>
 <translation id="5971872012779224351">{count,plural, =1{S'ha suprimit 1 adreça d'interès}other{S'han suprimit {count} adreces d'interès}}</translation>
 <translation id="5979837087407522202">Cerca contrasenyes</translation>

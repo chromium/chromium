@@ -272,6 +272,7 @@
 <translation id="1476595624592550506">비밀번호 변경</translation>
 <translation id="1482879811280872320">사이클</translation>
 <translation id="1483493594462132177">보내기</translation>
+<translation id="1484632730438126438">너무 짧습니다. 단어를 3개 이상 사용하세요.</translation>
 <translation id="1492194039220927094">정책 푸시:</translation>
 <translation id="14938948731065592">컴퓨터 주변기기</translation>
 <translation id="1495677929897281669">탭으로 돌아가기</translation>
@@ -1238,7 +1239,6 @@
 <translation id="3447661539832366887">이 기기의 소유자가 공룡 게임을 사용 중지했습니다.</translation>
 <translation id="3447884698081792621">인증서 표시(발급 기관: <ph name="ISSUER" />)</translation>
 <translation id="3450323514459570273">MIDI 기기 제어 및 재프로그래밍을 요청할 수 있음</translation>
-<translation id="3452151267620065789">진행 상황 저장됨</translation>
 <translation id="3452404311384756672">가져오기 간격:</translation>
 <translation id="3453962258458347894">재시도 횟수</translation>
 <translation id="3461266716147554923"><ph name="URL" />에서 클립보드에 복사된 텍스트 및 이미지를 확인하려고 합니다.</translation>
@@ -1404,6 +1404,7 @@
 <translation id="3748009735914587286">금속(고광택)</translation>
 <translation id="3748148204939282805"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />의 공격자가 소프트웨어를 설치하거나 개인정보(예: 비밀번호, 전화번호, 신용카드)를 공개하는 등의 위험한 행동을 하도록 사용자를 속일 수 있습니다. <ph name="BEGIN_LEARN_MORE_LINK" />자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">항공 산업</translation>
+<translation id="3751020515020988516">요청을 이해할 수 없습니다. 다른 요청을 시도해 보세요.</translation>
 <translation id="3752543821772132562"><ph name="POLICY_NAME" />가 설정되지 않아 무시되었습니다.</translation>
 <translation id="3754210790023674521">PIP 모드 종료</translation>
 <translation id="3759461132968374835">최근에 보고된 비정상 종료가 없습니다. 비정상 종료 보고를 사용 중지했을 때 발생한 비정상 종료는 여기에 표시되지 않습니다.</translation>
@@ -1460,6 +1461,7 @@
 <translation id="3858860766373142691">이름</translation>
 <translation id="3872834068356954457">과학</translation>
 <translation id="3875783148670536197">방법 보기</translation>
+<translation id="3877877650871124156">너무 깁니다. 내용을 줄여 다시 시도하세요.</translation>
 <translation id="3881478300875776315">자막 접기</translation>
 <translation id="3883500545751229739">방해가 되는 광고</translation>
 <translation id="3884278016824448484">기기 식별자 충돌</translation>
@@ -1537,7 +1539,6 @@
 <translation id="4067098466788473230">학업 보조금 및 장학금</translation>
 <translation id="4067947977115446013">유효한 주소 추가</translation>
 <translation id="4070790659619547722">광고 측정을 사용하면 광고 실적을 측정하기 위해 광고가 표시된 시간과 같이 제한된 유형의 데이터가 사이트 간에 공유됩니다.</translation>
-<translation id="4072193657607981494">정책 로드 중</translation>
 <translation id="4072486802667267160">주문을 처리하는 중에 오류가 발생했습니다. 다시 시도하세요.</translation>
 <translation id="4073376909608563327">기기 잠금 해제를 사용할 수 없음</translation>
 <translation id="4073797364926776829">카드 보기</translation>
@@ -2568,6 +2569,7 @@
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />Chrome 시크릿 모드 자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="6133320744616005677">계속 허용</translation>
 <translation id="6133984428121856852">파일 확장자가 비어 있거나 형식이 잘못되었습니다.</translation>
+<translation id="6139769382153674477">문제가 발생했습니다. 로그인하셨나요?</translation>
 <translation id="6139975341602920272">17x22인치</translation>
 <translation id="6146055958333702838">케이블을 확인하고 사용 중인 라우터, 모뎀 또는 기타 네트워크 기기를
     재부팅하시기 바랍니다.</translation>
@@ -2724,7 +2726,6 @@
 <translation id="6428450836711225518">전화번호 인증</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">Google 비밀번호 변경</translation>
-<translation id="6431119592588449664">보고서 업로드됨</translation>
 <translation id="6432297414176614592">광고 주제에 관해 자세히 알아보기</translation>
 <translation id="6432831586648556868">영업 및 마케팅직</translation>
 <translation id="6433490469411711332">연락처 정보 수정</translation>
@@ -3482,7 +3483,6 @@
 <translation id="7871445724586827387">Google 계정 비밀번호 변경</translation>
 <translation id="7877007680666472091">보호된 콘텐츠 ID</translation>
 <translation id="7878562273885520351">비밀번호가 도용될 수도 있음</translation>
-<translation id="7878966190323222027">계속하려면 다시 여세요</translation>
 <translation id="7880146494886811634">주소 저장</translation>
 <translation id="7882421473871500483">갈색</translation>
 <translation id="7882995332186050355">화물 트럭 및 트레일러</translation>
@@ -4103,7 +4103,6 @@
 <translation id="9119042192571987207">업로드됨</translation>
 <translation id="9122954576417194280">상품 및 선물 거래</translation>
 <translation id="912327514020027767">스커트</translation>
-<translation id="9128016270925453879">정책 로드됨</translation>
 <translation id="9128870381267983090">네트워크에 연결</translation>
 <translation id="9131119348384879525">기밀 콘텐츠를 캡처하시겠습니까?</translation>
 <translation id="9133985615769429248">이 기기를 다른 사용자와 공유하는 경우, 저장된 비밀번호를 사용할 때마다 화면 잠금을 통해 본인 인증을 진행할 수 있습니다.</translation>

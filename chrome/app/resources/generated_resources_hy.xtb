@@ -813,7 +813,6 @@
 <translation id="1615433306336820465">Կառավարեք մուտքի տվյալները, որոնք պահված են ձեր անվտանգության բանալու վրա</translation>
 <translation id="1616206807336925449">Տվյալ ընդլայնումը չի պահանջում հատուկ թույլտվություն:</translation>
 <translation id="1616298854599875024">Անհնար է ներմուծել «<ph name="IMPORT_NAME" />» ընդլայնումը, քանի որ այն ընդհանուր մոդուլ չէ</translation>
-<translation id="161654560322394775"><ph name="A" /> ապրանքի պատկեր <ph name="INDEX" />, <ph name="B" /> ոճով, <ph name="C" /> տրամադրությամբ։</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Ստուգվում է՝ արդյոք տվյալները համապատասխանում են ձեր կազմակերպության կանոններին…}=1{Ստուգվում է՝ արդյոք ֆայլը համապատասխանում է ձեր կազմակերպության կանոններին…}one{Ստուգվում է՝ արդյոք ֆայլերը համապատասխանում են ձեր կազմակերպության կանոններին…}other{Ստուգվում է՝ արդյոք ֆայլերը համապատասխանում են ձեր կազմակերպության կանոններին…}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">Օ&amp;գնության կենտրոն</translation>
@@ -4219,7 +4218,6 @@
 <translation id="4250229828105606438">Սքրինշոթ</translation>
 <translation id="4250680216510889253">Ոչ</translation>
 <translation id="4251377547188244181">Սարքի գրանցում կրպակի և ցուցանակի ռեժիմում</translation>
-<translation id="4252141040239557279"><ph name="A" /> ապրանքի պատկեր <ph name="INDEX" /></translation>
 <translation id="4252828488489674554">Մկնիկի աջ կոճակով սեղմեք ներդիրների խմբի անվանման վրա՝ խումբը փոփոխելու համար, կամ սեղմեք ծալելու համար</translation>
 <translation id="4252899949534773101">Bluetooth-ն անջատված է</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> – Ներդիրի բովանդակությունը հրապարակվում է</translation>
@@ -6550,7 +6548,6 @@
         <ph name="BREAK" />
         Դուք կարող եք կառավարել կարգավորումները քարտի ընտրացանկից կամ դիտել լրացուցիչ ընտրանքները «Կարգավորել Chrome-ը» բաժնում։</translation>
 <translation id="6121773125605585883">Դիտել <ph name="WEBSITE" /> կայքի համար <ph name="USERNAME" />-ի գաղտնաբառը</translation>
-<translation id="6122081475643980456">Ձեր կապակցումը համացանցին վերահսկվում է</translation>
 <translation id="6122093587541546701">Էլփոստ պարտադիր չէ՝</translation>
 <translation id="6122095009389448667">Արգելափակել այս կայքի մուտքը սեղմատախտակ</translation>
 <translation id="6122513630797178831">Պահել CVC-ն</translation>
@@ -7435,7 +7432,6 @@
 <translation id="6820079682647046800">Kerberos իսկորոշումը ձախողվեց</translation>
 <translation id="6821439254917412979">Ապամրացնել <ph name="EXTENSION_NAME" /> ընդլայնումը</translation>
 <translation id="6823174134746916417">Հպահարթակի tap-to-click գործառույթը</translation>
-<translation id="6823429960180594870">Կառավարեք ֆայլերը, երբ դրանք ներբեռնվում են, և բացեք դրանք, երբ ներբեռնումն ավարտված լինի</translation>
 <translation id="6823561724060793716">Հասցեագոտում դուք կարող եք լրացուցիչ տեղեկություններ բացել ձեր այցելած էջի մասին</translation>
 <translation id="6824564591481349393">Պատճենել &amp;էլփոստի հասցեն</translation>
 <translation id="6824584962142919697">&amp;Ստուգել տարրերը</translation>
@@ -7840,7 +7836,6 @@
 <translation id="714301620504747562">Դիտարկիչի և որոնման աշխատանքն ավելի արագ է, քան սովորական նախաբեռնումը</translation>
 <translation id="7143207342074048698">Միացում</translation>
 <translation id="7143409552554575716">ChromeOS-ի փորձնական գործառույթներ</translation>
-<translation id="714447804011008506">Ներբեռնումներն այժմ գործիքագոտում են</translation>
 <translation id="7144856456372460176">&amp;Տեղադրել <ph name="APP" /> հավելվածը…</translation>
 <translation id="7144878232160441200">Նորից փորձել</translation>
 <translation id="7145413760160421938">Չհաջողվեց վերսկսել նախորդ աշխատաշրջանը</translation>
@@ -8491,7 +8486,6 @@
 <translation id="7657090467145778067">Փոքր տնտեսում</translation>
 <translation id="7657218410916651670"><ph name="BEGIN_LINK_GOOGLE" />Այլ գործողություններ<ph name="END_LINK_GOOGLE" /> կարող են պահվել ձեր Google հաշվում, երբ դուք մուտք եք գործում։ Դրանք ցանկացած ժամանակ հնարավոր է ջնջել։</translation>
 <translation id="7658239707568436148">Չեղարկել</translation>
-<translation id="7658727964021657194">Արհեստական բանականության օգնությամբ վերջերս ստեղծված թեմա <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">Միևնույն է փակե՞լ ինկոգնիտո ռեժիմը։</translation>
 <translation id="7659336857671800422">Ուսումնասիրեք ուղեցույցը</translation>
 <translation id="7659584679870740384">Դուք այս սարքից օգտվելու իրավունք չունեք: Մուտք գործելու թույլտվության համար դիմեք սարքի ադմինիստրատորին:</translation>
@@ -8772,7 +8766,6 @@
 <translation id="7855678561139483478">Բացել ներդիրը նոր պատուհանում</translation>
 <translation id="7857004848504343806">Ձեր համակարգիչը պարունակում է անվտանգության մոդուլ, որն օգտագործվում է ChromeOS Flex-ում անվտանգության բազմաթիվ կարևոր գործառույթների համար։ Լրացուցիչ տեղեկությունների համար այցելեք Chromebook-ի օգնության կենտրոն՝ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Տեքստային հուշումներ</translation>
-<translation id="7857949311770343000">Սա՞ է ձեր ուզած նոր ներդիրի էջը:</translation>
 <translation id="7858120906780498731">ChromeOS-ին միացված ներածման սարքեր</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941">Հեռացնել <ph name="EXTENSION_NAME" /> ընդլայնումը</translation>
@@ -8821,7 +8814,6 @@
 <translation id="789722939441020330">Թույլ չտալ կայքերին ավտոմատ մի քանի ֆայլ ներբեռնել</translation>
 <translation id="7897900149154324287">Հետագայում չմոռանաք՝ նախքան կրիչն անջատելը օգտագործել Ֆայլեր հավելվածի «Հանել» կոճակը: Հակառակ դեպքում տվյալները կարող են կորել:</translation>
 <translation id="7898725031477653577">Միշտ թարգմանել</translation>
-<translation id="7899324822972399722"><ph name="A" /> ապրանքի պատկեր <ph name="INDEX" />, <ph name="B" /> ոճով</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Դիտարկիչի բաղադրիչնե՞րն եք փնտրում։ Անցեք</translation>
 <translation id="7903429136755645827">Սեղմեք՝ խաղի կառավարման տարրերը կարգավորելու համար</translation>
@@ -9101,7 +9093,6 @@
 <translation id="8098616321286360457">Պահանջվում է ինտերնետ կապ</translation>
 <translation id="8100230553590752325">Օգտագործեք պահված գաղտնաբառերը ցանկացած սարքում</translation>
 <translation id="810068641062493918">Ընտրվել է <ph name="LANGUAGE" /> լեզուն։ Չեղարկելու համար սեղմեք «Որոնում» + բացատ։</translation>
-<translation id="8100725874569949614"><ph name="A" /> ապրանքի պատկեր <ph name="INDEX" />, <ph name="C" /> տրամադրությամբ։</translation>
 <translation id="8101409298456377967">Ստեղծեք, պահեք և կառավարեք ձեր գաղտնաբառերը, որպեսզի հեշտությամբ մուտք գործեք կայքեր և հավելվածներ։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">Հատուկ գույն</translation>
 <translation id="8101987792947961127">Հաջորդ վերաբեռնման ժամանակ հարկավոր է կատարել Powerwash</translation>
@@ -10049,7 +10040,6 @@
 <translation id="8846163936679269230">Վերակայել eSIM պրոֆիլները</translation>
 <translation id="8846239054091760429">Մոնո աուդիո, մեկնարկի ձայներ, ենթագրեր և ավելին</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8848963863312877204">Ներբեռնված ֆայլերը կհայտնվեն այստեղ</translation>
 <translation id="8849001918648564819">Ոչ ոք</translation>
 <translation id="8849219423513870962">Չեղարկել eSIM պրոֆիլի (<ph name="PROFILE_NAME" />) հեռացումը</translation>
 <translation id="8849262417389398097"><ph name="CHECKED" />՝ <ph name="CHECKING" />-ից</translation>

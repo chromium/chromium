@@ -810,7 +810,6 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1615433306336820465">Gestiona los datos de inicio de sesión almacenados en tu llave de seguridad</translation>
 <translation id="1616206807336925449">Esta extensión no requiere permisos especiales.</translation>
 <translation id="1616298854599875024">No se ha podido importar la extensión "<ph name="IMPORT_NAME" />" porque no es un módulo compartido</translation>
-<translation id="161654560322394775">Imagen <ph name="INDEX" /> de <ph name="A" /> con el estilo <ph name="B" /> y el estado de ánimo <ph name="C" />.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Comprobando que estos datos cumplan las políticas de seguridad de tu organización…}=1{Comprobando que este archivo cumpla las políticas de seguridad de tu organización…}other{Comprobando que estos archivos cumplan las políticas de seguridad de tu organización…}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">C&amp;entro de ayuda</translation>
@@ -4219,7 +4218,6 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4250229828105606438">Captura de pantalla</translation>
 <translation id="4250680216510889253">No</translation>
 <translation id="4251377547188244181">Registro de dispositivo de kiosco y señalización</translation>
-<translation id="4252141040239557279">Imagen <ph name="INDEX" /> de <ph name="A" /></translation>
 <translation id="4252828488489674554">Haz clic con el botón derecho en el nombre del grupo de pestañas para editar este grupo o haz clic con el botón izquierdo para ocultarlo</translation>
 <translation id="4252899949534773101">El Bluetooth está inhabilitado</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" />: contenido de la pestaña compartido</translation>
@@ -6550,7 +6548,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
         <ph name="BREAK" />
         Puedes gestionar los ajustes en el menú de la tarjeta, o ver más opciones en Personalizar Chrome.</translation>
 <translation id="6121773125605585883">Ver contraseña con el nombre de usuario <ph name="USERNAME" /> para <ph name="WEBSITE" /></translation>
-<translation id="6122081475643980456">Tu conexión a Internet está siendo controlada</translation>
 <translation id="6122093587541546701">Correo electrónico (opcional):</translation>
 <translation id="6122095009389448667">Seguir impidiendo que este sitio web vea el portapapeles</translation>
 <translation id="6122513630797178831">Guardar CVC</translation>
@@ -7433,7 +7430,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6820079682647046800">Error de autenticación en Kerberos</translation>
 <translation id="6821439254917412979">No fijar <ph name="EXTENSION_NAME" /></translation>
 <translation id="6823174134746916417">Tocar para hacer clic en el panel táctil</translation>
-<translation id="6823429960180594870">Gestiona los archivos mientras se descargan y ábrelos cuando se haya completado la descarga</translation>
 <translation id="6823561724060793716">En la barra de direcciones, puedes abrir la información de la página en la que estás para ver datos adicionales sobre ella</translation>
 <translation id="6824564591481349393">Copiar &amp;dirección de correo electrónico</translation>
 <translation id="6824584962142919697">&amp;Inspeccionar elementos</translation>
@@ -7839,7 +7835,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="714301620504747562">La navegación y la búsqueda son más rápidas que con la precarga estándar</translation>
 <translation id="7143207342074048698">Conectando</translation>
 <translation id="7143409552554575716">Marcas de ChromeOS</translation>
-<translation id="714447804011008506">Ahora las descargas están en la barra de herramientas</translation>
 <translation id="7144856456372460176">&amp;Instalar <ph name="APP" />…</translation>
 <translation id="7144878232160441200">Reintentar</translation>
 <translation id="7145413760160421938">No se puede reanudar la sesión anterior</translation>
@@ -8490,7 +8485,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7657090467145778067">Ahorro reducido</translation>
 <translation id="7657218410916651670">Es posible que <ph name="BEGIN_LINK_GOOGLE" />otras formas de actividad<ph name="END_LINK_GOOGLE" /> se guarden en tu cuenta de Google si has iniciado sesión. Puedes eliminarlas cuando quieras.</translation>
 <translation id="7658239707568436148">Cancelar</translation>
-<translation id="7658727964021657194">Tema reciente generado por IA <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">¿Salir del modo Incógnito de todas formas?</translation>
 <translation id="7659336857671800422">Consultar la guía de privacidad</translation>
 <translation id="7659584679870740384">No tienes autorización para utilizar este dispositivo. Ponte en contacto con el administrador para obtener permiso de inicio de sesión.</translation>
@@ -8772,7 +8766,6 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7855678561139483478">Mover pestaña a ventana nueva</translation>
 <translation id="7857004848504343806">Tu ordenador contiene un módulo de seguridad, que se utiliza para implementar un gran número de funciones clave de seguridad en ChromeOS Flex. Puedes consultar más información en el Centro de Ayuda de Chromebook: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7857093393627376423">Sugerencias de texto</translation>
-<translation id="7857949311770343000">¿Es esta la página Nueva pestaña que esperabas?</translation>
 <translation id="7858120906780498731">Dispositivos de entrada conectados de ChromeOS</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941">Quitar extensión <ph name="EXTENSION_NAME" /></translation>
@@ -8821,7 +8814,6 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="789722939441020330">No permitir que los sitios descarguen varios archivos automáticamente</translation>
 <translation id="7897900149154324287">En el futuro, asegúrate de expulsar tu dispositivo extraíble en la aplicación Archivos antes de desconectarlo. De lo contrario, podrías perder datos.</translation>
 <translation id="7898725031477653577">Traducir siempre</translation>
-<translation id="7899324822972399722">Imagen <ph name="INDEX" /> de <ph name="A" /> con el estilo <ph name="B" />.</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">¿Buscas componentes del navegador? Visita</translation>
 <translation id="7903429136755645827">Haz clic para personalizar los controles de juegos</translation>
@@ -9102,7 +9094,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8098616321286360457">Se necesita una conexión de red</translation>
 <translation id="8100230553590752325">Usa tus contraseñas guardadas en cualquier dispositivo</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> seleccionado. Pulsa Buscar y la barra espaciadora para deseleccionar el idioma.</translation>
-<translation id="8100725874569949614">Imagen <ph name="INDEX" /> de <ph name="A" /> con el estado de ánimo <ph name="C" />.</translation>
 <translation id="8101409298456377967">Crea, guarda y gestiona tus contraseñas para iniciar sesión fácilmente en sitios y aplicaciones. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">Color personalizado</translation>
 <translation id="8101987792947961127">Se requiere Powerwash en el siguiente reinicio</translation>
@@ -10049,7 +10040,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8846163936679269230">Borrar perfiles de eSIM</translation>
 <translation id="8846239054091760429">Audio en mono, opciones de inicio, Subtítulos automáticos y más</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8848963863312877204">Consulta tus descargas aquí</translation>
 <translation id="8849001918648564819">Oculto</translation>
 <translation id="8849219423513870962">Cancelar la retirada del perfil de eSIM con nombre <ph name="PROFILE_NAME" /></translation>
 <translation id="8849262417389398097"><ph name="CHECKED" /> de <ph name="CHECKING" /></translation>

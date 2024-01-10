@@ -1505,6 +1505,7 @@ Gosodiad newydd</translation>
 <translation id="7025533177575372252">Cysylltwch eich <ph name="DEVICE_NAME" /> â'ch ffôn</translation>
 <translation id="7026338066939101231">Gostyngiad</translation>
 <translation id="7029814467594812963">Gadael y sesiwn</translation>
+<translation id="7031303610220416229">Gweld yr holl dasgau yn Google Tasks</translation>
 <translation id="7032161822340700104">Caniateir 6 templed yn unig. Tynnwch dempled i gadw un newydd.</translation>
 <translation id="7034025838182392395">Mae <ph name="APP_NAME" /> eisiau defnyddio'r <ph name="DEVICE_NAME" />. Trowch switsh <ph name="DEVICE_NAME" /> corfforol eich dyfais ymlaen.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistant</translation>
@@ -1817,6 +1818,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="8351131234907093545">Creu nodyn</translation>
 <translation id="8367948981300340152">Wrthi'n defnyddio <ph name="CAPTURE_MEDIUM" />.</translation>
 <translation id="8369166482916924789">Desg a gadwyd, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
+<translation id="8370414029565771236">Chwilio am <ph name="TEXT" /></translation>
 <translation id="8371779926711439835">Ymlaen wrth y llythyren</translation>
 <translation id="8371991222807690464">Mae'n bosib y bydd perfformiad y perifferol yn gyfyngedig yn y modd Gwestai</translation>
 <translation id="8374601332003098278">Pwyswch Enter i recordio'r sgrîn yn rhannol</translation>

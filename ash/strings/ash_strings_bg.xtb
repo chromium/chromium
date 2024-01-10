@@ -1505,6 +1505,7 @@
 <translation id="7025533177575372252">Свързване на устройството ви <ph name="DEVICE_NAME" /> с телефона ви</translation>
 <translation id="7026338066939101231">Намаляване</translation>
 <translation id="7029814467594812963">Изход от сесията</translation>
+<translation id="7031303610220416229">Преглед на всички задачи в Google Tasks</translation>
 <translation id="7032161822340700104">Разрешени са само 6 шаблона. Премахнете един от текущите, за да запазите нов.</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" /> иска да използва <ph name="DEVICE_NAME" />. Включете физическия превключвател за <ph name="DEVICE_NAME" /> на устройството си.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Асистент</translation>
@@ -1817,6 +1818,7 @@
 <translation id="8351131234907093545">Създаване на бележка</translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> се използва.</translation>
 <translation id="8369166482916924789">Запазен работен кът – <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
+<translation id="8370414029565771236">Търсене на „<ph name="TEXT" />“</translation>
 <translation id="8371779926711439835">Придвижване напред с една буква</translation>
 <translation id="8371991222807690464">Ефективността на периферните устройства може да е ограничена в режима на гост</translation>
 <translation id="8374601332003098278">Натиснете Enter за записване на част от екрана</translation>

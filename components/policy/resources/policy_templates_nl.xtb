@@ -520,6 +520,7 @@ De verschillende niveaus zijn:
 <translation id="143649776386947790">Standaardgedrag gebruiken</translation>
 <translation id="1438739959477268107">Standaardinstelling voor het genereren van sleutels</translation>
 <translation id="1440408958042020947">Hierdoor kunnen gebruikers die Telefoonhub toestaan, toegang krijgen tot recente foto's en video's die ze hebben gemaakt op hun telefoon</translation>
+<translation id="1443532790824582949">Het virtuele aanraaktoetsenbord aanzetten</translation>
 <translation id="1449083855104537880">Als je het beleid instelt op True, worden de toegankelijkheidsopties weergegeven in het systeemvakmenu. Als je het beleid instelt op False, worden de opties niet weergegeven in het menu.
 
       Als je het beleid instelt, kunnen gebruikers het niet wijzigen. Als je het beleid niet instelt, worden de toegankelijkheidsopties niet weergegeven in het menu, maar kunnen gebruikers ze tonen via de pagina Instellingen.
@@ -1169,6 +1170,7 @@ Als dit beleid wordt toegepast in combinatie met <ph name="DOWNLOAD_RESTRICTIONS
 <translation id="1954612656043024615">De functie voor gedeeld klembord aanzetten</translation>
 <translation id="1955063069502242812">Geluid voor een bijna lege batterij aanzetten</translation>
 <translation id="1955806069704957172">Bepaalt de instellingen voor de Desk Connector API.</translation>
+<translation id="1957093168333856467">Virtueel toetsenbord voor toegankelijkheid uitzetten</translation>
 <translation id="1960059835237529462">Hiermee kan de promotie voor <ph name="IOS_NAME" />-appstore-beoordelingen worden getoond aan gebruikers</translation>
 <translation id="1960416154405676350">Regio doorzoeken aanzetten voor <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
 <translation id="1961091374249454164">Het beleid is alleen van toepassing op beheerde gastsessies.
@@ -1270,6 +1272,7 @@ Dit beleid heeft geen effect als het beleid <ph name="DEVICE_SCREENSAVER_LOGIN_S
 <translation id="2029985289397958781">Door de camera ondersteund zoeken via <ph name="GOOGLE_LENS_PRODUCT_NAME" /> uitzetten voor zakelijke gebruikers</translation>
 <translation id="2030905906517501646">Zoekwoord voor standaardzoekprovider</translation>
 <translation id="203096360153626918">Dit beleid is niet van invloed op de Android-apps. Deze hebben toegang tot de modus voor volledig scherm, zelfs als dit beleid is ingesteld op <ph name="FALSE" /> (Onwaar).</translation>
+<translation id="2031074619942406753">Virtueel aanraaktoetsenbord uitzetten</translation>
 <translation id="2032848225007871645">Met dit beleid bepaal je welke standen voor snel ontgrendelen kunnen worden gebruikt om het vergrendelscherm te ontgrendelen.
 
       Je kunt kiezen uit de volgende opties:
@@ -2382,6 +2385,7 @@ Zie https://www.chromestatus.com/feature/4664843055398912.</translation>
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen.</translation>
 <translation id="2971096666394658693">Het contextmenu bevat een menu-item waarmee je afbeeldingen kunt delen met <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" />.</translation>
 <translation id="2973972555495515337">Als je het beleid toepast, kunnen web-apps van derden <ph name="DESK_API_NAME" /> gebruiken om <ph name="PRODUCT_OS_NAME" />-bureaus op te slaan en te delen. Als je het beleid niet toepast, kan de gebruiker geen bureaugegevens opslaan en delen via de <ph name="DESK_API_NAME" />. Als je het beleid niet instelt, is het gedrag hetzelfde als wanneer het uitstaat. Het beleid geldt alleen voor ingeschreven apparaten.</translation>
+<translation id="2976033779241323433">Virtueel aanraaktoetsenbord aanzetten op basis van de standaard systeemheuristiek</translation>
 <translation id="2976429807269247880">Instellingen voor gedrag van verouderde cookies van <ph name="ATTRIBUTE_SAMESITE_NAME" /></translation>
 <translation id="2979696534869541158">Oude implementatie afdwingen</translation>
 <translation id="2985927503455169394">De standaard modus voor introductie van de Assistent gebruiken</translation>
@@ -2488,6 +2492,7 @@ De gebruiker kan de avatarafbeelding instellen via een van deze opties als dit b
       Als je het beleid niet toepast, wordt mediabediening op het vergrendelscherm uitgezet.</translation>
 <translation id="3072847235228302527">De Servicevoorwaarden instellen voor een apparaat-lokaal account</translation>
 <translation id="3074032542020543133">LDS-kanaal</translation>
+<translation id="3074886258920642791">Het virtuele toetsenbord voor toegankelijkheid op het inlogscherm aanzetten</translation>
 <translation id="3077650998740742747">
 Standaardgedrag (beleid niet ingesteld)
 Als een account wordt toegevoegd in het contentgedeelte, verschijnt er een klein dialoogvenster met de vraag om een nieuw profiel te maken. Dit dialoogvenster kan worden gesloten.
@@ -3798,6 +3803,7 @@ Als je het beleid instelt op <ph name="DISABLE_UNPUBLISHED" /> (1), worden exten
 
       Als je dit beleid instelt vanuit een cloudbron, kan het geen specifieke gebruiker targeten.</translation>
 <translation id="416817811987180750">De functie voor boodschappenlijstjes is beschikbaar voor gebruikers.</translation>
+<translation id="4168880975307014079">Virtueel aanraaktoetsenbord aanzetten</translation>
 <translation id="4169094969938998854">Schermvergrendeling niet toestaan</translation>
 <translation id="4169692397912242417">Zet de toegankelijkheidsfunctie voor gesproken feedback op het inlogscherm aan.
 
@@ -4769,6 +4775,7 @@ Dit beleid is alleen van kracht als de machine is ingeschreven met <ph name="CLO
       Opmerking: Elementen kunnen ook aan deze lijst worden toegevoegd via het beleid <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" />.</translation>
 <translation id="5063480226653192405">Gebruik</translation>
 <translation id="5067143124345820993">Aanmelden bij witte lijst van gebruikers</translation>
+<translation id="50689955292091946">Virtueel toetsenbord voor toegankelijkheid op het inlogscherm aanzetten</translation>
 <translation id="5069522005630249098">Deze instelling bepaalt hoeveel gebruikersgegevens worden bewaard nadat <ph name="LACROS_NAME" /> is uitgezet.
 
       Als het beleid is ingesteld op <ph name="LACROS_BACKWARD_MIGRATION_NONE" /> of niet is ingesteld, wordt er geen achterwaartse gegevensmigratie uitgevoerd.
@@ -5099,6 +5106,7 @@ Als je dit beleid niet toepast, kunnen de browser- en downloadgeschiedenis niet 
 <translation id="5331746669335642668"><ph name="PRODUCT_NAME" />-cloudbeleid krijgt voorrang op het platformbeleid.</translation>
 <translation id="5334501839642146593">Statistieken nooit naar Google sturen</translation>
 <translation id="5335910979215357815">De Save and Share API aanzetten voor <ph name="PRODUCT_OS_NAME" />-beheer door derden.</translation>
+<translation id="5339096331970464266">Het virtuele toetsenbord voor toegankelijkheid aanzetten</translation>
 <translation id="5340008866815063393">Rapportage van beleidsgegevens aanzetten</translation>
 <translation id="5345910753471481870">De Google Lens-knop niet tonen in het zoekvak op de pagina Nieuw tabblad.</translation>
 <translation id="5346587320074666194">Toegang tot sensoren op deze sites blokkeren</translation>
@@ -5272,6 +5280,7 @@ Als je het beleid niet toepast of niet instelt, wordt op basis van de instelling
 <translation id="5475361623548884387">Afdrukken aanzetten</translation>
 <translation id="547601067149622666">Geen advertenties toestaan op sites met opdringerige advertenties</translation>
 <translation id="5476152378885134514">Het klembord blokkeren op deze sites</translation>
+<translation id="5479841110985196412">Virtueel toetsenbord voor toegankelijkheid aanzetten</translation>
 <translation id="5480380613778757009">Als je dit beleid uitzet of niet instelt, worden alle weergave-instellingen die zijn ingesteld in de beheerde gastsessie, gereset zodra de sessie wordt beëindigd. Als je dit beleid instelt op True, worden de weergave-eigenschappen bewaard nadat de beheerde gastsessie is beëindigd.</translation>
 <translation id="5483012943408894695">Beginpunten of hostnaampatronen waarvoor geen beperkingen voor niet-beveiligde herkomsten zouden moeten gelden.</translation>
 <translation id="5483065054530244863">Door lokale vertrouwensinstanties verstrekte, met SHA-1 ondertekende certificaten toestaan</translation>
@@ -6135,6 +6144,17 @@ Opmerking: Op dit moment wordt alleen rekening gehouden met de eerste vermelding
       Als dit beleid niet wordt ingesteld, wordt de standaardconfiguratie voor de audiosandbox gebruikt, die per platform kan verschillen.
       Dit beleid is bedoeld om bedrijven de flexibiliteit te bieden om de audiosandbox uit te zetten als ze instellingen voor beveiligingssoftware gebruiken die de sandbox kunnen verstoren.</translation>
 <translation id="624818583115864448">poort 554 (blokkering kan worden opgeheven tot 15-10-2021)</translation>
+<translation id="6249912382559535329">De toegankelijkheidsfunctie voor het virtuele toetsenbord op het inlogscherm aanzetten.
+
+          Als je dit beleid instelt op Waar, staat het virtuele toetsenbord voor toegankelijkheid altijd aan op het inlogscherm.
+
+          Als je dit beleid instelt op Onwaar, staat het virtuele toetsenbord voor toegankelijkheid altijd uit op het inlogscherm.
+
+          Als je dit beleid instelt, kunnen gebruikers dit niet wijzigen of overschrijven.
+
+          Als je dit beleid niet instelt, staat het virtuele toetsenbord voor toegankelijkheid in eerste instantie uit op het inlogscherm. Gebruikers kunnen het op elk moment aanzetten via de toegankelijkheidsinstellingen.
+
+          Dit beleid bepaalt niet of het virtuele aanraaktoetsenbord aanstaat. Het virtuele aanraaktoetsenbord wordt bijvoorbeeld nog steeds getoond op een tablet, ook als dit beleid is ingesteld op Onwaar.</translation>
 <translation id="6254498834449523938">Gebruiker niet toestaan Safe Browsing-waarschuwingen over te slaan</translation>
 <translation id="625580680776945310">De modus voor hoge efficiëntie wordt aangezet.</translation>
 <translation id="6258658183356534534">De GREASE-updatefunctie voor User-Agent Client Hints beheren.</translation>
@@ -6358,6 +6378,16 @@ Als je dit beleid instelt op <ph name="DISALLOW" />, werken de opties <ph name="
       Als je dit beleid niet instelt, wordt de standaardwaarde uitgezet voor zakelijke gebruikers en aangezet voor niet-beheerde accounts.</translation>
 <translation id="6401669939808766804">De gebruiker uitloggen</translation>
 <translation id="640244877779556713">Suggestie voor emoji's aanzetten</translation>
+<translation id="6403114173011456561">Beheert het virtuele aanraaktoetsenbord en fungeert als aanvullend beleid op het beleid <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />.
+
+      Als het virtuele toetsenbord voor toegankelijkheid aanstaat, heeft dit beleid geen effect.
+
+      Anders heeft dit beleid het volgende effect:
+Als je dit beleid niet instelt, wordt het virtuele toetsenbord getoond op basis van de standaard systeemheuristiek, bijvoorbeeld of er toetsenborden zijn aangesloten.
+      Als je dit beleid instelt op Waar, wordt het virtuele toetsenbord altijd getoond.
+      Als je dit beleid instelt op Onwaar, wordt het virtuele toetsenbord nooit getoond.
+
+      Het virtuele toetsenbord kan worden gewijzigd in een compacte indeling, afhankelijk van de invoermethode.</translation>
 <translation id="6404064917675764807">CRD-sessiegebeurtenissen niet rapporteren</translation>
 <translation id="6404360891305375004">Bestanden delen via netwerk toestaan</translation>
 <translation id="6407093060083181305">Blokkeringslijst voor installatie van extensies configureren</translation>
@@ -8772,6 +8802,17 @@ Certificaten moeten base64-gecodeerd zijn.</translation>
 
 Als je dit beleid niet instelt of instelt op 0, wordt de URL onmiddellijk in een alternatieve browser geopend als je naar de URL navigeert.</translation>
 <translation id="8402079500086185021">Pdf-bestanden altijd extern openen</translation>
+<translation id="8402357110539568621">De toegankelijkheidsfunctie voor het virtuele toetsenbord aanzetten.
+
+          Als je dit beleid instelt op Waar, staat het virtuele toetsenbord voor toegankelijkheid altijd aan.
+
+          Als je dit beleid instelt op Onwaar, staat het virtuele toetsenbord voor toegankelijkheid altijd uit.
+
+          Als je dit beleid instelt, kunnen gebruikers dit niet wijzigen of overschrijven.
+
+          Als je dit beleid niet instelt, staat het virtuele toetsenbord voor toegankelijkheid in eerste instantie uit. De gebruiker kan het toetsenbord op elk moment aanzetten via de toegankelijkheidsinstellingen.
+
+          Dit beleid bepaalt niet of het virtuele aanraaktoetsenbord aanstaat. Het virtuele aanraaktoetsenbord wordt bijvoorbeeld nog steeds getoond op een tablet, ook als dit beleid is ingesteld op Onwaar. Gebruik het beleid <ph name="TOUCH_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> om het gedrag van het virtuele aanraaktoetsenbord te bepalen.</translation>
 <translation id="8410477879938914253">Het beleid is alleen van toepassing op beheerde gastsessies.
       Als je het beleid instelt op True of niet instelt, wordt er een dialoogvenster getoond waarin de gebruiker wordt gevraagd het uitloggen te bevestigen of te weigeren als het laatste venster wordt gesloten.
       Als je het beleid instelt op False, wordt het dialoogvenster niet getoond en wordt automatisch uitloggen nadat het laatste venster is gesloten ook uitgezet.</translation>
@@ -8826,6 +8867,7 @@ Als je dit beleid niet instelt of instelt op 0, wordt de URL onmiddellijk in een
 <translation id="8470317291588703478">Beperkte modus van YouTube niet afdwingen</translation>
 <translation id="8477885780684655676">TLS 1.0</translation>
 <translation id="8479032202539686055">WebRTC gebruikt alle beschikbare interfaces als naar het beste pad wordt gezocht.</translation>
+<translation id="8479496880635054740">Virtueel toetsenbord voor toegankelijkheid op het inlogscherm uitzetten</translation>
 <translation id="8482518340010585741">App-herstel bij inloggen instellen</translation>
 <translation id="8483004350080020634">Verwijdert privacy- en beveiligingsgerelateerde gedeelten van URL's met https:// voordat deze worden doorgegeven aan PAC-scripts (Proxy Auto Config) die tijdens proxyverwerking worden gebruikt door <ph name="PRODUCT_NAME" />.
 

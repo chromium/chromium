@@ -814,7 +814,6 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1615433306336820465">Stjórna innskráningargögnum sem eru vistuð á öryggislyklinum þínum</translation>
 <translation id="1616206807336925449">Þessi viðbót þarf engar sérstakar heimildir.</translation>
 <translation id="1616298854599875024">Ekki er hægt að flytja inn viðbótina „<ph name="IMPORT_NAME" />“ vegna þess að hún er ekki samnýtt eining</translation>
-<translation id="161654560322394775">Mynd <ph name="INDEX" /> af <ph name="A" />, í stílnum <ph name="B" />, með stemningunni <ph name="C" />.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Athugar gögnin út frá öryggisreglum fyrirtækisins þíns...}=1{Athugar skrána út frá öryggisreglum fyrirtækisins þíns...}one{Athugar skrárnar út frá öryggisreglum fyrirtækisins þíns...}other{Athugar skrárnar út frá öryggisreglum fyrirtækisins þíns...}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">Hjálparmiðstöð</translation>
@@ -4235,7 +4234,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4250229828105606438">Skjámynd</translation>
 <translation id="4250680216510889253">Nei</translation>
 <translation id="4251377547188244181">Skráning tækis í sjálfsala- og merkingastillingu.</translation>
-<translation id="4252141040239557279">Mynd <ph name="INDEX" /> af <ph name="A" /></translation>
 <translation id="4252828488489674554">Hægrismelltu á heiti flipahópsins til að breyta þessum hópi eða smelltu til að minnka</translation>
 <translation id="4252899949534773101">Slökkt er á Bluetooth</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> – flipaefni deilt</translation>
@@ -6567,7 +6565,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
         <ph name="BREAK" />
         Þú getur stjórnað stillingum á valmynd spjaldsins eða skoðað fleiri valkosti í „Sérsníða Chrome“.</translation>
 <translation id="6121773125605585883">Skoða aðgangsorð með notandanafnið <ph name="USERNAME" /> fyrir <ph name="WEBSITE" /></translation>
-<translation id="6122081475643980456">Tengingunni þinni við internetið er stýrt</translation>
 <translation id="6122093587541546701">Netfang (valfrjálst):</translation>
 <translation id="6122095009389448667">Koma alltaf í veg fyrir að þetta vefsvæði sjái klippiborðið</translation>
 <translation id="6122513630797178831">Vista CVC-númer</translation>
@@ -7452,7 +7449,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6820079682647046800">Kerberos-auðkenning mistókst</translation>
 <translation id="6821439254917412979">Losa <ph name="EXTENSION_NAME" /></translation>
 <translation id="6823174134746916417">Ýta til að smella á snertifleti</translation>
-<translation id="6823429960180594870">Stjórnaðu skrám þegar þú sækir þær og opnaðu þær þegar niðurhali er lokið</translation>
 <translation id="6823561724060793716">Þú getur opnað upplýsingar um síðu í veffangastikunni til að sjá viðbótarupplýsingar um síðuna sem þú ert að skoða</translation>
 <translation id="6824564591481349393">Afrita n&amp;etfang</translation>
 <translation id="6824584962142919697">&amp;Kanna einingar</translation>
@@ -7857,7 +7853,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="714301620504747562">Það er fljótlegra að fletta og leita en að forhlaða á hefðbundinn máta</translation>
 <translation id="7143207342074048698">Tengist</translation>
 <translation id="7143409552554575716">ChromeOS-flögg</translation>
-<translation id="714447804011008506">Niðurhal er nú á tækjastikunni</translation>
 <translation id="7144856456372460176">Setja upp <ph name="APP" />...</translation>
 <translation id="7144878232160441200">Reyna aftur</translation>
 <translation id="7145413760160421938">Ekki er hægt að halda áfram með fyrri lotu</translation>
@@ -8508,7 +8503,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7657090467145778067">Lítill sparnaður</translation>
 <translation id="7657218410916651670"><ph name="BEGIN_LINK_GOOGLE" />Aðrar aðgerðir<ph name="END_LINK_GOOGLE" /> kunna að vera vistaðar á Google reikningnum þínum ef þú ert innskráð(ur). Þú getur eytt þessu hvenær sem er.</translation>
 <translation id="7658239707568436148">Hætta við</translation>
-<translation id="7658727964021657194">Nýlegt gervigreindarþema <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">Viltu samt loka huliðsstillingu?</translation>
 <translation id="7659336857671800422">Skoðaðu leiðbeiningar um persónuvernd</translation>
 <translation id="7659584679870740384">Þú hefur ekki leyfi til að nota þetta tæki. Hafðu samband við kerfisstjóra til að fá leyfi til að skrá þig inn.</translation>
@@ -8790,7 +8784,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7855678561139483478">Færa flipa í nýjan glugga</translation>
 <translation id="7857004848504343806">Tölvan inniheldur örugga einingu sem er notuð til að innleiða fjölda mikilvægra öryggiseiginleika í ChromeOS Flex. Farðu í hjálparmiðstöð Chromebook til að fá frekari upplýsingar: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Textatillögur</translation>
-<translation id="7857949311770343000">Er þetta síða nýrra flipa sem þú bjóst við?</translation>
 <translation id="7858120906780498731">Inntakstæki tengd við ChromeOS</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941">Fjarlægja <ph name="EXTENSION_NAME" />-viðbót</translation>
@@ -8839,7 +8832,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="789722939441020330">Ekki leyfa vefsvæðum að hlaða mörgum skrám niður sjálfkrafa</translation>
 <translation id="7897900149154324287">Framvegis skaltu gæta þess að aftengja lausa tækið í forritinu Skrár áður en þú tekur það úr sambandi. Að öðrum kosti gætirðu tapað gögnum.</translation>
 <translation id="7898725031477653577">Þýða alltaf</translation>
-<translation id="7899324822972399722">Mynd <ph name="INDEX" /> af <ph name="A" />, í stílnum <ph name="B" /></translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Ertu að leita að vafraíhlutum? Opna</translation>
 <translation id="7903429136755645827">Smelltu til að sérsníða leikjastýringar</translation>
@@ -9119,7 +9111,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8098616321286360457">Nettenging áskilin</translation>
 <translation id="8100230553590752325">Notaðu vistuð aðgangsorð í hvaða tæki sem er</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> valið. Ýttu á leit og bilslána til að hætta við val.</translation>
-<translation id="8100725874569949614">Mynd <ph name="INDEX" /> af <ph name="A" />, með stemningunni <ph name="C" />.</translation>
 <translation id="8101409298456377967">Búðu til, vistaðu og stjórnaðu aðgangsorðunum þínum til að skrá þig inn á vefsvæði og forrit á einfaldan hátt. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">Sérsniðinn litur</translation>
 <translation id="8101987792947961127">Djúphreinsunar er krafist við næstu endurræsingu</translation>
@@ -10067,7 +10058,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8846163936679269230">Endurstilla eSIM-prófíla</translation>
 <translation id="8846239054091760429">Einóma hljóðstilling, ræsing, skjátextar í rauntíma og fleira</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8848963863312877204">Hér finnurðu niðurhalið þitt</translation>
 <translation id="8849001918648564819">Falið</translation>
 <translation id="8849219423513870962">Hætta við að fjarlægja eSIM-prófíl með heitinu <ph name="PROFILE_NAME" /></translation>
 <translation id="8849262417389398097"><ph name="CHECKED" /> af <ph name="CHECKING" /></translation>

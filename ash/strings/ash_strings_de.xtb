@@ -1505,6 +1505,7 @@ Neuinstallation</translation>
 <translation id="7025533177575372252"><ph name="DEVICE_NAME" /> mit deinem Smartphone verbinden</translation>
 <translation id="7026338066939101231">Verringern</translation>
 <translation id="7029814467594812963">Sitzung beenden</translation>
+<translation id="7031303610220416229">Alle Aufgaben in Google Tasks ansehen</translation>
 <translation id="7032161822340700104">Es sind maximal sechs Vorlagen erlaubt. Entferne eine Vorlage, um eine neue zu speichern.</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" /> möchte dein Gerät „<ph name="DEVICE_NAME" />“ verwenden. Aktiviere den physischen Schalter deines Geräts „<ph name="DEVICE_NAME" />“.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistant</translation>
@@ -1817,6 +1818,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8351131234907093545">Notiz erstellen</translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> wird verwendet.</translation>
 <translation id="8369166482916924789">Gespeicherter Desktop, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
+<translation id="8370414029565771236">Nach <ph name="TEXT" /> suchen</translation>
 <translation id="8371779926711439835">Weiter um einen Buchstaben</translation>
 <translation id="8371991222807690464">Die Leistung des Peripheriegeräts kann im Gastmodus eingeschränkt sein</translation>
 <translation id="8374601332003098278">Eingabetaste drücken, um einen Teil des Bildschirms aufzuzeichnen</translation>

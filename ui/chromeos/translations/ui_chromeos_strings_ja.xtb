@@ -24,7 +24,6 @@
 <translation id="1173916544412572294"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="PHONE_NAME" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、電池残量 <ph name="BATTERY_STATUS" />%、詳細</translation>
 <translation id="117624967391683467"><ph name="FILE_NAME" /> をコピーしています...</translation>
 <translation id="1178581264944972037">一時停止</translation>
-<translation id="1190144681599273207">このファイルを取得すると、約 <ph name="FILE_SIZE" /> のモバイル データを使用します。</translation>
 <translation id="1194390763418645112"><ph name="RESTRICTED_DESTINATIONS" /> によるファイル アクセス</translation>
 <translation id="1201402288615127009">次へ</translation>
 <translation id="1209796539517632982">自動ネーム サーバー</translation>
@@ -100,7 +99,6 @@
 <translation id="1761091787730831947"><ph name="VM_NAME" /> と共有</translation>
 <translation id="1773212559869067373">認証証明書がローカルで拒否されました</translation>
 <translation id="1775381402323441512">動画情報</translation>
-<translation id="180035236176489073">このファイルにアクセスするには、オンライン接続が必要です。</translation>
 <translation id="1807938677607439181">すべてのファイル</translation>
 <translation id="1810764548349082891">プレビュー機能はご利用いただけません</translation>
 <translation id="1812302367230252929">アムハラ語（文字変換）</translation>
@@ -135,6 +133,7 @@
 <translation id="2084809735218147718">ありがとうとサインする</translation>
 <translation id="2088690981887365033">VPN ネットワーク</translation>
 <translation id="209653272837065803">空き容量が不足しているため、ファイルの同期を続行できません</translation>
+<translation id="2099143626019777139">アクセスしたウェブサイトは管理者に公開されます。公開されるウェブサイトのリストを確認できます。</translation>
 <translation id="2111134541987263231">[<ph name="BEGIN_BOLD" />シークレット モードでの実行を許可する<ph name="END_BOLD" />] をオンにする</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> 個のアイテムが削除され、復元できなくなります。</translation>
 <translation id="2122305276694332719">非公開ネットワークに自動接続すると、お使いのデバイスと一部のネットワーク設定が他のユーザーに公開されます。そのためこの設定はおすすめしません。</translation>
@@ -161,8 +160,6 @@
 <translation id="2282155092769082568">自動設定 URL:</translation>
 <translation id="2284767815536050991">リムーバブル ストレージ</translation>
 <translation id="2288278176040912387">レコード プレーヤー</translation>
-<translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> 個のファイルを開いています。</translation>
-<translation id="2303301624314357662">ファイル <ph name="FILE_NAME" /> を開いています。</translation>
 <translation id="2304820083631266885">惑星</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> が取り外されました。</translation>
 <translation id="2307462900900812319">ネットワークを設定</translation>
@@ -172,7 +169,6 @@
 <translation id="233822363739146957">空き容量が不足しているため、すべてのファイルを同期できません</translation>
 <translation id="23721837607121582">モバイル プロファイルのダウンロード - <ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">リスト表示に切り替え</translation>
-<translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> 個のフォルダが Linux と共有されています</translation>
 <translation id="2379576081295865700">空き容量を確認しています… 1 個のアイテムが見つかりました</translation>
 <translation id="2383454254762599978">ゴミ箱に移動</translation>
 <translation id="2387458720915042159">プロキシ接続タイプ</translation>
@@ -396,12 +392,10 @@
 <translation id="4197674956721858839">zip 圧縮</translation>
 <translation id="4202378258276439759">スペイン語（ラテンアメリカ）</translation>
 <translation id="4202977638116331303">ジョージア（グルジア）語</translation>
-<translation id="421017592316736757">このファイルにアクセスするには、オンライン接続が必要です。</translation>
 <translation id="4212740939091998969">「<ph name="FOLDER_NAME" />」という名前のフォルダはすでに存在します。別の名前を選択してください。</translation>
 <translation id="4218274196133425560"><ph name="HOST_NAME" /> の例外を削除します</translation>
 <translation id="4261901459838235729">Google プレゼンテーション</translation>
 <translation id="4277536868133419688"><ph name="FILTER_NAME" /> フィルタがオンになりました。</translation>
-<translation id="4290535918735525311">1 個のフォルダを Linux と共有しました</translation>
 <translation id="4299729908419173967">ポルトガル語（ブラジル）</translation>
 <translation id="4302605047395093221">このデバイスでこのモバイル ネットワークに接続するには、PIN を入力する必要があります。</translation>
 <translation id="4303531889494116116">このネットワークはビジー状態です。しばらくしてからもう一度お試しください。</translation>
@@ -502,8 +496,6 @@
 <translation id="4906580650526544301"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="PHONE_NAME" />、<ph name="PROVIDER_NAME" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、電池残量 <ph name="BATTERY_STATUS" />%、詳細</translation>
 <translation id="4935975195727477204">花</translation>
 <translation id="4943368462779413526">フットボール</translation>
-<translation id="4961158930123534723">1 個のフォルダが Parallels Desktop と共有されています</translation>
-<translation id="4965874878399872778">組織のセキュリティ ポリシーに沿ってファイルをチェックしています...</translation>
 <translation id="496656650103537022">「<ph name="FILE_NAME" />」を復元しました</translation>
 <translation id="4969785127455456148">アルバム</translation>
 <translation id="4972330214479971536">ファイルの同期の設定を完了できませんでした</translation>
@@ -565,7 +557,6 @@
 <translation id="5317780077021120954">保存</translation>
 <translation id="5318819489018851358">Linux と共有</translation>
 <translation id="5323213332664049067">ラテン アメリカ</translation>
-<translation id="5330145655348521461">これらのファイルは別のデスクトップで開かれます。表示するには <ph name="USER_NAME" />（<ph name="MAIL_ADDRESS" />）に移動してください。</translation>
 <translation id="5330512191124428349">情報を見る</translation>
 <translation id="535792325654997756">猫と一緒にいる人</translation>
 <translation id="5358764674931277">フレームレート</translation>
@@ -667,7 +658,6 @@
 <translation id="613750717151263950">日本語（US）キーボード</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />、ネットワークなし</translation>
 <translation id="6146563240635539929">動画</translation>
-<translation id="6150853954427645995">このファイルを保存してオフラインで使用できるようにするには、オンラインに戻ってファイルを右クリックし、[<ph name="OFFLINE_CHECKBOX_NAME" />] オプションを選択します。</translation>
 <translation id="6164412158936057769">蝶</translation>
 <translation id="6165508094623778733">詳細</translation>
 <translation id="6170470584681422115">サンドイッチ</translation>
@@ -700,7 +690,6 @@
 <translation id="636254897931573416">無効なドメイン サフィックス マッチの値</translation>
 <translation id="6364301859968397756">組織のストレージの空き容量がなくなりました</translation>
 <translation id="6367976544441405720">ワゴン車</translation>
-<translation id="637062427944097960">このファイルは別のデスクトップで開かれます。表示するには <ph name="USER_NAME" />（<ph name="MAIL_ADDRESS" />）に移動してください。</translation>
 <translation id="6394388407447716302">読み取り専用</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> 個のアイテム</translation>
 <translation id="6407769893376380348">暗号化されているため、<ph name="FILE_NAME" /> を移動できませんでした。</translation>
@@ -709,7 +698,6 @@
 <translation id="6430271654280079150">入力できるのはあと 1 回です。</translation>
 <translation id="643243556292470964">削除したファイルはゴミ箱に移されました</translation>
 <translation id="6438480100790416671">保存容量を確認しています…</translation>
-<translation id="6451527188465304418">組織のセキュリティ ポリシーに沿ってファイルをチェックしています...</translation>
 <translation id="6485131920355264772">空き容量情報を取得できませんでした</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="SECURITY_STATUS" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、管理者によって管理、詳細</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> を <ph name="FOLDER_NAME" /> に展開しています</translation>
@@ -724,7 +712,6 @@
 <translation id="6588648400954570689">ファイルの同期設定</translation>
 <translation id="6594855146910089723">このフォルダは Linux および Parallels Desktop と共有されています</translation>
 <translation id="6607272825297743757">ファイル情報</translation>
-<translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> 個のフォルダが Parallels Desktop と共有されています</translation>
 <translation id="6629518321609546825">4 桁以上の数字を入力してください</translation>
 <translation id="6643016212128521049">削除</translation>
 <translation id="6650726141019353908">ピンクの蝶</translation>
@@ -891,7 +878,6 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">ネットワークの設定中にエラーが発生しました</translation>
-<translation id="7839804798877833423">このファイルを取得すると、約 <ph name="FILE_SIZE" /> のモバイル データを使用します。</translation>
 <translation id="7846076177841592234">選択解除</translation>
 <translation id="7853966320808728790">フランス語 BÉPO</translation>
 <translation id="7857117644404132472">例外を追加</translation>
@@ -933,13 +919,13 @@
 <translation id="813913629614996137">初期化しています...</translation>
 <translation id="8147028810663464959">文字幅は全角です</translation>
 <translation id="8151638057146502721">設定</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 件のエラーがあります。}other{# 件のエラーがあります。}}</translation>
 <translation id="8154842056504218462">すべての項目を選択しました。</translation>
 <translation id="8157684860301034423">アプリ情報を取得できませんでした。</translation>
 <translation id="8175731104491895765">フランス語（ベルギー）</translation>
 <translation id="8175799081768705361"><ph name="NUMBER_OF_FILES_SYNCING" /> 個のドライブ ファイルを同期しています</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">デバイスモデル</translation>
-<translation id="8223479393428528563">これらのファイルを保存してオフラインで使用できるようにするには、オンラインに戻ってファイルを右クリックし、[<ph name="OFFLINE_CHECKBOX_NAME" />] オプションを選択します。</translation>
 <translation id="8241139360630443550">ストレージを表示</translation>
 <translation id="8249296373107784235">中止</translation>
 <translation id="8250690786522693009">ラテン文字</translation>
@@ -966,6 +952,7 @@
 <translation id="83651606385705612"><ph name="VM_NAME" /> に <ph name="FOLDER_NAME" /> フォルダのファイルへのアクセスを許可します</translation>
 <translation id="8372369524088641025">WEP キーが正しくありません</translation>
 <translation id="8372852072747894550">ギリシャ語</translation>
+<translation id="8377269993083688872">メール レイアウト</translation>
 <translation id="8386903983509584791">スキャンが完了しました</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> を抽出しました。</translation>
 <translation id="8395901698320285466">サイズ</translation>
@@ -1024,6 +1011,7 @@
 <translation id="8787254343425541995">共有ネットワークのプロキシを許可する</translation>
 <translation id="8790981080411996443">植物に水をやっている人</translation>
 <translation id="8798099450830957504">既定</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 件の警告があります。}other{# 件の警告があります。}}</translation>
 <translation id="8808686172382650546">ネコ</translation>
 <translation id="8810671769985673465">圧縮できませんでした。アイテム「<ph name="FILE_NAME" />」が存在します。</translation>
 <translation id="8813284582615685103">スペイン語（スペイン）</translation>

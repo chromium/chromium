@@ -24,7 +24,6 @@
 <translation id="1173916544412572294">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="PHONE_NAME" />,‏ <ph name="CONNECTION_STATUS" />, עוצמת האות: ‎<ph name="SIGNAL_STRENGTH" />%‎, סוללת הטלפון: ‎<ph name="BATTERY_STATUS" />%‎, פרטים</translation>
 <translation id="117624967391683467">העתקת <ph name="FILE_NAME" /> מתבצעת...</translation>
 <translation id="1178581264944972037">השהיה</translation>
-<translation id="1190144681599273207">הבאת קובץ זה תצרוך בערך <ph name="FILE_SIZE" /> מחבילת הגלישה.</translation>
 <translation id="1194390763418645112">גישה לקובץ על ידי <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">הבא</translation>
 <translation id="1209796539517632982">שרתי שמות אוטומטיים</translation>
@@ -100,7 +99,6 @@
 <translation id="1761091787730831947">שיתוף עם <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">אישור האימות נדחה מקומית</translation>
 <translation id="1775381402323441512">פרטי הסרטון</translation>
-<translation id="180035236176489073">עליך להיות במצב מקוון כדי לגשת לקבצים אלה.</translation>
 <translation id="1807938677607439181">כל הקבצים</translation>
 <translation id="1810764548349082891">אין תצוגה מקדימה זמינה</translation>
 <translation id="1812302367230252929">תעתיק אמהרית</translation>
@@ -162,8 +160,6 @@
 <translation id="2282155092769082568">כתובת אתר של תצורה אוטומטית:</translation>
 <translation id="2284767815536050991">אחסון נשלף</translation>
 <translation id="2288278176040912387">פטיפון</translation>
-<translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> קבצים נפתחים.</translation>
-<translation id="2303301624314357662">הקובץ <ph name="FILE_NAME" /> נפתח.</translation>
 <translation id="2304820083631266885">כוכב לכת</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> הוצא.</translation>
 <translation id="2307462900900812319">הגדרת רשת</translation>
@@ -173,7 +169,6 @@
 <translation id="233822363739146957">אין מספיק נפח אחסון לסנכרון כל הקבצים שלך</translation>
 <translation id="23721837607121582">הורדה של פרופיל נייד, רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">מעבר לתצוגת רשימה</translation>
-<translation id="2377590462528165447">‏<ph name="NUMBER_OF_ITEMS" /> תיקיות שותפו עם Linux</translation>
 <translation id="2379576081295865700">נפח האחסון בבדיקה… נמצא פריט אחד</translation>
 <translation id="2383454254762599978">העברה לאשפה</translation>
 <translation id="2387458720915042159">‏סוג חיבור לשרת proxy</translation>
@@ -397,12 +392,10 @@
 <translation id="4197674956721858839">כיווץ הקבצים שנבחרו</translation>
 <translation id="4202378258276439759">ספרדית (אמריקה הלטינית)</translation>
 <translation id="4202977638116331303">גיאורגית</translation>
-<translation id="421017592316736757">עליך להיות במצב מקוון כדי לגשת לקובץ זה.</translation>
 <translation id="4212740939091998969">כבר קיימת תיקייה בשם "<ph name="FOLDER_NAME" />". יש לבחור שם אחר.</translation>
 <translation id="4218274196133425560">הסרת החריגה של <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">‏מצגת Google</translation>
 <translation id="4277536868133419688">המסנן <ph name="FILTER_NAME" /> פעיל.</translation>
-<translation id="4290535918735525311">‏תיקייה אחת שותפה עם Linux</translation>
 <translation id="4299729908419173967">פורטוגזית (ברזיל)</translation>
 <translation id="4302605047395093221">כל המשתמשים במכשיר יצטרכו להזין את קוד האימות כדי להתחבר לרשת הסלולרית הזו</translation>
 <translation id="4303531889494116116">הרשת הזו עמוסה. יש לנסות שוב מאוחר יותר.</translation>
@@ -503,8 +496,6 @@
 <translation id="4906580650526544301">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="PHONE_NAME" />,‏ <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, עוצמת האות: %<ph name="SIGNAL_STRENGTH" />‎, סוללת הטלפון: %<ph name="BATTERY_STATUS" />, פרטים</translation>
 <translation id="4935975195727477204">פרח גזניה</translation>
 <translation id="4943368462779413526">פוטבול</translation>
-<translation id="4961158930123534723">‏תיקייה אחת שותפה עם Parallels Desktop</translation>
-<translation id="4965874878399872778">המערכת בודקת אם הקבצים עומדים בדרישות של מדיניות האבטחה של הארגון שלך…</translation>
 <translation id="496656650103537022">הקובץ <ph name="FILE_NAME" /> שוחזר</translation>
 <translation id="4969785127455456148">אלבום</translation>
 <translation id="4972330214479971536">לא ניתן היה לסיים את ההגדרה לסנכרון הקבצים</translation>
@@ -567,7 +558,6 @@
 <translation id="5317780077021120954">שמירה</translation>
 <translation id="5318819489018851358">‏שיתוף עם Linux</translation>
 <translation id="5323213332664049067">אמריקאית לטינית</translation>
-<translation id="5330145655348521461">הקבצים האלה נפתחו בשולחן עבודה אחר. יש לעבור אל <ph name="USER_NAME" />‏ (<ph name="MAIL_ADDRESS" />) כדי להציג אותם.</translation>
 <translation id="5330512191124428349">פרטי קובץ</translation>
 <translation id="535792325654997756">אדם עם חתולים</translation>
 <translation id="5358764674931277">קצב פריימים</translation>
@@ -669,7 +659,6 @@
 <translation id="613750717151263950">יפנית עם מקלדת אמריקאית</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, אין רשת</translation>
 <translation id="6146563240635539929">סרטונים</translation>
-<translation id="6150853954427645995">כדי לשמור קובץ זה לשימוש אופליין, יש לחזור למצב אונליין, ללחוץ לחיצה ימנית על הקובץ ולבחור את האפשרות <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">פרפרים</translation>
 <translation id="6165508094623778733">למידע נוסף</translation>
 <translation id="6170470584681422115">כריך</translation>
@@ -702,7 +691,6 @@
 <translation id="636254897931573416">ערך ההתאמה של סיומות האתרים לא תקין</translation>
 <translation id="6364301859968397756">נפח האחסון של הארגון מלא</translation>
 <translation id="6367976544441405720">רכב מסחרי</translation>
-<translation id="637062427944097960">הקובץ הזה נפתח בשולחן עבודה שונה. עבור אל <ph name="USER_NAME" />‏ (<ph name="MAIL_ADDRESS" />) כדי לראות אותו.</translation>
 <translation id="6394388407447716302">לקריאה בלבד</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> פריטים</translation>
 <translation id="6407769893376380348">לא ניתן להעביר את הקובץ <ph name="FILE_NAME" /> כי הוא מוצפן.</translation>
@@ -711,7 +699,6 @@
 <translation id="6430271654280079150">נותר לך עוד ניסיון אחד.</translation>
 <translation id="643243556292470964">הקבצים שנמחקו מועברים עכשיו לאשפה</translation>
 <translation id="6438480100790416671">נפח האחסון נבדק…</translation>
-<translation id="6451527188465304418">המערכת בודקת אם הקובץ עומד בדרישות של מדיניות האבטחה של הארגון שלך…</translation>
 <translation id="6485131920355264772">נכשל בקבלת מידע על שטח האחסון</translation>
 <translation id="6495925982925244349">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ <ph name="SECURITY_STATUS" />,‏ <ph name="CONNECTION_STATUS" />, עוצמת האות: ‎<ph name="SIGNAL_STRENGTH" />%‎, הרשת מנוהלת על ידי מנהל המערכת שלך, פרטים</translation>
 <translation id="649877868557234318">מתבצע חילוץ של הקובץ <ph name="FILE_NAME" /> אל <ph name="FOLDER_NAME" /></translation>
@@ -726,7 +713,6 @@
 <translation id="6588648400954570689">הגדרות של סנכרון קבצים</translation>
 <translation id="6594855146910089723">‏התיקייה הזו משותפת עם Linux ועם Parallels Desktop</translation>
 <translation id="6607272825297743757">פרטי הקובץ</translation>
-<translation id="6609332149380188670">‏<ph name="NUMBER_OF_ITEMS" /> תיקיות שותפו עם Parallels Desktop</translation>
 <translation id="6629518321609546825">יש להזין 4 מספרים לפחות</translation>
 <translation id="6643016212128521049">ניקוי</translation>
 <translation id="6650726141019353908">פרפר ורוד</translation>
@@ -893,7 +879,6 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" />TB</translation>
 <translation id="7831491651892296503">אירעה שגיאה בהגדרת הרשת</translation>
-<translation id="7839804798877833423">הבאת קבצים אלה תצרוך בערך <ph name="FILE_SIZE" /> מחבילת הגלישה.</translation>
 <translation id="7846076177841592234">ביטול הבחירה</translation>
 <translation id="7853966320808728790">‏BÉPO - צרפתית</translation>
 <translation id="7857117644404132472">להוספת מקרה חריג</translation>
@@ -941,7 +926,6 @@
 <translation id="8175799081768705361">‏<ph name="NUMBER_OF_FILES_SYNCING" /> קבצים ב-Drive מסתנכרנים עכשיו</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">דגם מכשיר</translation>
-<translation id="8223479393428528563">כדי לשמור קבצים אלה לשימוש אופליין, יש לחזור למצב אונליין, ללחוץ לחיצה ימנית על הקבצים ולבחור את האפשרות <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8241139360630443550">הצגת האחסון</translation>
 <translation id="8249296373107784235">ביטול</translation>
 <translation id="8250690786522693009">לטינית</translation>

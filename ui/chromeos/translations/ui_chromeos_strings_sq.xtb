@@ -24,7 +24,6 @@
 <translation id="1173916544412572294">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, bateria e telefonit <ph name="BATTERY_STATUS" />%, detaje</translation>
 <translation id="117624967391683467">Po kopjon <ph name="FILE_NAME" />...</translation>
 <translation id="1178581264944972037">Pauzë</translation>
-<translation id="1190144681599273207">Marrja e këtij skedari do të përdorë afro <ph name="FILE_SIZE" /> të dhëna celulare.</translation>
 <translation id="1194390763418645112">Qasja te skedari nga <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">Para</translation>
 <translation id="1209796539517632982">Serverët automatikë të emrave</translation>
@@ -100,7 +99,6 @@
 <translation id="1761091787730831947">Ndaj me <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">Certifikata e vërtetimit u refuzua nga afër</translation>
 <translation id="1775381402323441512">Informacionet e videos</translation>
-<translation id="180035236176489073">Duhet të jesh online për t'u qasur te këta skedarë.</translation>
 <translation id="1807938677607439181">Të gjithë skedarët</translation>
 <translation id="1810764548349082891">Nuk ka asnjë pamje paraprake</translation>
 <translation id="1812302367230252929">Amarikisht me transliterim</translation>
@@ -161,8 +159,6 @@
 <translation id="2282155092769082568">URL-ja e konfigurimit automatik:</translation>
 <translation id="2284767815536050991">hapësira ruajtëse e lëvizshme</translation>
 <translation id="2288278176040912387">Gramafoni</translation>
-<translation id="2291538123825441971">Po hapen <ph name="NUMBER_OF_FILES" /> skedarë.</translation>
-<translation id="2303301624314357662">Po hap skedarin <ph name="FILE_NAME" />.</translation>
 <translation id="2304820083631266885">Planet</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> është nxjerrë.</translation>
 <translation id="2307462900900812319">Konfiguro rrjetin</translation>
@@ -172,7 +168,6 @@
 <translation id="233822363739146957">Nuk ka hapësirë ruajtëse të mjaftueshme për të sinkronizuar të gjithë skedarët e tu</translation>
 <translation id="23721837607121582">Shkarko profilin e celularit, rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Kalo te pamja e listës</translation>
-<translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> dosje të ndara me Linux</translation>
 <translation id="2379576081295865700">Po kontrollohet hapësira ruajtëse… 1 artikull i gjetur</translation>
 <translation id="2383454254762599978">Zhvendos te koshi</translation>
 <translation id="2387458720915042159">Lloji i lidhjes së përfaqësuesit</translation>
@@ -396,12 +391,10 @@
 <translation id="4197674956721858839">Përzgjedhja e ngjeshjes</translation>
 <translation id="4202378258276439759">Spanjisht (Amerika Latine)</translation>
 <translation id="4202977638116331303">Gjeorgjisht</translation>
-<translation id="421017592316736757">Duhet të jesh online për t'u qasur te ky skedar.</translation>
 <translation id="4212740939091998969">Dosja e emërtuar "<ph name="FOLDER_NAME" />" ekziston tashmë. Zgjidh një emër tjetër.</translation>
 <translation id="4218274196133425560">Hiq përjashtimin për <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">Prezantim i Google</translation>
 <translation id="4277536868133419688">Filtri <ph name="FILTER_NAME" /> është aktiv.</translation>
-<translation id="4290535918735525311">1 dosje e ndarë me Linux</translation>
 <translation id="4299729908419173967">Braziliane</translation>
 <translation id="4302605047395093221">Çdo person që përdor këtë pajisje do të duhet të futë kodin PIN për t'u lidhur me këtë rrjet celular</translation>
 <translation id="4303531889494116116">Ky rrjet është i zënë. Provo përsëri më vonë.</translation>
@@ -502,8 +495,6 @@
 <translation id="4906580650526544301">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, bateria e telefonit <ph name="BATTERY_STATUS" />%, detaje</translation>
 <translation id="4935975195727477204">Lule Gazania</translation>
 <translation id="4943368462779413526">Futboll</translation>
-<translation id="4961158930123534723">1 dosje e ndarë me Parallels Desktop</translation>
-<translation id="4965874878399872778">Skedarët po kontrollohen me politikat e sigurisë së organizatës sate...</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> u restaurua</translation>
 <translation id="4969785127455456148">Albumi</translation>
 <translation id="4972330214479971536">Konfigurimi i sinkronizimit të skedarëve nuk mund të përfundonte</translation>
@@ -565,7 +556,6 @@
 <translation id="5317780077021120954">Ruaj</translation>
 <translation id="5318819489018851358">Ndaj me Linux</translation>
 <translation id="5323213332664049067">Tastiera amerikano-latine</translation>
-<translation id="5330145655348521461">Këta skedarë u hapën në një desktop tjetër. Lëviz te <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) për ta parë.</translation>
 <translation id="5330512191124428349">Merr informacione</translation>
 <translation id="535792325654997756">Person me mace</translation>
 <translation id="5358764674931277">Shpejtësia e kuadrove</translation>
@@ -667,7 +657,6 @@
 <translation id="613750717151263950">Japonisht me tastierë amerikane</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, nuk ka rrjet</translation>
 <translation id="6146563240635539929">Videot</translation>
-<translation id="6150853954427645995">Për ta ruajtur këtë skedar për përdorim offline, kthehu online, kliko me të djathtën te skedari dhe zgjidh opsionin <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Flutura</translation>
 <translation id="6165508094623778733">Mëso më shumë</translation>
 <translation id="6170470584681422115">Sandviç</translation>
@@ -700,7 +689,6 @@
 <translation id="636254897931573416">Vlerë e pavlefshme për përputhjen e prapashtesës së domenit</translation>
 <translation id="6364301859968397756">Hapësira ruajtëse e organizatës është plot</translation>
 <translation id="6367976544441405720">Furgon</translation>
-<translation id="637062427944097960">Ky skedar u hap në një desktop tjetër. Lëviz te <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) për ta parë.</translation>
 <translation id="6394388407447716302">Vetëm për lexim</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> artikuj</translation>
 <translation id="6407769893376380348">Skedari <ph name="FILE_NAME" /> nuk mund të zhvendosej sepse është i enkriptuar.</translation>
@@ -709,7 +697,6 @@
 <translation id="6430271654280079150">Ke 1 përpjekje të mbetur.</translation>
 <translation id="643243556292470964">Skedarët e fshirë tani zhvendosen te koshi</translation>
 <translation id="6438480100790416671">Po kontrollon hapësirën ruajtëse…</translation>
-<translation id="6451527188465304418">Skedari po kontrollohet me politikat e sigurisë të organizatës sate...</translation>
 <translation id="6485131920355264772">Dështoi në marrjen e informacionit të hapësirës</translation>
 <translation id="6495925982925244349">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, menaxhuar nga administratori yt, detaje</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> po nxirret te "<ph name="FOLDER_NAME" />"</translation>
@@ -724,7 +711,6 @@
 <translation id="6588648400954570689">Cilësimet e sinkronizimit të skedarëve</translation>
 <translation id="6594855146910089723">Kjo dosje është ndarë me Linux dhe Parallels Desktop</translation>
 <translation id="6607272825297743757">Informacioni i skedarit</translation>
-<translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> dosje të ndara me Parallels Desktop</translation>
 <translation id="6629518321609546825">Fut të paktën 4 numra</translation>
 <translation id="6643016212128521049">Pastro</translation>
 <translation id="6650726141019353908">Flutur rozë</translation>
@@ -891,7 +877,6 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Gabim gjatë konfigurimit të rrjetit</translation>
-<translation id="7839804798877833423">Marrja e këtyre skedarëve do të përdorë afro <ph name="FILE_SIZE" /> të dhëna celulare.</translation>
 <translation id="7846076177841592234">Anulo zgjedhjen</translation>
 <translation id="7853966320808728790">Franceze BÉPO</translation>
 <translation id="7857117644404132472">Shto një përjashtim</translation>
@@ -939,7 +924,6 @@
 <translation id="8175799081768705361">Po sinkronizohen <ph name="NUMBER_OF_FILES_SYNCING" /> skedarë të "Diskut"</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Modeli i pajisjes</translation>
-<translation id="8223479393428528563">Për të ruajtur këta skedarë për përdorim offline, kthehu online, kliko me të djathtën te skedarët dhe zgjidh opsionin <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8241139360630443550">Shiko hapësirën ruajtëse</translation>
 <translation id="8249296373107784235">Ndërprite</translation>
 <translation id="8250690786522693009">Alfabet latin</translation>

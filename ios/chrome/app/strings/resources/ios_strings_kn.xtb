@@ -56,7 +56,6 @@
 <translation id="1279024913354609713">ಅನುಮತಿಸಬೇಡಿ</translation>
 <translation id="1281818060020671000">ಡೇಟಾವನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="1282311502488501110">ಸೈನ್ ಇನ್ ಮಾಡಬೇಡಿ</translation>
-<translation id="1283039547216852943">ವಿಸ್ತರಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="1283524564873030414">ಕಳೆದ 24 ಗಂಟೆಗಳು</translation>
 <translation id="1285320974508926690">ಈ ಸೈಟ್ ಅನ್ನು ಎಂದಿಗೂ ಭಾಷಾಂತರಿಸದಿರಿ</translation>
 <translation id="1291506870746876680">ನೀವು ಈ ಸೈಟ್ ಅನ್ನು ತೊರೆದಾಗ <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> ಅನುಮತಿಗಳನ್ನು ಆಫ್‌ಗೆ ರೀಸೆಟ್ ಮಾಡಲಾಗುತ್ತದೆ.</translation>
@@ -82,7 +81,6 @@
 <translation id="1377255359165588604">ಸಿಂಕ್ ಕಾರ್ಯನಿರ್ವಹಿಸುವುದನ್ನು ನಿಲ್ಲಿಸಿದೆ.</translation>
 <translation id="1377321085342047638">ಕಾರ್ಡ್ ಸಂಖ್ಯೆ</translation>
 <translation id="1377508275003315939">ಪಾಸ್‌ವರ್ಡ್‌ಗಳು</translation>
-<translation id="1380914240355562929"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> ಅವರು <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಲು Google Password Manager ಅನ್ನು ಬಳಸುವಾಗ, ಅವರು ನಿಮ್ಮ ಬಳಕೆದಾರರ ಹೆಸರು ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬಳಸಬಹುದು. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">ಹುಡುಕಿ</translation>
 <translation id="138618066238211776"><ph name="USER_NAME" /> ಆಗಿ ಮುಂದುವರಿಸಿ</translation>
 <translation id="1400642268715879018">ಕಳೆದ 4 ವಾರಗಳು</translation>
@@ -406,7 +404,6 @@
 <translation id="3087734570205094154">ಕೆಳಗೆ</translation>
 <translation id="3090455602619185166">ನಿರ್ವಹಿಸಲಾದ ಖಾತೆಯ ಮೂಲಕ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="309710370695886264">ನೀವು 1 ಮರುಬಳಕೆ ಮಾಡಲಾದ ಪಾಸ್‌ವರ್ಡ್‌ ಅನ್ನು ಹೊಂದಿದ್ದೀರಿ. ಸುರಕ್ಷಿತವಾಗಿರಲು ಈಗಲೇ ಅದನ್ನು ಸರಿಪಡಿಸಿ.</translation>
-<translation id="3109724472072898302">ಕುಗ್ಗಿಸಿದ</translation>
 <translation id="3112556859945124369">ಗುರುತಿಸಿ...</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />ನೀವು ಏನನ್ನು ಸಿಂಕ್ ಮಾಡಬಹುದು ಎಂಬುದನ್ನು ನೋಡಿ<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">ಇತಿಹಾಸ ಮತ್ತು ಇನ್ನಷ್ಟು</translation>
@@ -775,7 +772,6 @@
 <translation id="5121618895923301719">ನೀವು ಈ ಉತ್ಪನ್ನವನ್ನು ಈಗಾಗಲೇ ಟ್ರ್ಯಾಕ್ ಮಾಡುತ್ತಿದ್ದೀರಿ. ಈ ಪುಟವನ್ನು <ph name="BEGIN_LINK" />ಮೊಬೈಲ್ Bookmarks<ph name="END_LINK" /> ನಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="512533434554095351">ನೀವು ಹಲವಾರು ಪಾಸ್‌ವರ್ಡ್ ಸಮಸ್ಯೆಗಳನ್ನು ಹೊಂದಿದ್ದೀರಿ.</translation>
 <translation id="5126465625664020024">ಸೈನ್ ಇನ್ ಆಗಿ ಮತ್ತು ಸಿಂಕ್ ಮಾಡಿ.</translation>
-<translation id="5131062416352684089">ನಿಮ್ಮ ಕುಟುಂಬದ ಸದಸ್ಯರು <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಲು Google Password Manager ಅನ್ನು ಬಳಸುವಾಗ, ಅವರು ನಿಮ್ಮ ಬಳಕೆದಾರರ ಹೆಸರು ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬಳಸಬಹುದು. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲೂ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು, ಇತಿಹಾಸ ಹಾಗೂ ಇನ್ನೂ ಹೆಚ್ಚಿನವುಗಳನ್ನು ಸಿಂಕ್ ಮಾಡಿ</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} ದುರ್ಬಲ ಪಾಸ್‌ವರ್ಡ್}one{{COUNT} ದುರ್ಬಲ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು}other{{COUNT} ದುರ್ಬಲ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು}}</translation>
 <translation id="5149188072385105201">ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಸೇರಿಸಿ...</translation>
@@ -924,7 +920,6 @@
 <translation id="5955891643922670672">ಆಫ್‌ಲೈನ್ ಆವೃತ್ತಿ ಅನ್ನು ವೀಕ್ಷಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="5957613098218939406">ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳು</translation>
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> ಮೂಲಕ ಹುಡುಕಿ</translation>
-<translation id="5962718611393537961">ಕುಗ್ಗಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="5963939892571022323">ಹೈಲೈಟ್ ಮಾಡುವುದಕ್ಕಾಗಿ ಲಿಂಕ್ ಅನ್ನು ರಚಿಸಲು ಸಾದ್ಯವಿಲ್ಲ.</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 ಬುಕ್‌ಮಾರ್ಕ್ ಅನ್ನು ಅಳಿಸಲಾಗಿದೆ}one{{count} ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಅಳಿಸಲಾಗಿದೆ}other{{count} ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಅಳಿಸಲಾಗಿದೆ}}</translation>
 <translation id="5979837087407522202">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಹುಡುಕಿ</translation>

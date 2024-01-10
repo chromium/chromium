@@ -56,7 +56,6 @@
 <translation id="1279024913354609713">Älä salli</translation>
 <translation id="1281818060020671000">Hallinnoi dataa</translation>
 <translation id="1282311502488501110">Älä kirjaudu sisään</translation>
-<translation id="1283039547216852943">Laajenna napauttamalla.</translation>
 <translation id="1283524564873030414">Viimeiset 24 tuntia</translation>
 <translation id="1285320974508926690">Älä käännä tätä sivustoa</translation>
 <translation id="1291506870746876680">Luvat (<ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" />) nollataan, kun poistut sivustolta.</translation>
@@ -82,7 +81,6 @@
 <translation id="1377255359165588604">Synkronointi on lakannut toimimasta.</translation>
 <translation id="1377321085342047638">Kortin numero</translation>
 <translation id="1377508275003315939">Salasanat</translation>
-<translation id="1380914240355562929"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> voi nyt käyttää käyttäjätunnustasi ja salasanaasi, kun hän kirjautuu osoitteeseen <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> Googlen Salasanojen avulla. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">Haku</translation>
 <translation id="138618066238211776">Jatka käyttäjänä <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">Viimeisten 4 viikon ajalta</translation>
@@ -406,7 +404,6 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="3087734570205094154">Alaosassa</translation>
 <translation id="3090455602619185166">Kirjaudu sisään hallinnoidulla tilillä</translation>
 <translation id="309710370695886264">Sinulla on 1 uudelleenkäytetty salasana. Korjaa se nyt, jotta pysyt turvassa.</translation>
-<translation id="3109724472072898302">Tiivistetty</translation>
 <translation id="3112556859945124369">Merkitse…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Katso, mitä voit synkronoida<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">Historia ja muita</translation>
@@ -775,7 +772,6 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="5121618895923301719">Seuraat jo tätä tuotetta. Tämä sivu on tallennettu <ph name="BEGIN_LINK" />mobiilikirjanmerkkeihin<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Sinulla on useita salasanaongelmia.</translation>
 <translation id="5126465625664020024">Kirjaudu sisään ja synkronoi</translation>
-<translation id="5131062416352684089">Perheenjäsenesi voivat nyt käyttää käyttäjätunnustasi ja salasanaasi, kun he kirjautuvat osoitteeseen <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> Googlen Salasanojen avulla. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">Synkronoi salasanasi, historiasi ja paljon muuta kaikilla laitteilla</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} heikko salasana}other{{COUNT} heikkoa salasanaa}}</translation>
 <translation id="5149188072385105201">Lisää salasana…</translation>
@@ -924,7 +920,6 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="5955891643922670672">Näytetään offline-versio</translation>
 <translation id="5957613098218939406">Lisäasetukset</translation>
 <translation id="595769230373966252">Hae tällä: <ph name="SEARCH_PROVIDER" /></translation>
-<translation id="5962718611393537961">Tiivistä napauttamalla.</translation>
 <translation id="5963939892571022323">Korostukseen ei voi luoda linkkiä.</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 kirjanmerkki poistettu}other{{count} kirjanmerkkiä poistettu}}</translation>
 <translation id="5979837087407522202">Hae salasanoista</translation>

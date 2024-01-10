@@ -233,6 +233,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="2318045970523081853">Tapiwch i wneud galwad</translation>
 <translation id="2321086116217818302">Wrthi'n paratoi cyfrineiriau…</translation>
 <translation id="2323763861024343754">Storfa gwefan</translation>
+<translation id="2327226657832576859">Agor ffeiliau PDF yn awtomatig?</translation>
 <translation id="2328985652426384049">Methu â mewngofnodi</translation>
 <translation id="2341410551640223969">Methu â gosod <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Cyfanswm y data a ddefnyddir gan Chrome, gan gynnwys cyfrifon, nodau tudalen, a gosodiadau sydd wedi'u cadw</translation>
@@ -638,6 +639,7 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="4523326818319942067">awr olaf</translation>
 <translation id="452750746583162491">Adolygwch eich data a gysonwyd</translation>
 <translation id="4532845899244822526">Dewis ffolder</translation>
+<translation id="4541505619120536051">Bob amser ar agor</translation>
 <translation id="4543131175509360848">Dalen dim codau pas</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> tab}zero{<ph name="TAB_COUNT_MANY" /> tab, <ph name="TAB_COUNT_INCOGNITO" /> tab anhysbys}two{<ph name="TAB_COUNT_MANY" /> dab, <ph name="TAB_COUNT_INCOGNITO" /> dab anhysbys}few{<ph name="TAB_COUNT_MANY" /> thab, <ph name="TAB_COUNT_INCOGNITO" /> thab anhysbys}many{<ph name="TAB_COUNT_MANY" /> thab, <ph name="TAB_COUNT_INCOGNITO" /> thab anhysbys}other{<ph name="TAB_COUNT_MANY" /> tab, <ph name="TAB_COUNT_INCOGNITO" /> tab anhysbys}}</translation>
 <translation id="4554077758708533499">Wedi cysylltu â chebl USB</translation>
@@ -829,6 +831,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="5486841595534124508">Logo hysbysiad preifatrwydd ar gyfer hwb mewnwelediadau'r dudalen sy'n ailgyfeirio i fy nhudalen gweithgarwch.</translation>
 <translation id="5487521232677179737">Clirio data</translation>
 <translation id="5492637351392383067">Amgryptio ar y ddyfais</translation>
+<translation id="5509866835115085009">Gall Chrome agor PDF yn awtomatig pan fyddwch chi'n eu lawrlwytho.</translation>
 <translation id="5514904542973294328">Wedi'i analluogi gan weinyddwr y ddyfais hon</translation>
 <translation id="5515439363601853141">Datglowch i weld eich cyfrinair</translation>
 <translation id="5517095782334947753">Mae gennych nodau tudalen, hanes, cyfrineiriau a gosodiadau eraill o <ph name="FROM_ACCOUNT" />.</translation>

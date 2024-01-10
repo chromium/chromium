@@ -814,7 +814,6 @@
 <translation id="1615433306336820465">ਆਪਣੀ ਸੁਰੱਖਿਆ ਕੁੰਜੀ 'ਤੇ ਸਟੋਰ ਕੀਤੇ ਸਾਈਨ-ਇਨ ਡਾਟੇ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="1616206807336925449">ਇਸ ਐਕਸਟੈਂਸ਼ਨ ਲਈ ਕੋਈ ਖ਼ਾਸ ਇਜਾਜ਼ਤਾਂ ਦੀ ਲੋੜ ਨਹੀਂ ਹੈ।</translation>
 <translation id="1616298854599875024">"<ph name="IMPORT_NAME" />" ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਆਯਾਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ, ਕਿਉਂਕਿ ਇਹ ਇੱਕ ਸਾਂਝਾ ਕੀਤਾ ਗਿਆ ਮਾਡਿਊਲ ਨਹੀਂ ਹੈ</translation>
-<translation id="161654560322394775"><ph name="C" /> ਮਿਜ਼ਾਜ ਦੇ ਨਾਲ <ph name="B" /> ਸਟਾਈਲ ਵਿੱਚ <ph name="A" /> ਦਾ ਚਿੱਤਰ <ph name="INDEX" />.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{ਤੁਹਾਡੀ ਸੰਸਥਾ ਦੀ ਸੁਰੱਖਿਆ ਨੀਤੀਆਂ ਨਾਲ ਇਸ ਡਾਟੇ ਦੀ ਜਾਂਚ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...}=1{ਤੁਹਾਡੀ ਸੰਸਥਾ ਦੀ ਸੁਰੱਖਿਆ ਨੀਤੀਆਂ ਨਾਲ ਇਸ ਫ਼ਾਈਲ ਦੀ ਜਾਂਚ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...}other{ਤੁਹਾਡੀ ਸੰਸਥਾ ਦੀ ਸੁਰੱਖਿਆ ਨੀਤੀਆਂ ਨਾਲ ਇਹਨਾਂ ਫ਼ਾਈਲਾਂ ਦੀ ਜਾਂਚ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">ਸ&amp;ਹਾਇਤਾ ਕੇਂਦਰ</translation>
@@ -4236,7 +4235,6 @@
 <translation id="4250229828105606438">ਸਕ੍ਰੀਨਸ਼ਾਟ</translation>
 <translation id="4250680216510889253">ਨਹੀਂ</translation>
 <translation id="4251377547188244181">ਕਿਓਸਕ ਅਤੇ ਸਾਈਨੇਜ ਡੀਵਾਈਸ ਨੂੰ ਦਰਜ ਕਰਨਾ</translation>
-<translation id="4252141040239557279"><ph name="A" /> ਵਿੱਚੋਂ <ph name="INDEX" /> ਚਿੱਤਰ</translation>
 <translation id="4252828488489674554">ਇਸ ਗਰੁੱਪ ਦਾ ਸੰਪਾਦਨ ਕਰਨ ਲਈ ਟੈਬ ਗਰੁੱਪ ਦੇ ਨਾਮ 'ਤੇ ਸੱਜਾ-ਕਲਿਕ ਕਰੋ ਜਾਂ ਸਮੇਟਣ ਲਈ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="4252899949534773101">ਬਲੂਟੁੱਥ ਬੰਦ ਹੈ</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - ਟੈਬ ਸਮੱਗਰੀ ਸਾਂਝੀ ਕੀਤੀ ਗਈ</translation>
@@ -6568,7 +6566,6 @@
         <ph name="BREAK" />
         ਤੁਸੀਂ ਕਾਰਡ ਮੀਨੂ ਤੋਂ ਸੈਟਿੰਗਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰ ਸਕਦੇ ਹੋ ਜਾਂ 'Chrome ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ' ਵਿੱਚ ਹੋਰ ਵਿਕਲਪਾਂ ਨੂੰ ਦੇਖ ਸਕਦੇ ਹੋ।</translation>
 <translation id="6121773125605585883"><ph name="WEBSITE" /> ਲਈ ਵਰਤੋਂਕਾਰ ਨਾਮ <ph name="USERNAME" /> ਨਾਲ ਪਾਸਵਰਡ ਦੇਖੋ</translation>
-<translation id="6122081475643980456">ਤੁਹਾਡੇ ਇੰਟਰਨੈਟ ਕਨੈਕਸ਼ਨ ਤੇ ਨਿਯੰਤਰਣ ਪਾਇਆ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="6122093587541546701">ਈਮੇਲ (ਚੋਣਵਾਂ):</translation>
 <translation id="6122095009389448667">ਇਸ ਸਾਈਟ ਨੂੰ ਕਲਿੱਪਬੋਰਡ ਦੇਖਣ ਤੋਂ ਬਲਾਕ ਕਰਦੇ ਰਹੋ</translation>
 <translation id="6122513630797178831">CVC ਨੂੰ ਰੱਖਿਅਤ ਕਰੋ</translation>
@@ -7454,7 +7451,6 @@
 <translation id="6820079682647046800">Kerberos ਦਾ ਪ੍ਰਮਾਣੀਕਰਨ ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="6821439254917412979"><ph name="EXTENSION_NAME" /> ਨੂੰ ਅਣਪਿੰਨ ਕਰੋ</translation>
 <translation id="6823174134746916417">'ਕਲਿੱਕ ਕਰਨ ਲਈ ਟੈਪ ਕਰੋ' ਟੱਚਪੈਡ</translation>
-<translation id="6823429960180594870">ਡਾਊਨਲੋਡ ਹੋਣ 'ਤੇ, ਫ਼ਾਈਲਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ ਅਤੇ ਉਨ੍ਹਾਂ ਨੂੰ ਖੋਲ੍ਹੋ</translation>
 <translation id="6823561724060793716">ਜਿਸ ਪੰਨੇ 'ਤੇ ਤੁਸੀਂ ਜਾ ਰਹੇ ਹੋ, ਉਸ ਬਾਰੇ ਵਧੀਕ ਜਾਣਕਾਰੀ ਦੇਖਣ ਲਈ, ਤੁਸੀਂ ਪਤਾ ਬਾਰ ਤੋਂ, ਪੰਨੇ ਦੀ ਜਾਣਕਾਰੀ ਨੂੰ ਖੋਲ੍ਹ ਸਕਦੇ ਹੋ</translation>
 <translation id="6824564591481349393">&amp;ਈਮੇਲ ਪਤਾ ਕਾਪੀ ਕਰੋ</translation>
 <translation id="6824584962142919697">&amp;ਅੰਸ਼ਾਂ ਦੀ ਜਾਂਚ ਕਰੋ</translation>
@@ -7859,7 +7855,6 @@
 <translation id="714301620504747562">ਬ੍ਰਾਊਜ਼ ਅਤੇ ਖੋਜ ਕਰਨਾ ਮਿਆਰੀ ਪ੍ਰੀਲੋਡਿੰਗ ਨਾਲੋਂ ਤੇਜ਼ ਹੈ</translation>
 <translation id="7143207342074048698">ਕਨੈਕਟ ਕਰ ਰਿਹਾ ਹੈ</translation>
 <translation id="7143409552554575716">ChromeOS ਫਲੈਗ</translation>
-<translation id="714447804011008506">ਡਾਊਨਲੋਡ ਹੁਣ ਟੂਲਬਾਰ ਵਿੱਚ ਮੌਜੂਦ ਹਨ</translation>
 <translation id="7144856456372460176"><ph name="APP" /> ਨੂੰ &amp;ਸਥਾਪਤ ਕਰੋ...</translation>
 <translation id="7144878232160441200">ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="7145413760160421938">ਪਿਛਲੇ ਸੈਸ਼ਨ ਨੂੰ ਮੁੜ-ਚਾਲੂ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
@@ -8510,7 +8505,6 @@
 <translation id="7657090467145778067">ਥੋੜ੍ਹੀਆਂ ਬਚਤਾਂ</translation>
 <translation id="7657218410916651670">ਤੁਹਾਡੇ ਸਾਈਨ-ਇਨ ਹੋਣ 'ਤੇ, ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ <ph name="BEGIN_LINK_GOOGLE" />ਸਰਗਰਮੀ ਦੀਆਂ ਹੋਰ ਕਿਸਮਾਂ<ph name="END_LINK_GOOGLE" /> ਨੂੰ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ। ਤੁਸੀਂ ਉਨ੍ਹਾਂ ਨੂੰ ਕਿਸੇ ਵੀ ਸਮੇਂ ਮਿਟਾ ਸਕਦੇ ਹੋ।</translation>
 <translation id="7658239707568436148">ਰੱਦ ਕਰੋ</translation>
-<translation id="7658727964021657194">ਹਾਲੀਆ ਬਣਾਇਆ ਗਿਆ AI ਥੀਮ <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">ਕੀ ਫਿਰ ਵੀ ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਤੋਂ ਬਾਹਰ ਜਾਣਾ ਹੈ?</translation>
 <translation id="7659336857671800422">ਪਰਦੇਦਾਰੀ ਗਾਈਡ ਨੂੰ ਦੇਖੋ</translation>
 <translation id="7659584679870740384">ਤੁਸੀਂ ਇਹ ਡੀਵਾਈਸ ਵਰਤਣ ਲਈ ਅਧਿਕਾਰਿਤ ਨਹੀਂ ਹੋ। ਕਿਰਪਾ ਕਰਕੇ ਸਾਈਨ-ਇਨ ਸੰਬੰਧੀ ਇਜਾਜ਼ਤ ਲਈ ਡੀਵਾਈਸ ਪ੍ਰਬੰਧਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ।</translation>
@@ -8791,7 +8785,6 @@
 <translation id="7855678561139483478">ਟੈਬ ਨੂੰ ਨਵੀਂ ਵਿੰਡੋ ਵਿੱਚ ਲਿਜਾਓ</translation>
 <translation id="7857004848504343806">ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ ਵਿੱਚ ਕੋਈ ਅਜਿਹਾ ਸੁਰੱਖਿਆ ਮਾਡਿਊਲ ਹੈ, ਜਿਸਨੂੰ ChromeOS Flex ਵਿਚਲੀਆਂ ਕਈ ਮਹੱਤਵਪੂਰਨ ਸੁਰੱਖਿਆ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਨੂੰ ਲਾਗੂ ਕਰਨ ਲਈ ਵਰਤਿਆ ਜਾਂਦਾ ਹੈ। ਹੋਰ ਜਾਣਨ ਲਈ Chromebook ਦੇ ਮਦਦ ਕੇਂਦਰ 'ਤੇ ਜਾਓ: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">ਲਿਖਤ ਸੁਝਾਅ</translation>
-<translation id="7857949311770343000">ਕੀ ਇਹ ਉਹੀ ਨਵੀਂ ਟੈਬ ਪੰਨਾ ਹੈ ਜਿਸਦੀ ਤੁਸੀਂ ਆਸ ਕਰ ਰਹੇ ਸੀ?</translation>
 <translation id="7858120906780498731">ChromeOS ਨਾਲ ਕਨੈਕਟ ਕੀਤੇ ਇਨਪੁੱਟ ਡੀਵਾਈਸ</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941"><ph name="EXTENSION_NAME" /> ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਹਟਾਓ</translation>
@@ -8840,7 +8833,6 @@
 <translation id="789722939441020330">ਸਾਈਟਾਂ ਨੂੰ ਇੱਕ ਤੋਂ ਵੱਧ ਫ਼ਾਈਲ ਡਾਊਨਲੋਡ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਨਾ ਦਿਓ</translation>
 <translation id="7897900149154324287">ਭਵਿੱਖ ਵਿੱਚ, ਆਪਣੀ ਹਟਾਉਣਯੋਗ ਡੀਵਾਈਸ ਨੂੰ ਫ਼ਾਈਲਾਂ ਐਪ ਵਿੱਚ ਇਸਨੂੰ ਅਨਪਲੱਗ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਕੱਢਣਾ ਪੱਕਾ ਕਰੋ । ਨਹੀਂ ਤਾਂ, ਤੁੁਹਾਡਾ ਡਾਟਾ ਨਸ਼ਟ ਹੋ ਸਕਦਾ ਹੈ।</translation>
 <translation id="7898725031477653577">ਹਮੇਸ਼ਾਂ ਅਨੁਵਾਦ ਕਰੋ</translation>
-<translation id="7899324822972399722"><ph name="B" /> ਸਟਾਈਲ ਵਿੱਚ, <ph name="A" /> ਦਾ ਚਿੱਤਰ <ph name="INDEX" /></translation>
 <translation id="7901405293566323524">ਫ਼ੋਨ ਹੱਬ</translation>
 <translation id="7903290522161827520">ਕੀ ਬ੍ਰਾਊਜ਼ਰ ਤੱਤਾਂ ਨੂੰ ਲੱਭ ਰਹੇ ਹੋ? ਇੱਥੇ ਜਾਓ</translation>
 <translation id="7903429136755645827">ਆਪਣੀ ਗੇਮ ਦੇ ਕੰਟਰੋਲਾਂ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰਨ ਲਈ ਕਲਿੱਕ ਕਰੋ</translation>
@@ -9120,7 +9112,6 @@
 <translation id="8098616321286360457">ਨੈੱਟਵਰਕ ਕਨੈਕਸ਼ਨ ਲੋੜੀਂਦਾ ਹੈ</translation>
 <translation id="8100230553590752325">ਕਿਸੇ ਵੀ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡਾਂ ਨੂੰ ਵਰਤੋ</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> ਨੂੰ ਚੁਣਿਆ ਗਿਆ। ਅਣਚੁਣਿਆ ਕਰਨ ਲਈ Search ਦੇ ਨਾਲ Space ਨੂੰ ਦਬਾਓ।</translation>
-<translation id="8100725874569949614"><ph name="C" /> ਮਿਜ਼ਾਜ ਦੇ ਨਾਲ, <ph name="A" /> ਦਾ ਚਿੱਤਰ <ph name="INDEX" />.</translation>
 <translation id="8101409298456377967">ਆਪਣੇ ਪਾਸਵਰਡਾਂ ਨੂੰ ਬਣਾਓ, ਰੱਖਿਅਤ ਕਰੋ ਅਤੇ ਉਨ੍ਹਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ ਤਾਂ ਜੋ ਤੁਸੀਂ ਆਸਾਨੀ ਨਾਲ ਸਾਈਟਾਂ ਅਤੇ ਐਪਾਂ ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰ ਸਕੋ। <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">ਵਿਉਂਤਿਆ ਰੰਗ</translation>
 <translation id="8101987792947961127">ਅਗਲੇ ਰੀਬੂਟ 'ਤੇ ਪਾਵਰਵਾਸ਼ ਲੁੜੀਂਦਾ</translation>
@@ -10068,7 +10059,6 @@
 <translation id="8846163936679269230">ਈ-ਸਿਮ ਪ੍ਰੋਫਾਈਲਾਂ ਨੂੰ ਰੀਸੈੱਟ ਕਰੋ</translation>
 <translation id="8846239054091760429">ਮੋਨੋ ਆਡੀਓ, ਸ਼ੁਰੂਆਤ, ਲਾਈਵ ਸੁਰਖੀਆਂ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8848963863312877204">ਆਪਣੇ ਡਾਊਨਲੋਡ ਇੱਥੇ ਲੱਭੋ</translation>
 <translation id="8849001918648564819">ਲੁਕੀ ਹੋਈ</translation>
 <translation id="8849219423513870962"><ph name="PROFILE_NAME" /> ਨਾਮਕ ਈ-ਸਿਮ ਪ੍ਰੋਫਾਈਲ ਨੂੰ ਹਟਾਉਣਾ ਰੱਦ ਕਰੋ</translation>
 <translation id="8849262417389398097"><ph name="CHECKING" /> ਵਿੱਚੋਂ <ph name="CHECKED" /></translation>

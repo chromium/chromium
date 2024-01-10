@@ -56,7 +56,6 @@
 <translation id="1279024913354609713">Mos lejo</translation>
 <translation id="1281818060020671000">Menaxho të dhënat</translation>
 <translation id="1282311502488501110">Mos u identifiko</translation>
-<translation id="1283039547216852943">Trokit për të zgjeruar</translation>
 <translation id="1283524564873030414">24 orët e fundit</translation>
 <translation id="1285320974508926690">Asnjëherë mos e përkthe këtë sajt</translation>
 <translation id="1291506870746876680">Lejet e <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> do të rivendosen në joaktive kur të largohesh nga ky sajt.</translation>
@@ -82,7 +81,6 @@
 <translation id="1377255359165588604">"Sinkronizimi" ka ndaluar së funksionuari.</translation>
 <translation id="1377321085342047638">Numri i kartës</translation>
 <translation id="1377508275003315939">Fjalëkalimet</translation>
-<translation id="1380914240355562929"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> mund të përdorë tani emrin e përdoruesit dhe fjalëkalimin tënd kur përdor "Menaxherin e fjalëkalimeve të Google" për t'u identifikuar në <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">Kërko</translation>
 <translation id="138618066238211776">Vazhdo si <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">4 javët e fundit</translation>
@@ -406,7 +404,6 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="3087734570205094154">Në fund</translation>
 <translation id="3090455602619185166">Identifikohu me një llogari të menaxhuar</translation>
 <translation id="309710370695886264">Je 1 fjalëkalim të ripërdorur. Rregulloje tani për të qëndruar i sigurt.</translation>
-<translation id="3109724472072898302">Palosur</translation>
 <translation id="3112556859945124369">Shëno...</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Shiko se çfarë mund të sinkronizosh<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">Historiku etj.</translation>
@@ -775,7 +772,6 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="5121618895923301719">Po e monitoron tashmë këtë produkt. Kjo faqe është ruajtur te <ph name="BEGIN_LINK" />Faqeshënuesit për celular<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Ke disa probleme me fjalëkalimet.</translation>
 <translation id="5126465625664020024">Identifikohu dhe sinkronizo</translation>
-<translation id="5131062416352684089">Anëtarët e familjes mund të përdorin tani emrin e përdoruesit dhe fjalëkalimin tënd kur përdorin "Menaxherin e fjalëkalimeve të Google" për t'u identifikuar në <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">Sinkronizo fjalëkalimet, historikun etj. në të gjitha pajisjet</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} fjalëkalim i dobët}other{{COUNT} fjalëkalime të dobëta}}</translation>
 <translation id="5149188072385105201">Shto fjalëkalimin...</translation>
@@ -924,7 +920,6 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="5955891643922670672">Po shikon versionin offline</translation>
 <translation id="5957613098218939406">Opsione të tjera</translation>
 <translation id="595769230373966252">Kërko me <ph name="SEARCH_PROVIDER" /></translation>
-<translation id="5962718611393537961">Trokit për të palosur</translation>
 <translation id="5963939892571022323">Nuk mund të krijohet një lidhje për te teksti i theksuar.</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 faqeshënues u fshi}other{{count} faqeshënues u fshinë}}</translation>
 <translation id="5979837087407522202">Kërko për fjalëkalime</translation>

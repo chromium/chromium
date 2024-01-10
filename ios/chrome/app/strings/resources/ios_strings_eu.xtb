@@ -56,7 +56,6 @@
 <translation id="1279024913354609713">Ez eman baimena</translation>
 <translation id="1281818060020671000">Kudeatu datuak</translation>
 <translation id="1282311502488501110">Ez hasi saioa</translation>
-<translation id="1283039547216852943">Sakatu zabaltzeko</translation>
 <translation id="1283524564873030414">Azken 24 orduetakoak</translation>
 <translation id="1285320974508926690">Ez itzuli inoiz webgune hau</translation>
 <translation id="1291506870746876680"><ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> webgunearen baimenak desaktibatu egingo dira webgunetik irteten zarenean.</translation>
@@ -82,7 +81,6 @@
 <translation id="1377255359165588604">Gelditu egin da sinkronizazioa.</translation>
 <translation id="1377321085342047638">Txartelaren zenbakia</translation>
 <translation id="1377508275003315939">Pasahitzak</translation>
-<translation id="1380914240355562929">Orain, <ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> erabiltzaileak zure erabiltzaile-izena eta pasahitza erabil ditzake <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> webgunean saioa hasteko Google-ren Pasahitz-kudeatzailea darabilenean. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">Bilaketa</translation>
 <translation id="138618066238211776">Egin aurrera <ph name="USER_NAME" /> gisa</translation>
 <translation id="1400642268715879018">Azken lau asteetakoak</translation>
@@ -406,7 +404,6 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="3087734570205094154">Behekoa</translation>
 <translation id="3090455602619185166">Hasi saioa kontu kudeatu batekin</translation>
 <translation id="309710370695886264">Beste nonbait erabilitako pasahitz bat daukazu. Segurtasuna bermatzeko, alda ezazu.</translation>
-<translation id="3109724472072898302">Tolestuta</translation>
 <translation id="3112556859945124369">Markatu…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Ikusi zer sinkroniza dezakezun<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">Historia eta beste</translation>
@@ -775,7 +772,6 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="5121618895923301719">Produktuaren jarraipena egiten ari zara jada. Orri hau <ph name="BEGIN_LINK" />Mugikorreko laster-markak<ph name="END_LINK" /> atalean gorde da.</translation>
 <translation id="512533434554095351">Pasahitzekin lotutako arazo batzuk dauzkazu.</translation>
 <translation id="5126465625664020024">Hasi saioa eta sinkronizatu</translation>
-<translation id="5131062416352684089">Orain, zure familiako kideek zure erabiltzaile-izena eta pasahitza erabil ditzakete <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> webgunean saioa hasteko Google-ren Pasahitz-kudeatzailea darabiltenean. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">Sinkronizatu pasahitzak, historia eta beste gauza asko gailu guztietan</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} pasahitz ez da segurua}other{{COUNT} pasahitz ez dira seguruak}}</translation>
 <translation id="5149188072385105201">Gehitu pasahitz bat…</translation>
@@ -924,7 +920,6 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="5955891643922670672">Konexiorik gabeko bertsioa da hau</translation>
 <translation id="5957613098218939406">Aukera gehiago</translation>
 <translation id="595769230373966252">Bilatu honen bidez: <ph name="SEARCH_PROVIDER" /></translation>
-<translation id="5962718611393537961">Sakatu tolesteko</translation>
 <translation id="5963939892571022323">Ezin da sortu nabarmendutako testurako estekarik.</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 laster-marka ezabatu da}other{{count} laster-marka ezabatu dira}}</translation>
 <translation id="5979837087407522202">Bilatu pasahitzak</translation>
@@ -991,6 +986,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="6255097610484507482">Editatu kreditu-txartela</translation>
 <translation id="6266039999629596120">Zerbait egin behar duzu</translation>
 <translation id="6277426346321820595">Babesik gabe</translation>
+<translation id="628251768213143684">Beti kudea dezakezu Google-ko kontuan gordeta daukazun guztia</translation>
 <translation id="6284652193729350524">Eskaini <ph name="LANGUAGE" /> itzultzea</translation>
 <translation id="6289501276895392862">Utzi diozu <ph name="CHANNEL_NAME" /> kanalari jarraitzeari</translation>
 <translation id="6293101329759844770">Arakatze segurua aktibatzeko, ireki <ph name="BEGIN_LINK" />Google-ren zerbitzuak<ph name="END_LINK" /> eta sakatu Arakatze segurua.</translation>

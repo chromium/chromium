@@ -5,6 +5,7 @@
 <translation id="1155815720264022949">Vrei să închizi filele vechi?</translation>
 <translation id="1215127405478249895">Examinează filele</translation>
 <translation id="125153950246128346">Atinge pentru a vedea altă filă</translation>
+<translation id="1326271443836399892">Examinează setările actuale pentru ordonare.</translation>
 <translation id="1499635324672558517">Închizi toate filele incognito?</translation>
 <translation id="1657719826150349398">Mută fila mai jos</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> filă}few{<ph name="TABS_COUNT_MANY" /> file}other{<ph name="TABS_COUNT_MANY" /> de file}}</translation>
@@ -25,6 +26,7 @@
 <translation id="2977480621796371840">Elimină din grup</translation>
 <translation id="3008554597174452548">Nu mai urmări produsul</translation>
 <translation id="3052964831964880138">Scădere de preț de <ph name="PRICE_DROP" /> pentru <ph name="PRODUCT_NAME" /></translation>
+<translation id="313819129451406482">{TABS_COUNT,plural, =1{Ai <ph name="TABS_COUNT_ONE" /> filă arhivată}few{Ai <ph name="TABS_COUNT_MANY" /> file arhivate}other{Ai <ph name="TABS_COUNT_MANY" /> de file arhivate}}</translation>
 <translation id="3194464645767632461">evaluare</translation>
 <translation id="3291470810748040983">Vei primi o alertă atunci când scade prețul dintr-o filă deschisă.</translation>
 <translation id="3328308545011660196">Sugestie: <ph name="NUMBER_OF_TABS" /> file par similare. Vrei să le grupezi?</translation>
@@ -98,5 +100,6 @@
 <translation id="9090098097337832354">Informațiile despre magazin închise</translation>
 <translation id="9150694013019234766">Comută între filele din grupul de file în partea de jos a ecranului</translation>
 <translation id="9169594135889675189">Adaugă o filă nouă în grup</translation>
+<translation id="955558140275419384">Examinează toate filele arhivate pentru a le ordona, accesând acest editor.</translation>
 <translation id="959682366969460160">Organizează-te</translation>
 </translationbundle>

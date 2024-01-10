@@ -56,7 +56,6 @@
 <translation id="1279024913354609713">No permitir</translation>
 <translation id="1281818060020671000">Gestionar datos</translation>
 <translation id="1282311502488501110">No iniciar sesión</translation>
-<translation id="1283039547216852943">Toca para ampliar</translation>
 <translation id="1283524564873030414">Últimas 24 horas</translation>
 <translation id="1285320974508926690">No traducir nunca este sitio</translation>
 <translation id="1291506870746876680">Los permisos de <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> se desactivarán cuando salgas de este sitio.</translation>
@@ -82,7 +81,6 @@
 <translation id="1377255359165588604">La sincronización ha dejado de funcionar.</translation>
 <translation id="1377321085342047638">Número de tarjeta</translation>
 <translation id="1377508275003315939">Contraseñas</translation>
-<translation id="1380914240355562929">Ahora, <ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> podrá usar tu nombre de usuario y contraseña cuando use el Gestor de contraseñas de Google para iniciar sesión en <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="138618066238211776">Continuar como <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">Últimas 4 semanas</translation>
@@ -337,6 +335,7 @@ Usas el buscador <ph name="DSE_NAME" />. Consulta las instrucciones del buscador
 <translation id="2747003861858887689">Campo anterior</translation>
 <translation id="2749231692441336879">Ahora sigues a <ph name="CHANNEL_NAME" />.</translation>
 <translation id="2754492786623500387">Cuentas en este dispositivo</translation>
+<translation id="2755595981383829244">Ahora recibirás notificaciones de contenido</translation>
 <translation id="2762000892062317888">justo ahora</translation>
 <translation id="2772667768515195373">Puedes usar las direcciones guardadas en todos los productos de Google. Esta dirección está guardada en tu cuenta de Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Búsqueda en modo Incógnito</translation>
@@ -406,7 +405,6 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="3087734570205094154">Inferior</translation>
 <translation id="3090455602619185166">Iniciar sesión con una cuenta gestionada</translation>
 <translation id="309710370695886264">Tienes 1 contraseña reutilizada. Corrige el problema para protegerte.</translation>
-<translation id="3109724472072898302">Contraído</translation>
 <translation id="3112556859945124369">Marcar…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Consulta lo que puedes sincronizar<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">Historial y más</translation>
@@ -775,7 +773,6 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="5121618895923301719">Ya estás siguiendo este producto. Esta página se ha guardado en <ph name="BEGIN_LINK" />Marcadores del móvil<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Tienes varios problemas relacionados con contraseñas.</translation>
 <translation id="5126465625664020024">Iniciar sesión y sincronizar</translation>
-<translation id="5131062416352684089">Ahora, los miembros de tu familia podrán usar tu nombre de usuario y contraseña cuando usen el Gestor de contraseñas de Google para iniciar sesión en <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">Sincroniza tus contraseñas, tu historial y más en todos tus dispositivos</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} contraseña poco segura}other{{COUNT} contraseñas poco seguras}}</translation>
 <translation id="5149188072385105201">Añadir contraseña...</translation>
@@ -924,7 +921,6 @@ Handoff también debe estar habilitado en la sección General de Configuración,
 <translation id="5955891643922670672">Viendo versión sin conexión</translation>
 <translation id="5957613098218939406">Más opciones</translation>
 <translation id="595769230373966252">Buscar con <ph name="SEARCH_PROVIDER" /></translation>
-<translation id="5962718611393537961">Toca para ocultar</translation>
 <translation id="5963939892571022323">No se puede crear un enlace al texto destacado.</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 marcador eliminado}other{{count} marcadores eliminados}}</translation>
 <translation id="5979837087407522202">Buscar contraseñas</translation>

@@ -56,7 +56,6 @@
 <translation id="1279024913354609713">Ekki leyfa</translation>
 <translation id="1281818060020671000">Stjórna gögnum</translation>
 <translation id="1282311502488501110">Ekki skrá inn</translation>
-<translation id="1283039547216852943">Ýttu til að stækka</translation>
 <translation id="1283524564873030414">Síðastliðinn sólarhring</translation>
 <translation id="1285320974508926690">Aldrei þýða þetta vefsvæði</translation>
 <translation id="1291506870746876680">Heimildir <ph name="BEGIN_BOLD" />„<ph name="SITE_NAME" />“<ph name="END_BOLD" /> verða endurstilltar á „slökkt“ þegar þú yfirgefur vefsvæðið.</translation>
@@ -82,7 +81,6 @@
 <translation id="1377255359165588604">Samstilling er hætt að virka.</translation>
 <translation id="1377321085342047638">Kortanúmer</translation>
 <translation id="1377508275003315939">Aðgangsorð</translation>
-<translation id="1380914240355562929"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> getur nú notað þitt notandanafn og aðgangsorð þegar viðkomandi notar Google-aðgangsorðastjórnun til að skrá sig inn á <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">Leita</translation>
 <translation id="138618066238211776">Halda áfram sem <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">Síðustu fjórar vikur</translation>
@@ -407,7 +405,6 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="3087734570205094154">Neðst</translation>
 <translation id="3090455602619185166">Skráðu þig inn með stýrðum reikningi</translation>
 <translation id="309710370695886264">Þú ert með 1 endurnýtt aðgangsorð. Lagfærðu það núna til að gæta öryggis.</translation>
-<translation id="3109724472072898302">Minnkað</translation>
 <translation id="3112556859945124369">Merkja…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Sjáðu hvað þú getur samstillt<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">Ferill og fleira</translation>
@@ -776,7 +773,6 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="5121618895923301719">Þú ert þegar að vakta þessa vöru. Þessi síða er vistuð í <ph name="BEGIN_LINK" />Bókamerkjum í snjalltæki<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Þú ert með ýmis aðgangsorðavandamál.</translation>
 <translation id="5126465625664020024">Skráðu þig inn og samstilltu</translation>
-<translation id="5131062416352684089">Fjölskyldumeðlimir þínir geta nú notað þitt notandanafn og aðgangsorð þegar þeir nota Google-aðgangsorðastjórnun til að skrá sig inn á <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">Samstilltu aðgangsorðin, ferilinn og fleira í öllum tækjum</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} lélegt aðgangsorð}one{{COUNT} lélegt aðgangsorð}other{{COUNT} léleg aðgangsorð}}</translation>
 <translation id="5149188072385105201">Bæta aðgangsorði við...</translation>
@@ -925,7 +921,6 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="5955891643922670672">Skoðar útgáfu án nettengingar</translation>
 <translation id="5957613098218939406">Fleiri valkostir</translation>
 <translation id="595769230373966252">Leita með <ph name="SEARCH_PROVIDER" /></translation>
-<translation id="5962718611393537961">Ýttu til að draga saman</translation>
 <translation id="5963939892571022323">Ekki er hægt að búa til tengil í merkta textann.</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 bókamerki eytt}one{{count} bókamerki eytt}other{{count} bókamerkjum eytt}}</translation>
 <translation id="5979837087407522202">Leita að aðgangsorðum</translation>

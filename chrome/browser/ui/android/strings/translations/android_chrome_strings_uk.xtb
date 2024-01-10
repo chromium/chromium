@@ -233,6 +233,7 @@
 <translation id="2318045970523081853">Натисніть, щоб зателефонувати</translation>
 <translation id="2321086116217818302">Готуються паролі…</translation>
 <translation id="2323763861024343754">Дані сайтів</translation>
+<translation id="2327226657832576859">Відкривати файли PDF автоматично?</translation>
 <translation id="2328985652426384049">Не вдається ввійти</translation>
 <translation id="2341410551640223969">Не вдалося встановити додаток <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Усі дані, які використовує Chrome, зокрема облікові записи, закладки та збережені налаштування</translation>
@@ -638,6 +639,7 @@
 <translation id="4523326818319942067">останню годину</translation>
 <translation id="452750746583162491">Переглянути синхронізовані дані</translation>
 <translation id="4532845899244822526">Вибрати папку</translation>
+<translation id="4541505619120536051">Завжди відкривати</translation>
 <translation id="4543131175509360848">Екран "Немає ключів доступу"</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> вкладка}one{<ph name="TAB_COUNT_MANY" /> вкладка, <ph name="TAB_COUNT_INCOGNITO" /> анонімно}few{<ph name="TAB_COUNT_MANY" /> вкладки, <ph name="TAB_COUNT_INCOGNITO" /> анонімно}many{<ph name="TAB_COUNT_MANY" /> вкладок, <ph name="TAB_COUNT_INCOGNITO" /> анонімно}other{<ph name="TAB_COUNT_MANY" /> вкладки, <ph name="TAB_COUNT_INCOGNITO" /> анонімно}}</translation>
 <translation id="4554077758708533499">Підключено за допомогою кабелю USB</translation>
@@ -829,6 +831,7 @@
 <translation id="5486841595534124508">Логотип Примітки про конфіденційність для центру статистики сторінки, який переспрямовує на сторінку "Мої дії".</translation>
 <translation id="5487521232677179737">Видалити дані</translation>
 <translation id="5492637351392383067">Шифрування на пристрої</translation>
+<translation id="5509866835115085009">Chrome може автоматично відкривати файли PDF, які ви завантажуєте.</translation>
 <translation id="5514904542973294328">Вимкнено адміністратором пристрою</translation>
 <translation id="5515439363601853141">Розблокуйте, щоб переглянути пароль</translation>
 <translation id="5517095782334947753">У вас є закладки, історія, паролі й інші налаштування з облікового запису <ph name="FROM_ACCOUNT" />.</translation>

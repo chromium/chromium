@@ -56,7 +56,6 @@
 <translation id="1279024913354609713">İcazə verməyin</translation>
 <translation id="1281818060020671000">Datanı idarə edin</translation>
 <translation id="1282311502488501110">Daxil olmayın</translation>
-<translation id="1283039547216852943">Genişləndirmək üçün klikləyin</translation>
 <translation id="1283524564873030414">Son 24 Saat</translation>
 <translation id="1285320974508926690">Bu saytı heç vaxt tərcümə etməyin</translation>
 <translation id="1291506870746876680">Bu saytdan çıxdığınız zaman <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> icazələri sıfırlanaraq deaktiv olacaq.</translation>
@@ -82,7 +81,6 @@
 <translation id="1377255359165588604">Sinxronizasiya işləmir.</translation>
 <translation id="1377321085342047638">Kart Nömrəsi</translation>
 <translation id="1377508275003315939">Parollar</translation>
-<translation id="1380914240355562929"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> Google Parol Meneceri ilə <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> veb-saytına daxil olduqda istifadəçi adı və parolunuzdan istifadə edə bilər. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">Axtar</translation>
 <translation id="138618066238211776"><ph name="USER_NAME" /> kimi davam edin</translation>
 <translation id="1400642268715879018">Son 4 Həftə</translation>
@@ -406,7 +404,6 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="3087734570205094154">Alt</translation>
 <translation id="3090455602619185166">İdarə olunan hesab ilə daxil olun</translation>
 <translation id="309710370695886264">1 təkrar işlənən parol var. Təhlükəsizlik üçün bunu indi həll edin.</translation>
-<translation id="3109724472072898302">Yığcamlaşdı</translation>
 <translation id="3112556859945124369">Qeyd edin...</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Nəyi sinxronlaşdıra biləcəyinizə baxın<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">Tarixçə və digərləri</translation>
@@ -775,7 +772,6 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="5121618895923301719">Artıq bu məhsulu izləyirsiniz. Bu səhifə <ph name="BEGIN_LINK" />Mobil Əlfəcinlərdə<ph name="END_LINK" /> yadda saxlandı.</translation>
 <translation id="512533434554095351">Bir neçə parol problemi var.</translation>
 <translation id="5126465625664020024">Daxil olun və sinxronlaşdırın</translation>
-<translation id="5131062416352684089">Ailə üzvləriniz Google Parol Meneceri ilə <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> veb-saytına daxil olduqda istifadəçi adı və parolunuzdan istifadə edə bilər. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">Bütün cihazlarda parol, tarixçə və s. sinxronizasiya edin</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} zəif parol}other{{COUNT} zəif parol}}</translation>
 <translation id="5149188072385105201">Parol Əlavə edin...</translation>
@@ -924,7 +920,6 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="5955891643922670672">Oflayn versiyaya baxırsınız</translation>
 <translation id="5957613098218939406">Əlavə Seçimlər</translation>
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> ilə axtarın</translation>
-<translation id="5962718611393537961">Yığcamlaşdırmaq üçün klikləyin</translation>
 <translation id="5963939892571022323">Vurğulamaya keçid yaratmaq olmur.</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 əlfəcin silindi}other{{count} əlfəcin silindi}}</translation>
 <translation id="5979837087407522202">Parolları Axtarın</translation>

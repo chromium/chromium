@@ -56,7 +56,6 @@
 <translation id="1279024913354609713">Nepovolovat</translation>
 <translation id="1281818060020671000">Správa dat</translation>
 <translation id="1282311502488501110">Nepřihlašovat se</translation>
-<translation id="1283039547216852943">Klepnutím rozbalíte</translation>
 <translation id="1283524564873030414">Posledních 24 hodin</translation>
 <translation id="1285320974508926690">Tento web nikdy nepřekládat</translation>
 <translation id="1291506870746876680">Až web <ph name="BEGIN_BOLD" />„<ph name="SITE_NAME" />“<ph name="END_BOLD" /> opustíte, jeho oprávnění se resetují.</translation>
@@ -82,7 +81,6 @@
 <translation id="1377255359165588604">Synchronizace přestala fungovat.</translation>
 <translation id="1377321085342047638">Číslo karty</translation>
 <translation id="1377508275003315939">Hesla</translation>
-<translation id="1380914240355562929"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> teď při přihlašování k webu <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> pomocí Správce hesel Google může používat vaše uživatelské jméno a heslo. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">Vyhledávání</translation>
 <translation id="138618066238211776">Pokračovat jako <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">Z posledních 4 týdnů</translation>
@@ -406,7 +404,6 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="3087734570205094154">Až dolů</translation>
 <translation id="3090455602619185166">Přihlášení pomocí spravovaného účtu</translation>
 <translation id="309710370695886264">Máte jedno opakovaně použité heslo. Pokud chcete být v bezpečí, ihned to vyřešte.</translation>
-<translation id="3109724472072898302">Sbaleno</translation>
 <translation id="3112556859945124369">Označit…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Co lze synchronizovat<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">Historie a další</translation>
@@ -775,7 +772,6 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="5121618895923301719">Tento produkt již sledujete. Tato stránka je uložena v <ph name="BEGIN_LINK" />mobilních záložkách<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Máte několik problémů s hesly.</translation>
 <translation id="5126465625664020024">Přihlásit se a synchronizovat</translation>
-<translation id="5131062416352684089">Členové vaší rodiny teď při přihlašování k webu <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> pomocí Správce hesel Google mohou používat vaše uživatelské jméno a heslo. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">Vaše hesla, historie a další údaje na všech zařízeních</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} slabé heslo}few{{COUNT} slabá hesla}many{{COUNT} slabého hesla}other{{COUNT} slabých hesel}}</translation>
 <translation id="5149188072385105201">Přidat heslo…</translation>
@@ -924,7 +920,6 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="5955891643922670672">Zobrazuje se offline verze</translation>
 <translation id="5957613098218939406">Další možnosti</translation>
 <translation id="595769230373966252">Vyhledat pomocí <ph name="SEARCH_PROVIDER" /></translation>
-<translation id="5962718611393537961">Klepnutím sbalíte</translation>
 <translation id="5963939892571022323">Odkaz na zvýraznění nelze vytvořit.</translation>
 <translation id="5971872012779224351">{count,plural, =1{Byla smazána 1 záložka}few{Byly smazány {count} záložky}many{Bylo smazáno {count} záložky}other{Bylo smazáno {count} záložek}}</translation>
 <translation id="5979837087407522202">Prohledat hesla</translation>

@@ -272,6 +272,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1476595624592550506">Zmień hasło</translation>
 <translation id="1482879811280872320">Jazda na rowerze</translation>
 <translation id="1483493594462132177">Wyślij</translation>
+<translation id="1484632730438126438">Wpisany tekst jest za krótki. Napisz co najmniej 3 słowa.</translation>
 <translation id="1492194039220927094">Przekazywanie zasad w trybie push:</translation>
 <translation id="14938948731065592">Komputerowe urządzenia peryferyjne</translation>
 <translation id="1495677929897281669">Wróć do karty</translation>
@@ -1016,6 +1017,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />; naciśnij Tab, aby przejrzeć dostępne działania, a potem Enter, aby wykonać wybraną czynność.</translation>
 <translation id="3013291976881901233">Urządzenia MIDI</translation>
 <translation id="3014553260345122294">Informacje biznesowe</translation>
+<translation id="3014726756341138577">Zaawansowane funkcje drukarek</translation>
 <translation id="301521992641321250">Automatycznie zablokowane</translation>
 <translation id="3016780570757425217">Sprawdzanie Twojej lokalizacji</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />. Aby usunąć sugestię, naciśnij Tab, a potem Enter.</translation>
@@ -1165,6 +1167,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="33073482541490531">Użyte właśnie hasło znaleźliśmy jako ujawnione w wyniku naruszenia bezpieczeństwa danych. Menedżer haseł zaleca, aby jak najszybciej je zmienić.</translation>
 <translation id="3307649904964670439">Przycisk Dostosuj Chrome; aktywuj, aby dostosować wygląd przeglądarki</translation>
 <translation id="3308006649705061278">Jednostka organizacyjna (OU)</translation>
+<translation id="3324223664999044166">co najmniej 3 słowa podsumowujące Twoje przemyślenia,</translation>
 <translation id="3324687287337751929">4 x 6 cali</translation>
 <translation id="3324983252691184275">Karmazynowy</translation>
 <translation id="3325027355611702542">Przyczepy kempingowe i kampery</translation>
@@ -1238,7 +1241,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3447661539832366887">Właściciel tego urządzenia wyłączył grę z dinozaurem.</translation>
 <translation id="3447884698081792621">Pokaż certyfikat (wydany przez: <ph name="ISSUER" />)</translation>
 <translation id="3450323514459570273">Może prosić o uprawnienia do przeprogramowywania urządzeń MIDI i sterowania nimi</translation>
-<translation id="3452151267620065789">Postęp zapisany</translation>
 <translation id="3452404311384756672">Okres pobierania:</translation>
 <translation id="3453962258458347894">Liczba ponownych prób</translation>
 <translation id="3461266716147554923"><ph name="URL" /> chce mieć dostęp do tekstu i obrazów skopiowanych do schowka</translation>
@@ -1404,6 +1406,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3748009735914587286">Metal (wysoki połysk)</translation>
 <translation id="3748148204939282805">Osoby atakujące na stronie <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> mogą podstępem nakłonić Cię do wykonania czynności niebezpiecznych takich jak zainstalowanie oprogramowania czy ujawnienie danych osobowych (na przykład haseł, numerów telefonów lub danych kart kredytowych). <ph name="BEGIN_LEARN_MORE_LINK" />Więcej informacji<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Branża lotnicza</translation>
+<translation id="3751020515020988516">Twoje prośba nie została zrozumiana. Spróbuj poprosić o coś innego.</translation>
 <translation id="3752543821772132562">Ignorowana, bo zasada <ph name="POLICY_NAME" /> nie jest skonfigurowana.</translation>
 <translation id="3754210790023674521">Wyłącz tryb obrazu w obrazie</translation>
 <translation id="3759461132968374835">Brak ostatnio zgłoszonych awarii. Awarie, które nastąpiły wówczas, gdy funkcja zgłaszania awarii była wyłączona, nie są tutaj wymienione.</translation>
@@ -1460,6 +1463,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3858860766373142691">Nazwa</translation>
 <translation id="3872834068356954457">Nauka</translation>
 <translation id="3875783148670536197">Pokaż jak</translation>
+<translation id="3877877650871124156">Wpisany tekst jest za długi. Skróć go i spróbuj ponownie.</translation>
 <translation id="3881478300875776315">Pokaż mniej wierszy</translation>
 <translation id="3883500545751229739">uciążliwe reklamy</translation>
 <translation id="3884278016824448484">Konflikt identyfikatorów urządzeń</translation>
@@ -1537,7 +1541,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4067098466788473230">Stypendia naukowe</translation>
 <translation id="4067947977115446013">Dodaj poprawny adres</translation>
 <translation id="4070790659619547722">Na potrzeby pomiaru skuteczności reklam wyświetlanych w witrynach udostępniamy między nimi niektóre dane, np. porę dnia, o której reklama została Ci wyświetlona.</translation>
-<translation id="4072193657607981494">Ładuję zasady</translation>
 <translation id="4072486802667267160">Podczas przetwarzania zamówienia wystąpił błąd. Spróbuj ponownie.</translation>
 <translation id="4073376909608563327">Nie udało się użyć odblokowywania urządzenia</translation>
 <translation id="4073797364926776829">Wyświetl kartę</translation>
@@ -2167,6 +2170,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5292714443869769806">Otwórz ustawienia urządzenia <ph name="OPERATING_SYSTEM" /></translation>
 <translation id="5293919335876685914">Samochody coupé</translation>
 <translation id="5296589789433599000">Gotowanie i przepisy</translation>
+<translation id="5298618990685278995">pierwszą wersję roboczą,</translation>
 <translation id="5299298092464848405">Podczas przetwarzania zasady wystąpił błąd</translation>
 <translation id="5299638840995777423">Robotyka</translation>
 <translation id="5300062471671636390">Ukryj listę urządzeń do przesyłania</translation>
@@ -2283,6 +2287,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5541086400771735334">Zestaw tac odbiorczych 7</translation>
 <translation id="5541546772353173584">Dodaj adres e-mail</translation>
 <translation id="5543722831081909240">180 stopni</translation>
+<translation id="555037537507405574">zaawansowane funkcje drukarek</translation>
 <translation id="555128936272638662">Akcesoria do telefonów komórkowych i urządzeń bezprzewodowych</translation>
 <translation id="5551890439174915351">100 x 200 mm</translation>
 <translation id="5552137475244467770">Co jakiś czas Chrome sprawdza, czy Twoje hasła nie pojawiły się na listach opublikowanych w internecie. Aby nikt (nawet Google) nie mógł odczytać haseł ani nazw użytkowników, podczas sprawdzania są one zaszyfrowane.</translation>
@@ -2568,6 +2573,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />Dowiedz się więcej o trybie incognito w Chrome<ph name="END_LINK" /></translation>
 <translation id="6133320744616005677">Nadal zezwalaj</translation>
 <translation id="6133984428121856852">Rozszerzenie pliku jest puste lub ma nieprawidłowy format.</translation>
+<translation id="6139769382153674477">Coś poszło nie tak. Czy jesteś zalogowany(-a)?</translation>
 <translation id="6139975341602920272">17 x 22 cale</translation>
 <translation id="6146055958333702838">Sprawdź wszystkie kable i uruchom ponownie wszelkie używane routery, modemy
     i inne urządzenia sieciowe.</translation>
@@ -2724,7 +2730,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6428450836711225518">Weryfikowanie numeru telefonu</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">Zmień hasło do Google</translation>
-<translation id="6431119592588449664">Raport został przesłany</translation>
 <translation id="6432297414176614592">Więcej informacji o tematach reklam</translation>
 <translation id="6432831586648556868">Praca w działach sprzedaży i marketingu</translation>
 <translation id="6433490469411711332">Edytuj dane kontaktowe</translation>
@@ -3203,6 +3208,7 @@ Dodatkowe informacje:
 <translation id="7378877318020334501">Komedie telewizyjne</translation>
 <translation id="7380398842872229465">10 x 15 cali</translation>
 <translation id="738439098860678026">Pedagogika przedszkolna i wczesnoszkolna</translation>
+<translation id="7388071710882496863">prośbę typu „napisz opinię przyznającą tej restauracji 5 gwiazdek”.</translation>
 <translation id="7388594495505979117">{0,plural, =1{Twoje urządzenie uruchomi się ponownie za 1 minutę}few{Twoje urządzenie uruchomi się ponownie za # minuty}many{Twoje urządzenie uruchomi się ponownie za # minut}other{Twoje urządzenie uruchomi się ponownie za # minuty}}</translation>
 <translation id="7390545607259442187">Potwierdź kartę</translation>
 <translation id="7392089738299859607">Zmień adres</translation>
@@ -3483,7 +3489,6 @@ Dodatkowe informacje:
 <translation id="7871445724586827387">Zmień hasło do konta Google</translation>
 <translation id="7877007680666472091">identyfikatory treści chronionych</translation>
 <translation id="7878562273885520351">Ktoś mógł poznać Twoje hasło</translation>
-<translation id="7878966190323222027">Aby kontynuować, otwórz ponownie</translation>
 <translation id="7880146494886811634">Zapisz adres</translation>
 <translation id="7882421473871500483">Brązowy</translation>
 <translation id="7882995332186050355">Samochody ciężarowe i przyczepy</translation>
@@ -4104,7 +4109,6 @@ Dodatkowe informacje:
 <translation id="9119042192571987207">Przesłano</translation>
 <translation id="9122954576417194280">Handel towarami i transakcje terminowe</translation>
 <translation id="912327514020027767">Spódnice</translation>
-<translation id="9128016270925453879">Zasady zostały załadowane</translation>
 <translation id="9128870381267983090">Połącz z siecią</translation>
 <translation id="9131119348384879525">Zrobić zrzut ekranu z treściami poufnymi?</translation>
 <translation id="9133985615769429248">Jeśli udostępniasz to urządzenie innym osobom, możesz używać blokady ekranu, aby sprawdzało ono Twoją tożsamość za każdym razem, gdy używasz zapisanego hasła</translation>
@@ -4118,6 +4122,7 @@ Dodatkowe informacje:
 <translation id="9144951720726881238">Data wygaśnięcia:</translation>
 <translation id="9148507642005240123">&amp;Cofnij edycję</translation>
 <translation id="9148599396704355100">Cena jest niska</translation>
+<translation id="9150025764986957246">Możesz na przykład wpisać:</translation>
 <translation id="9150045010208374699">Korzystanie z Twojej kamery</translation>
 <translation id="9150685862434908345">Administrator może zdalnie zmienić konfigurację przeglądarki. Aktywność na tym urządzeniu może być zarządzana również poza Chrome. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">Zaktualizowano</translation>
@@ -4128,6 +4133,7 @@ Dodatkowe informacje:
 <translation id="9164742147345933553">os://flags</translation>
 <translation id="9165305804774426672">Witryny, które odwiedzasz, mogą też określać Twoje zainteresowania na podstawie Twojej aktywności w danej witrynie. Na przykład jeśli odwiedzasz stronę internetową, na której można kupić buty do biegania na długie dystanse, może ona uznać, że interesują Cię maratony.</translation>
 <translation id="9166851138617700776">Więcej informacji o reklamach sugerowanych przez witryny i pomiarze skuteczności reklam</translation>
+<translation id="9167594211215946097">Mieć bezpośredni dostęp do drukarek</translation>
 <translation id="9168814207360376865">Zezwalaj stronom na sprawdzanie, czy masz zapisane formy płatności</translation>
 <translation id="9169664750068251925">Zawsze blokuj w tej witrynie</translation>
 <translation id="9169931577761441333">Dodaj aplikację <ph name="APP_NAME" /> do ekranu głównego</translation>

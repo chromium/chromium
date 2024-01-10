@@ -56,7 +56,6 @@
 <translation id="1279024913354609713">अनुमति नदिनुहोस्</translation>
 <translation id="1281818060020671000">डेटा व्यवस्थापन गर्नुहोस्</translation>
 <translation id="1282311502488501110">साइन इन नगर्नुहोस्</translation>
-<translation id="1283039547216852943">विस्तृत गर्न ट्याप गर्नुहोस्</translation>
 <translation id="1283524564873030414">पछिल्ला २४ घन्टा</translation>
 <translation id="1285320974508926690">यो साइट कहिले पनि अनुवाद नगर्नुहोस्</translation>
 <translation id="1291506870746876680">तपाईं <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> बाट बाहिरिनुभयो भने यो साइटसम्बन्धी अनुमति रिसेट गरी अफ गरिने छ।</translation>
@@ -82,7 +81,6 @@
 <translation id="1377255359165588604">सिंकले काम गर्न छोड्यो।</translation>
 <translation id="1377321085342047638">कार्ड नम्बर</translation>
 <translation id="1377508275003315939">पासवर्डहरू</translation>
-<translation id="1380914240355562929"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> Google पासवर्ड म्यानेजर प्रयोग गरेर <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> मा साइन इन गर्दा अब तपाईंको युजरनेम र पासवर्ड प्रयोग गर्न सक्नुहुन्छ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">खोज्नुहोस्</translation>
 <translation id="138618066238211776"><ph name="USER_NAME" /> का नामबाट जारी राख्नुहोस्</translation>
 <translation id="1400642268715879018">पछिल्लो ४ हप्ता</translation>
@@ -337,6 +335,7 @@
 <translation id="2747003861858887689">अघिल्लो क्षेत्र</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> फलो गरिँदै छ</translation>
 <translation id="2754492786623500387">यो डिभाइसमा लिंक गरिएका खाताहरू</translation>
+<translation id="2755595981383829244">तपाईं अब सामग्रीसम्बन्धी सूचनाहरू प्राप्त गर्नु हुने छ</translation>
 <translation id="2762000892062317888">भर्खरै</translation>
 <translation id="2772667768515195373">तपाईं सेभ गरिएका ठेगानाहरू Google का विभिन्न उत्पादनमा प्रयोग गर्न सक्नुहुन्छ। यो ठेगाना तपाईंको Google खाता (<ph name="USER_EMAIL" />) मा सेभ गरिन्छ।</translation>
 <translation id="2773292004659987824">इन्कोग्निटो खोज</translation>
@@ -406,7 +405,6 @@
 <translation id="3087734570205094154">तल</translation>
 <translation id="3090455602619185166">व्यवस्थापन गरिएको खाता प्रयोग गरी साइन इन गर्नुहोस्</translation>
 <translation id="309710370695886264">तपाईंले एकभन्दा बढी ठाउँमा एउटा पासवर्ड प्रयोग गर्नुभएको छ। सुरक्षित रहन अहिले नै यो समस्या निवारण गर्नुहोस्।</translation>
-<translation id="3109724472072898302">ध्वस्त भएको</translation>
 <translation id="3112556859945124369">चिन्ह लगाउनुहोस्…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />तपाईं के कस्ता कुराहरू सिंक गर्न पाउनुहुन्छ भन्ने कुरा हेर्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">इतिहास र अन्य डेटा</translation>
@@ -775,7 +773,6 @@
 <translation id="5121618895923301719">तपाईं यो उत्पादन ट्र्याक गरिरहनुभएको छ। यो पेज <ph name="BEGIN_LINK" />मोबाइल बुकमार्कहरू<ph name="END_LINK" />मा सेभ गरिएको छ।</translation>
 <translation id="512533434554095351">तपाईंको पासवर्डसम्बन्धी कयौँ समस्याहरू छन्।</translation>
 <translation id="5126465625664020024">साइन इन गरेर सिंक गर्नुहोस्</translation>
-<translation id="5131062416352684089">तपाईंका परिवारका सदस्य अब Google पासवर्ड म्यानेजर प्रयोग गरेर <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> मा साइन इन गर्न तपाईंको युजरनेम र पासवर्ड प्रयोग गर्न सक्नुहुन्छ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">सबै यन्त्रहरूमा आफ्ना पासवर्ड, इतिहास र थप कुरा सिंक गर्नुहोस्</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} वटा कमजोर पासवर्ड भेटियो}other{{COUNT} वटा कमजोर पासवर्ड भेटिए}}</translation>
 <translation id="5149188072385105201">पासवर्ड सेभ गर्नुहोस्...</translation>
@@ -924,7 +921,6 @@
 <translation id="5955891643922670672">अफलाइन संस्करण हेरिँदै</translation>
 <translation id="5957613098218939406">थप विकल्पहरू</translation>
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> मार्फत खोज्नुहोस्</translation>
-<translation id="5962718611393537961">संक्षिप्त गर्न ट्याप गर्नुहोस्</translation>
 <translation id="5963939892571022323">हाइलाइट गरिएको पाठको लिंक सिर्जना गर्न सकिएन।</translation>
 <translation id="5971872012779224351">{count,plural, =1{एउटा बुकमार्क मेटाइएको छ}other{{count} वटा बुकमार्क मेटाइएका छन्}}</translation>
 <translation id="5979837087407522202">पासवर्डहरू खोज्नुहोस्</translation>

@@ -272,6 +272,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1476595624592550506">Palitan ang iyong password</translation>
 <translation id="1482879811280872320">Pagbibisikleta</translation>
 <translation id="1483493594462132177">Ipadala</translation>
+<translation id="1484632730438126438">Masyado itong maikli. Sumulat ng hindi bababa sa 3 salita.</translation>
 <translation id="1492194039220927094">Pag-push ng mga patakaran:</translation>
 <translation id="14938948731065592">Mga computer peripheral</translation>
 <translation id="1495677929897281669">Bumalik sa tab</translation>
@@ -1238,7 +1239,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3447661539832366887">Na-off ng may-ari ng device na ito ang larong dinosaur.</translation>
 <translation id="3447884698081792621">Ipakita ang certificate (ibinigay ng <ph name="ISSUER" />)</translation>
 <translation id="3450323514459570273">Puwedeng humiling na kontrolin at i-reprogram ang iyong mga MIDI device</translation>
-<translation id="3452151267620065789">Na-save ang progreso</translation>
 <translation id="3452404311384756672">Kunin ang agwat:</translation>
 <translation id="3453962258458347894">Bilang ng mga pag-retry</translation>
 <translation id="3461266716147554923">Gustong makita ng <ph name="URL" /> ang text at mga larawang kinopya sa clipboard</translation>
@@ -1404,6 +1404,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3748009735914587286">Metal (High-Gloss)</translation>
 <translation id="3748148204939282805">Maaaring linlangin ka ng mga attacker sa <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> na gawin ang isang mapanganib na bagay tulad ng pag-install ng software o paghayag ng iyong personal na impormasyon (halimbawa, mga password, numero ng telepono, o credit card). <ph name="BEGIN_LEARN_MORE_LINK" />Matuto pa<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Industriya ng aviation</translation>
+<translation id="3751020515020988516">Hindi naintindihan ang iyong request. Sumubok ng ibang request.</translation>
 <translation id="3752543821772132562">Binalewala dahil hindi nakatakda ang <ph name="POLICY_NAME" />.</translation>
 <translation id="3754210790023674521">Lumabas sa picture-in-picture</translation>
 <translation id="3759461132968374835">Wala kang kamakailang iniulat na mga pag-crash. Hindi lilitaw dito ang mga pag-crash na naganap kapag hindi pinagana ang pag-uulat ng pag-crash.</translation>
@@ -1460,6 +1461,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3858860766373142691">Pangalan</translation>
 <translation id="3872834068356954457">Agham</translation>
 <translation id="3875783148670536197">Ipakita sa Akin Kung Paano</translation>
+<translation id="3877877650871124156">Masyado itong mahaba. Paikliin at subukan ulit.</translation>
 <translation id="3881478300875776315">Magpakita ng mas kaunting linya</translation>
 <translation id="3883500545751229739">mga nakakasagabal na ad</translation>
 <translation id="3884278016824448484">Sumasalungat na tagatukoy ng device</translation>
@@ -1537,7 +1539,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4067098466788473230">Mga study grant at scholarship</translation>
 <translation id="4067947977115446013">Magdagdag ng Wastong Address</translation>
 <translation id="4070790659619547722">Sa pagsukat ng ad, may mga limitadong uri ng data na shine-share sa pagitan ng mga site para sukatin ang performance ng kanilang mga ad, tulad ng oras kung kailan ipinakita sa iyo ang ad.</translation>
-<translation id="4072193657607981494">Nilo-load ang mga patakaran</translation>
 <translation id="4072486802667267160">Nagkaroon ng error sa pagproseso ng iyong order. Pakisubukang muli.</translation>
 <translation id="4073376909608563327">Hindi magamit ang pag-unlock ng device</translation>
 <translation id="4073797364926776829">Tingnan ang card</translation>
@@ -2568,6 +2569,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />Matuto pa tungkol sa Incognito sa Chrome<ph name="END_LINK" /></translation>
 <translation id="6133320744616005677">Patuloy na pahintulutan</translation>
 <translation id="6133984428121856852">Walang laman o mali ang file extension.</translation>
+<translation id="6139769382153674477">Nagkaproblema. Naka-sign in ka ba?</translation>
 <translation id="6139975341602920272">17 x 22 in</translation>
 <translation id="6146055958333702838">Tingnan ang anumang mga kable at i-reboot ang anumang mga router, modem o iba
     pang mga network device na maaaring ginagamit mo.</translation>
@@ -2724,7 +2726,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6428450836711225518">I-verify ang iyong numero ng telepono</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">Palitan ang password sa Google</translation>
-<translation id="6431119592588449664">Na-upload na ang ulat</translation>
 <translation id="6432297414176614592">Higit pa tungkol sa mga paksa ng ad</translation>
 <translation id="6432831586648556868">Mga Trabaho sa Pagbebenta at Marketing</translation>
 <translation id="6433490469411711332">I-edit ang impormasyon sa pakikipag-ugnayan</translation>
@@ -3483,7 +3484,6 @@ Mga karagdagang detalye:
 <translation id="7871445724586827387">Palitan ang password ng iyong Google Account</translation>
 <translation id="7877007680666472091">mga pinoprotektahang content ID</translation>
 <translation id="7878562273885520351">Maaaring makompromismo ang iyong password</translation>
-<translation id="7878966190323222027">Buksan ulit para magpatuloy</translation>
 <translation id="7880146494886811634">I-save ang Address</translation>
 <translation id="7882421473871500483">Brown</translation>
 <translation id="7882995332186050355">Mga cargo truck at trailer</translation>
@@ -4104,7 +4104,6 @@ Mga karagdagang detalye:
 <translation id="9119042192571987207">Na-upload</translation>
 <translation id="9122954576417194280">Pangangalakal ng mga commodity at future</translation>
 <translation id="912327514020027767">Mga Palda</translation>
-<translation id="9128016270925453879">Na-load na ang mga patakaran</translation>
 <translation id="9128870381267983090">Kumonekta sa network</translation>
 <translation id="9131119348384879525">Mag-capture ng kumpidensyal na content?</translation>
 <translation id="9133985615769429248">Kung ise-share mo ang device na ito sa ibang tao, puwede mong gamitin ang iyong lock ng screen para i-verify na ikaw iyan kapag gagamit ka ng naka-save na password</translation>

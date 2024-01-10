@@ -814,7 +814,6 @@
 <translation id="1615433306336820465">Управувајте со податоците за најавување зачувани на вашиот безбедносен клуч</translation>
 <translation id="1616206807336925449">Оваа наставка не бара специјални дозволи.</translation>
 <translation id="1616298854599875024">Екстензијата „<ph name="IMPORT_NAME" />" не може да се увезе бидејќи не е споделен модул</translation>
-<translation id="161654560322394775">Слика <ph name="INDEX" /> од <ph name="A" />, во <ph name="B" /> стил, со <ph name="C" /> расположение.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Ги проверуваме податоциве согласно безбедносните правила на организацијата…}=1{Ја проверуваме датотекава согласно безбедносните правила на организацијата…}one{Ги проверуваме датотекиве согласно безбедносните правила на организацијата…}other{Ги проверуваме датотекиве согласно безбедносните правила на организацијата…}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">Центар за п&amp;омош</translation>
@@ -4235,7 +4234,6 @@
 <translation id="4250229828105606438">Слика од екран</translation>
 <translation id="4250680216510889253">Не</translation>
 <translation id="4251377547188244181">Регистрирација на киоск или уред за сигнализација</translation>
-<translation id="4252141040239557279">Слика <ph name="INDEX" /> од <ph name="A" /></translation>
 <translation id="4252828488489674554">Кликнете на името на групата картички со десното копче за да ја измените групава или кликнете за да ја соберете</translation>
 <translation id="4252899949534773101">Bluetooth е оневозможен</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - содржината на картичката е споделена</translation>
@@ -6567,7 +6565,6 @@
         <ph name="BREAK" />
         Може да управувате со поставките од менито со картички или да видите повеќе опции во „Приспособете го Chrome“.</translation>
 <translation id="6121773125605585883">Прегледајте ја лозинката со корисничкото име <ph name="USERNAME" /> за <ph name="WEBSITE" /></translation>
-<translation id="6122081475643980456">Вашето поврзување на интернет се контролира</translation>
 <translation id="6122093587541546701">Е-пошта (изборно):</translation>
 <translation id="6122095009389448667">Продолжи да го блокираш пристапот за гледање на привремената меморија на сајтов</translation>
 <translation id="6122513630797178831">Зачувај CVC</translation>
@@ -7452,7 +7449,6 @@
 <translation id="6820079682647046800">Автентикацијата на Kerberos не успеа</translation>
 <translation id="6821439254917412979">Откачи ја екстензијата <ph name="EXTENSION_NAME" /></translation>
 <translation id="6823174134746916417">Допри за да се кликне на подлогата за допир</translation>
-<translation id="6823429960180594870">Управувајте со датотеките како што се преземаат и отворете ги кога ќе се преземат</translation>
 <translation id="6823561724060793716">Од лентата за адреси, може да ги отворите информациите за страницата за да видите дополнителни детали за страницата што ја отворате</translation>
 <translation id="6824564591481349393">Копирај &amp;адреса на е-пошта</translation>
 <translation id="6824584962142919697">&amp;Проверете ги елементите</translation>
@@ -7857,7 +7853,6 @@
 <translation id="714301620504747562">Прелистувањето и пребарувањето се побрзи од стандардното вчитување однапред</translation>
 <translation id="7143207342074048698">Се поврзува</translation>
 <translation id="7143409552554575716">Ознаки на ChromeOS</translation>
-<translation id="714447804011008506">Сега преземањата се во алатникот</translation>
 <translation id="7144856456372460176">Инсталирање <ph name="APP" />…</translation>
 <translation id="7144878232160441200">Обиди се повторно</translation>
 <translation id="7145413760160421938">Не може да се продолжи претходната сесија</translation>
@@ -8508,7 +8503,6 @@
 <translation id="7657090467145778067">Мали заштеди</translation>
 <translation id="7657218410916651670"><ph name="BEGIN_LINK_GOOGLE" />Други форми на активност<ph name="END_LINK_GOOGLE" /> може да се зачувуваат во вашата сметка на Google кога сте најавени. Може да ги избришете во секое време.</translation>
 <translation id="7658239707568436148">Откажи</translation>
-<translation id="7658727964021657194">Неодамнешна AI-тема: <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">Сепак да се излезе од режимот „Инкогнито“?</translation>
 <translation id="7659336857671800422">Прегледајте го водичот за приватност</translation>
 <translation id="7659584679870740384">Немате дозвола да го користите овој уред. Контактирајте го администраторот за дозвола за пријавување.</translation>
@@ -8790,7 +8784,6 @@
 <translation id="7855678561139483478">Преместете ја картичката во нов прозорец</translation>
 <translation id="7857004848504343806">Вашиот компјутер содржи заштитен модул што се користи за имплементирање многу важни безбедносни функции во ChromeOS Flex. Посетете го „Центарот за помош на Chromebook“ за да дознаете повеќе: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Предлози за текст</translation>
-<translation id="7857949311770343000">Дали е ова страницата од новата картичка што ја очекувавте?</translation>
 <translation id="7858120906780498731">Поврзани влезни уреди на ChromeOS</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941">Отстрани ја екстензијата <ph name="EXTENSION_NAME" /></translation>
@@ -8839,7 +8832,6 @@
 <translation id="789722939441020330">Не им дозволувај на сајтовите автоматски да преземаат повеќе датотеки</translation>
 <translation id="7897900149154324287">Во иднина, погрижете се да го извадите преносливиот уред во апликацијата Датотеки пред да го исклучите. Во спротивно, може да изгубите податоци.</translation>
 <translation id="7898725031477653577">Секогаш преведувај</translation>
-<translation id="7899324822972399722">Слика <ph name="INDEX" /> од <ph name="A" />, во <ph name="B" /> стил</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Барате компоненти на прелистувач? Оди</translation>
 <translation id="7903429136755645827">Кликнете за да ги приспособите контролите за игри</translation>
@@ -9119,7 +9111,6 @@
 <translation id="8098616321286360457">Потребна е мрежна врска</translation>
 <translation id="8100230553590752325">Користење зачувани лозинки на кој било уред</translation>
 <translation id="810068641062493918">Избран е <ph name="LANGUAGE" />. Притиснете „Пребарувај“ и Space за да го поништите изборот.</translation>
-<translation id="8100725874569949614">Слика <ph name="INDEX" /> од <ph name="A" />, со <ph name="C" /> расположение.</translation>
 <translation id="8101409298456377967">Создавајте, зачувувајте и управувајте со лозинки за лесно најавување на сајтови и апликации. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">Приспособена боја</translation>
 <translation id="8101987792947961127">Потребно е фабричко ресетирање на следното рестартирање</translation>
@@ -10070,7 +10061,6 @@
 <translation id="8846163936679269230">Ресетирајте ги профилите на eSIM</translation>
 <translation id="8846239054091760429">Моно аудио, стартување, „Автоматски титлови“ и друго</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8848963863312877204">Најдете ги вашите преземања тука</translation>
 <translation id="8849001918648564819">Скриен</translation>
 <translation id="8849219423513870962">Откажете го отстранувањето на профилот на eSIM наречен <ph name="PROFILE_NAME" /></translation>
 <translation id="8849262417389398097"><ph name="CHECKED" /> од <ph name="CHECKING" /></translation>

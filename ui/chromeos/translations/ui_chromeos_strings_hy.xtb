@@ -24,7 +24,6 @@
 <translation id="1173916544412572294">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, մարտկոցի լիցքը՝ <ph name="BATTERY_STATUS" />%, մանրամասներ</translation>
 <translation id="117624967391683467"><ph name="FILE_NAME" /> ֆայլը պատճենվում է…</translation>
 <translation id="1178581264944972037">Դադար</translation>
-<translation id="1190144681599273207">Այս ֆայլը քաշելու համար կպահանջվի մոտ <ph name="FILE_SIZE" /> բջջային տվյալների հոսք:</translation>
 <translation id="1194390763418645112">Ֆայլի հասանելիություն հետևյալ URL-ների միջոցով՝ <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">Հաջորդը</translation>
 <translation id="1209796539517632982">Անունների ավտոմատ սերվերներ</translation>
@@ -100,7 +99,6 @@
 <translation id="1761091787730831947">Կիսվել <ph name="VM_NAME" />-ի հետ</translation>
 <translation id="1773212559869067373">Իսկորոշման վկայագիրը մերժվեց տեղում</translation>
 <translation id="1775381402323441512">Տեղեկություններ տեսանյութի մասին</translation>
-<translation id="180035236176489073">Այս ֆայլերն օգտագործելու համար դուք պետք է առցանց լինեք:</translation>
 <translation id="1807938677607439181">Բոլոր ֆայլերը</translation>
 <translation id="1810764548349082891">Նախադիտումը հասանելի չէ</translation>
 <translation id="1812302367230252929">ամհարերեն (տառադարձություն)</translation>
@@ -161,8 +159,6 @@
 <translation id="2282155092769082568">Ինքնակազմաձևման URL-ը՝</translation>
 <translation id="2284767815536050991">շարժական կրիչ</translation>
 <translation id="2288278176040912387">Գրամոֆոն</translation>
-<translation id="2291538123825441971">Բացվում է <ph name="NUMBER_OF_FILES" /> ֆայլ։</translation>
-<translation id="2303301624314357662">Բացվում է <ph name="FILE_NAME" /> ֆայլը։</translation>
 <translation id="2304820083631266885">Մոլորակ</translation>
 <translation id="2305020378527873881">Չհաջողվեց առբերել <ph name="VOLUME_NAME" /> պանակը։</translation>
 <translation id="2307462900900812319">Կազմաձևել ցանցը</translation>
@@ -172,7 +168,6 @@
 <translation id="233822363739146957">Ձեր բոլոր ֆայլերը համաժամացնելու համար բավարար տարածք չկա</translation>
 <translation id="23721837607121582">Ներբեռնել բջջային պրոֆիլը, ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Ցանկի տեսքով</translation>
-<translation id="2377590462528165447">Դուք <ph name="NUMBER_OF_ITEMS" /> պանակով կիսվեցին Լինուքսի հետ</translation>
 <translation id="2379576081295865700">Ստուգվում է ազատ տարածքի առկայությունը… Գտնվել է 1 տարր</translation>
 <translation id="2383454254762599978">Տեղափոխել աղբարկղ</translation>
 <translation id="2387458720915042159">Պրոքսի սերվերի միացման տեսակը</translation>
@@ -396,12 +391,10 @@
 <translation id="4197674956721858839">Արխիվացնել ընտրված տարրերը</translation>
 <translation id="4202378258276439759">իսպաներեն (Լատինական Ամերիկա)</translation>
 <translation id="4202977638116331303">վրացերեն</translation>
-<translation id="421017592316736757">Այս ֆայլն օգտագործելու համար դուք պետք է առցանց լինեք:</translation>
 <translation id="4212740939091998969">«<ph name="FOLDER_NAME" />» անունով պանակ արդեն գոյություն ունի: Ընտրեք այլ անուն:</translation>
 <translation id="4218274196133425560">Հեռացնել բացառումը <ph name="HOST_NAME" />-ի համար</translation>
 <translation id="4261901459838235729">Google ներկայացում</translation>
 <translation id="4277536868133419688"><ph name="FILTER_NAME" /> զտիչը միացված է։</translation>
-<translation id="4290535918735525311">1 պանակով կիսվեցիք Լինուքսի հետ</translation>
 <translation id="4299729908419173967">Բրազիլական</translation>
 <translation id="4302605047395093221">Այս սարքն օգտագործող ցանկացած անձ պետք է մուտքագրի PIN կոդը՝ այս բջջային ցանցին միանալու համար</translation>
 <translation id="4303531889494116116">Ցանցն անհասանելի է։ Փորձեք ավելի ուշ։</translation>
@@ -502,8 +495,6 @@
 <translation id="4906580650526544301">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, մարտկոցի լիցքը՝ <ph name="BATTERY_STATUS" />%, մանրամասներ</translation>
 <translation id="4935975195727477204">Ծաղիկ</translation>
 <translation id="4943368462779413526">Ֆուտբոլ</translation>
-<translation id="4961158930123534723">Parallels Desktop-ին հասանելի է դարձել 1 պանակ</translation>
-<translation id="4965874878399872778">Ստուգվում է՝ արդյոք ֆայլերը համապատասխանում են ձեր կազմակերպության անվտանգության կանոններին...</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> ֆայլը վերականգնվեց</translation>
 <translation id="4969785127455456148">Ալբոմ</translation>
 <translation id="4972330214479971536">Չհաջողվեց ավարտել ֆայլերի համաժամացման կարգավորումը</translation>
@@ -565,7 +556,6 @@
 <translation id="5317780077021120954">Պահել</translation>
 <translation id="5318819489018851358">Հասանելի դարձնել Լինուքսին</translation>
 <translation id="5323213332664049067">Լատինամերիկյան</translation>
-<translation id="5330145655348521461">Այս ֆայլերը բացված են այլ աշխատասեղանի վրա: Դիտելու համար տեղափոխվեք <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />):</translation>
 <translation id="5330512191124428349">Ստանալ տեղեկություններ</translation>
 <translation id="535792325654997756">Կատուներով մարդ</translation>
 <translation id="5358764674931277">Կադրերի արագությունը</translation>
@@ -667,7 +657,6 @@
 <translation id="613750717151263950">ճապոներեն՝ ԱՄՆ ստեղնաշարով</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, ցանց չկա</translation>
 <translation id="6146563240635539929">Տեսանյութեր</translation>
-<translation id="6150853954427645995">Այս ֆայլը անցանց ռեժիմում օգտագործելու համար, նորից կապակցվեք համացանցին, ֆայլի վրա աջ սեղմումով ընտրեք <ph name="OFFLINE_CHECKBOX_NAME" /> ընտրանքը:</translation>
 <translation id="6164412158936057769">Թիթեռներ</translation>
 <translation id="6165508094623778733">Իմանալ ավելին</translation>
 <translation id="6170470584681422115">Սենդվիչ</translation>
@@ -700,7 +689,6 @@
 <translation id="636254897931573416">Տիրույթի վերջածանցի հետ համընկնման սխալ արժեք</translation>
 <translation id="6364301859968397756">Կազմակերպության տարածքը լցված է</translation>
 <translation id="6367976544441405720">Միկրոավտոբուս</translation>
-<translation id="637062427944097960">Այս ֆայլը բացված է այլ աշխատասեղանի վրա: Այն դիտելու համար տեղափոխվեք <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />):</translation>
 <translation id="6394388407447716302">Միայն կարդալու</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> տարր</translation>
 <translation id="6407769893376380348"><ph name="FILE_NAME" /> ֆայլը չհաջողվեց տեղափոխել, քանի որ այն գաղտնագրված է։</translation>
@@ -709,7 +697,6 @@
 <translation id="6430271654280079150">Մնաց 1 փորձ։</translation>
 <translation id="643243556292470964">Ջնջված ֆայլերն այժմ աղբարկղում են</translation>
 <translation id="6438480100790416671">Ստուգվում է ազատ տարածքի առկայությունը…</translation>
-<translation id="6451527188465304418">Ստուգվում է՝ արդյոք ֆայլը համապատասխանում է ձեր կազմակերպության անվտանգության կանոններին...</translation>
 <translation id="6485131920355264772">Չհաջողվեց առբերել ազատ տարածքի մասին տեղեկությունները</translation>
 <translation id="6495925982925244349">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, կառավարվում է ձեր ադմինիստրատորի կողմից, մանրամասներ</translation>
 <translation id="649877868557234318">Ֆայլը (<ph name="FILE_NAME" />) արտահանվում է <ph name="FOLDER_NAME" /> պանակ</translation>
@@ -724,7 +711,6 @@
 <translation id="6588648400954570689">Ֆայլերի համաժամացման կարգավորումներ</translation>
 <translation id="6594855146910089723">Այս պանակը հասանելի է Լինուքսին և Parallels Desktop-ին</translation>
 <translation id="6607272825297743757">Ֆայլի տվյալներ</translation>
-<translation id="6609332149380188670">Parallels Desktop-ին հասանելի է դարձել <ph name="NUMBER_OF_ITEMS" /> պանակ</translation>
 <translation id="6629518321609546825">Մուտքագրեք առնվազն 4 նիշ</translation>
 <translation id="6643016212128521049">Մաքրել</translation>
 <translation id="6650726141019353908">Վարդագույն թիթեռ</translation>
@@ -891,7 +877,6 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> ՏԲ</translation>
 <translation id="7831491651892296503">Չհաջողվեց կազմաձևել ցանցը</translation>
-<translation id="7839804798877833423">Այս ֆայլերը քաշելու համար կպահանջվի մոտ <ph name="FILE_SIZE" /> բջջային տվյալների հոսք:</translation>
 <translation id="7846076177841592234">Չեղարկել ընտրվածքը</translation>
 <translation id="7853966320808728790">Ֆրանսիական BÉPO</translation>
 <translation id="7857117644404132472">Ավելացնել բացառություն</translation>
@@ -939,7 +924,6 @@
 <translation id="8175799081768705361">Համաժամացվում է <ph name="NUMBER_OF_FILES_SYNCING" /> Drive ֆայլ</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Սարքի մոդելը</translation>
-<translation id="8223479393428528563">Այս ֆայլերը անցանց ռեժիմում օգտագործելու համար, նորից կապակցվեք համացանցին, ֆայլերի վրա աջ սեղմումով ընտրեք <ph name="OFFLINE_CHECKBOX_NAME" /> ընտրանքը:</translation>
 <translation id="8241139360630443550">Դիտել հիշողությունը</translation>
 <translation id="8249296373107784235">Ընդհատել</translation>
 <translation id="8250690786522693009">լատիներեն</translation>

@@ -56,7 +56,6 @@
 <translation id="1279024913354609713">Бүү зөвшөөр</translation>
 <translation id="1281818060020671000">Өгөгдөл удирдах</translation>
 <translation id="1282311502488501110">Бүү нэвтэр</translation>
-<translation id="1283039547216852943">Дэлгэхийн тулд товших</translation>
 <translation id="1283524564873030414">Сүүлийн 24 цаг</translation>
 <translation id="1285320974508926690">Энэ сайтыг хэзээ ч бүү хөрвүүл</translation>
 <translation id="1291506870746876680">Таныг энэ сайтаас гарах үед <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" />-н зөвшөөрлийг унтраасан болгож шинэчилнэ.</translation>
@@ -82,7 +81,6 @@
 <translation id="1377255359165588604">Синк ажиллахаа больсон байна.</translation>
 <translation id="1377321085342047638">Картын дугаар</translation>
 <translation id="1377508275003315939">Нууц үг</translation>
-<translation id="1380914240355562929"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> одоо Google Password Manager-г ашиглан <ph name="BEGIN_BOLD" /><ph name="WEBSITE" />-д<ph name="END_BOLD" /> нэвтрэх үедээ таны хэрэглэгчийн нэр болон нууц үгийг ашиглах боломжтой. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">Хайлт</translation>
 <translation id="138618066238211776"><ph name="USER_NAME" />-р үргэлжлүүлэх</translation>
 <translation id="1400642268715879018">Сүүлийн 4 долоо хоног</translation>
@@ -337,6 +335,7 @@
 <translation id="2747003861858887689">Өмнөх талбар</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" />-г дагаж байна</translation>
 <translation id="2754492786623500387">Энэ төхөөрөмж дээрх бүртгэлүүд</translation>
+<translation id="2755595981383829244">Та одоо контентын мэдэгдлүүд хүлээн авна</translation>
 <translation id="2762000892062317888">дөнгөж сая</translation>
 <translation id="2772667768515195373">Та Google-н бүтээгдэхүүнүүд дээр хадгалсан хаягуудыг ашиглах боломжтой. Энэ хаягийг таны <ph name="USER_EMAIL" /> Google Бүртгэлд хадгалсан.</translation>
 <translation id="2773292004659987824">Нууцлалтай хайлт</translation>
@@ -406,7 +405,6 @@
 <translation id="3087734570205094154">Доод</translation>
 <translation id="3090455602619185166">Тохиргоо хийгдсэн бүртгэлээр нэвтрэх</translation>
 <translation id="309710370695886264">Танд дахин ашигласан 1 нууц үг байна. Аюулгүй байхын тулд үүнийг одоо засна уу.</translation>
-<translation id="3109724472072898302">Задарсан</translation>
 <translation id="3112556859945124369">Тэмдэглэх...</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Та юу синк хийх боломжтойгоо хараарай<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">Түүх болон бусад</translation>
@@ -775,7 +773,6 @@
 <translation id="5121618895923301719">Та энэ бүтээгдэхүүнийг аль хэдийн хянаж байна. Энэ хуудсыг <ph name="BEGIN_LINK" />Мобайл хавчуургад<ph name="END_LINK" /> хадгалсан.</translation>
 <translation id="512533434554095351">Танд нууц үгний хэд хэдэн асуудал байна.</translation>
 <translation id="5126465625664020024">Нэвтрээд, синк хийх</translation>
-<translation id="5131062416352684089">Танай гэр бүлийн гишүүд одоо Google Password Manager-г ашиглан <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />-д нэвтрэх үедээ таны хэрэглэгчийн нэр болон нууц үгийг ашиглах боломжтой. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">Нууц үг, түүх болон бусад зүйлээ бүх төхөөрөмждөө синк хийгээрэй</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} сул нууц үг}other{{COUNT} сул нууц үг}}</translation>
 <translation id="5149188072385105201">Нууц үг нэмэх...</translation>
@@ -924,7 +921,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="5955891643922670672">Офлайн хувилбарыг харж байна</translation>
 <translation id="5957613098218939406">Бусад сонголт</translation>
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" />-р хайх</translation>
-<translation id="5962718611393537961">Буулгахын тулд товших</translation>
 <translation id="5963939892571022323">Тодруулсан текстийн холбоосыг үүсгэх боломжгүй.</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 хавчуургыг устгасан}other{{count} хавчуургыг устгасан}}</translation>
 <translation id="5979837087407522202">Нууц үгийг хайх</translation>
@@ -991,6 +987,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6255097610484507482">Зээлийн картыг засварлах</translation>
 <translation id="6266039999629596120">Анхаарал шаардлагатай</translation>
 <translation id="6277426346321820595">Хамгаалалтгүй</translation>
+<translation id="628251768213143684">Та Google Бүртгэлд тань юу хадгалахыг хүссэн үедээ удирдах боломжтой</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" />-г орчуулахыг санал болгох</translation>
 <translation id="6289501276895392862"><ph name="CHANNEL_NAME" />-г дагахаа больсон</translation>
 <translation id="6293101329759844770">Аюулгүй үзэлтийг асаахын тулд <ph name="BEGIN_LINK" />Google-н үйлчилгээнүүдийг<ph name="END_LINK" /> нээж, Аюулгүй үзэлт дээр товшино уу.</translation>

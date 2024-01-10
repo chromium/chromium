@@ -812,7 +812,6 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1615433306336820465">Administrer påloggingsinformasjon som er lagret på sikkerhetsnøkkelen din</translation>
 <translation id="1616206807336925449">Denne utvidelsen krever ingen spesielle tillatelser.</translation>
 <translation id="1616298854599875024">Kan ikke importere utvidelsen «<ph name="IMPORT_NAME" />», fordi den ikke er en delt modul</translation>
-<translation id="161654560322394775">Bilde <ph name="INDEX" /> av <ph name="A" />, i <ph name="B" />-stil, med <ph name="C" />-stemning.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Sjekker disse dataene opp mot sikkerhetsretningslinjene til organisasjonen din …}=1{Sjekker denne filen opp mot sikkerhetsretningslinjene til organisasjonen din …}other{Sjekker disse filene opp mot sikkerhetsretningslinjene til organisasjonen din …}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">&amp;Brukerstøtte</translation>
@@ -4232,7 +4231,6 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4250229828105606438">Skjermdump</translation>
 <translation id="4250680216510889253">Nei</translation>
 <translation id="4251377547188244181">Registrering som kiosk- og skiltenhet</translation>
-<translation id="4252141040239557279">Bilde <ph name="INDEX" /> av <ph name="A" /></translation>
 <translation id="4252828488489674554">Høyreklikk på navnet på fanegruppen for å endre denne gruppen, eller klikk for å skjule den</translation>
 <translation id="4252899949534773101">Bluetooth er slått av</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> – faneinnholdet er delt</translation>
@@ -6568,7 +6566,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
         <ph name="BREAK" />
         Du kan administrere innstillinger via kortmenyen eller se flere alternativer i Tilpass Chrome.</translation>
 <translation id="6121773125605585883">Vis passord med brukernavnet <ph name="USERNAME" /> for <ph name="WEBSITE" /></translation>
-<translation id="6122081475643980456">Internett-tilkoblingen din kontrolleres</translation>
 <translation id="6122093587541546701">E-post (valgfritt):</translation>
 <translation id="6122095009389448667">Fortsett å blokkere dette nettstedet fra å se utklippstavlen</translation>
 <translation id="6122513630797178831">Lagre verifiseringskoden</translation>
@@ -7452,7 +7449,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6820079682647046800">Kerberos-autentisering mislyktes</translation>
 <translation id="6821439254917412979">Løsne <ph name="EXTENSION_NAME" /></translation>
 <translation id="6823174134746916417">Berøringsklikk på styreflaten</translation>
-<translation id="6823429960180594870">Administrer filer etter hvert som de lastes ned, og åpne dem når de er klare</translation>
 <translation id="6823561724060793716">Fra adressefeltet kan du åpne sideinformasjon for å se mer informasjon om siden du besøker</translation>
 <translation id="6824564591481349393">Kopier &amp;e-postadresse</translation>
 <translation id="6824584962142919697">&amp;Undersøk elementer</translation>
@@ -7858,7 +7854,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="714301620504747562">Surfing og søk er raskere enn standard forhåndslasting.</translation>
 <translation id="7143207342074048698">Kobler til</translation>
 <translation id="7143409552554575716">ChromeOS-flagg</translation>
-<translation id="714447804011008506">Nedlastinger er nå på verktøylinjen</translation>
 <translation id="7144856456372460176">&amp;Installer <ph name="APP" />…</translation>
 <translation id="7144878232160441200">Prøv på nytt</translation>
 <translation id="7145413760160421938">Kan ikke gjenoppta forrige økt</translation>
@@ -8509,7 +8504,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7657090467145778067">Små besparelser</translation>
 <translation id="7657218410916651670"><ph name="BEGIN_LINK_GOOGLE" />Andre typer aktiviteter<ph name="END_LINK_GOOGLE" /> kan bli lagret i Google-kontoen din når du er pålogget. Du kan slette dem når som helst.</translation>
 <translation id="7658239707568436148">Avbryt</translation>
-<translation id="7658727964021657194">Nylig AI-tema <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">Vil du avslutte Inkognitomodus likevel?</translation>
 <translation id="7659336857671800422">Gjennomgå personvernveiledningen</translation>
 <translation id="7659584679870740384">Du er ikke autorisert til å bruke denne enheten. Ta kontakt med administratoren for å få tillatelse til å logge på.</translation>
@@ -8791,7 +8785,6 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7855678561139483478">Flytt fanen til et nytt vindu</translation>
 <translation id="7857004848504343806">Datamaskinen din inneholder en sikker modul, som brukes til å implementere mange viktige sikkerhetsfunksjoner i ChromeOS Flex. Gå til Chromebook-brukerstøtten for å finne ut mer: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Tekstforslag</translation>
-<translation id="7857949311770343000">Er dette den nye fanen du ventet på?</translation>
 <translation id="7858120906780498731">ChromeOS – tilkoblede inndataenheter</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941">Fjern <ph name="EXTENSION_NAME" />-utvidelsen</translation>
@@ -8840,7 +8833,6 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="789722939441020330">Ikke la nettsteder laste ned flere filer automatisk</translation>
 <translation id="7897900149154324287">I fremtiden må du sørge for å løse ut den flyttbare enheten i Filer-appen, før du kobler den fra. Ellers kan du miste data.</translation>
 <translation id="7898725031477653577">Oversett alltid</translation>
-<translation id="7899324822972399722">Bilde <ph name="INDEX" /> av <ph name="A" /> i stil <ph name="B" /></translation>
 <translation id="7901405293566323524">Telefonstyring</translation>
 <translation id="7903290522161827520">Ser du etter nettleserkomponenter? Gå til</translation>
 <translation id="7903429136755645827">Klikk for å tilpasse spillkontrollene dine</translation>
@@ -9122,7 +9114,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8098616321286360457">Nettverkstilkobling kreves</translation>
 <translation id="8100230553590752325">Bruk lagrede passord på alle enheter</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> er valgt. Trykk på Søk + mellomrom for å fjerne valget.</translation>
-<translation id="8100725874569949614">Bilde <ph name="INDEX" /> av <ph name="A" />, med humør til <ph name="C" />.</translation>
 <translation id="8101409298456377967">Opprett, lagre og administrer passordene dine, slik at det blir enkelt å logge på nettsteder og apper. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">Egendefinert farge</translation>
 <translation id="8101987792947961127">Powerwash kreves ved neste omstart</translation>
@@ -10071,7 +10062,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8846163936679269230">Tilbakestill eSIM-profiler</translation>
 <translation id="8846239054091760429">Monolyd, oppstart, direkteteksting med mer</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8848963863312877204">Finn nedlastingene dine her</translation>
 <translation id="8849001918648564819">Skjult</translation>
 <translation id="8849219423513870962">Avbryt fjerning av eSIM-profilen <ph name="PROFILE_NAME" /></translation>
 <translation id="8849262417389398097"><ph name="CHECKED" /> av <ph name="CHECKING" /></translation>

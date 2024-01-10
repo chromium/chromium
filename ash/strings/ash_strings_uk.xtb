@@ -1505,6 +1505,7 @@
 <translation id="7025533177575372252">Під’єднайте <ph name="DEVICE_NAME" /> до телефона</translation>
 <translation id="7026338066939101231">Понизити</translation>
 <translation id="7029814467594812963">Завершити сеанс</translation>
+<translation id="7031303610220416229">Переглянути всі завдання в Google Завданнях</translation>
 <translation id="7032161822340700104">Максимальна кількість шаблонів: 6. Щоб зберегти новий шаблон, видаліть старий.</translation>
 <translation id="7034025838182392395">Додаток <ph name="APP_NAME" /> хоче використовувати цей пристрій: <ph name="DEVICE_NAME" />. Увімкніть фізичний перемикач на пристрої (<ph name="DEVICE_NAME" />).</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Асистент</translation>
@@ -1817,6 +1818,7 @@
 <translation id="8351131234907093545">Створити нотатку</translation>
 <translation id="8367948981300340152">Використовується <ph name="CAPTURE_MEDIUM" />.</translation>
 <translation id="8369166482916924789">Збережений робочий стіл, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
+<translation id="8370414029565771236">Шукати "<ph name="TEXT" />"</translation>
 <translation id="8371779926711439835">Уперед на одну літеру</translation>
 <translation id="8371991222807690464">Ефективність периферійних пристроїв у режимі гостя може бути обмежена</translation>
 <translation id="8374601332003098278">Щоб записати частину екрана, натисніть клавішу Enter</translation>

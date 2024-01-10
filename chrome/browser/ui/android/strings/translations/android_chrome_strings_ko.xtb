@@ -233,6 +233,7 @@
 <translation id="2318045970523081853">탭하여 전화 걸기</translation>
 <translation id="2321086116217818302">비밀번호 준비 중…</translation>
 <translation id="2323763861024343754">사이트 저장공간</translation>
+<translation id="2327226657832576859">PDF를 자동으로 여시겠습니까?</translation>
 <translation id="2328985652426384049">로그인할 수 없음</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> APK를 설치할 수 없음</translation>
 <translation id="2349710944427398404">계정, 북마크, 저장된 설정 등 Chrome에서 사용한 전체 데이터</translation>
@@ -638,6 +639,7 @@
 <translation id="4523326818319942067">지난 1시간</translation>
 <translation id="452750746583162491">동기화된 데이터 검토</translation>
 <translation id="4532845899244822526">폴더 선택</translation>
+<translation id="4541505619120536051">항상 열기</translation>
 <translation id="4543131175509360848">패스키 시트 없음</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{탭 <ph name="TAB_COUNT_ONE" />개}other{탭 <ph name="TAB_COUNT_MANY" />개(시크릿 탭 <ph name="TAB_COUNT_INCOGNITO" />개)}}</translation>
 <translation id="4554077758708533499">USB 케이블로 연결됨</translation>
@@ -829,6 +831,7 @@
 <translation id="5486841595534124508">내 활동 페이지로 리디렉션되는 페이지 인사이트 허브의 개인정보처리방침 로고</translation>
 <translation id="5487521232677179737">인터넷 사용 기록 삭제</translation>
 <translation id="5492637351392383067">기기 내 암호화</translation>
+<translation id="5509866835115085009">PDF를 다운로드하면 Chrome에서 자동으로 PDF를 열 수 있습니다.</translation>
 <translation id="5514904542973294328">기기 관리자가 사용 중지함</translation>
 <translation id="5515439363601853141">비밀번호를 보려면 잠금 해제하세요</translation>
 <translation id="5517095782334947753"><ph name="FROM_ACCOUNT" />에서 가져온 북마크, 방문 기록, 비밀번호 및 기타 설정이 있습니다.</translation>

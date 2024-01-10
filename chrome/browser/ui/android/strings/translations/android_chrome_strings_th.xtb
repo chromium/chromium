@@ -233,6 +233,7 @@
 <translation id="2318045970523081853">แตะเพื่อโทร</translation>
 <translation id="2321086116217818302">กำลังเตรียมรหัสผ่าน…</translation>
 <translation id="2323763861024343754">พื้นที่เก็บข้อมูลเว็บไซต์</translation>
+<translation id="2327226657832576859">เปิดไฟล์ PDF โดยอัตโนมัติใช่ไหม</translation>
 <translation id="2328985652426384049">ลงชื่อเข้าใช้ไม่ได้</translation>
 <translation id="2341410551640223969">ติดตั้ง <ph name="WEBAPK_NAME" /> ไม่สำเร็จ</translation>
 <translation id="2349710944427398404">ข้อมูลทั้งหมดที่ Chrome ใช้ รวมถึงบัญชี บุ๊กมาร์ก และการตั้งค่าที่บันทึกไว้</translation>
@@ -638,6 +639,7 @@
 <translation id="4523326818319942067">ชั่วโมงที่ผ่านมา</translation>
 <translation id="452750746583162491">ตรวจสอบข้อมูลที่ซิงค์</translation>
 <translation id="4532845899244822526">เลือกโฟลเดอร์</translation>
+<translation id="4541505619120536051">เปิดตลอดเวลา</translation>
 <translation id="4543131175509360848">ไม่มีชีตพาสคีย์</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> แท็บ}other{<ph name="TAB_COUNT_MANY" /> แท็บ <ph name="TAB_COUNT_INCOGNITO" /> แท็บที่ไม่ระบุตัวตน}}</translation>
 <translation id="4554077758708533499">เชื่อมต่อด้วยสาย USB แล้ว</translation>
@@ -829,6 +831,7 @@
 <translation id="5486841595534124508">โลโก้ประกาศเกี่ยวกับนโยบายความเป็นส่วนตัวสำหรับศูนย์รวมข้อมูลเชิงลึกเกี่ยวกับหน้าเว็บซึ่งเปลี่ยนเส้นทางไปยังหน้ากิจกรรมของฉัน</translation>
 <translation id="5487521232677179737">ล้างข้อมูล</translation>
 <translation id="5492637351392383067">การเข้ารหัสในอุปกรณ์</translation>
+<translation id="5509866835115085009">Chrome จะเปิดไฟล์ PDF โดยอัตโนมัติเมื่อคุณดาวน์โหลด</translation>
 <translation id="5514904542973294328">ปิดใช้โดยผู้ดูแลระบบของอุปกรณ์นี้</translation>
 <translation id="5515439363601853141">ปลดล็อกเพื่อดูรหัสผ่าน</translation>
 <translation id="5517095782334947753">คุณมีบุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และการตั้งค่าอื่นๆ จาก <ph name="FROM_ACCOUNT" /></translation>

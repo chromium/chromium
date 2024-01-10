@@ -812,7 +812,6 @@
 <translation id="1615433306336820465">Настройте учетные данные, сохраненные на электронном ключе</translation>
 <translation id="1616206807336925449">Расширению не требуются особые разрешения.</translation>
 <translation id="1616298854599875024">Не удалось импортировать расширение "<ph name="IMPORT_NAME" />", поскольку это не общий модуль</translation>
-<translation id="161654560322394775">Изображение: <ph name="INDEX" /> из <ph name="A" />. Стиль: <ph name="B" />. Настроение: <ph name="C" />.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Проверка данных на соответствие правилам безопасности вашей организации…}=1{Проверка файла на соответствие правилам безопасности вашей организации…}one{Проверка файлов на соответствие правилам безопасности вашей организации…}few{Проверка файлов на соответствие правилам безопасности вашей организации…}many{Проверка файлов на соответствие правилам безопасности вашей организации…}other{Проверка файлов на соответствие правилам безопасности вашей организации…}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">Справочный &amp;центр</translation>
@@ -4221,7 +4220,6 @@
 <translation id="4250229828105606438">Скриншот</translation>
 <translation id="4250680216510889253">Нет</translation>
 <translation id="4251377547188244181">Регистрация устройства в режиме киоска или цифровой вывески</translation>
-<translation id="4252141040239557279">Изображение: <ph name="INDEX" /> из <ph name="A" /></translation>
 <translation id="4252828488489674554">Нажмите правой кнопкой мыши на название группы вкладок, чтобы изменить ее, или нажмите левой кнопкой, чтобы свернуть группу.</translation>
 <translation id="4252899949534773101">Включите Bluetooth</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" />: доступ к содержимому вкладки открыт</translation>
@@ -6552,7 +6550,6 @@
         <ph name="BREAK" />
         Вы можете управлять настройками в меню карточки. Чтобы посмотреть дополнительные параметры, выберите "Настроить Chrome".</translation>
 <translation id="6121773125605585883">Показать пароль для имени пользователя <ph name="USERNAME" /> на сайте <ph name="WEBSITE" /></translation>
-<translation id="6122081475643980456">С вашим интернет-соединением все не так просто</translation>
 <translation id="6122093587541546701">Адрес эл. почты (необязательно):</translation>
 <translation id="6122095009389448667">Не открывать этому сайту доступ к буферу обмена</translation>
 <translation id="6122513630797178831">Сохранить CVC-код</translation>
@@ -7441,7 +7438,6 @@
 <translation id="6820079682647046800">Ошибка аутентификации по протоколу Kerberos</translation>
 <translation id="6821439254917412979">Открепить расширение "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6823174134746916417">Нажатие от прикосновения к сенсорной панели</translation>
-<translation id="6823429960180594870">Управляйте файлами по мере их скачивания и открывайте их, когда все будет готово</translation>
 <translation id="6823561724060793716">В адресной строке можно открыть дополнительную информацию о просматриваемой странице.</translation>
 <translation id="6824564591481349393">Скопировать адрес электронной почты</translation>
 <translation id="6824584962142919697">&amp;Проверить элементы</translation>
@@ -7847,7 +7843,6 @@
 <translation id="714301620504747562">Скорость работы браузера и поиска выше, чем со стандартной предзагрузкой.</translation>
 <translation id="7143207342074048698">Подключение</translation>
 <translation id="7143409552554575716">Экспериментальные параметры ChromeOS</translation>
-<translation id="714447804011008506">Скачанные файлы теперь отображаются на панели инструментов</translation>
 <translation id="7144856456372460176">&amp;Установить приложение "<ph name="APP" />"</translation>
 <translation id="7144878232160441200">Повторить</translation>
 <translation id="7145413760160421938">Невозможно возобновить предыдущий сеанс</translation>
@@ -8497,7 +8492,6 @@
 <translation id="7657090467145778067">Небольшая экономия</translation>
 <translation id="7657218410916651670">Сведения о <ph name="BEGIN_LINK_GOOGLE" />других действиях<ph name="END_LINK_GOOGLE" /> могут сохраняться в аккаунте Google, если вы в него вошли. Эти данные можно удалить в любое время.</translation>
 <translation id="7658239707568436148">Отмена</translation>
-<translation id="7658727964021657194">Недавно созданная тема <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">Вы действительно хотите выйти из режима инкогнито?</translation>
 <translation id="7659336857671800422">Изучите руководство</translation>
 <translation id="7659584679870740384">У вас нет доступа к этому устройству. Свяжитесь с его администратором.</translation>
@@ -8779,7 +8773,6 @@
 <translation id="7855678561139483478">Открыть вкладку в новом окне</translation>
 <translation id="7857004848504343806">Компьютер оснащен модулем безопасности, с помощью которого в Chrome OS Flex реализовано множество критически важных функций защиты. Более подробную информацию можно получить в Справочном центре Chromebook: https://support.google.com/chromebook/?p=sm.</translation>
 <translation id="7857093393627376423">Текстовые подсказки</translation>
-<translation id="7857949311770343000">Другая страница быстрого доступа?</translation>
 <translation id="7858120906780498731">Устройства ввода, подключенные к ChromeOS</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941">Удалить расширение <ph name="EXTENSION_NAME" /></translation>
@@ -8828,7 +8821,6 @@
 <translation id="789722939441020330">Запретить сайтам автоматически скачивать несколько файлов</translation>
 <translation id="7897900149154324287">В будущем, прежде чем отключать накопитель, воспользуйтесь командой "Извлечь" в приложении "Файлы", чтобы не потерять данные.</translation>
 <translation id="7898725031477653577">Всегда переводить</translation>
-<translation id="7899324822972399722">Изображение: <ph name="INDEX" /> из <ph name="A" />. Стиль: <ph name="B" />.</translation>
 <translation id="7901405293566323524">Управление телефоном</translation>
 <translation id="7903290522161827520">Ищете компоненты браузера? Перейдите на страницу</translation>
 <translation id="7903429136755645827">Нажмите, чтобы настроить управление игрой</translation>
@@ -9109,7 +9101,6 @@
 <translation id="8098616321286360457">Нет подключения к Сети</translation>
 <translation id="8100230553590752325">Используйте сохраненные пароли на любом устройстве</translation>
 <translation id="810068641062493918">Выбранный язык: <ph name="LANGUAGE" />. Чтобы отменить выбор, нажмите клавиши Поиск + Пробел.</translation>
-<translation id="8100725874569949614">Изображение: <ph name="INDEX" /> из <ph name="A" />. Настроение: <ph name="C" />.</translation>
 <translation id="8101409298456377967">Создавайте, сохраняйте и изменяйте пароли. Быстрый доступ к ним позволит вам легко входить в аккаунты на сайтах и в приложениях. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">Свои цвета</translation>
 <translation id="8101987792947961127">При следующей перезагрузке устройства необходимо выполнить Powerwash</translation>
@@ -10059,7 +10050,6 @@
 <translation id="8846163936679269230">Сбросить профили eSIM</translation>
 <translation id="8846239054091760429">Монофонический звук, автоматические субтитры, звуки при включении и не только</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8848963863312877204">Скачанные файлы будут появляться здесь</translation>
 <translation id="8849001918648564819">Скрытые</translation>
 <translation id="8849219423513870962">Отменить удаление профиля eSIM с именем "<ph name="PROFILE_NAME" />"</translation>
 <translation id="8849262417389398097"><ph name="CHECKED" /> из <ph name="CHECKING" /></translation>

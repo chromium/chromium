@@ -56,7 +56,6 @@
 <translation id="1279024913354609713">Jangan Izinkan</translation>
 <translation id="1281818060020671000">Kelola Data</translation>
 <translation id="1282311502488501110">Jangan Login</translation>
-<translation id="1283039547216852943">Ketuk untuk meluaskan</translation>
 <translation id="1283524564873030414">24 Jam Terakhir</translation>
 <translation id="1285320974508926690">Jangan pernah terjemahkan situs ini</translation>
 <translation id="1291506870746876680">Izin <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> akan direset ke nonaktif saat Anda menutup situs ini.</translation>
@@ -82,7 +81,6 @@
 <translation id="1377255359165588604">Sinkronisasi berhenti berfungsi.</translation>
 <translation id="1377321085342047638">Nomor Kartu</translation>
 <translation id="1377508275003315939">Sandi</translation>
-<translation id="1380914240355562929"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> kini dapat menggunakan nama pengguna dan sandi Anda saat dia menggunakan Pengelola Sandi Google untuk login ke <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">Telusuri</translation>
 <translation id="138618066238211776">Lanjutkan sebagai <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">4 Minggu Terakhir</translation>
@@ -406,7 +404,6 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="3087734570205094154">Bawah</translation>
 <translation id="3090455602619185166">Login dengan Akun Terkelola</translation>
 <translation id="309710370695886264">Anda memiliki 1 sandi yang digunakan ulang. Perbaiki sekarang agar tetap terlindungi.</translation>
-<translation id="3109724472072898302">Diciutkan</translation>
 <translation id="3112556859945124369">Tandai…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Lihat Apa Saja yang Dapat Anda Sinkronkan<ph name="END_LINK" />.</translation>
 <translation id="3130863904455712965">Histori dan lainnya</translation>
@@ -775,7 +772,6 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="5121618895923301719">Anda sudah memantau produk ini. Halaman ini disimpan di <ph name="BEGIN_LINK" />Bookmark Seluler<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Anda memiliki beberapa masalah sandi.</translation>
 <translation id="5126465625664020024">Login dan Sinkronkan</translation>
-<translation id="5131062416352684089">Anggota keluarga Anda kini dapat menggunakan nama pengguna dan sandi Anda saat mereka menggunakan Pengelola Sandi Google untuk login ke <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">Sinkronkan sandi, histori, dan lainnya di semua perangkat</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} Sandi Lemah}other{{COUNT} Sandi Lemah}}</translation>
 <translation id="5149188072385105201">Tambahkan sandi ...</translation>
@@ -924,7 +920,6 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="5955891643922670672">Melihat Versi Offline</translation>
 <translation id="5957613098218939406">Opsi Lainnya</translation>
 <translation id="595769230373966252">Telusuri dengan <ph name="SEARCH_PROVIDER" /></translation>
-<translation id="5962718611393537961">Ketuk untuk menciutkan</translation>
 <translation id="5963939892571022323">Link ke sorotan tidak dapat dibuat.</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 bookmark dihapus}other{{count} bookmark dihapus}}</translation>
 <translation id="5979837087407522202">Telusuri Sandi</translation>

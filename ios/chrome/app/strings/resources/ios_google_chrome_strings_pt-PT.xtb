@@ -201,6 +201,9 @@ Os seus dados estão encriptados com a sua frase de acesso. Introduza-a para usa
 
 Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google não recebe nem armazena a frase de acesso. Se se esquecer da frase de acesso ou quiser alterar esta definição, <ph name="BEGIN_LINK" />limpe os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
 <translation id="6851982868877411675">Abra as Definições do Chrome no iOS, toque em "App de navegador predefinida" e selecione o Chrome.</translation>
+<translation id="686691656039982452">Pode <ph name="BEGIN_LINK" />gerir que dados do Chrome são guardados<ph name="END_LINK" /> na sua Conta Google.
+
+Para ver mais definições que usam dados para melhorar a sua experiência do Chrome, aceda aos <ph name="BEGIN_LINK" />serviços Google<ph name="END_LINK" />.</translation>
 <translation id="687586529977635009">O Chrome vai detetar números de acompanhamento nos sites que visitar e mostrar-lhe atualizações de embalagens na página Novo separador. Os seus dados vão ser partilhados com a Google para oferecer esta funcionalidade e melhorar o Shopping para todos. Pode alterar esta opção nas <ph name="BEGIN_LINK" />Definições de acompanhamento de embalagens<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">Pesquise com a voz no Chrome</translation>
 <translation id="6964931465519938134">Agora, pode utilizar o Chrome sempre que tocar em links de mensagens, documentos e outras apps.</translation>

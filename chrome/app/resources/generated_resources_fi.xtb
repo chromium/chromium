@@ -813,7 +813,6 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1615433306336820465">Muuta suojausavaimeen tallennettua kirjautumisdataa</translation>
 <translation id="1616206807336925449">Tämä laajennus ei vaadi erityisiä käyttöoikeuksia.</translation>
 <translation id="1616298854599875024">Laajennusta <ph name="IMPORT_NAME" /> ei voi tuoda, koska se ei ole jaettu moduuli.</translation>
-<translation id="161654560322394775">Kuva <ph name="INDEX" />/<ph name="A" />, tyyli: <ph name="B" />, tunnelma: <ph name="C" />.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Tarkistetaan, onko tämä data organisaatiosi tietosuojakäytäntöjen mukaista…}=1{Tarkistetaan, onko tämä tiedosto organisaatiosi tietosuojakäytäntöjen mukainen…}other{Tarkistetaan, ovatko nämä tiedostot organisaatiosi tietosuojakäytäntöjen mukaisia…}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">Ohj&amp;ekeskus</translation>
@@ -4230,7 +4229,6 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="4250229828105606438">Kuvakaappaus</translation>
 <translation id="4250680216510889253">Ei</translation>
 <translation id="4251377547188244181">Kioski- ja opastelaitteen rekisteröinti</translation>
-<translation id="4252141040239557279">Kuva <ph name="INDEX" />/<ph name="A" /></translation>
 <translation id="4252828488489674554">Klikkaa välilehtiryhmän nimeä kakkospainikkeella muokataksesi ryhmää tai klikkaa sitä tiivistääksesi</translation>
 <translation id="4252899949534773101">Bluetooth on poistettu käytöstä</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> – välilehden sisältö jaettu</translation>
@@ -6562,7 +6560,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
         <ph name="BREAK" />
         Voit muuttaa asetuksia korttivalikossa. Lisää vaihtoehtoja löydät Yksilöi Chromea ‑osiosta.</translation>
 <translation id="6121773125605585883">Katso käyttäjänimellä <ph name="USERNAME" /> tallennettu salasana (<ph name="WEBSITE" />)</translation>
-<translation id="6122081475643980456">Internetyhteyttäsi hallinnoidaan</translation>
 <translation id="6122093587541546701">Sähköpostiosoite (valinnainen):</translation>
 <translation id="6122095009389448667">Estä sivustoa näkemästä leikepöydän sisältöä myös jatkossa</translation>
 <translation id="6122513630797178831">Tallenna CVC</translation>
@@ -7445,7 +7442,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6820079682647046800">Kerberos-todennus epäonnistui</translation>
 <translation id="6821439254917412979">Irrota <ph name="EXTENSION_NAME" /></translation>
 <translation id="6823174134746916417">Kosketuslevyn napauttamalla klikkaus</translation>
-<translation id="6823429960180594870">Voit ylläpitää tiedostoja latauksen aikana ja avata ne latauksen jälkeen</translation>
 <translation id="6823561724060793716">Osoitepalkista voit avata sivun tiedot ja katsoa lukea lisää käyttämästäsi sivusta</translation>
 <translation id="6824564591481349393">Kopioi sähköpostiosoit&amp;e</translation>
 <translation id="6824584962142919697">Tutk&amp;i elementtejä</translation>
@@ -7851,7 +7847,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="714301620504747562">Selaaminen ja hakeminen on tavallista esilatausta nopeampaa</translation>
 <translation id="7143207342074048698">Yhdistetään</translation>
 <translation id="7143409552554575716">ChromeOS-merkinnät</translation>
-<translation id="714447804011008506">Lataukset löytyvät nyt yläpalkista</translation>
 <translation id="7144856456372460176">&amp;Asenna <ph name="APP" />…</translation>
 <translation id="7144878232160441200">Yritä uudelleen</translation>
 <translation id="7145413760160421938">Edellisen istunnon jatkaminen epäonnistui</translation>
@@ -8502,7 +8497,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7657090467145778067">Pienet säästöt</translation>
 <translation id="7657218410916651670"><ph name="BEGIN_LINK_GOOGLE" />Muita toimintoja<ph name="END_LINK_GOOGLE" /> voidaan tallentaa Google-tilillesi, kun olet kirjautuneena sisään. Voit poistaa niitä koska vain.</translation>
 <translation id="7658239707568436148">Peru</translation>
-<translation id="7658727964021657194">Viimeaikainen AI-teema <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">Haluatko silti poistua incognito-tilasta?</translation>
 <translation id="7659336857671800422">Tutustu yksityisyysoppaaseen</translation>
 <translation id="7659584679870740384">Sinulla ei ole tämän laitteen käyttölupaa. Pyydä järjestelmänvalvojalta kirjautumislupa.</translation>
@@ -8783,7 +8777,6 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="7855678561139483478">Siirrä välilehti uuteen ikkunaan</translation>
 <translation id="7857004848504343806">Tietokoneesi sisältää suojausmoduulin, jonka avulla käytetään monia tärkeitä turvallisuusominaisuuksia ChromeOS Flexissä. Lisätietoja on Chromebook-ohjekeskuksessa: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Tekstiehdotukset</translation>
-<translation id="7857949311770343000">Onko tämä haluamasi Uusi välilehti -sivu?</translation>
 <translation id="7858120906780498731">ChromeOS:n yhdistetyt syöttölaitteet</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941">Poista laajennus <ph name="EXTENSION_NAME" /></translation>
@@ -8832,7 +8825,6 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="789722939441020330">Älä salli sivustojen ladata automaattisesti useita tiedostoja</translation>
 <translation id="7897900149154324287">Muista seuraavilla kerroilla poistaa ulkoinen laitteesi käytöstä Tiedostot-sovelluksessa ennen kuin irrotat sen laitteesta. Muutoin voit menettää tietoja.</translation>
 <translation id="7898725031477653577">Käännä aina</translation>
-<translation id="7899324822972399722">Kuva <ph name="INDEX" />/<ph name="A" />, tyyli: <ph name="B" /></translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Etsitkö selaimen osuuksia? Avaa</translation>
 <translation id="7903429136755645827">Yksilöi peliohjaimia klikkaamalla</translation>
@@ -9113,7 +9105,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8098616321286360457">Verkkoyhteys vaaditaan</translation>
 <translation id="8100230553590752325">Käytä tallennettuja salasanoja kaikilla laitteilla</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> valittu. Poista valinta painamalla Haku ja Välilyönti.</translation>
-<translation id="8100725874569949614">Kuva <ph name="INDEX" />/<ph name="A" />, tunnelma: <ph name="C" />.</translation>
 <translation id="8101409298456377967">Luo, tallenna ja ylläpidä salasanoja, jotta voit kirjautua helposti sivustoille ja sovelluksiin <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">Oma väri</translation>
 <translation id="8101987792947961127">Powerwash vaaditaan seuraavan uudelleenkäynnistyksen yhteydessä</translation>
@@ -10060,7 +10051,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8846163936679269230">Nollaa eSIM-profiilit</translation>
 <translation id="8846239054091760429">Monoääni, käynnistys, Livetekstitys ym.</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8848963863312877204">Löydät lataukset täältä</translation>
 <translation id="8849001918648564819">Piilotettu</translation>
 <translation id="8849219423513870962">Peru eSIM-profiilin poistaminen: <ph name="PROFILE_NAME" /></translation>
 <translation id="8849262417389398097"><ph name="CHECKED" />/<ph name="CHECKING" /></translation>

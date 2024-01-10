@@ -201,6 +201,9 @@ Dane zostały zaszyfrowane Twoim hasłem. Podaj hasło, aby korzystać z danych
 
 Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie jest wysyłane do Google ani tam przechowywane. Jeśli zapomnisz hasło lub zechcesz zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swoim koncie<ph name="END_LINK" />.</translation>
 <translation id="6851982868877411675">Otwórz Ustawienia Chrome na urządzeniu z iOS, kliknij „Domyślna przeglądarka” i wybierz Chrome.</translation>
+<translation id="686691656039982452">Możesz <ph name="BEGIN_LINK" />określić, jakie dane Chrome mają być zapisywane<ph name="END_LINK" /> na koncie Google.
+
+W <ph name="BEGIN_LINK" />usługach Google<ph name="END_LINK" /> znajdziesz więcej ustawień, które wykorzystują dane do ulepszania działania Chrome.</translation>
 <translation id="687586529977635009">Chrome wykryje numery śledzenia w odwiedzanych przez Ciebie witrynach i wyświetli aktualne informacje o przesyłkach na stronie Nowa karta. Aby ta funkcja mogła działać, Twoje dane będą udostępniane Google. Pozwoli to też na ulepszanie Zakupów Google. Możesz to zmienić w <ph name="BEGIN_LINK" />ustawieniach śledzenia przesyłek<ph name="END_LINK" />.</translation>
 <translation id="6916015246697034114">Wyszukaj głosowo w Chrome</translation>
 <translation id="6964931465519938134">Teraz możesz używać Chrome za każdym razem, gdy klikniesz link w wiadomościach, dokumentach i w innych aplikacjach.</translation>

@@ -24,7 +24,6 @@
 <translation id="1173916544412572294">Сүлжээ: <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, дохионы хүч <ph name="SIGNAL_STRENGTH" />%, утасны батарей <ph name="BATTERY_STATUS" />%, дэлгэрэнгүй мэдээлэл</translation>
 <translation id="117624967391683467"><ph name="FILE_NAME" />-ийг хуулж байна...</translation>
 <translation id="1178581264944972037">Түр зогсоох</translation>
-<translation id="1190144681599273207">Энэ файлыг татаж авахад таны гар утасны ойролцоогоор <ph name="FILE_SIZE" /> дата шаардлагатай.</translation>
 <translation id="1194390763418645112"><ph name="RESTRICTED_DESTINATIONS" />-н файлын хандалт</translation>
 <translation id="1201402288615127009">Дараагийнх</translation>
 <translation id="1209796539517632982">Автомат нэрийн серверүүд</translation>
@@ -100,7 +99,6 @@
 <translation id="1761091787730831947"><ph name="VM_NAME" />-тай хуваалцах</translation>
 <translation id="1773212559869067373">Баталгаажуулалтын гэрчилгээг түтгэлзүүлсэн байна</translation>
 <translation id="1775381402323441512">Видеоны мэдээлэл</translation>
-<translation id="180035236176489073">Та эдгээр файлуудад хандахын тулд онлайн байх ёстой.</translation>
 <translation id="1807938677607439181">Бүх файлууд</translation>
 <translation id="1810764548349082891">Урьдчилан харах боломжгүй</translation>
 <translation id="1812302367230252929">Амхар галиг</translation>
@@ -135,6 +133,7 @@
 <translation id="2084809735218147718">Баярлалаа гэж дохионы хэлээр хэлж байна</translation>
 <translation id="2088690981887365033">VPN сүлжээ</translation>
 <translation id="209653272837065803">Файлуудыг үргэлжлүүлэн синк хийхэд хангалттай хадгалах сангийн зай байхгүй байна</translation>
+<translation id="2099143626019777139">Таны зочилдог вебсайтууд администраторт тань харагдана. Та харагдаж буй вебсайтуудын жагсаалтыг харах боломжтой.</translation>
 <translation id="2111134541987263231"><ph name="BEGIN_BOLD" />Нууцлалтай горимд зөвшөөрөхийг<ph name="END_BOLD" /> асаана уу</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> зүйлийг устгах бөгөөд та тэдгээрийг сэргээх боломжгүй болно.</translation>
 <translation id="2122305276694332719">Нуусан сүлжээнд автоматаар холбогдсоноор бусдад таны төхөөрөмж болон зарим сүлжээний тохиргоог харахыг зөвшөөрөх бөгөөд үүнийг зөвлөдөггүй.</translation>
@@ -161,8 +160,6 @@
 <translation id="2282155092769082568">Автоматаар тохируулах URL:</translation>
 <translation id="2284767815536050991">салгах боломжтой хадгалах сан</translation>
 <translation id="2288278176040912387">Бичлэг тоглуулагч</translation>
-<translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> файлыг нээж байна.</translation>
-<translation id="2303301624314357662"><ph name="FILE_NAME" /> файлыг нээж байна.</translation>
 <translation id="2304820083631266885">Гараг</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" />-г салгалаа.</translation>
 <translation id="2307462900900812319">Сүлжээг тохируулах</translation>
@@ -172,7 +169,6 @@
 <translation id="233822363739146957">Таны бүх файлыг синк хийхэд хангалттай хадгалах сангийн зай байхгүй байна</translation>
 <translation id="23721837607121582">Мобайл профайл татах, <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" /> сүлжээ, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Жагсаалтаар харах горим руу сэлгэх</translation>
-<translation id="2377590462528165447">Linux-тэй <ph name="NUMBER_OF_ITEMS" /> фолдер хуваалцсан байна</translation>
 <translation id="2379576081295865700">Хадгалах сангийн зайг шалгаж байна… 1 зүйл олдлоо</translation>
 <translation id="2383454254762599978">Хогийн сав руу зөөх</translation>
 <translation id="2387458720915042159">Прокси холболтын төрөл</translation>
@@ -396,12 +392,10 @@
 <translation id="4197674956721858839">Зип сонголт</translation>
 <translation id="4202378258276439759">Испани (Латин Америк)</translation>
 <translation id="4202977638116331303">Гүрж</translation>
-<translation id="421017592316736757">Та энэ файлд хандахын тулд онлайн байх шаардлагатай.</translation>
 <translation id="4212740939091998969">"<ph name="FOLDER_NAME" />" нэртэй фолдер аль хэдийн байна. Өөр нэр сонгоно уу.</translation>
 <translation id="4218274196133425560"><ph name="HOST_NAME" />-д зориулж дүрмээс гажих онцгой тохиолдлыг хасах</translation>
 <translation id="4261901459838235729">Google танилцуулга</translation>
 <translation id="4277536868133419688"><ph name="FILTER_NAME" /> шүүлтүүр асаалттай байна.</translation>
-<translation id="4290535918735525311">Linux-тай хуваалцсан 1 фолдер</translation>
 <translation id="4299729908419173967">Бразил хэл</translation>
 <translation id="4302605047395093221">Энэ төхөөрөмжийг ашиглаж буй дурын хүн энэ мобайл сүлжээнд холбогдохын тулд ПИН оруулах шаардлагатай болно</translation>
 <translation id="4303531889494116116">Энэ сүлжээ завгүй байна. Дараа дахин оролдоно уу.</translation>
@@ -502,8 +496,6 @@
 <translation id="4906580650526544301">Сүлжээ <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, дохионы хүч <ph name="SIGNAL_STRENGTH" />%, утасны батарей <ph name="BATTERY_STATUS" />, дэлгэрэнгүй мэдээлэл</translation>
 <translation id="4935975195727477204">Gazania Flower</translation>
 <translation id="4943368462779413526">Хөл бөмбөг</translation>
-<translation id="4961158930123534723">1 фолдерыг Parallels Desktop-тай хуваалцсан</translation>
-<translation id="4965874878399872778">Файлуудыг танай байгууллагын аюулгүй байдлын бодлогуудад нийцүүлэн шалгаж байна...</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" />-г сэргээсэн</translation>
 <translation id="4969785127455456148">Цомог</translation>
 <translation id="4972330214479971536">Файлын синкийг тохируулж дуусгаж чадсангүй</translation>
@@ -563,7 +555,6 @@
 <translation id="5317780077021120954">Хадгалах</translation>
 <translation id="5318819489018851358">Linux-р хуваалцах</translation>
 <translation id="5323213332664049067">Латин Америк</translation>
-<translation id="5330145655348521461">Эдгээр файлууд өөр компьютер дээр нээгдсэн байна. Нээхийн тулд <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) рүү шилжүүл.</translation>
 <translation id="5330512191124428349">Мэдээлэл авах</translation>
 <translation id="535792325654997756">Мууртай хүн</translation>
 <translation id="5358764674931277">Фреймийн хурд</translation>
@@ -665,7 +656,6 @@
 <translation id="613750717151263950">АНУ-ын гартай япон</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, сүлжээ алга байна</translation>
 <translation id="6146563240635539929">Видео</translation>
-<translation id="6150853954427645995">Энэ файлыг интернетэд холбогдоогүй байхдаа ашиглахаар хадгалахын тулд интернетэд холбогдсоныхоо дараагаар холбогдох файл дээр очин хулганын баруун талд даран <ph name="OFFLINE_CHECKBOX_NAME" /> сонголтыг сонгоно уу.</translation>
 <translation id="6164412158936057769">Эрвээхий</translation>
 <translation id="6165508094623778733">Нэмэлт мэдээлэл авах</translation>
 <translation id="6170470584681422115">Сэндвич</translation>
@@ -698,7 +688,6 @@
 <translation id="636254897931573416">Домэйн дагаврын тохирлын утга буруу байна</translation>
 <translation id="6364301859968397756">Байгууллагын хадгалах сан дүүрсэн</translation>
 <translation id="6367976544441405720">Битүү ачааны машин</translation>
-<translation id="637062427944097960">Энэ файл нь өөр десктоп дээр нээгдсэн байна. Үүнийг харахын тулд <ph name="USER_NAME" /> ( <ph name="MAIL_ADDRESS" /> ) руу шилжинэ үү.</translation>
 <translation id="6394388407447716302">Зєвхєн унших</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> зүйл</translation>
 <translation id="6407769893376380348"><ph name="FILE_NAME" />-г шифрлэсэн тул үүнийг зөөж чадсангүй.</translation>
@@ -707,7 +696,6 @@
 <translation id="6430271654280079150">Танд 1 оролдлого үлдсэн байна.</translation>
 <translation id="643243556292470964">Устгасан файлуудыг одоо хогийн сав руу зөөсөн</translation>
 <translation id="6438480100790416671">Хадгалах сангийн зайг шалгаж байна…</translation>
-<translation id="6451527188465304418">Файлыг танай байгууллагын аюулгүй байдлын бодлогуудад нийцүүлэн шалгаж байна...</translation>
 <translation id="6485131920355264772">Сансрын мэдээллийг сэргээн татаж авч чадсангүй</translation>
 <translation id="6495925982925244349">Сүлжээ: <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, дохионы хүч <ph name="SIGNAL_STRENGTH" />%, таны администратор удирддаг, дэлгэрэнгүй мэдээлэл</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" />-г <ph name="FOLDER_NAME" /> руу татаж авах</translation>
@@ -722,7 +710,6 @@
 <translation id="6588648400954570689">Файл синк хийх тохиргоо</translation>
 <translation id="6594855146910089723">Энэ фолдерыг Linux болон Parallels Desktop-тай хуваалцсан байна</translation>
 <translation id="6607272825297743757">Файлын мэдээлэл</translation>
-<translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> фолдерыг Parallels Desktop-тай хуваалцсан</translation>
 <translation id="6629518321609546825">Дор хаяж 4 тоо оруулна уу</translation>
 <translation id="6643016212128521049">Цэвэрлэх</translation>
 <translation id="6650726141019353908">Ягаан эрвээхий</translation>
@@ -889,7 +876,6 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> ТБ</translation>
 <translation id="7831491651892296503">Сүлжээг тохируулахад алдаа гарлаа</translation>
-<translation id="7839804798877833423">Эдгээр файлуудыг татаж авчрахад гар утасны өгөгдлийн ойролцоогоор <ph name="FILE_SIZE" />-ийг ашиглах болно.</translation>
 <translation id="7846076177841592234">Сонголтыг цуцлах</translation>
 <translation id="7853966320808728790">Франц хэлний BÉPO</translation>
 <translation id="7857117644404132472">Онцгой тохиолдол нэмэх</translation>
@@ -931,13 +917,13 @@
 <translation id="813913629614996137">Эхлүүлж байна…</translation>
 <translation id="8147028810663464959">Тэмдэгтүүдийн өргөн бүтэн байна</translation>
 <translation id="8151638057146502721">Тохируулах</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 алдаа.}other{# алдаа.}}</translation>
 <translation id="8154842056504218462">Бүх оролтыг сонгосон.</translation>
 <translation id="8157684860301034423">Аппын мэдээллийг сэргээж чадсангүй.</translation>
 <translation id="8175731104491895765">Франц (Бельги)</translation>
 <translation id="8175799081768705361"><ph name="NUMBER_OF_FILES_SYNCING" /> Драйвын файлыг синк хийж байна</translation>
 <translation id="8179976553408161302">Нэвтрэх</translation>
 <translation id="8193175696669055101">Төхөөрөмжийн загвар:</translation>
-<translation id="8223479393428528563">Эдгээр файлыг интернетэд холбогдоогүй байхдаа ашиглахаар хадгалахын тулд интернетэд холбогдсоныхоо дараагаар холбогдох файл дээр очин хулганын баруун талд даран <ph name="OFFLINE_CHECKBOX_NAME" /> сонголтыг сонгоно уу.</translation>
 <translation id="8241139360630443550">Санах ойг харах</translation>
 <translation id="8249296373107784235">Цуцлах</translation>
 <translation id="8250690786522693009">Латин цагаан толгойгоор</translation>
@@ -964,6 +950,7 @@
 <translation id="83651606385705612"><ph name="VM_NAME" />-д <ph name="FOLDER_NAME" /> фолдерын файлуудад хандах зөвшөөрөл өгнө үү</translation>
 <translation id="8372369524088641025">WEP сул түлхүүр байна</translation>
 <translation id="8372852072747894550">Грек</translation>
+<translation id="8377269993083688872">Имэйлийн бүдүүвч</translation>
 <translation id="8386903983509584791">Шалгаж дууслаа</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" />-г задалсан.</translation>
 <translation id="8395901698320285466">Хэмжээ</translation>
@@ -1022,6 +1009,7 @@
 <translation id="8787254343425541995">Нэгдсэн сүлжээнүүдэд проксиг зөвшөөрөх</translation>
 <translation id="8790981080411996443">Ургамал усалж буй хүн</translation>
 <translation id="8798099450830957504">Гэрээ үл биелүүлэх</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 сануулга.}other{# сануулга.}}</translation>
 <translation id="8808686172382650546">Муур</translation>
 <translation id="8810671769985673465">Zip болгож чадсангүй. Байгаа зүйлс: "$1" "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">Испани (Испани)</translation>

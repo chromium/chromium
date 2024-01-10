@@ -233,6 +233,7 @@
 <translation id="2318045970523081853">കോൾ ചെയ്യാൻ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="2321086116217818302">പാസ്‍വേഡുകൾ തയ്യാറാക്കുന്നു…</translation>
 <translation id="2323763861024343754">സൈറ്റ് സ്‌റ്റോറേജ്</translation>
+<translation id="2327226657832576859">PDF-കൾ സ്വയമേവ തുറക്കണോ?</translation>
 <translation id="2328985652426384049">സൈൻ ഇൻ ചെയ്യാനാകില്ല</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> ഇൻസ്‌റ്റാൾ ചെയ്യാനായില്ല.</translation>
 <translation id="2349710944427398404">അക്കൗണ്ടുകളും ബുക്ക്‌മാർക്കുകളും സംരക്ഷിച്ച ക്രമീകരണവും ഉൾപ്പെടെ Chrome ഉപയോഗിക്കുന്ന മൊത്തം വിവരങ്ങൾ</translation>
@@ -638,6 +639,7 @@
 <translation id="4523326818319942067">അവസാന മണിക്കൂർ</translation>
 <translation id="452750746583162491">നിങ്ങളുടെ സമന്വയിപ്പിച്ച ഡാറ്റ അവലോകനം ചെയ്യുക</translation>
 <translation id="4532845899244822526">ഫോൾഡർ തിരഞ്ഞെടുക്കുക</translation>
+<translation id="4541505619120536051">എപ്പോഴും തുറന്നിരിക്കുന്നു</translation>
 <translation id="4543131175509360848">പാസ്‌കീകളുടെ ഷീറ്റൊന്നുമില്ല</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ടാബ്}other{<ph name="TAB_COUNT_MANY" /> ടാബുകൾ, <ph name="TAB_COUNT_INCOGNITO" /> അദൃശ്യ മോഡ്}}</translation>
 <translation id="4554077758708533499">USB കേബിൾ ഉപയോഗിച്ച് കണക്റ്റ് ചെയ്തു</translation>
@@ -829,6 +831,7 @@
 <translation id="5486841595534124508">"എന്റെ ആക്റ്റിവിറ്റി" പേജിലേക്ക് റീഡയറക്റ്റ് ചെയ്യുന്ന, പേജ് ഉൾക്കാഴ്ചാ ഹബിനുള്ള സ്വകാര്യതാ അറിയിപ്പിന്റെ ലോഗോ.</translation>
 <translation id="5487521232677179737">ഡാറ്റ മായ്‌ക്കുക</translation>
 <translation id="5492637351392383067">ഉപകരണത്തിലെ എൻക്രിപ്ഷൻ</translation>
+<translation id="5509866835115085009">നിങ്ങൾ ഒരു PDF ഡൗൺലോഡ് ചെയ്യുമ്പോൾ Chrome-ന് അത് സ്വയമേവ തുറക്കാനാകും.</translation>
 <translation id="5514904542973294328">ഈ ഉപകരണത്തിന്റെ അഡ്‌മിൻ പ്രവർത്തനരഹിതമാക്കി</translation>
 <translation id="5515439363601853141">നിങ്ങളുടെ പാസ്‍വേഡ് കാണാൻ അൺലോക്ക് ചെയ്യുക</translation>
 <translation id="5517095782334947753">നിങ്ങൾക്ക് <ph name="FROM_ACCOUNT" /> എന്നയാളിൽ നിന്നുള്ള ബുക്ക്‌മാർക്കുകളും ചരിത്രവും പാസ്‌വേഡുകളും മറ്റ് ക്രമീകരണവുമുണ്ട്.</translation>

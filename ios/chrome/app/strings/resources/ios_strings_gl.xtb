@@ -56,7 +56,6 @@
 <translation id="1279024913354609713">Non permitir</translation>
 <translation id="1281818060020671000">Xestionar datos</translation>
 <translation id="1282311502488501110">Non iniciar sesión</translation>
-<translation id="1283039547216852943">Toca para despregar</translation>
 <translation id="1283524564873030414">Últimas 24 horas</translation>
 <translation id="1285320974508926690">Non traducir nunca este sitio</translation>
 <translation id="1291506870746876680">Os permisos de <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> volverán desactivarse cando saias deste sitio.</translation>
@@ -82,7 +81,6 @@
 <translation id="1377255359165588604">A sincronización deixou de funcionar.</translation>
 <translation id="1377321085342047638">Nº tarxeta</translation>
 <translation id="1377508275003315939">Contrasinais</translation>
-<translation id="1380914240355562929"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> agora pode utilizar o teu nome de usuario e contrasinal para iniciar sesión en <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> se usa o xestor de contrasinais de Google. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="138618066238211776">Continuar como <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">As últimas 4 semanas</translation>
@@ -406,7 +404,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3087734570205094154">Parte inferior</translation>
 <translation id="3090455602619185166">Iniciar sesión cunha conta xestionada</translation>
 <translation id="309710370695886264">Tes 1 contrasinal reutilizado. Cámbiao xa para non correr riscos.</translation>
-<translation id="3109724472072898302">Contraído</translation>
 <translation id="3112556859945124369">Marcar como...</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Consultar o que podes sincronizar<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">Historial e moito máis</translation>
@@ -775,7 +772,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="5121618895923301719">Xa estás facendo un seguimento deste produto. A páxina está gardada en <ph name="BEGIN_LINK" />Marcadores do móbil<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Tes varios problemas cos contrasinais.</translation>
 <translation id="5126465625664020024">Inicia sesión para ter todo sincronizado</translation>
-<translation id="5131062416352684089">Os membros da túa familia agora poden usar o teu nome de usuario e contrasinal para iniciar sesión en <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> se usan o xestor de contrasinais de Google. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">Sincroniza os teus contrasinais, o historial e moito máis en todos os dispositivos</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} contrasinal pouco seguro}other{{COUNT} contrasinais pouco seguros}}</translation>
 <translation id="5149188072385105201">Engadir contrasinal…</translation>
@@ -924,7 +920,6 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5955891643922670672">Visualizando a versión sen conexión</translation>
 <translation id="5957613098218939406">Máis opcións</translation>
 <translation id="595769230373966252">Buscar resultados con <ph name="SEARCH_PROVIDER" /></translation>
-<translation id="5962718611393537961">Toca para contraer</translation>
 <translation id="5963939892571022323">Non se puido crear unha ligazón ao texto destacado.</translation>
 <translation id="5971872012779224351">{count,plural, =1{Eliminouse 1 marcador}other{Elimináronse {count} marcadores}}</translation>
 <translation id="5979837087407522202">Buscar contrasinais</translation>

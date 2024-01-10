@@ -56,7 +56,6 @@
 <translation id="1279024913354609713">Tillad ikke</translation>
 <translation id="1281818060020671000">Administrer data</translation>
 <translation id="1282311502488501110">Log ikke ind</translation>
-<translation id="1283039547216852943">Tryk for at udvide</translation>
 <translation id="1283524564873030414">De seneste 24 timer</translation>
 <translation id="1285320974508926690">Oversæt aldrig dette website</translation>
 <translation id="1291506870746876680">Tilladelser for <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> nulstilles til deres deaktiverede tilstand, når du forlader dette website.</translation>
@@ -82,7 +81,6 @@
 <translation id="1377255359165588604">Synkroniseringen fungerer ikke.</translation>
 <translation id="1377321085342047638">Kortnummer</translation>
 <translation id="1377508275003315939">Adgangskoder</translation>
-<translation id="1380914240355562929"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> kan nu benytte dit brugernavn og din adgangskode, når vedkommende bruger Google Adgangskodeadministrator til at logge ind på <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">Søg</translation>
 <translation id="138618066238211776">Fortsæt som <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">Seneste fire uger</translation>
@@ -337,6 +335,7 @@ Din standardsøgemaskine er <ph name="DSE_NAME" />. I vejledningen til søgemask
 <translation id="2747003861858887689">Forrige felt</translation>
 <translation id="2749231692441336879">Følger <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Konti på denne enhed</translation>
+<translation id="2755595981383829244">Du modtager nu indholdsnotifikationer</translation>
 <translation id="2762000892062317888">lige nu</translation>
 <translation id="2772667768515195373">Du kan bruge gemte adresser i alle Google-produkter. Denne adresse er gemt på din Google-konto (<ph name="USER_EMAIL" />).</translation>
 <translation id="2773292004659987824">Søgning i inkognitotilstand</translation>
@@ -406,7 +405,6 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3087734570205094154">Bund</translation>
 <translation id="3090455602619185166">Log ind med Managerkonto</translation>
 <translation id="309710370695886264">Du har 1 genbrugt adgangskode. Løs problemet nu for at forblive beskyttet.</translation>
-<translation id="3109724472072898302">Skjult</translation>
 <translation id="3112556859945124369">Markér…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Se, hvad du kan synkronisere<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">Historik m.m.</translation>
@@ -691,6 +689,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="4689564913179979534">Administrer betalingsmetoder…</translation>
 <translation id="469300482518076788">Luk fane</translation>
 <translation id="4697071790493980729">Der blev ikke fundet nogen resultater</translation>
+<translation id="470337593714520080">{count,plural, =1{Gem 1 bogmærke på din Google-konto}one{Gem {count} bogmærke på din Google-konto}other{Gem {count} bogmærker på din Google-konto}}</translation>
 <translation id="470966556546083668">Aktivér ikke synkronisering</translation>
 <translation id="4711809265250406889">Når funktionen er aktiveret</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} og 1 mere}one{{website_1}, {website_2} og {more_count} mere}other{{website_1}, {website_2} og {more_count} mere}}</translation>
@@ -775,7 +774,6 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="5121618895923301719">Du holder allerede øje med dette produkt. Denne side er gemt i <ph name="BEGIN_LINK" />Bogmærker på mobil<ph name="END_LINK" /></translation>
 <translation id="512533434554095351">Du har adskillige problemer med dine adgangskoder.</translation>
 <translation id="5126465625664020024">Log ind og synkroniser</translation>
-<translation id="5131062416352684089">Dine familiemedlemmer kan nu benytte dit brugernavn og din adgangskode, når de bruger Google Adgangskodeadministrator til at logge ind på <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">Synkroniser dine adgangskoder, din historik og meget mere på alle enheder</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} svag adgangskode}one{{COUNT} svag adgangskode}other{{COUNT} svage adgangskoder}}</translation>
 <translation id="5149188072385105201">Tilføj adgangskode…</translation>
@@ -924,7 +922,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5955891643922670672">Viser offlineversion</translation>
 <translation id="5957613098218939406">Flere valgmuligheder</translation>
 <translation id="595769230373966252">Søg med <ph name="SEARCH_PROVIDER" /></translation>
-<translation id="5962718611393537961">Tryk for at skjule</translation>
 <translation id="5963939892571022323">Der kan ikke oprettes et link til fremhævningen.</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 bogmærke er slettet}one{{count} bogmærke er slettet}other{{count} bogmærker er slettet}}</translation>
 <translation id="5979837087407522202">Søg i adgangskoder</translation>
@@ -991,6 +988,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6255097610484507482">Rediger kreditkort</translation>
 <translation id="6266039999629596120">Kræver handling</translation>
 <translation id="6277426346321820595">Ingen beskyttelse</translation>
+<translation id="628251768213143684">Du kan til altid administrere, hvad der gemmes på din Google-konto</translation>
 <translation id="6284652193729350524">Tilbyd at oversætte fra <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Følger ikke længere <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Åbn <ph name="BEGIN_LINK" />Google-tjenester<ph name="END_LINK" />, og tryk på Beskyttet browsing for at aktivere Beskyttet browsing.</translation>

@@ -24,7 +24,6 @@
 <translation id="1173916544412572294">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, batterie du téléphone à <ph name="BATTERY_STATUS" /> %, détails</translation>
 <translation id="117624967391683467">Copie de <ph name="FILE_NAME" /> en cours…</translation>
 <translation id="1178581264944972037">Suspendre</translation>
-<translation id="1190144681599273207">L'opération de récupération de ce fichier consommera environ <ph name="FILE_SIZE" /> de données mobiles.</translation>
 <translation id="1194390763418645112">Accès au fichier pour <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">Suivant</translation>
 <translation id="1209796539517632982">Serveurs de noms automatiques</translation>
@@ -100,7 +99,6 @@
 <translation id="1761091787730831947">Partager avec <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">Certificat d'authentification rejeté en local.</translation>
 <translation id="1775381402323441512">Informations sur le fichier vidéo</translation>
-<translation id="180035236176489073">Pour accéder à ces fichiers, vous devez être connecté à Internet.</translation>
 <translation id="1807938677607439181">Tous les fichiers</translation>
 <translation id="1810764548349082891">Aucun aperçu disponible</translation>
 <translation id="1812302367230252929">Amharique (translittération)</translation>
@@ -135,6 +133,7 @@
 <translation id="2084809735218147718">Dit merci en langue des signes</translation>
 <translation id="2088690981887365033">Réseau VPN</translation>
 <translation id="209653272837065803">Espace de stockage insuffisant pour continuer la synchronisation des fichiers</translation>
+<translation id="2099143626019777139">Les sites Web que vous consultez sont visibles par votre administrateur. Vous pouvez afficher la liste des sites Web visibles.</translation>
 <translation id="2111134541987263231">Activez l'option <ph name="BEGIN_BOLD" />Autoriser en navigation privée<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> éléments seront supprimés et vous ne pourrez pas les restaurer.</translation>
 <translation id="2122305276694332719">La connexion automatique à un réseau masqué permet à d'autres personnes de voir votre appareil, ainsi que certains paramètres du réseau, ce qui n'est pas recommandé.</translation>
@@ -161,8 +160,6 @@
 <translation id="2282155092769082568">URL de configuration automatique :</translation>
 <translation id="2284767815536050991">espace de stockage amovible</translation>
 <translation id="2288278176040912387">Tourne-disque</translation>
-<translation id="2291538123825441971">Ouverture de <ph name="NUMBER_OF_FILES" /> fichiers.</translation>
-<translation id="2303301624314357662">Ouverture du fichier <ph name="FILE_NAME" />.</translation>
 <translation id="2304820083631266885">Planète</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> a été éjecté.</translation>
 <translation id="2307462900900812319">Configurer le réseau</translation>
@@ -172,7 +169,6 @@
 <translation id="233822363739146957">Espace de stockage insuffisant pour synchroniser tous vos fichiers</translation>
 <translation id="23721837607121582">Téléchargez le profil mobile, Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Passer en mode Liste</translation>
-<translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> dossiers partagés avec Linux</translation>
 <translation id="2379576081295865700">Vérification de l'espace de stockage… 1 élément trouvé</translation>
 <translation id="2383454254762599978">Placer dans la corbeille</translation>
 <translation id="2387458720915042159">Type de connexion proxy</translation>
@@ -396,12 +392,10 @@
 <translation id="4197674956721858839">Compresser les fichiers sélectionnés au format .zip</translation>
 <translation id="4202378258276439759">Espagnol (Amérique latine)</translation>
 <translation id="4202977638116331303">Géorgien</translation>
-<translation id="421017592316736757">Pour accéder à ce fichier, vous devez être connecté à Internet.</translation>
 <translation id="4212740939091998969">Le nom "<ph name="FOLDER_NAME" />" est déjà attribué à un dossier. Veuillez en choisir un autre.</translation>
 <translation id="4218274196133425560">Supprimer l'exception pour <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">Présentation Google</translation>
 <translation id="4277536868133419688">Le filtre <ph name="FILTER_NAME" /> est activé.</translation>
-<translation id="4290535918735525311">1 dossier partagé avec Linux</translation>
 <translation id="4299729908419173967">brésilien</translation>
 <translation id="4302605047395093221">Toute personne qui utilise cet appareil devra saisir le code PIN pour se connecter à ce réseau mobile</translation>
 <translation id="4303531889494116116">Ce réseau n'est pas disponible. Réessayez plus tard.</translation>
@@ -502,8 +496,6 @@
 <translation id="4906580650526544301">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, batterie du téléphone à <ph name="BATTERY_STATUS" /> %, détails</translation>
 <translation id="4935975195727477204">Fleur de gazania</translation>
 <translation id="4943368462779413526">Football américain</translation>
-<translation id="4961158930123534723">1 dossier partagé avec Parallels Desktop</translation>
-<translation id="4965874878399872778">Vérification des fichiers par rapport aux règles de sécurité de votre organisation...</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> a été restauré</translation>
 <translation id="4969785127455456148">Album</translation>
 <translation id="4972330214479971536">Impossible de terminer la configuration de la synchronisation des fichiers</translation>
@@ -565,7 +557,6 @@
 <translation id="5317780077021120954">Enregistrer</translation>
 <translation id="5318819489018851358">Partager avec Linux</translation>
 <translation id="5323213332664049067">Espagnol d'Amérique latine</translation>
-<translation id="5330145655348521461">Ces fichiers sont ouverts sur un autre bureau. Utilisez le compte de <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) pour les afficher.</translation>
 <translation id="5330512191124428349">Lire les informations</translation>
 <translation id="535792325654997756">Personne avec des chats</translation>
 <translation id="5358764674931277">Fréquence d'images</translation>
@@ -667,7 +658,6 @@
 <translation id="613750717151263950">Japonais avec clavier américain</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, aucun réseau disponible</translation>
 <translation id="6146563240635539929">Vidéos</translation>
-<translation id="6150853954427645995">Pour enregistrer ce fichier en vue d'une utilisation hors connexion, cliquez sur celui-ci avec le bouton droit de la souris, puis sélectionnez l'option <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Papillons</translation>
 <translation id="6165508094623778733">En savoir plus</translation>
 <translation id="6170470584681422115">Sandwich</translation>
@@ -700,7 +690,6 @@
 <translation id="636254897931573416">Valeur non valide pour la correspondance du suffixe de domaine</translation>
 <translation id="6364301859968397756">Espace de stockage de l'organisation saturé</translation>
 <translation id="6367976544441405720">Van</translation>
-<translation id="637062427944097960">Ce fichier est ouvert sur un autre bureau. Utilisez le compte de <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) pour l'afficher.</translation>
 <translation id="6394388407447716302">Lecture seule</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> éléments</translation>
 <translation id="6407769893376380348">Impossible de déplacer <ph name="FILE_NAME" />, car ce fichier est chiffré.</translation>
@@ -709,7 +698,6 @@
 <translation id="6430271654280079150">Il vous reste 1 tentative.</translation>
 <translation id="643243556292470964">Les fichiers supprimés sont maintenant placés dans la corbeille</translation>
 <translation id="6438480100790416671">Vérification de l'espace de stockage…</translation>
-<translation id="6451527188465304418">Vérification du fichier par rapport aux règles de sécurité de votre organisation...</translation>
 <translation id="6485131920355264772">Échec de la récupération des informations sur l'espace disponible</translation>
 <translation id="6495925982925244349">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, géré par votre administrateur, détails</translation>
 <translation id="649877868557234318">Extraction de <ph name="FILE_NAME" /> vers <ph name="FOLDER_NAME" /></translation>
@@ -724,7 +712,6 @@
 <translation id="6588648400954570689">Paramètres de synchronisation des fichiers</translation>
 <translation id="6594855146910089723">Ce dossier est partagé avec Linux et Parallels Desktop</translation>
 <translation id="6607272825297743757">Informations sur le fichier</translation>
-<translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> dossiers partagés avec Parallels Desktop</translation>
 <translation id="6629518321609546825">Saisissez au moins 4 chiffres</translation>
 <translation id="6643016212128521049">Effacer</translation>
 <translation id="6650726141019353908">Papillon rose</translation>
@@ -891,7 +878,6 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> To</translation>
 <translation id="7831491651892296503">Erreur lors de la configuration du réseau</translation>
-<translation id="7839804798877833423">L'opération de récupération de ces fichiers consommera environ <ph name="FILE_SIZE" /> de données mobiles.</translation>
 <translation id="7846076177841592234">Annuler la sélection</translation>
 <translation id="7853966320808728790">BÉPO français</translation>
 <translation id="7857117644404132472">Ajouter une exception</translation>
@@ -939,7 +925,6 @@
 <translation id="8175799081768705361">Synchronisation de <ph name="NUMBER_OF_FILES_SYNCING" /> fichiers Drive…</translation>
 <translation id="8179976553408161302">Entrée</translation>
 <translation id="8193175696669055101">Modèle de l'appareil</translation>
-<translation id="8223479393428528563">Pour enregistrer ces fichiers en vue d'une utilisation hors connexion, reconnectez-vous, cliquez sur les fichiers à l'aide du bouton droit de la souris, puis sélectionnez l'option <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8241139360630443550">Afficher l'espace de stockage</translation>
 <translation id="8249296373107784235">Annuler</translation>
 <translation id="8250690786522693009">Latin</translation>
@@ -966,6 +951,7 @@
 <translation id="83651606385705612">Autoriser <ph name="VM_NAME" /> à accéder aux fichiers du dossier <ph name="FOLDER_NAME" /></translation>
 <translation id="8372369524088641025">Clé WEP incorrecte</translation>
 <translation id="8372852072747894550">Grec</translation>
+<translation id="8377269993083688872">Mises en page d'e-mail</translation>
 <translation id="8386903983509584791">Recherche terminée</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> extrait.</translation>
 <translation id="8395901698320285466">Dimensions</translation>

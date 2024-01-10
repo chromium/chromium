@@ -56,7 +56,6 @@
 <translation id="1279024913354609713">عدم السماح</translation>
 <translation id="1281818060020671000">إدارة البيانات</translation>
 <translation id="1282311502488501110">عدم تسجيل الدخول</translation>
-<translation id="1283039547216852943">النقر للتوسيع</translation>
 <translation id="1283524564873030414">آخر 24 ساعة</translation>
 <translation id="1285320974508926690">عدم ترجمة هذا الموقع مطلقًا</translation>
 <translation id="1291506870746876680">بعد مغادرة الموقع الإلكتروني <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" />، ستتم إعادة ضبط أذوناته على وضع الإيقاف.</translation>
@@ -82,7 +81,6 @@
 <translation id="1377255359165588604">توقفت المزامنة.</translation>
 <translation id="1377321085342047638">رقم البطاقة</translation>
 <translation id="1377508275003315939">كلمات المرور</translation>
-<translation id="1380914240355562929">‏بإمكان "<ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" />" الآن استخدام اسم المستخدم وكلمة المرور الخاصَّين بك عند استخدام "مدير كلمات المرور في Google" لتسجيل الدخول إلى <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">البحث</translation>
 <translation id="138618066238211776">المتابعة بحساب "<ph name="USER_NAME" />"</translation>
 <translation id="1400642268715879018">الأسابيع الأربعة الأخيرة</translation>
@@ -339,6 +337,7 @@
 <translation id="2747003861858887689">الحقل السابق</translation>
 <translation id="2749231692441336879">تتم متابعة <ph name="CHANNEL_NAME" /> حاليًا.</translation>
 <translation id="2754492786623500387">الحسابات على هذا الجهاز</translation>
+<translation id="2755595981383829244">ستصلك الآن إشعارات عن المحتوى</translation>
 <translation id="2762000892062317888">الآن</translation>
 <translation id="2772667768515195373">‏يمكنك استخدام العناوين المحفوظة مع جميع منتجات Google. تم حفظ هذا العنوان في حسابك على Google، <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">البحث في وضع التصفُّح المتخفي</translation>
@@ -408,7 +407,6 @@
 <translation id="3087734570205094154">أسفل</translation>
 <translation id="3090455602619185166">تسجيل الدخول باستخدام حساب مُدار</translation>
 <translation id="309710370695886264">لديك كلمة مرور واحدة مستخدَمة لحساب آخر. عليك تغييرها الآن للحفاظ على أمانك.</translation>
-<translation id="3109724472072898302">مصغّر</translation>
 <translation id="3112556859945124369">وضع علامة...</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />التعرُّف على أنواع البيانات التي يمكنك مزامنتها<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">السجلّ وغير ذلك</translation>
@@ -777,7 +775,6 @@
 <translation id="5121618895923301719">يتم تتبُّع هذا المنتج حاليًا. تم حفظ هذه الصفحة في قائمة <ph name="BEGIN_LINK" />الإشارات المرجعية على الجوّال<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">لديك عدة مشاكل متعلقة بكلمات المرور.</translation>
 <translation id="5126465625664020024">تسجيل الدخول والمزامنة</translation>
-<translation id="5131062416352684089">‏يمكن لأفراد عائلتك الآن استخدام اسم المستخدم وكلمة المرور الخاصَّين بك عند استخدام "مدير كلمات المرور في Google" لتسجيل الدخول إلى <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">يمكنك مزامنة كلمات المرور والسجلّ وغير ذلك على جميع الأجهزة.</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{كلمة مرور واحدة ضعيفة ({COUNT})}zero{‫{COUNT} كلمة مرور ضعيفة}two{كلِمتا مرور ضعيفتان ({COUNT})}few{‫{COUNT} كلمات مرور ضعيفة}many{‫{COUNT} كلمة مرور ضعيفة}other{‫{COUNT} كلمة مرور ضعيفة}}</translation>
 <translation id="5149188072385105201">إضافة كلمة مرور…</translation>
@@ -926,7 +923,6 @@
 <translation id="5955891643922670672">عرض النسخة بلا إنترنت</translation>
 <translation id="5957613098218939406">خيارات إضافية</translation>
 <translation id="595769230373966252">البحث باستخدام "<ph name="SEARCH_PROVIDER" />"</translation>
-<translation id="5962718611393537961">النقر للتصغير</translation>
 <translation id="5963939892571022323">يتعذَّر إنشاء رابط يؤدي إلى النصوص التي تم تمييزها.</translation>
 <translation id="5971872012779224351">{count,plural, =1{تم حذف إشارة مرجعية واحدة.}zero{تم حذف {count} إشارة مرجعية.}two{تم حذف إشارتَين مرجعيتَين ({count}).}few{تم حذف {count} إشارات مرجعية.}many{تم حذف {count} إشارة مرجعية.}other{تم حذف {count} إشارة مرجعية.}}</translation>
 <translation id="5979837087407522202">البحث عن كلمات المرور</translation>
@@ -993,6 +989,7 @@
 <translation id="6255097610484507482">تعديل بطاقة الائتمان</translation>
 <translation id="6266039999629596120">يستدعي الانتباه</translation>
 <translation id="6277426346321820595">بلا حماية</translation>
+<translation id="628251768213143684">‏يمكنك في أي وقت إدارة البيانات التي يتم حفظها في حسابك على Google.</translation>
 <translation id="6284652193729350524">اقتراح ترجمة <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">تم إلغاء متابعة <ph name="CHANNEL_NAME" />.</translation>
 <translation id="6293101329759844770">‏لتفعيل "التصفّح الآمن"، افتح <ph name="BEGIN_LINK" />خدمات Google<ph name="END_LINK" /> وانقر على "التصفّح الآمن".</translation>

@@ -24,7 +24,6 @@
 <translation id="1173916544412572294">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, %<ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, %<ph name="BATTERY_STATUS" /> Telefon Pili, Ayrıntılar</translation>
 <translation id="117624967391683467"><ph name="FILE_NAME" /> kopyalanıyor...</translation>
 <translation id="1178581264944972037">Duraklat</translation>
-<translation id="1190144681599273207">Bu dosyayı getirmek için yaklaşık olarak <ph name="FILE_SIZE" /> mobil veri kullanılacak.</translation>
 <translation id="1194390763418645112"><ph name="RESTRICTED_DESTINATIONS" /> tarafından dosya erişimi</translation>
 <translation id="1201402288615127009">İleri</translation>
 <translation id="1209796539517632982">Otomatik ad sunucuları</translation>
@@ -100,7 +99,6 @@
 <translation id="1761091787730831947"><ph name="VM_NAME" /> ile paylaşın</translation>
 <translation id="1773212559869067373">Kimlik doğrulama sertifikası yerel olarak reddedildi</translation>
 <translation id="1775381402323441512">Video bilgileri</translation>
-<translation id="180035236176489073">Bu dosyalara erişebilmek için çevrimiçi olmalısınız.</translation>
 <translation id="1807938677607439181">Tüm dosyalar</translation>
 <translation id="1810764548349082891">Önizleme yok</translation>
 <translation id="1812302367230252929">Amharca Harf Çevirisi</translation>
@@ -161,8 +159,6 @@
 <translation id="2282155092769082568">Otomatik yapılandırma URL'si:</translation>
 <translation id="2284767815536050991">çıkarılabilir depolama alanı</translation>
 <translation id="2288278176040912387">Plak çalar</translation>
-<translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> dosya açılıyor.</translation>
-<translation id="2303301624314357662"><ph name="FILE_NAME" /> dosyası açılıyor.</translation>
 <translation id="2304820083631266885">Gezegen</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> çıkarıldı.</translation>
 <translation id="2307462900900812319">Ağı yapılandır</translation>
@@ -172,7 +168,6 @@
 <translation id="233822363739146957">Tüm dosyalarınızı senkronize etmek için yeterli depolama alanı yok</translation>
 <translation id="23721837607121582">Mobil profili indir, <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /> ağı</translation>
 <translation id="2377319039870049694">Liste görünümüne geç</translation>
-<translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> klasör Linux ile paylaşıldı</translation>
 <translation id="2379576081295865700">Depolama alanı kontrol ediliyor… 1 öğe bulundu</translation>
 <translation id="2383454254762599978">Çöp kutusuna taşı</translation>
 <translation id="2387458720915042159">Proxy bağlantısı türü</translation>
@@ -396,12 +391,10 @@
 <translation id="4197674956721858839">Zip seçimi</translation>
 <translation id="4202378258276439759">İspanyolca (Latin Amerika)</translation>
 <translation id="4202977638116331303">Gürcüce</translation>
-<translation id="421017592316736757">Bu dosyaya erişebilmek için çevrimiçi olmalısınız.</translation>
 <translation id="4212740939091998969">"<ph name="FOLDER_NAME" />" adlı klasör zaten var. Lütfen farklı bir ad seçin.</translation>
 <translation id="4218274196133425560"><ph name="HOST_NAME" /> için istisnayı kaldır</translation>
 <translation id="4261901459838235729">Google sunusu</translation>
 <translation id="4277536868133419688"><ph name="FILTER_NAME" /> filtresi açık.</translation>
-<translation id="4290535918735525311">Linux ile 1 klasör paylaşılıyor</translation>
 <translation id="4299729908419173967">Brezilya Dili</translation>
 <translation id="4302605047395093221">Bu cihazı kullanan herkesin bu mobil ağa bağlanmak için PIN'i girmesi gerekir.</translation>
 <translation id="4303531889494116116">Bu ağ meşgul. Daha sonra tekrar deneyin.</translation>
@@ -502,8 +495,6 @@
 <translation id="4906580650526544301">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, %<ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, %<ph name="BATTERY_STATUS" /> Telefon Pili, Ayrıntılar</translation>
 <translation id="4935975195727477204">Gazania Çiçeği</translation>
 <translation id="4943368462779413526">Futbol</translation>
-<translation id="4961158930123534723">1 klasör Parallels Desktop ile paylaşıldı</translation>
-<translation id="4965874878399872778">Dosyaların, kuruluşunuzun güvenlik politikalarıyla uyumlu olup olmadığı kontrol ediliyor...</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> geri yüklendi</translation>
 <translation id="4969785127455456148">Albüm</translation>
 <translation id="4972330214479971536">Dosya senkronizasyonu kurulumu tamamlanamadı</translation>
@@ -565,7 +556,6 @@
 <translation id="5317780077021120954">Kaydet</translation>
 <translation id="5318819489018851358">Linux ile paylaş</translation>
 <translation id="5323213332664049067">Latin Amerika</translation>
-<translation id="5330145655348521461">Bu dosyalar farklı bir masaüstünde açıldı. Görüntülemek için <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) adlı kullanıcıya geçin.</translation>
 <translation id="5330512191124428349">Bilgi al</translation>
 <translation id="535792325654997756">Kediler ve insan</translation>
 <translation id="5358764674931277">Kare hızı</translation>
@@ -667,7 +657,6 @@
 <translation id="613750717151263950">Japonca (ABD klavye)</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, ağ yok</translation>
 <translation id="6146563240635539929">Videolar</translation>
-<translation id="6150853954427645995">Bu dosyayı çevrimdışı kullanım için kaydetmek üzere tekrar çevrimiçi olun, dosyayı sağ tıklayın ve <ph name="OFFLINE_CHECKBOX_NAME" /> seçeneğini belirleyin.</translation>
 <translation id="6164412158936057769">Kelebekler</translation>
 <translation id="6165508094623778733">Daha fazla bilgi</translation>
 <translation id="6170470584681422115">Sandviç</translation>
@@ -700,7 +689,6 @@
 <translation id="636254897931573416">Alan adı son eki eşleşme değeri geçersiz</translation>
 <translation id="6364301859968397756">Kuruluşun depolama alanı dolu</translation>
 <translation id="6367976544441405720">Kamyonet</translation>
-<translation id="637062427944097960">Bu dosya farklı bir masaüstünde açıldı. Görüntülemek için <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) adlı kullanıcıya gidin.</translation>
 <translation id="6394388407447716302">Salt okunur</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> öğe</translation>
 <translation id="6407769893376380348"><ph name="FILE_NAME" />, şifrelenmiş olduğu için taşınamadı.</translation>
@@ -709,7 +697,6 @@
 <translation id="6430271654280079150">1 deneme hakkınız kaldı.</translation>
 <translation id="643243556292470964">Silinen dosyalar artık çöp kutusuna taşınıyor</translation>
 <translation id="6438480100790416671">Depolama alanı kontrol ediliyor…</translation>
-<translation id="6451527188465304418">Dosyanın, kuruluşunuzun güvenlik politikalarıyla uyumlu olup olmadığı kontrol ediliyor...</translation>
 <translation id="6485131920355264772">Alan bilgileri alınamadı</translation>
 <translation id="6495925982925244349">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, %<ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, Yöneticiniz tarafından yönetiliyor, Ayrıntılar</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> dosyası <ph name="FOLDER_NAME" /> klasörüne çıkarılıyor</translation>
@@ -724,7 +711,6 @@
 <translation id="6588648400954570689">Dosya senkronizasyon ayarları</translation>
 <translation id="6594855146910089723">Bu klasör, Linux ve Parallels Desktop ile paylaşılıyor</translation>
 <translation id="6607272825297743757">Dosya bilgileri</translation>
-<translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> klasör Parallels Desktop ile paylaşıldı</translation>
 <translation id="6629518321609546825">En az 4 rakam girin</translation>
 <translation id="6643016212128521049">Temizle</translation>
 <translation id="6650726141019353908">Pembe kelebek</translation>
@@ -891,7 +877,6 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Ağ yapılandırılırken hata oluştu</translation>
-<translation id="7839804798877833423">Bu dosyaları getirmek için yaklaşık olarak <ph name="FILE_SIZE" /> mobil veri kullanılacak.</translation>
 <translation id="7846076177841592234">Seçimi iptal et</translation>
 <translation id="7853966320808728790">Fransızca BÉPO</translation>
 <translation id="7857117644404132472">İstisna ekle</translation>
@@ -939,7 +924,6 @@
 <translation id="8175799081768705361"><ph name="NUMBER_OF_FILES_SYNCING" /> Drive dosyası senkronize ediliyor</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Cihaz modeli</translation>
-<translation id="8223479393428528563">Bu dosyaları çevrimdışı kullanım için kaydetmek üzere tekrar çevrimiçi olun, dosyaları sağ tıklayın ve <ph name="OFFLINE_CHECKBOX_NAME" /> seçeneğini belirleyin.</translation>
 <translation id="8241139360630443550">Depolama ayarlarını görüntüle</translation>
 <translation id="8249296373107784235">İptal Et</translation>
 <translation id="8250690786522693009">Latince</translation>

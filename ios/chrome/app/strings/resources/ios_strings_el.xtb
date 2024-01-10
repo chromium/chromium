@@ -56,7 +56,6 @@
 <translation id="1279024913354609713">Δεν επιτρέπεται</translation>
 <translation id="1281818060020671000">Διαχείριση δεδομένων</translation>
 <translation id="1282311502488501110">Να μην γίνει σύνδεση</translation>
-<translation id="1283039547216852943">Πατήστε για ανάπτυξη</translation>
 <translation id="1283524564873030414">Τελευταίες 24 ώρες</translation>
 <translation id="1285320974508926690">Να μην γίνεται ποτέ μετάφραση αυτού του ιστότοπου</translation>
 <translation id="1291506870746876680">Οι άδειες για τον ιστότοπο <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> θα απενεργοποιηθούν μόλις αποχωρήσετε από τον ιστότοπο.</translation>
@@ -82,7 +81,6 @@
 <translation id="1377255359165588604">Ο συγχρονισμός σταμάτησε να λειτουργεί.</translation>
 <translation id="1377321085342047638">Αρ.κάρτας</translation>
 <translation id="1377508275003315939">Κωδικοί πρόσβασης</translation>
-<translation id="1380914240355562929">Ο χρήστης <ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> μπορεί πλέον να χρησιμοποιήσει το δικό σας όνομα χρήστη και κωδικό πρόσβασής όταν χρησιμοποιεί τον Διαχειριστή κωδικών πρόσβασης Google, για να συνδεθεί στον ιστότοπο <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">Αναζήτηση</translation>
 <translation id="138618066238211776">Συνέχεια ως <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">Τελευταίες 4 εβδομάδες</translation>
@@ -337,6 +335,7 @@
 <translation id="2747003861858887689">Προηγούμενο πεδίο</translation>
 <translation id="2749231692441336879">Παρακολουθείτε το κανάλι <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Λογαριασμοί σε αυτήν τη συσκευή</translation>
+<translation id="2755595981383829244">Στο εξής θα λαμβάνετε ειδοποιήσεις περιεχομένου</translation>
 <translation id="2762000892062317888">μόλις τώρα</translation>
 <translation id="2772667768515195373">Μπορείτε να χρησιμοποιήσετε τις αποθηκευμένες διευθύνσεις σε όλα τα προϊόντα Google. Αυτή η διεύθυνση έχει αποθηκευτεί στον Λογαριασμό σας Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Ανώνυμη αναζήτηση</translation>
@@ -406,7 +405,6 @@
 <translation id="3087734570205094154">Κάτω</translation>
 <translation id="3090455602619185166">Σύνδεση με διαχειριζόμενο λογαριασμό</translation>
 <translation id="309710370695886264">Έχετε 1 επαναχρησιμοποιημένο κωδικό πρόσβασης. Επιδιορθώστε τον τώρα για να παραμείνετε ασφαλείς.</translation>
-<translation id="3109724472072898302">Συμπτυγμένο</translation>
 <translation id="3112556859945124369">Επισήμανση…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Δείτε τι μπορείτε να συγχρονίσετε<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">Ιστορικό και άλλα</translation>
@@ -775,7 +773,6 @@
 <translation id="5121618895923301719">Παρακολουθείτε ήδη αυτό το προϊόν. Αυτή η σελίδα έχει αποθηκευτεί στους <ph name="BEGIN_LINK" />Σελιδοδείκτες κινητής συσκευής<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Έχετε αρκετά προβλήματα με τους κωδικούς πρόσβασης.</translation>
 <translation id="5126465625664020024">Σύνδεση και συγχρονισμός</translation>
-<translation id="5131062416352684089">Τα μέλη της οικογένειάς σας μπορούν πλέον να χρησιμοποιήσουν το δικό σας όνομα χρήστη και κωδικό πρόσβασής όταν χρησιμοποιούν τον Διαχειριστή κωδικών πρόσβασης Google, για να συνδεθούν στον ιστότοπο <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">Συγχρονίστε κωδικούς πρόσβασης, ιστορικό και πολλά άλλα σε όλες τις συσκευές</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} ασθενής κωδικός πρόσβασης}other{{COUNT} ασθενείς κωδικοί πρόσβασης}}</translation>
 <translation id="5149188072385105201">Προσθήκη κωδικού πρόσβασης…</translation>
@@ -924,7 +921,6 @@
 <translation id="5955891643922670672">Προβολή έκδοσης εκτός σύνδεσης</translation>
 <translation id="5957613098218939406">Περισσότερες επιλογές</translation>
 <translation id="595769230373966252">Αναζήτηση με <ph name="SEARCH_PROVIDER" /></translation>
-<translation id="5962718611393537961">Πατήστε για σύμπτυξη</translation>
 <translation id="5963939892571022323">Δεν είναι δυνατή η δημιουργία συνδέσμου προς την επισήμανση.</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 σελιδοδείκτης διαγράφηκε}other{{count} σελιδοδείκτες διαγράφηκαν}}</translation>
 <translation id="5979837087407522202">Αναζήτηση κωδικών πρόσβασης</translation>

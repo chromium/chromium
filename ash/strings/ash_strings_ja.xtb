@@ -1505,6 +1505,7 @@
 <translation id="7025533177575372252">スマートフォンを使って <ph name="DEVICE_NAME" /> を接続する</translation>
 <translation id="7026338066939101231">減らす</translation>
 <translation id="7029814467594812963">セッションを終了</translation>
+<translation id="7031303610220416229">Google ToDo リストですべてのタスクを表示</translation>
 <translation id="7032161822340700104">使用できるテンプレートは 6 つまでです。新しいテンプレートを保存するには、既存のテンプレートを削除してください。</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" /> が <ph name="DEVICE_NAME" /> の使用をリクエストしています。デバイスの <ph name="DEVICE_NAME" /> 本体のスイッチをオンにしてください。</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />、Google アシスタント</translation>
@@ -1818,6 +1819,7 @@
 <translation id="8351131234907093545">メモを作成</translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> を使用中です。</translation>
 <translation id="8369166482916924789">保存したデスク、<ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
+<translation id="8370414029565771236"><ph name="TEXT" /> を検索</translation>
 <translation id="8371779926711439835">1 字進む</translation>
 <translation id="8371991222807690464">ゲストモードでは、周辺機器のパフォーマンスが制限される場合があります</translation>
 <translation id="8374601332003098278">画面の一部を録画するには Enter キーを押してください</translation>

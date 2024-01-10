@@ -56,7 +56,6 @@
 <translation id="1279024913354609713">Ruxsat berilmasin</translation>
 <translation id="1281818060020671000">Maʼlumotlarni boshqarish</translation>
 <translation id="1282311502488501110">Kirilmasin</translation>
-<translation id="1283039547216852943">Bosib yoyish</translation>
 <translation id="1283524564873030414">Oxirgi 24 soat</translation>
 <translation id="1285320974508926690">Bu sayt hech qachon tarjima qilinmasin</translation>
 <translation id="1291506870746876680">Bu sayt yopilganda <ph name="BEGIN_BOLD" />“<ph name="SITE_NAME" />”<ph name="END_BOLD" /> ruxsatlari asliga qaytariladi.</translation>
@@ -82,7 +81,6 @@
 <translation id="1377255359165588604">Sinxronlab bo‘lmadi.</translation>
 <translation id="1377321085342047638">Karta raqami</translation>
 <translation id="1377508275003315939">Parollar</translation>
-<translation id="1380914240355562929"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> saytiga kirishda Google Parollar menejeri orqali login va parolingizdan foydalanishi mumkin. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">Qidiruv</translation>
 <translation id="138618066238211776"><ph name="USER_NAME" /> hisobi bilan davom etish</translation>
 <translation id="1400642268715879018">Oxirgi 4 haftalik</translation>
@@ -337,6 +335,7 @@ Qidiruv tizimingiz: <ph name="DSE_NAME" />. Imkon boʻlsa, qidiruv tarixini qand
 <translation id="2747003861858887689">Avvalgi maydoncha</translation>
 <translation id="2749231692441336879"><ph name="CHANNEL_NAME" /> endi kuzatuvingizda</translation>
 <translation id="2754492786623500387">Bu qurilmadagi hisoblar</translation>
+<translation id="2755595981383829244">Endi kontentga oid bildirishnomalar olasiz</translation>
 <translation id="2762000892062317888">hozirgina</translation>
 <translation id="2772667768515195373">Saqlangan manzillardan Google xizmatlarida foydalanish mumkin. Bu manzil Google hisobingizga (<ph name="USER_EMAIL" />) saqlandi.</translation>
 <translation id="2773292004659987824">Inkognito qidiruv</translation>
@@ -406,7 +405,6 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="3087734570205094154">Pastga</translation>
 <translation id="3090455602619185166">Boshqariladigan hisobga kirish</translation>
 <translation id="309710370695886264">1 ta qayta ishlatilgan parol bor. Xavfsiz qolish uchun uni tuzating.</translation>
-<translation id="3109724472072898302">Yig‘ilgan</translation>
 <translation id="3112556859945124369">Belgilash…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Nimalarni sinxronlash mumkin<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">Tarix va boshqa</translation>
@@ -775,7 +773,6 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="5121618895923301719">Siz bu mahsulotni kuzatyapsiz. Bu sahifa <ph name="BEGIN_LINK" />Mobil bukmarklarga<ph name="END_LINK" /> saqlandi.</translation>
 <translation id="512533434554095351">Bir nechta parol bilan bogʻliq muammo bor.</translation>
 <translation id="5126465625664020024">Kiring va sinxronlang</translation>
-<translation id="5131062416352684089">Endi oilangiz aʼzolari <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> saytiga kirishda Google Parollar menejeri orqali login va parolingizdan foydalanishi mumkin. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">Parollar, tarix va boshqa sozlamalaringizni barcha qurilmalaringizda sinxronlang</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} ta kuchsiz parol aniqlandi}other{{COUNT} ta kuchsiz parol aniqlandi}}</translation>
 <translation id="5149188072385105201">Parol kiritish...</translation>
@@ -924,7 +921,6 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="5955891643922670672">Oflayn versiyasini ko‘ryapsiz</translation>
 <translation id="5957613098218939406">Boshqa parametrlar</translation>
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> bilan qidirish</translation>
-<translation id="5962718611393537961">Bosib yig‘ish</translation>
 <translation id="5963939892571022323">Belgilangan matnga havola yaratilmadi.</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 ta bukmark oʻchirildi}other{{count} ta bukmark oʻchirildi}}</translation>
 <translation id="5979837087407522202">Parollar ichidan qidirish</translation>

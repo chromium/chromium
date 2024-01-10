@@ -233,6 +233,7 @@
 <translation id="2318045970523081853">कॉल करण्यासाठी टॅप करा</translation>
 <translation id="2321086116217818302">पासवर्ड तयार करत आहे…</translation>
 <translation id="2323763861024343754">साइट स्टोरेज</translation>
+<translation id="2327226657832576859">PDFs आपोआप उघडायच्या आहेत का?</translation>
 <translation id="2328985652426384049">साइन इन करू शकत नाही</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> इंस्टॉल करता आले नाही.</translation>
 <translation id="2349710944427398404">खाती, बुकमार्क आणि सेव्ह केलेल्या सेटिंग्जसह, Chrome ने वापरलेला एकूण डेटा</translation>
@@ -638,6 +639,7 @@
 <translation id="4523326818319942067">मागील तासामधील</translation>
 <translation id="452750746583162491">तुमच्या सिंक केलेल्या डेटाचे पुनरावलोकन करा</translation>
 <translation id="4532845899244822526">फोल्डर निवडा</translation>
+<translation id="4541505619120536051">नेहमी उघडे</translation>
 <translation id="4543131175509360848">कोणतीही पासकी शीट नाही</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> टॅब}other{<ph name="TAB_COUNT_MANY" /> टॅब, <ph name="TAB_COUNT_INCOGNITO" /> गुप्त मोड}}</translation>
 <translation id="4554077758708533499">USB केबल वापरून कनेक्ट केला</translation>
@@ -829,6 +831,7 @@
 <translation id="5486841595534124508">माझी अ‍ॅक्टिव्हिटी पेजवर रीडिरेक्ट करणारा पेज इनसाइट हबसाठी गोपनीयता सूचनेचा लोगो.</translation>
 <translation id="5487521232677179737">डेटा साफ करा</translation>
 <translation id="5492637351392383067">डिव्हाइसवरील एंक्रिप्शन</translation>
+<translation id="5509866835115085009">तुम्ही PDF डाउनलोड केल्यानंतर Chrome त्या आपोआप उघडू शकते.</translation>
 <translation id="5514904542973294328">या डिव्हाइसच्या ॲडमिनिस्ट्रेटरने बंद केले आहे.</translation>
 <translation id="5515439363601853141">तुमचा पासवर्ड पाहण्यासाठी अनलॉक करा</translation>
 <translation id="5517095782334947753">आपल्याकडे <ph name="FROM_ACCOUNT" /> मधील बुकमार्क, इतिहास, पासवर्ड आणि अन्य सेटिंग्ज आहेत.</translation>

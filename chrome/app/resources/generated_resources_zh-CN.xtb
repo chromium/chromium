@@ -806,7 +806,6 @@
 <translation id="1615433306336820465">管理您的安全密钥上存储的登录数据</translation>
 <translation id="1616206807336925449">此扩展程序无需任何特殊权限。</translation>
 <translation id="1616298854599875024">无法导入扩展程序“<ph name="IMPORT_NAME" />”，因为它不是共享模块</translation>
-<translation id="161654560322394775"><ph name="A" />的第 <ph name="INDEX" /> 张图片，样式是<ph name="B" />，情感基调是<ph name="C" />。</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{正在检查此数据是否符合贵组织的安全政策…}=1{正在检查这个文件是否符合贵组织的安全政策…}other{正在检查这些文件是否符合贵组织的安全政策…}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">帮助中心(&amp;E)</translation>
@@ -4212,7 +4211,6 @@
 <translation id="4250229828105606438">屏幕截图</translation>
 <translation id="4250680216510889253">否</translation>
 <translation id="4251377547188244181">自助服务终端和数字标牌设备注册</translation>
-<translation id="4252141040239557279"><ph name="A" />的第 <ph name="INDEX" /> 张图片</translation>
 <translation id="4252828488489674554">右键点击标签页分组名称即可修改此分组，或点击该名称即可收起</translation>
 <translation id="4252899949534773101">已停用蓝牙</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - 已分享标签页内容</translation>
@@ -6542,7 +6540,6 @@
         <ph name="BREAK" />
         您可以从卡片菜单中管理设置，或者在“自定义 Chrome”中查看更多选项。</translation>
 <translation id="6121773125605585883">查看用户名“<ph name="USERNAME" />”在 <ph name="WEBSITE" /> 上的密码</translation>
-<translation id="6122081475643980456">您的互联网连接受到控制</translation>
 <translation id="6122093587541546701">电子邮件（可选）：</translation>
 <translation id="6122095009389448667">继续禁止此网站查看剪贴板</translation>
 <translation id="6122513630797178831">保存 CVC</translation>
@@ -7425,7 +7422,6 @@
 <translation id="6820079682647046800">Kerberos 身份验证失败</translation>
 <translation id="6821439254917412979">取消固定“<ph name="EXTENSION_NAME" />”</translation>
 <translation id="6823174134746916417">触控板点按即点击</translation>
-<translation id="6823429960180594870">管理下载期间的文件，并在下载完成后打开</translation>
 <translation id="6823561724060793716">在地址栏中，您可打开网页信息，查看当前所访问网页的更多信息</translation>
 <translation id="6824564591481349393">复制电子邮件地址(&amp;E)</translation>
 <translation id="6824584962142919697">检查元素(&amp;I)</translation>
@@ -7831,7 +7827,6 @@
 <translation id="714301620504747562">与标准预加载相比，浏览和搜索速度更快</translation>
 <translation id="7143207342074048698">正在连接</translation>
 <translation id="7143409552554575716">ChromeOS 相关 flag</translation>
-<translation id="714447804011008506">下载内容现在位于工具栏中</translation>
 <translation id="7144856456372460176">安装“<ph name="APP" />”(&amp;I)…</translation>
 <translation id="7144878232160441200">重试</translation>
 <translation id="7145413760160421938">无法恢复上一个会话</translation>
@@ -8482,7 +8477,6 @@
 <translation id="7657090467145778067">节省少量内存</translation>
 <translation id="7657218410916651670">当您登录后，系统可能会将<ph name="BEGIN_LINK_GOOGLE" />其他形式的活动记录<ph name="END_LINK_GOOGLE" />保存在您的 Google 账号中。您可以随时删除这些记录。</translation>
 <translation id="7658239707568436148">取消</translation>
-<translation id="7658727964021657194">近期搜索的 AI 主题 <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">仍要退出无痕模式？</translation>
 <translation id="7659336857671800422">查看隐私保护指南</translation>
 <translation id="7659584679870740384">您无权使用此设备。请向管理员申请登录权限。</translation>
@@ -8764,7 +8758,6 @@
 <translation id="7855678561139483478">将标签页移至新窗口</translation>
 <translation id="7857004848504343806">您的计算机包含一个安全模块，该模块可用于在 ChromeOS Flex 中实现许多关键的安全功能。如需了解详情，请访问 Chromebook 帮助中心：https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">文字建议</translation>
-<translation id="7857949311770343000">这是您想要的新标签页吗？</translation>
 <translation id="7858120906780498731">ChromeOS 连接的输入设备</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941">移除“<ph name="EXTENSION_NAME" />”扩展程序</translation>
@@ -8813,7 +8806,6 @@
 <translation id="789722939441020330">不允许网站自动下载多个文件</translation>
 <translation id="7897900149154324287">日后在拔下您的可移动设备之前，请务必先使用“文件”菜单将其弹出。否则，您的数据可能会丢失。</translation>
 <translation id="7898725031477653577">一律翻译</translation>
-<translation id="7899324822972399722"><ph name="A" />的第 <ph name="INDEX" /> 张图片，样式是<ph name="B" /></translation>
 <translation id="7901405293566323524">手机中心</translation>
 <translation id="7903290522161827520">想要查看浏览器组件？请访问</translation>
 <translation id="7903429136755645827">点击即可自定义您的游戏控件</translation>
@@ -9094,7 +9086,6 @@
 <translation id="8098616321286360457">需要连接网络</translation>
 <translation id="8100230553590752325">在任意设备上使用保存的密码</translation>
 <translation id="810068641062493918">已选择“<ph name="LANGUAGE" />”。按搜索键 + 空格键即可取消选择。</translation>
-<translation id="8100725874569949614"><ph name="A" />的第 <ph name="INDEX" /> 张图片，情感基调是<ph name="C" />。</translation>
 <translation id="8101409298456377967">您可创建、保存和管理您的密码，以便轻松登录网站和应用。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">自定义颜色</translation>
 <translation id="8101987792947961127">必须在下次重启时执行 Powerwash</translation>
@@ -10041,7 +10032,6 @@
 <translation id="8846163936679269230">重置 eSIM 卡配置文件</translation>
 <translation id="8846239054091760429">单声道音频、启动、实时字幕等</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8848963863312877204">在此处查找您的下载内容</translation>
 <translation id="8849001918648564819">已隐藏</translation>
 <translation id="8849219423513870962">取消移除名为“<ph name="PROFILE_NAME" />”的 eSIM 卡配置文件</translation>
 <translation id="8849262417389398097"><ph name="CHECKED" /> 个（共 <ph name="CHECKING" /> 个）</translation>

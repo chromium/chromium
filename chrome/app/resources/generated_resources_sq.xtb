@@ -807,7 +807,6 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1615433306336820465">Menaxho të dhënat e identifikimit të ruajtura në çelësin tënd të sigurisë</translation>
 <translation id="1616206807336925449">Kjo shtesë nuk kërkon leje të veçanta.</translation>
 <translation id="1616298854599875024">Importimi i shtesës "<ph name="IMPORT_NAME" />" është i pamundur, sepse nuk është një modul i ndarë.</translation>
-<translation id="161654560322394775">Imazhi <ph name="INDEX" /> nga <ph name="A" />, në stilin "<ph name="B" />", me atmosferë "<ph name="C" />".</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Po kontrollon këto të dhëna me politikat e sigurisë së organizatës sate...}=1{Po kontrollon këtë skedar me politikat e sigurisë së organizatës sate...}other{Po kontrollon këta skedarë me politikat e sigurisë së organizatës sate...}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">Qendra e n&amp;dihmës</translation>
@@ -4217,7 +4216,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4250229828105606438">Pamje e ekranit</translation>
 <translation id="4250680216510889253">Jo</translation>
 <translation id="4251377547188244181">Regjistrimi i kioskës dhe pajisjes sinjalizuese</translation>
-<translation id="4252141040239557279">Imazhi <ph name="INDEX" /> nga <ph name="A" /></translation>
 <translation id="4252828488489674554">Kliko me butonin djathtas në emrin e grupit të skedave për ta modifikuar këtë grup ose klikoje për ta palosur</translation>
 <translation id="4252899949534773101">Bluetooth-i është çaktivizuar</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - përmbajtja e skedës është ndarë</translation>
@@ -6548,7 +6546,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
         <ph name="BREAK" />
         Mund t'i menaxhosh cilësimet nga menyja e kartave ose të shikosh opsione të tjera te "Personalizimi i Chrome".</translation>
 <translation id="6121773125605585883">Shiko fjalëkalimin me emrin e përdoruesit <ph name="USERNAME" /> për <ph name="WEBSITE" /></translation>
-<translation id="6122081475643980456">Lidhja jote e internetit po kontrollohet</translation>
 <translation id="6122093587541546701">Mail-i (opsional):</translation>
 <translation id="6122095009389448667">Vazhdo të bllokosh këtë sajt që të mos shikojë kujtesën e fragmenteve</translation>
 <translation id="6122513630797178831">Ruaj kodin CVC</translation>
@@ -7431,7 +7428,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6820079682647046800">Vërtetimi i Kerberos dështoi</translation>
 <translation id="6821439254917412979">Zhgozhdo <ph name="EXTENSION_NAME" /></translation>
 <translation id="6823174134746916417">"Trokit për të klikuar" në bllokun me prekje</translation>
-<translation id="6823429960180594870">Menaxho skedarët ndërkohë që shkarkohen dhe hapi ata kur të përfundojë shkarkimi</translation>
 <translation id="6823561724060793716">Nga shiriti i adresës, mund të hapësh informacionet e faqes për të parë informacione shtesë për faqen që po viziton</translation>
 <translation id="6824564591481349393">Kopjo adresën e &amp;mail-it</translation>
 <translation id="6824584962142919697">&amp;Inspekto elementet</translation>
@@ -7836,7 +7832,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="714301620504747562">Shfletimi dhe kërkimi është më i shpejtë se ngarkimi paraprak standard</translation>
 <translation id="7143207342074048698">Po lidhet</translation>
 <translation id="7143409552554575716">Flamurët e ChromeOS</translation>
-<translation id="714447804011008506">Shkarkimet tani janë te shiriti i veglave</translation>
 <translation id="7144856456372460176">&amp;Instalo <ph name="APP" />...</translation>
 <translation id="7144878232160441200">Provo sërish</translation>
 <translation id="7145413760160421938">Seanca e mëparshme nuk mund të vazhdohet</translation>
@@ -8487,7 +8482,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7657090467145778067">Kursime të vogla</translation>
 <translation id="7657218410916651670"><ph name="BEGIN_LINK_GOOGLE" />Forma të tjera aktiviteti<ph name="END_LINK_GOOGLE" /> mund të ruhen në "Llogarinë tënde të Google" kur je i identifikuar. Mund t'i fshish ato në çdo kohë.</translation>
 <translation id="7658239707568436148">Anulo</translation>
-<translation id="7658727964021657194">Tema e fundit me IA: <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">Të dilet gjithsesi nga modaliteti "i fshehtë"?</translation>
 <translation id="7659336857671800422">Shiko udhëzuesin e privatësisë</translation>
 <translation id="7659584679870740384">Nuk je i autorizuar ta përdorësh këtë pajisje. Kontakto me administratorin për të marrë leje për identifikim.</translation>
@@ -8768,7 +8762,6 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7855678561139483478">Lëvize skedën në dritare të re</translation>
 <translation id="7857004848504343806">Kompjuteri yt përmban një modul sigurie që përdoret për të zbatuar shumë funksione kritike të sigurisë në Chrome OS Flex. Vizito "Qendrën e ndihmës të Chromebook" për të mësuar më shumë: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Sugjerimet e tekstit</translation>
-<translation id="7857949311770343000">A është kjo faqja e skedës së re që po prisje?</translation>
 <translation id="7858120906780498731">Pajisjet e lidhura të hyrjes të ChromeOS</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941">Hiqe shtesën <ph name="EXTENSION_NAME" /></translation>
@@ -8817,7 +8810,6 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="789722939441020330">Mos lejo që sajtet të shkarkojnë automatikisht disa skedarë</translation>
 <translation id="7897900149154324287">Në të ardhmen, sigurohu që ta nxjerrësh pajisjen e lëvizshme në aplikacionin "Skedarët" para se ta heqësh. Në rast të kundërt, mund të humbasësh të dhëna.</translation>
 <translation id="7898725031477653577">Përkthe gjithmonë</translation>
-<translation id="7899324822972399722">Imazhi <ph name="INDEX" /> nga <ph name="A" />, në stilin "<ph name="B" />"</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Po kërkon për komponentët e shfletuesit? Vizito</translation>
 <translation id="7903429136755645827">Kliko për të personalizuar kontrollet e lojës</translation>
@@ -9097,7 +9089,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8098616321286360457">Nevojitet lidhje me rrjetin</translation>
 <translation id="8100230553590752325">Përdor fjalëkalimet e ruajtura në çdo pajisje</translation>
 <translation id="810068641062493918">U zgjodh <ph name="LANGUAGE" />. Shtyp "Kërko" plus "Hapësirë" për ta anuluar zgjedhjen.</translation>
-<translation id="8100725874569949614">Imazhi <ph name="INDEX" /> nga <ph name="A" />, me atmosferë "<ph name="C" />".</translation>
 <translation id="8101409298456377967">Krijo, ruaj dhe menaxho fjalëkalimet e tua që të mund të identifikohesh me lehtësi në sajte dhe aplikacione. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">Ngjyra e personalizuar</translation>
 <translation id="8101987792947961127">Kërkohet Powerwash me rindezjen e ardhshme</translation>
@@ -10044,7 +10035,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8846163936679269230">Rivendos profilet e kartës eSIM</translation>
 <translation id="8846239054091760429">Audioja mono, nisja, "Titrat në çast" etj.</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8848963863312877204">Gjej shkarkimet e tua këtu</translation>
 <translation id="8849001918648564819">E fshehur</translation>
 <translation id="8849219423513870962">Anulo heqjen e profilit të kartës eSIM me emrin <ph name="PROFILE_NAME" /></translation>
 <translation id="8849262417389398097"><ph name="CHECKED" /> nga <ph name="CHECKING" /></translation>

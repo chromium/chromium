@@ -24,7 +24,6 @@
 <translation id="1173916544412572294">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, bateria telefonului: <ph name="BATTERY_STATUS" /> %, detalii</translation>
 <translation id="117624967391683467">Se copiază <ph name="FILE_NAME" />...</translation>
 <translation id="1178581264944972037">Întrerupe</translation>
-<translation id="1190144681599273207">Preluarea acestui fișier va utiliza aproximativ <ph name="FILE_SIZE" /> din datele mobile.</translation>
 <translation id="1194390763418645112">accesul la fișiere pentru <ph name="RESTRICTED_DESTINATIONS" />.</translation>
 <translation id="1201402288615127009">Înainte</translation>
 <translation id="1209796539517632982">Servere de nume automate</translation>
@@ -100,7 +99,6 @@
 <translation id="1761091787730831947">Permite accesul pentru <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">Certificatul de autentificare a fost respins local</translation>
 <translation id="1775381402323441512">Informații despre fișierul video</translation>
-<translation id="180035236176489073">Trebuie să fiți online pentru a accesa aceste fișiere.</translation>
 <translation id="1807938677607439181">Toate fișierele</translation>
 <translation id="1810764548349082891">Nicio previzualizare disponibilă</translation>
 <translation id="1812302367230252929">Amharică, transliterație</translation>
@@ -135,6 +133,7 @@
 <translation id="2084809735218147718">Gesticulează „Mulțumesc” în limbajul semnelor</translation>
 <translation id="2088690981887365033">Rețea VPN</translation>
 <translation id="209653272837065803">Nu ai suficient spațiu de stocare pentru a continua sincronizarea fișierelor</translation>
+<translation id="2099143626019777139">Site-urile pe care le accesezi sunt vizibile pentru administrator. Poți să vezi lista de site-uri vizibile.</translation>
 <translation id="2111134541987263231">activează <ph name="BEGIN_BOLD" />Permite în modul incognito<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> articole vor fi șterse și nu vei putea să le restabilești.</translation>
 <translation id="2122305276694332719">Conectarea automată la o rețea ascunsă permite altora să îți vadă dispozitivul și unele setări pentru rețea, așadar nu este recomandată.</translation>
@@ -161,8 +160,6 @@
 <translation id="2282155092769082568">Adresa URL de autoconfigurare:</translation>
 <translation id="2284767815536050991">stocarea amovibilă</translation>
 <translation id="2288278176040912387">Picup</translation>
-<translation id="2291538123825441971">Se deschid <ph name="NUMBER_OF_FILES" /> fișiere.</translation>
-<translation id="2303301624314357662">Se deschide <ph name="FILE_NAME" />.</translation>
 <translation id="2304820083631266885">Planetă</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> a fost scos.</translation>
 <translation id="2307462900900812319">Configurați rețeaua</translation>
@@ -172,7 +169,6 @@
 <translation id="233822363739146957">Nu ai suficient spațiu de stocare pentru a sincroniza toate fișierele</translation>
 <translation id="23721837607121582">Descarcă profilul mobil, Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Comută la afișarea listă</translation>
-<translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> dosare cu acces permis pentru Linux</translation>
 <translation id="2379576081295865700">Se verifică spațiul de stocare… S-a găsit un element</translation>
 <translation id="2383454254762599978">Mută în coșul de gunoi</translation>
 <translation id="2387458720915042159">Tip de conexiune prin proxy</translation>
@@ -396,12 +392,10 @@
 <translation id="4197674956721858839">Arhivați fișierele selectate</translation>
 <translation id="4202378258276439759">Spaniolă (America Latină)</translation>
 <translation id="4202977638116331303">Georgiană</translation>
-<translation id="421017592316736757">Trebuie să fiți online pentru a accesa acest fișier.</translation>
 <translation id="4212740939091998969">Dosarul cu numele „<ph name="FOLDER_NAME" />” există deja. Alege un alt nume.</translation>
 <translation id="4218274196133425560">Elimină excepția pentru <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">Prezentare Google</translation>
 <translation id="4277536868133419688">Filtrul <ph name="FILTER_NAME" /> este activat.</translation>
-<translation id="4290535918735525311">Un dosar cu accesul permis pentru Linux</translation>
 <translation id="4299729908419173967">Braziliană</translation>
 <translation id="4302605047395093221">Oricine folosește dispozitivul va trebui să introducă PIN-ul pentru a se conecta la această rețea mobilă</translation>
 <translation id="4303531889494116116">Această rețea este ocupată. Încearcă din nou mai târziu.</translation>
@@ -502,8 +496,6 @@
 <translation id="4906580650526544301">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, bateria telefonului: <ph name="BATTERY_STATUS" /> %, detalii</translation>
 <translation id="4935975195727477204">Floare</translation>
 <translation id="4943368462779413526">Minge de fotbal</translation>
-<translation id="4961158930123534723">Un dosar cu acces permis pentru Parallels Desktop</translation>
-<translation id="4965874878399872778">Se verifică fișierele în conformitate cu politicile de securitate ale organizației...</translation>
 <translation id="496656650103537022">S-a restabilit <ph name="FILE_NAME" /></translation>
 <translation id="4969785127455456148">Album</translation>
 <translation id="4972330214479971536">Nu s-a putut finaliza configurarea sincronizării fișierelor</translation>
@@ -565,7 +557,6 @@
 <translation id="5317780077021120954">Salvează</translation>
 <translation id="5318819489018851358">Trimite cu Linux</translation>
 <translation id="5323213332664049067">America Latină</translation>
-<translation id="5330145655348521461">Aceste fișiere au fost deschise pe alt desktop. Pentru a le vedea, treceți la <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="5330512191124428349">Obține informații</translation>
 <translation id="535792325654997756">Persoană cu pisici</translation>
 <translation id="5358764674931277">Rata de cadre</translation>
@@ -667,7 +658,6 @@
 <translation id="613750717151263950">Japoneză cu tastatură S.U.A.</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, nicio rețea</translation>
 <translation id="6146563240635539929">Videoclipuri</translation>
-<translation id="6150853954427645995">Pentru a salva acest fișier pentru utilizare offline, revino online, dă clic dreapta pe fișier și selectează opțiunea <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Fluturi</translation>
 <translation id="6165508094623778733">Află mai multe</translation>
 <translation id="6170470584681422115">Sendviș</translation>
@@ -700,7 +690,6 @@
 <translation id="636254897931573416">Valoare nevalidă a potrivirii sufixului de domeniu</translation>
 <translation id="6364301859968397756">Spațiul de stocare al organizației este plin</translation>
 <translation id="6367976544441405720">Camionetă</translation>
-<translation id="637062427944097960">Acest fișier a fost deschis pe alt desktop. Pentru a-l vedea, treceți la <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="6394388407447716302">Numai în citire</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> elemente</translation>
 <translation id="6407769893376380348">Fișierul <ph name="FILE_NAME" /> nu a putut fi mutat deoarece este criptat.</translation>
@@ -709,7 +698,6 @@
 <translation id="6430271654280079150">Mai ai o încercare.</translation>
 <translation id="643243556292470964">Fișierele șterse au fost mutate în coșul de gunoi</translation>
 <translation id="6438480100790416671">Se verifică spațiul de stocare…</translation>
-<translation id="6451527188465304418">Se verifică fișierul în conformitate cu politicile de securitate ale organizației...</translation>
 <translation id="6485131920355264772">Nu s-au putut prelua informațiile despre spațiu</translation>
 <translation id="6495925982925244349">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, gestionată de administratorul tău, detalii</translation>
 <translation id="649877868557234318">Se extrage <ph name="FILE_NAME" /> în <ph name="FOLDER_NAME" /></translation>
@@ -724,7 +712,6 @@
 <translation id="6588648400954570689">Setări pentru sincronizarea fișierelor</translation>
 <translation id="6594855146910089723">Linux și Parallels Desktop au acces la acest dosar</translation>
 <translation id="6607272825297743757">Informațiile fișierului</translation>
-<translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> dosare cu acces permis pentru Parallels Desktop</translation>
 <translation id="6629518321609546825">Introdu minimum patru cifre</translation>
 <translation id="6643016212128521049">Șterge</translation>
 <translation id="6650726141019353908">Fluture roz</translation>
@@ -891,7 +878,6 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Eroare la configurarea rețelei</translation>
-<translation id="7839804798877833423">Preluarea acestor fișiere va utiliza aproximativ <ph name="FILE_SIZE" /> din datele mobile.</translation>
 <translation id="7846076177841592234">Anulează selecția</translation>
 <translation id="7853966320808728790">Franceză BÉPO</translation>
 <translation id="7857117644404132472">Adaugă o excepție</translation>
@@ -933,13 +919,13 @@
 <translation id="813913629614996137">Se inițializează...</translation>
 <translation id="8147028810663464959">Lățimea pentru caractere este completă</translation>
 <translation id="8151638057146502721">Configurați</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{O eroare.}few{# erori.}other{# de erori.}}</translation>
 <translation id="8154842056504218462">S-au selectat toate intrările.</translation>
 <translation id="8157684860301034423">Nu s-au putut prelua informațiile despre aplicație.</translation>
 <translation id="8175731104491895765">Franceză (Belgia)</translation>
 <translation id="8175799081768705361">Se sincronizează <ph name="NUMBER_OF_FILES_SYNCING" /> fișiere Drive</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Modelul dispozitivului</translation>
-<translation id="8223479393428528563">Pentru a salva aceste fișiere pentru utilizare offline, revino online, dă clic dreapta pe fișiere și selectează opțiunea <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8241139360630443550">Vezi spațiul de stocare</translation>
 <translation id="8249296373107784235">Abandonați</translation>
 <translation id="8250690786522693009">Latină</translation>
@@ -966,6 +952,7 @@
 <translation id="83651606385705612">Acordă permisiunea ca <ph name="VM_NAME" /> să acceseze fișiere din dosarul <ph name="FOLDER_NAME" /></translation>
 <translation id="8372369524088641025">Cheie WEP greșită</translation>
 <translation id="8372852072747894550">Greacă</translation>
+<translation id="8377269993083688872">Aspecte de e-mail</translation>
 <translation id="8386903983509584791">Scanarea s-a finalizat</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> a fost extras.</translation>
 <translation id="8395901698320285466">Dimensiuni</translation>
@@ -1024,6 +1011,7 @@
 <translation id="8787254343425541995">Permiteți proxy-uri pentru rețelele utilizate în comun</translation>
 <translation id="8790981080411996443">Persoană care udă plante</translation>
 <translation id="8798099450830957504">Prestabilit</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{Un avertisment.}few{# avertismente.}other{# de avertismente.}}</translation>
 <translation id="8808686172382650546">Pisică</translation>
 <translation id="8810671769985673465">Arhivarea nu a reușit, elementul există: „<ph name="FILE_NAME" />”</translation>
 <translation id="8813284582615685103">Spaniolă (Spania)</translation>

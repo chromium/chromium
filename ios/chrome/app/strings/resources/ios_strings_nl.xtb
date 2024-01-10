@@ -56,7 +56,6 @@
 <translation id="1279024913354609713">Niet toestaan</translation>
 <translation id="1281818060020671000">Gegevens beheren</translation>
 <translation id="1282311502488501110">Niet inloggen</translation>
-<translation id="1283039547216852943">Tik om uit te vouwen</translation>
 <translation id="1283524564873030414">Afgelopen 24 uur</translation>
 <translation id="1285320974508926690">Deze site nooit vertalen</translation>
 <translation id="1291506870746876680">De rechten voor <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> worden weer uitgezet als je deze site verlaat.</translation>
@@ -82,7 +81,6 @@
 <translation id="1377255359165588604">Synchronisatie werkt niet meer.</translation>
 <translation id="1377321085342047638">Kaartnummer</translation>
 <translation id="1377508275003315939">Wachtwoorden</translation>
-<translation id="1380914240355562929"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> kan nu je gebruikersnaam en wachtwoord gebruiken als die Google Wachtwoordmanager gebruikt om in te loggen bij <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">Zoeken</translation>
 <translation id="138618066238211776">Doorgaan als <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">Afgelopen 4 weken</translation>
@@ -407,7 +405,6 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3087734570205094154">Onderaan</translation>
 <translation id="3090455602619185166">Inloggen met een beheerd account</translation>
 <translation id="309710370695886264">Je hebt 1 hergebruikt wachtwoord. Los dit nu op om beveiligd te blijven.</translation>
-<translation id="3109724472072898302">Samengevouwen</translation>
 <translation id="3112556859945124369">Markeren…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Bekijken wat je kunt synchroniseren<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">Geschiedenis en meer</translation>
@@ -692,6 +689,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="4689564913179979534">Betaalmethoden beheren...</translation>
 <translation id="469300482518076788">Tabblad sluiten</translation>
 <translation id="4697071790493980729">Geen resultaten gevonden</translation>
+<translation id="470337593714520080">{count,plural, =1{1 bookmark opslaan in je Google-account}other{{count} bookmarks opslaan in je Google-account}}</translation>
 <translation id="470966556546083668">Synchronisatie niet aanzetten</translation>
 <translation id="4711809265250406889">Als dit aanstaat</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} en nog 1}other{{website_1}, {website_2} en nog {more_count}}}</translation>
@@ -776,7 +774,6 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="5121618895923301719">Je volgt dit product al. Deze pagina is opgeslagen in <ph name="BEGIN_LINK" />Mobiele bookmarks<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Je hebt verschillende wachtwoordproblemen.</translation>
 <translation id="5126465625664020024">Aanmelden en synchroniseren</translation>
-<translation id="5131062416352684089">Je gezinsleden kunnen nu je gebruikersnaam en wachtwoord gebruiken als ze Google Wachtwoordmanager gebruiken om in te loggen bij <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">Je wachtwoorden, geschiedenis en meer synchroniseren op al je apparaten</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} zwak wachtwoord}other{{COUNT} zwakke wachtwoorden}}</translation>
 <translation id="5149188072385105201">Wachtwoord toevoegen...</translation>
@@ -925,7 +922,6 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="5955891643922670672">Offline versie bekijken</translation>
 <translation id="5957613098218939406">Meer opties</translation>
 <translation id="595769230373966252">Zoeken met <ph name="SEARCH_PROVIDER" /></translation>
-<translation id="5962718611393537961">Tik om samen te vouwen</translation>
 <translation id="5963939892571022323">Er kan geen link naar de markering worden gemaakt.</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 bookmark verwijderd}other{{count} bookmarks verwijderd}}</translation>
 <translation id="5979837087407522202">Wachtwoorden zoeken</translation>
@@ -992,6 +988,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6255097610484507482">Creditcard bewerken</translation>
 <translation id="6266039999629596120">Vereist aandacht</translation>
 <translation id="6277426346321820595">Geen beveiliging</translation>
+<translation id="628251768213143684">Je kunt altijd bepalen wat wordt opgeslagen in je Google-account</translation>
 <translation id="6284652193729350524">Aanbieden om <ph name="LANGUAGE" /> te vertalen</translation>
 <translation id="6289501276895392862"><ph name="CHANNEL_NAME" /> is ontvolgd</translation>
 <translation id="6293101329759844770">Als je Safe Browsing wilt gebruiken, open je <ph name="BEGIN_LINK" />Google-services<ph name="END_LINK" /> en tik je op Safe Browsing.</translation>

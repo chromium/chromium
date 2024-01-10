@@ -56,7 +56,6 @@
 <translation id="1279024913354609713">Tiltás</translation>
 <translation id="1281818060020671000">Adatok kezelése</translation>
 <translation id="1282311502488501110">Bejelentkezés leállítása</translation>
-<translation id="1283039547216852943">Koppintson a kibontáshoz</translation>
 <translation id="1283524564873030414">Az elmúlt 24 órából</translation>
 <translation id="1285320974508926690">Ezt a webhelyet soha ne fordítsa le</translation>
 <translation id="1291506870746876680">A(z) <ph name="BEGIN_BOLD" />„<ph name="SITE_NAME" />”<ph name="END_BOLD" /> webhelyre vonatkozó engedélyeket a rendszer letiltott beállításra állítja vissza, amikor Ön elhagyja ezt a webhelyet.</translation>
@@ -82,7 +81,6 @@
 <translation id="1377255359165588604">A szinkronizálás leállt.</translation>
 <translation id="1377321085342047638">Kártyaszám</translation>
 <translation id="1377508275003315939">Jelszavak</translation>
-<translation id="1380914240355562929"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> mostantól használhatja az Ön felhasználónevét és jelszavát, amikor a Google Jelszókezelővel jelentkezik be a(z) <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> webhelyen. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="1383876407941801731">Keresés</translation>
 <translation id="138618066238211776">Folytatás mint <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">Elmúlt négy hét</translation>
@@ -406,7 +404,6 @@ A keresési előzmények törléséről a keresőmotorja útmutatójából táj�
 <translation id="3087734570205094154">Alja</translation>
 <translation id="3090455602619185166">Bejelentkezés felügyelt fiókkal</translation>
 <translation id="309710370695886264">1 újrafelhasznált jelszava van. A biztonság megőrzése érdekében javítsa ki most.</translation>
-<translation id="3109724472072898302">Összecsukott</translation>
 <translation id="3112556859945124369">Megjelölés…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Tekintse át, hogy mit szinkronizálhat<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">Előzmények és egyebek</translation>
@@ -775,7 +772,6 @@ A keresési előzmények törléséről a keresőmotorja útmutatójából táj�
 <translation id="5121618895923301719">Ön már nyomon követi ezt a terméket. A rendszer a <ph name="BEGIN_LINK" />Mobilos könyvjelzők<ph name="END_LINK" /> közé mentette az oldalt.</translation>
 <translation id="512533434554095351">Számos probléma merült fel a jelszavaival kapcsolatban.</translation>
 <translation id="5126465625664020024">Bejelentkezés és szinkronizálás</translation>
-<translation id="5131062416352684089">A családtagok mostantól használhatják az Ön felhasználónevét és jelszavát, amikor a Google Jelszókezelővel jelentkeznek be a(z) <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> oldalon. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="5132942445612118989">Jelszavak, előzmények és egyebek szinkronizálása valamennyi eszközén</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} gyenge jelszó}other{{COUNT} gyenge jelszó}}</translation>
 <translation id="5149188072385105201">Jelszó hozzáadása…</translation>
@@ -924,7 +920,6 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="5955891643922670672">Offline verzió</translation>
 <translation id="5957613098218939406">További lehetőségek</translation>
 <translation id="595769230373966252">Keresőmotor: <ph name="SEARCH_PROVIDER" /></translation>
-<translation id="5962718611393537961">Koppintson az összecsukáshoz</translation>
 <translation id="5963939892571022323">Nem lehet linket létrehozni a kiemelt szöveghez.</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 könyvjelző törölve}other{{count} könyvjelző törölve}}</translation>
 <translation id="5979837087407522202">Jelszavak keresése</translation>

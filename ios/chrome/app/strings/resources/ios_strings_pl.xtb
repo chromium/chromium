@@ -56,7 +56,6 @@
 <translation id="1279024913354609713">Nie zezwalaj</translation>
 <translation id="1281818060020671000">Zarządzaj danymi</translation>
 <translation id="1282311502488501110">Nie loguj się</translation>
-<translation id="1283039547216852943">Kliknij, by rozwinąć</translation>
 <translation id="1283524564873030414">Ostatnie 24 godziny</translation>
 <translation id="1285320974508926690">Nigdy nie tłumacz tej witryny</translation>
 <translation id="1291506870746876680">Gdy opuścisz tę stronę, uprawnienia witryny <ph name="BEGIN_BOLD" />„<ph name="SITE_NAME" />”<ph name="END_BOLD" /> zostaną wyłączone.</translation>
@@ -82,7 +81,6 @@
 <translation id="1377255359165588604">Synchronizacja przestała działać.</translation>
 <translation id="1377321085342047638">Numer karty</translation>
 <translation id="1377508275003315939">Hasła</translation>
-<translation id="1380914240355562929"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> może teraz korzystać z Twojej nazwy użytkownika i Twojego hasła podczas logowania się na stronie <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> za pomocą Menedżera haseł Google. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">Szukaj</translation>
 <translation id="138618066238211776">Nadal używaj konta użytkownika <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">Ostatnie cztery tygodnie</translation>
@@ -337,6 +335,7 @@ Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami,
 <translation id="2747003861858887689">Poprzednie pole</translation>
 <translation id="2749231692441336879">Obserwujesz: <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Konta na tym urządzeniu</translation>
+<translation id="2755595981383829244">Będziesz teraz otrzymywać powiadomienia o treściach</translation>
 <translation id="2762000892062317888">przed chwilą</translation>
 <translation id="2772667768515195373">Zapisanych adresów możesz używać w różnych usługach Google. Ten adres jest zapisany na Twoim koncie Google <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Wyszukiwanie incognito</translation>
@@ -406,7 +405,6 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3087734570205094154">Na dół</translation>
 <translation id="3090455602619185166">Zaloguj się na konto zarządzane</translation>
 <translation id="309710370695886264">Masz 1 ponownie użyte hasło. Dla bezpieczeństwa zmień je jak najszybciej.</translation>
-<translation id="3109724472072898302">Zwinięty</translation>
 <translation id="3112556859945124369">Oznacz…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Zobacz, co możesz synchronizować<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">Historia i inne elementy</translation>
@@ -691,6 +689,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4689564913179979534">Zarządzaj formami płatności…</translation>
 <translation id="469300482518076788">Zamknij kartę</translation>
 <translation id="4697071790493980729">Nie znaleziono wyników</translation>
+<translation id="470337593714520080">{count,plural, =1{Zapisz 1 zakładkę na swoim koncie Google}few{Zapisz {count} zakładki na swoim koncie Google}many{Zapisz {count} zakładek na swoim koncie Google}other{Zapisz {count} zakładki na swoim koncie Google}}</translation>
 <translation id="470966556546083668">Nie włączaj synchronizacji</translation>
 <translation id="4711809265250406889">Kiedy funkcja jest włączona</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} i jeszcze 1}few{{website_1}, {website_2} i jeszcze {more_count}}many{{website_1}, {website_2} i jeszcze {more_count}}other{{website_1}, {website_2} i jeszcze {more_count}}}</translation>
@@ -775,7 +774,6 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="5121618895923301719">Śledzisz już ten produkt. Ta strona jest zapisana w <ph name="BEGIN_LINK" />Zakładkach na komórce<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Występuje kilka problemów z hasłami.</translation>
 <translation id="5126465625664020024">Zaloguj się i zsynchronizuj</translation>
-<translation id="5131062416352684089">Członkowie grupy rodzinnej mogą teraz korzystać z Twojej nazwy użytkownika i Twojego hasła podczas logowania się na stronie <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> za pomocą Menedżera haseł Google. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">Synchronizuj swoje hasła, historię i inne dane na wszystkich swoich urządzeniach</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} słabe hasło}few{{COUNT} słabe hasła}many{{COUNT} słabych haseł}other{{COUNT} słabego hasła}}</translation>
 <translation id="5149188072385105201">Dodaj hasło…</translation>
@@ -924,7 +922,6 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5955891643922670672">Wyświetlam wersję offline</translation>
 <translation id="5957613098218939406">Więcej opcji</translation>
 <translation id="595769230373966252">Szukaj w <ph name="SEARCH_PROVIDER" /></translation>
-<translation id="5962718611393537961">Kliknij, by zwinąć</translation>
 <translation id="5963939892571022323">Nie udało się utworzyć linku do podświetlenia.</translation>
 <translation id="5971872012779224351">{count,plural, =1{Usunięto 1 zakładkę}few{Usunięto {count} zakładki}many{Usunięto {count} zakładek}other{Usunięto {count} zakładki}}</translation>
 <translation id="5979837087407522202">Szukaj haseł</translation>

@@ -24,7 +24,6 @@
 <translation id="1173916544412572294"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, সিগন্যাল: <ph name="SIGNAL_STRENGTH" />%, ফোনের ব্যাটারি <ph name="BATTERY_STATUS" />%, বিবরণ</translation>
 <translation id="117624967391683467"><ph name="FILE_NAME" /> অনুলিপি করা হচ্ছে...</translation>
 <translation id="1178581264944972037">বিরতি</translation>
-<translation id="1190144681599273207">এই ফাইল আনয়ন করতে আনুমানিক মোবাইল ডেটার <ph name="FILE_SIZE" /> ব্যবহার করবে৷</translation>
 <translation id="1194390763418645112"><ph name="RESTRICTED_DESTINATIONS" /> ফাইল অ্যাক্সেস করেছে</translation>
 <translation id="1201402288615127009">পরের</translation>
 <translation id="1209796539517632982">স্বয়ংক্রিয় নাম সার্ভার</translation>
@@ -100,7 +99,6 @@
 <translation id="1761091787730831947"><ph name="VM_NAME" /> দিয়ে শেয়ার করুন</translation>
 <translation id="1773212559869067373">স্থানীয়ভাবে যাচাইকরণ সার্টিফিকেট বাতিল করা হয়েছে</translation>
 <translation id="1775381402323441512">ভিডিওর তথ্য</translation>
-<translation id="180035236176489073">এই ফাইলগুলিতে অ্যাক্সেস পেতে আপনাকে অনলাইন হতে হবে৷</translation>
 <translation id="1807938677607439181">সবকটি ফাইল</translation>
 <translation id="1810764548349082891">কোনো প্রিভিউ উপলভ্য নেই</translation>
 <translation id="1812302367230252929">আমহারিক লিপ্যন্তর</translation>
@@ -161,8 +159,6 @@
 <translation id="2282155092769082568">স্বতঃকনফিগারেশান URL:</translation>
 <translation id="2284767815536050991">সরিয়ে দেওয়া যায় এমন স্টোরেজ</translation>
 <translation id="2288278176040912387">রেকর্ড প্লেয়ার</translation>
-<translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" />টি ফাইল খোলা হচ্ছে।</translation>
-<translation id="2303301624314357662"><ph name="FILE_NAME" /> খোলা হচ্ছে।</translation>
 <translation id="2304820083631266885">গ্রহ</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> সরিয়ে দেওয়া হয়েছে।</translation>
 <translation id="2307462900900812319">নেটওয়ার্ক কনফিগার করুন</translation>
@@ -172,7 +168,6 @@
 <translation id="233822363739146957">আপনার সব ফাইল সিঙ্ক করার জন্য পর্যাপ্ত স্টোরেজের জায়গা নেই</translation>
 <translation id="23721837607121582">মোবাইল প্রোফাইল ডাউনলোড করুন, <ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">তালিকা দৃশ্যে যান</translation>
-<translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" />টি ফোল্ডার Linux-এর সাথে শেয়ার করা হয়েছে</translation>
 <translation id="2379576081295865700">স্টোরেজের জায়গা চেক করা হচ্ছে… ১টি আইটেম খুঁজে পাওয়া গেছে</translation>
 <translation id="2383454254762599978">ট্র্যাশে সরান</translation>
 <translation id="2387458720915042159">প্রক্সি কানেকশনের ধরণ</translation>
@@ -396,12 +391,10 @@
 <translation id="4197674956721858839">জিপ নির্বাচন</translation>
 <translation id="4202378258276439759">স্প্যানিশ (লাতিন আমেরিকা)</translation>
 <translation id="4202977638116331303">জর্জিয়ান</translation>
-<translation id="421017592316736757">আপনার এই ফাইলটিতে অ্যাক্সেস পেতে অনলাইন হওয়া আবশ্যক৷</translation>
 <translation id="4212740939091998969">"<ph name="FOLDER_NAME" />" নামের ফোল্ডার আগে থেকেই আছে। অন্য একটি নাম লিখুন।</translation>
 <translation id="4218274196133425560"><ph name="HOST_NAME" />-এর জন্য ব্যতিক্রম সরানোর বোতাম</translation>
 <translation id="4261901459838235729">Google উপস্থাপনা</translation>
 <translation id="4277536868133419688"><ph name="FILTER_NAME" /> চালু আছে।</translation>
-<translation id="4290535918735525311">Linux ব্যবহার করে ১টি ফোল্ডার শেয়ার করা হয়েছে</translation>
 <translation id="4299729908419173967">ব্রাজিলীয়</translation>
 <translation id="4302605047395093221">যেকোনও কেউ এই ডিভাইস ব্যবহার করতে চাইলে, তাকে এই মোবাইল নেটওয়ার্কের সাথে কানেক্ট করতে পিন লিখতে হবে</translation>
 <translation id="4303531889494116116">এই নেটওয়ার্ক উপলভ্য নেই। পরে আবার চেষ্টা করুন।</translation>
@@ -502,8 +495,6 @@
 <translation id="4906580650526544301"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" /> সিগন্যাল ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, ফোনের ব্যাটারি <ph name="BATTERY_STATUS" />%, বিবরণ</translation>
 <translation id="4935975195727477204">গাজানিয়া ফুল</translation>
 <translation id="4943368462779413526">ফুটবল</translation>
-<translation id="4961158930123534723">১টি ফোল্ডার Parallels Desktop-এর সাথে শেয়ার করা হয়েছে</translation>
-<translation id="4965874878399872778">আপনার প্রতিষ্ঠানের নিরাপত্তা সংক্রান্ত নীতি অনুযায়ী ফাইলগুলি চেক করা হচ্ছে...</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> ফিরিয়ে আনা হয়েছে</translation>
 <translation id="4969785127455456148">অ্যালবাম</translation>
 <translation id="4972330214479971536">ফাইল সিঙ্ক করার প্রসেস সেট-আপ সম্পূর্ণ করা যায়নি</translation>
@@ -564,7 +555,6 @@
 <translation id="5317780077021120954">সেভ করুন</translation>
 <translation id="5318819489018851358">Linux-এর সাথে শেয়ার করুন</translation>
 <translation id="5323213332664049067">লাতিন আমেরিকান</translation>
-<translation id="5330145655348521461">এই ফাইলগুলি একটি আলাদা ডেস্কটপে খোলা রয়েছে৷ এটিকে দেখতে <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />)-এ সরান৷</translation>
 <translation id="5330512191124428349">তথ্য পান</translation>
 <translation id="535792325654997756">বিড়ালের সাথে ব্যক্তির ছবি</translation>
 <translation id="5358764674931277">ফ্রেম রেট</translation>
@@ -666,7 +656,6 @@
 <translation id="613750717151263950">জাপানি ভাষায় ইউএস কীবোর্ড</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, কোনও নেটওয়ার্ক নেই</translation>
 <translation id="6146563240635539929">ভিডিও</translation>
-<translation id="6150853954427645995">অফলাইনে ব্যবহারের জন্য এই ফাইলটি সেভ করুন, অনলাইন ফিরে পেতে, ফাইলের ডানদিকে ক্লিক করুন, এবং <ph name="OFFLINE_CHECKBOX_NAME" /> বিকল্প নির্বাচন করুন৷</translation>
 <translation id="6164412158936057769">প্রজাপতি</translation>
 <translation id="6165508094623778733">আরও জানুন</translation>
 <translation id="6170470584681422115">স্যান্ডউইচ</translation>
@@ -699,7 +688,6 @@
 <translation id="636254897931573416">ডোমেন সাফিক্সের সাথে মিল থাকা মানটি ভুল</translation>
 <translation id="6364301859968397756">সংস্থার স্টোরেজ ভর্তি হয়ে গেছে</translation>
 <translation id="6367976544441405720">ভ্যান</translation>
-<translation id="637062427944097960">এই ফাইলটি একটি আলাদা ডেস্কটপে খোলা রয়েছে৷ এটিকে দেখতে <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) এ সরান৷</translation>
 <translation id="6394388407447716302">রিড-ওনলি</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" />টি আইটেম</translation>
 <translation id="6407769893376380348"><ph name="FILE_NAME" /> সরানো যায়নি কারণ এটি এনক্রিপ্ট করা আছে।</translation>
@@ -708,7 +696,6 @@
 <translation id="6430271654280079150">আপনি আর ১ বার চেষ্টা করতে পারেন।</translation>
 <translation id="643243556292470964">মুছে ফেলা ফাইলগুলি এখন ট্র্যাশে সরানো হয়েছে</translation>
 <translation id="6438480100790416671">স্টোরেজের জায়গা চেক করা হচ্ছে…</translation>
-<translation id="6451527188465304418">আপনার প্রতিষ্ঠানের নিরাপত্তা সংক্রান্ত নীতি অনুযায়ী ফাইল চেক করা হচ্ছে...</translation>
 <translation id="6485131920355264772">স্থান তথ্য পুনরুদ্ধার করতে ব্যর্থ হয়েছে</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" /> সিগন্যাল: <ph name="SIGNAL_STRENGTH" />%, আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে, বিবরণ</translation>
 <translation id="649877868557234318"><ph name="FOLDER_NAME" />-এ <ph name="FILE_NAME" /> এক্সট্যাক্ট করা হচ্ছে</translation>
@@ -723,7 +710,6 @@
 <translation id="6588648400954570689">ফাইল সিঙ্ক করা সম্পর্কিত সেটিংস</translation>
 <translation id="6594855146910089723">এই ফোল্ডার Linux ও Parallels Desktop-এর সাথে শেয়ার করা হয়েছে</translation>
 <translation id="6607272825297743757">ফাইলের তথ্য</translation>
-<translation id="6609332149380188670">Parallels Desktop-এর সাথে <ph name="NUMBER_OF_ITEMS" /> ফোল্ডার শেয়ার করা হয়েছে</translation>
 <translation id="6629518321609546825">কমপক্ষে ৪টি সংখ্যা লিখুন</translation>
 <translation id="6643016212128521049">সাফ করুন</translation>
 <translation id="6650726141019353908">গোলাপি প্রজাপতি</translation>
@@ -890,7 +876,6 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> টিবি</translation>
 <translation id="7831491651892296503">নেটওয়ার্ক কনফিগার করার সময় ত্রুটি</translation>
-<translation id="7839804798877833423">এই ফাইলগুলি আনতে আনুমানিক মোবাইল ডেটা <ph name="FILE_SIZE" /> ব্যবহার হবে</translation>
 <translation id="7846076177841592234">নির্বাচন বাতিল করুন</translation>
 <translation id="7853966320808728790">ফরাসি BÉPO</translation>
 <translation id="7857117644404132472">ব্যতিক্রম যোগ করুন</translation>
@@ -938,7 +923,6 @@
 <translation id="8175799081768705361"><ph name="NUMBER_OF_FILES_SYNCING" />টি Drive ফাইল সিঙ্ক করা হচ্ছে</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">ডিভাইস মডেল</translation>
-<translation id="8223479393428528563">অফলাইনে ব্যবহারের জন্য এই ফাইলগুলি সেভ করতে অনলাইনে ফিরে আসুন, ফাইলগুলিতে ডান-ক্লিক করুন এবং <ph name="OFFLINE_CHECKBOX_NAME" /> বিকল্পটি নির্বাচন করুন৷</translation>
 <translation id="8241139360630443550">স্টোরেজ দেখুন</translation>
 <translation id="8249296373107784235">বাতিল</translation>
 <translation id="8250690786522693009">ল্যাটিন</translation>

@@ -807,7 +807,6 @@
 <translation id="1615433306336820465">तपाईंको सुरक्षा साँचोमा भण्डारण गरिएको साइन इन डेटा व्यवस्थापन गर्नुहोस्</translation>
 <translation id="1616206807336925449">यस विस्तारलाई  कुनै विशेष अनुमति आवश्यक पर्दैन।</translation>
 <translation id="1616298854599875024">विस्तार "<ph name="IMPORT_NAME" />" कुनै साझेदारी गरिएको मोड्युल नभएका कारण यसलाई आयात गर्न सकिएन</translation>
-<translation id="161654560322394775"><ph name="A" /> मध्ये <ph name="B" /> शैली र <ph name="C" /> मुड भएको <ph name="INDEX" /> औँ फोटो।</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{यो डेटा तपाईंको सङ्गठनका सुरक्षासम्बन्धी नीतिअनुकूल छ कि छैन भनी जाँच गर्दै...}=1{यो फाइल तपाईंको सङ्गठनका सुरक्षासम्बन्धी नीतिअनुकूल छ कि छैन भनी जाँच गर्दै...}other{यी फाइलहरू तपाईंको सङ्गठनका सुरक्षासम्बन्धी नीतिअनुकूल छन् कि छैनन् भनी जाँच गर्दै...}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">मद्द&amp;त केन्द्र</translation>
@@ -4216,7 +4215,6 @@
 <translation id="4250229828105606438">स्क्रिसट</translation>
 <translation id="4250680216510889253">होइन</translation>
 <translation id="4251377547188244181">किअस्क र साइनेज डिभाइस दर्ता गर्ने प्रक्रिया</translation>
-<translation id="4252141040239557279"><ph name="A" /> मध्ये <ph name="INDEX" /> औँ फोटो</translation>
 <translation id="4252828488489674554">यो समूह सम्पादन गर्न ट्याब समूहको नाममा राइट क्लिक गर्नुहोस् वा कोल्याप्स गर्न क्लिक गर्नुहोस्</translation>
 <translation id="4252899949534773101">ब्लुटुथ असक्षम पारिएको छ</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - ट्याबको सामग्री आदन-प्रदान गरिएको छ</translation>
@@ -6546,7 +6544,6 @@
         <ph name="BREAK" />
         तपाईं कार्ड मेनुमार्फत सेटिङ मिलाउन वा "Chrome कस्टमाइज गर्नुहोस्" मा गई थप विकल्पहरू हेर्न सक्नुहुन्छ।</translation>
 <translation id="6121773125605585883"><ph name="WEBSITE" /> मा <ph name="USERNAME" /> युजरनेमको पासवर्ड हेर्नुहोस्</translation>
-<translation id="6122081475643980456">तपाईंको इन्टरनेट जडान नियन्त्रणमा रहेको छ</translation>
 <translation id="6122093587541546701">इमेल (वैकल्पिक):</translation>
 <translation id="6122095009389448667">यो साइटलाई क्लिपबोर्ड हेर्न लगाइएको रोक जारी राख्नुहोस्‌</translation>
 <translation id="6122513630797178831">CVC सेभ गर्नुहोस्</translation>
@@ -7429,7 +7426,6 @@
 <translation id="6820079682647046800">Kerberos प्रमाणीकरण गर्न सकिएन</translation>
 <translation id="6821439254917412979"><ph name="EXTENSION_NAME" /> अनपिन गर्नुहोस्</translation>
 <translation id="6823174134746916417">टचप्याडको क्लिक गर्न ट्याप गर्नुहोस् नामक सुविधा</translation>
-<translation id="6823429960180594870">फाइलहरू डाउनलोड गर्दै गर्दा ती फाइल व्यवस्थापन गर्नुहोस् र फाइल डाउनलोड भइसकेपछि तिनलाई खोल्नुहोस्</translation>
 <translation id="6823561724060793716">तपाईं एड्रेस बारबाट पेजसम्बन्धी जानकारी खोलेर आफूले हेरिरहेको पेजसम्बन्धी थप जानकारी प्राप्त गर्न सक्नुहुन्छ</translation>
 <translation id="6824564591481349393">&amp;इमेल ठेगाना कपी गर्नुहोस्</translation>
 <translation id="6824584962142919697">तत्त्वहरूको निरीक्षण गर्नुहोस्</translation>
@@ -7834,7 +7830,6 @@
 <translation id="714301620504747562">ब्राउज गर्ने तथा खोज्ने प्रक्रिया प्रिलोड गर्ने डिफल्ट प्रक्रियाभन्दा छिटो पूरा हुन्छ</translation>
 <translation id="7143207342074048698">जडान गर्दै...</translation>
 <translation id="7143409552554575716">ChromeOS का फ्ल्यागहरू</translation>
-<translation id="714447804011008506">डाउनलोड गर्ने सुविधा अब टुलबारमा उपलब्ध छ</translation>
 <translation id="7144856456372460176"><ph name="APP" /> इन्स्टल गर्नुहोस्...</translation>
 <translation id="7144878232160441200">पुन: प्रयास गर्नुहोस्</translation>
 <translation id="7145413760160421938">यसअघिको सत्र सुचारु गर्न मिल्दैन</translation>
@@ -8485,7 +8480,6 @@
 <translation id="7657090467145778067">साना बचतहरू</translation>
 <translation id="7657218410916651670">तपाईंले आफ्नो Google खातामा साइन इन गर्नुभएका बेला सो खातामा <ph name="BEGIN_LINK_GOOGLE" />अन्य किसिमका क्रियाकलाप<ph name="END_LINK_GOOGLE" /> सेभ गरिन सक्छ। तपाईं जुनसुकै बेला तिनलाई मेटाउन सक्नुहुन्छ।</translation>
 <translation id="7658239707568436148">रद्द गर्नुहोस्</translation>
-<translation id="7658727964021657194">हालसालै AI प्रयोग गरी सिर्जना गरिएको थिम <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">जे भए पनि इन्कोग्निटो मोडबाट बाहिरिने हो?</translation>
 <translation id="7659336857671800422">गोपनीयतासम्बन्धी मार्गदर्शन प्राप्त गर्नुहोस्</translation>
 <translation id="7659584679870740384">तपाईंलाई यो डिभाइस प्रयोग गर्ने अधिकार छैन। कृपया साइन-इन अनुमतिको लागि प्रशासकलाई सम्पर्क गर्नुहोस्।</translation>
@@ -8767,7 +8761,6 @@
 <translation id="7855678561139483478">ट्याब नयाँ विन्डोमा सार्नुहोस्</translation>
 <translation id="7857004848504343806">तपाईंको कम्प्युटरमा सुरक्षित मोड्युल समावेश छ। ChromeOS Flex मा सुरक्षासम्बन्धी थुप्रै महत्त्वपूर्ण सुविधाहरू लागू गर्नका लागि उक्त मोड्युल प्रयोग गरिन्छ। तपाईं यसका सम्बन्धमा थप जान्न चाहनुहुन्छ भने Chromebook को मद्दत केन्द्रमा जानुहोस्: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">पाठसम्बन्धी सुझावहरू</translation>
-<translation id="7857949311770343000">के यो नै तपाईंले अपेक्षा गर्नुभएको नयाँ ट्याब पृष्ठ हो?</translation>
 <translation id="7858120906780498731">ChromeOS डिभाइसमा कनेक्ट गरिएका इनपुट डिभाइसहरू</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941"><ph name="EXTENSION_NAME" /> एक्स्टेन्सन हटाउनुहोस्</translation>
@@ -8816,7 +8809,6 @@
 <translation id="789722939441020330">साइटहरूलाई एकभन्दा बढी फाइल स्वतः डाउनलोड गर्ने अनुमति नदिइयोस्</translation>
 <translation id="7897900149154324287">भविष्यमा, तपाईंको हटाउन सकिने यन्त्रलाई अनप्लग गर्नुभन्दा अगाडि यसलाई फाइलहरू एपमा निश्चित रूपमा निकाल्नुहोस्।</translation>
 <translation id="7898725031477653577">सधैं अनुवाद गर्नुहोस्</translation>
-<translation id="7899324822972399722"><ph name="A" /> मध्ये <ph name="B" /> शैली भएको <ph name="INDEX" /> औँ फोटो</translation>
 <translation id="7901405293566323524">फोन हब</translation>
 <translation id="7903290522161827520">ब्राउजरका कम्पोनेन्टहरू खोज्दै हुनुहुन्छ? यहाँ जानुहोस्</translation>
 <translation id="7903429136755645827">आफ्ना गेम कन्ट्रोलहरू कस्टमाइज गर्न क्लिक गर्नुहोस्</translation>
@@ -9096,7 +9088,6 @@
 <translation id="8098616321286360457">इन्टरनेट चाहिन्छ</translation>
 <translation id="8100230553590752325">कुनै पनि डिभाइसमा सेभ गरिएका पासवर्डहरू प्रयोग गर्नुहोस्</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> चयन गरियो। चयन गरिएको भाषा नचलाउन 'खोज' बटनसँगै 'स्पेस' बटन थिच्नुहोस्।</translation>
-<translation id="8100725874569949614"><ph name="A" /> मध्ये <ph name="C" /> मुड भएको <ph name="INDEX" /> औँ फोटो।</translation>
 <translation id="8101409298456377967">तपाईं साइट र एपहरूमा सजिलै साइन इन गर्न चाहनुहुन्छ भने पासवर्ड सिर्जना गर्नुहोस्, सेभ गर्नुहोस् र व्यवस्थापन गर्नुहोस्। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">आफूले रोजेको रङ</translation>
 <translation id="8101987792947961127">अर्को रिबुटमा पावरवास आवश्यक छ</translation>
@@ -10043,7 +10034,6 @@
 <translation id="8846163936679269230">eSIM प्रोफाइलहरू रिसेट गर्नुहोस्</translation>
 <translation id="8846239054091760429">मोनो अडियो, स्टार्टअप, लाइभ क्याप्सन र अन्य सुविधाहरू</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8848963863312877204">तपाईं आफूले डाउनलोड गरेका सामग्री यहाँ देख्न सक्नुहुन्छ</translation>
 <translation id="8849001918648564819">लुकाइएको</translation>
 <translation id="8849219423513870962"><ph name="PROFILE_NAME" /> नामक eSIM प्रोफाइल हटाउने कार्य रद्द गर्नुहोस्</translation>
 <translation id="8849262417389398097"><ph name="CHECKING" /> मध्ये <ph name="CHECKED" /></translation>

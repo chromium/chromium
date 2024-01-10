@@ -233,7 +233,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="2318045970523081853">Dodirnite da uspostavite poziv</translation>
 <translation id="2321086116217818302">Pripremanje lozinki…</translation>
 <translation id="2323763861024343754">Pohrana web lokacije</translation>
-<translation id="2327226657832576859">Želite li automatski otvarati PDF-ove?</translation>
+<translation id="2327226657832576859">Automatski otvarati PDF-ove?</translation>
 <translation id="2328985652426384049">Nije se moguće prijaviti</translation>
 <translation id="2341410551640223969">Instaliranje aplikacije <ph name="WEBAPK_NAME" /> nije uspjelo.</translation>
 <translation id="2349710944427398404">Ukupna količina podataka koju je Chrome iskoristio, uključujući račune, oznake i sačuvane postavke</translation>
@@ -639,7 +639,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="4523326818319942067">posljednjih sat vremena</translation>
 <translation id="452750746583162491">Pregledajte sinhronizirane podatke</translation>
 <translation id="4532845899244822526">Izaberite folder</translation>
-<translation id="4541505619120536051">Uvijek otvoreno</translation>
+<translation id="4541505619120536051">Otvori uvijek</translation>
 <translation id="4543131175509360848">Nema nijedne tabele pristupnih ključeva</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> kartica}one{<ph name="TAB_COUNT_MANY" /> kartica, <ph name="TAB_COUNT_INCOGNITO" /> anonimna}few{<ph name="TAB_COUNT_MANY" /> kartice, <ph name="TAB_COUNT_INCOGNITO" /> anonimne}other{<ph name="TAB_COUNT_MANY" /> kartica, <ph name="TAB_COUNT_INCOGNITO" /> anonimnih}}</translation>
 <translation id="4554077758708533499">Povezano pomoću USB kabla</translation>
@@ -831,7 +831,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />poništite sinhronizaciju<p
 <translation id="5486841595534124508">Logotip obavještenja o privatnosti za središte uvida u stranice koji preusmjerava na stranicu Moja aktivnost.</translation>
 <translation id="5487521232677179737">Obriši podatke</translation>
 <translation id="5492637351392383067">Šifriranje na uređaju</translation>
-<translation id="5509866835115085009">Chrome može automatski otvoriti PDF-ove kada ih preuzmete.</translation>
+<translation id="5509866835115085009">Chrome može automatski otvarati PDF-ove kada ih preuzmete.</translation>
 <translation id="5514904542973294328">Onemogućio administrator ovog uređaja</translation>
 <translation id="5515439363601853141">Otključajte da pregledate lozinku</translation>
 <translation id="5517095782334947753">Imate oznake, historiju, lozinke i druge postavke s računa <ph name="FROM_ACCOUNT" />.</translation>

@@ -1505,6 +1505,7 @@
 <translation id="7025533177575372252">Подключите <ph name="DEVICE_NAME" /> к своему телефону</translation>
 <translation id="7026338066939101231">Уменьшить</translation>
 <translation id="7029814467594812963">Завершить сеанс</translation>
+<translation id="7031303610220416229">Показать все задачи в Google Задачах</translation>
 <translation id="7032161822340700104">Максимальное количество шаблонов – 6. Удалите один из шаблонов, чтобы сохранить новый.</translation>
 <translation id="7034025838182392395">Приложению "<ph name="APP_NAME" />" нужно разрешение (<ph name="DEVICE_NAME" />). Чтобы дать разрешение (<ph name="DEVICE_NAME" />), используйте физический переключатель.</translation>
 <translation id="703425375924687388">Запрос "<ph name="QUERY_NAME" />" для Google Ассистента</translation>
@@ -1817,6 +1818,7 @@
 <translation id="8351131234907093545">Создать заметку</translation>
 <translation id="8367948981300340152">Используется <ph name="CAPTURE_MEDIUM" /></translation>
 <translation id="8369166482916924789">Сохраненный рабочий стол "<ph name="SAVE_AND_RECALL_DESK_NAME" />"</translation>
+<translation id="8370414029565771236">Искать "<ph name="TEXT" />"</translation>
 <translation id="8371779926711439835">Вперед на одну букву</translation>
 <translation id="8371991222807690464">Производительность периферийных устройств в гостевом режиме может быть ограничена.</translation>
 <translation id="8374601332003098278">Нажмите Ввод, чтобы записать видео с части экрана</translation>

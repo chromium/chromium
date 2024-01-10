@@ -24,7 +24,6 @@
 <translation id="1173916544412572294">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Baterai Ponsel <ph name="BATTERY_STATUS" />%, Detail</translation>
 <translation id="117624967391683467">Menyalin <ph name="FILE_NAME" />...</translation>
 <translation id="1178581264944972037">Jeda</translation>
-<translation id="1190144681599273207">Mengambil file ini akan menggunakan sekitar <ph name="FILE_SIZE" /> data seluler.</translation>
 <translation id="1194390763418645112">Akses file oleh <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">Berikutnya</translation>
 <translation id="1209796539517632982">Server nama otomatis</translation>
@@ -100,7 +99,6 @@
 <translation id="1761091787730831947">Bagikan ke <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">Sertifikat autentikasi ditolak secara lokal</translation>
 <translation id="1775381402323441512">Info video</translation>
-<translation id="180035236176489073">Anda harus online untuk mengakses file ini.</translation>
 <translation id="1807938677607439181">Semua file</translation>
 <translation id="1810764548349082891">Tidak ada pratinjau yang tersedia</translation>
 <translation id="1812302367230252929">Transliterasi Amhar</translation>
@@ -161,8 +159,6 @@
 <translation id="2282155092769082568">URL konfigurasi otomatis:</translation>
 <translation id="2284767815536050991">penyimpanan eksternal</translation>
 <translation id="2288278176040912387">Pemutar piringan hitam</translation>
-<translation id="2291538123825441971">Membuka <ph name="NUMBER_OF_FILES" /> file.</translation>
-<translation id="2303301624314357662">Membuka file <ph name="FILE_NAME" />.</translation>
 <translation id="2304820083631266885">Planet</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> telah dikeluarkan.</translation>
 <translation id="2307462900900812319">Konfigurasi jaringan</translation>
@@ -172,7 +168,6 @@
 <translation id="233822363739146957">Ruang penyimpanan tidak cukup untuk menyinkronkan semua file Anda</translation>
 <translation id="23721837607121582">Download profil seluler, Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Beralih ke tampilan daftar</translation>
-<translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> folder dibagikan dengan Linux</translation>
 <translation id="2379576081295865700">Memeriksa ruang penyimpanan… 1 item ditemukan</translation>
 <translation id="2383454254762599978">Pindahkan ke sampah</translation>
 <translation id="2387458720915042159">Jenis sambungan proxy</translation>
@@ -396,12 +391,10 @@
 <translation id="4197674956721858839">Pilihan file zip</translation>
 <translation id="4202378258276439759">Spanyol (Amerika Latin)</translation>
 <translation id="4202977638116331303">Georgia</translation>
-<translation id="421017592316736757">Anda harus online untuk mengakses file ini.</translation>
 <translation id="4212740939091998969">Folder bernama "<ph name="FOLDER_NAME" />" sudah ada. Harap pilih nama lain.</translation>
 <translation id="4218274196133425560">Hapus pengecualian untuk <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">Presentasi Google</translation>
 <translation id="4277536868133419688">Filter <ph name="FILTER_NAME" /> aktif.</translation>
-<translation id="4290535918735525311">1 folder dibagikan dengan Linux</translation>
 <translation id="4299729908419173967">Brasil</translation>
 <translation id="4302605047395093221">Siapa pun yang menggunakan perangkat ini perlu memasukkan PIN untuk terhubung ke jaringan seluler ini</translation>
 <translation id="4303531889494116116">Jaringan ini sibuk. Coba lagi nanti.</translation>
@@ -502,8 +495,6 @@
 <translation id="4906580650526544301">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Baterai Ponsel <ph name="BATTERY_STATUS" />%, Detail</translation>
 <translation id="4935975195727477204">Bunga Gazania</translation>
 <translation id="4943368462779413526">Sepak bola</translation>
-<translation id="4961158930123534723">1 folder dibagikan ke Parallels Desktop</translation>
-<translation id="4965874878399872778">Memeriksa file berdasarkan kebijakan keamanan organisasi Anda...</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> dipulihkan</translation>
 <translation id="4969785127455456148">Album</translation>
 <translation id="4972330214479971536">Tidak dapat menyelesaikan penyiapan sinkronisasi file</translation>
@@ -565,7 +556,6 @@
 <translation id="5317780077021120954">Simpan</translation>
 <translation id="5318819489018851358">Bagikan dengan Linux</translation>
 <translation id="5323213332664049067">Amerika Latin</translation>
-<translation id="5330145655348521461">File ini dibuka pada desktop yang berbeda. Pindahkan ke <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) untuk melihatnya.</translation>
 <translation id="5330512191124428349">Dapatkan info</translation>
 <translation id="535792325654997756">Orang dengan kucing</translation>
 <translation id="5358764674931277">Kecepatan frame</translation>
@@ -667,7 +657,6 @@
 <translation id="613750717151263950">Jepang dengan keyboard AS</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, tidak ada jaringan</translation>
 <translation id="6146563240635539929">Video</translation>
-<translation id="6150853954427645995">Untuk menyimpan file ini agar dapat digunakan saat offline, sambungkan ke internet, klik kanan file, dan pilih opsi <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Kupu-kupu</translation>
 <translation id="6165508094623778733">Pelajari selengkapnya</translation>
 <translation id="6170470584681422115">Sandwich</translation>
@@ -700,7 +689,6 @@
 <translation id="636254897931573416">Nilai kecocokan suffix domain tidak valid</translation>
 <translation id="6364301859968397756">Penyimpanan organisasi penuh</translation>
 <translation id="6367976544441405720">Van</translation>
-<translation id="637062427944097960">File ini dibuka pada desktop yang berbeda. Pindahkan ke <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) untuk melihatnya.</translation>
 <translation id="6394388407447716302">Hanya baca</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> item</translation>
 <translation id="6407769893376380348"><ph name="FILE_NAME" /> tidak dapat dipindahkan karena dienkripsi.</translation>
@@ -709,7 +697,6 @@
 <translation id="6430271654280079150">Tersisa 1 upaya lagi.</translation>
 <translation id="643243556292470964">File yang dihapus sekarang dipindahkan ke sampah</translation>
 <translation id="6438480100790416671">Memeriksa ruang penyimpanan…</translation>
-<translation id="6451527188465304418">Memeriksa file berdasarkan kebijakan keamanan organisasi Anda...</translation>
 <translation id="6485131920355264772">Gagal mengambil info ruang</translation>
 <translation id="6495925982925244349">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Dikelola oleh Administrator Anda, Detail</translation>
 <translation id="649877868557234318">Mengekstrak <ph name="FILE_NAME" /> ke <ph name="FOLDER_NAME" /></translation>
@@ -724,7 +711,6 @@
 <translation id="6588648400954570689">Setelan sinkronisasi file</translation>
 <translation id="6594855146910089723">Folder ini dibagikan ke Linux dan Parallels Desktop</translation>
 <translation id="6607272825297743757">Info file</translation>
-<translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> folder dibagikan ke Parallels Desktop</translation>
 <translation id="6629518321609546825">Masukkan minimal 4 angka</translation>
 <translation id="6643016212128521049">Hapus</translation>
 <translation id="6650726141019353908">Kupu-kupu merah muda</translation>
@@ -891,7 +877,6 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Terjadi error saat mengonfigurasi jaringan</translation>
-<translation id="7839804798877833423">Mengambil file ini akan menggunakan sekitar <ph name="FILE_SIZE" /> data seluler.</translation>
 <translation id="7846076177841592234">Batalkan pilihan</translation>
 <translation id="7853966320808728790">BÉPO Prancis</translation>
 <translation id="7857117644404132472">Tambahkan pengecualian</translation>
@@ -939,7 +924,6 @@
 <translation id="8175799081768705361">Menyinkronkan <ph name="NUMBER_OF_FILES_SYNCING" /> file Drive</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Model perangkat</translation>
-<translation id="8223479393428528563">Untuk menyimpan file ini agar dapat digunakan saat offline, sambungkan ke internet, klik kanan pada file, dan pilih opsi <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8241139360630443550">Lihat penyimpanan</translation>
 <translation id="8249296373107784235">Batalkan</translation>
 <translation id="8250690786522693009">Latin</translation>

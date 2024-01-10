@@ -56,7 +56,6 @@
 <translation id="1279024913354609713">Тыюу салуу</translation>
 <translation id="1281818060020671000">Дайын-даректерди башкаруу</translation>
 <translation id="1282311502488501110">Кирбейм</translation>
-<translation id="1283039547216852943">Жайып көрсөтүү үчүн таптап коюңуз</translation>
 <translation id="1283524564873030414">Акыркы 24 саат</translation>
 <translation id="1285320974508926690">Бул сайт эч качан которулбасын</translation>
 <translation id="1291506870746876680"><ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> сайтынан чыкканыңызда ага берилген уруксаттар өчүрүлөт.</translation>
@@ -82,7 +81,6 @@
 <translation id="1377255359165588604">Шайкештирүү иштебей калды.</translation>
 <translation id="1377321085342047638">Карт номер</translation>
 <translation id="1377508275003315939">Сырсөздөр</translation>
-<translation id="1380914240355562929"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" />эми <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> вебсайтына Сырсөздөрдү башкаргычтын жардамы менен кирүүдө колдонуучу атыңызды жана сырсөзүңүздү колдоно алат. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">Издөө</translation>
 <translation id="138618066238211776"><ph name="USER_NAME" /> катары улантуу</translation>
 <translation id="1400642268715879018">Акыркы 4 аптада</translation>
@@ -406,7 +404,6 @@
 <translation id="3087734570205094154">Аягы</translation>
 <translation id="3090455602619185166">Башкарылган аккаунт менен кирүү</translation>
 <translation id="309710370695886264">1 кайра колдонулган сырсөзүңүз бар. Коопсуз болуу үчүн аны азыр оңдоңуз.</translation>
-<translation id="3109724472072898302">Жыйналды</translation>
 <translation id="3112556859945124369">Белгилөө…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Шайкештире ала турган нерселерди көрүңүз<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">Таржымал жана башкалар</translation>
@@ -691,6 +688,7 @@
 <translation id="4689564913179979534">Төлөм ыкмаларын башкаруу…</translation>
 <translation id="469300482518076788">Өтмөктү жабуу</translation>
 <translation id="4697071790493980729">Натыйжалар табылган жок</translation>
+<translation id="470337593714520080">{count,plural, =1{1 кыстарманы Google аккаунтуңузга сактаңыз}other{{count} кыстарманы Google аккаунтуңузга сактаңыз}}</translation>
 <translation id="470966556546083668">Шайкештирүү күйгүзүлбөсүн</translation>
 <translation id="4711809265250406889">Күйүп турганда</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} жана дагы 1}other{{website_1}, {website_2} жана дагы {more_count}}}</translation>
@@ -775,7 +773,6 @@
 <translation id="5121618895923301719">Бул товарга көз салып жатасыз. Бул барак <ph name="BEGIN_LINK" />Мобилдик түзмөктүн кыстармаларына<ph name="END_LINK" /> сакталды.</translation>
 <translation id="512533434554095351">Бир нече сырсөз көйгөйлөрүңүз бар.</translation>
 <translation id="5126465625664020024">Аккаунтка кирүү жана шайкештирүү</translation>
-<translation id="5131062416352684089">Үй-бүлөлүк тобуңуздун мүчөлөрү эми <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> вебсайтына Сырсөздөрдү башкаргычтын жардамы менен кирүүдө колдонуучу атыңызды жана сырсөзүңүздү колдоно алат. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">Бардык түзмөктөрдөгү сырсөздөрдү, таржымалды жана башкаларды шайкештирүү</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} начар сырсөз бар}other{{COUNT} начар сырсөз бар}}</translation>
 <translation id="5149188072385105201">Сырсөз кошуу...</translation>
@@ -924,7 +921,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="5955891643922670672">Оффлайн версиясын көрүп жатасыз</translation>
 <translation id="5957613098218939406">Дагы параметрлер</translation>
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> менен издөө</translation>
-<translation id="5962718611393537961">Жыйыштыруу үчүн таптап коюңуз</translation>
 <translation id="5963939892571022323">Бөлүнүп көрсөтүлгөн нерсеге шилтеме түзүлгөн жок.</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 кыстарма өчүрүлдү}other{{count} кыстарма өчүрүлдү}}</translation>
 <translation id="5979837087407522202">Сырсөздөрдү издөө</translation>
@@ -991,6 +987,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6255097610484507482">Насыя картсын түзтүү</translation>
 <translation id="6266039999629596120">Чара көрүү керек</translation>
 <translation id="6277426346321820595">Коопсуздук корголгон жок</translation>
+<translation id="628251768213143684">Google аккаунтуңузга эмнелер сакталарын ар дайым тескей аласыз</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> тилин которууну сунуштоо</translation>
 <translation id="6289501276895392862"><ph name="CHANNEL_NAME" /> каналына жазылуу токтотулду</translation>
 <translation id="6293101329759844770">Коопсуз серептөөнү күйгүзүү үчүн <ph name="BEGIN_LINK" />Google кызматтарын<ph name="END_LINK" /> ачып, Коопсуз серептөөнү таптаңыз.</translation>

@@ -56,7 +56,6 @@
 <translation id="1279024913354609713">Не разрешать</translation>
 <translation id="1281818060020671000">Управление данными</translation>
 <translation id="1282311502488501110">Отмена</translation>
-<translation id="1283039547216852943">Нажмите, чтобы развернуть</translation>
 <translation id="1283524564873030414">Последние 24 часа</translation>
 <translation id="1285320974508926690">Никогда не переводить этот сайт</translation>
 <translation id="1291506870746876680">Когда вы покинете сайт <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" />, все разрешения для него будут отключены.</translation>
@@ -82,7 +81,6 @@
 <translation id="1377255359165588604">Ошибка синхронизации.</translation>
 <translation id="1377321085342047638">Номер карты</translation>
 <translation id="1377508275003315939">Пароли</translation>
-<translation id="1380914240355562929">Теперь <ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> может использовать ваши имя пользователя и пароль, когда входит в аккаунт на сайте <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> с помощью Google Менеджера паролей. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">Поиск</translation>
 <translation id="138618066238211776">Продолжить как <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">Последние 4 недели</translation>
@@ -337,6 +335,7 @@
 <translation id="2747003861858887689">Предыдущее поле</translation>
 <translation id="2749231692441336879">Вы подписались на "<ph name="CHANNEL_NAME" />".</translation>
 <translation id="2754492786623500387">Аккаунты на этом устройстве</translation>
+<translation id="2755595981383829244">Теперь вы будете получать уведомления о контенте.</translation>
 <translation id="2762000892062317888">только что</translation>
 <translation id="2772667768515195373">Этот адрес сохранен в вашем аккаунте Google (<ph name="USER_EMAIL" />). Сохраненные адреса можно использовать в разных продуктах Google.</translation>
 <translation id="2773292004659987824">Поиск в режиме инкогнито</translation>
@@ -406,7 +405,6 @@
 <translation id="3087734570205094154">Снизу</translation>
 <translation id="3090455602619185166">Вход в управляемый аккаунт</translation>
 <translation id="309710370695886264">У вас есть повторяющийся пароль. Измените его, чтобы обезопасить себя.</translation>
-<translation id="3109724472072898302">Свернуто</translation>
 <translation id="3112556859945124369">Отметить…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Какие данные можно синхронизировать<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">История и другие данные</translation>
@@ -775,7 +773,6 @@
 <translation id="5121618895923301719">Вы уже отслеживаете этот товар. Эта страница добавлена в папку <ph name="BEGIN_LINK" />Закладки на мобильном устройстве<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">У вас есть несколько ненадежных паролей.</translation>
 <translation id="5126465625664020024">Войти и выполнить синхронизацию</translation>
-<translation id="5131062416352684089">Теперь участники вашей семейной группы могут использовать ваши имя пользователя и пароль, когда входят в аккаунт на сайте <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> с помощью Google Менеджера паролей. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">Синхронизируйте пароли, историю и другие данные на всех ваших устройствах</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} простой пароль}one{{COUNT} простой пароль}few{{COUNT} простых пароля}many{{COUNT} простых паролей}other{{COUNT} простого пароля}}</translation>
 <translation id="5149188072385105201">Добавить пароль</translation>
@@ -924,7 +921,6 @@
 <translation id="5955891643922670672">Просматривается в офлайн-режиме</translation>
 <translation id="5957613098218939406">Другое</translation>
 <translation id="595769230373966252">Поиск в <ph name="SEARCH_PROVIDER" /></translation>
-<translation id="5962718611393537961">Нажмите, чтобы свернуть</translation>
 <translation id="5963939892571022323">Не удалось создать ссылку на выделенный текст.</translation>
 <translation id="5971872012779224351">{count,plural, =1{Удалена 1 закладка.}one{Удалена {count} закладка.}few{Удалено {count} закладки.}many{Удалено {count} закладок.}other{Удалено {count} закладки.}}</translation>
 <translation id="5979837087407522202">Поиск паролей</translation>

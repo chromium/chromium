@@ -816,7 +816,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1615433306336820465">Pamahalaan ang data sa pag-sign in na naka-store sa iyong security key</translation>
 <translation id="1616206807336925449">Hindi nangangailangan ang extension na ito ng mga espesyal na pahintulot.</translation>
 <translation id="1616298854599875024">Hindi ma-import ang extension na "<ph name="IMPORT_NAME" />" dahil hindi ito nakabahaging module</translation>
-<translation id="161654560322394775">Larawan <ph name="INDEX" /> sa <ph name="A" />, sa istilong <ph name="B" />, na may mood na <ph name="C" />.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Sinusuri ang data na ito gamit ang mga patakaran sa seguridad ng iyong organisasyon...}=1{Sinusuri ang file na ito gamit ang mga patakaran sa seguridad ng iyong organisasyon...}one{Sinusuri ang mga file na ito gamit ang mga patakaran sa seguridad ng iyong organisasyon...}other{Sinusuri ang mga file na ito gamit ang mga patakaran sa seguridad ng iyong organisasyon...}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">Help Center</translation>
@@ -4240,7 +4239,6 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="4250680216510889253">Hindi</translation>
 <translation id="4251377547188244181">Pag-enroll ng kiosk at signage device</translation>
-<translation id="4252141040239557279">Larawan <ph name="INDEX" /> sa <ph name="A" /></translation>
 <translation id="4252828488489674554">Mag-right click sa pangalan ng grupo ng tab para i-edit ang grupong ito o i-click ito para i-collapse</translation>
 <translation id="4252899949534773101">Naka-disable ang Bluetooth</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - Nakabahagi ang content ng tab</translation>
@@ -6578,7 +6576,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
         <ph name="BREAK" />
         Puwede mong pamahalaan ang mga setting mula sa menu ng card o tingnan ang higit pang opsyon sa I-customize ang Chrome.</translation>
 <translation id="6121773125605585883">Tingnan ang password na may username na <ph name="USERNAME" /> para sa <ph name="WEBSITE" /></translation>
-<translation id="6122081475643980456">Kinokontrol ang iyong koneksyon sa Internet</translation>
 <translation id="6122093587541546701">Email (opsyonal):</translation>
 <translation id="6122095009389448667">Patuloy na i-block ang site na ito sa pagtingin sa clipboard</translation>
 <translation id="6122513630797178831">I-save ang CVC</translation>
@@ -7464,7 +7461,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6820079682647046800">Hindi na-authenticate ang Kerberos</translation>
 <translation id="6821439254917412979">I-unpin ang <ph name="EXTENSION_NAME" /></translation>
 <translation id="6823174134746916417">Tap-to-click gamit ang touchpad</translation>
-<translation id="6823429960180594870">Pamahalaan ang mga file habang nagda-download ang mga ito, at buksan ang mga ito kapag tapos nang ma-download</translation>
 <translation id="6823561724060793716">Mula sa address bar, puwede mong buksan ang impormasyon ng page para makakita ng karagdagang impormasyon tungkol sa page na binibisita mo</translation>
 <translation id="6824564591481349393">Kopyahin ang &amp;Email Address</translation>
 <translation id="6824584962142919697">&amp;Siyasatin ang mga element</translation>
@@ -7870,7 +7866,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="714301620504747562">Mas mabilis na ang pag-browse at paghahanap kumpara sa karaniwang pag-preload</translation>
 <translation id="7143207342074048698">Kumokonekta</translation>
 <translation id="7143409552554575716">Mga flag ng ChromeOS</translation>
-<translation id="714447804011008506">Nasa toolbar na ang mga download</translation>
 <translation id="7144856456372460176">&amp;I-install ang <ph name="APP" />...</translation>
 <translation id="7144878232160441200">Subukang muli</translation>
 <translation id="7145413760160421938">Hindi maipagpatuloy ang nakaraang session</translation>
@@ -8521,7 +8516,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7657090467145778067">Maliliit na natipid</translation>
 <translation id="7657218410916651670">Posibleng ma-save ang <ph name="BEGIN_LINK_GOOGLE" />iba pang anyo ng aktibidad<ph name="END_LINK_GOOGLE" /> sa iyong Google Account kapag naka-sign in ka. Puwede mong i-delete ang mga ito anumang oras.</translation>
 <translation id="7658239707568436148">Kanselahin</translation>
-<translation id="7658727964021657194">Kamakailang AI theme <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">Umalis pa rin sa Incognito mode?</translation>
 <translation id="7659336857671800422">Gamitin ang Gabay sa Privacy</translation>
 <translation id="7659584679870740384">Wala kang pahintulot na gamitin ang device na ito. Mangyaring makipag-ugnayan sa administrator upang makakuha ng pahintulot sa pag-sign in.</translation>
@@ -8803,7 +8797,6 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="7855678561139483478">Ilipat ang tab sa bagong window</translation>
 <translation id="7857004848504343806">Naglalaman ng secure na module ang iyong computer, na ginagamit para magpatupad ng maraming kritikal na panseguridad na feature sa ChromeOS Flex. Bisitahin ang Help Center ng Chromebook para matuto pa: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Mga suhestyong text</translation>
-<translation id="7857949311770343000">Ito ba ang page ng bagong tab na inaasahan mo?</translation>
 <translation id="7858120906780498731">Mga Input Device na Nakakonekta sa ChromeOS</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941">Alisin ang extension na <ph name="EXTENSION_NAME" /></translation>
@@ -8852,7 +8845,6 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="789722939441020330">Huwag payagan ang mga site na awtomatikong mag-download ng maraming file</translation>
 <translation id="7897900149154324287">Sa hinaharap, tiyaking i-eject ang iyong naaalis na device sa Files app bago ito i-unplug. Kung hindi, maaari kang mawalan ng data.</translation>
 <translation id="7898725031477653577">Palaging i-translate</translation>
-<translation id="7899324822972399722">Larawan <ph name="INDEX" /> sa <ph name="A" />, sa istilong <ph name="B" /></translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Hinahanap ang mga bahagi ng browser? Bisitahin ang</translation>
 <translation id="7903429136755645827">I-click para i-customize ang iyong mga kontrol ng laro</translation>
@@ -9134,7 +9126,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8098616321286360457">Kailangan ng koneksyon sa network</translation>
 <translation id="8100230553590752325">Gumamit ng mga naka-save na password sa anumang device</translation>
 <translation id="810068641062493918">Pinili ang <ph name="LANGUAGE" />. Pindutin ang Search at Space para i-unselect.</translation>
-<translation id="8100725874569949614">Larawan <ph name="INDEX" /> sa <ph name="A" />, na may mood na <ph name="C" />.</translation>
 <translation id="8101409298456377967">Gawin, i-save, at pamahalaan ang iyong mga password para madali kang makapag-sign in sa mga site at app. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">Custom na kulay</translation>
 <translation id="8101987792947961127">Kinakailangan ng Powerwash sa susunod na reboot</translation>
@@ -10085,7 +10076,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="8846163936679269230">I-reset ang mga profile ng eSIM</translation>
 <translation id="8846239054091760429">Mono audio, startup, Instant Caption, at higit pa</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8848963863312877204">Hanapin ang iyong mga download dito</translation>
 <translation id="8849001918648564819">Nakatago</translation>
 <translation id="8849219423513870962">Kanselahin ang pag-aalis ng profile ng eSIM na may pangalang <ph name="PROFILE_NAME" /></translation>
 <translation id="8849262417389398097"><ph name="CHECKED" /> sa <ph name="CHECKING" /></translation>

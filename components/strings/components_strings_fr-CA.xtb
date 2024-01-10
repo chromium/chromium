@@ -272,6 +272,7 @@
 <translation id="1476595624592550506">Modifiez votre mot de passe</translation>
 <translation id="1482879811280872320">Cyclisme</translation>
 <translation id="1483493594462132177">Envoi</translation>
+<translation id="1484632730438126438">Entrée trop courte. Écrivez au moins trois mots.</translation>
 <translation id="1492194039220927094">Notifications poussées des politiques :</translation>
 <translation id="14938948731065592">Périphériques pour ordinateur</translation>
 <translation id="1495677929897281669">Retour à l'onglet</translation>
@@ -1238,7 +1239,6 @@
 <translation id="3447661539832366887">Le propriétaire de cet appareil a désactivé le jeu dinosaure.</translation>
 <translation id="3447884698081792621">Afficher le certificat (délivré par <ph name="ISSUER" />)</translation>
 <translation id="3450323514459570273">Le site peut demander de contrôler et de reprogrammer vos appareils MIDI</translation>
-<translation id="3452151267620065789">Progrès enregistré</translation>
 <translation id="3452404311384756672">Intervalle de récupération :</translation>
 <translation id="3453962258458347894">Nombre de nouveaux essais</translation>
 <translation id="3461266716147554923"><ph name="URL" /> veut voir le texte et les images copiés dans le presse-papiers</translation>
@@ -1404,6 +1404,7 @@
 <translation id="3748009735914587286">Métal (haute brillance)</translation>
 <translation id="3748148204939282805">Les cyberpirates à l'œuvre sur le site <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> peuvent vous inciter à faire quelque chose de dangereux comme installer un logiciel ou révéler vos renseignements personnels (par exemple, des mots de passe, des numéros de téléphone ou des numéros de carte de crédit). <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Industrie aéronautique</translation>
+<translation id="3751020515020988516">Impossible de comprendre la demande. Essayez-en une autre.</translation>
 <translation id="3752543821772132562">Ignorée, car <ph name="POLICY_NAME" /> n'est pas définie.</translation>
 <translation id="3754210790023674521">Quitter le mode d'incrustation d'image</translation>
 <translation id="3759461132968374835">Aucune erreur n'a été signalée récemment. Les erreurs n'apparaissent ici que lorsque l'envoi de rapports d'erreur est activé.</translation>
@@ -1460,6 +1461,7 @@
 <translation id="3858860766373142691">Nom</translation>
 <translation id="3872834068356954457">Sciences</translation>
 <translation id="3875783148670536197">Afficher la marche à suivre</translation>
+<translation id="3877877650871124156">Entrée trop longue. Raccourcissez-la et réessayez.</translation>
 <translation id="3881478300875776315">Afficher moins de lignes</translation>
 <translation id="3883500545751229739">annonces intrusives</translation>
 <translation id="3884278016824448484">Identifiant de périphérique en conflit</translation>
@@ -1537,7 +1539,6 @@
 <translation id="4067098466788473230">Bourses d'études</translation>
 <translation id="4067947977115446013">Ajouter une adresse valide</translation>
 <translation id="4070790659619547722">Pour la mesure des annonces, des types de données restreints sont partagés entre les sites pour qu'ils puissent mesurer la performance de leurs annonces, comme l'heure à laquelle une annonce vous a été montrée.</translation>
-<translation id="4072193657607981494">Chargement des politiques en cours…</translation>
 <translation id="4072486802667267160">Une erreur s'est produite lors du traitement de votre commande. Veuillez réessayer.</translation>
 <translation id="4073376909608563327">Impossible d'utiliser le déverrouillage de l'appareil</translation>
 <translation id="4073797364926776829">Affichez la carte</translation>
@@ -2568,6 +2569,7 @@
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />En savoir plus sur la navigation privée dans Chrome<ph name="END_LINK" /></translation>
 <translation id="6133320744616005677">Continuer l'autorisation</translation>
 <translation id="6133984428121856852">L'extension de fichier est vide ou malformée.</translation>
+<translation id="6139769382153674477">Un problème est survenu. Êtes-vous connecté?</translation>
 <translation id="6139975341602920272">17 po x 22 po</translation>
 <translation id="6146055958333702838">Vérifiez les câbles et redémarrez votre routeur, votre modem
     ou tout autre périphérique réseau utilisé.</translation>
@@ -2724,7 +2726,6 @@
 <translation id="6428450836711225518">Vérifier votre numéro de téléphone</translation>
 <translation id="6429267199680088961">Onglet A4</translation>
 <translation id="643051589346665201">Modifier le mot de passe Google</translation>
-<translation id="6431119592588449664">Le rapport a été téléversé</translation>
 <translation id="6432297414176614592">En savoir plus sur les sujets d'annonces</translation>
 <translation id="6432831586648556868">Emplois dans le domaine de la vente et du marketing</translation>
 <translation id="6433490469411711332">Modifier les coordonnées</translation>
@@ -3483,7 +3484,6 @@ Détails supplémentaires :
 <translation id="7871445724586827387">Modifier le mot de passe de votre compte Google</translation>
 <translation id="7877007680666472091">identifiants de contenu protégé</translation>
 <translation id="7878562273885520351">Votre mot de passe a peut-être été compromis</translation>
-<translation id="7878966190323222027">Rouvrir pour continuer</translation>
 <translation id="7880146494886811634">Enregistrer l'adresse</translation>
 <translation id="7882421473871500483">Brun</translation>
 <translation id="7882995332186050355">Poids lourds et semi-remorques</translation>
@@ -4104,7 +4104,6 @@ Détails supplémentaires :
 <translation id="9119042192571987207">Téléversé</translation>
 <translation id="9122954576417194280">Opérations sur marchandises et transactions à terme</translation>
 <translation id="912327514020027767">Jupes</translation>
-<translation id="9128016270925453879">Les politiques ont été chargées</translation>
 <translation id="9128870381267983090">Connexion au réseau</translation>
 <translation id="9131119348384879525">Capturer le contenu confidentiel?</translation>
 <translation id="9133985615769429248">Si vous partagez cet appareil avec d'autres personnes, vous pouvez utiliser le verrouillage d'écran pour vérifier qu'il s'agit bien de vous lorsque que vous utilisez un mot de passe enregistré</translation>

@@ -272,6 +272,7 @@
 <translation id="1476595624592550506">तुमचा पासवर्ड बदला</translation>
 <translation id="1482879811280872320">सायकल चालवणे</translation>
 <translation id="1483493594462132177">पाठवा</translation>
+<translation id="1484632730438126438">हे खूप लहान आहे. किमान ३ शब्द लिहा.</translation>
 <translation id="1492194039220927094">धोरणे पुढे ढकला:</translation>
 <translation id="14938948731065592">कॉंप्युटर उपकरणे</translation>
 <translation id="1495677929897281669">टॅबवर परत</translation>
@@ -1238,7 +1239,6 @@
 <translation id="3447661539832366887">या डिव्हाइसच्या मालकाने डायनासोर गेम बंद केला आहे.</translation>
 <translation id="3447884698081792621">सर्टिफिकेट दाखवा (<ph name="ISSUER" /> ने जारी केलेले)</translation>
 <translation id="3450323514459570273">तुमची MIDI डिव्हाइस नियंत्रित आणि रीप्रोग्राम करण्यास सांगू शकते</translation>
-<translation id="3452151267620065789">प्रगती सेव्ह केली आहे</translation>
 <translation id="3452404311384756672">मध्यंतर मिळवा:</translation>
 <translation id="3453962258458347894">किती वेळा पुन्हा प्रयत्न केले</translation>
 <translation id="3461266716147554923"><ph name="URL" /> ला क्लिपबोर्डवर कॉपी केलेला मजकूर आणि इमेज पहायच्या आहेत</translation>
@@ -1403,6 +1403,7 @@
 <translation id="3748009735914587286">मेटल (हाय-ग्लॉस)</translation>
 <translation id="3748148204939282805"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> वरील हल्लेखोर कदाचित तुम्हाला सॉफ्टवेअर इंस्टॉल करणे किंवा तुमची वैयक्तिक माहिती (उदाहरणार्थ, पासवर्ड, फोन नंबर किंवा क्रेडिट कार्डे) उघड करणे यासारख्या काही धोकादायक गोष्टी करण्यासाठी तुम्हाला फसवू शकतात. <ph name="BEGIN_LEARN_MORE_LINK" />आणखी जाणून घ्या<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">हवाई वाहतूक उद्योग</translation>
+<translation id="3751020515020988516">तुमची विनंती समजली नाही. वेगळी विनंती करून पहा.</translation>
 <translation id="3752543821772132562"><ph name="POLICY_NAME" /> सेट केले नसल्याने दुर्लक्ष केले.</translation>
 <translation id="3754210790023674521">चित्रात-चित्र मधून बाहेर पडा</translation>
 <translation id="3759461132968374835">तुम्ही अलीकडे कोणतेही क्रॅश नोंदवले नाहीत. क्रॅश नोंदवणे अक्षम असताना झालेले क्रॅश येथे दिसून येणार नाहीत.</translation>
@@ -1459,6 +1460,7 @@
 <translation id="3858860766373142691">नाव</translation>
 <translation id="3872834068356954457">विज्ञान</translation>
 <translation id="3875783148670536197">मला कसे ते दाखवा</translation>
+<translation id="3877877650871124156">हे खूप मोठे आहे. ते कमी करून पुन्हा प्रयत्न करा.</translation>
 <translation id="3881478300875776315">कमी रेषा दाखवा</translation>
 <translation id="3883500545751229739">नको असलेल्या जाहिराती</translation>
 <translation id="3884278016824448484">संघर्ष करणारा डिव्हाइस अभिज्ञापक</translation>
@@ -1536,7 +1538,6 @@
 <translation id="4067098466788473230">शैक्षणिक अनुदाने आणि शिष्यवृत्ती</translation>
 <translation id="4067947977115446013">वैध पत्ता जोडा</translation>
 <translation id="4070790659619547722">जाहिरात मापनासह, तुम्हाला जाहिरात दाखवण्यात आलेली दिवसाची वेळ यासारखा मर्यादित प्रकारचा डेटा हा साइटदरम्यान त्यांच्या जाहिरातींचा परफॉर्मन्स मोजण्यासाठी शेअर केला जातो.</translation>
-<translation id="4072193657607981494">धोरणे लोड करत आहे</translation>
 <translation id="4072486802667267160">तुमच्या मागणीवर प्रक्रिया करताना एरर आली, कृपया पुन्हा प्रयत्न करा.</translation>
 <translation id="4073376909608563327">डिव्हाइस अनलॉक वापरता आले नाही</translation>
 <translation id="4073797364926776829">कार्ड पहा</translation>
@@ -2567,6 +2568,7 @@
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />Chrome मधील गुप्त मोडबद्दल अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="6133320744616005677">अनुमती देणे पुढे सुरू ठेवा</translation>
 <translation id="6133984428121856852">फाइल एक्स्टेंशन रिकामे आहे किंवा त्यामध्ये समस्या आहे.</translation>
+<translation id="6139769382153674477">काहीतरी चुकले. तुम्ही साइन इन केले आहे का?</translation>
 <translation id="6139975341602920272">17 x 22 in</translation>
 <translation id="6146055958333702838">कोणत्याही केबल तपासा आणि कोणतेही राउटर, मोडेम किंवा तुम्ही
 वापरत असलेले
@@ -2724,7 +2726,6 @@
 <translation id="6428450836711225518">तुमच्या फोन नंबरची पडताळणी करा</translation>
 <translation id="6429267199680088961">A4 टॅब</translation>
 <translation id="643051589346665201">Google पासवर्ड बदला</translation>
-<translation id="6431119592588449664">अहवाल अपलोड केला आहे</translation>
 <translation id="6432297414176614592">जाहिरातीच्या विषयांबद्दल अधिक माहिती</translation>
 <translation id="6432831586648556868">विक्री आणि मार्केटिंग नोकऱ्या</translation>
 <translation id="6433490469411711332">संपर्क माहिती संपादित करा</translation>
@@ -3483,7 +3484,6 @@
 <translation id="7871445724586827387">तुमचा Google खाते पासवर्ड बदला</translation>
 <translation id="7877007680666472091">संरक्षित आशय आयडी</translation>
 <translation id="7878562273885520351">तुमच्या पासवर्डशी तडजोड होत असल्याची शक्यता आहे</translation>
-<translation id="7878966190323222027">सुरू ठेवण्यासाठी पुन्हा उघडा</translation>
 <translation id="7880146494886811634">पत्ता सेव्ह करा</translation>
 <translation id="7882421473871500483">तपकिरी</translation>
 <translation id="7882995332186050355">कार्गो ट्रक आणि ट्रेलर</translation>
@@ -4104,7 +4104,6 @@
 <translation id="9119042192571987207">अपलोड केला</translation>
 <translation id="9122954576417194280">कमॉडिटी आणि फ्यूचर्स ट्रेडिंग</translation>
 <translation id="912327514020027767">स्कर्ट</translation>
-<translation id="9128016270925453879">धोरणे लोड केलेली आहेत</translation>
 <translation id="9128870381267983090">नेटवर्कशी कनेक्ट करा</translation>
 <translation id="9131119348384879525">गोपनीय आशय कॅप्चर करायचा आहे का?</translation>
 <translation id="9133985615769429248">तुम्ही हे डिव्हाइस इतरांसोबत शेअर करत असल्यास, तुम्ही सेव्ह केलेले पासवर्ड वापरता, तेव्हा ते तुम्हीच असल्याची पडताळणी करण्यासाठी तुमचे स्क्रीन लॉक वापरू शकता</translation>

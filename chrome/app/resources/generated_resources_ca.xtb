@@ -810,7 +810,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1615433306336820465">Gestiona les dades d'inici de sessió emmagatzemades a la clau de seguretat</translation>
 <translation id="1616206807336925449">Aquesta extensió no requereix cap permís especial.</translation>
 <translation id="1616298854599875024">L'extensió <ph name="IMPORT_NAME" /> no es pot importar perquè no és un mòdul compartit</translation>
-<translation id="161654560322394775">Imatge <ph name="INDEX" /> de <ph name="A" />, d'estil <ph name="B" />, amb un estat d'ànim <ph name="C" />.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{S'està comprovant si aquestes dades compleixen les polítiques de seguretat de la teva organització...}=1{S'està comprovant si aquest fitxer compleix les polítiques de seguretat de la teva organització...}other{S'està comprovant si aquests fitxers compleixen les polítiques de seguretat de la teva organització...}}</translation>
 <translation id="1618102204889321535"><ph name="CURRENT_CHARACTER_COUNT" />/<ph name="MAX_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">Centre d'ajuda</translation>
@@ -4218,7 +4217,6 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4250229828105606438">Captura de pantalla</translation>
 <translation id="4250680216510889253">No</translation>
 <translation id="4251377547188244181">Inscripció de dispositiu de quiosc i de cartelleria</translation>
-<translation id="4252141040239557279">Imatge <ph name="INDEX" /> de <ph name="A" /></translation>
 <translation id="4252828488489674554">Fes clic amb el botó dret al nom del grup de pestanyes per editar-lo o fes clic per replegar-lo</translation>
 <translation id="4252899949534773101">El Bluetooth està desactivat</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" />: el contingut de les pestanyes es comparteix</translation>
@@ -6548,7 +6546,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
         <ph name="BREAK" />
         Pots gestionar la configuració des del menú de la targeta o veure més opcions a Personalitza Chrome.</translation>
 <translation id="6121773125605585883">Mostra la contrasenya amb el nom d'usuari <ph name="USERNAME" /> per a <ph name="WEBSITE" /></translation>
-<translation id="6122081475643980456">La vostra connexió a Internet s'està controlant</translation>
 <translation id="6122093587541546701">Adreça electrònica (opcional):</translation>
 <translation id="6122095009389448667">Continua impedint que aquest lloc web vegi el porta-retalls</translation>
 <translation id="6122513630797178831">Desa el CVC</translation>
@@ -7431,7 +7428,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6820079682647046800">Kerberos no s'ha pogut autenticar</translation>
 <translation id="6821439254917412979">Deixa de fixar <ph name="EXTENSION_NAME" /></translation>
 <translation id="6823174134746916417">Toca per fer clic amb el ratolí tàctil</translation>
-<translation id="6823429960180594870">Gestiona els fitxers mentre es baixen i obre'ls quan es completi la baixada</translation>
 <translation id="6823561724060793716">A la barra d'adreces, pots obrir la informació de la pàgina per veure dades addicionals sobre la pàgina que visites</translation>
 <translation id="6824564591481349393">Copi&amp;a l'adreça electrònica</translation>
 <translation id="6824584962142919697">&amp;Inspecciona els elements</translation>
@@ -7837,7 +7833,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="714301620504747562">Navegar i fer cerques és més ràpid que amb la precàrrega estàndard</translation>
 <translation id="7143207342074048698">Connectant</translation>
 <translation id="7143409552554575716">Marques de ChromeOS</translation>
-<translation id="714447804011008506">Ara, les baixades són a la barra d'eines</translation>
 <translation id="7144856456372460176">&amp;Instal·la <ph name="APP" />...</translation>
 <translation id="7144878232160441200">Torna-ho a provar</translation>
 <translation id="7145413760160421938">No es pot reprendre la sessió anterior</translation>
@@ -8488,7 +8483,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7657090467145778067">Estalvi baix</translation>
 <translation id="7657218410916651670">És possible que <ph name="BEGIN_LINK_GOOGLE" />altres tipus d'activitats<ph name="END_LINK_GOOGLE" /> es desin al teu Compte de Google quan tinguis la sessió iniciada. Les pots suprimir en qualsevol moment.</translation>
 <translation id="7658239707568436148">Cancel·la</translation>
-<translation id="7658727964021657194">Tema d'IA recent <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">Vols sortir del mode d'incògnit de totes maneres?</translation>
 <translation id="7659336857671800422">Consulta la guia de privadesa</translation>
 <translation id="7659584679870740384">No teniu autorització per fer servir aquest dispositiu. Contacteu amb l'administrador per obtenir el permís d'inici de sessió.</translation>
@@ -8770,7 +8764,6 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7855678561139483478">Mou la pestanya a una finestra nova</translation>
 <translation id="7857004848504343806">L'ordinador conté un mòdul de seguretat, que s'utilitza per implementar un gran nombre de funcions de seguretat clau a ChromeOS Flex. Visita el Centre d'ajuda de Chromebook per obtenir més informació: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Suggeriments de text</translation>
-<translation id="7857949311770343000">Aquesta és la pàgina de la pestanya nova que volíeu?</translation>
 <translation id="7858120906780498731">Dispositius d'entrada connectats de ChromeOS</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941">Suprimeix l'extensió <ph name="EXTENSION_NAME" /></translation>
@@ -8819,7 +8812,6 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="789722939441020330">No permetis que els llocs web baixin automàticament diversos fitxers</translation>
 <translation id="7897900149154324287">La propera vegada, assegureu-vos d'expulsar el dispositiu extraïble des de l'aplicació Fitxers abans de desconnectar-lo si no en voleu perdre les dades.</translation>
 <translation id="7898725031477653577">Tradueix sempre</translation>
-<translation id="7899324822972399722">Imatge <ph name="INDEX" /> de <ph name="A" />, d'estil <ph name="B" /></translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7903290522161827520">Busques els components del navegador? Ves a</translation>
 <translation id="7903429136755645827">Fes clic per personalitzar els controls de joc</translation>
@@ -9100,7 +9092,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8098616321286360457">Cal una connexió a la xarxa</translation>
 <translation id="8100230553590752325">Utilitza les contrasenyes desades en qualsevol dispositiu</translation>
 <translation id="810068641062493918">S'ha seleccionat <ph name="LANGUAGE" />. Prem Cerca+Espai per desseleccionar-lo.</translation>
-<translation id="8100725874569949614">Imatge <ph name="INDEX" /> de <ph name="A" />, amb un estat d'ànim <ph name="C" />.</translation>
 <translation id="8101409298456377967">Crea, desa i gestiona les teves contrasenyes de manera que puguis iniciar la sessió fàcilment en llocs web i aplicacions. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">Color personalitzat</translation>
 <translation id="8101987792947961127">Es requereix Powerwash la propera vegada que es reiniciï</translation>
@@ -10048,7 +10039,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8846163936679269230">Restableix els perfils eSIM</translation>
 <translation id="8846239054091760429">Àudio mono, inici, subtítols instantanis, etc.</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8848963863312877204">Troba les baixades aquí</translation>
 <translation id="8849001918648564819">Amagat</translation>
 <translation id="8849219423513870962">Cancel·la la supressió del perfil d'eSIM anomenat <ph name="PROFILE_NAME" /></translation>
 <translation id="8849262417389398097"><ph name="CHECKED" /> de <ph name="CHECKING" /></translation>

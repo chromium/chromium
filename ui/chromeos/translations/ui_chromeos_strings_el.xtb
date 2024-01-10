@@ -25,7 +25,6 @@
 <translation id="1173916544412572294">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Μπαταρία τηλεφώνου <ph name="BATTERY_STATUS" />%, Λεπτομέρειες</translation>
 <translation id="117624967391683467">Αντιγραφή αρχείου <ph name="FILE_NAME" />…</translation>
 <translation id="1178581264944972037">Παύση</translation>
-<translation id="1190144681599273207">Για την ανάκτηση αυτού του αρχείου θα χρησιμοποιηθούν περίπου <ph name="FILE_SIZE" /> δεδομένων κινητής τηλεφωνίας.</translation>
 <translation id="1194390763418645112">Πρόσβαση στο αρχείο από <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">Επόμενο</translation>
 <translation id="1209796539517632982">Αυτόματοι διακομιστές ονομάτων</translation>
@@ -101,7 +100,6 @@
 <translation id="1761091787730831947">Κοινή χρήση με το <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">Το πιστοποιητικό ελέγχου ταυτότητας απορρίφθηκε τοπικά</translation>
 <translation id="1775381402323441512">Πληροφορίες βίντεο</translation>
-<translation id="180035236176489073">Πρέπει να είστε συνδεδεμένοι στο διαδίκτυο για να αποκτήσετε πρόσβαση σε αυτά τα αρχεία.</translation>
 <translation id="1807938677607439181">Όλα τα αρχεία</translation>
 <translation id="1810764548349082891">Δεν υπάρχει διαθέσιμη προεπισκόπηση</translation>
 <translation id="1812302367230252929">Μεταγραφή σε Αμχαρικά</translation>
@@ -137,6 +135,7 @@
 <translation id="2084809735218147718">Άτομο που λέει ευχαριστώ στη νοηματική γλώσσα</translation>
 <translation id="2088690981887365033">Δίκτυο VPN</translation>
 <translation id="209653272837065803">Ο αποθηκευτικός χώρος δεν επαρκεί για να συνεχιστεί ο συγχρονισμός αρχείων</translation>
+<translation id="2099143626019777139">Οι ιστότοποι που επισκέπτεστε είναι ορατοί στον διαχειριστή σας. Μπορείτε να δείτε τη λίστα με τους ορατούς ιστοτόπους.</translation>
 <translation id="2111134541987263231">Ενεργοποιήστε την επιλογή <ph name="BEGIN_BOLD" />Να επιτρέπεται στην ανώνυμη περιήγηση<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> στοιχεία θα διαγραφούν και δεν θα είστε σε θέση να τα επαναφέρετε.</translation>
 <translation id="2122305276694332719">Η αυτόματη σύνδεση σε ένα κρυφό δίκτυο επιτρέπει σε άλλα άτομα να βλέπουν τη συσκευή σας και ορισμένες ρυθμίσεις δικτύου σας και δεν συνιστάται.</translation>
@@ -163,8 +162,6 @@
 <translation id="2282155092769082568">Αυτόματη διαμόρφωση URL</translation>
 <translation id="2284767815536050991">αφαιρούμενος αποθηκευτικός χώρος</translation>
 <translation id="2288278176040912387">Πικάπ</translation>
-<translation id="2291538123825441971">Άνοιγμα <ph name="NUMBER_OF_FILES" /> αρχείων.</translation>
-<translation id="2303301624314357662">Άνοιγμα αρχείου <ph name="FILE_NAME" />.</translation>
 <translation id="2304820083631266885">Πλανήτης</translation>
 <translation id="2305020378527873881">Το στοιχείο <ph name="VOLUME_NAME" /> καταργήθηκε.</translation>
 <translation id="2307462900900812319">Διαμόρφωση δικτύου</translation>
@@ -174,7 +171,6 @@
 <translation id="233822363739146957">Ο αποθηκευτικός χώρος δεν επαρκεί για τον συγχρονισμό όλων των αρχείων σας</translation>
 <translation id="23721837607121582">Λήψη προφίλ κινητού, Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Εναλλαγή σε προβολή λίστας</translation>
-<translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> φάκελοι κοινόχρηστοι με Linux</translation>
 <translation id="2379576081295865700">Έλεγχος αποθηκευτικού χώρου… Βρέθηκε 1 στοιχείο</translation>
 <translation id="2383454254762599978">Μετακίνηση στον κάδο</translation>
 <translation id="2387458720915042159">Τύπος σύνδεσης διακομιστή μεσολάβησης</translation>
@@ -404,12 +400,10 @@
 <translation id="4197674956721858839">Επιλογή για δημιουργία συμπιεσμένου αρχείου</translation>
 <translation id="4202378258276439759">Ισπανικά (Λατινική Αμερική)</translation>
 <translation id="4202977638116331303">Γεωργιανά</translation>
-<translation id="421017592316736757">Πρέπει να είστε συνδεδεμένοι στο διαδίκτυο για να αποκτήσετε πρόσβαση σε αυτό το αρχείο.</translation>
 <translation id="4212740939091998969">Ο φάκελος με την ονομασία "<ph name="FOLDER_NAME" />" υπάρχει ήδη. Επιλέξτε διαφορετικό όνομα.</translation>
 <translation id="4218274196133425560">Κατάργηση εξαίρεσης για τον ιστότοπο <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">Παρουσίαση Google</translation>
 <translation id="4277536868133419688">Το φίλτρο <ph name="FILTER_NAME" /> είναι ενεργό.</translation>
-<translation id="4290535918735525311">1 φάκελος που κοινοποιήθηκε με Linux</translation>
 <translation id="4299729908419173967">Βραζιλιάνικα</translation>
 <translation id="4302605047395093221">Όποιος χρησιμοποιεί αυτήν τη συσκευή θα πρέπει να εισαγάγει το PIN για να συνδεθεί σε αυτό το δίκτυο κινητής τηλεφωνίας.</translation>
 <translation id="4303531889494116116">Αυτό το δίκτυο είναι απασχολημένο. Δοκιμάστε ξανά αργότερα.</translation>
@@ -512,8 +506,6 @@
 <translation id="4906580650526544301">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Μπαταρία τηλεφώνου <ph name="BATTERY_STATUS" />%, Λεπτομέρειες</translation>
 <translation id="4935975195727477204">Φυτό γκαζάνια</translation>
 <translation id="4943368462779413526">Αμερικάνικο ποδόσφαιρο</translation>
-<translation id="4961158930123534723">Μοιραστήκατε έναν φάκελο με το Parallels Desktop.</translation>
-<translation id="4965874878399872778">Έλεγχος αρχείων ως προς τις πολιτικές ασφαλείας του οργανισμού σας…</translation>
 <translation id="496656650103537022">Έγινε επαναφορά του αρχείου <ph name="FILE_NAME" /></translation>
 <translation id="4969785127455456148">Λεύκωμα</translation>
 <translation id="4972330214479971536">Δεν ήταν δυνατή η ολοκλήρωση της ρύθμισης συγχρονισμού αρχείων</translation>
@@ -577,7 +569,6 @@
 <translation id="5317780077021120954">Αποθήκευση</translation>
 <translation id="5318819489018851358">Κοινοποίηση σε Linux</translation>
 <translation id="5323213332664049067">Λατινικής Αμερικής</translation>
-<translation id="5330145655348521461">Αυτά τα αρχεία άνοιξαν σε διαφορετικό προφίλ. Μεταφερθείτε στο προφίλ <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) για να τα δείτε.</translation>
 <translation id="5330512191124428349">Λήψη πληροφοριών</translation>
 <translation id="535792325654997756">Άτομο με γάτες</translation>
 <translation id="5358764674931277">Ρυθμός καρέ</translation>
@@ -680,7 +671,6 @@
 <translation id="613750717151263950">Ιαπωνικά με πληκτρολόγιο ΗΠΑ</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, κανένα δίκτυο</translation>
 <translation id="6146563240635539929">Βίντεο</translation>
-<translation id="6150853954427645995">Για να αποθηκεύσετε αυτό το αρχείο για χρήση εκτός σύνδεσης, συνδεθείτε ξανά στο διαδίκτυο, κάντε δεξί κλικ στο αρχείο και ενεργοποιήστε την επιλογή <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Πεταλούδες</translation>
 <translation id="6165508094623778733">Μάθετε περισσότερα</translation>
 <translation id="6170470584681422115">Σάντουιτς</translation>
@@ -713,7 +703,6 @@
 <translation id="636254897931573416">Μη έγκυρη τιμή αντιστοιχίας επιθήματος τομέα</translation>
 <translation id="6364301859968397756">Ο αποθηκευτικός χώρος του οργανισμού είναι πλήρης</translation>
 <translation id="6367976544441405720">Βαν</translation>
-<translation id="637062427944097960">Αυτό το αρχείο άνοιξε σε διαφορετικό προφίλ. Μεταβείτε στο προφίλ <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) για να το δείτε.</translation>
 <translation id="6394388407447716302">Μόνο για ανάγνωση</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> στοιχεία</translation>
 <translation id="6407769893376380348">Δεν ήταν δυνατή η μετακίνηση του αρχείου <ph name="FILE_NAME" /> επειδή είναι κρυπτογραφημένο.</translation>
@@ -722,7 +711,6 @@
 <translation id="6430271654280079150">Απομένει 1 ακόμη προσπάθεια.</translation>
 <translation id="643243556292470964">Τα διαγραμμένα αρχεία μετακινούνται τώρα στον κάδο</translation>
 <translation id="6438480100790416671">Έλεγχος αποθηκευτικού χώρου…</translation>
-<translation id="6451527188465304418">Έλεγχος αρχείου ως προς τις πολιτικές ασφαλείας του οργανισμού σας…</translation>
 <translation id="6485131920355264772">Αποτυχία ανάκτησης των πληροφοριών χώρου</translation>
 <translation id="6495925982925244349">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Διαχειριζόμενο από τον διαχειριστή σας, Λεπτομέρειες</translation>
 <translation id="649877868557234318">Εξαγωγή του αρχείου <ph name="FILE_NAME" /> στον φάκελο <ph name="FOLDER_NAME" /></translation>
@@ -737,7 +725,6 @@
 <translation id="6588648400954570689">Ρυθμίσεις συγχρονισμού αρχείων</translation>
 <translation id="6594855146910089723">Αυτός ο φάκελος χρησιμοποιείται από κοινού με το Linux και το Parallels Desktop.</translation>
 <translation id="6607272825297743757">Πληροφορίες αρχείου</translation>
-<translation id="6609332149380188670">Μοιραστήκατε <ph name="NUMBER_OF_ITEMS" /> φακέλους με το Parallels Desktop.</translation>
 <translation id="6629518321609546825">Εισαγάγετε τουλάχιστον 4 αριθμούς</translation>
 <translation id="6643016212128521049">Διαγραφή</translation>
 <translation id="6650726141019353908">Ροζ πεταλούδα</translation>
@@ -908,7 +895,6 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Σφάλμα κατά τη διαμόρφωση του δικτύου</translation>
-<translation id="7839804798877833423">Για την ανάκτηση αυτών των αρχείων θα χρησιμοποιηθούν περίπου <ph name="FILE_SIZE" /> δεδομένων κινητής τηλεφωνίας.</translation>
 <translation id="7846076177841592234">Ακύρωση επιλογής</translation>
 <translation id="7853966320808728790">Γαλλικά BÉPO</translation>
 <translation id="7857117644404132472">Προσθήκη εξαίρεσης</translation>
@@ -957,7 +943,6 @@
 <translation id="8175799081768705361">Συγχρονισμός <ph name="NUMBER_OF_FILES_SYNCING" /> αρχείων Drive</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Μοντέλο της συσκευής</translation>
-<translation id="8223479393428528563">Για να αποθηκεύσετε αυτά τα αρχεία για χρήση εκτός σύνδεσης, συνδεθείτε ξανά στο διαδίκτυο, κάντε δεξί κλικ στα αρχεία και ενεργοποιήστε την επιλογή <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8241139360630443550">Προβολή αποθηκευτικού χώρου</translation>
 <translation id="8249296373107784235">Ματαίωση</translation>
 <translation id="8250690786522693009">Λατινικά</translation>
@@ -985,6 +970,7 @@
 <translation id="83651606385705612">Παραχωρήστε στο <ph name="VM_NAME" /> άδεια πρόσβασης στα αρχεία του φακέλου <ph name="FOLDER_NAME" />.</translation>
 <translation id="8372369524088641025">Εσφαλμένο κλειδί WEP</translation>
 <translation id="8372852072747894550">Ελληνικά</translation>
+<translation id="8377269993083688872">Διατάξεις μηνυμάτων ηλεκτρονικού ταχυδρομείου</translation>
 <translation id="8386903983509584791">Η σάρωση ολοκληρώθηκε</translation>
 <translation id="8387733224523483503">Έγινε εξαγωγή του στοιχείου <ph name="FILE_NAME" />.</translation>
 <translation id="8395901698320285466">Διαστάσεις</translation>

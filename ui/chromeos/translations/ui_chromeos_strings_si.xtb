@@ -24,7 +24,6 @@
 <translation id="1173916544412572294"><ph name="NETWORK_COUNT" />න් <ph name="NETWORK_INDEX" /> වැනි ජාලය, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, දුරකථන බැටරිය <ph name="BATTERY_STATUS" />%, විස්තර</translation>
 <translation id="117624967391683467">පිටපත් කරන <ph name="FILE_NAME" />...</translation>
 <translation id="1178581264944972037">විරාමය</translation>
-<translation id="1190144681599273207">මෙම ගොනු ලබාගැනීමට ආසන්න වශයෙන් ජංගම දත්ත <ph name="FILE_SIZE" /> භාවිතා වේ.</translation>
 <translation id="1194390763418645112"><ph name="RESTRICTED_DESTINATIONS" /> මගින් ගොනු ප්‍රවේශය</translation>
 <translation id="1201402288615127009">ඊළඟ</translation>
 <translation id="1209796539517632982">ස්වයංක්‍රීය නාම සේවාදායක</translation>
@@ -100,7 +99,6 @@
 <translation id="1761091787730831947"><ph name="VM_NAME" /> සමග බෙදා ගන්න</translation>
 <translation id="1773212559869067373">තහවුරු කිරීමේ සහතිකය ස්ථානීයව ප්‍රතික්ෂේප කෙරිණි</translation>
 <translation id="1775381402323441512">වීඩියෝ තොරතුරු</translation>
-<translation id="180035236176489073">මෙම ගොනු වෙත පිවිසීමට ඔබ ඔන්ලයින් සිටිය යුතුය.</translation>
 <translation id="1807938677607439181">සියළු ගොනු</translation>
 <translation id="1810764548349082891">පෙරදසුන ලබාගත නොහැකිය</translation>
 <translation id="1812302367230252929">ඇම්හරික් අක්ෂර පරිවර්තනය</translation>
@@ -161,8 +159,6 @@
 <translation id="2282155092769082568">ස්වයංවින්‍යාසකරණ URL:</translation>
 <translation id="2284767815536050991">ඉවත් කළ හැකි ආචයනය</translation>
 <translation id="2288278176040912387">තැටි වාදකය</translation>
-<translation id="2291538123825441971">ගොනු <ph name="NUMBER_OF_FILES" />ක් විවෘත කිරීම.</translation>
-<translation id="2303301624314357662"><ph name="FILE_NAME" /> ගොනුව විවෘත කිරීම.</translation>
 <translation id="2304820083631266885">ග්‍රහලෝකය</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> ඉවත් කර ඇත.</translation>
 <translation id="2307462900900812319">ජාලය සකසන්න</translation>
@@ -172,7 +168,6 @@
 <translation id="233822363739146957">ඔබේ සියලු ම ගොනු සමමුහුර්ත කිරීමට ප්‍රමාණවත් ආචයන ඉඩක් නොමැත</translation>
 <translation id="23721837607121582">ජංගම පැතිකඩ බාගන්න, ජාල <ph name="NETWORK_COUNT" />කින් <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">ලැයිස්තු දසුනට මාරු වන්න</translation>
-<translation id="2377590462528165447">ෆෝල්ඩර <ph name="NUMBER_OF_ITEMS" />ක් ලිනක්ස් සමඟ බෙදා ගත්තා</translation>
 <translation id="2379576081295865700">ආචයන ඉඩ පරීක්ෂා කරමින්… 1 අයිතමයක් හමු විය</translation>
 <translation id="2383454254762599978">කුණු කූඩය වෙත ගෙන යන්න</translation>
 <translation id="2387458720915042159">ප්‍රොක්සි සබැඳුම් වර්ගය</translation>
@@ -396,12 +391,10 @@
 <translation id="4197674956721858839">Zip තේරීම</translation>
 <translation id="4202378258276439759">ස්පාඤ්ඤ (ලතින් ඇමෙරිකාව)</translation>
 <translation id="4202977638116331303">ජෝර්ජියානු</translation>
-<translation id="421017592316736757">මෙම ගොනුව වෙත පිවිසීමට ඔබ මාර්ගගතව සිටිය යුතුය.</translation>
 <translation id="4212740939091998969">"<ph name="FOLDER_NAME" />" නමැති ෆෝල්ඩරය දැනටමත් පවතියි. වෙනත් නමක් තෝරන්න.</translation>
 <translation id="4218274196133425560"><ph name="HOST_NAME" /> සඳහා වන ව්‍යතිරේකය ඉවත් කරන්න</translation>
 <translation id="4261901459838235729">Google සමර්පණය</translation>
 <translation id="4277536868133419688"><ph name="FILTER_NAME" /> පෙරහන ක්‍රියාත්මකයි.</translation>
-<translation id="4290535918735525311">ලිනක්ස් සමඟ 1 ෆෝල්ඩරයක් බෙදා ගත්තා</translation>
 <translation id="4299729908419173967">බ්‍රසීලියානු</translation>
 <translation id="4302605047395093221">මෙම උපාංගය භාවිත කරන ඕනෑම කෙනෙකු මෙම ජංගම ජාලයට සම්බන්ධ වීමට PIN අංකය ඇතුළු කළ යුතුය</translation>
 <translation id="4303531889494116116">මෙම ජාලය කාර්යබහුලයි. පසුව නැවත උත්සාහ කරන්න.</translation>
@@ -502,8 +495,6 @@
 <translation id="4906580650526544301"><ph name="NETWORK_COUNT" />න් <ph name="NETWORK_INDEX" /> වැනි ජාලය, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, දුරකථන බැටරිය <ph name="BATTERY_STATUS" />%, විස්තර</translation>
 <translation id="4935975195727477204">ගැන්සානියා මල</translation>
 <translation id="4943368462779413526">පාපන්දු</translation>
-<translation id="4961158930123534723">Parallels Desktop සමග එක ෆෝල්ඩරයක් බෙදා ගන්නා ලදි</translation>
-<translation id="4965874878399872778">ඔබේ සංවිධානයේ ආරක්ෂක ප්‍රතිපත්තිවලට එදිරිව ගොනු පරීක්ෂා කරමින්...</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> ප්‍රතිස්ථාපනය කරන ලදි</translation>
 <translation id="4969785127455456148">ඇල්බමය</translation>
 <translation id="4972330214479971536">ගොනු සමමුහුර්ත කිරීම පිහිටුවීම අවසන් කළ නොහැකි විය</translation>
@@ -565,7 +556,6 @@
 <translation id="5317780077021120954">සුරකින්න</translation>
 <translation id="5318819489018851358">Linux සමග බෙදාගන්න</translation>
 <translation id="5323213332664049067">ලතින් ඇමෙරිකානු</translation>
-<translation id="5330145655348521461">මෙම ගොනු වෙනස් ඩෙස්ක්ටොප් එකක විවෘත කරන ලදි. බැලීමට <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) වෙත ගෙන යන්න.</translation>
 <translation id="5330512191124428349">තොරතුරු ලබා ගන්න</translation>
 <translation id="535792325654997756">බළලුන් සමග පුද්ගලයා</translation>
 <translation id="5358764674931277">රාමු අනුපාතය</translation>
@@ -667,7 +657,6 @@
 <translation id="613750717151263950">එ.ජ. යතුරුපුවරුව සමග ජපන්</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, ජාලයක් නැත</translation>
 <translation id="6146563240635539929">වීඩියෝ</translation>
-<translation id="6150853954427645995">මෙම ගොනුව මාර්ගගත නොවී භාවිත කිරීම සඳහා, මාර්ගගත වී, ගොනුව මත දකුණු ක්ලික් කර, <ph name="OFFLINE_CHECKBOX_NAME" /> අභිප්‍රේතය තෝරන්න.</translation>
 <translation id="6164412158936057769">සමනලුන්</translation>
 <translation id="6165508094623778733">තව දැන ගන්න</translation>
 <translation id="6170470584681422115">සැන්ඩ්විච්</translation>
@@ -700,7 +689,6 @@
 <translation id="636254897931573416">වලංගු නොවන වසම් ප්‍රත්‍ය ගැළපීම් අගය</translation>
 <translation id="6364301859968397756">සංවිධානයේ ආචයනය පිරී ඇත</translation>
 <translation id="6367976544441405720">වෑන් රථය</translation>
-<translation id="637062427944097960">මෙම ගොනුව වෙනත් වැඩබිමක විවෘත විය. එය දර්ශනයට <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) වෙත ගෙනයන්න.</translation>
 <translation id="6394388407447716302">කියවීමට-පමණි</translation>
 <translation id="6395575651121294044">අයිතම <ph name="NUMBER_OF_FILES" /></translation>
 <translation id="6407769893376380348"><ph name="FILE_NAME" /> සංකේතනය කර ඇති නිසා එය ගෙන යාමට නොහැකි විය.</translation>
@@ -709,7 +697,6 @@
 <translation id="6430271654280079150">ඔබට 1 උත්සාහයක් ඉතුරුයි.</translation>
 <translation id="643243556292470964">මකා දැමූ ගොනු දැන් කුණු කූඩයට ගෙන ගොස් ඇත</translation>
 <translation id="6438480100790416671">ආචයන ඉඩ පරීක්ෂා කරමින්…</translation>
-<translation id="6451527188465304418">ඔබේ සංවිධානයේ ආරක්ෂක ප්‍රතිපත්තිවලට එදිරිව ගොනුව පරීක්ෂා කරමින්...</translation>
 <translation id="6485131920355264772">ඉඩ තතු යළි ලබා ගැනීමට අසමත් විය</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_COUNT" />න් <ph name="NETWORK_INDEX" /> වැනි ජාලය, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, ඔබේ පරිපාලකයා විසින් කළමනාකරණය කරයි, විස්තර</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> <ph name="FOLDER_NAME" /> වෙත උපුටා ගනිමින්</translation>
@@ -724,7 +711,6 @@
 <translation id="6588648400954570689">ගොනු සමමුහූර්ත කිරීමේ සැකසීම්</translation>
 <translation id="6594855146910089723">මෙම ෆේල්ඩරය Linux සහ Parallels Desktop සමග බෙදා ගනු ඇත</translation>
 <translation id="6607272825297743757">ගොනු තොරතුරු</translation>
-<translation id="6609332149380188670">ෆෝල්ඩර <ph name="NUMBER_OF_ITEMS" />ක් Parallels Desktop සමඟ බෙදා ගන්නා ලදි</translation>
 <translation id="6629518321609546825">අඩු තරමින් අංක 4ක් ඇතුළු කරන්න</translation>
 <translation id="6643016212128521049">මකන්න</translation>
 <translation id="6650726141019353908">රෝස සමනලයා</translation>
@@ -891,7 +877,6 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009">ටෙරාබයිට් <ph name="NUMBER_OF_TB" /></translation>
 <translation id="7831491651892296503">ජාලය වින්‍යාස කිරීමේ දෝෂයකි</translation>
-<translation id="7839804798877833423">මෙම ගොනු සොයා ගැනීමෙන් ආසන්න වශයෙන් ජංගම දත්ත <ph name="FILE_SIZE" /> භාවිතා වේ.</translation>
 <translation id="7846076177841592234">තේරීම අවලංගු කරන්න</translation>
 <translation id="7853966320808728790">ප්‍රංශ BÉPO</translation>
 <translation id="7857117644404132472">ව්‍යතිරේකයක් එක් කරන්න</translation>
@@ -939,7 +924,6 @@
 <translation id="8175799081768705361">Drive ගොනු <ph name="NUMBER_OF_FILES_SYNCING" /> ක් සමමුහූර්ත කරමින්</translation>
 <translation id="8179976553408161302">ඇතුළු කරන්න</translation>
 <translation id="8193175696669055101">උපාංග මාදිලිය</translation>
-<translation id="8223479393428528563">මෙම ගොනු මාර්ගගත නොවන භාවිතයට සුරැකීමට, නැවත මාර්ගගත වී, ගොනු මත දකුණු ක්ලික් කර, <ph name="OFFLINE_CHECKBOX_NAME" /> අභිප්‍රේතය තෝරන්න.</translation>
 <translation id="8241139360630443550">ආචයනය බලන්න</translation>
 <translation id="8249296373107784235">අහෝසි කරන්න</translation>
 <translation id="8250690786522693009">ලතින්</translation>

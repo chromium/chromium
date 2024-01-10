@@ -233,6 +233,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2318045970523081853">Tryk for at ringe op</translation>
 <translation id="2321086116217818302">Forbereder adgangskoder…</translation>
 <translation id="2323763861024343754">Websitelagerplads</translation>
+<translation id="2327226657832576859">Vil du åbne PDF-filer automatisk?</translation>
 <translation id="2328985652426384049">Det er ikke muligt at logge ind</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> kunne ikke installeres.</translation>
 <translation id="2349710944427398404">Samlet mængde data, som Chrome anvender, herunder konti, bogmærker og gemte indstillinger</translation>
@@ -638,6 +639,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="4523326818319942067">den seneste time</translation>
 <translation id="452750746583162491">Gennemgå dine synkroniserede data</translation>
 <translation id="4532845899244822526">Vælg mappe</translation>
+<translation id="4541505619120536051">Åbn altid</translation>
 <translation id="4543131175509360848">Feltet "Ingen tilgængelige adgangsnøgler"</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> fane}one{<ph name="TAB_COUNT_MANY" /> fane og <ph name="TAB_COUNT_INCOGNITO" /> inkognitofane}other{<ph name="TAB_COUNT_MANY" /> faner og <ph name="TAB_COUNT_INCOGNITO" /> inkognitofaner}}</translation>
 <translation id="4554077758708533499">Tilsluttet via USB-kabel</translation>
@@ -829,6 +831,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5486841595534124508">Logo for privatlivsmeddelelse for platform med sideindsigt, som omdirigerer til siden Min aktivitet.</translation>
 <translation id="5487521232677179737">Ryd data</translation>
 <translation id="5492637351392383067">Kryptering på enheden</translation>
+<translation id="5509866835115085009">Chrome kan åbne en PDF-fil automatisk, når du downloader den.</translation>
 <translation id="5514904542973294328">Deaktiveret af administratoren af denne enhed</translation>
 <translation id="5515439363601853141">Lås op for at se din adgangskode</translation>
 <translation id="5517095782334947753">Du har bogmærker, historik, adgangskoder og andre indstillinger fra <ph name="FROM_ACCOUNT" />.</translation>

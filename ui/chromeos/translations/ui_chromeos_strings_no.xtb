@@ -24,7 +24,6 @@
 <translation id="1173916544412572294">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="PHONE_NAME" /> – <ph name="CONNECTION_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – telefonbatterinivå <ph name="BATTERY_STATUS" /> % – detaljer</translation>
 <translation id="117624967391683467">Kopierer <ph name="FILE_NAME" /> ...</translation>
 <translation id="1178581264944972037">Stans midlertidig</translation>
-<translation id="1190144681599273207">Henting av denne filen kommer til å bruke ca. <ph name="FILE_SIZE" /> mobildata.</translation>
 <translation id="1194390763418645112">Filtilgang for <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">Neste</translation>
 <translation id="1209796539517632982">Automatiske navnetjenere</translation>
@@ -100,7 +99,6 @@
 <translation id="1761091787730831947">Del med <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">Autentiseringssertifikatet ble avvist lokalt</translation>
 <translation id="1775381402323441512">Videoinformasjon</translation>
-<translation id="180035236176489073">Du må ha internettilkobling for å få tilgang til disse filene.</translation>
 <translation id="1807938677607439181">Alle filer</translation>
 <translation id="1810764548349082891">Ingen forhåndsvisning er tilgjengelig</translation>
 <translation id="1812302367230252929">Amharisk, translitterasjon</translation>
@@ -135,6 +133,7 @@
 <translation id="2084809735218147718">Tegnspråk for takk</translation>
 <translation id="2088690981887365033">VPN-nettverk</translation>
 <translation id="209653272837065803">Du har ikke nok lagringsplass til å fortsette å synkronisere filer</translation>
+<translation id="2099143626019777139">Administratoren din kan se nettstedene du besøker. Du kan se listen over synlige nettsteder.</translation>
 <translation id="2111134541987263231">Slå på <ph name="BEGIN_BOLD" />Tillat i inkognitomodus<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> elementer slettes, og du kan ikke gjenopprette dem.</translation>
 <translation id="2122305276694332719">Automatisk tilkobling til skjulte nettverk gjør det mulig for andre å se enheten din og enkelte nettverksinnstillinger, så det anbefales ikke.</translation>
@@ -161,8 +160,6 @@
 <translation id="2282155092769082568">Nettadresse for automatisk konfigurering:</translation>
 <translation id="2284767815536050991">flyttbar lagring</translation>
 <translation id="2288278176040912387">Platespiller</translation>
-<translation id="2291538123825441971">Åpner <ph name="NUMBER_OF_FILES" /> filer.</translation>
-<translation id="2303301624314357662">Åpner filen <ph name="FILE_NAME" />.</translation>
 <translation id="2304820083631266885">Planet</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> er løst ut.</translation>
 <translation id="2307462900900812319">Konfigurer nettverket</translation>
@@ -172,7 +169,6 @@
 <translation id="233822363739146957">Du har ikke nok lagringsplass til å synkronisere alle filene dine</translation>
 <translation id="23721837607121582">Last ned mobilprofilen, nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Bytt til listevisning</translation>
-<translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> mapper er delt med Linux</translation>
 <translation id="2379576081295865700">Sjekker lagringsplassen … Fant 1 element</translation>
 <translation id="2383454254762599978">Legg i papirkurven</translation>
 <translation id="2387458720915042159">Tilkoblingstype for proxy-tjener</translation>
@@ -396,12 +392,10 @@
 <translation id="4197674956721858839">Zip-utvalg</translation>
 <translation id="4202378258276439759">Spansk (Latin-Amerika)</translation>
 <translation id="4202977638116331303">Georgisk</translation>
-<translation id="421017592316736757">Du må ha internettilkobling for å få tilgang til denne filen.</translation>
 <translation id="4212740939091998969">Det finnes allerede en mappe som heter «<ph name="FOLDER_NAME" />». Velg et annet navn.</translation>
 <translation id="4218274196133425560">Fjern unntak for <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">Google-presentasjon</translation>
 <translation id="4277536868133419688"><ph name="FILTER_NAME" />-filteret er på.</translation>
-<translation id="4290535918735525311">1 mappe er delt med Linux</translation>
 <translation id="4299729908419173967">Brasiliansk</translation>
 <translation id="4302605047395093221">Alle som bruker denne enheten, må oppgi PIN-koden for å koble til dette mobilnettverket</translation>
 <translation id="4303531889494116116">Dette nettverket er utilgjengelig. Prøv på nytt senere.</translation>
@@ -502,8 +496,6 @@
 <translation id="4906580650526544301">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="PHONE_NAME" /> – <ph name="PROVIDER_NAME" /> – <ph name="CONNECTION_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – telefonbatterinivå <ph name="BATTERY_STATUS" /> % – detaljer</translation>
 <translation id="4935975195727477204">Gazania-blomst</translation>
 <translation id="4943368462779413526">Fotball</translation>
-<translation id="4961158930123534723">1 mappe er delt med Parallels Desktop</translation>
-<translation id="4965874878399872778">Sjekker filene opp mot organisasjonens sikkerhetsregler …</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> er gjenopprettet</translation>
 <translation id="4969785127455456148">Album</translation>
 <translation id="4972330214479971536">Kunne ikke fullføre konfigureringen av filsynkronisering</translation>
@@ -565,7 +557,6 @@
 <translation id="5317780077021120954">Lagre</translation>
 <translation id="5318819489018851358">Del med Linux</translation>
 <translation id="5323213332664049067">Latinamerikansk</translation>
-<translation id="5330145655348521461">Disse filene ble åpnet på et annet skrivebord. Flytt til <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) for å se dem.</translation>
 <translation id="5330512191124428349">Få informasjon</translation>
 <translation id="535792325654997756">Person med katter</translation>
 <translation id="5358764674931277">Bildefrekvens</translation>
@@ -667,7 +658,6 @@
 <translation id="613750717151263950">Japansk med amerikansk tastatur</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" /> – ingen nettverk</translation>
 <translation id="6146563240635539929">Videoer</translation>
-<translation id="6150853954427645995">For å lagre denne filen for bruk utenfor Internett, går du på nettet, høyreklikker på filen og velger <ph name="OFFLINE_CHECKBOX_NAME" />-alternativet.</translation>
 <translation id="6164412158936057769">Sommerfugler</translation>
 <translation id="6165508094623778733">Finn ut mer</translation>
 <translation id="6170470584681422115">Smørbrød</translation>
@@ -700,7 +690,6 @@
 <translation id="636254897931573416">Ugyldig verdi i listen over samsvarende domenesuffikser</translation>
 <translation id="6364301859968397756">Organisasjonens lagringsplass er oppbrukt</translation>
 <translation id="6367976544441405720">Varebil</translation>
-<translation id="637062427944097960">Denne filen ble åpnet på et annet skrivebord. Flytt til <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) for å se den.</translation>
 <translation id="6394388407447716302">Skrivebeskyttet</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> elementer</translation>
 <translation id="6407769893376380348"><ph name="FILE_NAME" /> kunne ikke flyttes fordi den er kryptert.</translation>
@@ -709,7 +698,6 @@
 <translation id="6430271654280079150">Du har ett forsøk igjen.</translation>
 <translation id="643243556292470964">Slettede filer flyttes nå til papirkurven</translation>
 <translation id="6438480100790416671">Kontrollerer lagringsplass …</translation>
-<translation id="6451527188465304418">Sjekker filen opp mot organisasjonens sikkerhetsregler …</translation>
 <translation id="6485131920355264772">Kunne ikke hente informasjon om lagringsplass</translation>
 <translation id="6495925982925244349">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – <ph name="SECURITY_STATUS" /> – <ph name="CONNECTION_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – administreres av administratoren din – detaljer</translation>
 <translation id="649877868557234318">Pakker ut <ph name="FILE_NAME" /> i <ph name="FOLDER_NAME" /></translation>
@@ -724,7 +712,6 @@
 <translation id="6588648400954570689">Innstillinger for filsynkronisering</translation>
 <translation id="6594855146910089723">Denne mappen deles med Linux og Parallels Desktop</translation>
 <translation id="6607272825297743757">Filinformasjon</translation>
-<translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> mapper er delt med Parallels Desktop</translation>
 <translation id="6629518321609546825">Skriv inn de fire siste tallene</translation>
 <translation id="6643016212128521049">Tøm</translation>
 <translation id="6650726141019353908">Rosa sommerfugl</translation>
@@ -891,7 +878,6 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">En feil oppsto under konfigureringen av nettverket</translation>
-<translation id="7839804798877833423">Henting av disse filene kommer til å bruke ca. <ph name="FILE_SIZE" /> mobildata.</translation>
 <translation id="7846076177841592234">Opphev valget</translation>
 <translation id="7853966320808728790">Fransk BÉPO</translation>
 <translation id="7857117644404132472">Legg til unntak</translation>
@@ -940,7 +926,6 @@
 <translation id="8175799081768705361">Synkroniserer <ph name="NUMBER_OF_FILES_SYNCING" /> Disk-filer</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Enhetsmodell</translation>
-<translation id="8223479393428528563">For å lagre disse filene for bruk utenfor Internett, går du på nettet, høyreklikker på filene og velger <ph name="OFFLINE_CHECKBOX_NAME" />-alternativet.</translation>
 <translation id="8241139360630443550">Se lagringsplass</translation>
 <translation id="8249296373107784235">Avbryt</translation>
 <translation id="8250690786522693009">Latin</translation>
@@ -967,6 +952,7 @@
 <translation id="83651606385705612">Gi <ph name="VM_NAME" /> tilgang til filer i mappen <ph name="FOLDER_NAME" /></translation>
 <translation id="8372369524088641025">Feil WEP-nøkkel</translation>
 <translation id="8372852072747894550">Gresk</translation>
+<translation id="8377269993083688872">E-postmaler</translation>
 <translation id="8386903983509584791">Skanningen er fullført</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> er pakket ut.</translation>
 <translation id="8395901698320285466">Dimensjoner</translation>

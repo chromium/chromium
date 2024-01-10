@@ -272,6 +272,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1476595624592550506">Endre passordet</translation>
 <translation id="1482879811280872320">Sykling</translation>
 <translation id="1483493594462132177">Send</translation>
+<translation id="1484632730438126438">Dette er for kort. Skriv minst tre ord.</translation>
 <translation id="1492194039220927094">Push-levering av regler:</translation>
 <translation id="14938948731065592">Datautstyr</translation>
 <translation id="1495677929897281669">Tilbake til fanen</translation>
@@ -1238,7 +1239,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3447661539832366887">Eieren av denne enheten har slått av dinosaurspillet.</translation>
 <translation id="3447884698081792621">Vis sertifikat (utstedt av <ph name="ISSUER" />)</translation>
 <translation id="3450323514459570273">Kan be om å få styre og omprogrammere MIDI-enhetene dine</translation>
-<translation id="3452151267620065789">Fremdriften er lagret</translation>
 <translation id="3452404311384756672">Hentingsintervall:</translation>
 <translation id="3453962258458347894">Antall forsøk</translation>
 <translation id="3461266716147554923"><ph name="URL" /> ber om å se tekst og bilder som er kopiert til utklippstavlen</translation>
@@ -1404,6 +1404,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3748009735914587286">Metall (høyglans)</translation>
 <translation id="3748148204939282805">Angripere på <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> kan lure deg til å gjøre farlige ting, deriblant å installere programvare eller oppgi personopplysninger (for eksempel passord, telefonnumre og kredittkortinformasjon). <ph name="BEGIN_LEARN_MORE_LINK" />Finn ut mer<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Flybransjen</translation>
+<translation id="3751020515020988516">Forespørselen ble ikke forstått. Prøv en annen forespørsel.</translation>
 <translation id="3752543821772132562">Ignorert fordi <ph name="POLICY_NAME" /> ikke er angitt.</translation>
 <translation id="3754210790023674521">Avslutt bilde-i-bilde</translation>
 <translation id="3759461132968374835">Du har ingen nylig rapporterte krasj. Krasj som inntraff når rapportering om krasj var deaktivert, blir ikke vist her.</translation>
@@ -1460,6 +1461,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3858860766373142691">Navn</translation>
 <translation id="3872834068356954457">Vitenskap</translation>
 <translation id="3875783148670536197">Vis meg hvordan</translation>
+<translation id="3877877650871124156">Dette er for langt. Gjør det kortere, og prøv på nytt.</translation>
 <translation id="3881478300875776315">Vis færre linjer</translation>
 <translation id="3883500545751229739">forstyrrende annonser</translation>
 <translation id="3884278016824448484">Motstridende enhetsidentifikator</translation>
@@ -1537,7 +1539,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4067098466788473230">Legater og stipender</translation>
 <translation id="4067947977115446013">Du må angi en gyldig adresse</translation>
 <translation id="4070790659619547722">Med annonsemålinger deles begrensede typer data mellom nettsteder for å måle annonseresultater, for eksempel når på dagen en annonse ble vist for deg.</translation>
-<translation id="4072193657607981494">Laster inn regler</translation>
 <translation id="4072486802667267160">Det oppsto en feil under behandlingen av bestillingen din. Prøv på nytt.</translation>
 <translation id="4073376909608563327">Kunne ikke bruke enhetsopplåsing</translation>
 <translation id="4073797364926776829">Se kortet</translation>
@@ -2568,6 +2569,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />Finn ut mer om Incognito i Chrome<ph name="END_LINK" /></translation>
 <translation id="6133320744616005677">Fortsett å tillate</translation>
 <translation id="6133984428121856852">Filetternavnet er tomt eller feilformatert.</translation>
+<translation id="6139769382153674477">Noe gikk galt. Er du pålogget?</translation>
 <translation id="6139975341602920272">17 x 22 tommer</translation>
 <translation id="6146055958333702838">Sjekk alle kabler, og start rutere, modemer eller andre nettverksenheter
      du bruker, på nytt.</translation>
@@ -2724,7 +2726,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6428450836711225518">Bekreft telefonnummeret ditt</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">Bytt Google-passord</translation>
-<translation id="6431119592588449664">Rapporten er lastet opp</translation>
 <translation id="6432297414176614592">Mer om annonseemner</translation>
 <translation id="6432831586648556868">Salgs- og markedsføringsjobber</translation>
 <translation id="6433490469411711332">Endre kontaktinformasjonen</translation>
@@ -3482,7 +3483,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7871445724586827387">Endre passordet for Google-kontoen din</translation>
 <translation id="7877007680666472091">ID-er for beskyttet innhold</translation>
 <translation id="7878562273885520351">Passordet ditt kan være kompromittert</translation>
-<translation id="7878966190323222027">Åpne på nytt for å fortsette</translation>
 <translation id="7880146494886811634">Lagre adresse</translation>
 <translation id="7882421473871500483">Brun</translation>
 <translation id="7882995332186050355">Lastebiler og trailere</translation>
@@ -4103,7 +4103,6 @@ Mer informasjon:
 <translation id="9119042192571987207">Opplastet</translation>
 <translation id="9122954576417194280">Råvare- og futureshandel</translation>
 <translation id="912327514020027767">Skjørt</translation>
-<translation id="9128016270925453879">Regler er lastet inn</translation>
 <translation id="9128870381267983090">Koble til nettverk</translation>
 <translation id="9131119348384879525">Vil du ta opp konfidensielt innhold?</translation>
 <translation id="9133985615769429248">Hvis du deler denne enheten med andre, kan du bruke skjermlåsen til å bekrefte at det er deg, når du bruker lagrede passord</translation>

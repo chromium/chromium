@@ -56,7 +56,6 @@
 <translation id="1279024913354609713">Peidio â chaniatáu</translation>
 <translation id="1281818060020671000">Rheoli Data</translation>
 <translation id="1282311502488501110">Peidio â Mewngofnodi</translation>
-<translation id="1283039547216852943">Tapiwch i ehangu</translation>
 <translation id="1283524564873030414">24 awr ddiwethaf</translation>
 <translation id="1285320974508926690">Peidio byth â chyfieithu'r wefan hon</translation>
 <translation id="1291506870746876680">Bydd caniatadau <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> yn ailosod i wedi'u diffodd pan fyddwch yn gadael y wefan hon.</translation>
@@ -82,7 +81,6 @@
 <translation id="1377255359165588604">Mae Cysoni wedi stopio gweithio.</translation>
 <translation id="1377321085342047638">Rhif y Cerdyn</translation>
 <translation id="1377508275003315939">Cyfrineiriau</translation>
-<translation id="1380914240355562929">Gall <ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> bellach ddefnyddio'ch enw defnyddiwr a'ch cyfrinair pan fyddant yn defnyddio Rheolwr Cyfrineiriau Google i fewngofnodi i <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">Chwilio</translation>
 <translation id="138618066238211776">Parhau fel <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">Y 4 wythnos ddiwethaf</translation>
@@ -337,6 +335,7 @@ Ni all gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahano
 <translation id="2747003861858887689">Maes blaenorol</translation>
 <translation id="2749231692441336879">Yn dilyn <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Cyfrifon ar y Ddyfais hon</translation>
+<translation id="2755595981383829244">Byddwch nawr yn derbyn hysbysiadau cynnwys</translation>
 <translation id="2762000892062317888">newydd ddigwydd</translation>
 <translation id="2772667768515195373">Gallwch ddefnyddio cyfeiriadau sydd wedi'u cadw ar draws cynhyrchion Google. Mae'r cyfeiriad hwn wedi'i gadw yn eich Cyfrif Google <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Chwiliad Anhysbys</translation>
@@ -406,7 +405,6 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="3087734570205094154">Gwaelod</translation>
 <translation id="3090455602619185166">Mewngofnodwch gyda Chyfrif a Reolir</translation>
 <translation id="309710370695886264">Mae gennych 1 cyfrinair sydd wedi'i ailddefnyddio. Trwsiwch ef nawr i aros yn ddiogel.</translation>
-<translation id="3109724472072898302">Wedi'i grebachu</translation>
 <translation id="3112556859945124369">Nodi…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Gweld Beth Allwch ei Gysoni<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">Hanes a rhagor</translation>
@@ -775,7 +773,6 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="5121618895923301719">Rydych yn olrhain y cynnyrch hwn yn barod. Mae'r dudalen hon wedi'i chadw yn <ph name="BEGIN_LINK" />Nodau Tudalen Dyfais Symudol<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Mae gennych nifer o broblemau cyfrinair.</translation>
 <translation id="5126465625664020024">Mewngofnodi a Chysoni</translation>
-<translation id="5131062416352684089">Gall aelodau'ch teulu bellach ddefnyddio'ch enw defnyddiwr a'ch cyfrinair pan fyddant yn defnyddio Rheolwr Cyfrineiriau Google i fewngofnodi i <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">Cysonwch eich cyfrineiriau, hanes a mwy ar bob dyfais</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} Cyfrinair Gwan}zero{{COUNT} Cyfrinair Gwan}two{{COUNT} Gyfrinair Gwan}few{{COUNT} Cyfrinair Gwan}many{{COUNT} Cyfrinair Gwan}other{{COUNT} Cyfrinair Gwan}}</translation>
 <translation id="5149188072385105201">Ychwanegu Cyfrinair...</translation>
@@ -924,7 +921,6 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="5955891643922670672">Dyma'r Fersiwn All-lein</translation>
 <translation id="5957613098218939406">Rhagor o Ddewisiadau</translation>
 <translation id="595769230373966252">Chwilio gyda <ph name="SEARCH_PROVIDER" /></translation>
-<translation id="5962718611393537961">Tapiwch i grebachu</translation>
 <translation id="5963939892571022323">Ni ellir creu dolen i'r testun a amlygir.</translation>
 <translation id="5971872012779224351">{count,plural, =1{Mae 1 nod tudalen wedi'i ddileu}zero{Mae {count} nod tudalen wedi'u dileu}two{Mae {count} nod tudalen wedi'u dileu}few{Mae {count} nod tudalen wedi'u dileu}many{Mae {count} nod tudalen wedi'u dileu}other{Mae {count} nod tudalen wedi'u dileu}}</translation>
 <translation id="5979837087407522202">Chwilio'r Cyfrineiriau</translation>
@@ -991,6 +987,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="6255097610484507482">Golygu Cerdyn Credyd</translation>
 <translation id="6266039999629596120">Angen sylw</translation>
 <translation id="6277426346321820595">Dim Amddiffyniad</translation>
+<translation id="628251768213143684">Gallwch bob amser reoli'r hyn sydd wedi'i gadw yn eich Cyfrif Google</translation>
 <translation id="6284652193729350524">Cynnig cyfieithu <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Wedi dad-ddilyn <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">I droi Pori'n Ddiogel ymlaen, agorwch <ph name="BEGIN_LINK" />Gwasanaethau Google<ph name="END_LINK" /> a thapiwch Pori'n Ddiogel.</translation>

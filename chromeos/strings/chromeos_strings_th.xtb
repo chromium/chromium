@@ -443,6 +443,7 @@
 <translation id="4289849978083912975">แสดงภาพสไลด์</translation>
 <translation id="4297501883039923494">หยุดพิมพ์ - ข้อผิดพลาดที่ไม่รู้จัก</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ภาพ</translation>
+<translation id="4310735698903592804">วอลเปเปอร์ล่าสุดที่ทำงานด้วยระบบ AI ของ Google</translation>
 <translation id="4333390807948134856">กดปุ่ม <ph name="KEY_NAME" /> อยู่</translation>
 <translation id="4354430579665871434">แป้น</translation>
 <translation id="4361257691546579041">APN เป็นแบบ Default</translation>
@@ -664,6 +665,7 @@
 <translation id="5916664084637901428">เปิด</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{สแกนไฟล์และบันทึกไว้ใน <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> เรียบร้อยแล้ว}other{สแกนไฟล์และบันทึกไว้ใน <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> เรียบร้อยแล้ว}}</translation>
 <translation id="5931523347251946569">ไม่พบไฟล์</translation>
+<translation id="593880865674747800">สร้างเพิ่มเติมในสไตล์นี้</translation>
 <translation id="5939518447894949180">รีเซ็ต</translation>
 <translation id="594552776027197022">สร้างคู่คีย์แบบสุ่ม</translation>
 <translation id="5946538341867151940">คุณยังไม่ได้เชื่อมต่อ หากผู้ให้บริการเครือข่ายมือถือของคุณแนะนำ APN ที่กําหนดเอง ให้ป้อนข้อมูล APN ดังกล่าวโดยเลือก "+ APN ใหม่"</translation>
@@ -925,6 +927,7 @@
 <translation id="7819857487979277519">PSK (WPA หรือ RSN)</translation>
 <translation id="7841134249932030522">เปิดใช้โหมดมืด</translation>
 <translation id="7846634333498149051">แป้นพิมพ์</translation>
+<translation id="7850847810298646851">วอลเปเปอร์ที่ทำงานด้วยระบบ AI ของ Google</translation>
 <translation id="7856267634822906833">หน้าจอสัมผัสบลูทูธ</translation>
 <translation id="7869143217755017858">ปิดใช้โหมดมืด</translation>
 <translation id="7881066108824108340">DNS</translation>

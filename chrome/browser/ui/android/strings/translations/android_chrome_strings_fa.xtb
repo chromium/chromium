@@ -233,6 +233,7 @@
 <translation id="2318045970523081853">برای برقراری تماس، ضربه بزنید.</translation>
 <translation id="2321086116217818302">درحال آماده‌سازی گذرواژه‌ها…</translation>
 <translation id="2323763861024343754">فضای ذخیره‌سازی سایت</translation>
+<translation id="2327226657832576859">‏فایل‌های PDF به‌طور خودکار باز شود؟</translation>
 <translation id="2328985652426384049">ورود به سیستم امکان‌پذیر نیست</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> نصب نشد.</translation>
 <translation id="2349710944427398404">‏کل داده‌های استفاده‌شده توسط Chrome، شامل حساب‌ها، نشانک‌ها و تنظیمات ذخیره‌شده</translation>
@@ -638,6 +639,7 @@
 <translation id="4523326818319942067">یک ساعتِ گذشته</translation>
 <translation id="452750746583162491">مرور داده‌های همگام‌سازی‌شده</translation>
 <translation id="4532845899244822526">انتخاب پوشه</translation>
+<translation id="4541505619120536051">همیشه باز شود</translation>
 <translation id="4543131175509360848">برگ گذرکلیدی وجود ندارد</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> برگه}one{<ph name="TAB_COUNT_MANY" /> برگه، <ph name="TAB_COUNT_INCOGNITO" /> برگه ناشناس}other{<ph name="TAB_COUNT_MANY" /> برگه، <ph name="TAB_COUNT_INCOGNITO" /> برگه ناشناس}}</translation>
 <translation id="4554077758708533499">‏بااستفاده از سیم USB متصل است</translation>
@@ -829,6 +831,7 @@
 <translation id="5486841595534124508">نشان‌واره اعلان حریم خصوصی برای مرکز اطلاعات آماری صفحه که به صفحه فعالیت‌هایم هدایت می‌کند.</translation>
 <translation id="5487521232677179737">پاک کردن داده‌ها</translation>
 <translation id="5492637351392383067">رمزگذاری درون‌دستگاهی</translation>
+<translation id="5509866835115085009">‏Chrome می‌تواند وقتی فایل PDF بارگیری می‌کنید، آن را به‌طور خودکار باز کند.</translation>
 <translation id="5514904542973294328">توسط سرپرست این دستگاه غیرفعال شده است</translation>
 <translation id="5515439363601853141">برای مشاهده گذرواژه‌تان، قفل صفحه را باز کنید</translation>
 <translation id="5517095782334947753">نشانک، سابقه، گذرواژه و تنظیمات دیگری از <ph name="FROM_ACCOUNT" /> دارید.</translation>

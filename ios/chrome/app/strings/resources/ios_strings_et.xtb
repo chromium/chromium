@@ -56,7 +56,6 @@
 <translation id="1279024913354609713">Ära luba</translation>
 <translation id="1281818060020671000">Andmete haldamine</translation>
 <translation id="1282311502488501110">Ära logi sisse</translation>
-<translation id="1283039547216852943">Laiendamiseks puudutage</translation>
 <translation id="1283524564873030414">Viimased 24 tundi</translation>
 <translation id="1285320974508926690">Ära kunagi seda saiti tõlgi</translation>
 <translation id="1291506870746876680">Saidi <ph name="BEGIN_BOLD" />„<ph name="SITE_NAME" />“<ph name="END_BOLD" /> load lähtestatakse väljalülitatud olekusse, kui saidilt lahkute.</translation>
@@ -82,7 +81,6 @@
 <translation id="1377255359165588604">Sünkroonimine lakkas töötamast.</translation>
 <translation id="1377321085342047638">Kaardinr</translation>
 <translation id="1377508275003315939">Paroolid</translation>
-<translation id="1380914240355562929"><ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> saab nüüd kasutada teie kasutajanime ja parooli, kui ta kasutab saidile <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> sisselogimiseks Google'i paroolihaldurit. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">Otsi</translation>
 <translation id="138618066238211776">Jätkake kasutajana <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">Viimased neli nädalat</translation>
@@ -406,7 +404,6 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="3087734570205094154">Alaserv</translation>
 <translation id="3090455602619185166">Sisselogimine hallatud kontoga</translation>
 <translation id="309710370695886264">Teil on 1 korduvalt kasutatud parool. Turvalisuse tagamiseks parandage see kohe.</translation>
-<translation id="3109724472072898302">Ahendatud</translation>
 <translation id="3112556859945124369">Märgi …</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Vaadake, mida sünkroonida saate<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">Ajalugu ja muu</translation>
@@ -775,7 +772,6 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="5121618895923301719">Jälgite juba seda toodet. Leht salvestati <ph name="BEGIN_LINK" />mobiili järjehoidjatesse<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Teil on mitmeid parooliprobleeme.</translation>
 <translation id="5126465625664020024">Sisselogimine ja sünkroonimine</translation>
-<translation id="5131062416352684089">Teie pereliikmed saavad nüüd kasutada teie kasutajanime ja parooli, kui nad kasutavad saidile <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> sisselogimiseks Google'i paroolihaldurit. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">Teie paroolide, ajaloo ja muude andmete sünkroonimine kõigis seadmetes</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} nõrk parool}other{{COUNT} nõrka parooli}}</translation>
 <translation id="5149188072385105201">Parooli lisamine …</translation>
@@ -924,7 +920,6 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="5955891643922670672">Kuvatakse võrguühenduseta versioon</translation>
 <translation id="5957613098218939406">Rohkem valikuid</translation>
 <translation id="595769230373966252">Otsing teenusepakkujaga <ph name="SEARCH_PROVIDER" /></translation>
-<translation id="5962718611393537961">Ahendamiseks puudutage</translation>
 <translation id="5963939892571022323">Esiletõstu linki ei saa luua.</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 järjehoidja kustutati}other{{count} järjehoidjat kustutati}}</translation>
 <translation id="5979837087407522202">Otsi paroole</translation>
@@ -991,6 +986,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="6255097610484507482">Muuda krediitkaarti</translation>
 <translation id="6266039999629596120">Vajab tähelepanu</translation>
 <translation id="6277426346321820595">Kaitse puudub</translation>
+<translation id="628251768213143684">Google'i kontole salvestatud teavet saate alati hallata</translation>
 <translation id="6284652193729350524">Paku tõlkimist keelde <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Kanali <ph name="CHANNEL_NAME" /> jälgimine lõpetati</translation>
 <translation id="6293101329759844770">Google'i ohutu sirvimise sisselülitamiseks avage jaotis <ph name="BEGIN_LINK" />Google'i teenused<ph name="END_LINK" /> ja puudutage valikut Google'i ohutu sirvimine.</translation>

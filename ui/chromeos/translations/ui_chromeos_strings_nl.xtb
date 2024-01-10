@@ -24,7 +24,6 @@
 <translation id="1173916544412572294">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, telefoonbatterij <ph name="BATTERY_STATUS" />%, details</translation>
 <translation id="117624967391683467"><ph name="FILE_NAME" /> kopiëren...</translation>
 <translation id="1178581264944972037">Onderbreken</translation>
-<translation id="1190144681599273207">Voor het ophalen van dit bestand wordt ongeveer <ph name="FILE_SIZE" /> aan mobiele data gebruikt.</translation>
 <translation id="1194390763418645112">Bestandstoegang door <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">Volgende</translation>
 <translation id="1209796539517632982">Automatische naamservers</translation>
@@ -100,7 +99,6 @@
 <translation id="1761091787730831947">Delen met <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">Verificatiecertificaat lokaal geweigerd</translation>
 <translation id="1775381402323441512">Videogegevens</translation>
-<translation id="180035236176489073">Je moet online zijn om deze bestanden te openen.</translation>
 <translation id="1807938677607439181">Alle bestanden</translation>
 <translation id="1810764548349082891">Geen voorbeeld beschikbaar</translation>
 <translation id="1812302367230252929">Amhaars (transliteratie)</translation>
@@ -162,8 +160,6 @@
 <translation id="2282155092769082568">URL voor autoconfiguratie</translation>
 <translation id="2284767815536050991">verwijderbare opslag</translation>
 <translation id="2288278176040912387">Platenspeler</translation>
-<translation id="2291538123825441971"><ph name="NUMBER_OF_FILES" /> bestanden openen.</translation>
-<translation id="2303301624314357662">Bestand <ph name="FILE_NAME" /> wordt geopend.</translation>
 <translation id="2304820083631266885">Planeet</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> is verwijderd.</translation>
 <translation id="2307462900900812319">Netwerk configureren</translation>
@@ -173,7 +169,6 @@
 <translation id="233822363739146957">Er is niet genoeg opslagruimte beschikbaar om al je bestanden te synchroniseren</translation>
 <translation id="23721837607121582">Mobiel profiel downloaden, netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Overschakelen naar lijstweergave</translation>
-<translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> mappen gedeeld met Linux</translation>
 <translation id="2379576081295865700">Opslagruimte checken… 1 item gevonden</translation>
 <translation id="2383454254762599978">Naar de prullenbak verplaatsen</translation>
 <translation id="2387458720915042159">Proxyverbindingstype</translation>
@@ -397,12 +392,10 @@
 <translation id="4197674956721858839">Geselecteerde bestanden toevoegen aan zip-bestand</translation>
 <translation id="4202378258276439759">Spaans (Latijns-Amerika)</translation>
 <translation id="4202977638116331303">Georgisch</translation>
-<translation id="421017592316736757">Je moet online zijn om dit bestand te openen.</translation>
 <translation id="4212740939091998969">Er bestaat al een map met de naam '<ph name="FOLDER_NAME" />'. Kies een andere naam.</translation>
 <translation id="4218274196133425560">Uitzondering voor <ph name="HOST_NAME" /> verwijderen</translation>
 <translation id="4261901459838235729">Google-presentatie</translation>
 <translation id="4277536868133419688">Het filter <ph name="FILTER_NAME" /> staat aan.</translation>
-<translation id="4290535918735525311">1 map gedeeld met Linux</translation>
 <translation id="4299729908419173967">Braziliaans</translation>
 <translation id="4302605047395093221">Iedereen die dit apparaat gebruikt, moet de pincode invoeren om verbinding te maken met dit mobiele netwerk</translation>
 <translation id="4303531889494116116">Dit netwerk is bezig. Probeer het later opnieuw.</translation>
@@ -503,8 +496,6 @@
 <translation id="4906580650526544301">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, telefoonbatterij <ph name="BATTERY_STATUS" />%, details</translation>
 <translation id="4935975195727477204">Bloem</translation>
 <translation id="4943368462779413526">Amerikaanse voetbal</translation>
-<translation id="4961158930123534723">1 map gedeeld met Parallels Desktop</translation>
-<translation id="4965874878399872778">Bestanden checken op basis van het beveiligingsbeleid van je organisatie…</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> hersteld</translation>
 <translation id="4969785127455456148">Album</translation>
 <translation id="4972330214479971536">Kan instellingen van de bestandssynchronisatie niet afronden</translation>
@@ -567,7 +558,6 @@
 <translation id="5317780077021120954">Opslaan</translation>
 <translation id="5318819489018851358">Delen met Linux</translation>
 <translation id="5323213332664049067">Latijns-Amerikaans</translation>
-<translation id="5330145655348521461">Deze bestanden zijn op een ander bureaublad geopend. Verplaats ze naar <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) om ze te bekijken.</translation>
 <translation id="5330512191124428349">Informatie ophalen</translation>
 <translation id="535792325654997756">Persoon met katten</translation>
 <translation id="5358764674931277">Framesnelheid</translation>
@@ -669,7 +659,6 @@
 <translation id="613750717151263950">Japans met Amerikaans toetsenbord</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, geen netwerk</translation>
 <translation id="6146563240635539929">Video's</translation>
-<translation id="6150853954427645995">Als je dit bestand wilt opslaan voor offline gebruik, ga je weer online, klik je met de rechtermuisknop op het bestand en selecteer je de optie <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Vlinders</translation>
 <translation id="6165508094623778733">Meer informatie</translation>
 <translation id="6170470584681422115">Sandwich</translation>
@@ -702,7 +691,6 @@
 <translation id="636254897931573416">Ongeldige invoer voor overeenkomst voor domeinextensie</translation>
 <translation id="6364301859968397756">Opslag van organisatie is vol</translation>
 <translation id="6367976544441405720">Busje</translation>
-<translation id="637062427944097960">Dit bestand is op een ander bureaublad geopend. Verplaats het naar <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) om het te bekijken.</translation>
 <translation id="6394388407447716302">Alleen lezen</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> items</translation>
 <translation id="6407769893376380348"><ph name="FILE_NAME" /> kan niet worden verplaatst omdat het is versleuteld.</translation>
@@ -711,7 +699,6 @@
 <translation id="6430271654280079150">Je hebt nog 1 poging.</translation>
 <translation id="643243556292470964">Verwijderde bestanden worden nu naar de prullenbak verplaatst</translation>
 <translation id="6438480100790416671">Opslagruimte checken…</translation>
-<translation id="6451527188465304418">Bestand checken op basis van het beveiligingsbeleid van je organisatie…</translation>
 <translation id="6485131920355264772">Kan ruimte-informatie niet ophalen</translation>
 <translation id="6495925982925244349">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, beheerd door je beheerder, details</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> uitpakken naar <ph name="FOLDER_NAME" /></translation>
@@ -726,7 +713,6 @@
 <translation id="6588648400954570689">Instellingen voor bestandssynchronisatie</translation>
 <translation id="6594855146910089723">Deze map wordt gedeeld met Linux en Parallels Desktop</translation>
 <translation id="6607272825297743757">Bestandsinformatie</translation>
-<translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> mappen gedeeld met Parallels Desktop</translation>
 <translation id="6629518321609546825">Geef minimaal 4 cijfers op</translation>
 <translation id="6643016212128521049">Wissen</translation>
 <translation id="6650726141019353908">Roze vlinder</translation>
@@ -893,7 +879,6 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Fout bij configureren van netwerk</translation>
-<translation id="7839804798877833423">Voor het ophalen van deze bestanden wordt ongeveer <ph name="FILE_SIZE" /> aan mobiele data gebruikt.</translation>
 <translation id="7846076177841592234">Selectie opheffen</translation>
 <translation id="7853966320808728790">Franse BÉPO</translation>
 <translation id="7857117644404132472">Uitzondering toevoegen</translation>
@@ -935,13 +920,13 @@
 <translation id="813913629614996137">Starten...</translation>
 <translation id="8147028810663464959">Karakterbreedte: volledig (vol)</translation>
 <translation id="8151638057146502721">Configureren</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 fout.}other{# fouten.}}</translation>
 <translation id="8154842056504218462">Alle items zijn geselecteerd.</translation>
 <translation id="8157684860301034423">Het ophalen van app-informatie is mislukt.</translation>
 <translation id="8175731104491895765">Frans (België)</translation>
 <translation id="8175799081768705361"><ph name="NUMBER_OF_FILES_SYNCING" /> Drive-bestanden synchroniseren</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Apparaatmodel</translation>
-<translation id="8223479393428528563">Als je deze bestanden wilt opslaan voor offline gebruik, ga je weer online, klik je met de rechtermuisknop op de bestanden en selecteer je de optie <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8241139360630443550">Opslag bekijken</translation>
 <translation id="8249296373107784235">Annuleren</translation>
 <translation id="8250690786522693009">Latijn</translation>
@@ -1027,6 +1012,7 @@
 <translation id="8787254343425541995">Proxy's voor gedeelde netwerken toestaan</translation>
 <translation id="8790981080411996443">Persoon die de planten water geeft</translation>
 <translation id="8798099450830957504">Standaard</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 waarschuwing.}other{# waarschuwingen.}}</translation>
 <translation id="8808686172382650546">Kat</translation>
 <translation id="8810671769985673465">Inpakken mislukt. Item bestaat al: '<ph name="FILE_NAME" />'</translation>
 <translation id="8813284582615685103">Spaans (Spanje)</translation>

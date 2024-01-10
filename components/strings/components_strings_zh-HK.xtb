@@ -272,6 +272,7 @@
 <translation id="1476595624592550506">變更您的密碼</translation>
 <translation id="1482879811280872320">踏單車</translation>
 <translation id="1483493594462132177">傳送</translation>
+<translation id="1484632730438126438">輸入的內容太短，內容至少要有 3 個字。</translation>
 <translation id="1492194039220927094">政策推送：</translation>
 <translation id="14938948731065592">電腦周邊設備</translation>
 <translation id="1495677929897281669">返回分頁</translation>
@@ -1240,7 +1241,6 @@
 <translation id="3447661539832366887">此裝置的擁有者已停用恐龍遊戲。</translation>
 <translation id="3447884698081792621">顯示憑證 (核發者：<ph name="ISSUER" />)</translation>
 <translation id="3450323514459570273">網站可要求控制 MIDI 裝置及將其重新編程</translation>
-<translation id="3452151267620065789">已儲存進度</translation>
 <translation id="3452404311384756672">擷取間隔：</translation>
 <translation id="3453962258458347894">重試次數</translation>
 <translation id="3461266716147554923"><ph name="URL" /> 要求查看複製到剪貼簿的文字和圖片</translation>
@@ -1405,6 +1405,7 @@
 <translation id="3748009735914587286">金屬 (高光面)</translation>
 <translation id="3748148204939282805"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> 上的攻擊者可能會誘使您採取一些危險的行動，例如安裝軟件或洩漏您的個人資料 (包括密碼、電話號碼或信用卡資料)。<ph name="BEGIN_LEARN_MORE_LINK" />瞭解詳情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">航空業</translation>
+<translation id="3751020515020988516">系統無法理解你提出的要求，請試試其他要求。</translation>
 <translation id="3752543821772132562">由於未設定 <ph name="POLICY_NAME" />，因此已忽略。</translation>
 <translation id="3754210790023674521">退出畫中畫</translation>
 <translation id="3759461132968374835">最近沒有收到當機資訊。當機報告功能停用時發生的當機不會在這裡顯示。</translation>
@@ -1461,6 +1462,7 @@
 <translation id="3858860766373142691">名稱</translation>
 <translation id="3872834068356954457">科學</translation>
 <translation id="3875783148670536197">顯示方法</translation>
+<translation id="3877877650871124156">輸入的內容過長。請縮短內容，然後再試一次。</translation>
 <translation id="3881478300875776315">顯示較少行</translation>
 <translation id="3883500545751229739">滋擾性廣告</translation>
 <translation id="3884278016824448484">裝置識別碼發生衝突</translation>
@@ -1538,7 +1540,6 @@
 <translation id="4067098466788473230">助學金和獎學金</translation>
 <translation id="4067947977115446013">新增有效的地址</translation>
 <translation id="4070790659619547722">廣告評估功能讓各網站只可分享特定類型的資料，以評估廣告成效，例如一天中向使用者放送廣告的時段。</translation>
-<translation id="4072193657607981494">載入緊政策</translation>
 <translation id="4072486802667267160">處理您的訂單時發生錯誤，請再試一次。</translation>
 <translation id="4073376909608563327">無法使用裝置解鎖功能</translation>
 <translation id="4073797364926776829">查看虛擬卡</translation>
@@ -2571,6 +2572,7 @@
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />進一步瞭解 Chrome 無痕模式<ph name="END_LINK" /></translation>
 <translation id="6133320744616005677">允許繼續存取</translation>
 <translation id="6133984428121856852">副檔名空白或格式錯誤。</translation>
+<translation id="6139769382153674477">發生錯誤，請確認是否已登入帳戶。</translation>
 <translation id="6139975341602920272">17 x 22 吋</translation>
 <translation id="6146055958333702838">檢查連接線，或重新啟動路由器、數據機或其他使用中的
     網絡裝置。</translation>
@@ -2727,7 +2729,6 @@
 <translation id="6428450836711225518">請驗證您的電話號碼</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">變更 Google 密碼</translation>
-<translation id="6431119592588449664">上載咗報告</translation>
 <translation id="6432297414176614592">進一步瞭解廣告主題</translation>
 <translation id="6432831586648556868">銷售/市場推廣職位</translation>
 <translation id="6433490469411711332">編輯聯絡人資料</translation>
@@ -3487,7 +3488,6 @@
 <translation id="7871445724586827387">變更 Google 帳戶密碼</translation>
 <translation id="7877007680666472091">受保護的內容 ID</translation>
 <translation id="7878562273885520351">您的密碼可能會被盜用</translation>
-<translation id="7878966190323222027">重新開啟即可繼續</translation>
 <translation id="7880146494886811634">儲存地址</translation>
 <translation id="7882421473871500483">啡色</translation>
 <translation id="7882995332186050355">貨車和拖車</translation>
@@ -4108,7 +4108,6 @@
 <translation id="9119042192571987207">已上載</translation>
 <translation id="9122954576417194280">商品和期貨買賣</translation>
 <translation id="912327514020027767">短裙</translation>
-<translation id="9128016270925453879">載入咗政策</translation>
 <translation id="9128870381267983090">連接網絡</translation>
 <translation id="9131119348384879525">要擷取機密內容嗎？</translation>
 <translation id="9133985615769429248">如果您與其他人分享此裝置，可以在使用已儲存的密碼時透過螢幕鎖定來驗證身份</translation>

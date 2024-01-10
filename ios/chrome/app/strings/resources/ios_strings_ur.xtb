@@ -56,7 +56,6 @@
 <translation id="1279024913354609713">اجازت نہ دیں</translation>
 <translation id="1281818060020671000">ڈیٹا کا نظم کریں</translation>
 <translation id="1282311502488501110">سائن ان نہ کریں</translation>
-<translation id="1283039547216852943">پھیلانے کیلئے تھپتھپائیں</translation>
 <translation id="1283524564873030414">گزشتہ 24 گھنٹے</translation>
 <translation id="1285320974508926690">اس سائٹ کا ترجمہ کبھی نہ کریں</translation>
 <translation id="1291506870746876680">جب آپ اس سائٹ کو چھوڑ دیتے ہیں تو <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> اجازتیں ری سیٹ ہو جائیں گی۔</translation>
@@ -82,7 +81,6 @@
 <translation id="1377255359165588604">مطابقت پذیری نے کام کرنا بند کر دیا ہے۔</translation>
 <translation id="1377321085342047638">کارڈ نمبر</translation>
 <translation id="1377508275003315939">پاس ورڈز</translation>
-<translation id="1380914240355562929">‏Google پاس ورڈ مینیجر کا استعمال کر کے <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> میں سائن ان کرنے کے لیے <ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> اب آپ کا صارف نام اور پاس ورڈ استعمال کر سکتا ہے۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">تلاش کریں</translation>
 <translation id="138618066238211776">بطور <ph name="USER_NAME" /> جاری رکھیں</translation>
 <translation id="1400642268715879018">گزشتہ 4 ہفتے</translation>
@@ -406,7 +404,6 @@
 <translation id="3087734570205094154">نیچے</translation>
 <translation id="3090455602619185166">نظم کردہ اکاؤنٹ کے ساتھ سائن ان کریں</translation>
 <translation id="309710370695886264">آپ کے پاس 1 دوبارہ استعمال کردہ پاس ورڈ ہے۔ محفوظ رہنے کے لیے اسے ابھی صحیح کریں۔</translation>
-<translation id="3109724472072898302">سکیڑا گیا</translation>
 <translation id="3112556859945124369">نشان زد کریں…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />دیکھیں کہ آپ کیا سِنک کر سکتے ہیں<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">سرگزشت اور مزید</translation>
@@ -775,7 +772,6 @@
 <translation id="5121618895923301719">آپ پہلے سے ہی اس پروڈکٹ کو ٹریک کر رہے ہیں۔ یہ صفحہ <ph name="BEGIN_LINK" />موبائل بُک مارکس<ph name="END_LINK" /> میں محفوظ ہے۔</translation>
 <translation id="512533434554095351">آپ کے پاس ورڈ میں مختلف مسائل ہیں۔</translation>
 <translation id="5126465625664020024">سائن ان کریں اور سِنک کریں</translation>
-<translation id="5131062416352684089">‏آپ کے فیملی ممبرز Google پاس ورڈ مینیجر کا استعمال کر کے <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> میں سائن ان کرنے کے لیے اب آپ کا صارف نام اور پاس ورڈ استعمال کر سکتے ہیں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">سبھی آلات پر اپنے پاس ورڈز اور سرگزشت کی مطابقت پذیری اور مزید بہت کچھ کریں</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} کمزور پاس ورڈ}other{{COUNT} کمزور پاس ورڈز}}</translation>
 <translation id="5149188072385105201">پاس ورڈ شامل کریں...</translation>
@@ -924,7 +920,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="5955891643922670672">آف لائن ورژن دیکھنا</translation>
 <translation id="5957613098218939406">مزید اختیارات</translation>
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> کے ساتھ تلاش کریں</translation>
-<translation id="5962718611393537961">سکیڑنے کیلئے تھپتھپائیں</translation>
 <translation id="5963939892571022323">نمایاں کرنے کا لنک تخلیق نہیں کیا جا سکا۔</translation>
 <translation id="5971872012779224351">{count,plural, =1{1 بُک مارک حذف کیا گیا}other{{count} بُک مارکس حذف کئے گئے}}</translation>
 <translation id="5979837087407522202">پاس ورڈز تلاش کریں</translation>
@@ -991,6 +986,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6255097610484507482">کریڈٹ کارڈ میں ترمیم کریں</translation>
 <translation id="6266039999629596120">توجہ درکار ہے</translation>
 <translation id="6277426346321820595">کوئی تحفظ نہیں</translation>
+<translation id="628251768213143684">‏آپ ہمیشہ اپنے Google اکاؤنٹ میں محفوظ کردہ چیزوں کا نظم کر سکتے ہیں</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> کا ترجمہ کرنے کی پیشکش کریں</translation>
 <translation id="6289501276895392862"><ph name="CHANNEL_NAME" /> کی پیروی ختم کی گئی</translation>
 <translation id="6293101329759844770">‏محفوظ براؤزنگ کو آن کرنے کے لیے، <ph name="BEGIN_LINK" />Google سروسز<ph name="END_LINK" /> کھولیں اور محفوظ براؤزنگ پر تھپتھپائیں۔</translation>

@@ -24,7 +24,6 @@
 <translation id="1173916544412572294">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" /> %, telefonens batterinivå <ph name="BATTERY_STATUS" /> %, information</translation>
 <translation id="117624967391683467"><ph name="FILE_NAME" /> kopieras ...</translation>
 <translation id="1178581264944972037">Paus</translation>
-<translation id="1190144681599273207">Att hämta den här filen kräver ungefär <ph name="FILE_SIZE" /> mobildata.</translation>
 <translation id="1194390763418645112">Filåtkomst för <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">Nästa</translation>
 <translation id="1209796539517632982">Automatiska namnservrar</translation>
@@ -100,7 +99,6 @@
 <translation id="1761091787730831947">Dela med <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">Autentiseringscertifikatet godkändes inte lokalt</translation>
 <translation id="1775381402323441512">Videoinformation</translation>
-<translation id="180035236176489073">Du måste vara online för att kunna öppna filerna.</translation>
 <translation id="1807938677607439181">Alla filer</translation>
 <translation id="1810764548349082891">Ingen förhandsgranskning</translation>
 <translation id="1812302367230252929">amhariska, translitterering</translation>
@@ -161,8 +159,6 @@
 <translation id="2282155092769082568">Webbadress för automatisk konfiguration:</translation>
 <translation id="2284767815536050991">externt lagringsutrymme</translation>
 <translation id="2288278176040912387">Skivspelare</translation>
-<translation id="2291538123825441971">Öppnar <ph name="NUMBER_OF_FILES" /> filer.</translation>
-<translation id="2303301624314357662">Öppnar filen <ph name="FILE_NAME" /></translation>
 <translation id="2304820083631266885">Planet</translation>
 <translation id="2305020378527873881"><ph name="VOLUME_NAME" /> har tagits bort.</translation>
 <translation id="2307462900900812319">Konfigurera nätverk</translation>
@@ -172,7 +168,6 @@
 <translation id="233822363739146957">Det finns inte tillräckligt med lagringsutrymme för att synkronisera alla dina filer</translation>
 <translation id="23721837607121582">Ladda ned mobilprofil, Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Byt till listvy</translation>
-<translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> mappar delas med Linux</translation>
 <translation id="2379576081295865700">Kontrollerar lagringsutrymme … 1 objekt hittades</translation>
 <translation id="2383454254762599978">Flytta till papperskorgen</translation>
 <translation id="2387458720915042159">Proxyanslutningstyp</translation>
@@ -396,12 +391,10 @@
 <translation id="4197674956721858839">Zippa markerade filer</translation>
 <translation id="4202378258276439759">spanska (Latinamerika)</translation>
 <translation id="4202977638116331303">georgiska</translation>
-<translation id="421017592316736757">Du måste vara online för att kunna öppna filen.</translation>
 <translation id="4212740939091998969">Det finns redan en mapp med namnet <ph name="FOLDER_NAME" />. Välj ett annat namn.</translation>
 <translation id="4218274196133425560">Ta bort undantag för <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">Presentation i Google Dokument</translation>
 <translation id="4277536868133419688">Filtret <ph name="FILTER_NAME" /> är på.</translation>
-<translation id="4290535918735525311">1 mapp delas med Linux</translation>
 <translation id="4299729908419173967">brasilianska</translation>
 <translation id="4302605047395093221">Alla som använder enheten måste ange pinkoden innan de kan ansluta till det här mobilnätverket.</translation>
 <translation id="4303531889494116116">Nätverket är upptaget. Försök igen senare.</translation>
@@ -502,8 +495,6 @@
 <translation id="4906580650526544301">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" /> %, telefonens batterinivå <ph name="BATTERY_STATUS" /> %, information</translation>
 <translation id="4935975195727477204">Gazaniablomma</translation>
 <translation id="4943368462779413526">Amerikansk fotboll</translation>
-<translation id="4961158930123534723">1 mapp delas med Parallels Desktop</translation>
-<translation id="4965874878399872778">Filerna kontrolleras mot organisationens säkerhetspolicyer …</translation>
 <translation id="496656650103537022"><ph name="FILE_NAME" /> har återställts</translation>
 <translation id="4969785127455456148">Album</translation>
 <translation id="4972330214479971536">Det gick inte att slutföra konfigureringen av filsynkronisering</translation>
@@ -565,7 +556,6 @@
 <translation id="5317780077021120954">Spara</translation>
 <translation id="5318819489018851358">Dela med Linux</translation>
 <translation id="5323213332664049067">Latinamerikanskt</translation>
-<translation id="5330145655348521461">Filerna öppnades på ett annat skrivbord. Byt till <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) om du vill visa dem.</translation>
 <translation id="5330512191124428349">Mer information</translation>
 <translation id="535792325654997756">Person med katter</translation>
 <translation id="5358764674931277">Bildfrekvens</translation>
@@ -667,7 +657,6 @@
 <translation id="613750717151263950">japanska med amerikanskt tangentbord</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, inget nätverk</translation>
 <translation id="6146563240635539929">Videor</translation>
-<translation id="6150853954427645995">Om du vill spara filen för användning offline ansluter du till internet igen, högerklickar på filen och väljer sedan alternativet <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Fjärilar</translation>
 <translation id="6165508094623778733">Läs mer</translation>
 <translation id="6170470584681422115">Smörgås</translation>
@@ -700,7 +689,6 @@
 <translation id="636254897931573416">Ogiltigt värde för matchning av domänsuffix</translation>
 <translation id="6364301859968397756">Organisationens lagringsutrymme är fullt</translation>
 <translation id="6367976544441405720">Skåpbil</translation>
-<translation id="637062427944097960">Filen öppnades på ett annat skrivbord. Byt till <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) om du vill visa den.</translation>
 <translation id="6394388407447716302">Skrivskyddat</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> objekt</translation>
 <translation id="6407769893376380348">Det gick inte att flytta <ph name="FILE_NAME" /> eftersom den är krypterad.</translation>
@@ -709,7 +697,6 @@
 <translation id="6430271654280079150">Du har 1 försök kvar.</translation>
 <translation id="643243556292470964">Raderade filer har nu flyttats till papperskorgen</translation>
 <translation id="6438480100790416671">Kontrollerar lagringsutrymme …</translation>
-<translation id="6451527188465304418">Filen kontrolleras mot organisationens säkerhetspolicyer …</translation>
 <translation id="6485131920355264772">Det gick inte att hämta information om lagringsutrymme</translation>
 <translation id="6495925982925244349">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" /> %, hanteras av administratören, information</translation>
 <translation id="649877868557234318">Extraherar <ph name="FILE_NAME" /> till <ph name="FOLDER_NAME" /></translation>
@@ -724,7 +711,6 @@
 <translation id="6588648400954570689">Inställningar för filsynkronisering</translation>
 <translation id="6594855146910089723">Den här mappen delas med Linux och Parallels Desktop</translation>
 <translation id="6607272825297743757">Filinformation</translation>
-<translation id="6609332149380188670"><ph name="NUMBER_OF_ITEMS" /> mappar delas med Parallels Desktop</translation>
 <translation id="6629518321609546825">Ange minst fyra siffror</translation>
 <translation id="6643016212128521049">Rensa</translation>
 <translation id="6650726141019353908">Rosa fjäril</translation>
@@ -891,7 +877,6 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Fel i nätverkskonfigurationen</translation>
-<translation id="7839804798877833423">Att hämta dessa filer kräver ungefär <ph name="FILE_SIZE" /> mobildata.</translation>
 <translation id="7846076177841592234">Rensa val</translation>
 <translation id="7853966320808728790">franska (BÉPO)</translation>
 <translation id="7857117644404132472">Lägg till undantag</translation>
@@ -939,7 +924,6 @@
 <translation id="8175799081768705361">Synkroniserar <ph name="NUMBER_OF_FILES_SYNCING" /> filer på Drive</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">Enhetsmodell</translation>
-<translation id="8223479393428528563">Om du vill spara filerna och använda dem offline ansluter du till internet igen, högerklickar på filerna och väljer alternativet <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8241139360630443550">Visa lagringsutrymme</translation>
 <translation id="8249296373107784235">Avbryt</translation>
 <translation id="8250690786522693009">Latin</translation>

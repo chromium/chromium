@@ -5669,6 +5669,18 @@ Se questo criterio viene disattivato o se non viene configurato, i Glanceables n
 <translation id="5790763087505467169">Riduci notifiche sull'avvio automatico della sessione Ospite gestita</translation>
 <translation id="5800329278018669527">Disattiva la richiesta di configurazione di rete in modalità offline</translation>
 <translation id="5802931736499687181">Disabilita la Pipeline di reporting criptato</translation>
+<translation id="5803715507113569033">Questo criterio consente agli amministratori di configurare il montaggio di <ph name="MICROSOFT_ONE_DRIVE_NAME" />.
+
+Se il criterio viene impostato su "<ph name="ALLOWED_NAME" />", l'utente può configurare <ph name="MICROSOFT_ONE_DRIVE_NAME" /> se vuole.
+Dopo aver completato la procedura di configurazione, <ph name="MICROSOFT_ONE_DRIVE_NAME" /> verrà montato in gestore di file.
+
+Se il criterio viene impostato su "<ph name="DISALLOWED_NAME" />", l'utente non può configurare <ph name="MICROSOFT_ONE_DRIVE_NAME" />.
+
+Se il criterio viene impostato su "<ph name="AUTOMATED_NAME" />", questo tenta di configurare <ph name="MICROSOFT_ONE_DRIVE_NAME" /> automaticamente. L'utente deve accedere a <ph name="PRODUCT_OS_NAME" /> con un account Microsoft. In caso di errore, torna al flusso di configurazione.
+
+Se il criterio non viene configurato, in pratica equivale a impostarlo su "<ph name="ALLOWED_NAME" />" per gli utenti normali e su "<ph name="DISALLOWED_NAME" />" per gli utenti aziendali.
+
+È possibile aggiungere ulteriori limitazioni per gli account con il criterio <ph name="MICROSOFT_ONE_DRIVE_ACCOUNT_RESTRICTIONS" />.</translation>
 <translation id="5804795151506109282">Non chiedere agli utenti di eseguire la migrazione.</translation>
 <translation id="5806128552675651249">Consenti solo la stampa senza immagini di sfondo</translation>
 <translation id="5809210507920527553">Consente di gestire le impostazioni relative al container Linux (Crostini).</translation>
@@ -6142,6 +6154,21 @@ Dalla versione 114 in poi, questo criterio è facoltativo se viene configurato i
 <translation id="6244210204546589761">Pagine da aprire all'avvio</translation>
 <translation id="624595269193747921">Consente di stabilire se limitare o meno la ricerca della stampante corrispondente a un insieme specifico di stampanti.</translation>
 <translation id="6246290059248303618">Mostra i controlli multimediali per le sessioni <ph name="PRODUCT_NAME" /> avviate da altri dispositivi sulla rete locale</translation>
+<translation id="6246420783859339814">Questo criterio consente agli amministratori di limitare gli account autorizzati ad accedere a <ph name="MICROSOFT_ONE_DRIVE_NAME" /> quando il criterio <ph name="MICROSOFT_ONE_DRIVE_MOUNT_POLICY_NAME" /> è attivato.
+
+Se questo criterio contiene il valore "<ph name="COMMON_NAME" />", per accedere è possibile utilizzare qualsiasi account.
+
+Se questo criterio contiene il valore "<ph name="ORGANIZATIONS_NAME" />", per accedere è possibile utilizzare account di lavoro o della scuola.
+
+Se questo criterio contiene il valore "<ph name="CONSUMER_NAME" />", per accedere è possibile utilizzare account <ph name="MICROSOFT_NAME" /> personali.
+
+Se questo criterio contiene nomi di dominio o ID tenant, per accedere è possibile utilizzare gli account di questi nomi di dominio o ID tenant (vedi la pagina https://learn.microsoft.com/it-it/azure/active-directory/develop/v2-protocols#endpoints).
+
+Se questo criterio non viene configurato o se contiene soltanto un valore vuoto, si comporta come se "<ph name="COMMON_NAME" />" fosse stato specificato per gli utenti normali e "<ph name="ORGANIZATIONS_NAME" />" per gli utenti aziendali.
+
+La modifica delle limitazioni potrebbe comportare la disconnessione degli utenti dal proprio account <ph name="MICROSOFT_ONE_DRIVE_NAME" /> se non ottempera alle nuove limitazioni.
+
+Nota: al momento verrà presa in considerazione solo la prima voce. Le estensioni successive supporteranno più voci.</translation>
 <translation id="6247316685259031374">Questo criterio consente di controllare la sandbox del processo audio.
       Se questo criterio viene attivato, il processo audio verrà eseguito con limitazione tramite sandbox.
       Se il criterio viene disattivato, il processo audio verrà eseguito senza limitazione tramite sandbox e il modulo di elaborazione audio WebRTC verrà eseguito nel processo di rendering.
@@ -7168,6 +7195,16 @@ Questo criterio verrà rimosso in futuro, una volta completata l'implementazione
       Se selezioni l'opzione "U2F", il funzionamento dell'autenticazione a due fattori integrata dipenderà dalla specifica FIDO U2F.
 
       Se selezioni l'opzione "U2F_EXTENDED", l'autenticazione a due fattori integrata fornirà le funzioni U2F più alcune estensioni per la singola attestazione.</translation>
+<translation id="69942621143543910">Questo criterio consente agli amministratori di configurare il flusso <ph name="CLOUD_UPLOAD_NAME" /> per <ph name="MICROSOFT_ONE_DRIVE_NAME" /> e <ph name="MICROSOFT_365_NAME" /> su <ph name="PRODUCT_OS_NAME" />.
+
+Se il criterio viene impostato su "<ph name="ALLOWED_NAME" />", l'utente può configurare il flusso <ph name="CLOUD_UPLOAD_NAME" /> per <ph name="MICROSOFT_ONE_DRIVE_NAME" /> e <ph name="MICROSOFT_365_NAME" /> se vuole.
+Dopo aver completato la procedura di configurazione, i file con formati file corrispondenti verranno spostati per impostazione predefinita su <ph name="MICROSOFT_ONE_DRIVE_NAME" /> e gestiti dall'app <ph name="MICROSOFT_365_NAME" /> quando l'utente tenterà di aprirli.
+
+Se il criterio viene impostato su "<ph name="DISALLOWED_NAME" />", l'utente non può configurare il flusso <ph name="CLOUD_UPLOAD_NAME" /> per <ph name="MICROSOFT_ONE_DRIVE_NAME" /> e <ph name="MICROSOFT_365_NAME" /> come descritto in precedenza e <ph name="MICROSOFT_365_NAME" /> viene rimosso dall'elenco dei potenziali gestori di file.
+
+Se il criterio viene impostato su "<ph name="AUTOMATED_NAME" />", il flusso <ph name="CLOUD_UPLOAD_NAME" /> per <ph name="MICROSOFT_ONE_DRIVE_NAME" /> e <ph name="MICROSOFT_365_NAME" /> viene configurato automaticamente, quindi i file con formati file corrispondenti verranno spostati per impostazione predefinita su <ph name="MICROSOFT_ONE_DRIVE_NAME" /> e gestiti dall'app <ph name="MICROSOFT_365_NAME" /> quando l'utente tenterà di aprirli.
+
+Se il criterio non viene configurato, in pratica equivale a impostarlo su "<ph name="ALLOWED_NAME" />" per gli utenti normali e su "<ph name="DISALLOWED_NAME" />" per gli utenti aziendali.</translation>
 <translation id="6999948519306285655">Questo criterio è deprecato. Usa il criterio <ph name="PROXY_SETTINGS_POLICY_NAME" />.
 
        La configurazione del criterio consente di specificare un URL a un file proxy .pac. Questo criterio viene applicato solo se il criterio <ph name="PROXY_SETTINGS_POLICY_NAME" /> non è specificato e hai selezionato <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> con <ph name="PROXY_MODE_POLICY_NAME" />.

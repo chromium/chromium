@@ -24,7 +24,6 @@
 <translation id="1173916544412572294">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, batería do teléfono ao <ph name="BATTERY_STATUS" /> %, detalles</translation>
 <translation id="117624967391683467">Copiando <ph name="FILE_NAME" />...</translation>
 <translation id="1178581264944972037">Pausar</translation>
-<translation id="1190144681599273207">A descarga deste ficheiro ocupará aproximadamente <ph name="FILE_SIZE" /> de datos móbiles.</translation>
 <translation id="1194390763418645112">O acceso aos ficheiros por parte de <ph name="RESTRICTED_DESTINATIONS" /></translation>
 <translation id="1201402288615127009">Seguinte</translation>
 <translation id="1209796539517632982">Servidores de nomes automáticos</translation>
@@ -100,7 +99,6 @@
 <translation id="1761091787730831947">Compartir con <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">Certificado de autenticación rexeitado localmente</translation>
 <translation id="1775381402323441512">Información do vídeo</translation>
-<translation id="180035236176489073">Debes estar conectado para poder acceder a estes ficheiros.</translation>
 <translation id="1807938677607439181">Todos os ficheiros</translation>
 <translation id="1810764548349082891">Non hai vistas previas dispoñibles</translation>
 <translation id="1812302367230252929">Amhárico (transliteración)</translation>
@@ -161,8 +159,6 @@
 <translation id="2282155092769082568">URL de configuración automática:</translation>
 <translation id="2284767815536050991">almacenamento extraíble</translation>
 <translation id="2288278176040912387">Tocadiscos</translation>
-<translation id="2291538123825441971">Abrindo <ph name="NUMBER_OF_FILES" /> ficheiros.</translation>
-<translation id="2303301624314357662">Abrindo o ficheiro <ph name="FILE_NAME" />.</translation>
 <translation id="2304820083631266885">Planeta</translation>
 <translation id="2305020378527873881">Expulsouse <ph name="VOLUME_NAME" />.</translation>
 <translation id="2307462900900812319">Configurar rede</translation>
@@ -172,7 +168,6 @@
 <translation id="233822363739146957">Non hai suficiente espazo de almacenamento para sincronizar todos os ficheiros</translation>
 <translation id="23721837607121582">Descargar perfil para móbiles, rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Cambiar á vista de lista</translation>
-<translation id="2377590462528165447">Compartíronse <ph name="NUMBER_OF_ITEMS" /> cartafoles con Linux</translation>
 <translation id="2379576081295865700">Comprobando espazo de almacenamento… 1 elemento atopado</translation>
 <translation id="2383454254762599978">Mover á papeleira</translation>
 <translation id="2387458720915042159">Tipo de conexión mediante proxy</translation>
@@ -396,12 +391,10 @@
 <translation id="4197674956721858839">Selección para comprimir</translation>
 <translation id="4202378258276439759">Español (América Latina)</translation>
 <translation id="4202977638116331303">Xeorxiano</translation>
-<translation id="421017592316736757">Debes estar conectado poder acceder a este ficheiro.</translation>
 <translation id="4212740939091998969">Xa existe un cartafol co nome "<ph name="FOLDER_NAME" />". Escolle un nome diferente.</translation>
 <translation id="4218274196133425560">Quitar excepción para <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">Presentación de Google</translation>
 <translation id="4277536868133419688">Activouse o filtro <ph name="FILTER_NAME" />.</translation>
-<translation id="4290535918735525311">1 cartafol compartido con Linux</translation>
 <translation id="4299729908419173967">Brasileiro</translation>
 <translation id="4302605047395093221">Calquera que utilice este dispositivo deberá meter o PIN para conectarse a esta rede de telefonía móbil</translation>
 <translation id="4303531889494116116">Esta rede está ocupada. Téntao de novo máis tarde.</translation>
@@ -502,8 +495,6 @@
 <translation id="4906580650526544301">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, batería do teléfono ao <ph name="BATTERY_STATUS" /> %, detalles</translation>
 <translation id="4935975195727477204">Flor de gazania</translation>
 <translation id="4943368462779413526">Fútbol</translation>
-<translation id="4961158930123534723">Compartiuse 1 cartafol con Parallels Desktop</translation>
-<translation id="4965874878399872778">Estase comprobando se os ficheiros cumpren as políticas de seguranza da túa organización...</translation>
 <translation id="496656650103537022">Restaurouse <ph name="FILE_NAME" /></translation>
 <translation id="4969785127455456148">Álbum</translation>
 <translation id="4972330214479971536">Non se puido terminar de configurar a sincronización de ficheiros</translation>
@@ -565,7 +556,6 @@
 <translation id="5317780077021120954">Gardar</translation>
 <translation id="5318819489018851358">Compartir con Linux</translation>
 <translation id="5323213332664049067">Latinoamericano</translation>
-<translation id="5330145655348521461">Estes ficheiros abríronse nun ordenador diferente. Diríxete a <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) para velo.</translation>
 <translation id="5330512191124428349">Obter información</translation>
 <translation id="535792325654997756">Persoa con gatos</translation>
 <translation id="5358764674931277">Fotogramas por segundo</translation>
@@ -667,7 +657,6 @@
 <translation id="613750717151263950">Xaponés con teclado estadounidense</translation>
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, sen rede dispoñible</translation>
 <translation id="6146563240635539929">Vídeos</translation>
-<translation id="6150853954427645995">Para gardar este ficheiro para o uso sen conexión, accede en liña, fai clic co botón dereito no ficheiro e selecciona a opción <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Bolboretas</translation>
 <translation id="6165508094623778733">Máis información</translation>
 <translation id="6170470584681422115">Sándwich</translation>
@@ -700,7 +689,6 @@
 <translation id="636254897931573416">O valor da coincidencia do sufixo de dominio non é válido</translation>
 <translation id="6364301859968397756">O almacenamento da organización está cheo</translation>
 <translation id="6367976544441405720">Furgoneta</translation>
-<translation id="637062427944097960">Este ficheiro abriuse nun ordenador diferente. Diríxete a <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) para velo.</translation>
 <translation id="6394388407447716302">Só lectura</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> elementos</translation>
 <translation id="6407769893376380348"><ph name="FILE_NAME" /> non se puido mover porque está encriptado.</translation>
@@ -709,7 +697,6 @@
 <translation id="6430271654280079150">Quédache 1 intento.</translation>
 <translation id="643243556292470964">Os ficheiros eliminados movéronse á papeleira</translation>
 <translation id="6438480100790416671">Comprobando espazo de almacenamento…</translation>
-<translation id="6451527188465304418">Estase comprobando se o ficheiro cumpre as políticas de seguranza da túa organización...</translation>
 <translation id="6485131920355264772">Non se puido recuperar a información sobre o espazo</translation>
 <translation id="6495925982925244349">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, xestionada polo teu administrador, detalles</translation>
 <translation id="649877868557234318">Extraendo <ph name="FILE_NAME" /> en <ph name="FOLDER_NAME" /></translation>
@@ -724,7 +711,6 @@
 <translation id="6588648400954570689">Configuración da sincronización de ficheiros</translation>
 <translation id="6594855146910089723">Este cartafol compártese con Linux e Parallels Desktop</translation>
 <translation id="6607272825297743757">Información do ficheiro</translation>
-<translation id="6609332149380188670">Compartíronse <ph name="NUMBER_OF_ITEMS" /> cartafoles con Parallels Desktop</translation>
 <translation id="6629518321609546825">Mete polo menos 4 cifras</translation>
 <translation id="6643016212128521049">Borrar</translation>
 <translation id="6650726141019353908">Bolboreta rosa</translation>
@@ -891,7 +877,6 @@
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7831491651892296503">Produciuse un erro ao configurar a rede</translation>
-<translation id="7839804798877833423">A recuperación destes ficheiros ocupará aproximadamente <ph name="FILE_SIZE" /> de datos móbiles.</translation>
 <translation id="7846076177841592234">Cancelar selección</translation>
 <translation id="7853966320808728790">BÉPO francés</translation>
 <translation id="7857117644404132472">Engadir excepción</translation>
@@ -939,7 +924,6 @@
 <translation id="8175799081768705361">Sincronizando <ph name="NUMBER_OF_FILES_SYNCING" /> ficheiros de Drive</translation>
 <translation id="8179976553408161302">Intro</translation>
 <translation id="8193175696669055101">Modelo do dispositivo</translation>
-<translation id="8223479393428528563">Para gardar estes ficheiros para o uso sen conexión, accede en liña, fai clic co botón dereito nos ficheiros e selecciona a opción <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="8241139360630443550">Ver o almacenamento</translation>
 <translation id="8249296373107784235">Cancelar</translation>
 <translation id="8250690786522693009">Alfabeto latino</translation>

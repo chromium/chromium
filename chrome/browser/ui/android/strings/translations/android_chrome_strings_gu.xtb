@@ -233,6 +233,7 @@
 <translation id="2318045970523081853">કૉલ કરવા માટે ટૅપ કરો</translation>
 <translation id="2321086116217818302">પાસવર્ડ તૈયાર કરી રહ્યાં છીએ…</translation>
 <translation id="2323763861024343754">સાઇટ સ્ટોરેજ</translation>
+<translation id="2327226657832576859">શું PDFs ઑટોમૅટિક રીતે ખોલીએ?</translation>
 <translation id="2328985652426384049">સાઇન ઇન કરી શકાતું નથી</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> ઇન્સ્ટૉલ કરી શકાઈ નથી.</translation>
 <translation id="2349710944427398404">Chrome દ્વારા ઉપયોગમાં લેવાયેલી કુલ સ્ટોરેજ, એકાઉન્ટ, બુકમાર્ક અને સાચવેલા સેટિંગ સહિત</translation>
@@ -638,6 +639,7 @@
 <translation id="4523326818319942067">છેલ્લો એક કલાક</translation>
 <translation id="452750746583162491">તમારા સિંક કરેલા ડેટાનો રિવ્યૂ કરો</translation>
 <translation id="4532845899244822526">ફોલ્ડર પસંદ કરો</translation>
+<translation id="4541505619120536051">હંમેશાં ખોલો</translation>
 <translation id="4543131175509360848">કોઈ પાસકી શીટ નથી</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ટૅબ}one{<ph name="TAB_COUNT_MANY" /> ટૅબ, <ph name="TAB_COUNT_INCOGNITO" /> છૂપી}other{<ph name="TAB_COUNT_MANY" /> ટૅબ, <ph name="TAB_COUNT_INCOGNITO" /> છૂપી}}</translation>
 <translation id="4554077758708533499">USB કેબલ સાથે કનેક્ટ કરેલો છે</translation>
@@ -829,6 +831,7 @@
 <translation id="5486841595534124508">પેજની જાણકારીવાળા હબની પ્રાઇવસી નોટિસનો લોગો, જે મારી પ્રવૃત્તિના પેજ પર રીડાયરેક્ટ કરે છે.</translation>
 <translation id="5487521232677179737">ડેટા સાફ કરો</translation>
 <translation id="5492637351392383067">ડિવાઇસ પર એન્ક્રિપ્શન</translation>
+<translation id="5509866835115085009">જ્યારે તમે કોઈ PDF ડાઉનલોડ કરો, ત્યારે Chrome તેને ઑટોમૅટિક રીતે ખોલી શકે છે.</translation>
 <translation id="5514904542973294328">આ ઉપકરણના વ્યવસ્થાપકે અક્ષમ કરેલ છે</translation>
 <translation id="5515439363601853141">તમારો પાસવર્ડ જોવા માટે અનલૉક કરો</translation>
 <translation id="5517095782334947753">તમારી પાસે <ph name="FROM_ACCOUNT" />ના બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને અન્ય સેટિંગ છે.</translation>

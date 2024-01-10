@@ -813,7 +813,6 @@
 <translation id="1615433306336820465">ניהול פרטי הכניסה המאוחסנים במפתח האבטחה</translation>
 <translation id="1616206807336925449">אין צורך בהרשאות מיוחדות כדי להשתמש בתוסף זה.</translation>
 <translation id="1616298854599875024">לא ניתן לייבא את התוסף "<ph name="IMPORT_NAME" />" כי הוא לא מודול משותף</translation>
-<translation id="161654560322394775">תמונה <ph name="INDEX" /> של <ph name="A" />, בסגנון <ph name="B" />, באווירה <ph name="C" />.</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{המערכת בודקת אם הנתונים האלה מצייתים למדיניות האבטחה של הארגון שלך...}=1{המערכת בודקת אם הקובץ הזה מציית למדיניות האבטחה של הארגון שלך...}one{המערכת בודקת אם הקבצים האלה מצייתים למדיניות האבטחה של הארגון שלך...}two{המערכת בודקת אם הקבצים האלה מצייתים למדיניות האבטחה של הארגון שלך...}other{המערכת בודקת אם הקבצים האלה מצייתים למדיניות האבטחה של הארגון שלך...}}</translation>
 <translation id="1618102204889321535"><ph name="MAX_CHARACTER_COUNT" />/<ph name="CURRENT_CHARACTER_COUNT" /></translation>
 <translation id="1618268899808219593">מרכז עזרה</translation>
@@ -4236,7 +4235,6 @@
 <translation id="4250229828105606438">צילום מסך</translation>
 <translation id="4250680216510889253">לא</translation>
 <translation id="4251377547188244181">רישום של מכשיר שילוט וקיוסק</translation>
-<translation id="4252141040239557279">תמונה <ph name="INDEX" /> של <ph name="A" /></translation>
 <translation id="4252828488489674554">כדי לכווץ את קבוצת הכרטיסיות, לוחצים עליה, וכדי לערוך אותה, לוחצים לחיצה ימנית על השם שלה</translation>
 <translation id="4252899949534773101">‏Bluetooth מושבת</translation>
 <translation id="4252996741873942488"><ph name="WINDOW_TITLE" /> - תוכן הכרטיסייה שותף</translation>
@@ -6571,7 +6569,6 @@
         <ph name="BREAK" />
         ניתן לנהל את ההגדרות דרך התפריט בכרטיס או לראות עוד אפשרויות ב'התאמה אישית של Chrome'.</translation>
 <translation id="6121773125605585883">הצגת הסיסמה של שם המשתמש <ph name="USERNAME" /> לאתר <ph name="WEBSITE" /></translation>
-<translation id="6122081475643980456">החיבור שלך לאינטרנט נשלט על ידי גורם כלשהו</translation>
 <translation id="6122093587541546701">אימייל (אופציונלי):</translation>
 <translation id="6122095009389448667">המשך חסימת הגישה של האתר הזה ללוח</translation>
 <translation id="6122513630797178831">‏שמירת קוד האימות (CVC)</translation>
@@ -7458,7 +7455,6 @@
 <translation id="6820079682647046800">‏האימות של Kerberos נכשל</translation>
 <translation id="6821439254917412979">ביטול ההצמדה של <ph name="EXTENSION_NAME" /></translation>
 <translation id="6823174134746916417">שימוש בנגיעה קלה בלוח המגע</translation>
-<translation id="6823429960180594870">ניהול הקבצים בזמן ההורדה, ופתיחת הקבצים בסיום ההורדה</translation>
 <translation id="6823561724060793716">בסרגל הכתובות ניתן לפתוח את פרטי הדף כדי לראות מידע נוסף על הדף הפתוח</translation>
 <translation id="6824564591481349393">העתקת כתובת &amp;אימייל</translation>
 <translation id="6824584962142919697">&amp;בדיקת רכיבים</translation>
@@ -7864,7 +7860,6 @@
 <translation id="714301620504747562">הגלישה והחיפוש מהירים יותר ביחס לטעינה רגילה מראש</translation>
 <translation id="7143207342074048698">מתבצע חיבור</translation>
 <translation id="7143409552554575716">‏תכונות ניסיוניות ב-Chrome OS</translation>
-<translation id="714447804011008506">עכשיו ההורדות זמינות בסרגל הכלים</translation>
 <translation id="7144856456372460176">&amp;התקנת <ph name="APP" />…</translation>
 <translation id="7144878232160441200">יש לנסות שוב</translation>
 <translation id="7145413760160421938">לא ניתן לחזור לסשן הקודם</translation>
@@ -8515,7 +8510,6 @@
 <translation id="7657090467145778067">חיסכון של נפח קטן</translation>
 <translation id="7657218410916651670">‏<ph name="BEGIN_LINK_GOOGLE" />סוגי פעילות אחרים<ph name="END_LINK_GOOGLE" /> יכולים להישמר בחשבון Google אחרי שנכנסים. אפשר למחוק אותם בכל שלב.</translation>
 <translation id="7658239707568436148">ביטול</translation>
-<translation id="7658727964021657194">‏עיצוב אחרון שנוצר באמצעות AI‏ <ph name="TILE_INDEX" /></translation>
 <translation id="7659154729610375585">לצאת מהמצב האנונימי בכל זאת?</translation>
 <translation id="7659336857671800422">כניסה למדריך בנושא פרטיות</translation>
 <translation id="7659584679870740384">אין לך אישור להשתמש במכשיר הזה. יש ליצור קשר עם מנהל המערכת כדי לקבל הרשאה לכניסה.</translation>
@@ -8796,7 +8790,6 @@
 <translation id="7855678561139483478">העברת כרטיסייה לחלון חדש</translation>
 <translation id="7857004848504343806">‏המחשב שלך מכיל מודול אבטחה המשמש ליישום תכונות אבטחה קריטיות רבות ב-ChromeOS Flex. מידע נוסף מפורט במרכז העזרה של Chromebook‏: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">הצעות לטקסט</translation>
-<translation id="7857949311770343000">האם זהו דף הכרטיסייה החדשה שציפית לראות?</translation>
 <translation id="7858120906780498731">‏מכשירים מחוברים לקליטת נתונים של ChromeOS</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941">להסיר את התוסף <ph name="EXTENSION_NAME" />?</translation>
@@ -8845,7 +8838,6 @@
 <translation id="789722939441020330">לא לאפשר לאתרים להוריד באופן אוטומטי קבצים מרובים</translation>
 <translation id="7897900149154324287">בעתיד, יש להקפיד ללחוץ על סמל הניתוק עבור ההתקן הנשלף דרך אפליקציית 'קבצים' לפני שמנתקים אותו פיזית. אם לא עושים זאת, אפשר לאבד נתונים.</translation>
 <translation id="7898725031477653577">ברצוני לקבל תרגום תמיד</translation>
-<translation id="7899324822972399722">תמונה <ph name="INDEX" /> של <ph name="A" />, בסגנון <ph name="B" /></translation>
 <translation id="7901405293566323524">מרכז טלפוני</translation>
 <translation id="7903290522161827520">רוצה לאתר את רכיבי הדפדפן? יש לעבור לכתובת</translation>
 <translation id="7903429136755645827">ניתן ללחוץ כדי להתאים אישית את פקדי המשחקים</translation>
@@ -9128,7 +9120,6 @@
 <translation id="8098616321286360457">נדרש חיבור לאינטרנט</translation>
 <translation id="8100230553590752325">שימוש בסיסמאות השמורות בכל מכשיר</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> נבחרה. כדי לבטל את הבחירה, יש ללחוץ על 'חיפוש' ועל מקש הרווח.</translation>
-<translation id="8100725874569949614">תמונה <ph name="INDEX" /> של <ph name="A" />, באווירה <ph name="C" />.</translation>
 <translation id="8101409298456377967">ניתן ליצור, לנהל ולשמור סיסמאות כדי להיכנס בקלות לאתרים ולאפליקציות. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="810185532889603849">צבע מותאם אישית</translation>
 <translation id="8101987792947961127">‏יש לבצע Powerwash באתחול הבא</translation>
@@ -10077,7 +10068,6 @@
 <translation id="8846163936679269230">‏איפוס הפרופילים של ה-eSIM</translation>
 <translation id="8846239054091760429">אודיו במונו, הפעלה, כתוביות מיידיות ועוד</translation>
 <translation id="8847988622838149491">USB</translation>
-<translation id="8848963863312877204">ההורדות שלך נמצאות כאן</translation>
 <translation id="8849001918648564819">מוסתר</translation>
 <translation id="8849219423513870962">‏ביטול ההסרה של פרופיל ה-eSIM שנקרא <ph name="PROFILE_NAME" /></translation>
 <translation id="8849262417389398097"><ph name="CHECKED" /> מתוך <ph name="CHECKING" /></translation>

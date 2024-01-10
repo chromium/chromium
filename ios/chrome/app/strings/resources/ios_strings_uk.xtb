@@ -56,7 +56,6 @@
 <translation id="1279024913354609713">Не дозволяти</translation>
 <translation id="1281818060020671000">Керувати даними</translation>
 <translation id="1282311502488501110">Не входити</translation>
-<translation id="1283039547216852943">Торкніться, щоб розгорнути</translation>
 <translation id="1283524564873030414">Останні 24 години</translation>
 <translation id="1285320974508926690">Ніколи не перекладати цей сайт</translation>
 <translation id="1291506870746876680">Коли ви закриєте сайт <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" />, усі дозволи для нього буде скинуто.</translation>
@@ -82,7 +81,6 @@
 <translation id="1377255359165588604">Синхронізація перестала працювати.</translation>
 <translation id="1377321085342047638">Номер картки</translation>
 <translation id="1377508275003315939">Паролі</translation>
-<translation id="1380914240355562929">Тепер <ph name="BEGIN_BOLD" /><ph name="USERNAME" /><ph name="END_BOLD" /> зможе використовувати ваші ім’я користувача й пароль, коли входитиме на сайт <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> за допомогою Google Менеджера паролів. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="1383876407941801731">Пошук</translation>
 <translation id="138618066238211776">Продовжити як <ph name="USER_NAME" /></translation>
 <translation id="1400642268715879018">Останні 4 тижні</translation>
@@ -337,6 +335,7 @@
 <translation id="2747003861858887689">Попереднє поле</translation>
 <translation id="2749231692441336879">Ви підписалися на канал <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Облікові записи на цьому пристрої</translation>
+<translation id="2755595981383829244">Тепер ви отримуватимете сповіщення про контент</translation>
 <translation id="2762000892062317888">щойно</translation>
 <translation id="2772667768515195373">Ви можете використовувати збережені адреси в усіх продуктах Google. Цю адресу збережено у вашому обліковому записі Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="2773292004659987824">Пошук у режимі інкогніто</translation>
@@ -406,7 +405,6 @@
 <translation id="3087734570205094154">Низ</translation>
 <translation id="3090455602619185166">Увійти за допомогою керованого облікового запису</translation>
 <translation id="309710370695886264">У вас є 1 повторно використаний пароль. Змініть його, щоб захистити свої дані.</translation>
-<translation id="3109724472072898302">Згорнуто</translation>
 <translation id="3112556859945124369">Позначити…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Які дані можна синхронізувати<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">Історія та інші переваги</translation>
@@ -775,7 +773,6 @@
 <translation id="5121618895923301719">Ви вже відстежуєте ціну на цей товар. Цю сторінку збережено в папці <ph name="BEGIN_LINK" />Закладки на мобільному<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">У вас є кілька проблем із паролями.</translation>
 <translation id="5126465625664020024">Вхід і синхронізація</translation>
-<translation id="5131062416352684089">Тепер учасники сімейної групи зможуть використовувати ваші ім’я користувача й пароль, коли входитимуть на сайті <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> за допомогою Google Менеджера паролів. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="5132942445612118989">Синхронізуйте свої паролі, історію тощо на всіх пристроях</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} ненадійний пароль}one{{COUNT} ненадійний пароль}few{{COUNT} ненадійні паролі}many{{COUNT} ненадійних паролів}other{{COUNT} ненадійного пароля}}</translation>
 <translation id="5149188072385105201">Додати пароль…</translation>
@@ -924,7 +921,6 @@
 <translation id="5955891643922670672">Перегляд офлайн-версії</translation>
 <translation id="5957613098218939406">Інші параметри</translation>
 <translation id="595769230373966252">Пошук через сервіс <ph name="SEARCH_PROVIDER" /></translation>
-<translation id="5962718611393537961">Торкніться, щоб згорнути</translation>
 <translation id="5963939892571022323">Не вдається створити посилання на виділений текст.</translation>
 <translation id="5971872012779224351">{count,plural, =1{Видалено 1 закладку}one{Видалено {count} закладку}few{Видалено {count} закладки}many{Видалено {count} закладок}other{Видалено {count} закладки}}</translation>
 <translation id="5979837087407522202">Пошук паролів</translation>
@@ -991,6 +987,7 @@
 <translation id="6255097610484507482">Редагувати дані кредитної картки</translation>
 <translation id="6266039999629596120">Потрібна дія</translation>
 <translation id="6277426346321820595">Захист вимкнено</translation>
+<translation id="628251768213143684">Ви будь-коли можете керувати даними, які зберігаються в обліковому записі Google</translation>
 <translation id="6284652193729350524">Пропонувати переклад для такої мови: <ph name="LANGUAGE" /></translation>
 <translation id="6289501276895392862">Ви скасували підписку на канал <ph name="CHANNEL_NAME" /></translation>
 <translation id="6293101329759844770">Щоб увімкнути Безпечний перегляд, відкрийте параметр <ph name="BEGIN_LINK" />Сервіси Google<ph name="END_LINK" /> і натисніть "Безпечний перегляд".</translation>

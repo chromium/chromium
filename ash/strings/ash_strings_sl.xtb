@@ -1505,6 +1505,7 @@ Nova namestitev</translation>
 <translation id="7025533177575372252">Povežite napravo <ph name="DEVICE_NAME" /> s telefonom</translation>
 <translation id="7026338066939101231">Pomanjšava</translation>
 <translation id="7029814467594812963">Zapusti sejo</translation>
+<translation id="7031303610220416229">Ogled vseh opravil v Google Opravilih</translation>
 <translation id="7032161822340700104">Dovoljenih je samo 6 predlog. Če želite shraniti novo, odstranite eno.</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" /> želi uporabljati napravo <ph name="DEVICE_NAME" />. Vklopite fizično stikalo naprave <ph name="DEVICE_NAME" />.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Pomočnik Google</translation>
@@ -1817,6 +1818,7 @@ Nova namestitev</translation>
 <translation id="8351131234907093545">Ustvarjanje zapiska</translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> je v uporabi.</translation>
 <translation id="8369166482916924789">Shranjeno namizje, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
+<translation id="8370414029565771236">Iskanje tega: <ph name="TEXT" /></translation>
 <translation id="8371779926711439835">Naprej po črko</translation>
 <translation id="8371991222807690464">Delovanje zunanje dodatne opreme je v načinu za goste morda omejeno.</translation>
 <translation id="8374601332003098278">Pritisnite Enter, če želite snemati delni zaslon</translation>
