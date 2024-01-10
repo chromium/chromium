@@ -202368,7 +202368,7 @@
        ]
       ],
       "trailing-space-rtl-001.html": [
-       "8bc6cc75cbeaf8b6a091b2aadd5eead52d3b1bfd",
+       "0550f7279fcea337f7065f8f4bd52c67a5a96f5b",
        [
         null,
         [
@@ -264697,12 +264697,25 @@
    "fullscreen": {
     "rendering": {
      "backdrop-iframe.html": [
-      "710d1b48f182d0fcb577298c72bbf6a7f7329dbf",
+      "dbdf9c841a4685160987ed5df0ba5e632b754669",
       [
        null,
        [
         [
-         "/fullscreen/rendering/backdrop-iframe-ref.html",
+         "/fullscreen/rendering/backdrop-green-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "backdrop-inherit.html": [
+      "3a38dc4c815269bcba1fb570c1b0ee1a06ff8b2e",
+      [
+       null,
+       [
+        [
+         "/fullscreen/rendering/backdrop-green-ref.html",
          "=="
         ]
        ],
@@ -285580,6 +285593,19 @@
         {}
        ]
       ],
+      "gradient-in-symbol.svg": [
+       "be0f4ff895315f4382863ba37d376fd29aa42184",
+       [
+        null,
+        [
+         [
+          "/svg/struct/reftests/reference/green-100x100.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "nested-svg-through-display-contents.svg": [
        "1be64d5242f9f65f53cd079df270c8a2232b741b",
        [
@@ -285868,6 +285894,19 @@
       ],
       "use-symbol-dimensions-override-002.svg": [
        "9c1fd49083ae55b5a6743c9da4b4ecab46683b2c",
+       [
+        null,
+        [
+         [
+          "/svg/struct/reftests/reference/green-100x100.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "use-symbol-display-none.svg": [
+       "7cb2720d7e869d6871297aebfd3fb7eb13bc4960",
        [
         null,
         [
@@ -295037,7 +295076,7 @@
      }
     },
     "nonce-hiding": {
-     "dangling-html-or-body.html.headers": [
+     "dangling-html-or-body.tentative.html.headers": [
       "67d4c81e589d487b25bdb73a89f8ba1c49a0c431",
       []
      ],
@@ -321888,7 +321927,7 @@
       ]
      },
      "stretch-grid-item-button-overflow-ref.html": [
-      "900c794af10e750ce98b50dd5d15016d963f471e",
+      "a798dffe958bda179c300e0ddc570eb39799702b",
       []
      ],
      "stretch-grid-item-checkbox-input-ref.html": [
@@ -334351,7 +334390,7 @@
        []
       ],
       "text-spacing-trim-space-first-wrap-001-ref.html": [
-       "5295bdc34fff440fc3c75c6d1a1600390f601573",
+       "d043b213ca594ebdc057bc57a28fd50f38e7ec21",
        []
       ],
       "text-spacing-trim-trim-all-001-ref.html": [
@@ -335036,7 +335075,7 @@
         []
        ],
        "trailing-space-rtl-001-ref.html": [
-        "f3f25235911e7a317377a57d66d68318aaf2eaf6",
+        "25094d539d8609bf5c7bea575f41e5248bf91720",
         []
        ],
        "white-space-applies-to-text-001-ref.html": [
@@ -356215,7 +356254,7 @@
      }
     },
     "rendering": {
-     "backdrop-iframe-ref.html": [
+     "backdrop-green-ref.html": [
       "3126fe194261f7ce7f6039885e4ec73e7a997468",
       []
      ],
@@ -389435,7 +389474,7 @@
        []
       ],
       "utils.js": [
-       "56ab603fdffb962062f75bace5f1cef45bf54f6b",
+       "940edcc0ca359e3ececefac7498acf66af898c67",
        []
       ],
       "wake-lock.https.html": [
@@ -395995,7 +396034,7 @@
        []
       ],
       "helpers.py": [
-       "0a8e1dc1a4f1d15873db3bc6663bcd1a64ebef40",
+       "9870643b3d95e6e09396f514b901aebd08c5c551",
        []
       ],
       "html": {
@@ -432458,7 +432497,7 @@
      ]
     },
     "nonce-hiding": {
-     "dangling-html-or-body.html": [
+     "dangling-html-or-body.tentative.html": [
       "4ba65e05b885cbc780fab7f1650689016f257ac2",
       [
        null,
@@ -628063,7 +628102,7 @@
       ]
      ],
      "initiators-iframe-location-href.sub.https.html": [
-      "9a795b7404a55587201c46dd3bc5f12209284e94",
+      "0c195ee454f03b60432e2a5f3a02d6a0d748cb4f",
       [
        "speculation-rules/prefetch/initiators-iframe-location-href.sub.https.html?cross-site",
        {
@@ -628919,6 +628958,15 @@
      ],
      "prefetch.https.html": [
       "42e4fa47867210c14bc56fb67d66f544ddd111fd",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "prerender-while-prerender.html": [
+      "bced845b5114302e5a84d53e47a5ca6255020040",
       [
        null,
        {
@@ -706027,10 +706075,12 @@
         ]
        ],
        "default_values.py": [
-        "678d7a8e881ccc0b00c24539165bb38d2521bd40",
+        "ac544c1338cce015d5360d22e097a9c591661327",
         [
          null,
-         {}
+         {
+          "timeout": "long"
+         }
         ]
        ],
        "invalid_capabilities.py": [
