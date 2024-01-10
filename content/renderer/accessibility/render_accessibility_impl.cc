@@ -1030,7 +1030,6 @@ void RenderAccessibilityImpl::OnDestruct() {
 void RenderAccessibilityImpl::AddPluginTreeToUpdate(
     ui::AXTreeUpdate* update,
     bool mark_plugin_subtree_dirty) {
-  const WebDocument& document = GetMainDocument();
   if (mark_plugin_subtree_dirty) {
     plugin_serializer_->Reset();
   }
