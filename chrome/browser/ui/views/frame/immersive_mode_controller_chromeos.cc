@@ -262,23 +262,19 @@ void ImmersiveModeControllerChromeos::OnWindowPropertyChanged(
     aura::Window* window,
     const void* key,
     intptr_t old) {
-  bool pin_state_transition = false;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(crbug.com/1250129): Get pin state from exo.
-  pin_state_transition = key == lacros::kWindowPinTypeKey;
-#else
+  // Lacros pinned state is controlled on Ash side and will be triggered when
+  // Lacros receives configure event.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Track locked fullscreen changes.
   if (key == chromeos::kWindowStateTypeKey) {
     auto old_type = static_cast<chromeos::WindowStateType>(old);
     // Check if there is a transition into or out of a pinned state.
-    pin_state_transition =
-        IsWindowPinned(window) || chromeos::IsPinnedWindowStateType(old_type);
+    if (IsWindowPinned(window) || chromeos::IsPinnedWindowStateType(old_type)) {
+      browser_view_->FullscreenStateChanging();
+      return;
+    }
   }
-#endif
-  if (pin_state_transition) {
-    browser_view_->FullscreenStateChanging();
-    return;
-  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   if (key == aura::client::kShowStateKey) {
     ui::WindowShowState new_state =

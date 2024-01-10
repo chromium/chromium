@@ -7,12 +7,14 @@
 #include <optional>
 
 #include "base/check.h"
+#include "chrome/browser/ui/lacros/window_properties.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/desktop_browser_frame_lacros.h"
 #include "chrome/browser/ui/views/tabs/tab_drag_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chromeos/ui/base/window_pin_type.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/frame_utils.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
@@ -29,6 +31,11 @@ std::optional<ui::mojom::DragEventSource> GetCurrentTabDragEventSource() {
     }
   }
   return std::nullopt;
+}
+
+bool IsPinned(ui::PlatformWindowState state) {
+  return state == ui::PlatformWindowState::kPinnedFullscreen ||
+         state == ui::PlatformWindowState::kTrustedPinnedFullscreen;
 }
 
 }  // namespace
@@ -125,6 +132,20 @@ void BrowserDesktopWindowTreeHostLacros::OnWindowStateChanged(
       ui::IsPlatformWindowStateFullscreen(new_window_show_state) ||
       ui::IsPlatformWindowStateFullscreen(old_window_show_state);
   if (old_window_show_state != new_window_show_state && fullscreen_changed) {
+    // Update WindowPinTypeKey before triggering BrowserView::ProcessFullscreen.
+    if (IsPinned(old_window_show_state)) {
+      CHECK(!IsPinned(new_window_show_state));
+      desktop_native_widget_aura_->GetNativeWindow()->SetProperty(
+          lacros::kWindowPinTypeKey, chromeos::WindowPinType::kNone);
+    } else if (IsPinned(new_window_show_state)) {
+      CHECK(!IsPinned(old_window_show_state));
+      desktop_native_widget_aura_->GetNativeWindow()->SetProperty(
+          lacros::kWindowPinTypeKey,
+          new_window_show_state == ui::PlatformWindowState::kPinnedFullscreen
+              ? chromeos::WindowPinType::kPinned
+              : chromeos::WindowPinType::kTrustedPinned);
+    }
+
     // If the browser view initiated this state change,
     // BrowserView::ProcessFullscreen will no-op, so this call is harmless.
     browser_view_->FullscreenStateChanging();

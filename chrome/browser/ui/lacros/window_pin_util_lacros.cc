@@ -12,24 +12,38 @@
 
 void PinWindow(aura::Window* window, bool trusted) {
   CHECK(window);
-  window->SetProperty(lacros::kWindowPinTypeKey,
-                      trusted ? chromeos::WindowPinType::kTrustedPinned
-                              : chromeos::WindowPinType::kPinned);
 
   auto* pinned_mode_extension =
       views::DesktopWindowTreeHostLacros::From(window->GetHost())
           ->GetPinnedModeExtension();
+
+  // kWindowPinTypeKey should be updated when Ash side acknowledges the state
+  // change, but this requires pinned state to be supported on configure event.
+  // If it's not yet supported, set it synchronously here.
+  if (!pinned_mode_extension->SupportsConfigurePinnedState()) {
+    window->SetProperty(lacros::kWindowPinTypeKey,
+                        trusted ? chromeos::WindowPinType::kTrustedPinned
+                                : chromeos::WindowPinType::kPinned);
+  }
+
   pinned_mode_extension->Pin(trusted);
 }
 
 void UnpinWindow(aura::Window* window) {
   CHECK(window);
-  window->SetProperty(lacros::kWindowPinTypeKey,
-                      chromeos::WindowPinType::kNone);
 
   auto* pinned_mode_extension =
       views::DesktopWindowTreeHostLacros::From(window->GetHost())
           ->GetPinnedModeExtension();
+
+  // kWindowPinTypeKey should be updated when Ash side acknowledges the state
+  // change, but this requires pinned state to be supported on configure event.
+  // If it's not yet supported, set it synchronously here.
+  if (!pinned_mode_extension->SupportsConfigurePinnedState()) {
+    window->SetProperty(lacros::kWindowPinTypeKey,
+                        chromeos::WindowPinType::kNone);
+  }
+
   pinned_mode_extension->Unpin();
 }
 
