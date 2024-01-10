@@ -1764,6 +1764,11 @@
           'shards': 2,
         },
       },
+      'Win10 Tests x64 (dbg)': {
+        'swarming': {
+          'shards': 2,
+        },
+      },
       'android-11-x86-rel': {
         'args': [
           # TODO(crbug.com/1192348): Fix the test failure
