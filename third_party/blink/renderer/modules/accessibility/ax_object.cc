@@ -7799,8 +7799,12 @@ String AXObject::ToString(bool verbose, bool cached_values_only) const {
           string_builder = string_builder + " missingFromParentsChildren";
         }
       }
-    } else if (IsMissingParent()) {
-      string_builder = string_builder + " isMissingParent";
+    } else if (!IsRoot()) {
+      if (!parent_) {
+        string_builder = string_builder + " isMissingParent";
+      } else if (parent_->IsDetached()) {
+        string_builder = string_builder + " detachedParent";
+      }
     }
     if (!cached_values_only && !CanHaveChildren()) {
       string_builder = string_builder + " cannotHaveChildren";
