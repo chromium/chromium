@@ -5655,7 +5655,7 @@
           '--no-wpt-internal',
         ],
         'swarming': {
-          'shards': 16,
+          'shards': 36,
           'expiration': 18000,
           'hard_timeout': 14400,
         },

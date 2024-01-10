@@ -24679,7 +24679,7 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 16
+          "shards": 36
         },
         "test": "chrome_ios_wpt",
         "test_id_prefix": "ninja://ios/chrome/test/wpt:chrome_ios_wpt/"
