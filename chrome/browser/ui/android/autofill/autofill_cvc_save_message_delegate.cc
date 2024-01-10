@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/android/autofill/autofill_cvc_save_message_delegate.h"
 
+#include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/messages/android/message_dispatcher_bridge.h"
@@ -40,6 +41,12 @@ void AutofillCvcSaveMessageDelegate::ShowMessage(
   message_->SetTitle(ui_info.title_text);
   message_->SetDescription(ui_info.description_text);
   message_->SetPrimaryButtonText(ui_info.confirm_text);
+  message_->SetSecondaryIconResourceId(
+      ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_MESSAGE_SETTINGS));
+  message_->SetSecondaryButtonMenuText(ui_info.cancel_text);
+  message_->SetSecondaryActionCallback(
+      base::BindRepeating(&AutofillCvcSaveMessageDelegate::OnMessageCancelled,
+                          base::Unretained(this)));
   message_->SetIconResourceId(
       ResourceMapper::MapToJavaDrawableId(ui_info.logo_icon_id));
   message_->DisableIconTint();
@@ -55,6 +62,12 @@ void AutofillCvcSaveMessageDelegate::OnMessageAccepted() {
       base::Unretained(this)));
 }
 
+void AutofillCvcSaveMessageDelegate::OnMessageCancelled() {
+  CHECK(message_.has_value());
+  messages::MessageDispatcherBridge::Get()->DismissMessage(
+      &message_.value(), messages::DismissReason::SECONDARY_ACTION);
+}
+
 void AutofillCvcSaveMessageDelegate::OnMessageDismissed(
     messages::DismissReason dismiss_reason) {
   switch (dismiss_reason) {
@@ -62,15 +75,12 @@ void AutofillCvcSaveMessageDelegate::OnMessageDismissed(
       // Primary action is handled in `OnMessageAccepted`.
       break;
     case messages::DismissReason::SECONDARY_ACTION:
-      // No secondary action.
-      NOTREACHED_NORETURN();
-    case messages::DismissReason::GESTURE:
-      // User explicitly dismissed the message.
+      // User cancelled the message by clicking on the "No thanks" button.
       save_card_delegate_->OnUiCanceled();
       save_card_delegate_.reset();
       break;
     default:
-      // User ignored the message.
+      // User either ignored the message or swiped to dismiss.
       save_card_delegate_->OnUiIgnored();
       save_card_delegate_.reset();
       break;

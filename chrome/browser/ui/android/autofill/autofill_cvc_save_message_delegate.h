@@ -31,6 +31,7 @@ class AutofillCvcSaveMessageDelegate {
                    std::unique_ptr<AutofillSaveCardDelegateAndroid> delegate);
   // Callbacks for user decision.
   void OnMessageAccepted();
+  void OnMessageCancelled();
   void OnMessageDismissed(messages::DismissReason dismiss_reason);
 
  private:
