@@ -31,6 +31,9 @@ struct RegistrationMethod {
   bool (*func)(JNIEnv* env);
 };
 
+using LogFatalCallback = void (*)(const char* message);
+
+BASE_EXPORT extern LogFatalCallback g_log_fatal_callback_for_testing;
 BASE_EXPORT extern const char kUnableToGetStackTraceMessage[];
 BASE_EXPORT extern const char kReetrantOutOfMemoryMessage[];
 BASE_EXPORT extern const char kReetrantExceptionMessage[];

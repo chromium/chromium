@@ -71,6 +71,7 @@ ScopedJavaLocalRef<jclass> GetClassInternal(JNIEnv* env,
 
 }  // namespace
 
+LogFatalCallback g_log_fatal_callback_for_testing = nullptr;
 const char kUnableToGetStackTraceMessage[] =
     "Unable to retrieve Java caller stack trace as the exception handler is "
     "being re-entered";
@@ -245,10 +246,18 @@ void CheckException(JNIEnv* env) {
     if (is_oom_error) {
       base::android::SetJavaException(kReetrantOutOfMemoryMessage);
       // Use different LOG(FATAL) statements to ensure unique stack traces.
-      LOG(FATAL) << kReetrantOutOfMemoryMessage;
+      if (g_log_fatal_callback_for_testing) {
+        g_log_fatal_callback_for_testing(kReetrantOutOfMemoryMessage);
+      } else {
+        LOG(FATAL) << kReetrantOutOfMemoryMessage;
+      }
     } else {
       base::android::SetJavaException(kReetrantExceptionMessage);
-      LOG(FATAL) << kReetrantExceptionMessage;
+      if (g_log_fatal_callback_for_testing) {
+        g_log_fatal_callback_for_testing(kReetrantExceptionMessage);
+      } else {
+        LOG(FATAL) << kReetrantExceptionMessage;
+      }
     }
     // Needed for tests, which do not terminate from LOG(FATAL).
     return;
@@ -287,7 +296,11 @@ void CheckException(JNIEnv* env) {
   if (!handle_exception_in_java) {
     base::android::SetJavaException(
         GetJavaExceptionInfo(env, throwable).c_str());
-    LOG(FATAL) << kUncaughtExceptionMessage;
+    if (g_log_fatal_callback_for_testing) {
+      g_log_fatal_callback_for_testing(kUncaughtExceptionMessage);
+    } else {
+      LOG(FATAL) << kUncaughtExceptionMessage;
+    }
     // Needed for tests, which do not terminate from LOG(FATAL).
     g_reentering = false;
     return;
@@ -313,7 +326,11 @@ void CheckException(JNIEnv* env) {
       GetJavaExceptionInfo(
           env, secondary_exception ? secondary_exception : throwable)
           .c_str());
-  LOG(FATAL) << kUncaughtExceptionHandlerFailedMessage;
+  if (g_log_fatal_callback_for_testing) {
+    g_log_fatal_callback_for_testing(kUncaughtExceptionHandlerFailedMessage);
+  } else {
+    LOG(FATAL) << kUncaughtExceptionHandlerFailedMessage;
+  }
   // Needed for tests, which do not terminate from LOG(FATAL).
   g_reentering = false;
 }
