@@ -242,6 +242,10 @@ TEST_P(CredentialsFilterTest, ShouldSave_SignedInWithSyncServiceNull) {
   // Non-Gaia forms should always offer saving.
   EXPECT_TRUE(filter_->ShouldSave(SimpleNonGaiaForm(kPrimaryAccountEmail)));
   EXPECT_TRUE(filter_->ShouldSave(SimpleNonGaiaForm("")));
+  EXPECT_TRUE(filter_->ShouldSave(
+      SimpleForm("https://subdomain.google.com/", kPrimaryAccountEmail)));
+  EXPECT_TRUE(
+      filter_->ShouldSave(SimpleForm("https://subdomain.google.com/", "")));
 
   // See comments inside ShouldSave() for the justification.
   const PasswordForm simple_gaia_form =
@@ -261,13 +265,6 @@ TEST_P(CredentialsFilterTest, ShouldSave_SignedInWithSyncServiceNull) {
   EXPECT_EQ(filter_->ShouldSave(SimpleGaiaForm(kPrimaryAccountEmail)),
             !passwords_account_storage_enabled);
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-
-  EXPECT_TRUE(filter_->ShouldSave(
-      SimpleForm("https://subdomain.google.com/", kPrimaryAccountEmail)));
-
-  EXPECT_EQ(
-      filter_->ShouldSave(SimpleForm("https://subdomain.google.com/", "")),
-      passwords_account_storage_enabled);
 }
 
 TEST_P(CredentialsFilterTest, ShouldSave_SyncFeatureOnWithPasswordsEnabled) {
@@ -279,6 +276,10 @@ TEST_P(CredentialsFilterTest, ShouldSave_SyncFeatureOnWithPasswordsEnabled) {
   // Non-Gaia forms should always offer saving.
   EXPECT_TRUE(filter_->ShouldSave(SimpleNonGaiaForm(kPrimaryAccountEmail)));
   EXPECT_TRUE(filter_->ShouldSave(SimpleNonGaiaForm("")));
+  EXPECT_TRUE(filter_->ShouldSave(
+      SimpleForm("https://subdomain.google.com/", kPrimaryAccountEmail)));
+  EXPECT_TRUE(
+      filter_->ShouldSave(SimpleForm("https://subdomain.google.com/", "")));
 
   // Gaia forms can offer saving only if the username doesn't match the primary
   // account.
@@ -295,12 +296,6 @@ TEST_P(CredentialsFilterTest, ShouldSave_SyncFeatureOnWithPasswordsEnabled) {
             passwords_account_storage_enabled);
   EXPECT_EQ(filter_->ShouldSave(SimpleGAIAChangePasswordForm()),
             passwords_account_storage_enabled);
-  EXPECT_EQ(filter_->ShouldSave(SimpleForm("https://subdomain.google.com/",
-                                           kPrimaryAccountEmail)),
-            passwords_account_storage_enabled);
-  EXPECT_EQ(
-      filter_->ShouldSave(SimpleForm("https://subdomain.google.com/", "")),
-      passwords_account_storage_enabled);
 }
 
 TEST_P(CredentialsFilterTest, ShouldSave_SignedInWithSyncFeatureOff) {
@@ -311,14 +306,16 @@ TEST_P(CredentialsFilterTest, ShouldSave_SignedInWithSyncFeatureOff) {
   // Non-Gaia forms should always offer saving.
   EXPECT_TRUE(filter_->ShouldSave(SimpleNonGaiaForm(kPrimaryAccountEmail)));
   EXPECT_TRUE(filter_->ShouldSave(SimpleNonGaiaForm("")));
+  EXPECT_TRUE(filter_->ShouldSave(
+      SimpleForm("https://subdomain.google.com/", kPrimaryAccountEmail)));
+  EXPECT_TRUE(
+      filter_->ShouldSave(SimpleForm("https://subdomain.google.com/", "")));
 
   // Gaia forms can offer saving if the username doesn't match the primary
   // account.
   EXPECT_TRUE(
       filter_->ShouldSave(SimpleGaiaForm("arbitrary_user@example.org")));
 
-  EXPECT_TRUE(filter_->ShouldSave(
-      SimpleForm("https://subdomain.google.com/", kPrimaryAccountEmail)));
 
   // Some scenarios behave differently based on whether or not the feature
   // toggle is enabled.
@@ -331,9 +328,6 @@ TEST_P(CredentialsFilterTest, ShouldSave_SignedInWithSyncFeatureOff) {
             passwords_account_storage_enabled);
   EXPECT_EQ(filter_->ShouldSave(SimpleGAIAChangePasswordForm()),
             passwords_account_storage_enabled);
-  EXPECT_EQ(
-      filter_->ShouldSave(SimpleForm("https://subdomain.google.com/", "")),
-      passwords_account_storage_enabled);
 }
 
 TEST_P(CredentialsFilterTest, ShouldSave_SyncFeatureOnWithPasswordsDisabled) {
@@ -345,11 +339,13 @@ TEST_P(CredentialsFilterTest, ShouldSave_SyncFeatureOnWithPasswordsDisabled) {
   // Non-Gaia forms should always offer saving.
   EXPECT_TRUE(filter_->ShouldSave(SimpleNonGaiaForm(kPrimaryAccountEmail)));
   EXPECT_TRUE(filter_->ShouldSave(SimpleNonGaiaForm("")));
+  EXPECT_TRUE(filter_->ShouldSave(
+      SimpleForm("https://subdomain.google.com/", kPrimaryAccountEmail)));
+  EXPECT_TRUE(
+      filter_->ShouldSave(SimpleForm("https://subdomain.google.com/", "")));
 
   EXPECT_TRUE(filter_->ShouldSave(SimpleGaiaForm("non_sync_user@example.org")));
 
-  EXPECT_TRUE(filter_->ShouldSave(
-      SimpleForm("https://subdomain.google.com/", kPrimaryAccountEmail)));
 
   // Some scenarios behave differently based on whether or not the feature
   // toggle is enabled.
@@ -363,9 +359,6 @@ TEST_P(CredentialsFilterTest, ShouldSave_SyncFeatureOnWithPasswordsDisabled) {
             passwords_account_storage_enabled);
   EXPECT_EQ(filter_->ShouldSave(SimpleGAIAChangePasswordForm()),
             passwords_account_storage_enabled);
-  EXPECT_EQ(
-      filter_->ShouldSave(SimpleForm("https://subdomain.google.com/", "")),
-      passwords_account_storage_enabled);
 }
 
 TEST_P(CredentialsFilterTest, ShouldSave_SignIn_Form) {
