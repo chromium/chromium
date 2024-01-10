@@ -4875,7 +4875,7 @@
   {
     "name": "ios-hide-feed-with-search-choice",
     "owners": ["scottyoder@google.com", "bling-get-set-up@google.com"],
-    "expiry_milestone": 123
+    "expiry_milestone": 124
   },
   {
     "name": "ios-incognito-downloads-warning",
@@ -4895,7 +4895,7 @@
   {
     "name": "ios-large-fakebox",
     "owners": ["scottyoder@google.com", "bling-get-set-up@google.com"],
-    "expiry_milestone": 122
+    "expiry_milestone": 124
   },
   {
     "name": "ios-lens-use-direct-upload",
