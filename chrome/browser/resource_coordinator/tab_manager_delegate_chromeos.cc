@@ -580,6 +580,8 @@ void TabManagerDelegate::LowMemoryKillImpl(
   memory_pressure::ReclaimTarget target_memory_to_free =
       mem_stat_->TargetMemoryToFree();
 
+  unnecessary_discard_monitor_.OnReclaimTargetBegin(target_memory_to_free);
+
   MEMORY_LOG(ERROR) << "List of low memory kill candidates "
                        "(sorted from low priority to high priority):";
   for (const Candidate& candidate : base::Reversed(candidates)) {
@@ -603,6 +605,9 @@ void TabManagerDelegate::LowMemoryKillImpl(
     int freed_memory_kb = ProcessCandidate(reason, now, candidate,
                                            target_memory_to_free.target_kb);
 
+    unnecessary_discard_monitor_.OnDiscard(freed_memory_kb,
+                                           base::TimeTicks::Now());
+
     target_memory_to_free.target_kb -= freed_memory_kb;
 
     if (freed_memory_kb > 0 && !first_kill_time) {
@@ -621,6 +626,8 @@ void TabManagerDelegate::LowMemoryKillImpl(
     UMA_HISTOGRAM_MEDIUM_TIMES("Memory.LowMemoryKiller.FirstKillLatency",
                                delta);
   }
+
+  unnecessary_discard_monitor_.OnReclaimTargetEnd();
 
   // tab_discard_done runs when it goes out of the scope.
 }

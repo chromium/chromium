@@ -85,6 +85,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Discarding.DiscardsDrivenByStaleSignal" units="tabs"
+    expires_after="2024-12-01">
+  <owner>kalutes@chromium.org</owner>
+  <owner>vovoy@chromium.org</owner>
+  <summary>
+    Reported for ChromeOS only. The count of tab discards that were unnecessary
+    given the origin time of the memory pressure reclaim target. This is
+    calculated and reported when Tab Manager or Page Discarder finish discarding
+    tabs in response to a reclaim target. There can be a non-trival amount of
+    time between when a memory pressure reclaim target is generated and when
+    Chrome actually discards tabs in response to the reclaim target. If a
+    reclaim target is generated before all tabs from the previous target have
+    been discarded, then the same memory shortfall can be included in all of
+    those signals' reclaim targets, resulting in Chrome discarding more tabs
+    than is strictly necessary.
+  </summary>
+</histogram>
+
 <histogram name="Discarding.LargestTabFootprint" units="MiB"
     expires_after="2021-02-28">
   <owner>chrisha@chromium.org</owner>
@@ -99,6 +117,18 @@ chromium-metrics-reviews@google.com.
   <owner>chrisha@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>The resident set of the oldest urgent discarding candidate.</summary>
+</histogram>
+
+<histogram name="Discarding.ReclaimTargetAge" units="ms"
+    expires_after="2024-12-01">
+  <owner>kalutes@chromium.org</owner>
+  <owner>vovoy@chromium.org</owner>
+  <summary>
+    Reported for ChromeOS only. The age of the memory pressure signal when it is
+    processed by the tab/page discarder. This is recorded when Tab Manager or
+    Page Discarder reads the signal, but before any tabs are discarded as a
+    result of the signal.
+  </summary>
 </histogram>
 
 <histogram name="Tab.AgeAtDeletion" units="ms" expires_after="2024-06-30">
