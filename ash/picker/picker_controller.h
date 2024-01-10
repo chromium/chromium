@@ -47,7 +47,10 @@ class ASH_EXPORT PickerController : public PickerViewDelegate {
   std::unique_ptr<AshWebView> CreateWebView(
       const AshWebView::InitParams& params) override;
   void LoadAndDecodeGif(const GURL& url, DecodeGifCallback callback) override;
+  void GetResultsForCategory(PickerCategory category,
+                             SearchResultsCallback callback) override;
   void StartSearch(const std::u16string& query,
+                   std::optional<PickerCategory> category,
                    SearchResultsCallback callback) override;
   void InsertResultOnNextFocus(const PickerSearchResult& result) override;
   bool ShouldPaint() override;

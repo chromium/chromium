@@ -5,6 +5,8 @@
 #ifndef ASH_PICKER_VIEWS_PICKER_VIEW_H_
 #define ASH_PICKER_VIEWS_PICKER_VIEW_H_
 
+#include <optional>
+
 #include "ash/ash_export.h"
 #include "ash/picker/model/picker_category.h"
 #include "ash/picker/picker_session_metrics.h"
@@ -30,6 +32,7 @@ class PickerSearchResultsView;
 class PickerUserEducationView;
 class PickerViewDelegate;
 class PickerZeroStateView;
+class PickerCategoryView;
 
 // View for the Picker widget.
 class ASH_EXPORT PickerView : public views::WidgetDelegateView {
@@ -65,6 +68,7 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView {
   PickerSearchResultsView& search_results_view_for_testing() {
     return *search_results_view_;
   }
+  PickerCategoryView& category_view_for_testing() { return *category_view_; }
   PickerZeroStateView& zero_state_view_for_testing() {
     return *zero_state_view_;
   }
@@ -74,14 +78,20 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView {
   // `PublishSearchResults`.
   void StartSearch(const std::u16string& query);
 
-  // Displays `results` in the view.
+  // Displays `results` in the search view.
   void PublishSearchResults(const PickerSearchResults& results);
 
   // Selects a search result.
   void SelectSearchResult(const PickerSearchResult& result);
 
-  // Selects a category.
+  // Selects a category. This shows the category view and fetches results for
+  // the category, which are returned to `PublishCategoryResults`.
   void SelectCategory(PickerCategory category);
+
+  // Displays `results` in the category view.
+  void PublishCategoryResults(const PickerSearchResults& results);
+
+  std::optional<PickerCategory> selected_category_;
 
   PickerSessionMetrics session_metrics_;
   raw_ptr<PickerViewDelegate> delegate_ = nullptr;
@@ -89,6 +99,7 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView {
   raw_ptr<PickerSearchFieldView> search_field_view_ = nullptr;
   raw_ptr<PickerContentsView> contents_view_ = nullptr;
   raw_ptr<PickerZeroStateView> zero_state_view_ = nullptr;
+  raw_ptr<PickerCategoryView> category_view_ = nullptr;
   raw_ptr<PickerSearchResultsView> search_results_view_ = nullptr;
   raw_ptr<PickerUserEducationView> user_education_view_ = nullptr;
 

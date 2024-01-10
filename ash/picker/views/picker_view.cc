@@ -8,6 +8,7 @@
 
 #include "ash/picker/model/picker_category.h"
 #include "ash/picker/model/picker_search_results.h"
+#include "ash/picker/views/picker_category_view.h"
 #include "ash/picker/views/picker_contents_view.h"
 #include "ash/picker/views/picker_search_field_view.h"
 #include "ash/picker/views/picker_search_results_view.h"
@@ -73,12 +74,12 @@ PickerView::PickerView(PickerViewDelegate* delegate,
           .WithWeight(1));
 
   // `base::Unretained` is safe here because this class owns
-  // `zero_state_view_`.
+  // `zero_state_view_`, `category_view_` and `search_results_view`_.
   zero_state_view_ = contents_view_->AddPage(
       std::make_unique<PickerZeroStateView>(base::BindRepeating(
           &PickerView::SelectCategory, base::Unretained(this))));
-  // `base::Unretained` is safe here because this class owns
-  // `search_results_view_`.
+  category_view_ = contents_view_->AddPage(std::make_unique<PickerCategoryView>(
+      base::BindOnce(&PickerView::SelectSearchResult, base::Unretained(this))));
   search_results_view_ = contents_view_->AddPage(
       std::make_unique<PickerSearchResultsView>(base::BindOnce(
           &PickerView::SelectSearchResult, base::Unretained(this))));
@@ -132,13 +133,16 @@ void PickerView::RemovedFromWidget() {
 }
 
 void PickerView::StartSearch(const std::u16string& query) {
-  if (query == u"") {
-    contents_view_->SetActivePage(zero_state_view_);
-  } else {
+  if (!query.empty()) {
     contents_view_->SetActivePage(search_results_view_);
     delegate_->StartSearch(
-        query, base::BindRepeating(&PickerView::PublishSearchResults,
-                                   weak_ptr_factory_.GetWeakPtr()));
+        query, selected_category_,
+        base::BindRepeating(&PickerView::PublishSearchResults,
+                            weak_ptr_factory_.GetWeakPtr()));
+  } else if (selected_category_.has_value()) {
+    contents_view_->SetActivePage(category_view_);
+  } else {
+    contents_view_->SetActivePage(zero_state_view_);
   }
 }
 
@@ -152,7 +156,15 @@ void PickerView::SelectSearchResult(const PickerSearchResult& result) {
 }
 
 void PickerView::SelectCategory(PickerCategory category) {
-  // TODO: b/316936723 - Show category page with results for that category.
+  selected_category_ = category;
+  contents_view_->SetActivePage(category_view_);
+  delegate_->GetResultsForCategory(
+      category, base::BindRepeating(&PickerView::PublishCategoryResults,
+                                    weak_ptr_factory_.GetWeakPtr()));
+}
+
+void PickerView::PublishCategoryResults(const PickerSearchResults& results) {
+  category_view_->SetResults(results);
 }
 
 BEGIN_METADATA(PickerView, views::View)

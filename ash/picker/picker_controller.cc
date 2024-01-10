@@ -107,7 +107,17 @@ void PickerController::LoadAndDecodeGif(const GURL& url,
       base::BindOnce(&image_util::DecodeAnimationData, std::move(callback)));
 }
 
+void PickerController::GetResultsForCategory(PickerCategory category,
+                                             SearchResultsCallback callback) {
+  // TODO: b/316936620 - Get actual results for the category.
+  callback.Run(PickerSearchResults({{
+      PickerSearchResults::Section(u"Recently used",
+                                   {{PickerSearchResult(u"😊")}}),
+  }}));
+}
+
 void PickerController::StartSearch(const std::u16string& query,
+                                   std::optional<PickerCategory> category,
                                    SearchResultsCallback callback) {
   // TODO(b/310088338): Do a real search.
   callback.Run(PickerSearchResults({{

@@ -6,7 +6,9 @@
 
 #include <optional>
 
+#include "ash/picker/model/picker_category.h"
 #include "ash/picker/model/picker_search_results.h"
+#include "ash/picker/views/picker_category_view.h"
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_search_field_view.h"
 #include "ash/picker/views/picker_search_results_view.h"
@@ -42,12 +44,16 @@ using PickerViewTest = AshTestBase;
 
 class FakePickerViewDelegate : public PickerViewDelegate {
  public:
-  using FakeSearchFunction =
-      base::RepeatingCallback<PickerSearchResults(std::u16string_view query)>;
+  using FakeSearchFunction = base::RepeatingCallback<PickerSearchResults(
+      std::u16string_view query,
+      std::optional<PickerCategory> category)>;
 
   FakePickerViewDelegate()
-      : search_function_(base::BindRepeating(
-            [](std::u16string_view query) { return PickerSearchResults(); })) {}
+      : search_function_(
+            base::BindRepeating([](std::u16string_view query,
+                                   std::optional<PickerCategory> category) {
+              return PickerSearchResults();
+            })) {}
   explicit FakePickerViewDelegate(FakeSearchFunction search_function)
       : search_function_(search_function) {}
 
@@ -58,9 +64,15 @@ class FakePickerViewDelegate : public PickerViewDelegate {
 
   void LoadAndDecodeGif(const GURL& url, DecodeGifCallback callback) override {}
 
+  void GetResultsForCategory(PickerCategory category,
+                             SearchResultsCallback callback) override {
+    callback.Run(PickerSearchResults());
+  }
+
   void StartSearch(const std::u16string& query,
+                   std::optional<PickerCategory> category,
                    SearchResultsCallback callback) override {
-    callback.Run(search_function_.Run(query));
+    callback.Run(search_function_.Run(query, category));
   }
 
   void InsertResultOnNextFocus(const PickerSearchResult& result) override {
@@ -82,6 +94,17 @@ class FakePickerViewDelegate : public PickerViewDelegate {
 PickerView* GetPickerViewFromWidget(views::Widget& widget) {
   return views::AsViewClass<PickerView>(
       widget.non_client_view()->client_view()->children().front());
+}
+
+// Gets an item view that can be clicked to select a category.
+// TODO: b/316935911 - This assumes that the picker is in the zero state and
+// that the first item is a category. This probably won't be the case once more
+// of the zero state view has been implemented. We should have a better way of
+// getting a category item.
+PickerItemView* GetCategoryItemView(PickerView* picker_view) {
+  return picker_view->zero_state_view_for_testing()
+      .section_views_for_testing()[0]
+      ->item_views_for_testing()[0];
 }
 
 TEST_F(PickerViewTest, CreateWidgetHasCorrectHierarchy) {
@@ -170,8 +193,8 @@ TEST_F(PickerViewTest, EmptySearchFieldContentsSwitchesToZeroStateView) {
 
 TEST_F(PickerViewTest, LeftClickSearchResultSelectsResult) {
   base::test::TestFuture<void> future;
-  FakePickerViewDelegate delegate(
-      base::BindLambdaForTesting([&](std::u16string_view query) {
+  FakePickerViewDelegate delegate(base::BindLambdaForTesting(
+      [&](std::u16string_view query, std::optional<PickerCategory> category) {
         future.SetValue();
         return PickerSearchResults({{
             PickerSearchResults::Section(u"section",
@@ -199,6 +222,59 @@ TEST_F(PickerViewTest, LeftClickSearchResultSelectsResult) {
 
   EXPECT_THAT(delegate.last_inserted_result(),
               Optional(Property(&PickerSearchResult::text, Eq(u"result"))));
+}
+
+TEST_F(PickerViewTest, SwitchesToCategoryView) {
+  FakePickerViewDelegate delegate;
+  auto widget = PickerView::CreateWidget(&delegate);
+  widget->Show();
+
+  PickerView* picker_view = GetPickerViewFromWidget(*widget);
+  PickerItemView* category_item_view = GetCategoryItemView(picker_view);
+  ViewDrawnWaiter().Wait(category_item_view);
+  LeftClickOn(category_item_view);
+
+  EXPECT_TRUE(picker_view->category_view_for_testing().GetVisible());
+  EXPECT_FALSE(picker_view->zero_state_view_for_testing().GetVisible());
+  EXPECT_FALSE(picker_view->search_results_view_for_testing().GetVisible());
+}
+
+TEST_F(PickerViewTest, SearchingWithCategorySwitchesToSearchResultsView) {
+  FakePickerViewDelegate delegate;
+  auto widget = PickerView::CreateWidget(&delegate);
+  widget->Show();
+
+  // Switch to category view.
+  PickerView* picker_view = GetPickerViewFromWidget(*widget);
+  PickerItemView* category_item_view = GetCategoryItemView(picker_view);
+  ViewDrawnWaiter().Wait(category_item_view);
+  LeftClickOn(category_item_view);
+  // Type something into the search field.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+
+  EXPECT_FALSE(picker_view->category_view_for_testing().GetVisible());
+  EXPECT_FALSE(picker_view->zero_state_view_for_testing().GetVisible());
+  EXPECT_TRUE(picker_view->search_results_view_for_testing().GetVisible());
+}
+
+TEST_F(PickerViewTest, EmptySearchFieldSwitchesBackToCategoryView) {
+  FakePickerViewDelegate delegate;
+  auto widget = PickerView::CreateWidget(&delegate);
+  widget->Show();
+
+  // Switch to category view.
+  PickerView* picker_view = GetPickerViewFromWidget(*widget);
+  PickerItemView* category_item_view = GetCategoryItemView(picker_view);
+  ViewDrawnWaiter().Wait(category_item_view);
+  LeftClickOn(category_item_view);
+  // Type something into the search field.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  // Clear the search field.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_BACK, ui::EF_NONE);
+
+  EXPECT_TRUE(picker_view->category_view_for_testing().GetVisible());
+  EXPECT_FALSE(picker_view->zero_state_view_for_testing().GetVisible());
+  EXPECT_FALSE(picker_view->search_results_view_for_testing().GetVisible());
 }
 
 }  // namespace

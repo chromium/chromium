@@ -6,8 +6,10 @@
 #define ASH_PICKER_VIEWS_PICKER_VIEW_DELEGATE_H_
 
 #include <memory>
+#include <optional>
 
 #include "ash/ash_export.h"
+#include "ash/picker/model/picker_category.h"
 #include "ash/public/cpp/ash_web_view.h"
 #include "ash/public/cpp/image_util.h"
 
@@ -38,9 +40,15 @@ class ASH_EXPORT PickerViewDelegate {
   virtual void LoadAndDecodeGif(const GURL& url,
                                 DecodeGifCallback callback) = 0;
 
+  // Gets initially suggested results for category. Results will be returned via
+  // `callback`, which may be called multiples times to update the results.
+  virtual void GetResultsForCategory(PickerCategory category,
+                                     SearchResultsCallback callback) = 0;
+
   // Starts a search for `query`. Results will be returned via `callback`,
   // which may be called multiples times to update the results.
   virtual void StartSearch(const std::u16string& query,
+                           std::optional<PickerCategory> category,
                            SearchResultsCallback callback) = 0;
 
   // Inserts `result` into the next focused input field.
