@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/snapshot/snapshot_win.h"
+#include "ui/snapshot/snapshot.h"
 
 #include <memory>
 #include <utility>
@@ -18,12 +18,10 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/image/image.h"
-#include "ui/snapshot/snapshot.h"
-#include "ui/snapshot/snapshot_aura.h"
 
 namespace ui {
 
-namespace internal {
+namespace {
 
 bool GrabHwndSnapshot(HWND window_handle,
                       const gfx::Rect& snapshot_bounds_in_pixels,
@@ -74,7 +72,7 @@ bool GrabHwndSnapshot(HWND window_handle,
   return true;
 }
 
-}  // namespace internal
+}  // namespace
 
 bool GrabViewSnapshot(gfx::NativeView view_handle,
                       const gfx::Rect& snapshot_bounds,
@@ -102,8 +100,8 @@ bool GrabWindowSnapshot(gfx::NativeWindow window_handle,
 
   expanded_window_bounds_in_pixels.Intersect(client_area_rect);
 
-  return internal::GrabHwndSnapshot(hwnd, snapshot_bounds_in_pixels,
-                                    expanded_window_bounds_in_pixels, image);
+  return GrabHwndSnapshot(hwnd, snapshot_bounds_in_pixels,
+                          expanded_window_bounds_in_pixels, image);
 }
 
 void GrabWindowSnapshotAsync(gfx::NativeWindow window,
