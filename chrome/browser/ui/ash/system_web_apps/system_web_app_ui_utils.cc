@@ -300,8 +300,10 @@ Browser* FindSystemWebAppBrowser(Profile* profile,
   // Look through all the windows, find a browser for this app. Prefer the most
   // recently active app window.
   for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
-    if (browser->profile() != profile || browser->type() != browser_type)
+    if (browser->profile() != profile || browser->type() != browser_type ||
+        browser->is_delete_scheduled()) {
       continue;
+    }
 
     if (web_app::GetAppIdFromApplicationName(browser->app_name()) !=
         app_id.value()) {
