@@ -10,8 +10,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "chrome/browser/performance_manager/mechanisms/page_discarder.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
 #include "components/memory_pressure/reclaim_target.h"
+#include "components/memory_pressure/unnecessary_discard_monitor.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/graph.h"
@@ -191,14 +193,16 @@ class PageDiscardingHelper : public GraphOwned,
       base::OnceCallback<void(bool)> post_discard_cb,
       DiscardReason discard_reason,
       base::TimeDelta minimum_time_in_background,
-      bool success);
+      const std::vector<mechanism::PageDiscarder::DiscardEvent>&
+          discard_events);
 
   // The mechanism used to do the actual discarding.
-  std::unique_ptr<performance_manager::mechanism::PageDiscarder>
-      page_discarder_;
+  std::unique_ptr<mechanism::PageDiscarder> page_discarder_;
 
   std::map<std::string, std::unique_ptr<url_matcher::URLMatcher>>
       profiles_no_discard_patterns_;
+
+  memory_pressure::UnnecessaryDiscardMonitor unnecessary_discard_monitor_;
 
   raw_ptr<Graph> graph_ = nullptr;
 

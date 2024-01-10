@@ -38,7 +38,8 @@ class LenientMockPageDiscarder
   void DiscardPageNodes(
       const std::vector<const PageNode*>& page_nodes,
       ::mojom::LifecycleUnitDiscardReason discard_reason,
-      base::OnceCallback<void(bool)> post_discard_cb) override;
+      base::OnceCallback<void(const std::vector<DiscardEvent>&)>
+          post_discard_cb) override;
 };
 using MockPageDiscarder = ::testing::StrictMock<LenientMockPageDiscarder>;
 

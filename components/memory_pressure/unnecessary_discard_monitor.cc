@@ -90,9 +90,11 @@ void UnnecessaryDiscardMonitor::OnDiscard(
     int64_t memory_freed_kb,
     base::TimeTicks discard_complete_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Cache this kill event along with the time it took place.
-  current_reclaim_event_kills_.emplace_back(memory_freed_kb,
-                                            discard_complete_time);
+  if (current_reclaim_event_) {
+    // Cache this kill event along with the time it took place.
+    current_reclaim_event_kills_.emplace_back(memory_freed_kb,
+                                              discard_complete_time);
+  }
 }
 
 void UnnecessaryDiscardMonitor::ReportUnnecessaryDiscards(size_t count) {
