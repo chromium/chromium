@@ -303,7 +303,7 @@
           class$="emoji-button [[getEmojiButtonClassName(item)]]"
           on-mouseenter="showTooltip" on-focus="showTooltip"
           aria-label="[[getEmojiAriaLabel(item)]]">
-          [[getDisplayEmojiForEmoji(item.base.string)]]
+          [[getDisplayEmojiForEmoji(item.base.string, item)]]
         </button>
         <template is="dom-if"
           if="[[isEmojiVariantVisible(index,shownEmojiVariantIndex)]]">
@@ -325,7 +325,7 @@
           class$="emoji-button [[getEmojiButtonClassName(item)]]"
           on-mouseenter="showTooltip" on-focus="showTooltip"
           aria-label="[[getEmojiAriaLabel(item)]]">
-          [[getDisplayEmojiForEmoji(item.base.string)]]
+          [[getDisplayEmojiForEmoji(item.base.string, item)]]
         </button>
         </div>
       </template>

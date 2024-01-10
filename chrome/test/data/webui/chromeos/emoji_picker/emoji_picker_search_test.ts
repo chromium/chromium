@@ -12,10 +12,29 @@ suite('emoji-search', () => {
   let emojiPicker: EmojiPickerApp;
   let emojiSearch: EmojiSearch;
   let findInEmojiPicker: (...path: string[]) => HTMLElement | null;
+  let expectEmojiButton: (text: string, getGroup?: () => HTMLElement | null) =>
+      Promise<HTMLElement>;
+  let expectEmojiButtons:
+      (texts: string[], getGroup?: () => HTMLElement | null) =>
+          Promise<HTMLElement[]>;
+  let clickVariant: (text: string, button: HTMLElement) => Promise<void>;
+  let findSearchGroup: (category: string) => HTMLElement | null;
+  let reload: () => Promise<void>;
+
+  const setSearchQuery = (value: string) => {
+    const emojiSearch = findInEmojiPicker('emoji-search') as EmojiSearch;
+    emojiSearch.setSearchQuery(value);
+  };
+
   setup(async () => {
     const newPicker = initialiseEmojiPickerForTest();
     emojiPicker = newPicker.emojiPicker;
     findInEmojiPicker = newPicker.findInEmojiPicker;
+    expectEmojiButton = newPicker.expectEmojiButton;
+    expectEmojiButtons = newPicker.expectEmojiButtons;
+    clickVariant = newPicker.clickVariant;
+    findSearchGroup = newPicker.findSearchGroup;
+    reload = newPicker.reload;
     await newPicker.readyPromise;
     emojiSearch = findInEmojiPicker('emoji-search') as EmojiSearch;
   });
@@ -116,5 +135,23 @@ suite('emoji-search', () => {
         emojiResults!.length,
         4,  // normal, italic, bold and san-serif bold
     );
+  });
+
+  test(
+      'selecting a variant from search should update preferences', async () => {
+        setSearchQuery('shrug');
+        const searchEmoji =
+            await expectEmojiButton('🤷', () => findSearchGroup('emoji'));
+        await clickVariant('🤷🏿‍♀', searchEmoji);
+        await reload();
+        await expectEmojiButtons(['🤷🏿‍♀', '👍🏿', '🧞‍♀']);
+      });
+
+  test('preferences should be applied in emoji search', async () => {
+    const thumbsUp = await expectEmojiButton('👍');
+    await clickVariant('👍🏿', thumbsUp);
+    await reload();
+    setSearchQuery('shrug');
+    await expectEmojiButton('🤷🏿', () => findSearchGroup('emoji'));
   });
 });
