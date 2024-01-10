@@ -5676,6 +5676,7 @@ static_library("browser") {
       "ui/lacros/screen_capture_notification_ui_lacros.h",
       "ui/lacros/snap_controller_lacros.cc",
       "ui/lacros/snap_controller_lacros.h",
+      "ui/lacros/window_pin_util_lacros.cc",
       "ui/lacros/window_properties.cc",
       "ui/lacros/window_properties.h",
       "ui/lacros/window_utility.cc",

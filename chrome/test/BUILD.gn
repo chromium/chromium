@@ -8535,7 +8535,7 @@ if (!is_fuchsia) {
         "../browser/ui/ash/system_tray_client_impl_unittest.cc",
         "../browser/ui/ash/user_education/chrome_user_education_delegate_unittest.cc",
         "../browser/ui/ash/wallpaper_controller_client_impl_unittest.cc",
-        "../browser/ui/ash/window_pin_util_unittest.cc",
+        "../browser/ui/ash/window_pin_util_ash_unittest.cc",
         "../browser/ui/quick_answers/quick_answers_controller_unittest.cc",
         "../browser/ui/quick_answers/quick_answers_state_ash_unittest.cc",
         "../browser/ui/quick_answers/quick_answers_ui_controller_unittest.cc",

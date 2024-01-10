@@ -123,19 +123,16 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/ash/window_pin_util.h"
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/browser_command_controller.h"
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/ui/browser_command_controller.h"
-#include "chrome/browser/ui/lacros/window_properties.h"
-#include "chromeos/ui/base/window_pin_type.h"
+#include "chrome/browser/ui/chromeos/window_pin_util.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "content/public/browser/devtools_agent_host.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
-#include "ui/platform_window/extensions/pinned_mode_extension.h"
-#include "ui/views/widget/desktop_aura/desktop_window_tree_host_lacros.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 using content::BrowserThread;
 using content::NavigationController;
@@ -377,9 +374,12 @@ int MoveTabToWindow(ExtensionFunction* function,
 // screen is set locked. This is only necessary for ChromeOS and Lacros and
 // is restricted to allowlisted extensions.
 void SetLockedFullscreenState(Browser* browser, bool pinned) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   aura::Window* window = browser->window()->GetNativeWindow();
   DCHECK(window);
+
+  CHECK_NE(GetWindowPinType(window), chromeos::WindowPinType::kPinned)
+      << "Extensions only set Trusted Pinned";
 
   // As this gets triggered from extensions, we might encounter this case.
   if (IsWindowPinned(window) == pinned)
@@ -394,41 +394,13 @@ void SetLockedFullscreenState(Browser* browser, bool pinned) {
 
   // Update the set of available browser commands.
   browser->command_controller()->LockedFullscreenStateChanged();
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  aura::Window* window = browser->window()->GetNativeWindow();
-  DCHECK(window);
 
-  const chromeos::WindowPinType previous_type =
-      window->GetProperty(lacros::kWindowPinTypeKey);
-  CHECK_NE(previous_type, chromeos::WindowPinType::kPinned)
-      << "Extensions only set Trusted Pinned";
-
-  bool previous_pinned =
-      previous_type == chromeos::WindowPinType::kTrustedPinned;
-  // As this gets triggered from extensions, we might encounter this case.
-  if (previous_pinned == pinned)
-    return;
-
-  window->SetProperty(lacros::kWindowPinTypeKey,
-                      pinned ? chromeos::WindowPinType::kTrustedPinned
-                             : chromeos::WindowPinType::kNone);
-
-  auto* pinned_mode_extension =
-      views::DesktopWindowTreeHostLacros::From(window->GetHost())
-          ->GetPinnedModeExtension();
-  if (pinned) {
-    pinned_mode_extension->Pin(/*trusted=*/true);
-  } else {
-    pinned_mode_extension->Unpin();
-  }
-
-  // Update the set of available browser commands.
-  browser->command_controller()->LockedFullscreenStateChanged();
-
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Wipe the clipboard in browser and detach any dev tools.
   ui::Clipboard::GetForCurrentThread()->Clear(ui::ClipboardBuffer::kCopyPaste);
   content::DevToolsAgentHost::DetachAllClients();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 // Returns whether the given `bounds` intersect with at least 50% of all the

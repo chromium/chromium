@@ -29,7 +29,7 @@
 #include "ui/views/window/non_client_view.h"
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/ui/ash/window_pin_util.h"
+#include "chrome/browser/ui/chromeos/window_pin_util.h"
 #else
 #include "chrome/browser/ui/lacros/window_properties.h"
 #endif

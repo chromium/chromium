@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/window_pin_util.h"
+#include "chrome/browser/ui/chromeos/window_pin_util.h"
 
 #include <memory>
 
@@ -14,6 +14,7 @@
 
 namespace {
 
+// TODO(elkurin): Migrate this into chromeos common test with lacros.
 class WindowPinUtilTest : public ash::AshTestBase {};
 
 TEST_F(WindowPinUtilTest, IsPinned_Pinned) {

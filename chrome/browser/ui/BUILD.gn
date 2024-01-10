@@ -762,6 +762,7 @@ static_library("ui") {
 
   if (is_chromeos) {
     sources += [
+      "chromeos/window_pin_util.h",
       "webui/dlp_internals/dlp_internals_page_handler.cc",
       "webui/dlp_internals/dlp_internals_page_handler.h",
       "webui/dlp_internals/dlp_internals_ui.cc",
@@ -2897,8 +2898,7 @@ static_library("ui") {
       "ash/vpn_list_forwarder.h",
       "ash/wallpaper_controller_client_impl.cc",
       "ash/wallpaper_controller_client_impl.h",
-      "ash/window_pin_util.cc",
-      "ash/window_pin_util.h",
+      "ash/window_pin_util_ash.cc",
       "ash/window_properties.cc",
       "ash/window_properties.h",
       "browser_commands_chromeos.cc",

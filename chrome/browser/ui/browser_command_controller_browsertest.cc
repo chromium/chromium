@@ -48,7 +48,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
-#include "chrome/browser/ui/ash/window_pin_util.h"
+#include "chrome/browser/ui/chromeos/window_pin_util.h"
 #include "ui/aura/window.h"
 #endif
 
