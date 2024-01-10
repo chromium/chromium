@@ -6532,11 +6532,6 @@ Called by update_autofill_enums.py.-->
   <int value="1" label="Http(s) scheme"/>
 </enum>
 
-<enum name="BooleanHung">
-  <int value="0" label="Is not hung"/>
-  <int value="1" label="Is hung"/>
-</enum>
-
 <enum name="BooleanIgnored">
   <int value="0" label="Not ignored"/>
   <int value="1" label="Ignored"/>

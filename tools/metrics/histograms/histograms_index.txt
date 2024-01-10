@@ -87,6 +87,7 @@ tools/metrics/histograms/metadata/google/enums.xml
 tools/metrics/histograms/metadata/google/histograms.xml
 tools/metrics/histograms/metadata/gpu/enums.xml
 tools/metrics/histograms/metadata/gpu/histograms.xml
+tools/metrics/histograms/metadata/hang_watcher/enums.xml
 tools/metrics/histograms/metadata/hang_watcher/histograms.xml
 tools/metrics/histograms/metadata/help_app/histograms.xml
 tools/metrics/histograms/metadata/histogram_suffixes_list.xml
