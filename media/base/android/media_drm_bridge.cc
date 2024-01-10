@@ -375,7 +375,7 @@ base::Version MediaDrmBridge::GetVersion(const std::string& key_system) {
   scoped_refptr<MediaDrmBridge> media_drm_bridge =
       MediaDrmBridge::CreateWithoutSessionSupport(
           key_system, /* origin_id= */ "",
-          media::MediaDrmBridge::SECURITY_LEVEL_DEFAULT, base::NullCallback());
+          MediaDrmBridge::SECURITY_LEVEL_DEFAULT, base::NullCallback());
   if (!media_drm_bridge) {
     DVLOG(1) << "Unable to create MediaDrmBridge for " << key_system;
     return base::Version();
@@ -473,6 +473,12 @@ void MediaDrmBridge::GetStatusForPolicy(
     std::unique_ptr<KeyStatusCdmPromise> promise) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DVLOG(2) << __func__;
+
+  if (!base::FeatureList::IsEnabled(kMediaDrmGetStatusForPolicy)) {
+    promise->reject(CdmPromise::Exception::NOT_SUPPORTED_ERROR, 0,
+                    "GetStatusForPolicy() is not supported.");
+    return;
+  }
 
   promise->resolve(min_hdcp_version <= GetCurrentHdcpLevel()
                        ? CdmKeyInformation::KeyStatus::USABLE
