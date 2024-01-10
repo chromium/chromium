@@ -36,12 +36,6 @@ class BaseRunLoop implements RunLoop {
     }
 
     @Override
-    public void quit() {
-        assert mRunLoopID != 0 : "The run loop cannot be quitted run once closed";
-        BaseRunLoopJni.get().quit(BaseRunLoop.this);
-    }
-
-    @Override
     public void postDelayedTask(Runnable runnable, long delay) {
         assert mRunLoopID != 0 : "The run loop cannot run tasks once closed";
         BaseRunLoopJni.get().postDelayedTask(BaseRunLoop.this, mRunLoopID, runnable, delay);
@@ -71,8 +65,6 @@ class BaseRunLoop implements RunLoop {
         void run(BaseRunLoop caller);
 
         void runUntilIdle(BaseRunLoop caller);
-
-        void quit(BaseRunLoop caller);
 
         void postDelayedTask(BaseRunLoop caller, long runLoopID, Runnable runnable, long delay);
 
