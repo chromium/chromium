@@ -62,6 +62,7 @@
 #import "ios/chrome/browser/ui/autofill/card_name_fix_flow_view_bridge.h"
 #import "ios/chrome/browser/ui/autofill/create_card_unmask_prompt_view_bridge.h"
 #import "ios/chrome/browser/ui/autofill/ios_chrome_payments_autofill_client.h"
+#import "ios/chrome/browser/ui/autofill/scoped_autofill_payment_reauth_module_override.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 #import "ios/chrome/common/channel_info.h"
 #import "ios/public/provider/chrome/browser/risk_data/risk_data_api.h"
@@ -548,8 +549,13 @@ std::unique_ptr<device_reauth::DeviceAuthenticator>
 ChromeAutofillClientIOS::GetDeviceAuthenticator() {
   device_reauth::DeviceAuthParams params(
       base::Seconds(60), device_reauth::DeviceAuthSource::kAutofill);
-  id<ReauthenticationProtocol> reauthModule =
-      [[ReauthenticationModule alloc] init];
+  id<ReauthenticationProtocol> reauthModule;
+  if (ScopedAutofillPaymentReauthModuleOverride::instance) {
+    reauthModule = ScopedAutofillPaymentReauthModuleOverride::instance->module;
+  } else {
+    reauthModule = [[ReauthenticationModule alloc] init];
+  }
+
   return CreateIOSDeviceAuthenticator(reauthModule, browser_state_, params);
 }
 
