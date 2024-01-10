@@ -104,6 +104,11 @@ void LogSaveCardPromptOfferMetric(
                                       ".WithSameLastFourButDifferentExpiration",
                                   metric);
   }
+  if (options.card_save_type ==
+      AutofillClient::CardSaveType::kCardSaveWithCvc) {
+    base::UmaHistogramEnumeration(
+        metric_with_destination_and_show + ".SavingWithCvc", metric);
+  }
 
   if (security_level != security_state::SecurityLevel::SECURITY_LEVEL_COUNT) {
     base::UmaHistogramEnumeration(
@@ -150,6 +155,11 @@ void LogSaveCardPromptResultMetric(
     base::UmaHistogramEnumeration(metric_with_destination_and_show +
                                       ".WithSameLastFourButDifferentExpiration",
                                   metric);
+  }
+  if (options.card_save_type ==
+      AutofillClient::CardSaveType::kCardSaveWithCvc) {
+    base::UmaHistogramEnumeration(
+        metric_with_destination_and_show + ".SavingWithCvc", metric);
   }
 
   if (security_level != security_state::SecurityLevel::SECURITY_LEVEL_COUNT) {

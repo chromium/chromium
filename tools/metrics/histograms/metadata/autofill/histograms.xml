@@ -265,6 +265,8 @@ chromium-metrics-reviews@google.com.
       summary="explicitly requesting cardholder name"/>
   <variant name=".RequestingExpirationDate"
       summary="explicitly requesting expiration date"/>
+  <variant name=".SavingWithCvc"
+      summary="saved security code at the same time"/>
 </variants>
 
 <variants name="AutofillCreditCardWebauthnOptInOrigin">

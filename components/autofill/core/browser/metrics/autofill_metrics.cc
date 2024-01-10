@@ -834,6 +834,13 @@ void AutofillMetrics::LogCreditCardInfoBarMetric(
                                       ".WithSameLastFourButDifferentExpiration",
                                   metric, NUM_INFO_BAR_METRICS);
   }
+
+  if (options.card_save_type ==
+      AutofillClient::CardSaveType::kCardSaveWithCvc) {
+    base::UmaHistogramEnumeration(base::StrCat({"Autofill.CreditCardInfoBar",
+                                                destination, ".SavingWithCvc"}),
+                                  metric, NUM_INFO_BAR_METRICS);
+  }
 }
 
 // static

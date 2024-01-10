@@ -286,13 +286,17 @@ struct SaveCardOptionParam {
   bool should_request_expiration_date_from_user;
   bool has_multiple_legal_lines;
   bool has_same_last_four_as_server_card_but_different_expiration_date;
+  AutofillClient::CardSaveType card_save_type;
 };
 
 const SaveCardOptionParam kSaveCardOptionParam[] = {
-    {false, false, false, false}, {true, false, false, false},
-    {false, true, false, false},  {false, false, true, false},
-    {false, false, false, true},
-};
+    {false, false, false, false, AutofillClient::CardSaveType::kCardSaveOnly},
+    {true, false, false, false, AutofillClient::CardSaveType::kCardSaveOnly},
+    {false, true, false, false, AutofillClient::CardSaveType::kCardSaveOnly},
+    {false, false, true, false, AutofillClient::CardSaveType::kCardSaveOnly},
+    {false, false, false, true, AutofillClient::CardSaveType::kCardSaveOnly},
+    {false, false, false, false,
+     AutofillClient::CardSaveType::kCardSaveWithCvc}};
 
 // Param of the SaveCardBubbleSingletonTestData:
 // -- std::string save_destination
@@ -320,7 +324,8 @@ class SaveCardBubbleLoggingTest
                 save_card_option_param.has_multiple_legal_lines)
             .with_same_last_four_as_server_card_but_different_expiration_date(
                 save_card_option_param
-                    .has_same_last_four_as_server_card_but_different_expiration_date);
+                    .has_same_last_four_as_server_card_but_different_expiration_date)
+            .with_card_save_type(save_card_option_param.card_save_type);
   }
 
   ~SaveCardBubbleLoggingTest() override = default;
@@ -372,6 +377,10 @@ class SaveCardBubbleLoggingTest
     if (GetSaveCreditCardOptions()
             .has_same_last_four_as_server_card_but_different_expiration_date) {
       result += ".WithSameLastFourButDifferentExpiration";
+    }
+    if (GetSaveCreditCardOptions().card_save_type ==
+        AutofillClient::CardSaveType::kCardSaveWithCvc) {
+      result += ".SavingWithCvc";
     }
 
     return result;
