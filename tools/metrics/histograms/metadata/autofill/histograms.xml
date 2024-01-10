@@ -4567,17 +4567,6 @@ chromium-metrics-reviews@google.com.
   <token key="Category" variants="AutofillProfileCategory"/>
 </histogram>
 
-<histogram name="Autofill.StoredProfileWithoutCountryCount" units="Profiles"
-    expires_after="2024-01-21">
-  <owner>fleimgruber@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    The number of Autofill profiles of type kLegacyOrSyncable without a country
-    a user has stored, measured at launch time. This metric is only recorded if
-    the user has at least one kLegacyOrSyncable profile.
-  </summary>
-</histogram>
-
 <histogram
     name="Autofill.StrikeDatabase.CreditCardSaveNotOfferedDueToMaxStrikes"
     enum="AutofillSaveType" expires_after="2024-07-01">
