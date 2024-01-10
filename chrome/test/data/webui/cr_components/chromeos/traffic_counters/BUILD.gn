@@ -4,20 +4,6 @@
 
 import("//third_party/closure_compiler/compile_js.gni")
 
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  closure_flags =
-      default_closure_args + mojom_js_args + [
-        "browser_resolver_prefix_replacements=\"chrome://network/=" +
-            rebase_path("//chrome/browser/resources/chromeos/network/",
-                        root_build_dir) + "\"",
-        "js_module_root=" +
-            rebase_path("//chrome/test/data/webui/", root_build_dir),
-        "js_module_root=./gen/chrome/test/data/webui/",
-      ]
-  deps = [ ":traffic_counters_test" ]
-}
-
 js_library("traffic_counters_test") {
   deps = [
     "../../../chromeos:chai_assert",
@@ -25,7 +11,6 @@ js_library("traffic_counters_test") {
     "//ash/webui/common/resources/network:mojo_interface_provider",
     "//ash/webui/common/resources/network:onc_mojo",
     "//ash/webui/common/resources/network_health:network_health_container",
-    "//ash/webui/common/resources/traffic_counters:traffic_counters",
     "//chrome/test/data/webui/chromeos:fake_network_config_mojom",
     "//chromeos/services/network_config/public/mojom:mojom_webui_js",
     "//chromeos/services/network_config/public/mojom:network_types_webui_js",

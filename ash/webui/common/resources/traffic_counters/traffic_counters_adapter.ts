@@ -6,45 +6,42 @@
  * Class that provides the functionality for interacting with traffic counters.
  */
 
-import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
-import {CrosNetworkConfig, CrosNetworkConfigInterface, FilterType, NO_LIMIT, UInt32Value} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {MojoInterfaceProviderImpl} from '../network/mojo_interface_provider.js';
+import {TrafficCounter} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {CrosNetworkConfigInterface, FilterType, NO_LIMIT, UInt32Value} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
-/** @type {number} Default traffic counter reset day. */
+/** Default traffic counter reset day. */
 const kDefaultResetDay = 1;
 
 /**
  * Information about a network.
- * @typedef {{
- *   guid: string,
- *   name: string,
- *   type: !NetworkType,
- *   counters: !Array<!Object>,
- *   lastResetTime: ?Time,
- *   friendlyDate: ?string,
- *   autoReset: boolean,
- *   userSpecifiedResetDay: number,
- * }}
  */
-export let Network;
+export interface Network {
+  guid: string;
+  name: string;
+  type: NetworkType;
+  counters: TrafficCounter[];
+  lastResetTime: Time|null;
+  friendlyDate: string|null;
+  autoReset: boolean;
+  userSpecifiedResetDay: number;
+}
 
 
 /**
  * Helper function to create a Network object.
- * @param {string} guid
- * @param {string} name
- * @param {!NetworkType} type
- * @param {!Array<!Object>} counters
- * @param {?Time} lastResetTime
- * @param {?string} friendlyDate
- * @param {boolean} autoReset
- * @param {number} userSpecifiedResetDay
- * @return {Network} Network object
  */
 function createNetwork(
-    guid, name, type, counters, lastResetTime, friendlyDate, autoReset,
-    userSpecifiedResetDay) {
+    guid: string,
+    name: string,
+    type: NetworkType,
+    counters: TrafficCounter[],
+    lastResetTime: Time|null,
+    friendlyDate: string|null,
+    autoReset: boolean,
+    userSpecifiedResetDay: number): Network {
   return {
     guid: guid,
     name: name,
@@ -58,10 +55,11 @@ function createNetwork(
 }
 
 export class TrafficCountersAdapter {
+  private networkConfig_: CrosNetworkConfigInterface;
+
   constructor() {
     /**
      * Network Config mojo remote.
-     * @private {?CrosNetworkConfigInterface}
      */
     this.networkConfig_ =
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
@@ -69,9 +67,8 @@ export class TrafficCountersAdapter {
 
   /**
    * Requests traffic counters for active networks.
-   * @return {!Promise<!Array<!Network>>}
    */
-  async requestTrafficCountersForActiveNetworks() {
+  async requestTrafficCountersForActiveNetworks(): Promise<Network[]> {
     const filter = {
       filter: FilterType.kActive,
       networkType: NetworkType.kAll,
@@ -101,18 +98,16 @@ export class TrafficCountersAdapter {
 
   /**
    * Resets traffic counters for the given network.
-   * @param {string} guid
    */
-  async resetTrafficCountersForNetwork(guid) {
+  async resetTrafficCountersForNetwork(guid: string): Promise<void> {
     await this.networkConfig_.resetTrafficCounters(guid);
   }
 
   /**
    * Requests traffic counters for the given network.
-   * @param {string} guid
-   * @return {!Promise<!Array<!Object>>} traffic counters for network with guid
    */
-  async requestTrafficCountersForNetwork(guid) {
+  async requestTrafficCountersForNetwork(
+    guid: string): Promise<TrafficCounter[]> {
     const trafficCountersObj =
         await this.networkConfig_.requestTrafficCounters(guid);
     return trafficCountersObj.trafficCounters;
@@ -120,11 +115,8 @@ export class TrafficCountersAdapter {
 
   /**
    * Requests last reset time for the given network.
-   * @param {string} guid
-   * @return {?Promise<?Time>} last reset
-   * time for network with guid
    */
-  async requestLastResetTimeForNetwork(guid) {
+  async requestLastResetTimeForNetwork(guid: string): Promise<Time|null> {
     const managedPropertiesPromise =
         await this.networkConfig_.getManagedProperties(guid);
     if (!managedPropertiesPromise || !managedPropertiesPromise.result) {
@@ -138,11 +130,8 @@ export class TrafficCountersAdapter {
   /**
    * Requests a reader friendly date, corresponding to the last reset time,
    * for the given network.
-   * @param {string} guid
-   * @return {?Promise<?string>} friendly date corresponding to the last rest
-   * time for network matching |guid|.
    */
-  async requestFriendlyDateForNetwork(guid) {
+  async requestFriendlyDateForNetwork(guid: string): Promise<string|null> {
     const managedPropertiesPromise =
         await this.networkConfig_.getManagedProperties(guid);
     if (!managedPropertiesPromise || !managedPropertiesPromise.result) {
@@ -155,10 +144,9 @@ export class TrafficCountersAdapter {
 
   /**
    * Requests enable traffic counters auto reset boolean for the given network.
-   * @param {string} guid
-   * @return {!Promise<boolean>} whether traffic counter auto reset is enabled
    */
-  async requestEnableAutoResetBooleanForNetwork(guid) {
+  async requestEnableAutoResetBooleanForNetwork(
+    guid: string): Promise<boolean> {
     const managedPropertiesPromise =
         await this.networkConfig_.getManagedProperties(guid);
     if (!managedPropertiesPromise || !managedPropertiesPromise.result) {
@@ -169,10 +157,8 @@ export class TrafficCountersAdapter {
 
   /**
    * Requests user specified reset day for the given network.
-   * @param {string} guid
-   * @return {!Promise<number>}
    */
-  async requestUserSpecifiedResetDayForNetwork(guid) {
+  async requestUserSpecifiedResetDayForNetwork(guid: string): Promise<number> {
     const managedPropertiesPromise =
         await this.networkConfig_.getManagedProperties(guid);
     if (!managedPropertiesPromise || !managedPropertiesPromise.result) {
@@ -184,11 +170,11 @@ export class TrafficCountersAdapter {
 
   /**
    * Sets values for auto reset.
-   * @param {string} guid
-   * @param {boolean} autoReset
-   * @param {?UInt32Value} resetDay
    */
-  async setTrafficCountersAutoResetForNetwork(guid, autoReset, resetDay) {
+  async setTrafficCountersAutoResetForNetwork(
+    guid: string,
+    autoReset: boolean,
+    resetDay: UInt32Value|null): Promise<void> {
     await this.networkConfig_.setTrafficCountersAutoReset(
         guid, autoReset, resetDay);
   }
