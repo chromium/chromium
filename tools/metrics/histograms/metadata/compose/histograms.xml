@@ -88,6 +88,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Compose.Request.Reason" enum="ComposeRequestReason"
+    expires_after="2024-07-02">
+  <owner>cuianthony@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <summary>
+    Records the reason a Compose request is started. This includes the first
+    request from the input state, retries, updates and modifications made by the
+    user for a reuqest. Logged each time a Compose request is sent by the user
+    to the Compose service.
+  </summary>
+</histogram>
+
 <histogram name="Compose.Response.Duration.Error" units="ms"
     expires_after="2024-06-02">
   <owner>perrier@chromium.org</owner>

@@ -14,6 +14,7 @@ namespace compose {
 // Compose histogram names.
 extern const char kComposeDialogOpenLatency[];
 extern const char kComposeDialogSelectionLength[];
+extern const char kComposeRequestReason[];
 extern const char kComposeResponseDurationOk[];
 extern const char kComposeResponseDurationError[];
 extern const char kComposeResponseStatus[];
@@ -37,6 +38,19 @@ enum class ComposeContextMenuCtrEvent {
   kMenuItemDisplayed = 0,
   kComposeOpened = 1,
   kMaxValue = kComposeOpened,
+};
+
+// Keep in sync with ComposeRequestReason in
+// src/tools/metrics/histograms/metadata/compose/enums.xml.
+enum class ComposeRequestReason {
+  kFirstRequest = 0,
+  kRetryRequest = 1,
+  kUpdateRequest = 2,
+  kLengthShortenRequest = 3,
+  kLengthElaborateRequest = 4,
+  kToneCasualRequest = 5,
+  kToneFormalRequest = 6,
+  kMaxValue = kToneFormalRequest,
 };
 
 // Keep in sync with ComposeMSBBSessionCloseReasonType in
@@ -93,6 +107,8 @@ enum class ComposeShowStatus {
 void LogComposeContextMenuCtr(ComposeContextMenuCtrEvent event);
 
 void LogComposeContextMenuShowStatus(ComposeShowStatus status);
+
+void LogComposeRequestReason(ComposeRequestReason reason);
 
 // Log the duration of a compose request. |is_valid| indicates the status of
 // the request.

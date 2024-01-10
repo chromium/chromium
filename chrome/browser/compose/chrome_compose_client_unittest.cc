@@ -380,6 +380,9 @@ TEST_F(ChromeComposeClientTest, TestCompose) {
   // Check that a user action for the Compose request was emitted.
   EXPECT_EQ(1, user_action_tester().GetActionCount(
                    "Compose.ComposeRequest.CreateClicked"));
+  histograms().ExpectUniqueSample(compose::kComposeRequestReason,
+                                  compose::ComposeRequestReason::kFirstRequest,
+                                  1);
   // Check that a response result OK metric was emitted.
   histograms().ExpectUniqueSample(compose::kComposeResponseStatus,
                                   compose::mojom::ComposeStatus::kOk, 1);
@@ -1876,6 +1879,10 @@ TEST_F(ChromeComposeClientTest, TestComposeQualityWasEdited) {
 
   EXPECT_FALSE(result->quality_data<optimization_guide::ComposeFeatureTypeMap>()
                    ->was_generated_via_edit());
+
+  histograms().ExpectBucketCount(compose::kComposeRequestReason,
+                                 compose::ComposeRequestReason::kUpdateRequest,
+                                 1);
 }
 
 TEST_F(ChromeComposeClientTest, TestRegenerate) {
@@ -1919,6 +1926,10 @@ TEST_F(ChromeComposeClientTest, TestRegenerate) {
   result = test_future.Take();
   EXPECT_EQ(compose::mojom::ComposeStatus::kOk, result->status);
   EXPECT_EQ("Tomatoes", result->result);
+
+  histograms().ExpectBucketCount(compose::kComposeRequestReason,
+                                 compose::ComposeRequestReason::kRetryRequest,
+                                 1);
 }
 
 TEST_F(ChromeComposeClientTest, TestToneChange) {
@@ -1934,6 +1945,7 @@ TEST_F(ChromeComposeClientTest, TestToneChange) {
                 OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")),
                 nullptr);
           })));
+  // Rewrite with Formal.
   optimization_guide::proto::ComposeRequest request;
   request.mutable_rewrite_params()->set_previous_response("Cucumbers");
   request.mutable_rewrite_params()->set_tone(
@@ -1946,6 +1958,20 @@ TEST_F(ChromeComposeClientTest, TestToneChange) {
                       callback) {
             std::move(callback).Run(
                 OptimizationGuideResponse(ComposeResponse(true, "Tomatoes")),
+                nullptr);
+          })));
+  // Rewrite with Casual.
+  request.mutable_rewrite_params()->set_previous_response("Tomatoes");
+  request.mutable_rewrite_params()->set_tone(
+      optimization_guide::proto::ComposeTone::COMPOSE_INFORMAL);
+  auto rewrite_matcher_informal = EqualsProto(request);
+  EXPECT_CALL(session(), ExecuteModel(rewrite_matcher_informal, _))
+      .WillOnce(testing::WithArg<1>(testing::Invoke(
+          [&](optimization_guide::
+                  OptimizationGuideModelExecutionResultStreamingCallback
+                      callback) {
+            std::move(callback).Run(
+                OptimizationGuideResponse(ComposeResponse(true, "Potatoes")),
                 nullptr);
           })));
 
@@ -1966,6 +1992,16 @@ TEST_F(ChromeComposeClientTest, TestToneChange) {
   result = test_future.Take();
   EXPECT_EQ(compose::mojom::ComposeStatus::kOk, result->status);
   EXPECT_EQ("Tomatoes", result->result);
+  histograms().ExpectBucketCount(
+      compose::kComposeRequestReason,
+      compose::ComposeRequestReason::kToneFormalRequest, 1);
+
+  page_handler()->Rewrite(
+      compose::mojom::StyleModifiers::NewTone(compose::mojom::Tone::kCasual));
+  result = test_future.Take();
+  histograms().ExpectBucketCount(
+      compose::kComposeRequestReason,
+      compose::ComposeRequestReason::kToneCasualRequest, 1);
 }
 
 TEST_F(ChromeComposeClientTest, TestLengthChange) {
@@ -1981,6 +2017,8 @@ TEST_F(ChromeComposeClientTest, TestLengthChange) {
                 OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")),
                 nullptr);
           })));
+
+  // Rewrite with Elaborate
   optimization_guide::proto::ComposeRequest request;
   request.mutable_rewrite_params()->set_previous_response("Cucumbers");
   request.mutable_rewrite_params()->set_length(
@@ -1993,6 +2031,21 @@ TEST_F(ChromeComposeClientTest, TestLengthChange) {
                       callback) {
             std::move(callback).Run(
                 OptimizationGuideResponse(ComposeResponse(true, "Tomatoes")),
+                nullptr);
+          })));
+
+  // Rewrite with Shorten
+  request.mutable_rewrite_params()->set_previous_response("Tomatoes");
+  request.mutable_rewrite_params()->set_length(
+      optimization_guide::proto::ComposeLength::COMPOSE_SHORTER);
+  auto rewrite_shorten_matcher = EqualsProto(request);
+  EXPECT_CALL(session(), ExecuteModel(rewrite_shorten_matcher, _))
+      .WillOnce(testing::WithArg<1>(testing::Invoke(
+          [&](optimization_guide::
+                  OptimizationGuideModelExecutionResultStreamingCallback
+                      callback) {
+            std::move(callback).Run(
+                OptimizationGuideResponse(ComposeResponse(true, "Potatoes")),
                 nullptr);
           })));
 
@@ -2013,6 +2066,16 @@ TEST_F(ChromeComposeClientTest, TestLengthChange) {
   result = test_future.Take();
   EXPECT_EQ(compose::mojom::ComposeStatus::kOk, result->status);
   EXPECT_EQ("Tomatoes", result->result);
+  histograms().ExpectBucketCount(
+      compose::kComposeRequestReason,
+      compose::ComposeRequestReason::kLengthElaborateRequest, 1);
+
+  page_handler()->Rewrite(compose::mojom::StyleModifiers::NewLength(
+      compose::mojom::Length::kShorter));
+  result = test_future.Take();
+  histograms().ExpectBucketCount(
+      compose::kComposeRequestReason,
+      compose::ComposeRequestReason::kLengthShortenRequest, 1);
 }
 
 #if defined(GTEST_HAS_DEATH_TEST)

@@ -76,6 +76,32 @@ const char kComposeLearnMorePageURL[] =
     "https://support.google.com/chrome?p=help_me_write";
 const char kComposeFeedbackSurveyURL[] = "https://goto.google.com/ccfsfd";
 
+void LogComposeRewriteReason(const compose::mojom::StyleModifiersPtr& style) {
+  if (style && style->is_tone()) {
+    auto tone = optimization_guide::proto::ComposeTone(style->get_tone());
+    if (tone == optimization_guide::proto::ComposeTone::COMPOSE_INFORMAL) {
+      compose::LogComposeRequestReason(
+          compose::ComposeRequestReason::kToneCasualRequest);
+    } else if (tone == optimization_guide::proto::ComposeTone::COMPOSE_FORMAL) {
+      compose::LogComposeRequestReason(
+          compose::ComposeRequestReason::kToneFormalRequest);
+    }
+  } else if (style && style->is_length()) {
+    auto length = optimization_guide::proto::ComposeLength(style->get_length());
+    if (length == optimization_guide::proto::ComposeLength::COMPOSE_SHORTER) {
+      compose::LogComposeRequestReason(
+          compose::ComposeRequestReason::kLengthShortenRequest);
+    } else if (length ==
+               optimization_guide::proto::ComposeLength::COMPOSE_LONGER) {
+      compose::LogComposeRequestReason(
+          compose::ComposeRequestReason::kLengthElaborateRequest);
+    }
+  } else {
+    compose::LogComposeRequestReason(
+        compose::ComposeRequestReason::kRetryRequest);
+  }
+}
+
 void LogComposeResponseStatus(compose::mojom::ComposeStatus status) {
   UMA_HISTOGRAM_ENUMERATION(compose::kComposeResponseStatus, status);
 }
@@ -246,8 +272,12 @@ void ComposeSession::Bind(
 // ComposeSessionPageHandler
 void ComposeSession::Compose(const std::string& input, bool is_input_edited) {
   if (is_input_edited) {
+    compose::LogComposeRequestReason(
+        compose::ComposeRequestReason::kUpdateRequest);
     update_input_count_ += 1;
   } else {
+    compose::LogComposeRequestReason(
+        compose::ComposeRequestReason::kFirstRequest);
     base::RecordAction(
         base::UserMetricsAction("Compose.ComposeRequest.CreateClicked"));
   }
@@ -257,6 +287,8 @@ void ComposeSession::Compose(const std::string& input, bool is_input_edited) {
 }
 
 void ComposeSession::Rewrite(compose::mojom::StyleModifiersPtr style) {
+  LogComposeRewriteReason(style);
+
   optimization_guide::proto::ComposeRequest request;
   if (style && style->is_tone()) {
     request.mutable_rewrite_params()->set_tone(

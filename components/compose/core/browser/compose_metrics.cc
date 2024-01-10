@@ -15,6 +15,7 @@ const char kComposeDialogInnerTextShortenedBy[] =
 const char kComposeDialogInnerTextSize[] = "Compose.Dialog.InnerTextSize";
 const char kComposeDialogOpenLatency[] = "Compose.Dialog.OpenLatency";
 const char kComposeDialogSelectionLength[] = "Compose.Dialog.SelectionLength";
+const char kComposeRequestReason[] = "Compose.Request.Reason";
 const char kComposeResponseDurationOk[] = "Compose.Response.Duration.Ok";
 const char kComposeResponseDurationError[] = "Compose.Response.Duration.Error";
 const char kComposeResponseStatus[] = "Compose.Response.Status";
@@ -41,6 +42,10 @@ void LogComposeContextMenuCtr(ComposeContextMenuCtrEvent event) {
 
 void LogComposeContextMenuShowStatus(ComposeShowStatus status) {
   UMA_HISTOGRAM_ENUMERATION(kComposeShowStatus, status);
+}
+
+void LogComposeRequestReason(ComposeRequestReason reason) {
+  UMA_HISTOGRAM_ENUMERATION(kComposeRequestReason, reason);
 }
 
 void LogComposeRequestDuration(base::TimeDelta duration, bool is_valid) {
