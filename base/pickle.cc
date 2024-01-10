@@ -12,6 +12,7 @@
 #include <type_traits>
 
 #include "base/bits.h"
+#include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
 #include "build/build_config.h"
@@ -321,12 +322,20 @@ void Pickle::WriteString16(const StringPiece16& value) {
 }
 
 void Pickle::WriteData(const char* data, size_t length) {
-  WriteInt(checked_cast<int>(length));
-  WriteBytes(data, length);
+  WriteData(std::string_view(data, length));
+}
+
+void Pickle::WriteData(std::string_view data) {
+  WriteInt(checked_cast<int>(data.size()));
+  WriteBytes(as_byte_span(data));
 }
 
 void Pickle::WriteBytes(const void* data, size_t length) {
-  WriteBytesCommon(data, length);
+  WriteBytesCommon(make_span(reinterpret_cast<const uint8_t*>(data), length));
+}
+
+void Pickle::WriteBytes(span<const uint8_t> data) {
+  WriteBytesCommon(data);
 }
 
 void Pickle::Reserve(size_t length) {
@@ -414,7 +423,7 @@ bool Pickle::PeekNext(size_t header_size,
 
 template <size_t length>
 void Pickle::WriteBytesStatic(const void* data) {
-  WriteBytesCommon(data, length);
+  WriteBytesCommon(make_span(reinterpret_cast<const uint8_t*>(data), length));
 }
 
 template void Pickle::WriteBytesStatic<2>(const void* data);
@@ -448,13 +457,12 @@ inline void* Pickle::ClaimUninitializedBytesInternal(size_t length) {
   return write;
 }
 
-inline void Pickle::WriteBytesCommon(const void* data, size_t length) {
+inline void Pickle::WriteBytesCommon(span<const uint8_t> data) {
   DCHECK_NE(kCapacityReadOnly, capacity_after_header_)
       << "oops: pickle is readonly";
-  MSAN_CHECK_MEM_IS_INITIALIZED(data, length);
-  void* write = ClaimUninitializedBytesInternal(length);
-  std::copy(static_cast<const char*>(data),
-            static_cast<const char*>(data) + length, static_cast<char*>(write));
+  MSAN_CHECK_MEM_IS_INITIALIZED(data.data(), data.size());
+  void* write = ClaimUninitializedBytesInternal(data.size());
+  std::copy(data.data(), data.data() + data.size(), static_cast<char*>(write));
 }
 
 }  // namespace base

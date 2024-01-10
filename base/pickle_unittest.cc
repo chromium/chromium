@@ -126,7 +126,7 @@ TEST(PickleTest, EncodeDecode) {
   pickle.WriteString16(teststring16);
   pickle.WriteString(testrawstring);
   pickle.WriteString16(testrawstring16);
-  pickle.WriteData(testdata, testdatalen);
+  pickle.WriteData(std::string_view(testdata, testdatalen));
   VerifyResult(pickle);
 
   // test copy constructor
@@ -440,7 +440,8 @@ TEST(PickleTest, Resize) {
   // note that any data will have a 4-byte header indicating the size
   const size_t payload_size_after_header = unit - sizeof(uint32_t);
   Pickle pickle;
-  pickle.WriteData(data_ptr, payload_size_after_header - sizeof(uint32_t));
+  pickle.WriteData(
+      std::string_view(data_ptr, payload_size_after_header - sizeof(uint32_t)));
   size_t cur_payload = payload_size_after_header;
 
   // note: we assume 'unit' is a power of 2
@@ -448,13 +449,13 @@ TEST(PickleTest, Resize) {
   EXPECT_EQ(pickle.payload_size(), payload_size_after_header);
 
   // fill out a full page (noting data header)
-  pickle.WriteData(data_ptr, unit - sizeof(uint32_t));
+  pickle.WriteData(std::string_view(data_ptr, unit - sizeof(uint32_t)));
   cur_payload += unit;
   EXPECT_EQ(unit * 2, pickle.capacity_after_header());
   EXPECT_EQ(cur_payload, pickle.payload_size());
 
   // one more byte should double the capacity
-  pickle.WriteData(data_ptr, 1);
+  pickle.WriteData(std::string_view(data_ptr, 1u));
   cur_payload += 8;
   EXPECT_EQ(unit * 4, pickle.capacity_after_header());
   EXPECT_EQ(cur_payload, pickle.payload_size());
@@ -497,7 +498,7 @@ TEST(PickleTest, EqualsOperator) {
 TEST(PickleTest, EvilLengths) {
   Pickle source;
   std::string str(100000, 'A');
-  source.WriteData(str.c_str(), 100000);
+  source.WriteData(std::string_view(str.c_str(), 100000u));
   // ReadString16 used to have its read buffer length calculation wrong leading
   // to out-of-bounds reading.
   PickleIterator iter(source);
@@ -523,7 +524,7 @@ TEST(PickleTest, EvilLengths) {
 // Check we can write zero bytes of data and 'data' can be NULL.
 TEST(PickleTest, ZeroLength) {
   Pickle pickle;
-  pickle.WriteData(nullptr, 0);
+  pickle.WriteData(std::string_view());
 
   PickleIterator iter(pickle);
   const char* outdata;
