@@ -12,6 +12,8 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
+#include "base/strings/strcat.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/tpcd/metadata/metadata.pb.h"
 #include "components/tpcd/metadata/parser.h"
 #include "net/base/features.h"
@@ -79,8 +81,31 @@ void Parser::CallOnMetadataReady() {
   }
 }
 
+MetadataEntries GenerateLargeMetadataEntries() {
+  MetadataEntries entries;
+  for (int i = 1; i < content_settings::features::kUseTestMetadata.Get() + 1;
+       ++i) {
+    MetadataEntry entry = MetadataEntry();
+    std::string hostname = "";
+    int j = i;
+    while (j > 0) {
+      hostname.push_back('a' + j % 24);
+      j /= 24;
+    }
+    entry.set_primary_pattern_spec(
+        base::StrCat({"http://", hostname, ".test"}));
+    entry.set_secondary_pattern_spec("*");
+    entries.emplace_back(entry);
+  }
+  return entries;
+}
+
 MetadataEntries Parser::GetMetadata() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (content_settings::features::kUseTestMetadata.Get() > 0) {
+    return GenerateLargeMetadataEntries();
+  }
 
   base::FieldTrialParams params;
   bool has_feature_params = base::GetFieldTrialParamsByFeature(

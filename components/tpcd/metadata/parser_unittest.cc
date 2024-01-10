@@ -15,6 +15,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/tpcd/metadata/metadata.pb.h"
 #include "components/tpcd/metadata/parser_test_helper.h"
 #include "net/base/features.h"
@@ -51,6 +52,12 @@ class ParserTest : public ::testing::Test {
   void EnableFeatureWithParams(base::FieldTrialParams params) {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         net::features::kTpcdMetadataGrants, params);
+  }
+
+  void EnableFeatureWithLargeMetadata() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        content_settings::features::kHostIndexedMetadataGrants,
+        {{content_settings::features::kUseTestMetadataName, "10000"}});
   }
 
   void EnableFeature() {
@@ -381,6 +388,18 @@ TEST_F(ParserTest, GetMetadata_FeatureParamsThenComponentUpdater_2) {
     ASSERT_EQ(me.front().primary_pattern_spec(), wildcard_spec);
     ASSERT_EQ(me.front().secondary_pattern_spec(), wildcard_spec);
   }
+}
+
+TEST_F(ParserTest, GetMetadata_TestMetadataOnly) {
+  const std::string primary_pattern_spec = "http://b.test";
+  const std::string secondary_pattern_spec = "*";
+
+  EnableFeatureWithLargeMetadata();
+
+  MetadataEntries me = parser()->GetMetadata();
+  ASSERT_EQ(me.size(), 10000u);
+  ASSERT_EQ(me.front().primary_pattern_spec(), primary_pattern_spec);
+  ASSERT_EQ(me.front().secondary_pattern_spec(), secondary_pattern_spec);
 }
 
 }  // namespace tpcd::metadata
