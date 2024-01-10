@@ -27,6 +27,7 @@ import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipData.Item;
 import android.content.ClipDescription;
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.PointF;
@@ -37,6 +38,7 @@ import android.view.View.DragShadowBuilder;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import org.junit.After;
 import org.junit.Before;
@@ -49,6 +51,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowToast;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -83,7 +86,7 @@ import java.lang.ref.WeakReference;
 /** Tests for {@link TabDragSource}. */
 @EnableFeatures(ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID)
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(qualifiers = "sw600dp", sdk = VERSION_CODES.S)
+@Config(qualifiers = "sw600dp", sdk = VERSION_CODES.S, shadows = ShadowToast.class)
 public class TabDragSourceTest {
 
     private static final int CURR_INSTANCE_ID = 100;
@@ -106,6 +109,7 @@ public class TabDragSourceTest {
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TestTabModel mTabModel;
     @Mock private WindowAndroid mWindowAndroid;
+    @Mock private WeakReference<Context> mWeakReferenceContext;
     @Mock private MultiWindowUtils mMultiWindowUtils;
     @Mock private ObservableSupplier<Integer> mTabStripHeightSupplier;
 
@@ -123,6 +127,7 @@ public class TabDragSourceTest {
     private static final PointF DRAG_START_POINT = new PointF(250, 0);
     private static final float TAB_POSITION_X = 200f;
     private int mTabStripHeight;
+    private final Context mContext = ContextUtils.getApplicationContext();
 
     /** Resets the environment before each test. */
     @Before
@@ -146,6 +151,8 @@ public class TabDragSourceTest {
                         any(DropDataAndroid.class)))
                 .thenReturn(true);
         when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
+        when(mWindowAndroid.getContext()).thenReturn(mWeakReferenceContext);
+        when(mWeakReferenceContext.get()).thenReturn(mContext);
 
         when(mMultiWindowUtils.hasAtMostOneTabWithHomepageEnabled(any())).thenReturn(false);
         MultiWindowUtils.setInstanceForTesting(mMultiWindowUtils);
@@ -186,6 +193,7 @@ public class TabDragSourceTest {
         if (DragDropGlobalState.hasValue()) {
             DragDropGlobalState.clearForTesting();
         }
+        ShadowToast.reset();
     }
 
     @EnableFeatures({ChromeFeatureList.TAB_DRAG_DROP_ANDROID})
@@ -474,6 +482,8 @@ public class TabDragSourceTest {
         verify(mDestStripLayoutHelper)
                 .prepareForTabDrop(anyLong(), anyFloat(), anyFloat(), anyBoolean());
         verify(mDestStripLayoutHelper).onUpOrCancel(anyLong());
+
+        assertNull(ShadowToast.getLatestToast());
     }
 
     /** Test for {@link #ONDRAG_TEST_CASES} - Scenario D.2 */
@@ -490,6 +500,15 @@ public class TabDragSourceTest {
         // Verify - Tab moved to destination window at end.
         verify(mDestMultiInstanceManager, times(1))
                 .moveTabToWindow(any(), eq(mTabBeingDragged), eq(5));
+
+        assertNotNull(ShadowToast.getLatestToast());
+        TextView textView = (TextView) ShadowToast.getLatestToast().getView();
+        String actualText = textView == null ? "" : textView.getText().toString();
+        assertEquals(
+                "Text for toast shown does not match.",
+                ContextUtils.getApplicationContext()
+                        .getString(R.string.tab_dropped_different_model),
+                actualText);
     }
 
     /** Test for {@link #ONDRAG_TEST_CASES} - Scenario D.3 */
@@ -619,6 +638,8 @@ public class TabDragSourceTest {
         // Verify - Tab is not moved to destination window.
         verify(mDestMultiInstanceManager, times(0))
                 .moveTabToWindow(any(), eq(mTabBeingDragged), anyInt());
+
+        assertNull(ShadowToast.getLatestToast());
     }
 
     /** Test for {@link #ONDRAG_TEST_CASES} - Scenario G.4 */

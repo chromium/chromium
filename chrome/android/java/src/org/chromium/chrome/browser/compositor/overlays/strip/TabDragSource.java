@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
+import org.chromium.ui.widget.Toast;
 
 /**
  * Manages initiating tab drag and drop and handles the events that are received during drag and
@@ -288,9 +289,12 @@ public class TabDragSource implements View.OnDragListener {
         var globalState = DragDropGlobalState.getState(dropEvent);
         assert globalState != null;
         Tab tabBeingDragged = globalState.getData().mTab;
-        if (tabBeingDragged == null
-                || (!doesBelongToCurrentModel(tabBeingDragged)
-                        && TabUiFeatureUtilities.DISABLE_STRIP_TO_STRIP_DIFF_MODEL_DD.getValue())) {
+        if (tabBeingDragged == null) {
+            return false;
+        }
+        boolean tabDraggedBelongToCurrentModel = doesBelongToCurrentModel(tabBeingDragged);
+        if (!tabDraggedBelongToCurrentModel
+                && TabUiFeatureUtilities.DISABLE_STRIP_TO_STRIP_DIFF_MODEL_DD.getValue()) {
             // Disallow dropping into another model when param enabled.
             return false;
         }
@@ -308,6 +312,7 @@ public class TabDragSource implements View.OnDragListener {
             }
             int tabPositionIndex = getTabPositionIndex(xPx * mPxToDp, tabBeingDragged);
             mMultiInstanceManager.moveTabToWindow(getActivity(), tabBeingDragged, tabPositionIndex);
+            showToastIfNeeded(tabDraggedBelongToCurrentModel, mWindowAndroid.getContext().get());
         }
         return true;
     }
@@ -386,6 +391,18 @@ public class TabDragSource implements View.OnDragListener {
             return model.getCount();
         }
         return activeStripHelper.getTabIndexForTabDrop(dropXDp);
+    }
+
+    /**
+     * Shows a toast indicating that a tab is dropped into strip in a different model.
+     *
+     * @param tabDraggedBelongToCurrentModel Whether the tab being dragged belong to current model.
+     * @param context The context where the toast will be shown.
+     */
+    private void showToastIfNeeded(boolean tabDraggedBelongToCurrentModel, Context context) {
+        if (!tabDraggedBelongToCurrentModel) {
+            Toast.makeText(context, R.string.tab_dropped_different_model, Toast.LENGTH_LONG).show();
+        }
     }
 
     private boolean doesBelongToCurrentModel(Tab tabBeingDragged) {

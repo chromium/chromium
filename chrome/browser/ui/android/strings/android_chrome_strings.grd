@@ -4304,6 +4304,9 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_MAX_NUMBER_OF_WINDOWS" desc="Toast message for when the user has tried to start more than 5 instances of Chrome window.">
         You can have up to 5 windows.
       </message>
+      <message name="IDS_TAB_DROPPED_DIFFERENT_MODEL" desc="Toast that appears when a tab is dropped into tab strip with a different profile (regular v.s. incognito).">
+        You can find all open tabs in the tab switcher
+      </message>
 
       <message name="IDS_CLOSE_TAB" desc="Context menu option that allows the user to close the selected tab.">
         Close tab
