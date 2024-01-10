@@ -89,24 +89,12 @@
 namespace content {
 
 // The BiddingAndAuctionEncryptionMediaType feature controls the format we use
-// for the request to the Bidding and Auction Service. anything. When enabled
-// we add an extra byte to the request.
+// for the request to the Bidding and Auction Service. When enabled we add an
+// extra byte to the request and use the new media types instead of the
+// defaults from libquiche.
 CONTENT_EXPORT BASE_FEATURE(kBiddingAndAuctionEncryptionMediaType,
                             "BiddingAndAuctionEncryptionMediaType",
-                            base::FEATURE_DISABLED_BY_DEFAULT);
-// While we would prefer to reference the constants from quiche for the defaults
-// here, they are only available as absl::string_view objects which are not
-// easily convertible to null-terminated strings. Previously we used the .data()
-// accessor which worked due to undefined behavior.
-const base::FeatureParam<std::string>
-    kBiddingAndAuctionEncryptionRequestMediaType{
-        &kBiddingAndAuctionEncryptionMediaType,
-        "BiddingAndAuctionEncryptionRequestMediaType", "message/bhttp request"};
-const base::FeatureParam<std::string>
-    kBiddingAndAuctionEncryptionResponseMediaType{
-        &kBiddingAndAuctionEncryptionMediaType,
-        "BiddingAndAuctionEncryptionResponseMediaType",
-        "message/bhttp response"};
+                            base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
@@ -2510,7 +2498,9 @@ bool InterestGroupAuction::HandleServerResponseImpl(
           std::string(reinterpret_cast<char*>(response.data()),
                       response.size()),
           request_context->context,
-          kBiddingAndAuctionEncryptionResponseMediaType.Get());
+          base::FeatureList::IsEnabled(kBiddingAndAuctionEncryptionMediaType)
+              ? kBiddingAndAuctionEncryptionResponseMediaType
+              : quiche::ObliviousHttpHeaderKeyConfig::kOhttpResponseLabel);
   if (!maybe_response.ok()) {
     // We couldn't decrypt the response.
     saved_response_.emplace();

@@ -9393,7 +9393,8 @@ TEST_F(AuctionRunnerTest, PromiseServerResponseResolveTwice) {
       CreateBiddingAndAuctionEncryptionContext();
   std::string encrypted_response =
       quiche::ObliviousHttpResponse::CreateServerObliviousResponse(
-          std::string(kResponse, sizeof(kResponse)), client_context)
+          std::string(kResponse, sizeof(kResponse)), client_context,
+          kBiddingAndAuctionEncryptionResponseMediaType)
           ->EncapsulateAndSerialize();
 
   std::string witnessed_hash = crypto::SHA256HashString(encrypted_response);
@@ -21010,7 +21011,8 @@ TEST_F(AuctionRunnerTest, ServerResponseLogsErrors) {
     if (test_case.encrypt) {
       encrypted_response =
           quiche::ObliviousHttpResponse::CreateServerObliviousResponse(
-              test_case.response, client_context)
+              test_case.response, client_context,
+              kBiddingAndAuctionEncryptionResponseMediaType)
               ->EncapsulateAndSerialize();
     } else {
       encrypted_response = test_case.response;

@@ -10,6 +10,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -65,10 +66,11 @@ class PrivateAggregationManager;
 struct SignedAdditionalBidSignature;
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kBiddingAndAuctionEncryptionMediaType);
-CONTENT_EXPORT extern const base::FeatureParam<std::string>
-    kBiddingAndAuctionEncryptionRequestMediaType;
-CONTENT_EXPORT extern const base::FeatureParam<std::string>
-    kBiddingAndAuctionEncryptionResponseMediaType;
+
+inline constexpr std::string_view kBiddingAndAuctionEncryptionRequestMediaType =
+    "message/auction request";
+inline constexpr std::string_view
+    kBiddingAndAuctionEncryptionResponseMediaType = "message/auction response";
 
 // An InterestGroupAuction Handles running an auction, or a component auction.
 // Consumers should use AuctionRunner, which sets up InterestGroupAuction and

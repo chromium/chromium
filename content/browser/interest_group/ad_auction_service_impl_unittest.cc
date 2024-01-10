@@ -10693,8 +10693,9 @@ TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayload) {
                       sizeof(kTestPrivateKey)),
           key_config)
           .value();
-  auto request =
-      ohttp_gateway.DecryptObliviousHttpRequest(result.value().request);
+  EXPECT_EQ(0x00, result->request[0]);
+  auto request = ohttp_gateway.DecryptObliviousHttpRequest(
+      result->request.substr(1), kBiddingAndAuctionEncryptionRequestMediaType);
   ASSERT_TRUE(request.ok()) << request.status();
   auto plaintext_data = request->GetPlaintextData();
 
@@ -10845,7 +10846,8 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuction) {
 
   std::string encrypted_response =
       quiche::ObliviousHttpResponse::CreateServerObliviousResponse(
-          response, request_context->context)
+          response, request_context->context,
+          kBiddingAndAuctionEncryptionResponseMediaType)
           ->EncapsulateAndSerialize();
 
   page_data->AddAuctionResultWitnessForOrigin(
@@ -10969,7 +10971,8 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuctionNoBids) {
 
   std::string encrypted_response =
       quiche::ObliviousHttpResponse::CreateServerObliviousResponse(
-          response, request_context->context)
+          response, request_context->context,
+          kBiddingAndAuctionEncryptionResponseMediaType)
           ->EncapsulateAndSerialize();
 
   page_data->AddAuctionResultWitnessForOrigin(
@@ -11056,7 +11059,8 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuctionServerError) {
 
   std::string encrypted_response =
       quiche::ObliviousHttpResponse::CreateServerObliviousResponse(
-          response, request_context->context)
+          response, request_context->context,
+          kBiddingAndAuctionEncryptionResponseMediaType)
           ->EncapsulateAndSerialize();
 
   page_data->AddAuctionResultWitnessForOrigin(
@@ -11104,14 +11108,9 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuctionServerError) {
   hist.ExpectTotalCount("Ads.InterestGroup.Auction.AuctionWithWinnerTime", 0);
 }
 
-TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuctionWithCustomMediaType) {
-  const std::string kCustomRequestType = "message/ba request";
-  const std::string kCustomResponseType = "message/ba response";
+TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuctionWithoutCustomMediaType) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      content::kBiddingAndAuctionEncryptionMediaType,
-      {{"BiddingAndAuctionEncryptionRequestMediaType", kCustomRequestType},
-       {"BiddingAndAuctionEncryptionResponseMediaType", kCustomResponseType}});
+  feature_list.InitAndDisableFeature(kBiddingAndAuctionEncryptionMediaType);
 
   base::HistogramTester hist;
   ProvideKeys();
@@ -11149,9 +11148,9 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuctionWithCustomMediaType) {
           key_config)
           .value();
 
-  EXPECT_EQ(0x00, auction_data->request[0]);
   auto request = ohttp_gateway.DecryptObliviousHttpRequest(
-      auction_data->request.substr(1), kCustomRequestType);
+      auction_data->request,
+      quiche::ObliviousHttpHeaderKeyConfig::kOhttpRequestLabel);
   EXPECT_TRUE(request.ok()) << request.status();
   auto plaintext_data = request->GetPlaintextData();
 
@@ -11225,8 +11224,9 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuctionWithCustomMediaType) {
 
   std::string encrypted_response =
       ohttp_gateway
-          .CreateObliviousHttpResponse(response, request_context->context,
-                                       kCustomResponseType)
+          .CreateObliviousHttpResponse(
+              response, request_context->context,
+              quiche::ObliviousHttpHeaderKeyConfig::kOhttpResponseLabel)
           ->EncapsulateAndSerialize();
 
   page_data->AddAuctionResultWitnessForOrigin(
@@ -11319,7 +11319,8 @@ TEST_F(AdAuctionServiceImplBAndATest, HandlesBadResponseForBAndAAuction) {
 
   std::string encrypted_response =
       quiche::ObliviousHttpResponse::CreateServerObliviousResponse(
-          response, request_context->context)
+          response, request_context->context,
+          kBiddingAndAuctionEncryptionResponseMediaType)
           ->EncapsulateAndSerialize();
 
   page_data->AddAuctionResultWitnessForOrigin(
@@ -11436,7 +11437,8 @@ TEST_F(AdAuctionServiceImplBAndATest,
 
   std::string encrypted_response =
       quiche::ObliviousHttpResponse::CreateServerObliviousResponse(
-          response, request_context->context)
+          response, request_context->context,
+          kBiddingAndAuctionEncryptionResponseMediaType)
           ->EncapsulateAndSerialize();
 
   page_data->AddAuctionResultWitnessForOrigin(
@@ -11562,7 +11564,8 @@ function reportResult(auctionConfig, browserSignals) {
 
   std::string encrypted_response =
       quiche::ObliviousHttpResponse::CreateServerObliviousResponse(
-          response, request_context->context)
+          response, request_context->context,
+          kBiddingAndAuctionEncryptionResponseMediaType)
           ->EncapsulateAndSerialize();
 
   page_data->AddAuctionResultWitnessForOrigin(
@@ -11685,7 +11688,8 @@ TEST_F(AdAuctionServiceImplBAndATest, RunMultiSellerBAndAAuctionWrongSeller) {
 
   std::string encrypted_response =
       quiche::ObliviousHttpResponse::CreateServerObliviousResponse(
-          response, request_context->context)
+          response, request_context->context,
+          kBiddingAndAuctionEncryptionResponseMediaType)
           ->EncapsulateAndSerialize();
 
   page_data->AddAuctionResultWitnessForOrigin(
@@ -11843,7 +11847,8 @@ function reportResult(auctionConfig, browserSignals) {
 
   std::string encrypted_response =
       quiche::ObliviousHttpResponse::CreateServerObliviousResponse(
-          response, request_context->context)
+          response, request_context->context,
+          kBiddingAndAuctionEncryptionResponseMediaType)
           ->EncapsulateAndSerialize();
 
   page_data->AddAuctionResultWitnessForOrigin(
@@ -12007,7 +12012,8 @@ function reportResult(auctionConfig, browserSignals) {
 
   std::string encrypted_response =
       quiche::ObliviousHttpResponse::CreateServerObliviousResponse(
-          response, request_context->context)
+          response, request_context->context,
+          kBiddingAndAuctionEncryptionResponseMediaType)
           ->EncapsulateAndSerialize();
 
   page_data->AddAuctionResultWitnessForOrigin(
@@ -12213,7 +12219,8 @@ function reportResult(auctionConfig, browserSignals) {
 
   std::string encrypted_response =
       quiche::ObliviousHttpResponse::CreateServerObliviousResponse(
-          response, request_context->context)
+          response, request_context->context,
+          kBiddingAndAuctionEncryptionResponseMediaType)
           ->EncapsulateAndSerialize();
 
   page_data->AddAuctionResultWitnessForOrigin(
@@ -12420,7 +12427,8 @@ function reportResult(auctionConfig, browserSignals) {
 
   std::string encrypted_response =
       quiche::ObliviousHttpResponse::CreateServerObliviousResponse(
-          response, request_context->context)
+          response, request_context->context,
+          kBiddingAndAuctionEncryptionResponseMediaType)
           ->EncapsulateAndSerialize();
 
   page_data->AddAuctionResultWitnessForOrigin(
@@ -12601,7 +12609,8 @@ function reportResult(auctionConfig, browserSignals) {
 
   std::string encrypted_response =
       quiche::ObliviousHttpResponse::CreateServerObliviousResponse(
-          response, request_context->context)
+          response, request_context->context,
+          kBiddingAndAuctionEncryptionResponseMediaType)
           ->EncapsulateAndSerialize();
 
   page_data->AddAuctionResultWitnessForOrigin(

@@ -942,6 +942,8 @@ void AdAuctionServiceImpl::OnGotBiddingAndAuctionServerKey(
     std::move(state.callback).Run({}, {}, maybe_key.error());
     return;
   }
+  const bool use_new_format =
+      base::FeatureList::IsEnabled(kBiddingAndAuctionEncryptionMediaType);
 
   auto maybe_key_config = quiche::ObliviousHttpHeaderKeyConfig::Create(
       maybe_key->id, EVP_HPKE_DHKEM_X25519_HKDF_SHA256, EVP_HPKE_HKDF_SHA256,
@@ -952,7 +954,9 @@ void AdAuctionServiceImpl::OnGotBiddingAndAuctionServerKey(
       quiche::ObliviousHttpRequest::CreateClientObliviousRequest(
           std::string(state.data.request.begin(), state.data.request.end()),
           maybe_key->key, maybe_key_config.value(),
-          kBiddingAndAuctionEncryptionRequestMediaType.Get());
+          use_new_format
+              ? kBiddingAndAuctionEncryptionRequestMediaType
+              : quiche::ObliviousHttpHeaderKeyConfig::kOhttpRequestLabel);
   if (!maybe_request.ok()) {
     std::move(state.callback).Run({}, {}, "Could not create request");
     return;
@@ -973,7 +977,7 @@ void AdAuctionServiceImpl::OnGotBiddingAndAuctionServerKey(
   ad_auction_page_data->GetDecoderFor(state.seller)->GetService();
 
   size_t start_offset = 0;
-  if (base::FeatureList::IsEnabled(kBiddingAndAuctionEncryptionMediaType)) {
+  if (use_new_format) {
     // For the modified request format we need to prepend a version number byte
     // to the request.
     start_offset = 1;
