@@ -111,6 +111,9 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
   using GetArcDiskFeaturesCallback =
       chromeos::DBusMethodCallback<::user_data_auth::GetArcDiskFeaturesReply>;
 
+  using GetRecoverableKeyStoresCallback = chromeos::DBusMethodCallback<
+      ::user_data_auth::GetRecoverableKeyStoresReply>;
+
   // Not copyable or movable.
   UserDataAuthClient(const UserDataAuthClient&) = delete;
   UserDataAuthClient& operator=(const UserDataAuthClient&) = delete;
@@ -308,6 +311,11 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
   virtual void GetArcDiskFeatures(
       const ::user_data_auth::GetArcDiskFeaturesRequest& request,
       GetArcDiskFeaturesCallback callback) = 0;
+
+  // Retrieve LSKF-wrapped key material for upload to a remote recovery service.
+  virtual void GetRecoverableKeyStores(
+      const ::user_data_auth::GetRecoverableKeyStoresRequest& request,
+      GetRecoverableKeyStoresCallback callback) = 0;
 
  protected:
   // Initialize/Shutdown should be used instead.

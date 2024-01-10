@@ -315,6 +315,14 @@ class UserDataAuthClientImpl : public UserDataAuthClient {
                     std::move(callback));
   }
 
+  void GetRecoverableKeyStores(
+      const ::user_data_auth::GetRecoverableKeyStoresRequest& request,
+      GetRecoverableKeyStoresCallback callback) override {
+    CallProtoMethod(::user_data_auth::kGetRecoverableKeyStores,
+                    ::user_data_auth::kUserDataAuthInterface, request,
+                    std::move(callback));
+  }
+
  private:
   // Calls cryptohomed's |method_name| method in |interface_name| interface,
   // passing in |request| as input with |timeout_ms|. Once the (asynchronous)
