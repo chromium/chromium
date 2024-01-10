@@ -2197,15 +2197,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 }
 
 // Replaces a tab being dragged before the user moved enough to start a drag.
-#if (BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_CHROMEOS_ASH))
-// TODO(crbug.com/1466682) Test is flaky on ChromeOS/Lacros - releasing input
-// does not always end the drag.
-#define MAYBE_ReplaceBeforeStartedDragging DISABLED_ReplaceBeforeStartedDragging
-#else
-#define MAYBE_ReplaceBeforeStartedDragging ReplaceBeforeStartedDragging
-#endif
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
-                       MAYBE_ReplaceBeforeStartedDragging) {
+                       ReplaceBeforeStartedDragging) {
   AddTabsAndResetBrowser(browser(), 1);
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
 
