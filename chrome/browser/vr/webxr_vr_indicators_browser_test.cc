@@ -91,7 +91,8 @@ void TestIndicatorOnAccessForContentType(
 
   auto utils = UiUtils::Create();
   // Check if the location indicator shows.
-  utils->WaitForVisibilityStatus(element_name, true);
+  utils->PerformActionAndWaitForVisibilityStatus(element_name, true,
+                                                 base::DoNothing());
 
   t->EndSessionOrFail();
 }
@@ -109,8 +110,8 @@ void TestForInitialIndicatorForContentType(
   auto utils = UiUtils::Create();
   // Check if the location indicator shows.
   for (const TestIndicatorSetting& setting : test_indicator_settings)
-    utils->WaitForVisibilityStatus(setting.element_name,
-                                   setting.element_visibility);
+    utils->PerformActionAndWaitForVisibilityStatus(
+        setting.element_name, setting.element_visibility, base::DoNothing());
 
   t->EndSessionOrFail();
 }

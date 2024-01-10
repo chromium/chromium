@@ -63,7 +63,13 @@ UiTest::UiTest() {}
 UiTest::~UiTest() {}
 
 void UiTest::SetUp() {
-  ui_instance_ = std::make_unique<Ui>();
+  browser_ = std::make_unique<testing::NiceMock<MockUiBrowserInterface>>();
+
+  // Now create the initial scene.
+  UiInitialState state;
+  state.gvr_input_support = true;
+
+  ui_instance_ = std::make_unique<Ui>(std::move(browser_.get()), state);
   ui_ = ui_instance_.get();
   scene_ = ui_instance_->scene();
   model_ = ui_instance_->model_for_test();

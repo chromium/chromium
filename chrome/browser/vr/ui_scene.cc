@@ -237,6 +237,7 @@ UiScene::Elements UiScene::GetElementsToDraw() {
   return GetVisibleElementsWithPredicate(
       root_element_.get(), [](UiElement* element) {
         return element->draw_phase() == kPhaseForeground ||
+               element->draw_phase() == kPhaseBackplanes ||
                element->draw_phase() == kPhaseBackground;
       });
 }

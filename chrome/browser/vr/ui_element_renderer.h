@@ -30,6 +30,7 @@ class GridRenderer;
 class RadialGradientQuadRenderer;
 class TextureCopyRenderer;
 class TexturedQuadRenderer;
+class TransparentQuadRenderer;
 
 // An instance of this class is passed to UiElements by the UiRenderer in order
 // to issue the GL commands for drawing the frame. In some ways, this class is a
@@ -87,6 +88,7 @@ class UiElementRenderer {
 
   raw_ptr<BaseRenderer> last_renderer_ = nullptr;
 
+  std::unique_ptr<TransparentQuadRenderer> transparent_quad_renderer_;
   std::unique_ptr<TexturedQuadRenderer> textured_quad_renderer_;
   std::unique_ptr<RadialGradientQuadRenderer> radial_gradient_quad_renderer_;
   std::unique_ptr<TextureCopyRenderer> texture_copy_renderer_;
