@@ -276,10 +276,10 @@ bool OutputQueue::NegotiateFormat() {
       if (device_->TryOutputFormat(try_format)) {
         auto chosen_format = device_->SetOutputFormat(try_format);
         if (chosen_format) {
-          DVLOGF(2) << "Preferred format " << chosen_format->fourcc.ToString()
-                    << " choosen for output queue through negotiation. "
-                    << "Initial format was "
-                    << initial_format->fourcc.ToString() << ".";
+          DVLOGF(2) << "Preferred format " << chosen_format->ToString()
+                    << " chosen for output queue through negotiation. "
+                    << "Initial format was " << initial_format->ToString()
+                    << ".";
           buffer_format_ = *chosen_format;
           return true;
         } else {
@@ -288,8 +288,8 @@ bool OutputQueue::NegotiateFormat() {
       }
     }
   } else {
-    DVLOGF(2) << "Initial format " << initial_format->fourcc.ToString()
-              << " choosen for output queue.";
+    DVLOGF(2) << "Initial format " << initial_format->ToString()
+              << " chosen for output queue.";
     auto chosen_format = device_->SetOutputFormat(*initial_format);
     if (chosen_format) {
       buffer_format_ = *chosen_format;

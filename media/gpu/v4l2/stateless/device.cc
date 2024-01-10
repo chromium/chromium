@@ -293,6 +293,11 @@ BufferFormat::BufferFormat(const BufferFormat& other) = default;
 
 BufferFormat::~BufferFormat() {}
 
+std::string BufferFormat::ToString() const {
+  return std::string("(" + fourcc.ToString() + " : " + resolution.ToString() +
+                     " : " + BufferTypeString(buffer_type) + ")");
+}
+
 void Device::Close() {
   device_fd_.reset();
 }
