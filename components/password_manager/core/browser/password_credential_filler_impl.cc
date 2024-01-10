@@ -157,9 +157,8 @@ PasswordCredentialFillerImpl::GetSubmissionReadinessState() const {
   return submission_readiness_;
 }
 
-const GURL& PasswordCredentialFillerImpl::GetFrameUrl() const {
-  CHECK(driver_);
-  return driver_->GetLastCommittedURL();
+GURL PasswordCredentialFillerImpl::GetFrameUrl() const {
+  return driver_ ? driver_->GetLastCommittedURL() : GURL();
 }
 
 void PasswordCredentialFillerImpl::Dismiss(ToShowVirtualKeyboard should_show) {

@@ -57,7 +57,6 @@ using ::testing::AtLeast;
 using ::testing::ElementsAreArray;
 using ::testing::Eq;
 using ::testing::Return;
-using ::testing::ReturnRefOfCopy;
 using ::testing::WithArg;
 using webauthn::WebAuthnCredManDelegate;
 using IsOriginSecure = TouchToFillView::IsOriginSecure;
@@ -155,8 +154,7 @@ class TouchToFillControllerAutofillTest
     // the Mock filler will be passed to TouchToFillControllerAutofillDelegate.
     // cache the raw pointer here to interact with the mock after passing.
     weak_filler_ = filler.get();
-    ON_CALL(*filler, GetFrameUrl())
-        .WillByDefault(ReturnRefOfCopy(GURL(kExampleCom)));
+    ON_CALL(*filler, GetFrameUrl()).WillByDefault(Return(GURL(kExampleCom)));
     return filler;
   }
 
@@ -560,7 +558,7 @@ TEST_F(TouchToFillControllerAutofillTest, Show_Empty) {
 TEST_F(TouchToFillControllerAutofillTest, Show_Insecure_Origin) {
   auto filler_to_pass = CreateMockFiller();
   EXPECT_CALL(*last_mock_filler(), GetFrameUrl())
-      .WillOnce(ReturnRefOfCopy(GURL("http://example.com")));
+      .WillOnce(Return(GURL("http://example.com")));
 
   UiCredential credentials[] = {
       MakeUiCredential({.username = "alice", .password = "p4ssw0rd"})};

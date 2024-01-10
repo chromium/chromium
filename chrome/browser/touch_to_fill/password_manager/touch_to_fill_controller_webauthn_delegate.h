@@ -51,7 +51,7 @@ class TouchToFillControllerWebAuthnDelegate
   void OnHybridSignInSelected(base::OnceClosure action_completed) override;
   void OnDismiss(base::OnceClosure action_completed) override;
   void OnCredManDismissed(base::OnceClosure action_completed) override;
-  const GURL& GetFrameUrl() override;
+  GURL GetFrameUrl() override;
   bool ShouldTriggerSubmission() override;
   bool ShouldShowHybridOption() override;
   bool ShouldShowNoPasskeysSheetIfRequired() override;

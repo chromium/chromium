@@ -59,7 +59,7 @@ class TouchToFillControllerDelegate {
 
   // Gets the last committed URL for the frame that triggered this sheet to be
   // created.
-  virtual const GURL& GetFrameUrl() = 0;
+  virtual GURL GetFrameUrl() = 0;
 
   // Indicates whether the controller should trigger submission on selection of
   // a password credential.

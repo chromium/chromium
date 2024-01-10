@@ -72,7 +72,7 @@ void TouchToFillControllerWebAuthnDelegate::OnCredManDismissed(
   std::move(action_completed).Run();
 }
 
-const GURL& TouchToFillControllerWebAuthnDelegate::GetFrameUrl() {
+GURL TouchToFillControllerWebAuthnDelegate::GetFrameUrl() {
   return request_delegate_->web_contents()->GetLastCommittedURL();
 }
 

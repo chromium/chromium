@@ -33,7 +33,7 @@ class PasswordCredentialFillerImpl final : public PasswordCredentialFiller {
 
   SubmissionReadinessState GetSubmissionReadinessState() const override;
 
-  const GURL& GetFrameUrl() const override;
+  GURL GetFrameUrl() const override;
 
   void Dismiss(ToShowVirtualKeyboard should_show) override;
 
