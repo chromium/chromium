@@ -6,8 +6,8 @@ import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './base_page.js';
 import './shimless_rma_shared.css.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 
 import {getTemplate} from './reboot_page.html.js';
 import {RmadErrorCode} from './shimless_rma.mojom-webui.js';
@@ -22,17 +22,11 @@ const DELAY_DURATION = '3';
  * 'reboot-page' is displayed while waiting for a reboot.
  */
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const RebootPageBase = mixinBehaviors([I18nBehavior], PolymerElement);
+const RebootPageBase = I18nMixin(PolymerElement);
 
-/** @polymer */
 export class RebootPage extends RebootPageBase {
   static get is() {
-    return 'reboot-page';
+    return 'reboot-page' as const;
   }
 
   static get template() {
@@ -42,8 +36,7 @@ export class RebootPage extends RebootPageBase {
   static get properties() {
     return {
       /**
-       * Set by shimless_rma.js.
-       * @type {RmadErrorCode}
+       * Set by shimless_rma.ts.
        */
       errorCode: {
         type: Object,
@@ -51,31 +44,30 @@ export class RebootPage extends RebootPageBase {
     };
   }
 
-  /** @override */
-  ready() {
+  errorCode: RmadErrorCode;
+
+  override ready() {
     super.ready();
 
     focusPageTitle(this);
   }
 
-  /**
-   * @return {string}
-   * @protected
-   */
-  getPageTitle() {
+  protected getPageTitle(): string {
     return this.errorCode === RmadErrorCode.kExpectReboot ?
         this.i18n('rebootPageTitle') :
         this.i18n('shutdownPageTitle');
   }
 
-  /**
-   * @return {string}
-   * @protected
-   */
-  getPageInstructions() {
+  protected getPageInstructions(): string {
     return this.errorCode === RmadErrorCode.kExpectReboot ?
         this.i18n('rebootPageMessage', DELAY_DURATION) :
         this.i18n('shutdownPageMessage', DELAY_DURATION);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [RebootPage.is]: RebootPage;
   }
 }
 
