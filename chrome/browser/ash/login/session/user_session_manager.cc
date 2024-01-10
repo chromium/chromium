@@ -17,6 +17,8 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/metrics/login_unlock_throughput_recorder.h"
+#include "ash/shell.h"
 #include "base/base_paths.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
@@ -2445,6 +2447,13 @@ void UserSessionManager::DoBrowserLaunchInternal(Profile* profile,
       full_restore::FullRestoreService::GetForProfile(profile)
           ->LaunchBrowserWhenReady();
     }
+  }
+  if (ProfileHelper::IsPrimaryProfile(profile)) {
+    // chrome::SessionRestore is using synchronous mode on Chrome OS,
+    // which means that data is definitely loaded by this moment.
+    Shell::Get()
+        ->login_unlock_throughput_recorder()
+        ->BrowserSessionRestoreDataLoaded();
   }
 
   if (HatsNotificationController::ShouldShowSurveyToProfile(

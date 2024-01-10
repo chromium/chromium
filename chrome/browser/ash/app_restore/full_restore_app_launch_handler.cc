@@ -459,13 +459,14 @@ void FullRestoreAppLaunchHandler::RecordLaunchBrowserResult() {
 
 void FullRestoreAppLaunchHandler::LogRestoreData() {
   LoginUnlockThroughputRecorder* throughput_recorder =
-      Shell::HasInstance() ? Shell::Get()->login_unlock_throughput_recorder()
-                           : nullptr;
+      (Shell::HasInstance() && ProfileHelper::IsPrimaryProfile(profile()))
+          ? Shell::Get()->login_unlock_throughput_recorder()
+          : nullptr;
 
   if (!restore_data() || restore_data()->app_id_to_launch_list().empty()) {
     VLOG(1) << "There is no restore data from " << profile()->GetPath();
     if (throughput_recorder) {
-      throughput_recorder->RestoreDataLoaded();
+      throughput_recorder->FullSessionRestoreDataLoaded();
     }
     return;
   }
@@ -490,7 +491,7 @@ void FullRestoreAppLaunchHandler::LogRestoreData() {
     ++other_app_count;
   }
   if (throughput_recorder) {
-    throughput_recorder->RestoreDataLoaded();
+    throughput_recorder->FullSessionRestoreDataLoaded();
   }
   VLOG(1) << "There is restore data: Browser("
           << (::full_restore::HasAppTypeBrowser(profile()->GetPath())

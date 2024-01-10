@@ -279,6 +279,9 @@ class FullRestoreAppLaunchHandlerBrowserTest
     extensions::PlatformAppBrowserTest::SetUpOnMainThread();
     display_service_ =
         std::make_unique<NotificationDisplayServiceTester>(profile());
+    Shell::Get()
+        ->login_unlock_throughput_recorder()
+        ->SetLoginFinishedReportedForTesting();
   }
 
   void SetShouldRestore(FullRestoreAppLaunchHandler* app_launch_handler) {
@@ -2770,6 +2773,13 @@ class FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest
 
   ~FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest() override {
     OsUrlHandlerSystemWebAppDelegate::EnableDelegateForTesting(false);
+  }
+
+  void SetUpOnMainThread() override {
+    SystemWebAppIntegrationTest::SetUpOnMainThread();
+    Shell::Get()
+        ->login_unlock_throughput_recorder()
+        ->SetLoginFinishedReportedForTesting();
   }
 
   Browser* LaunchSystemWebApp(const GURL& gurl,

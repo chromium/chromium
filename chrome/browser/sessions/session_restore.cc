@@ -102,6 +102,7 @@
 #include "ash/metrics/login_unlock_throughput_recorder.h"
 #include "ash/shell.h"
 #include "chrome/browser/ash/boot_times_recorder.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "components/app_restore/window_properties.h"
 #include "ui/compositor/layer.h"
 #endif
@@ -127,10 +128,15 @@ std::set<SessionRestoreImpl*>* active_session_restorers = nullptr;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void StartRecordingRestoredWindowsMetrics(
+    const Profile* profile,
     const std::vector<std::unique_ptr<sessions::SessionWindow>>& windows) {
   // Ash is not always initialized in unit tests.
   if (!ash::Shell::HasInstance())
     return;
+
+  if (!ash::ProfileHelper::IsPrimaryProfile(profile)) {
+    return;
+  }
 
   ash::LoginUnlockThroughputRecorder* throughput_recorder =
       ash::Shell::Get()->login_unlock_throughput_recorder();
@@ -141,9 +147,6 @@ void StartRecordingRestoredWindowsMetrics(
           w->window_id.id(), w->app_name,
           ash::LoginUnlockThroughputRecorder::kBrowser);
     }
-  }
-  if (throughput_recorder) {
-    throughput_recorder->RestoreDataLoaded();
   }
 }
 
@@ -481,7 +484,7 @@ class SessionRestoreImpl : public BrowserListObserver {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     if (!read_error_)
-      StartRecordingRestoredWindowsMetrics(windows);
+      StartRecordingRestoredWindowsMetrics(profile_, windows);
 #endif
 
     // Copy windows into windows_ so that we can combine both app and browser
