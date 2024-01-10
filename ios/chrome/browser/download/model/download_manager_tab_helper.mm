@@ -10,6 +10,7 @@
 #import "base/notreached.h"
 #import "ios/chrome/browser/download/model/download_manager_tab_helper_delegate.h"
 #import "ios/chrome/browser/drive/model/drive_tab_helper.h"
+#import "ios/chrome/browser/drive/model/upload_task.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/web/public/download/download_task.h"
 
@@ -142,9 +143,9 @@ bool DownloadManagerTabHelper::WillDownloadTaskBeSavedToDrive() const {
   }
   DriveTabHelper* drive_tab_helper =
       DriveTabHelper::FromWebState(task_->GetWebState());
-  std::optional<DownloadTaskSaveToDriveData> save_to_drive_data =
-      drive_tab_helper->GetDownloadTaskSaveToDriveData();
-  return save_to_drive_data && save_to_drive_data->task == task_.get();
+  UploadTask* upload_task =
+      drive_tab_helper->GetUploadTaskForDownload(task_.get());
+  return upload_task && !upload_task->IsDone();
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(DownloadManagerTabHelper)

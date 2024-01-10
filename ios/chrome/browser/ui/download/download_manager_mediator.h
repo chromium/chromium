@@ -5,16 +5,19 @@
 #ifndef IOS_CHROME_BROWSER_UI_DOWNLOAD_DOWNLOAD_MANAGER_MEDIATOR_H_
 #define IOS_CHROME_BROWSER_UI_DOWNLOAD_DOWNLOAD_MANAGER_MEDIATOR_H_
 
-#include "base/files/file_path.h"
-#include "base/memory/weak_ptr.h"
+#import "base/files/file_path.h"
+#import "base/memory/weak_ptr.h"
+#import "ios/chrome/browser/drive/model/upload_task_observer.h"
 #import "ios/chrome/browser/ui/download/download_manager_consumer.h"
-#include "ios/web/public/download/download_task_observer.h"
+#import "ios/web/public/download/download_task_observer.h"
 
 @protocol DownloadManagerConsumer;
 
 namespace drive {
 class DriveService;
 }
+
+class UploadTask;
 
 namespace signin {
 class IdentityManager;
@@ -26,7 +29,8 @@ class DownloadTask;
 
 // Manages a single download task by providing means to start the download and
 // update consumer if download task was changed.
-class DownloadManagerMediator : public web::DownloadTaskObserver {
+class DownloadManagerMediator : public web::DownloadTaskObserver,
+                                public UploadTaskObserver {
  public:
   DownloadManagerMediator();
 
@@ -78,15 +82,26 @@ class DownloadManagerMediator : public web::DownloadTaskObserver {
   // is no announcement.
   int GetDownloadManagerA11yAnnouncement() const;
 
+  // Finds any upload task associated with the current download task and calls
+  // `SetUploadTask()` accordingly.
+  void UpdateUploadTask();
+  // Sets upload task. Must be set to null when task is destroyed.
+  void SetUploadTask(UploadTask* task);
+
   // web::DownloadTaskObserver overrides:
   void OnDownloadUpdated(web::DownloadTask* task) override;
   void OnDownloadDestroyed(web::DownloadTask* task) override;
+
+  // UploadTaskObserver overrides:
+  void OnUploadUpdated(UploadTask* task) override;
+  void OnUploadDestroyed(UploadTask* task) override;
 
   raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
   raw_ptr<drive::DriveService> drive_service_ = nullptr;
   bool is_incognito_;
   base::FilePath download_path_;
-  raw_ptr<web::DownloadTask> task_ = nullptr;
+  raw_ptr<web::DownloadTask> download_task_ = nullptr;
+  raw_ptr<UploadTask> upload_task_ = nullptr;
   __weak id<DownloadManagerConsumer> consumer_ = nil;
   base::WeakPtrFactory<DownloadManagerMediator> weak_ptr_factory_;
 };
