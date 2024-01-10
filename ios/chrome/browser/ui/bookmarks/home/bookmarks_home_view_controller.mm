@@ -1332,7 +1332,11 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 #pragma mark - Accessibility
 
 - (BOOL)accessibilityPerformEscape {
-  [self dismissWithURL:GURL()];
+  if ([self isDisplayingBookmarkRoot]) {
+    [self navigationBarCancel:self];
+  } else {
+    [self back];
+  }
   return YES;
 }
 
