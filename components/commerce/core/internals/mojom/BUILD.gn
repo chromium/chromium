@@ -8,6 +8,7 @@ mojom("mojo_bindings") {
   sources = [ "commerce_internals.mojom" ]
   webui_module_path = "/"
   public_deps = [
+    "//components/commerce/core/mojom:mojo_bindings",
     "//mojo/public/mojom/base",
     "//url/mojom:url_mojom_gurl",
   ]

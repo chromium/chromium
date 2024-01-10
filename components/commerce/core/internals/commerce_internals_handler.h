@@ -34,6 +34,8 @@ class CommerceInternalsHandler : public mojom::CommerceInternalsHandler {
   void GetShoppingListEligibleDetails(
       GetShoppingListEligibleDetailsCallback callback) override;
   void ResetPriceTrackingEmailPref() override;
+  void GetProductInfoForUrl(const GURL& url,
+                            GetProductInfoForUrlCallback callback) override;
 
  private:
   mojo::Remote<mojom::CommerceInternalsPage> page_;

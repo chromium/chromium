@@ -38,6 +38,8 @@ const char kOgTypeProductItem[] = "product.item";
 
 const char kPostHttpMethod[] = "POST";
 
+const long kToMicroCurrency = 1e6;
+
 const char kUTMCampaignLabel[] = "utm_campaign";
 
 const char kUTMCampaignValueForCartDiscount[] = "chrome-cart-discount-on";

@@ -8,6 +8,7 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/shopping_service.h"
+#include "components/commerce/core/webui/webui_utils.h"
 #include "components/prefs/pref_service.h"
 
 namespace commerce {
@@ -96,6 +97,31 @@ void CommerceInternalsHandler::ResetPriceTrackingEmailPref() {
     return;
   }
   shopping_service_->pref_service_->ClearPref(kPriceEmailNotificationsEnabled);
+}
+
+void CommerceInternalsHandler::GetProductInfoForUrl(
+    const GURL& url,
+    GetProductInfoForUrlCallback callback) {
+  if (!shopping_service_) {
+    std::move(callback).Run(shopping_list::mojom::ProductInfo::New());
+    return;
+  }
+
+  shopping_service_->GetProductInfoForUrl(
+      url,
+      base::BindOnce(
+          [](GetProductInfoForUrlCallback callback,
+             base::WeakPtr<ShoppingService> service, const GURL& url,
+             const absl::optional<const ProductInfo>& info) {
+            if (!service || !info) {
+              std::move(callback).Run(shopping_list::mojom::ProductInfo::New());
+              return;
+            }
+
+            std::move(callback).Run(ProductInfoToMojoProduct(
+                url, info, service->locale_on_startup_));
+          },
+          std::move(callback), shopping_service_->AsWeakPtr()));
 }
 
 }  // namespace commerce

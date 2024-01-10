@@ -49,6 +49,10 @@ extern const char kOgTypeProductItem[];
 // Http POST method.
 extern const char kPostHttpMethod[];
 
+// The conversion multiplier to go from standard currency units to
+// micro-currency units.
+extern const long kToMicroCurrency;
+
 // Please do not use below UTM constants beyond commerce use cases.
 // UTM campaign label.
 extern const char kUTMCampaignLabel[];

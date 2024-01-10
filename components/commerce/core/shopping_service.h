@@ -74,10 +74,6 @@ class SyncService;
 
 namespace commerce {
 
-// The conversion multiplier to go from standard currency units to
-// micro-currency units.
-extern const long kToMicroCurrency;
-
 extern const char kImageAvailabilityHistogramName[];
 extern const char kProductInfoLocalExtractionTime[];
 

@@ -6,6 +6,8 @@ source_set("webui") {
   sources = [
     "shopping_list_handler.cc",
     "shopping_list_handler.h",
+    "webui_utils.cc",
+    "webui_utils.h",
   ]
 
   deps = [
@@ -13,6 +15,7 @@ source_set("webui") {
     "../mojom:mojo_bindings",
     "//base",
     "//components/bookmarks/browser",
+    "//components/commerce/core:commerce_constants",
     "//components/commerce/core:feature_list",
     "//components/commerce/core:shopping_service",
     "//components/feature_engagement/public",
