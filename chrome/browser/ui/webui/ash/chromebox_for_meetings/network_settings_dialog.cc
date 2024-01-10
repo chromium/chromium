@@ -7,7 +7,7 @@
 #include "ash/public/cpp/network_config_service.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "chrome/browser/ash/app_mode/certificate_manager_dialog.h"
+#include "chrome/browser/ash/login/ui/login_web_dialog.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/cellular_setup/cellular_setup_localized_strings_provider.h"
@@ -71,8 +71,13 @@ class NetworkSettingsMessageHandler : public content::WebUIMessageHandler {
 
   void ShowManageCerts() {
     // Dialogs manage their own lifecycle and will delete themselves.
-    CertificateManagerDialog* dialog = new CertificateManagerDialog(
-        ProfileManager::GetActiveUserProfile(), nullptr);
+    LoginWebDialog* dialog = new LoginWebDialog(
+        ProfileManager::GetActiveUserProfile(), nullptr,
+        l10n_util::GetStringUTF16(IDS_CERTIFICATE_MANAGER_TITLE),
+        GURL(chrome::kChromeUICertificateManagerDialogURL));
+    // TODO: is this the right size to use? this was the old default size of
+    // CertificateManagerDialog before it was removed.
+    dialog->set_dialog_size(gfx::Size{640, 480});
     dialog->Show();
   }
 };

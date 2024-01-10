@@ -33,12 +33,6 @@ constexpr gfx::Size kMaxSize{512, 512};
 base::LazyInstance<base::circular_deque<WebContents*>>::DestructorAtExit
     g_web_contents_stack = LAZY_INSTANCE_INITIALIZER;
 
-// Returns the accelerator which is mapped as hangup button on Chrome OS CFM
-// remote controller to close the dialog.
-ui::Accelerator GetCloseAccelerator() {
-  return ui::Accelerator(ui::VKEY_BROWSER_BACK, ui::EF_SHIFT_DOWN);
-}
-
 }  // namespace
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -48,14 +42,25 @@ LoginWebDialog::LoginWebDialog(content::BrowserContext* browser_context,
                                gfx::NativeWindow parent_window,
                                const std::u16string& title,
                                const GURL& url)
-    : browser_context_(browser_context),
-      parent_window_(parent_window),
-      title_(title),
-      url_(url) {
+    : browser_context_(browser_context), parent_window_(parent_window) {
   if (!parent_window_ && LoginDisplayHost::default_host())
     parent_window_ = LoginDisplayHost::default_host()->GetNativeWindow();
   LOG_IF(WARNING, !parent_window_)
       << "No parent window. Dialog sizes could be wrong";
+
+  // Shift-Back is how the Chromebox for Meetings "Hangup" button is encoded.
+  RegisterAccelerator(ui::Accelerator(ui::VKEY_BROWSER_BACK, ui::EF_SHIFT_DOWN),
+                      base::BindRepeating(&LoginWebDialog::MaybeCloseWindow,
+                                          base::Unretained(this)));
+  RegisterOnDialogClosedCallback(
+      base::BindOnce(&LoginWebDialog::OnDialogClosing, base::Unretained(this)));
+  set_dialog_modal_type(ui::MODAL_TYPE_SYSTEM);
+  set_dialog_content_url(url);
+  set_minimum_dialog_size(kMinSize);
+  set_dialog_title(title);
+  set_show_dialog_title(true);
+  set_allow_default_context_menu(false);
+  set_allow_web_contents_creation(false);
 }
 
 LoginWebDialog::~LoginWebDialog() {}
@@ -65,24 +70,8 @@ void LoginWebDialog::Show() {
       chrome::ShowWebDialog(parent_window_, browser_context_, this);
 }
 
-void LoginWebDialog::SetDialogTitle(const std::u16string& title) {
-  title_ = title;
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 // LoginWebDialog, protected:
-
-ui::ModalType LoginWebDialog::GetDialogModalType() const {
-  return ui::MODAL_TYPE_SYSTEM;
-}
-
-std::u16string LoginWebDialog::GetDialogTitle() const {
-  return title_;
-}
-
-GURL LoginWebDialog::GetDialogContentURL() const {
-  return url_;
-}
 
 void LoginWebDialog::GetDialogSize(gfx::Size* size) const {
   // TODO(https://crbug.com/1022774): Fix for the lock screen.
@@ -97,14 +86,6 @@ void LoginWebDialog::GetDialogSize(gfx::Size* size) const {
   size->SetToMax(kMinSize);
 }
 
-void LoginWebDialog::GetMinimumDialogSize(gfx::Size* size) const {
-  *size = kMinSize;
-}
-
-std::string LoginWebDialog::GetDialogArgs() const {
-  return std::string();
-}
-
 // static.
 WebContents* LoginWebDialog::GetCurrentWebContents() {
   auto& stack = g_web_contents_stack.Get();
@@ -115,9 +96,8 @@ void LoginWebDialog::OnDialogShown(content::WebUI* webui) {
   g_web_contents_stack.Pointer()->push_front(webui->GetWebContents());
 }
 
-void LoginWebDialog::OnDialogClosed(const std::string& json_retval) {
+void LoginWebDialog::OnDialogClosing(const std::string& json_retval) {
   dialog_window_ = nullptr;
-  delete this;
 }
 
 void LoginWebDialog::OnCloseContents(WebContents* source,
@@ -126,19 +106,6 @@ void LoginWebDialog::OnCloseContents(WebContents* source,
 
   if (GetCurrentWebContents() == source)
     g_web_contents_stack.Pointer()->pop_front();
-  // Else: TODO(pkotwicz): Investigate if the else case should ever be hit.
-  // http://crbug.com/419837
-}
-
-bool LoginWebDialog::ShouldShowDialogTitle() const {
-  return true;
-}
-
-bool LoginWebDialog::HandleContextMenu(
-    content::RenderFrameHost& render_frame_host,
-    const content::ContextMenuParams& params) {
-  // Disable context menu.
-  return true;
 }
 
 bool LoginWebDialog::HandleOpenURLFromTab(WebContents* source,
@@ -153,24 +120,13 @@ bool LoginWebDialog::HandleOpenURLFromTab(WebContents* source,
   return (source && !chrome::FindBrowserWithTab(source));
 }
 
-bool LoginWebDialog::HandleShouldOverrideWebContentsCreation() {
-  return true;
-}
-
-std::vector<ui::Accelerator> LoginWebDialog::GetAccelerators() {
-  return {GetCloseAccelerator()};
-}
-
-bool LoginWebDialog::AcceleratorPressed(const ui::Accelerator& accelerator) {
+bool LoginWebDialog::MaybeCloseWindow(WebDialogDelegate& delegate,
+                                      const ui::Accelerator& accelerator) {
   if (!dialog_window_)
     return false;
 
-  if (GetCloseAccelerator() == accelerator) {
-    views::Widget::GetWidgetForNativeWindow(dialog_window_)->Close();
-    return true;
-  }
-
-  return false;
+  views::Widget::GetWidgetForNativeWindow(dialog_window_)->Close();
+  return true;
 }
 
 }  // namespace ash

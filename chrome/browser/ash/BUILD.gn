@@ -126,8 +126,6 @@ source_set("ash") {
     "app_mode/arc/arc_kiosk_app_service_factory.cc",
     "app_mode/arc/arc_kiosk_app_service_factory.h",
     "app_mode/cancellable_job.h",
-    "app_mode/certificate_manager_dialog.cc",
-    "app_mode/certificate_manager_dialog.h",
     "app_mode/crash_recovery_launcher.cc",
     "app_mode/crash_recovery_launcher.h",
     "app_mode/kiosk_app.cc",
