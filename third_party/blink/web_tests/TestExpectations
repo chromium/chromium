@@ -6810,7 +6810,7 @@ crbug.com/1496375 [ Mac ] http/tests/loading/image-picture-download-after-shrink
 [ Mac ] accessibility/selection-change-notification-on-selection-removed.html [ Failure Pass ]
 
 # Gardener 2023-12-21
-crbug.com/1508113 virtual/automatic-lazy-frame-loading/wpt_internal/lazyembed/automatic-lazy-frame-loading.sub.html [ Timeout ]
+crbug.com/1508113 virtual/automatic-lazy-frame-loading/wpt_internal/lazyembed/automatic-lazy-frame-loading.sub.html [ Timeout Failure Pass ]
 crbug.com/1470053 external/wpt/html/browsers/browsing-the-web/overlapping-navigations-and-traversals/cross-document-traversal-cross-document-traversal.html [ Failure Pass ]
 
 # Gardener 2024-01-04
