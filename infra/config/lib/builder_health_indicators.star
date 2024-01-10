@@ -198,7 +198,6 @@ _exempted_from_contact_builders = {
         "ASan Release (32-bit x86 with V8-ARM)",
         "ASan Release Media (32-bit x86 with V8-ARM)",
         "Blink Unexpected Pass Finder",
-        "Cast Audio Linux",
         "Cast Linux ARM64",
         "Cast Linux Debug",
         "Cast Linux",

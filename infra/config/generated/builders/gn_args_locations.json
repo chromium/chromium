@@ -382,7 +382,6 @@
     "Linux FYI GPU TSAN Release": "ci/Linux FYI GPU TSAN Release/gn-args.json"
   },
   "chromium.linux": {
-    "Cast Audio Linux": "ci/Cast Audio Linux/gn-args.json",
     "Cast Linux": "ci/Cast Linux/gn-args.json",
     "Cast Linux ARM64": "ci/Cast Linux ARM64/gn-args.json",
     "Cast Linux Debug": "ci/Cast Linux Debug/gn-args.json",
@@ -784,7 +783,6 @@
     "linux-wpt-content-shell-fyi-rel": "try/linux-wpt-content-shell-fyi-rel/gn-args.json",
     "linux-wpt-content-shell-leak-detection": "try/linux-wpt-content-shell-leak-detection/gn-args.json",
     "linux-x64-castos": "try/linux-x64-castos/gn-args.json",
-    "linux-x64-castos-audio": "try/linux-x64-castos-audio/gn-args.json",
     "linux-x64-castos-dbg": "try/linux-x64-castos-dbg/gn-args.json",
     "linux_chromium_archive_rel_ng": "try/linux_chromium_archive_rel_ng/gn-args.json",
     "linux_chromium_asan_rel_ng": "try/linux_chromium_asan_rel_ng/gn-args.json",

@@ -450,20 +450,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "linux-x64-castos-audio",
-    mirrors = [
-        "ci/Cast Audio Linux",
-    ],
-    gn_args = gn_args.config(
-        configs = [
-            "ci/Cast Audio Linux",
-            "release_try_builder",
-        ],
-    ),
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
-)
-
-try_.builder(
     name = "linux-x64-castos-dbg",
     branch_selector = branches.selector.LINUX_BRANCHES,
     mirrors = [

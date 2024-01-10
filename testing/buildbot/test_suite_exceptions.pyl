@@ -1816,11 +1816,6 @@
       'ToTFuchsiaOfficial arm64',
     ],
     'modifications': {
-      'Cast Audio Linux': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/cast-linux.content_browsertests.filter',
-        ],
-      },
       'Cast Linux': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/cast-linux.content_browsertests.filter',

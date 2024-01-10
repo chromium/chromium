@@ -280,15 +280,6 @@ targets.legacy_compound_suite(
 )
 
 targets.legacy_compound_suite(
-    name = "chromium_linux_cast_audio_gtests",
-    basic_suites = [
-        "cast_audio_specific_chromium_gtests",
-        "chromium_gtests",
-        "linux_flavor_specific_chromium_gtests",
-    ],
-)
-
-targets.legacy_compound_suite(
     name = "chromium_linux_cast_video_gtests",
     basic_suites = [
         "cast_audio_specific_chromium_gtests",

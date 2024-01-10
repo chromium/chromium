@@ -201,13 +201,6 @@ gn_args.config(
 )
 
 gn_args.config(
-    name = "cast_audio",
-    args = {
-        "is_cast_audio_only": True,
-    },
-)
-
-gn_args.config(
     name = "cast_os",
     args = {
         "is_castos": True,

@@ -29,7 +29,6 @@ exempted_from_description_builders = {
         "CFI Linux CF",
         "CFI Linux ToT",
         "Cast Android (dbg)",
-        "Cast Audio Linux",
         "Cast Linux ARM64",
         "Cast Linux Debug",
         "Cast Linux",

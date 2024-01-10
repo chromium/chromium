@@ -4718,18 +4718,6 @@
     'name': 'chromium.linux',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
-      'Cast Audio Linux': {
-        'mixins': [
-          'linux-jammy',
-        ],
-        'additional_compile_targets': [
-          'cast_shell',
-          'cast_test_lists',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_linux_cast_audio_gtests',
-        },
-      },
       'Cast Linux': {
         'mixins': [
           'linux-jammy',

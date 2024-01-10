@@ -5958,12 +5958,6 @@
       'vulkan_swiftshader_isolated_scripts',
     ],
 
-    'chromium_linux_cast_audio_gtests': [
-      'cast_audio_specific_chromium_gtests',
-      'chromium_gtests',
-      'linux_flavor_specific_chromium_gtests',
-    ],
-
     'chromium_linux_cast_video_gtests': [
       'cast_audio_specific_chromium_gtests',
       'cast_video_specific_chromium_gtests',
