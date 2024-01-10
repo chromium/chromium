@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Tab resumption module dimens -->
+    <dimen name="tab_resumption_module_padding_top">16dp</dimen>
+    <dimen name="tab_resumption_module_padding_bottom">11dp</dimen>
+    <dimen name="tab_resumption_module_padding_lateral">11dp</dimen>
+</resources>
