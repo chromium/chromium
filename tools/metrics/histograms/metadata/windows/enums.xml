@@ -26,11 +26,6 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<enum name="BooleanWin11MenuStyle">
-  <int value="0" label="Prior to Win11 Style"/>
-  <int value="1" label="Win11 Style"/>
-</enum>
-
 <enum name="IsPinnedToTaskbarResult">
   <int value="0" label="Not pinned"/>
   <int value="1" label="Pinned"/>

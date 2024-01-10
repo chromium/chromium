@@ -151,16 +151,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Windows.Menu.Win11Style" enum="BooleanWin11MenuStyle"
-    expires_after="M97">
-  <owner>kylixrd@chromium.org</owner>
-  <owner>robliao@chromium.org</owner>
-  <summary>
-    Indicates whether Windows 11 style menus are used. Recorded on menu
-    configuration initialization.
-  </summary>
-</histogram>
-
 <histogram name="Windows.ParallelDllLoadingEnabled" enum="BooleanEnabled"
     expires_after="never">
 <!-- expires-never: Needed to measure third party incompatibilities on Windows which could happen at any time. -->
