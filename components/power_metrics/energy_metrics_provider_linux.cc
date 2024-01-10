@@ -9,6 +9,7 @@
 
 #include <array>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
@@ -115,9 +116,9 @@ EnergyMetricsProviderLinux::CaptureMetrics() {
   EnergyMetrics energy_metrics = {0};
   for (const auto& event : events_) {
     uint64_t absolute_energy;
-    if (!base::ReadFromFD(event.fd.get(),
-                          reinterpret_cast<char*>(&absolute_energy),
-                          sizeof(absolute_energy))) {
+    if (!base::ReadFromFD(
+            event.fd.get(),
+            base::as_writable_chars(base::make_span(&absolute_energy, 1u)))) {
       LOG(ERROR) << "Failed to read absolute energy of " << event.metric_type;
       continue;
     }
