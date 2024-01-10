@@ -13,6 +13,13 @@ namespace enterprise_connectors {
 // service provider and/or policy configuration.
 BASE_DECLARE_FEATURE(kLocalContentAnalysisEnabled);
 
+// Controls whether the custom message per rule feature is enabled or not. Does
+// not affect interstitials custom message per rule feature.
+BASE_DECLARE_FEATURE(kDialogCustomRuleMessageEnabled);
+
+// Return true if custom rule message is enabled.
+bool IsDialogCustomRuleMessageEnabled();
+
 }  // namespace enterprise_connectors
 
 #endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_CONTENT_ANALYSIS_FEATURES_H_
