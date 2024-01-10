@@ -10,6 +10,7 @@ import static junit.framework.Assert.assertFalse;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -21,7 +22,9 @@ import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
@@ -39,6 +42,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.widget.ImageViewCompat;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -78,6 +82,7 @@ public class OptionalButtonViewTest {
     private Callback<Transition> mMockBeginDelayedTransition;
     private ViewGroup mMockTransitionRoot;
     private ListMenuButton mButton;
+    private ImageView mAnimationView;
 
     @Before
     public void setUp() {
@@ -113,6 +118,7 @@ public class OptionalButtonViewTest {
         mOptionalButtonView.setFakeBeginDelayedTransitionForTesting(mMockBeginDelayedTransition);
 
         mInnerButton = (ImageButton) mOptionalButtonView.getButtonView();
+        mAnimationView = mOptionalButtonView.getAnimationViewForTesting();
         mActionChipLabel = mOptionalButtonView.findViewById(R.id.action_chip_label);
         mButtonBackground =
                 mOptionalButtonView.findViewById(R.id.swappable_icon_secondary_background);
@@ -223,6 +229,31 @@ public class OptionalButtonViewTest {
                         0,
                         tooltipTextIdRes,
                         true);
+        ButtonDataImpl buttonData = new ButtonDataImpl();
+        buttonData.setButtonSpec(buttonSpec);
+        buttonData.setCanShow(true);
+        buttonData.setEnabled(true);
+
+        return buttonData;
+    }
+
+    private ButtonDataImpl getDataForButtonWithoutTint(Drawable iconDrawable) {
+        OnClickListener clickListener = mock(OnClickListener.class);
+        OnLongClickListener longClickListener = mock(OnLongClickListener.class);
+        String contentDescription = mActivity.getString(R.string.actionbar_share);
+
+        ButtonSpec buttonSpec =
+                new ButtonSpec(
+                        iconDrawable,
+                        clickListener,
+                        longClickListener,
+                        contentDescription,
+                        /* supportsTinting= */ false,
+                        null,
+                        /* buttonVariant= */ AdaptiveToolbarButtonVariant.UNKNOWN,
+                        /* actionChipLabelResId= */ Resources.ID_NULL,
+                        /* tooltipTextResId= */ Resources.ID_NULL,
+                        /* showHoverHighlight= */ false);
         ButtonDataImpl buttonData = new ButtonDataImpl();
         buttonData.setButtonSpec(buttonSpec);
         buttonData.setCanShow(true);
@@ -368,6 +399,83 @@ public class OptionalButtonViewTest {
         verifyNoMoreInteractions(
                 firstButtonData.getButtonSpec().getOnClickListener(),
                 firstButtonData.getButtonSpec().getOnLongClickListener());
+    }
+
+    @Test
+    public void testSetIconDrawableWithAnimation_swapIcons_withAndWithoutTint() {
+
+        // First button has an icon that supports tinting (e.g. new tab).
+        Drawable firstButtonIcon =
+                AppCompatResources.getDrawable(mActivity, R.drawable.star_outline_24dp);
+        ButtonData firstButtonDataWithTint = getDataForStaticNewTabIconButton(firstButtonIcon);
+
+        // Second button has an icon that doesn't support tinting (e.g. user profile pic).
+        Drawable secondButtonIcon =
+                AppCompatResources.getDrawable(mActivity, R.drawable.btn_star_filled);
+        ButtonData secondButtonDataWithoutTint = getDataForButtonWithoutTint(secondButtonIcon);
+
+        // This tint color comes from the current dynamic color or set by a website.
+        ColorStateList tintColor = ColorStateList.valueOf(Color.RED);
+        mOptionalButtonView.setColorStateList(tintColor);
+
+        // Transition from hidden to firstIcon.
+        mOptionalButtonView.updateButtonWithAnimation(firstButtonDataWithTint);
+
+        // Start transition, normally called by TransitionManager.
+        mOptionalButtonView.onTransitionStart(null);
+
+        // Record the drawable being animated and its tint color.
+        Drawable buttonDrawableWhileShowing = mInnerButton.getDrawable();
+        ColorStateList buttonTintWhileShowing = ImageViewCompat.getImageTintList(mInnerButton);
+
+        // Finish transition, normally called by TransitionManager.
+        mOptionalButtonView.onTransitionEnd(null);
+
+        // Record the button's drawable and tint color after the animation.
+        Drawable buttonDrawableAfterShowing = mInnerButton.getDrawable();
+        ColorStateList buttonTintAfterShowing = ImageViewCompat.getImageTintList(mInnerButton);
+
+        // Transition from the tinted button to the one that doesn't support tint.
+        mOptionalButtonView.updateButtonWithAnimation(secondButtonDataWithoutTint);
+
+        // Start transition, Normally called by TransitionManager.
+        mOptionalButtonView.onTransitionStart(null);
+
+        // During the swap animation we show both buttons at the same time, in this case
+        // mInnerButton is hiding the previous tinted icon, while mAnimationView is showing the new
+        // untinted icon.
+        // Record both drawables and their tints.
+        Drawable animationDrawableWhileSwapping = mAnimationView.getDrawable();
+        ColorStateList animationTintWhileSwapping =
+                ImageViewCompat.getImageTintList(mAnimationView);
+        Drawable buttonDrawableWhileSwapping = mInnerButton.getDrawable();
+        ColorStateList buttonTintWhileSwapping = ImageViewCompat.getImageTintList(mInnerButton);
+
+        // Finish transition, normally called by TransitionManager.
+        mOptionalButtonView.onTransitionEnd(null);
+
+        // After the animation only mInnerButton remains visible, it instantly changes its drawable
+        // and tint to the new icon.
+        Drawable buttonDrawableAfterSwapping = mInnerButton.getDrawable();
+        ColorStateList buttonTintAfterSwapping = ImageViewCompat.getImageTintList(mInnerButton);
+
+        // Verify that while the first button is appearing it is shown with tint.
+        assertEquals(firstButtonIcon, buttonDrawableWhileShowing);
+        assertEquals(tintColor, buttonTintWhileShowing);
+
+        // Verify that after the first button appeared it maintained its tint.
+        assertEquals(firstButtonIcon, buttonDrawableAfterShowing);
+        assertEquals(tintColor, buttonTintAfterShowing);
+
+        // Verify that while the second button replaced the first one each one had the correct tint.
+        assertEquals(secondButtonIcon, animationDrawableWhileSwapping);
+        assertNull(animationTintWhileSwapping);
+        assertEquals(firstButtonIcon, buttonDrawableWhileSwapping);
+        assertEquals(tintColor, buttonTintWhileSwapping);
+
+        // Verify that after swapping the second button remained untinted.
+        assertEquals(secondButtonIcon, buttonDrawableAfterSwapping);
+        assertNull(buttonTintAfterSwapping);
     }
 
     @Test
