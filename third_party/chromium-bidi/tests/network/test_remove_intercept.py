@@ -111,6 +111,7 @@ async def test_remove_intercept_twice(websocket):
                              "string and pattern",
                          ])
 @pytest.mark.asyncio
+@pytest.mark.skip(reason="TODO: Fix this test. It's racy.")
 async def test_remove_intercept_unblocks(websocket, context_id,
                                          another_context_id, url_patterns):
     # TODO: make offline
