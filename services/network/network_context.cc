@@ -2370,14 +2370,13 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
   network_delegate_ = network_delegate.get();
   builder.set_network_delegate(std::move(network_delegate));
 
-  // Decide which ProxyDelegate to create.
-  // TODO(crbug.com/1476881): clean up this logic.
-  if (params_->initial_custom_proxy_config &&
-      params_->initial_custom_proxy_config->rules
-          .restrict_to_network_service_proxy_allow_list) {
+  // Decide which ProxyDelegate to create. At most one of these will be the
+  // case for any given NetworkContext: either PrefetchProxy, handling its
+  // custom proxy configs, or IpProtection, using the proxy allowlist.
+  auto* nspal = network_service_->network_service_proxy_allow_list();
+  if (!params_->initial_custom_proxy_config && nspal->IsEnabled()) {
     std::unique_ptr<IpProtectionProxyDelegate> proxy_delegate =
-        std::make_unique<IpProtectionProxyDelegate>(
-            network_service_->network_service_proxy_allow_list());
+        std::make_unique<IpProtectionProxyDelegate>(nspal);
     if (params_->ip_protection_config_getter) {
       proxy_delegate->SetIpProtectionConfigCache(
           std::make_unique<IpProtectionConfigCacheImpl>(

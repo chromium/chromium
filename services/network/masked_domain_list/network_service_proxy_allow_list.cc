@@ -52,18 +52,6 @@ bool NetworkServiceProxyAllowList::IsPopulated() {
   return url_matcher_with_bypass_.IsPopulated();
 }
 
-// static
-mojom::CustomProxyConfigPtr
-NetworkServiceProxyAllowList::MakeIpProtectionCustomProxyConfig() {
-  auto custom_proxy_config = network::mojom::CustomProxyConfig::New();
-  // Indicate to the NetworkServiceProxyDelegate that this is for IP Protection
-  // and it should use the allow list. In this situation, the delegate does not
-  // use any other fields from the custom proxy config.
-  custom_proxy_config->rules.restrict_to_network_service_proxy_allow_list =
-      true;
-  return custom_proxy_config;
-}
-
 size_t NetworkServiceProxyAllowList::EstimateMemoryUsage() const {
   return base::trace_event::EstimateMemoryUsage(url_matcher_with_bypass_);
 }

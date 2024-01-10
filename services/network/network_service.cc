@@ -741,15 +741,6 @@ void NetworkService::SetSSLKeyLogFile(base::File file) {
 void NetworkService::CreateNetworkContext(
     mojo::PendingReceiver<mojom::NetworkContext> receiver,
     mojom::NetworkContextParamsPtr params) {
-  // If a custom proxy config is already set, the Masked Domain List proxy
-  // configs should not be used.
-  if (network_service_proxy_allow_list_->IsEnabled() &&
-      params->initial_custom_proxy_config.is_null() &&
-      !params->custom_proxy_config_client_receiver.is_valid()) {
-    params->initial_custom_proxy_config =
-        network_service_proxy_allow_list_->MakeIpProtectionCustomProxyConfig();
-  }
-
   owned_network_contexts_.emplace(std::make_unique<NetworkContext>(
       this, std::move(receiver), std::move(params),
       base::BindOnce(&NetworkService::OnNetworkContextConnectionClosed,

@@ -103,8 +103,6 @@ TEST_F(NetworkServiceProxyAllowListTest, IsEnabledWhenManuallySet) {
       network::mojom::IpProtectionProxyBypassPolicy::kNone);
 
   EXPECT_TRUE(allow_list.IsEnabled());
-  EXPECT_TRUE(allow_list.MakeIpProtectionCustomProxyConfig()
-                  ->rules.restrict_to_network_service_proxy_allow_list);
 }
 
 TEST_F(NetworkServiceProxyAllowListTest, AllowListIsNotPopulatedByDefault) {
