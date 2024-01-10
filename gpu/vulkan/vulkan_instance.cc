@@ -256,7 +256,6 @@ bool VulkanInstance::InitializeFromANGLE(
   vulkan_info_.used_api_version = api_version;
 
   auto extensions = gl::QueryVkInstanceExtensionsFromANGLE();
-  DCHECK(!extensions.empty());
 
   for (const auto& extension : extensions)
     vulkan_info_.enabled_instance_extensions.push_back(extension.data());
