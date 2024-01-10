@@ -24,6 +24,12 @@ enum SyncState {
 
 const TabOrganizationNotStartedElementBase = WebUiListenerMixin(PolymerElement);
 
+export interface TabOrganizationNotStartedElement {
+  $: {
+    header: HTMLElement,
+  };
+}
+
 // Not started state for the tab organization UI.
 export class TabOrganizationNotStartedElement extends
     TabOrganizationNotStartedElementBase {
@@ -58,6 +64,11 @@ export class TabOrganizationNotStartedElement extends
 
     this.syncBrowserProxy_.getSyncInfo().then(this.setSync_.bind(this));
     this.addWebUiListener('sync-info-changed', this.setSync_.bind(this));
+  }
+
+  announceHeader() {
+    this.$.header.textContent = '';
+    this.$.header.textContent = this.getTitle_();
   }
 
   private setAccount_(account: AccountInfo) {

@@ -52,7 +52,7 @@
 
 <div id="contents">
   <div id="body">
-    <tab-organization-not-started
+    <tab-organization-not-started id="notStarted"
         shown$="[[isState_(tabOrganizationStateEnum_.kNotStarted, state_)]]"
         on-sync-click="onSyncClick_"
         on-sign-in-click="onSignInClick_"
@@ -60,10 +60,10 @@
         on-organize-tabs-click="onOrganizeTabsClick_"
         show-fre="[[showFRE_]]">
     </tab-organization-not-started>
-    <tab-organization-in-progress
+    <tab-organization-in-progress id="inProgress"
         shown$="[[isState_(tabOrganizationStateEnum_.kInProgress, state_)]]">
     </tab-organization-in-progress>
-    <tab-organization-results
+    <tab-organization-results id="results"
         shown$="[[isState_(tabOrganizationStateEnum_.kSuccess, state_)]]"
         name="[[name_]]"
         tabs="[[tabs_]]"
@@ -75,7 +75,7 @@
         on-learn-more-click="onLearnMoreClick_"
         on-feedback="onFeedback_">
     </tab-organization-results>
-    <tab-organization-failure
+    <tab-organization-failure id="failure"
         shown$="[[isState_(tabOrganizationStateEnum_.kFailure, state_)]]"
         show-fre="[[showFRE_]]"
         error="[[error_]]"

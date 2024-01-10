@@ -13,13 +13,27 @@ import './tab_organization_results.js';
 import './tab_organization_shared_style.css.js';
 
 import {CrFeedbackOption} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
+import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {TabOrganizationFailureElement} from './tab_organization_failure.js';
+import {TabOrganizationInProgressElement} from './tab_organization_in_progress.js';
+import {TabOrganizationNotStartedElement} from './tab_organization_not_started.js';
 import {getTemplate} from './tab_organization_page.html.js';
+import {TabOrganizationResultsElement} from './tab_organization_results.js';
 import {Tab, TabOrganization, TabOrganizationError, TabOrganizationSession, TabOrganizationState, UserFeedback} from './tab_search.mojom-webui.js';
 import {TabSearchApiProxy, TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
+
+export interface TabOrganizationPageElement {
+  $: {
+    notStarted: TabOrganizationNotStartedElement,
+    inProgress: TabOrganizationInProgressElement,
+    results: TabOrganizationResultsElement,
+    failure: TabOrganizationFailureElement,
+  };
+}
 
 export class TabOrganizationPageElement extends PolymerElement {
   static get is() {
@@ -133,7 +147,8 @@ export class TabOrganizationPageElement extends PolymerElement {
   }
 
   private setState_(state: TabOrganizationState) {
-    this.classList.toggle('changed-state', this.state_ !== state);
+    const changedState = this.state_ !== state;
+    this.classList.toggle('changed-state', changedState);
     this.classList.toggle(
         'from-not-started', this.state_ === TabOrganizationState.kNotStarted);
     this.classList.toggle(
@@ -143,6 +158,25 @@ export class TabOrganizationPageElement extends PolymerElement {
     this.classList.toggle(
         'from-failure', this.state_ === TabOrganizationState.kFailure);
     this.state_ = state;
+    if (!changedState) {
+      return;
+    }
+    switch (state) {
+      case TabOrganizationState.kNotStarted:
+        this.$.notStarted.announceHeader();
+        break;
+      case TabOrganizationState.kInProgress:
+        this.$.inProgress.announceHeader();
+        break;
+      case TabOrganizationState.kSuccess:
+        this.$.results.announceHeader();
+        break;
+      case TabOrganizationState.kFailure:
+        this.$.failure.announceHeader();
+        break;
+      default:
+        assertNotReached('Invalid tab organization state');
+    }
   }
 
   private isState_(state: TabOrganizationState): boolean {

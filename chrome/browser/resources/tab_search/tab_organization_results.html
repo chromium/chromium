@@ -74,7 +74,12 @@
 </style>
 
 <div class="tab-organization-container">
-  <div class="tab-organization-header">$i18n{successTitle}</div>
+  <div id="header"
+      class="tab-organization-header"
+      aria-live="polite"
+      aria-relevant="all">
+    [[getTitle_()]]
+  </div>
   <div class="results">
     <div id="scrollable">
       <cr-input id="input" type="text" value="{{name}}"

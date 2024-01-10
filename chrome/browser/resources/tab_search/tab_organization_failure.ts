@@ -11,6 +11,12 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {getTemplate} from './tab_organization_failure.html.js';
 import {TabOrganizationError} from './tab_search.mojom-webui.js';
 
+export interface TabOrganizationFailureElement {
+  $: {
+    header: HTMLElement,
+  };
+}
+
 // Failure state for the tab organization UI.
 export class TabOrganizationFailureElement extends PolymerElement {
   static get is() {
@@ -29,6 +35,11 @@ export class TabOrganizationFailureElement extends PolymerElement {
 
   static get template() {
     return getTemplate();
+  }
+
+  announceHeader() {
+    this.$.header.textContent = '';
+    this.$.header.textContent = this.getTitle_();
   }
 
   private getTitle_(): string {
