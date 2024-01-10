@@ -43,6 +43,14 @@ def AddCommonArguments(parser: argparse.ArgumentParser) -> None:
                       help='Automatically modify or split semi-stale '
                       'expectations so they only apply to configurations that '
                       'actually need them.')
+  parser.add_argument('--no-auto-close-bugs',
+                      dest='auto_close_bugs',
+                      action='store_false',
+                      default=True,
+                      help='Disables automatic closing of bugs that no longer '
+                      'have active expectations once the generated CL lands. '
+                      'If set, a comment will be posted to the bug when all '
+                      'active expectations are gone instead.')
   parser.add_argument('-v',
                       '--verbose',
                       action='count',
