@@ -15,6 +15,8 @@ source_set("magic_stack") {
     "most_visited_tiles_config.mm",
     "placeholder_config.h",
     "placeholder_config.mm",
+    "shortcuts_config.h",
+    "shortcuts_config.mm",
   ]
   deps = [
     "//ios/chrome/app/strings",

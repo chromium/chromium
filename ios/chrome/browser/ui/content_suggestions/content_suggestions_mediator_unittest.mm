@@ -468,7 +468,7 @@ TEST_F(ContentSuggestionsMediatorTest, TestMagicStackConsumerCall) {
   scoped_feature_list_.InitWithFeatures({kMagicStack}, {});
   OCMExpect([consumer_ setMagicStackOrder:[OCMArg any]]);
   OCMExpect([consumer_ showSetUpListWithItems:[OCMArg any]]);
-  OCMExpect([consumer_ setShortcutTilesWithConfigs:[OCMArg any]]);
+  OCMExpect([consumer_ setShortcutTilesConfig:[OCMArg any]]);
   [consumer_ setExpectationOrderMatters:YES];
   mediator_.consumer = consumer_;
   EXPECT_OCMOCK_VERIFY(consumer_);

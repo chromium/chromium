@@ -63,7 +63,6 @@ ContentSuggestionsMostVisitedItem* ConvertNTPTile(
   suggestion.URL = tile.url;
   suggestion.source = tile.source;
   suggestion.titleSource = tile.title_source;
-  suggestion.accessibilityTraits = UIAccessibilityTraitButton;
 
   return suggestion;
 }

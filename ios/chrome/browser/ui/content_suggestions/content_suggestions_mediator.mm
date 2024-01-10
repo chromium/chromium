@@ -93,6 +93,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_tile_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_return_to_recent_tab_item.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_shortcut_tile_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/parcel_tracking_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/query_suggestion_view.h"
@@ -104,6 +105,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_tile_saver.h"
 #import "ios/chrome/browser/ui/content_suggestions/identifier/content_suggestions_section_information.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/most_visited_tiles_config.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/shortcuts_config.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_prefs.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_state.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/utils.h"
@@ -187,9 +189,6 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 // Whether the suggestions have been disabled by a policy.
 @property(nonatomic, assign)
     const PrefService::Preference* contentSuggestionsPolicyEnabled;
-
-@property(nonatomic, strong)
-    NSArray<ContentSuggestionsMostVisitedActionItem*>* actionButtonItems;
 // Most visited items from the MostVisitedSites service (copied upon receiving
 // the callback). Those items are up to date with the model.
 @property(nonatomic, strong)
@@ -275,6 +274,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   std::map<GURL, FaviconCompletionHandler> _mostVisitedFetchFaviconCallbacks;
   // Most visited items from the MostVisitedSites service currently displayed.
   MostVisitedTilesConfig* _mostVisitedConfig;
+  ShortcutsConfig* _shortcutsConfig;
 }
 
 #pragma mark - Public
@@ -1152,7 +1152,10 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   // 2) The Set Up List and Magic Stack are not enabled (Set Up List replaced
   // Shortcuts).
   if ((IsMagicStackEnabled() || ![self shouldShowSetUpList])) {
-    [self.consumer setShortcutTilesWithConfigs:self.actionButtonItems];
+    _shortcutsConfig = [[ShortcutsConfig alloc] init];
+    _shortcutsConfig.shortcutItems = [self shortcutItems];
+    _shortcutsConfig.commandHandler = self;
+    [self.consumer setShortcutTilesConfig:_shortcutsConfig];
   }
 
   if (IsSafetyCheckMagicStackEnabled() &&
@@ -1838,23 +1841,25 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
                     atIndex:mostVisitedView.config.index];
 }
 
+- (void)shortcutsTapped:(UIGestureRecognizer*)sender {
+  ContentSuggestionsShortcutTileView* shortcutView =
+      static_cast<ContentSuggestionsShortcutTileView*>(sender.view);
+  int index = static_cast<int>(shortcutView.config.index);
+  [self openMostVisitedItem:shortcutView.config atIndex:index];
+}
+
 #pragma mark - Properties
 
-- (NSArray<ContentSuggestionsMostVisitedActionItem*>*)actionButtonItems {
-  if (!_actionButtonItems) {
-    self.readingListItem = ReadingListActionItem();
-    self.readingListItem.count = self.readingListUnreadCount;
-    self.readingListItem.disabled = !self.readingListModelIsLoaded;
-    _actionButtonItems = @[
-      [self shouldShowWhatsNewActionItem] ? WhatsNewActionItem()
-                                          : BookmarkActionItem(),
-      self.readingListItem, RecentTabsActionItem(), HistoryActionItem()
-    ];
-    for (ContentSuggestionsMostVisitedActionItem* item in _actionButtonItems) {
-      item.accessibilityTraits = UIAccessibilityTraitButton;
-    }
-  }
-  return _actionButtonItems;
+- (NSArray<ContentSuggestionsMostVisitedActionItem*>*)shortcutItems {
+  self.readingListItem = ReadingListActionItem();
+  self.readingListItem.count = self.readingListUnreadCount;
+  self.readingListItem.disabled = !self.readingListModelIsLoaded;
+  NSArray<ContentSuggestionsMostVisitedActionItem*>* shortcuts = @[
+    [self shouldShowWhatsNewActionItem] ? WhatsNewActionItem()
+                                        : BookmarkActionItem(),
+    self.readingListItem, RecentTabsActionItem(), HistoryActionItem()
+  ];
+  return shortcuts;
 }
 
 - (void)setCommandHandler:
@@ -1974,9 +1979,8 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   self.readingListUnreadCount = model->unread_size();
   self.readingListModelIsLoaded = model->loaded();
   if (self.readingListItem) {
-    self.readingListItem.count = self.readingListUnreadCount;
-    self.readingListItem.disabled = !self.readingListModelIsLoaded;
-    [self.consumer updateShortcutTileConfig:self.readingListItem];
+    _shortcutsConfig.shortcutItems = [self shortcutItems];
+    [self.consumer setShortcutTilesConfig:_shortcutsConfig];
   }
 }
 

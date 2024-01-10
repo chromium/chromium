@@ -64,7 +64,8 @@ const CGFloat kIconSize = 56;
     // When in the Magic Stack, a smaller preferred font is desired.
     self.titleLabel.font = [self titleLabelFont];
   }
-  self.accessibilityTraits = config.accessibilityTraits;
+  self.accessibilityTraits =
+      UIAccessibilityTraitButton | config.accessibilityTraits;
   self.accessibilityLabel = config.accessibilityLabel.length
                                 ? config.accessibilityLabel
                                 : config.title;

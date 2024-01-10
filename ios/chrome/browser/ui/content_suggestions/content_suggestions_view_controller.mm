@@ -46,6 +46,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module_container_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/most_visited_tiles_config.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/placeholder_config.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/shortcuts_config.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_state.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_view.h"
@@ -506,30 +507,34 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   }
 }
 
-- (void)setShortcutTilesWithConfigs:
-    (NSArray<ContentSuggestionsMostVisitedActionItem*>*)configs {
-  if (!self.shortcutsViews) {
-    self.shortcutsViews = [NSMutableArray array];
-  }
-  // Assumes this only called before viewDidLoad, so there is no need to add the
-  // views into the view hierarchy here.
-  for (ContentSuggestionsMostVisitedActionItem* item in configs) {
-    ContentSuggestionsShortcutTileView* view =
-        [[ContentSuggestionsShortcutTileView alloc] initWithConfiguration:item];
-    [self.shortcutsViews addObject:view];
-  }
-
-  self.shortcutsStackView = [self createShortcutsStackView];
+- (void)setShortcutTilesConfig:(ShortcutsConfig*)config {
   if (IsMagicStackEnabled()) {
-    self.shortcutsModuleContainer = [[MagicStackModuleContainer alloc]
-        initWithContentView:self.shortcutsStackView
-                       type:ContentSuggestionsModuleType::kShortcuts
-                   delegate:self];
+    if (self.shortcutsModuleContainer) {
+      [self.shortcutsModuleContainer removeFromSuperview];
+    }
+    self.shortcutsModuleContainer =
+        [[MagicStackModuleContainer alloc] initWithFrame:CGRectZero];
+    [self.shortcutsModuleContainer configureWithConfig:config];
     if ([self hasMagicStackLoaded]) {
       [self insertModuleIntoMagicStack:self.shortcutsModuleContainer];
       [self logTopModuleImpressionForType:ContentSuggestionsModuleType::
                                               kShortcuts];
     }
+  } else {
+    if (!self.shortcutsViews) {
+      self.shortcutsViews = [NSMutableArray array];
+    }
+    // Assumes this only called before viewDidLoad, so there is no need to add
+    // the views into the view hierarchy here.
+    for (ContentSuggestionsMostVisitedActionItem* item in config
+             .shortcutItems) {
+      ContentSuggestionsShortcutTileView* view =
+          [[ContentSuggestionsShortcutTileView alloc]
+              initWithConfiguration:item];
+      [self.shortcutsViews addObject:view];
+    }
+
+    self.shortcutsStackView = [self createShortcutsStackView];
   }
 }
 

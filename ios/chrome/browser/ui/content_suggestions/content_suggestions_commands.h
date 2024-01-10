@@ -19,6 +19,8 @@ class GURL;
 // Indicates to the receiver that a Most Visited tile `sender` was tapped.
 - (void)mostVisitedTileTapped:(UIGestureRecognizer*)sender;
 
+- (void)shortcutsTapped:(UIGestureRecognizer*)sender;
+
 // Handles the actions tapping the "Return to Recent Tab" item that returns the
 // user to the last opened tab.
 - (void)openMostRecentTab;

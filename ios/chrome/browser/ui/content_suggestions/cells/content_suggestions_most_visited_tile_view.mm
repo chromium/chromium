@@ -99,6 +99,7 @@
       [_faviconView configureWithAttributes:config.attributes];
       _commandHandler = config.commandHandler;
       self.isAccessibilityElement = YES;
+      self.accessibilityTraits = UIAccessibilityTraitButton;
       self.accessibilityCustomActions = [self customActions];
       [self addInteraction:[[UIContextMenuInteraction alloc]
                                initWithDelegate:self]];

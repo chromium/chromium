@@ -7,11 +7,13 @@
 #import "base/notreached.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_tile_view.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_shortcut_tile_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_layout_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_image_data_source.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/most_visited_tiles_config.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/shortcuts_config.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "url/gurl.h"
@@ -29,6 +31,13 @@
                                  tileSpacing:
                                      ContentSuggestionsTilesHorizontalSpacing(
                                          traitCollection)];
+    }
+    case ContentSuggestionsModuleType::kShortcuts: {
+      ShortcutsConfig* shortcutsConfig = static_cast<ShortcutsConfig*>(config);
+      return [self
+          shortcutsStackViewForConfig:shortcutsConfig
+                          tileSpacing:ContentSuggestionsTilesHorizontalSpacing(
+                                          traitCollection)];
     }
     default:
       NOTREACHED_NORETURN();
@@ -82,6 +91,37 @@
   }
 
   return mostVisitedStackView;
+}
+
+- (UIView*)shortcutsStackViewForConfig:(ShortcutsConfig*)shortcutsConfig
+                           tileSpacing:(CGFloat)spacing {
+  NSMutableArray* shortcutsViews = [NSMutableArray array];
+  for (ContentSuggestionsMostVisitedActionItem* item in shortcutsConfig
+           .shortcutItems) {
+    ContentSuggestionsShortcutTileView* view =
+        [[ContentSuggestionsShortcutTileView alloc] initWithConfiguration:item];
+    [shortcutsViews addObject:view];
+  }
+  UIStackView* shortcutsStackView = [[UIStackView alloc] init];
+  shortcutsStackView.axis = UILayoutConstraintAxisHorizontal;
+  shortcutsStackView.distribution = UIStackViewDistributionFillEqually;
+  shortcutsStackView.spacing = spacing;
+  shortcutsStackView.alignment = UIStackViewAlignmentTop;
+  NSUInteger index = 0;
+  for (ContentSuggestionsShortcutTileView* view in shortcutsViews) {
+    view.accessibilityIdentifier = [NSString
+        stringWithFormat:
+            @"%@%li", kContentSuggestionsShortcutsAccessibilityIdentifierPrefix,
+            index];
+    UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]
+        initWithTarget:shortcutsConfig.commandHandler
+                action:@selector(shortcutsTapped:)];
+    [view addGestureRecognizer:tapRecognizer];
+    view.tapRecognizer = tapRecognizer;
+    [shortcutsStackView addArrangedSubview:view];
+    index++;
+  }
+  return shortcutsStackView;
 }
 
 @end
