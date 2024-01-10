@@ -1140,9 +1140,12 @@ BidderWorklet::V8State::GenerateSingleBid(
 
   bool reused_context = false;
   bool should_deep_freeze = false;
-  // See if we can reuse an existing context.
+  std::string_view execution_mode_string;
+  // See if we can reuse an existing context, and determine string to use for
+  // `executionMode`.
   switch (bidder_worklet_non_shared_params.execution_mode) {
     case blink::mojom::InterestGroup::ExecutionMode::kGroupedByOriginMode:
+      execution_mode_string = "group-by-origin";
       if (context_recycler_for_origin_group_mode_ &&
           join_origin_for_origin_group_mode_ == interest_group_join_origin) {
         context_recycler = context_recycler_for_origin_group_mode_.get();
@@ -1150,6 +1153,7 @@ BidderWorklet::V8State::GenerateSingleBid(
       }
       break;
     case blink::mojom::InterestGroup::ExecutionMode::kFrozenContext:
+      execution_mode_string = "frozen-context";
       should_deep_freeze = true;
       if (context_recycler_for_frozen_context_) {
         context_recycler = context_recycler_for_frozen_context_.get();
@@ -1157,8 +1161,10 @@ BidderWorklet::V8State::GenerateSingleBid(
       }
       break;
     case blink::mojom::InterestGroup::ExecutionMode::kCompatibilityMode:
+      execution_mode_string = "compatibility";
       break;
   }
+  DCHECK(!execution_mode_string.empty());
 
   base::UmaHistogramBoolean("Ads.InterestGroup.Auction.ContextReused",
                             reused_context);
@@ -1266,6 +1272,7 @@ BidderWorklet::V8State::GenerateSingleBid(
       (trusted_bidding_signals_url_ &&
        !SetTrustedBiddingSignalsUrl(isolate, interest_group_object,
                                     trusted_bidding_signals_url_->spec())) ||
+      !interest_group_dict.Set("executionMode", execution_mode_string) ||
       !interest_group_dict.Set(
           "trustedBiddingSignalsSlotSizeMode",
           blink::InterestGroup::TrustedBiddingSignalsSlotSizeModeToString(

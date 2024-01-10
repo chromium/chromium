@@ -165,38 +165,35 @@ makeTest({
   interestGroupOverrides: { enableBiddingSignalsPrioritization: true }
 });
 
-// TODO:  These violate spec. Fix, and update tests.
 makeTest({
   name: 'InterestGroup.executionMode not present.',
   fieldName: 'executionMode',
-  fieldValue: undefined
+  fieldValue: 'compatibility',
+  interestGroupOverrides: { executionMode: undefined }
 });
 
 makeTest({
   name: 'InterestGroup.executionMode compatibility.',
   fieldName: 'executionMode',
-  fieldValue: undefined,
-  interestGroupOverrides: { executionMode: 'compatibility' }
+  fieldValue: 'compatibility'
 });
 
 makeTest({
   name: 'InterestGroup.executionMode frozen-context.',
   fieldName: 'executionMode',
-  fieldValue: undefined,
-  interestGroupOverrides: { executionMode: 'frozen-context' }
+  fieldValue: 'frozen-context'
 });
 
 makeTest({
   name: 'InterestGroup.executionMode group-by-origin.',
   fieldName: 'executionMode',
-  fieldValue: undefined,
-  interestGroupOverrides: { executionMode: 'group-by-origin' }
+  fieldValue: 'group-by-origin'
 });
 
 makeTest({
   name: 'InterestGroup.executionMode has non-standard string.',
   fieldName: 'executionMode',
-  fieldValue: undefined,
+  fieldValue: 'compatibility',
   interestGroupOverrides: { executionMode: 'foo' }
 });
 
