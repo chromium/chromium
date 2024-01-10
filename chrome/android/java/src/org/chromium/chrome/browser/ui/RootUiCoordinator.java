@@ -911,7 +911,11 @@ public class RootUiCoordinator
                         }
                     };
             mToolbarManager.setReadAloudReadabilitySupplier(controller.getReadabilitySupplier());
-            mContextualSearchManagerSupplier.get().addObserver(mReadAloudContextualSearchObserver);
+            if (mContextualSearchManagerSupplier.get() != null) {
+                mContextualSearchManagerSupplier
+                        .get()
+                        .addObserver(mReadAloudContextualSearchObserver);
+            }
         }
     }
 
