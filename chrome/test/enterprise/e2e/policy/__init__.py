@@ -18,6 +18,7 @@ from .mergelist.mergelist import *
 from .password_manager_enabled.password_manager_enabled import *
 from .popups_allowed.popups_allowed import *
 from .precedence.precedence import *
+from .encrypted_reporting.report_cbcm_events import *
 from .restore_on_startup.restore_on_startup import *
 # Disable safe_browsing test due to chrome://downloads shadow DOM issue http://b/298889715
 # from .safe_browsing.safe_browsing import *
