@@ -15,6 +15,8 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_view_views_test_api.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/autofill/core/browser/filling_product.h"
+#include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -78,7 +80,15 @@ class PopupViewViewsBrowsertestBase
     PopupPixelTest::TearDownOnMainThread();
   }
 
-  void PrepareSuggestions(std::vector<Suggestion> suggestions) {
+  // TODO(b/316859406): Remove popup type parameter.
+  void PrepareSuggestions(std::vector<Suggestion> suggestions,
+                          PopupType popup_type) {
+    ON_CALL(controller(), GetMainFillingProduct())
+        .WillByDefault([&c = controller()] {
+          return GetFillingProductFromPopupItemId(
+              c.GetSuggestionAt(0).popup_item_id);
+        });
+    ON_CALL(controller(), GetPopupType()).WillByDefault(Return(popup_type));
     controller().set_suggestions(std::move(suggestions));
   }
 
@@ -131,18 +141,18 @@ class PopupViewViewsBrowsertest : public PopupViewViewsBrowsertestBase {
 };
 
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, InvokeUi_Autocomplete) {
-  PrepareSuggestions(CreateAutocompleteSuggestions());
+  PrepareSuggestions(CreateAutocompleteSuggestions(), PopupType::kAutocomplete);
   ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, InvokeUi_Autofill_Profile) {
-  PrepareSuggestions(CreateAutofillProfileSuggestions());
+  PrepareSuggestions(CreateAutofillProfileSuggestions(), PopupType::kAddresses);
   ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
                        InvokeUi_Autofill_Profile_Selected_Profile) {
-  PrepareSuggestions(CreateAutofillProfileSuggestions());
+  PrepareSuggestions(CreateAutofillProfileSuggestions(), PopupType::kAddresses);
   PrepareSelectedCell(CellIndex{0, CellType::kContent});
   ShowAndVerifyUi();
 }
@@ -152,7 +162,7 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
   std::vector<Suggestion> suggestions = CreateAutofillProfileSuggestions();
   suggestions[0].children = CreateAutofillProfileSuggestions();
 
-  PrepareSuggestions(std::move(suggestions));
+  PrepareSuggestions(std::move(suggestions), PopupType::kAddresses);
   PrepareSelectedCell(CellIndex{0, CellType::kContent});
   ShowAndVerifyUi();
 }
@@ -162,14 +172,14 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
   std::vector<Suggestion> suggestions = CreateAutofillProfileSuggestions();
   suggestions[0].children = CreateAutofillProfileSuggestions();
 
-  PrepareSuggestions(std::move(suggestions));
+  PrepareSuggestions(std::move(suggestions), PopupType::kAddresses);
   PrepareSelectedCell(CellIndex{0, CellType::kControl});
   ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
                        InvokeUi_Autofill_Profile_Selected_Footer) {
-  PrepareSuggestions(CreateAutofillProfileSuggestions());
+  PrepareSuggestions(CreateAutofillProfileSuggestions(), PopupType::kAddresses);
   PrepareSelectedCell(CellIndex{3, CellType::kContent});
   ShowAndVerifyUi();
 }
@@ -183,7 +193,7 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
       {Suggestion::Text(u"Fill full address"), Suggestion::Text(u"Alex Park")}};
   Suggestion suggestion("Google", std::move(labels), Suggestion::Icon::kAccount,
                         PopupItemId::kAddressEntry);
-  PrepareSuggestions({suggestion});
+  PrepareSuggestions({suggestion}, PopupType::kAddresses);
   ShowAndVerifyUi();
 }
 
@@ -220,7 +230,7 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
   settings.trailing_icon = Suggestion::Icon::kGooglePasswordManager;
   suggestions.push_back(std::move(settings));
 
-  PrepareSuggestions(std::move(suggestions));
+  PrepareSuggestions(std::move(suggestions), PopupType::kPasswords);
   ShowAndVerifyUi();
 }
 
@@ -229,7 +239,7 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
   Suggestion warning(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_WARNING_INSECURE_CONNECTION));
   warning.popup_item_id = PopupItemId::kInsecureContextPaymentDisabledMessage;
-  PrepareSuggestions({std::move(warning)});
+  PrepareSuggestions({std::move(warning)}, PopupType::kUnspecified);
   ShowAndVerifyUi();
 }
 
@@ -274,20 +284,20 @@ class PopupViewViewsBrowsertestShowAutocompleteDeleteButton
 
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertestShowAutocompleteDeleteButton,
                        InvokeUi_Autocomplete) {
-  PrepareSuggestions(CreateAutocompleteSuggestions());
+  PrepareSuggestions(CreateAutocompleteSuggestions(), PopupType::kAutocomplete);
   ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertestShowAutocompleteDeleteButton,
                        InvokeUi_AutocompleteWith_Selected_Content) {
-  PrepareSuggestions(CreateAutocompleteSuggestions());
+  PrepareSuggestions(CreateAutocompleteSuggestions(), PopupType::kAutocomplete);
   PrepareSelectedCell(CellIndex{1, CellType::kContent});
   ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertestShowAutocompleteDeleteButton,
                        InvokeUi_Autofill_Profile_Selected_Profile) {
-  PrepareSuggestions(CreateAutofillProfileSuggestions());
+  PrepareSuggestions(CreateAutofillProfileSuggestions(), PopupType::kAddresses);
   PrepareSelectedCell(CellIndex{0, CellType::kContent});
   ShowAndVerifyUi();
 }
