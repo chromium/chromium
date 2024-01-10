@@ -166,13 +166,11 @@ void SocketDataPump::SendMore() {
     ShutdownSend();
     return;
   }
-  const int num_bytes = static_cast<int>(pending_send_buffer_->size());
-  scoped_refptr<net::IOBuffer> buf = base::MakeRefCounted<net::WrappedIOBuffer>(
-      pending_send_buffer_->buffer(), num_bytes);
+  auto buf = base::MakeRefCounted<net::WrappedIOBuffer>(*pending_send_buffer_);
 
   // Use WeakPtr here because |this| doesn't outlive |socket_|.
   int write_result =
-      socket_->Write(buf.get(), num_bytes,
+      socket_->Write(buf.get(), buf->size(),
                      base::BindOnce(&SocketDataPump::OnNetworkWriteCompleted,
                                     weak_factory_.GetWeakPtr()),
                      traffic_annotation_);

@@ -48,7 +48,7 @@ class ServiceWorkerNewScriptLoader::WrappedIOBuffer
     : public net::WrappedIOBuffer {
  public:
   WrappedIOBuffer(const char* data, size_t size)
-      : net::WrappedIOBuffer(data, size) {}
+      : net::WrappedIOBuffer(base::make_span(data, size)) {}
 
  private:
   ~WrappedIOBuffer() override = default;

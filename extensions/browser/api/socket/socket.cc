@@ -54,10 +54,11 @@ void Socket::WriteData() {
 
   DCHECK(request.byte_count >= request.bytes_written);
   io_buffer_write_ = base::MakeRefCounted<net::WrappedIOBuffer>(
-      request.io_buffer->data() + request.bytes_written,
-      request.byte_count - request.bytes_written);
+      base::make_span(request.io_buffer->data(),
+                      static_cast<size_t>(request.byte_count))
+          .subspan(request.bytes_written));
   int result = WriteImpl(
-      io_buffer_write_.get(), request.byte_count - request.bytes_written,
+      io_buffer_write_.get(), io_buffer_write_->size(),
       base::BindOnce(&Socket::OnWriteComplete, base::Unretained(this)));
 
   if (result != net::ERR_IO_PENDING)

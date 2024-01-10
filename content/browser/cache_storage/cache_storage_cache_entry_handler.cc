@@ -140,8 +140,7 @@ class EntryReaderImpl : public storage::mojom::BlobDataItemReader {
     // to the BigBuffer without a copy.
     int length = blob_entry_->GetSize(side_data_disk_cache_index_);
     mojo_base::BigBuffer output_buf(static_cast<size_t>(length));
-    auto wrapped_buf = base::MakeRefCounted<net::WrappedIOBuffer>(
-        reinterpret_cast<char*>(output_buf.data()), output_buf.size());
+    auto wrapped_buf = base::MakeRefCounted<net::WrappedIOBuffer>(output_buf);
 
     auto split_callback = base::SplitOnceCallback(base::BindOnce(
         [](mojo_base::BigBuffer output_buf, ReadSideDataCallback callback,

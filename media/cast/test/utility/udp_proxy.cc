@@ -720,8 +720,7 @@ class UDPProxyImpl final : public UDPProxy {
     VLOG(1) << "Sending packet, len = " << packet->size();
     // We ignore all problems, callbacks and errors.
     // If it didn't work we just drop the packet at and call it a day.
-    auto buf = base::MakeRefCounted<net::WrappedIOBuffer>(
-        reinterpret_cast<char*>(&packet->front()), packet->size());
+    auto buf = base::MakeRefCounted<net::WrappedIOBuffer>(*packet);
     size_t buf_size = packet->size();
     int result;
     if (destination.address().empty()) {
@@ -804,8 +803,7 @@ class UDPProxyImpl final : public UDPProxy {
   void PollRead() {
     while (true) {
       packet_ = std::make_unique<Packet>(kMaxPacketSize);
-      auto recv_buf = base::MakeRefCounted<net::WrappedIOBuffer>(
-          reinterpret_cast<char*>(&packet_->front()), packet_->size());
+      auto recv_buf = base::MakeRefCounted<net::WrappedIOBuffer>(*packet_);
       int len =
           socket_->RecvFrom(recv_buf.get(), kMaxPacketSize, &recv_address_,
                             base::BindOnce(&UDPProxyImpl::ReadCallback,

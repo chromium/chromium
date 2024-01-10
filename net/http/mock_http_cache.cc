@@ -765,8 +765,7 @@ bool MockHttpCache::WriteResponseInfo(disk_cache::Entry* disk_entry,
 
   TestCompletionCallback cb;
   int len = static_cast<int>(pickle.size());
-  scoped_refptr<WrappedIOBuffer> data = base::MakeRefCounted<WrappedIOBuffer>(
-      reinterpret_cast<const char*>(pickle.data()), len);
+  auto data = base::MakeRefCounted<WrappedIOBuffer>(pickle);
 
   int rv = disk_entry->WriteData(0, 0, data.get(), len, cb.callback(), true);
   rv = cb.GetResult(rv);

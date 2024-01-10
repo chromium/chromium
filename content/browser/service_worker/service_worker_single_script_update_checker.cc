@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -94,7 +95,7 @@ class ServiceWorkerSingleScriptUpdateChecker::WrappedIOBuffer
     : public net::WrappedIOBuffer {
  public:
   WrappedIOBuffer(const char* data, size_t size)
-      : net::WrappedIOBuffer(data, size) {}
+      : net::WrappedIOBuffer(base::make_span(data, size)) {}
 
  private:
   ~WrappedIOBuffer() override = default;

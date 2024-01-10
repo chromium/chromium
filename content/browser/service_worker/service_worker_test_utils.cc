@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "content/browser/service_worker/service_worker_test_utils.h"
-#include "base/memory/raw_ref.h"
 
 #include <algorithm>
 #include <map>
@@ -13,6 +12,8 @@
 #include <vector>
 
 #include "base/barrier_closure.h"
+#include "base/containers/span.h"
+#include "base/memory/raw_ref.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
@@ -773,9 +774,10 @@ ServiceWorkerUpdateCheckTestUtils::CreatePausedCacheWriter(
   cache_writer->response_head_to_write_->headers =
       base::MakeRefCounted<net::HttpResponseHeaders>(new_headers);
   cache_writer->bytes_compared_ = bytes_compared;
-  cache_writer->data_to_write_ = base::MakeRefCounted<net::WrappedIOBuffer>(
-      pending_network_buffer ? pending_network_buffer->buffer() : nullptr,
-      pending_network_buffer ? pending_network_buffer->size() : 0);
+  cache_writer->data_to_write_ =
+      base::MakeRefCounted<net::WrappedIOBuffer>(base::make_span(
+          pending_network_buffer ? pending_network_buffer->buffer() : nullptr,
+          pending_network_buffer ? pending_network_buffer->size() : 0));
   cache_writer->len_to_write_ = consumed_size;
   cache_writer->bytes_written_ = 0;
   cache_writer->io_pending_ = true;

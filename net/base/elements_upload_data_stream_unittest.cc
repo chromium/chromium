@@ -701,8 +701,7 @@ TEST_F(ElementsUploadDataStreamTest, InitToReset) {
   // Read some.
   TestCompletionCallback read_callback1;
   std::vector<char> buf(kTestDataSize + kTestDataSize / 2);
-  auto wrapped_buffer =
-      base::MakeRefCounted<WrappedIOBuffer>(buf.data(), buf.size());
+  auto wrapped_buffer = base::MakeRefCounted<WrappedIOBuffer>(buf);
   EXPECT_EQ(
       ERR_IO_PENDING,
       stream->Read(wrapped_buffer.get(), buf.size(),
@@ -721,8 +720,7 @@ TEST_F(ElementsUploadDataStreamTest, InitToReset) {
   // Read.
   TestCompletionCallback read_callback2;
   std::vector<char> buf2(kTestDataSize * 2);
-  auto wrapped_buffer2 =
-      base::MakeRefCounted<WrappedIOBuffer>(buf2.data(), buf2.size());
+  auto wrapped_buffer2 = base::MakeRefCounted<WrappedIOBuffer>(buf2);
   EXPECT_EQ(ERR_IO_PENDING,
             stream->Read(
                 wrapped_buffer2.get(), buf2.size(), read_callback2.callback()));
@@ -766,8 +764,7 @@ TEST_F(ElementsUploadDataStreamTest, InitDuringAsyncInit) {
   // Read.
   TestCompletionCallback read_callback2;
   std::vector<char> buf2(kTestDataSize * 2);
-  auto wrapped_buffer2 =
-      base::MakeRefCounted<WrappedIOBuffer>(buf2.data(), buf2.size());
+  auto wrapped_buffer2 = base::MakeRefCounted<WrappedIOBuffer>(buf2);
   EXPECT_EQ(ERR_IO_PENDING,
             stream->Read(
                 wrapped_buffer2.get(), buf2.size(), read_callback2.callback()));
@@ -810,8 +807,7 @@ TEST_F(ElementsUploadDataStreamTest, InitDuringAsyncRead) {
   // Start reading.
   TestCompletionCallback read_callback1;
   std::vector<char> buf(kTestDataSize * 2);
-  auto wrapped_buffer =
-      base::MakeRefCounted<WrappedIOBuffer>(buf.data(), buf.size());
+  auto wrapped_buffer = base::MakeRefCounted<WrappedIOBuffer>(buf);
   EXPECT_EQ(
       ERR_IO_PENDING,
       stream->Read(wrapped_buffer.get(), buf.size(),
@@ -828,8 +824,7 @@ TEST_F(ElementsUploadDataStreamTest, InitDuringAsyncRead) {
   // Read.
   TestCompletionCallback read_callback2;
   std::vector<char> buf2(kTestDataSize * 2);
-  auto wrapped_buffer2 =
-      base::MakeRefCounted<WrappedIOBuffer>(buf2.data(), buf2.size());
+  auto wrapped_buffer2 = base::MakeRefCounted<WrappedIOBuffer>(buf2);
   EXPECT_EQ(ERR_IO_PENDING,
             stream->Read(
                 wrapped_buffer2.get(), buf2.size(), read_callback2.callback()));

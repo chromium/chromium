@@ -51,6 +51,11 @@ class COMPONENT_EXPORT(NETWORK_CPP) NetToMojoPendingBuffer
   char* buffer() { return buffer_.data(); }
   uint32_t size() const { return static_cast<uint32_t>(buffer_.size()); }
 
+  // Equivalent of buffer(), but allows the class to satisfy the requirements
+  // of std::ranges::contiguous_range, and hence allows a span, for example,
+  // to be implicitly constructed from a it.
+  char* data() { return buffer_.data(); }
+
  private:
   friend class base::RefCountedThreadSafe<NetToMojoPendingBuffer>;
   // Takes ownership of the handle.
@@ -115,6 +120,9 @@ class COMPONENT_EXPORT(NETWORK_CPP) MojoToNetPendingBuffer
 
   const char* buffer() const { return buffer_.data(); }
   uint32_t size() const { return static_cast<uint32_t>(buffer_.size()); }
+
+  // Equivalent of buffer(), allows conversion to span.
+  const char* data() { return buffer_.data(); }
 
  private:
   friend class base::RefCountedThreadSafe<MojoToNetPendingBuffer>;

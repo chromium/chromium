@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
@@ -39,7 +40,7 @@ class ServiceWorkerUpdatedScriptLoader::WrappedIOBuffer
     : public net::WrappedIOBuffer {
  public:
   WrappedIOBuffer(const char* data, size_t size)
-      : net::WrappedIOBuffer(data, size) {}
+      : net::WrappedIOBuffer(base::make_span(data, size)) {}
 
  private:
   ~WrappedIOBuffer() override = default;

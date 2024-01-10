@@ -37,8 +37,7 @@ class UploadBytesElementReaderTest : public PlatformTest {
 TEST_F(UploadBytesElementReaderTest, ReadPartially) {
   const size_t kHalfSize = bytes_.size() / 2;
   std::vector<char> buf(kHalfSize);
-  scoped_refptr<IOBuffer> wrapped_buffer =
-      base::MakeRefCounted<WrappedIOBuffer>(buf.data(), buf.size());
+  auto wrapped_buffer = base::MakeRefCounted<WrappedIOBuffer>(buf);
   EXPECT_EQ(static_cast<int>(buf.size()),
             reader_->Read(wrapped_buffer.get(), buf.size(),
                           CompletionOnceCallback()));
@@ -49,8 +48,7 @@ TEST_F(UploadBytesElementReaderTest, ReadPartially) {
 
 TEST_F(UploadBytesElementReaderTest, ReadAll) {
   std::vector<char> buf(bytes_.size());
-  scoped_refptr<IOBuffer> wrapped_buffer =
-      base::MakeRefCounted<WrappedIOBuffer>(buf.data(), buf.size());
+  auto wrapped_buffer = base::MakeRefCounted<WrappedIOBuffer>(buf);
   EXPECT_EQ(static_cast<int>(buf.size()),
             reader_->Read(wrapped_buffer.get(), buf.size(),
                           CompletionOnceCallback()));
@@ -64,8 +62,7 @@ TEST_F(UploadBytesElementReaderTest, ReadAll) {
 TEST_F(UploadBytesElementReaderTest, ReadTooMuch) {
   const size_t kTooLargeSize = bytes_.size() * 2;
   std::vector<char> buf(kTooLargeSize);
-  scoped_refptr<IOBuffer> wrapped_buffer =
-      base::MakeRefCounted<WrappedIOBuffer>(buf.data(), buf.size());
+  auto wrapped_buffer = base::MakeRefCounted<WrappedIOBuffer>(buf);
   EXPECT_EQ(static_cast<int>(bytes_.size()),
             reader_->Read(wrapped_buffer.get(), buf.size(),
                           CompletionOnceCallback()));
@@ -76,8 +73,7 @@ TEST_F(UploadBytesElementReaderTest, ReadTooMuch) {
 
 TEST_F(UploadBytesElementReaderTest, MultipleInit) {
   std::vector<char> buf(bytes_.size());
-  scoped_refptr<IOBuffer> wrapped_buffer =
-      base::MakeRefCounted<WrappedIOBuffer>(buf.data(), buf.size());
+  auto wrapped_buffer = base::MakeRefCounted<WrappedIOBuffer>(buf);
 
   // Read all.
   EXPECT_EQ(static_cast<int>(buf.size()),

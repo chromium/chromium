@@ -30,8 +30,8 @@ namespace cronet {
 IOBufferWithCronet_Buffer::IOBufferWithCronet_Buffer(
     Cronet_BufferPtr cronet_buffer)
     : net::WrappedIOBuffer(
-          reinterpret_cast<const char*>(cronet_buffer->GetData()),
-          static_cast<size_t>(cronet_buffer->GetSize())),
+          base::make_span(static_cast<const char*>(cronet_buffer->GetData()),
+                          static_cast<size_t>(cronet_buffer->GetSize()))),
       cronet_buffer_(cronet_buffer) {}
 
 IOBufferWithCronet_Buffer::~IOBufferWithCronet_Buffer() {
