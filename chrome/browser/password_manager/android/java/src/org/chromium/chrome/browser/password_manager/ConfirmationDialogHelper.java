@@ -21,6 +21,7 @@ public class ConfirmationDialogHelper {
     private ModalDialogManager mModalDialogManager;
     private PropertyModel mDialogModel;
     private Runnable mConfirmedCallback;
+    private Runnable mDeclinedCallback;
 
     public ConfirmationDialogHelper(Context context) {
         mContext = context;
@@ -43,16 +44,39 @@ public class ConfirmationDialogHelper {
 
     /**
      * Shows an dialog to confirm the deletion.
+     *
      * @param title A {@link String} used as title.
      * @param message A {@link String} used message body.
+     * @param confirmButtonTextId A string ID for positive button label.
+     * @param confirmedCallback A callback to run when the dialog is accepted.
+     * @param declinedCallback A callback to run when the dialog is declined.
      */
     public void showConfirmation(
             String title, String message, int confirmButtonTextId, Runnable confirmedCallback) {
+        showConfirmation(title, message, confirmButtonTextId, confirmedCallback, () -> {});
+    }
+
+    /**
+     * Shows an dialog to confirm the deletion.
+     *
+     * @param title A {@link String} used as title.
+     * @param message A {@link String} used message body.
+     * @param confirmButtonTextId A string ID for positive button label.
+     * @param confirmedCallback A callback to run when the dialog is accepted.
+     * @param declinedCallback A callback to run when the dialog is declined.
+     */
+    public void showConfirmation(
+            String title,
+            String message,
+            int confirmButtonTextId,
+            Runnable confirmedCallback,
+            Runnable declinedCallback) {
         assert title != null;
         assert message != null;
         assert confirmedCallback != null;
 
         mConfirmedCallback = confirmedCallback;
+        mDeclinedCallback = declinedCallback;
 
         mDialogModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
@@ -77,8 +101,16 @@ public class ConfirmationDialogHelper {
     }
 
     private void onDismiss(@DialogDismissalCause int dismissalCause) {
-        if (dismissalCause == DialogDismissalCause.POSITIVE_BUTTON_CLICKED) {
-            mConfirmedCallback.run();
+        switch (dismissalCause) {
+            case DialogDismissalCause.POSITIVE_BUTTON_CLICKED:
+                mConfirmedCallback.run();
+                break;
+            case DialogDismissalCause.NEGATIVE_BUTTON_CLICKED:
+                mDeclinedCallback.run();
+                break;
+            default:
+                // No explicit user decision.
+                break;
         }
         mDialogModel = null;
     }

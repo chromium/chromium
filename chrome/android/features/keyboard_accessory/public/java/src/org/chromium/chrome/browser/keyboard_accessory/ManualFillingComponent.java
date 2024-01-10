@@ -218,11 +218,14 @@ public interface ManualFillingComponent extends BackPressHandler {
 
     /**
      * Show a confimation dialog.
+     *
      * @param title A title of the confirmation dialog.
      * @param message The message of the confirmation dialog.
      * @param confirmedCallback A {@link Runnable} to trigger upon confirmation.
+     * @param declinedCallback A {@link Runnable} to trigger upon rejection.
      */
-    void confirmOperation(String title, String message, Runnable confirmedCallback);
+    void confirmOperation(
+            String title, String message, Runnable confirmedCallback, Runnable declinedCallback);
 
     /**
      * Returns the amount that the keyboard will be extended by the filling component when shown.

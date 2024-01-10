@@ -84,6 +84,10 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
                         mNativeAutofillKeyboardAccessory, AutofillKeyboardAccessoryViewBridge.this);
     }
 
+    private void onDeletionDeclined() {
+        // TODO(crbug.com/1509457): Implement deletion metric.
+    }
+
     /**
      * Initializes this object.
      * This function should be called at most one time.
@@ -134,7 +138,8 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
     @CalledByNative
     private void confirmDeletion(String title, String body) {
         assert mManualFillingComponent != null;
-        mManualFillingComponent.confirmOperation(title, body, this::onDeletionConfirmed);
+        mManualFillingComponent.confirmOperation(
+                title, body, this::onDeletionConfirmed, this::onDeletionDeclined);
     }
 
     @CalledByNative

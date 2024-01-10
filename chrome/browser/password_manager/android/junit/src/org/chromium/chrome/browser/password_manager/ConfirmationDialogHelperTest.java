@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.password_manager;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -41,6 +42,7 @@ public class ConfirmationDialogHelperTest {
 
     @Mock private DialogInterface mDialogInterface;
     @Mock private Runnable mConfirmedCallback;
+    @Mock private Runnable mDeclinedCallback;
 
     @Before
     public void setUp() {
@@ -55,14 +57,15 @@ public class ConfirmationDialogHelperTest {
     @Test
     @SmallTest
     public void dialogShown() {
-        mHelper.showConfirmation("Title", "Message", R.string.ok, mConfirmedCallback);
+        mHelper.showConfirmation(
+                "Title", "Message", R.string.ok, mConfirmedCallback, mDeclinedCallback);
         assertNotNull(mModalDialogManager.getShownDialogModel());
     }
 
     @Test
     @SmallTest
     public void positiveButtonPressed() {
-        mHelper.showConfirmation("Title", "Message", R.string.ok, mConfirmedCallback);
+        mHelper.showConfirmation("Title", "Message", R.string.ok, mConfirmedCallback, () -> fail());
         mModalDialogManager.clickPositiveButton();
         assertNull(mModalDialogManager.getShownDialogModel());
         verify(mConfirmedCallback, times(1)).run();
@@ -71,16 +74,17 @@ public class ConfirmationDialogHelperTest {
     @Test
     @SmallTest
     public void negativeButtonPressed() {
-        mHelper.showConfirmation("Title", "Message", R.string.ok, mConfirmedCallback);
+        mHelper.showConfirmation("Title", "Message", R.string.ok, () -> fail(), mDeclinedCallback);
         mModalDialogManager.clickNegativeButton();
         assertNull(mModalDialogManager.getShownDialogModel());
-        verify(mConfirmedCallback, times(0)).run();
+        verify(mDeclinedCallback, times(1)).run();
     }
 
     @Test
     @SmallTest
     public void dialogStrings() {
-        mHelper.showConfirmation("Title", "Message", R.string.ok, mConfirmedCallback);
+        mHelper.showConfirmation(
+                "Title", "Message", R.string.ok, mConfirmedCallback, mDeclinedCallback);
         PropertyModel model = mModalDialogManager.getShownDialogModel();
         assertNotNull(model);
         assertEquals(model.get(ModalDialogProperties.TITLE), "Title");

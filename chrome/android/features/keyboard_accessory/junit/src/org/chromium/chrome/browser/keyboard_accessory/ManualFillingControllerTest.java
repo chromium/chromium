@@ -1278,10 +1278,17 @@ public class ManualFillingControllerTest {
 
     @Test
     public void testCallsHelperToConfirmDeletion() {
-        Runnable testRunnable = () -> {};
-        mMediator.confirmOperation("Suggestion", "Delete it?", testRunnable);
+        Runnable testConfirmRunnable = () -> {};
+        Runnable testDeclineRunnable = () -> {};
+        mMediator.confirmOperation(
+                "Suggestion", "Delete it?", testConfirmRunnable, testDeclineRunnable);
         verify(mMockConfirmationHelper)
-                .showConfirmation("Suggestion", "Delete it?", R.string.ok, testRunnable);
+                .showConfirmation(
+                        "Suggestion",
+                        "Delete it?",
+                        R.string.ok,
+                        testConfirmRunnable,
+                        testDeclineRunnable);
     }
 
     @Test

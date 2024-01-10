@@ -620,8 +620,10 @@ class ManualFillingMediator extends EmptyTabObserver
         if (isInitialized() && mAccessorySheet.isShown()) onCloseAccessorySheet();
     }
 
-    void confirmOperation(String title, String message, Runnable confirmedCallback) {
-        mConfirmationHelper.showConfirmation(title, message, R.string.ok, confirmedCallback);
+    void confirmOperation(
+            String title, String message, Runnable confirmedCallback, Runnable declinedCallback) {
+        mConfirmationHelper.showConfirmation(
+                title, message, R.string.ok, confirmedCallback, declinedCallback);
     }
 
     private void changeBottomControlSpaceForState(int extensionState) {
