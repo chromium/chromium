@@ -161,8 +161,10 @@ std::u16string GetProfileSuggestionMainTextForNonAddressField(
   const std::u16string separator =
       l10n_util::GetStringUTF16(IDS_AUTOFILL_ADDRESS_SUMMARY_SEPARATOR);
   // The first part contains the main text.
-  return suggestion_text_array[0].substr(
-      0, suggestion_text_array[0].find_first_of(separator));
+  std::vector<std::u16string> text_pieces =
+      base::SplitStringUsingSubstr(suggestion_text_array[0], separator,
+                                   base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  return text_pieces[0];
 }
 
 // Check comment of method above:

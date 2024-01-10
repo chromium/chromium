@@ -1401,15 +1401,15 @@ TEST_F(AutofillNonAddressFieldsSuggestionGeneratorTest,
        SuggestionsAreCorrectAndExpectedLabelsAreCreated) {
   std::vector<AutofillProfile> profiles(
       5, AutofillProfile(i18n_model_definition::kLegacyHierarchyCountryCode));
-  profiles[0].SetRawInfo(NAME_FULL, u"test0");
-  profiles[0].SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"test0_label");
-  profiles[1].SetRawInfo(NAME_FULL, u"test1");
-  profiles[1].SetRawInfo(ADDRESS_HOME_CITY, u"test1_label");
-  profiles[2].SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"test2");
-  profiles[2].SetRawInfo(ADDRESS_HOME_CITY, u"test2_label");
-  profiles[3].SetRawInfo(ADDRESS_HOME_CITY, u"test3");
-  profiles[3].SetRawInfo(EMAIL_ADDRESS, u"test3_label");
-  profiles[4].SetRawInfo(EMAIL_ADDRESS, u"test4");
+  profiles[0].SetRawInfo(NAME_FULL, u"John Doe");
+  profiles[0].SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"Address 123");
+  profiles[1].SetRawInfo(NAME_FULL, u"Johnas Dhonas");
+  profiles[1].SetRawInfo(ADDRESS_HOME_CITY, u"New York");
+  profiles[2].SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"Other Address 33");
+  profiles[2].SetRawInfo(ADDRESS_HOME_CITY, u"Old City");
+  profiles[3].SetRawInfo(ADDRESS_HOME_CITY, u"Munich");
+  profiles[3].SetRawInfo(EMAIL_ADDRESS, u"munich@gmail.com");
+  profiles[4].SetRawInfo(EMAIL_ADDRESS, u"other@gmail.com");
 
   std::vector<Suggestion> suggestions =
       suggestion_generator()->CreateSuggestionsFromProfiles(
@@ -1424,39 +1424,39 @@ TEST_F(AutofillNonAddressFieldsSuggestionGeneratorTest,
       suggestions,
       ElementsAre(
           AllOf(Field(&Suggestion::main_text,
-                      Suggestion::Text(u"test0",
+                      Suggestion::Text(u"John Doe",
                                        Suggestion::Text::IsPrimary(true))),
                 Field(&Suggestion::labels,
                       std::vector<std::vector<Suggestion::Text>>{
-                          {Suggestion::Text(u"test0_label")}}),
+                          {Suggestion::Text(u"Address 123")}}),
                 Field(&Suggestion::popup_item_id, PopupItemId::kAddressEntry),
                 Field(&Suggestion::is_acceptable, false)),
           AllOf(Field(&Suggestion::main_text,
-                      Suggestion::Text(u"test1",
+                      Suggestion::Text(u"Johnas Dhonas",
                                        Suggestion::Text::IsPrimary(true))),
                 Field(&Suggestion::labels,
                       std::vector<std::vector<Suggestion::Text>>{
-                          {Suggestion::Text(u"test1_label")}}),
+                          {Suggestion::Text(u"New York")}}),
                 Field(&Suggestion::popup_item_id, PopupItemId::kAddressEntry),
                 Field(&Suggestion::is_acceptable, false)),
           AllOf(Field(&Suggestion::main_text,
-                      Suggestion::Text(u"test2",
+                      Suggestion::Text(u"Other Address 33",
                                        Suggestion::Text::IsPrimary(true))),
                 Field(&Suggestion::labels,
                       std::vector<std::vector<Suggestion::Text>>{
-                          {Suggestion::Text(u"test2_label")}}),
+                          {Suggestion::Text(u"Old City")}}),
                 Field(&Suggestion::popup_item_id, PopupItemId::kAddressEntry),
                 Field(&Suggestion::is_acceptable, false)),
           AllOf(Field(&Suggestion::main_text,
-                      Suggestion::Text(u"test3",
+                      Suggestion::Text(u"Munich",
                                        Suggestion::Text::IsPrimary(true))),
                 Field(&Suggestion::labels,
                       std::vector<std::vector<Suggestion::Text>>{
-                          {Suggestion::Text(u"test3_label")}}),
+                          {Suggestion::Text(u"munich@gmail.com")}}),
                 Field(&Suggestion::popup_item_id, PopupItemId::kAddressEntry),
                 Field(&Suggestion::is_acceptable, false)),
           AllOf(Field(&Suggestion::main_text,
-                      Suggestion::Text(u"test4",
+                      Suggestion::Text(u"other@gmail.com",
                                        Suggestion::Text::IsPrimary(true))),
                 Field(&Suggestion::labels,
                       std::vector<std::vector<Suggestion::Text>>{{}}),
