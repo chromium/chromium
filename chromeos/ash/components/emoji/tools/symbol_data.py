@@ -64,6 +64,8 @@ SYMBOLS_GROUPS = {
         (0x2260, 0x228b),
         # Fractions from Latin-1 Supplement
         (0x00BC, 0x00BE),
+        # Degree symbol from Latin-1 Supplement
+        (0x00B0, 0x00B0),
     ],
     'Miscellaneous': [
         # Miscellaneous Symbols Unicode Block.
