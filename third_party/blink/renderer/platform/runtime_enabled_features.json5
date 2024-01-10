@@ -3594,10 +3594,6 @@
       name: "SoftNavigationHeuristicsExposeFPAndFCP",
     },
     {
-      name: "SolidColorLayers",
-      status: "stable",
-    },
-    {
       name: "SparseObjectPaintProperties",
     },
     {

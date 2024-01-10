@@ -2267,18 +2267,6 @@
     "expires": "never"
   },
   {
-    "prefix": "disable-solid-color-layers",
-    "owners": ["wangxianzhu@chromium.org"],
-    "platforms": ["Linux"],
-    "bases": [
-      "compositing",
-      "paint/invalidation/compositing"
-    ],
-    "args": ["--disable-features=SolidColorLayers",
-             "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Oct 1, 2023"
-  },
-  {
     "prefix": "option-label-only-in-no-quirks",
     "platforms": ["Linux"],
     "bases": [

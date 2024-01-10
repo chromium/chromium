@@ -621,7 +621,7 @@ void PendingLayer::UpdateSolidColorLayer(PendingLayer* old_pending_layer) {
 }
 
 bool PendingLayer::UsesSolidColorLayer() const {
-  if (!RuntimeEnabledFeatures::SolidColorLayersEnabled() || !IsSolidColor()) {
+  if (!IsSolidColor()) {
     return false;
   }
   // We need a PictureLayer for the backdrop filter mask.

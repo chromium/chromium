@@ -137,11 +137,9 @@ TEST_P(FractionalScrollSimTest, NoRepaintOnScrollFromSubpixel) {
       mojom::blink::ScrollBehavior::kInstant);
 
   Compositor().BeginFrame();
-  EXPECT_FALSE(GetRasterInvalidationTracking(
-                   *GetDocument().View(),
-                   RuntimeEnabledFeatures::SolidColorLayersEnabled() ? 0 : 2,
-                   "container")
-                   ->HasInvalidations());
+  EXPECT_FALSE(
+      GetRasterInvalidationTracking(*GetDocument().View(), 0, "container")
+          ->HasInvalidations());
   GetDocument().View()->SetTracksRasterInvalidations(false);
 }
 

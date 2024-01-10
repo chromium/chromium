@@ -19,18 +19,16 @@ namespace blink {
 
 enum {
   kUnderInvalidationChecking = 1 << 0,
-  kSolidColorLayers = 1 << 1,
-  kUsedColorSchemeRootScrollbars = 1 << 2,
-  kFluentScrollbar = 1 << 3,
-  kSparseObjectPaintProperties = 1 << 4,
-  kHitTestOpaqueness = 1 << 5,
-  kElementCapture = 1 << 6,
+  kUsedColorSchemeRootScrollbars = 1 << 1,
+  kFluentScrollbar = 1 << 2,
+  kSparseObjectPaintProperties = 1 << 3,
+  kHitTestOpaqueness = 1 << 4,
+  kElementCapture = 1 << 5,
 };
 
 class PaintTestConfigurations
     : public testing::WithParamInterface<unsigned>,
       private ScopedPaintUnderInvalidationCheckingForTest,
-      private ScopedSolidColorLayersForTest,
       private ScopedUsedColorSchemeRootScrollbarsForTest,
       private ScopedSparseObjectPaintPropertiesForTest,
       private ScopedHitTestOpaquenessForTest,
@@ -39,7 +37,6 @@ class PaintTestConfigurations
   PaintTestConfigurations()
       : ScopedPaintUnderInvalidationCheckingForTest(GetParam() &
                                                     kUnderInvalidationChecking),
-        ScopedSolidColorLayersForTest(GetParam() & kSolidColorLayers),
         ScopedUsedColorSchemeRootScrollbarsForTest(
             GetParam() & kUsedColorSchemeRootScrollbars),
         ScopedSparseObjectPaintPropertiesForTest(GetParam() &
@@ -70,9 +67,8 @@ class PaintTestConfigurations
   base::test::ScopedFeatureList feature_list_;
 };
 
-#define PAINT_TEST_SUITE_P_VALUES                                         \
-  0, kSolidColorLayers, kUsedColorSchemeRootScrollbars, kFluentScrollbar, \
-      kHitTestOpaqueness
+#define PAINT_TEST_SUITE_P_VALUES \
+  0, kUsedColorSchemeRootScrollbars, kFluentScrollbar, kHitTestOpaqueness
 
 #define INSTANTIATE_PAINT_TEST_SUITE_P(test_class) \
   INSTANTIATE_TEST_SUITE_P(All, test_class,        \
