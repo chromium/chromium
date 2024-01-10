@@ -12,6 +12,7 @@
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/sync/base/features.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
@@ -120,6 +121,18 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
                                                        text)];
 }
 
+// Dismisses the snackbar item that shows up after pressing save on the batch
+// upload alert.
+void DismissBatchUploadConfirmationSnackbar(int count, NSString* email) {
+  NSString* text = base::SysUTF16ToNSString(
+      base::i18n::MessageFormatter::FormatWithNamedArgs(
+          l10n_util::GetStringUTF16(
+              IDS_IOS_BOOKMARKS_HOME_BULK_UPLOAD_SNACKBAR_MESSAGE),
+          "count", count, "email", base::SysNSStringToUTF16(email)));
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(text)]
+      performAction:grey_tap()];
+}
+
 }  // namespace
 
 @interface BookmarksBatchUploadTestCase : WebHttpServerChromeTestCase
@@ -200,6 +213,10 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
       setStringValue:[FakeSystemIdentity fakeIdentity1].gaiaID
          forUserPref:base::SysUTF8ToNSString(
                          prefs::kGoogleServicesLastSyncingGaiaId)];
+  // Reset pref to offer upload sync left-behind bookamrks.
+  [ChromeEarlGrey
+      setBoolValue:false
+       forUserPref:prefs::kIosBookmarkUploadSyncLeftBehindCompleted];
   GREYAssertNil([MetricsAppInterface setupHistogramTester],
                 @"Cannot setup histogram tester.");
 }
@@ -340,6 +357,68 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
   // Verify that the batch upload section is visible.
   ExpectBatchUploadSection(1, fakeIdentity.userEmail);
+}
+
+// Tests that no batch upload dialog is shown if the user has already uploaded
+// the sync left-behind bookmarks.
+- (void)testNoBatchUploadDialogIfLeftBehindBookmarksAlreadyUploaded {
+  // Add one local bookmark as a left-behind data.
+  [BookmarkEarlGrey
+      addBookmarkWithTitle:@"example1"
+                       URL:@"https://www.example1.com"
+                 inStorage:bookmarks::StorageType::kLocalOrSyncable];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Adds and signs in with `fakeIdentity`.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  [BookmarkEarlGreyUI openBookmarks];
+
+  // Verify that the batch upload section is visible.
+  ExpectBatchUploadSection(1, fakeIdentity.userEmail);
+
+  // Upload the left-behind bookmarks.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kBookmarksHomeBatchUploadButtonIdentifier)]
+      performAction:grey_tap()];
+  ExpectBatchUploadAlert(1);
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::AlertAction(l10n_util::GetNSString(
+                     IDS_IOS_BOOKMARKS_HOME_BULK_UPLOAD_ALERT_BUTTON))]
+      performAction:grey_tap()];
+  // Dismiss the snackbar shown upon upload.
+  DismissBatchUploadConfirmationSnackbar(1, fakeIdentity.userEmail);
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Close the bookamrks manager.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kBookmarksHomeNavigationBarDoneButtonIdentifier)]
+      performAction:grey_tap()];
+
+  // Sign out.
+  [SigninEarlGreyUI signOut];
+
+  // Add one local bookmark.
+  [BookmarkEarlGrey
+      addBookmarkWithTitle:@"example2"
+                       URL:@"https://www.example2.com"
+                 inStorage:bookmarks::StorageType::kLocalOrSyncable];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Sign in.
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  [BookmarkEarlGreyUI openBookmarks];
+
+  // Verify that the batch upload section is not visible anymore.
+  ExpectNoBatchUploadDialog();
 }
 
 // Tests that no batch upload dialog is shown if there are no local bookmarks.

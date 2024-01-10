@@ -106,6 +106,7 @@ source_set("browser_prefs") {
     "//ios/chrome/browser/ui/authentication/signin",
     "//ios/chrome/browser/ui/bookmarks:constants",
     "//ios/chrome/browser/ui/bookmarks:core",
+    "//ios/chrome/browser/ui/bookmarks/home:home",
     "//ios/chrome/browser/ui/content_suggestions",
     "//ios/chrome/browser/ui/content_suggestions/safety_check:prefs",
     "//ios/chrome/browser/ui/first_run:field_trial",
