@@ -120,13 +120,13 @@ repos:
       # ESLint is the slowest hook, so keep it at the bottom.
       - id: eslint
         name: eslint
-        entry: 'npx eslint --fix'
+        entry: 'npm run format:eslint'
         language: system
         verbose: true
-        types_or: [javascript, ts]
+        pass_filenames: false
       # ESLint may update code style (formatting) so keep prettier last.
       - id: prettier
         name: prettier
-        entry: 'npx prettier --write --ignore-unknown --check'
+        entry: 'npm run format:prettier'
         language: system
-        types_or: [text]
+        pass_filenames: false

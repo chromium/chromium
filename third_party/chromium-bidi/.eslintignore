@@ -1,3 +1,5 @@
+.mypy_cache/
+.pytest_cache/
 __pycache__
 .build
 .cache
@@ -5,10 +7,14 @@ __pycache__
 chromium-bidi-*
 chromium-bidi.iml
 *.py.ini
-lib
+lib/
 logs/
 node_modules/
 wptreport*.json
-./wpt/
+/tests/
+/wpt/
+/wpt-metadata/*/
+
+# EsLint Specific
 /src/protocol/generated/
 /src/protocol-parser/generated/
