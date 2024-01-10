@@ -3514,7 +3514,8 @@ function onCommitFiberUnmount(rendererID, fiber) {
   window.__RECORD_REPLAY_ANNOTATION_HOOK__("react-devtools-hook:v1:" + annotationType, "");
 }
 
-function onCommitFiberRoot(rendererID, root, _priorityLevel) {
+// eslint-disable-next-line no-unused-vars
+function onCommitFiberRoot(rendererID, root, priorityLevel) {
   // The "commit" handler should be the only one the routine needs to do the work as of 2023-05-01.
   // We capture unmounted fibers in the unmount handler above, and the routine
   // will process them when we evaluate at the commit annotation point.
@@ -3545,7 +3546,8 @@ function onCommitFiberRoot(rendererID, root, _priorityLevel) {
   unmountedFibersSet.clear();
 }
 
-function onPostCommitFiberRoot(_rendererID, _root) {
+// eslint-disable-next-line no-unused-vars
+function onPostCommitFiberRoot(rendererID, root) {
   const annotationType = "post-commit-fiber-root";
   window.__RECORD_REPLAY_ANNOTATION_HOOK__("react-devtools-hook:v1:" + annotationType, "");
 }
