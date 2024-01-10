@@ -6,6 +6,7 @@
 
 #include "base/json/json_reader.h"
 #include "base/scoped_observation.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/policy/policy_test_utils.h"
@@ -157,6 +158,8 @@ class TabStripModelBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(TabStripModelBrowserTest, CommandOrganizeTabs) {
+  base::HistogramTester histogram_tester;
+
   TabStripModel* const tab_strip_model = browser()->tab_strip_model();
   EXPECT_EQ(1, tab_strip_model->count());
 
@@ -174,4 +177,9 @@ IN_PROC_BROWSER_TEST_F(TabStripModelBrowserTest, CommandOrganizeTabs) {
   EXPECT_NE(session, nullptr);
   EXPECT_EQ(session->request()->state(),
             TabOrganizationRequest::State::NOT_STARTED);
+
+  histogram_tester.ExpectUniqueSample("Tab.Organization.AllEntrypoints.Clicked",
+                                      true, 1);
+  histogram_tester.ExpectUniqueSample("Tab.Organization.TabContextMenu.Clicked",
+                                      true, 1);
 }

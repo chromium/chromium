@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/tabs/tab_search_container.h"
 
+#include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
@@ -136,6 +137,9 @@ void TabSearchContainer::OnOrganizeButtonClicked() {
   base::UmaHistogramEnumeration(kTriggerOutcomeName, TriggerOutcome::kAccepted);
   tab_organization_service_->OnActionUIAccepted(browser_);
 
+  UMA_HISTOGRAM_BOOLEAN("Tab.Organization.AllEntrypoints.Clicked", true);
+  UMA_HISTOGRAM_BOOLEAN("Tab.Organization.Proactive.Clicked", true);
+
   // Force hide the button when pressed, bypassing locked expansion mode.
   ExecuteHideTabOrganization();
 }
@@ -145,12 +149,16 @@ void TabSearchContainer::OnOrganizeButtonDismissed() {
                                 TriggerOutcome::kDismissed);
   tab_organization_service_->OnActionUIDismissed(browser_);
 
+  UMA_HISTOGRAM_BOOLEAN("Tab.Organization.Proactive.Clicked", false);
+
   // Force hide the button when pressed, bypassing locked expansion mode.
   ExecuteHideTabOrganization();
 }
 
 void TabSearchContainer::OnOrganizeButtonTimeout() {
   base::UmaHistogramEnumeration(kTriggerOutcomeName, TriggerOutcome::kTimedOut);
+
+  UMA_HISTOGRAM_BOOLEAN("Tab.Organization.Proactive.Clicked", false);
 
   // Hide the button if not pressed. Use locked expansion mode to avoid
   // disrupting the user.
