@@ -84,13 +84,6 @@ ALLOWED_EXCEPTIONS = [
     'org/chromium/net/NetworkException/getMessage:()Ljava/lang/String;',
 ]
 
-# Filename of file containing the interface API version number.
-INTERFACE_API_VERSION_FILENAME = os.path.abspath(os.path.join(
-    os.path.dirname(__file__), '..', 'android', 'interface_api_version.txt'))
-# Filename of file containing the implementation API version number.
-IMPLEMENTATION_API_VERSION_FILENAME = os.path.abspath(os.path.join(
-    os.path.dirname(__file__), '..', 'android',
-    'implementation_api_version.txt'))
 JAR_PATH = os.path.join(build_utils.JAVA_HOME, 'bin', 'jar')
 JAVAP_PATH = os.path.join(build_utils.JAVA_HOME, 'bin', 'javap')
 
@@ -198,30 +191,12 @@ def check_api_calls(opts):
 
 
 def check_api_version(opts):
-  if not update_api.check_up_to_date(opts.api_jar):
-    print('ERROR: API file out of date.  Please run this command:')
-    print('       components/cronet/tools/update_api.py --api_jar %s' % (
-        os.path.abspath(opts.api_jar)))
-    return False
-  interface_api_version = None
-  implementation_api_version = None
-  with open(INTERFACE_API_VERSION_FILENAME, 'r') \
-       as interface_api_version_file:
-    interface_api_version = int(interface_api_version_file.read())
-  with open(IMPLEMENTATION_API_VERSION_FILENAME, 'r') \
-       as implementation_api_version_file:
-    implementation_api_version = int(implementation_api_version_file.read())
-  if interface_api_version > implementation_api_version:
-    print('ERROR: Interface API version cannot be higher than the current '
-          'implementation API version.')
-    return False
-  if implementation_api_version not in \
-      (interface_api_version + 1, interface_api_version):
-    print('ERROR: Implementation API version can be preemptively bumped up '
-          'at most once. Land the interface part of the API which is already '
-          'being released before adding a new one.')
-    return False
-  return True
+  if update_api.check_up_to_date(opts.api_jar):
+    return True
+  print('ERROR: API file out of date.  Please run this command:')
+  print('       components/cronet/tools/update_api.py --api_jar %s' %
+        (os.path.abspath(opts.api_jar)))
+  return False
 
 
 def main(args):
