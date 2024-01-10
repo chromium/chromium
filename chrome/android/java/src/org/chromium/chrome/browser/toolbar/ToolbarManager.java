@@ -2319,14 +2319,6 @@ public class ToolbarManager
         assert profile != null
                 : "Failed to get Profile when incognito = "
                         + mTabModelSelector.isIncognitoSelected();
-        // TODO(crbug/1498999): Remove this Profile calculation fallback if no asserts are hit.
-        if (profile == null) {
-            assert tab == null;
-            profile =
-                    mTabModelSelector.isIncognitoSelected()
-                            ? IncognitoUtils.getIncognitoProfileFromWindowAndroid(mWindowAndroid)
-                            : Profile.getLastUsedRegularProfile();
-        }
 
         mLocationBarModel.setTab(tab, profile);
         updateTabLoadingState(true);

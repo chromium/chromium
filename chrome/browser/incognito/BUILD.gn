@@ -8,7 +8,6 @@ import("//third_party/jni_zero/jni_zero.gni")
 android_library("java") {
   srcjar_deps = [ ":jni_headers" ]
   sources = [
-    "android/java/src/org/chromium/chrome/browser/incognito/IncognitoCctProfileManager.java",
     "android/java/src/org/chromium/chrome/browser/incognito/IncognitoStartup.java",
     "android/java/src/org/chromium/chrome/browser/incognito/IncognitoTabPersistence.java",
     "android/java/src/org/chromium/chrome/browser/incognito/IncognitoUtils.java",

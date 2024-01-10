@@ -4,15 +4,12 @@
 
 package org.chromium.chrome.browser.incognito;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKey;
-import org.chromium.ui.base.WindowAndroid;
 
 /** Utilities for working with incognito tabs spread across multiple activities. */
 public class IncognitoUtils {
@@ -35,47 +32,6 @@ public class IncognitoUtils {
      */
     public static boolean isIncognitoModeManaged() {
         return IncognitoUtilsJni.get().getIncognitoModeManaged();
-    }
-
-    /**
-     * Returns either the non-primary OTR profile if any that is associated with a |windowAndroid|
-     * instance, otherwise the primary OTR profile.
-     *
-     * <p>A non primary OTR profile is associated only for the case of incognito CustomTabActivity.
-     *
-     * @param windowAndroid The {@link WindowAndroid} instance for which the non primary OTR profile
-     *     is queried.
-     * @return A non-primary or a primary OTR {@link Profile}.
-     * @deprecated Use ProfileProvider instead of relying on this.
-     */
-    @Deprecated
-    public static Profile getIncognitoProfileFromWindowAndroid(
-            @Nullable WindowAndroid windowAndroid) {
-        Profile incognitoProfile = getNonPrimaryOTRProfileFromWindowAndroid(windowAndroid);
-        return (incognitoProfile != null)
-                ? incognitoProfile
-                : Profile.getLastUsedRegularProfile()
-                        .getPrimaryOTRProfile(/* createIfNeeded= */ true);
-    }
-
-    /**
-     * Returns the non primary OTR profile if any that is associated with a |windowAndroid|
-     * instance, otherwise null.
-     *
-     * <p>A non primary OTR profile is associated only for the case of incognito CustomTabActivity.
-     *
-     * @param windowAndroid The {@link WindowAndroid} instance for which the non primary OTR profile
-     *     is queried.
-     */
-    private static @Nullable Profile getNonPrimaryOTRProfileFromWindowAndroid(
-            @Nullable WindowAndroid windowAndroid) {
-        if (windowAndroid == null) return null;
-
-        IncognitoCctProfileManager incognitoCctProfileManager =
-                IncognitoCctProfileManager.from(windowAndroid);
-
-        if (incognitoCctProfileManager == null) return null;
-        return incognitoCctProfileManager.getProfile();
     }
 
     /**
