@@ -17,6 +17,10 @@ BASE_DECLARE_FEATURE(kComposeSettingsVisibility);
 BASE_DECLARE_FEATURE(kTabOrganizationSettingsVisibility);
 BASE_DECLARE_FEATURE(kWallpaperSearchSettingsVisibility);
 
+// Feature for controlling the users who are eligible to see the IPH promo for
+// experimental AI.
+BASE_DECLARE_FEATURE(kExperimentalAIIPHPromoRampUp);
+
 const base::Feature* GetFeatureToUseToCheckSettingsVisibility(
     proto::ModelExecutionFeature feature);
 

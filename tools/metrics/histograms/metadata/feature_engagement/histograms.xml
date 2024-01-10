@@ -151,6 +151,7 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_DownloadToolbarButton" summary="download toolbar button"/>
   <variant name="IPH_EphemeralTab"
       summary="new label on the context menu for Ephemeral Tab"/>
+  <variant name="IPH_ExperimentalAIPromo" summary="Experimental AI promo"/>
   <variant name="IPH_ExploreSitesTile" summary="Explore Sites feature"/>
   <variant name="IPH_ExtensionsMenu" summary="extensions menu opened"/>
   <variant name="IPH_ExtensionsRequestAccessButton"

@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/metrics/user_metrics.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
@@ -283,6 +284,29 @@ void MaybeRegisterChromeFeaturePromos(
           .SetInAnyContext(true)
           // See: crbug.com/1494923
           .OverrideFocusOnShow(false)));
+
+  // IPH promo for experimental AI that shows two buttons.
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForCustomAction(
+          feature_engagement::kIPHExperimentalAIPromoFeature,
+          kToolbarAppMenuButtonElementId, IDS_IPH_EXPERIMENTAL_AI_PROMO_BODY,
+          IDS_IPH_EXPERIMENTAL_AI_PROMO_BUTTON_CONTINUE,
+          base::BindRepeating(
+              [](ui::ElementContext ctx,
+                 user_education::FeaturePromoHandle promo_handle) {
+                auto* browser = chrome::FindBrowserWithUiElementContext(ctx);
+                if (!browser) {
+                  return;
+                }
+                chrome::ShowSettingsSubPage(
+                    browser, chrome::kExperimentalAISettingsSubPage);
+                base::RecordAction(base::UserMetricsAction(
+                    "ExperimentalAI_IPHPromo_SettingsPageOpened"));
+              }))
+          .SetBubbleTitleText(IDS_IPH_EXPERIMENTAL_AI_PROMO)
+          .SetCustomActionDismissText(IDS_NO_THANKS)
+          .SetBubbleArrow(HelpBubbleArrow::kTopRight)
+          .SetCustomActionIsDefault(true)));
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // kIPHExtensionsMenuFeature:

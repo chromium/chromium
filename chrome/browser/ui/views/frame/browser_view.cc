@@ -43,6 +43,8 @@
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/headless/headless_mode_util.h"
 #include "chrome/browser/native_window_notification_source.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -2657,6 +2659,14 @@ void BrowserView::MaybeShowReadingListInSidePanelIPH() {
   }
 }
 
+void BrowserView::MaybeShowExperimentalAIIPH() {
+  auto* opt_guide_service =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(browser_->profile());
+  if (opt_guide_service && opt_guide_service->ShouldShowExperimentalAIPromo()) {
+    MaybeShowFeaturePromo(feature_engagement::kIPHExperimentalAIPromoFeature);
+  }
+}
+
 void BrowserView::DestroyBrowser() {
   // After this returns other parts of Chrome are going to be shutdown. Close
   // the window now so that we are deleted immediately and aren't left holding
@@ -4343,6 +4353,11 @@ void BrowserView::AddedToWidget() {
       FROM_HERE,
       base::BindOnce(&BrowserView::MaybeShowReadingListInSidePanelIPH,
                      GetAsWeakPtr()),
+      base::Minutes(5));
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&BrowserView::MaybeShowExperimentalAIIPH, GetAsWeakPtr()),
       base::Minutes(5));
 
   initialized_ = true;

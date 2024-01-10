@@ -295,6 +295,8 @@ DEFINE_VARIATION_PARAM(kIPHDesktopTabGroupsNewGroupFeature,
                        "IPH_DesktopTabGroupsNewGroup");
 DEFINE_VARIATION_PARAM(kIPHDownloadToolbarButtonFeature,
                        "IPH_DownloadToolbarButton");
+DEFINE_VARIATION_PARAM(kIPHExperimentalAIPromoFeature,
+                       "IPH_ExperimentalAIPromo");
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 DEFINE_VARIATION_PARAM(kIPHExtensionsMenuFeature, "IPH_ExtensionsMenu");
 DEFINE_VARIATION_PARAM(kIPHExtensionsRequestAccessButtonFeature,
@@ -600,6 +602,7 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHDesktopNewTabPageModulesCustomizeFeature),
         VARIATION_ENTRY(kIPHDesktopTabGroupsNewGroupFeature),
         VARIATION_ENTRY(kIPHDownloadToolbarButtonFeature),
+        VARIATION_ENTRY(kIPHExperimentalAIPromoFeature),
 #if BUILDFLAG(ENABLE_EXTENSIONS)
         VARIATION_ENTRY(kIPHExtensionsMenuFeature),
         VARIATION_ENTRY(kIPHExtensionsRequestAccessButtonFeature),

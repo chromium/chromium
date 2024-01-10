@@ -603,6 +603,7 @@ const char kFileSystemSubpage[] = "content/filesystem";
 const char kFileSystemSettingsSubpage[] = "content/filesystem/siteDetails";
 const char kOnDeviceSiteDataSubpage[] = "content/siteData";
 const char kCookieSettingsSubPage[] = "cookies";
+const char kExperimentalAISettingsSubPage[] = "ai";
 const char kDownloadsSubPage[] = "downloads";
 const char kHandlerSettingsSubPage[] = "handlers";
 const char kImportDataSubPage[] = "importData";

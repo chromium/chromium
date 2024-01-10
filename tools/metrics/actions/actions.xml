@@ -9415,6 +9415,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ExperimentalAI_IPHPromo_SettingsPageOpened">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>chrome-intelligence-core@chromium.org</owner>
+  <description>
+    The AI Settings page was opened from the displayed IPH promo for
+    Experimental AI. Recorded whenever the IPH promo is clicked to view
+    settings.
+  </description>
+</action>
+
 <action name="ExploreSites.ContextMenu">
   <owner>chili@chromium.org</owner>
   <owner>dewittj@chromium.org</owner>
