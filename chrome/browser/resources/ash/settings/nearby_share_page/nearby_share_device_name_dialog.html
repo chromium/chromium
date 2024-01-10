@@ -3,6 +3,11 @@
     --cr-dialog-width: 340px;
   }
 
+  [slot="body"] {
+    /* Add padding to prevent input focus outline from being overlapped. */
+    padding-top: 5px;
+  }
+
   .title {
     color: var(--cros-primary-text-color);
     margin: 0;
