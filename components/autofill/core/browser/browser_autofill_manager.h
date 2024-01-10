@@ -513,8 +513,8 @@ class BrowserAutofillManager : public AutofillManager {
   std::vector<Suggestion> GetProfileSuggestions(
       const FormData& form,
       const FormStructure* form_structure,
-      const FormFieldData& field,
-      const AutofillField* autofill_field,
+      const FormFieldData& trigger_field,
+      const AutofillField* trigger_autofill_field,
       AutofillSuggestionTriggerSource trigger_source) const;
 
   // Returns a list of values from the stored credit cards that match

@@ -2728,15 +2728,15 @@ void BrowserAutofillManager::OnCreditCardFetchedSuccessfully(
 std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
     const FormData& form,
     const FormStructure* form_structure,
-    const FormFieldData& field,
-    const AutofillField* autofill_field,
+    const FormFieldData& trigger_field,
+    const AutofillField* trigger_autofill_field,
     AutofillSuggestionTriggerSource trigger_source) const {
-  address_form_event_logger_->OnDidPollSuggestions(field,
+  address_form_event_logger_->OnDidPollSuggestions(trigger_field,
                                                    signin_state_for_metrics_);
   const bool triggering_field_is_not_address_field =
       !form_structure ||
-      (autofill_field &&
-       !IsAddressType(autofill_field->Type().GetStorableType()));
+      (trigger_autofill_field &&
+       !IsAddressType(trigger_autofill_field->Type().GetStorableType()));
 
   if (triggering_field_is_not_address_field) {
     // Since Autofill was triggered from a field that is not classified as
@@ -2744,14 +2744,14 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
     // "form") to be a single unclassified field. Note that in this flow it is
     // not used and only holds semantic value.
     return suggestion_generator_->GetSuggestionsForProfiles(
-        /*field_types=*/{UNKNOWN_TYPE}, field, UNKNOWN_TYPE,
+        /*field_types=*/{UNKNOWN_TYPE}, trigger_field, UNKNOWN_TYPE,
         /*last_targeted_fields=*/absl::nullopt, trigger_source);
   }
   // If not manual fallback, `form_structure` and `autofill_field` should exist.
-  CHECK(form_structure && autofill_field);
+  CHECK(form_structure && trigger_autofill_field);
   std::optional<FieldTypeSet> last_address_fields_to_fill_for_section =
       external_delegate_->GetLastFieldTypesToFillForSection(
-          autofill_field->section);
+          trigger_autofill_field->section);
   // Getting the filling-relevant fields so that suggestions are based only on
   // those fields. Function BrowserAutofillManager::GetFieldFillingSkipReasons
   // assumes that the passed FormData and FormStructure have the same size. If
@@ -2760,11 +2760,12 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
   std::vector<FieldFillingSkipReason> skip_reasons =
       form.fields.size() == form_structure->field_count()
           ? GetFieldFillingSkipReasons(
-                form, *form_structure, field, autofill_field->section,
+                form, *form_structure, trigger_field,
+                trigger_autofill_field->section,
                 last_address_fields_to_fill_for_section
                     ? GetTargetServerFieldsForTypeAndLastTargetedFields(
                           *last_address_fields_to_fill_for_section,
-                          autofill_field->Type().GetStorableType())
+                          trigger_autofill_field->Type().GetStorableType())
                     : kAllFieldTypes,
                 /*optional_type_groups_originally_filled=*/nullptr,
                 FillingProduct::kAddress,
@@ -2781,7 +2782,8 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
     }
   }
   return suggestion_generator_->GetSuggestionsForProfiles(
-      field_types, field, autofill_field->Type().GetStorableType(),
+      field_types, trigger_field,
+      trigger_autofill_field->Type().GetStorableType(),
       last_address_fields_to_fill_for_section, trigger_source);
 }
 
