@@ -379,6 +379,10 @@ bool WaylandWindow::SupportsConfigureMinimizedState() const {
   return false;
 }
 
+bool WaylandWindow::SupportsConfigurePinnedState() const {
+  return false;
+}
+
 void WaylandWindow::Close() {
   delegate_->OnClosed();
 }
@@ -641,6 +645,9 @@ void WaylandWindow::HandleSurfaceConfigure(uint32_t serial) {
       << "Only shell surfaces must receive HandleSurfaceConfigure calls.";
 }
 
+WaylandWindow::WindowStates::WindowStates() = default;
+WaylandWindow::WindowStates::~WindowStates() = default;
+
 std::string WaylandWindow::WindowStates::ToString() const {
   std::string states = "";
   if (is_maximized) {
@@ -649,6 +656,17 @@ std::string WaylandWindow::WindowStates::ToString() const {
   if (is_fullscreen) {
     states += "fullscreen ";
   }
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (is_immersive_fullscreen) {
+    states += "immersive ";
+  }
+  if (is_pinned_fullscreen) {
+    states += "pinned ";
+  }
+  if (is_trusted_pinned_fullscreen) {
+    states += "trusted_pinned ";
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   if (is_activated) {
     states += "activated ";
   }

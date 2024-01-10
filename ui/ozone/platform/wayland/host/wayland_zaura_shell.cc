@@ -26,8 +26,9 @@ namespace ui {
 namespace {
 
 constexpr uint32_t kMinVersion = 1;
+// Version: 64
 constexpr uint32_t kMaxVersion =
-    ZAURA_TOPLEVEL_SET_SHADOW_CORNER_RADII_SINCE_VERSION;
+    ZAURA_TOPLEVEL_STATE_TRUSTED_PINNED_SINCE_VERSION;
 
 }  // namespace
 

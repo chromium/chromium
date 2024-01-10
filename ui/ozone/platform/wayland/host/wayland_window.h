@@ -230,11 +230,17 @@ class WaylandWindow : public PlatformWindow,
   virtual void HandleSurfaceConfigure(uint32_t serial);
 
   struct WindowStates {
+   public:
+    WindowStates();
+    ~WindowStates();
+
     bool is_maximized = false;
     bool is_fullscreen = false;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     bool is_immersive_fullscreen = false;
-#endif
+    bool is_pinned_fullscreen = false;
+    bool is_trusted_pinned_fullscreen = false;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     bool is_activated = false;
     bool is_minimized = false;
     bool is_snapped_primary = false;
@@ -348,6 +354,10 @@ class WaylandWindow : public PlatformWindow,
 
   // Returns true if this window's configure state supports the minimized state.
   virtual bool SupportsConfigureMinimizedState() const;
+
+  // Returns true if this window's configure state supports the pinned
+  // fullscreen and trusted pinned states.
+  virtual bool SupportsConfigurePinnedState() const;
 
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner() {
     return ui_task_runner_;

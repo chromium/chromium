@@ -307,14 +307,13 @@ void XDGToplevelWrapperImpl::OnToplevelConfigure(void* data,
   auto* self = static_cast<XDGToplevelWrapperImpl*>(data);
   DCHECK(self);
 
-  WaylandWindow::WindowStates window_states{
-      .is_maximized =
-          CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_MAXIMIZED),
-      .is_fullscreen =
-          CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_FULLSCREEN),
-      .is_activated =
-          CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_ACTIVATED),
-  };
+  WaylandWindow::WindowStates window_states;
+  window_states.is_maximized =
+      CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_MAXIMIZED);
+  window_states.is_fullscreen =
+      CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_FULLSCREEN);
+  window_states.is_activated =
+      CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_ACTIVATED);
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   if (xdg_toplevel_get_version(toplevel) >=
@@ -378,25 +377,32 @@ void XDGToplevelWrapperImpl::OnAuraToplevelConfigure(
   auto* self = static_cast<XDGToplevelWrapperImpl*>(data);
   DCHECK(self);
 
-  self->wayland_window_->HandleAuraToplevelConfigure(x, y, width, height, {
-    .is_maximized =
-        CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_MAXIMIZED),
-    .is_fullscreen =
-        CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_FULLSCREEN),
+  WaylandWindow::WindowStates window_states;
+  window_states.is_maximized =
+      CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_MAXIMIZED);
+  window_states.is_fullscreen =
+      CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_FULLSCREEN);
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    .is_immersive_fullscreen =
-        CheckIfWlArrayHasValue(states, ZAURA_TOPLEVEL_STATE_IMMERSIVE),
-#endif
-    .is_activated =
-        CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_ACTIVATED),
-    .is_minimized =
-        CheckIfWlArrayHasValue(states, ZAURA_TOPLEVEL_STATE_MINIMIZED),
-    .is_snapped_primary =
-        CheckIfWlArrayHasValue(states, ZAURA_TOPLEVEL_STATE_SNAPPED_PRIMARY),
-    .is_snapped_secondary =
-        CheckIfWlArrayHasValue(states, ZAURA_TOPLEVEL_STATE_SNAPPED_SECONDARY),
-    .is_floated = CheckIfWlArrayHasValue(states, ZAURA_TOPLEVEL_STATE_FLOATED)
-  });
+  window_states.is_immersive_fullscreen =
+      CheckIfWlArrayHasValue(states, ZAURA_TOPLEVEL_STATE_IMMERSIVE);
+  window_states.is_pinned_fullscreen =
+      CheckIfWlArrayHasValue(states, ZAURA_TOPLEVEL_STATE_PINNED);
+  window_states.is_trusted_pinned_fullscreen =
+      CheckIfWlArrayHasValue(states, ZAURA_TOPLEVEL_STATE_TRUSTED_PINNED);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  window_states.is_activated =
+      CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_ACTIVATED);
+  window_states.is_minimized =
+      CheckIfWlArrayHasValue(states, ZAURA_TOPLEVEL_STATE_MINIMIZED);
+  window_states.is_snapped_primary =
+      CheckIfWlArrayHasValue(states, ZAURA_TOPLEVEL_STATE_SNAPPED_PRIMARY);
+  window_states.is_snapped_secondary =
+      CheckIfWlArrayHasValue(states, ZAURA_TOPLEVEL_STATE_SNAPPED_SECONDARY);
+  window_states.is_floated =
+      CheckIfWlArrayHasValue(states, ZAURA_TOPLEVEL_STATE_FLOATED);
+
+  self->wayland_window_->HandleAuraToplevelConfigure(x, y, width, height,
+                                                     window_states);
 }
 
 // static

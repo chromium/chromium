@@ -729,8 +729,9 @@ TEST_P(WaylandWindowTest, RestoredBoundsSetWithCorrectOrigin) {
   SendConfigureEvent(surface_id_, {0, 0}, empty_state);
   AdvanceFrameToCurrent(window_.get(), delegate_);
 
-  WaylandWindow::WindowStates window_states{.is_maximized = true,
-                                            .is_activated = true};
+  WaylandWindow::WindowStates window_states;
+  window_states.is_maximized = true;
+  window_states.is_activated = true;
 
   window_->HandleToplevelConfigure(kMaximizedBounds.width(),
                                    kMaximizedBounds.height(), window_states);
@@ -866,7 +867,11 @@ TEST_P(WaylandWindowTest, ClientInitiatedMinimize) {
   EXPECT_CALL(delegate_,
               OnWindowStateChanged(_, PlatformWindowState::kMinimized))
       .Times(1);
-  window_->HandleAuraToplevelConfigure(0, 0, 0, 0, {.is_minimized = true});
+  {
+    WaylandWindow::WindowStates window_states;
+    window_states.is_minimized = true;
+    window_->HandleAuraToplevelConfigure(0, 0, 0, 0, window_states);
+  }
   window_->HandleSurfaceConfigure(3);
   EXPECT_EQ(window_->GetPlatformWindowState(), PlatformWindowState::kMinimized);
 }
@@ -888,7 +893,11 @@ TEST_P(WaylandWindowTest, ServerInitiatedMinimize) {
   // A subsequent minimize event from the server should notify delegates of the
   // window state change.
   EXPECT_CALL(delegate_, OnWindowStateChanged(_, _)).Times(1);
-  window_->HandleAuraToplevelConfigure(0, 0, 0, 0, {.is_minimized = true});
+  {
+    WaylandWindow::WindowStates window_states;
+    window_states.is_minimized = true;
+    window_->HandleAuraToplevelConfigure(0, 0, 0, 0, window_states);
+  }
   window_->HandleSurfaceConfigure(3);
   EXPECT_EQ(PlatformWindowState::kMinimized, window_->GetPlatformWindowState());
 }
@@ -954,7 +963,11 @@ TEST_P(WaylandWindowTest, ServerInitiatedRestoreFromMinimizedState) {
   // A subsequent minimize event from the server should notify delegates of the
   // window state change.
   EXPECT_CALL(delegate_, OnWindowStateChanged(_, _)).Times(1);
-  window_->HandleAuraToplevelConfigure(0, 0, 0, 0, {.is_minimized = true});
+  {
+    WaylandWindow::WindowStates window_states;
+    window_states.is_minimized = true;
+    window_->HandleAuraToplevelConfigure(0, 0, 0, 0, window_states);
+  }
   window_->HandleSurfaceConfigure(3);
   EXPECT_EQ(PlatformWindowState::kMinimized, window_->GetPlatformWindowState());
 
@@ -1936,9 +1949,13 @@ TEST_P(WaylandWindowTest, InitialConfigureFollowedByBoundsChangeCompletesAck) {
     EXPECT_CALL(*xdg_surface, AckConfigure(kConfigureSerial)).Times(1);
   });
 
-  window_->HandleAuraToplevelConfigure(
-      kSecondBounds.x(), kSecondBounds.y(), kSecondBounds.width(),
-      kSecondBounds.height(), {.is_activated = true});
+  {
+    WaylandWindow::WindowStates window_states;
+    window_states.is_activated = true;
+    window_->HandleAuraToplevelConfigure(kSecondBounds.x(), kSecondBounds.y(),
+                                         kSecondBounds.width(),
+                                         kSecondBounds.height(), window_states);
+  }
   window_->HandleSurfaceConfigure(kConfigureSerial);
 
   // Don't call AdvanceFrameToCurrent here, because just updating the
@@ -4185,9 +4202,13 @@ TEST_P(WaylandWindowTest, InitialBounds) {
   testing::NiceMock<MockWaylandPlatformWindowDelegate> delegate_2;
   auto toplevel = CreateWaylandWindowWithParams(
       PlatformWindowType::kWindow, gfx::Rect(10, 10, 200, 200), &delegate_2);
-  toplevel->HandleAuraToplevelConfigure(
-      0, 0, 0, 0,
-      {.is_maximized = false, .is_fullscreen = false, .is_activated = true});
+  {
+    WaylandWindow::WindowStates window_states;
+    window_states.is_maximized = false;
+    window_states.is_fullscreen = false;
+    window_states.is_activated = true;
+    toplevel->HandleAuraToplevelConfigure(0, 0, 0, 0, window_states);
+  }
   toplevel->HandleSurfaceConfigure(2);
   EXPECT_EQ(gfx::Rect(10, 10, 200, 200), toplevel->GetBoundsInDIP());
 }
@@ -4196,11 +4217,14 @@ TEST_P(WaylandWindowTest, PrimarySnappedState) {
   testing::NiceMock<MockWaylandPlatformWindowDelegate> delegate_2;
   auto toplevel = CreateWaylandWindowWithParams(
       PlatformWindowType::kWindow, gfx::Rect(0, 0, 200, 200), &delegate_2);
-  toplevel->HandleAuraToplevelConfigure(0, 0, 100, 200,
-                                        {.is_maximized = false,
-                                         .is_fullscreen = false,
-                                         .is_activated = true,
-                                         .is_snapped_primary = true});
+  {
+    WaylandWindow::WindowStates window_states;
+    window_states.is_maximized = false;
+    window_states.is_fullscreen = false;
+    window_states.is_activated = true;
+    window_states.is_snapped_primary = true;
+    toplevel->HandleAuraToplevelConfigure(0, 0, 100, 200, window_states);
+  }
   toplevel->HandleSurfaceConfigure(2);
   EXPECT_EQ(gfx::Rect(0, 0, 100, 200), toplevel->GetBoundsInDIP());
 }
@@ -4209,11 +4233,14 @@ TEST_P(WaylandWindowTest, SecondarySnappedState) {
   testing::NiceMock<MockWaylandPlatformWindowDelegate> delegate_2;
   auto toplevel = CreateWaylandWindowWithParams(
       PlatformWindowType::kWindow, gfx::Rect(0, 0, 200, 200), &delegate_2);
-  toplevel->HandleAuraToplevelConfigure(100, 0, 100, 200,
-                                        {.is_maximized = false,
-                                         .is_fullscreen = false,
-                                         .is_activated = true,
-                                         .is_snapped_secondary = true});
+  {
+    WaylandWindow::WindowStates window_states;
+    window_states.is_maximized = false;
+    window_states.is_fullscreen = false;
+    window_states.is_activated = true;
+    window_states.is_snapped_secondary = true;
+    toplevel->HandleAuraToplevelConfigure(100, 0, 100, 200, window_states);
+  }
   toplevel->HandleSurfaceConfigure(2);
   EXPECT_EQ(gfx::Rect(100, 0, 100, 200), toplevel->GetBoundsInDIP());
 }
@@ -4233,11 +4260,14 @@ TEST_P(WaylandWindowTest, ImmersiveFullscreen) {
               OnFullscreenTypeChanged(PlatformFullscreenType::kNone,
                                       PlatformFullscreenType::kImmersive))
       .Times(1);
-  toplevel->HandleAuraToplevelConfigure(0, 0, 0, 0,
-                                        {.is_maximized = false,
-                                         .is_fullscreen = true,
-                                         .is_immersive_fullscreen = true,
-                                         .is_activated = true});
+  {
+    WaylandWindow::WindowStates window_states;
+    window_states.is_maximized = false;
+    window_states.is_fullscreen = true;
+    window_states.is_immersive_fullscreen = true;
+    window_states.is_activated = true;
+    toplevel->HandleAuraToplevelConfigure(0, 0, 0, 0, window_states);
+  }
   toplevel->HandleSurfaceConfigure(2);
 }
 
@@ -4254,22 +4284,28 @@ TEST_P(WaylandWindowTest, ImmersiveFullscreen_Disabled) {
 
   // First we have to enable it, or the top level window will not detect
   // immersive state change.
-  toplevel->HandleAuraToplevelConfigure(0, 0, 0, 0,
-                                        {.is_maximized = false,
-                                         .is_fullscreen = true,
-                                         .is_immersive_fullscreen = true,
-                                         .is_activated = true});
+  {
+    WaylandWindow::WindowStates window_states;
+    window_states.is_maximized = false;
+    window_states.is_fullscreen = true;
+    window_states.is_immersive_fullscreen = true;
+    window_states.is_activated = true;
+    toplevel->HandleAuraToplevelConfigure(0, 0, 0, 0, window_states);
+  }
   toplevel->HandleSurfaceConfigure(++serial);
 
   EXPECT_CALL(delegate_2,
               OnFullscreenTypeChanged(PlatformFullscreenType::kImmersive,
                                       PlatformFullscreenType::kNone))
       .Times(1);
-  toplevel->HandleAuraToplevelConfigure(0, 0, 0, 0,
-                                        {.is_maximized = false,
-                                         .is_fullscreen = false,
-                                         .is_immersive_fullscreen = false,
-                                         .is_activated = true});
+  {
+    WaylandWindow::WindowStates window_states;
+    window_states.is_maximized = false;
+    window_states.is_fullscreen = false;
+    window_states.is_immersive_fullscreen = false;
+    window_states.is_activated = true;
+    toplevel->HandleAuraToplevelConfigure(0, 0, 0, 0, window_states);
+  }
   toplevel->HandleSurfaceConfigure(++serial);
 }
 
@@ -4624,7 +4660,11 @@ TEST_P(WaylandWindowTest, StartWithMinimized) {
     EXPECT_CALL(delegate_,
                 OnWindowStateChanged(_, PlatformWindowState::kMinimized))
         .Times(1);
-    window_->HandleAuraToplevelConfigure(0, 0, 0, 0, {.is_minimized = true});
+    {
+      WaylandWindow::WindowStates window_states;
+      window_states.is_minimized = true;
+      window_->HandleAuraToplevelConfigure(0, 0, 0, 0, window_states);
+    }
     window_->HandleSurfaceConfigure(3);
     EXPECT_EQ(window_->GetPlatformWindowState(),
               PlatformWindowState::kMinimized);

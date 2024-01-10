@@ -54,6 +54,13 @@ bool ShouldSetBounds(PlatformWindowState state) {
          state == PlatformWindowState::kFloated;
 }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+bool IsPinnedOrFullscreen(const WaylandWindow::WindowStates& states) {
+  return states.is_fullscreen || states.is_pinned_fullscreen ||
+         states.is_trusted_pinned_fullscreen;
+}
+#endif  // BUILDFLAG(IS_CHOMEOS_LACROS)
+
 }  // namespace
 
 constexpr int kVisibleOnAllWorkspaces = -1;
@@ -418,6 +425,12 @@ bool WaylandToplevelWindow::SupportsConfigureMinimizedState() const {
                                 ZAURA_TOPLEVEL_STATE_MINIMIZED_SINCE_VERSION);
 }
 
+bool WaylandToplevelWindow::SupportsConfigurePinnedState() const {
+  return shell_toplevel_ &&
+         shell_toplevel_->IsSupportedOnAuraToplevel(
+             ZAURA_TOPLEVEL_STATE_TRUSTED_PINNED_SINCE_VERSION);
+}
+
 void WaylandToplevelWindow::UpdateWindowScale(bool update_bounds) {
   auto old_scale = applied_state().window_scale;
   WaylandWindow::UpdateWindowScale(update_bounds);
@@ -541,6 +554,15 @@ void WaylandToplevelWindow::HandleAuraToplevelConfigure(
     state_ = PlatformWindowState::kMinimized;
   } else if (window_states.is_fullscreen) {
     state_ = PlatformWindowState::kFullScreen;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  } else if (window_states.is_pinned_fullscreen) {
+    // TODO(crbug.com/1512518): Use kPinnedFullscreen when it's supported.
+    state_ = PlatformWindowState::kFullScreen;
+  } else if (window_states.is_trusted_pinned_fullscreen) {
+    // TODO(crbug.com/1512518): Use kTrustedPinnedFullscreen when it's
+    // supported.
+    state_ = PlatformWindowState::kFullScreen;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   } else if (window_states.is_maximized) {
     state_ = PlatformWindowState::kMaximized;
   } else if (window_states.is_snapped_primary) {
@@ -558,12 +580,19 @@ void WaylandToplevelWindow::HandleAuraToplevelConfigure(
   fullscreen_display_id_ = display::kInvalidDisplayId;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  CHECK(!window_states.is_immersive_fullscreen || window_states.is_fullscreen);
+  CHECK(!window_states.is_immersive_fullscreen ||
+        IsPinnedOrFullscreen(window_states))
+      << "Immersive state should not be set when it's not fullscreen.";
+
+  // TODO(crbug.com/1512518): Refer to window_states.is_pinned_fullscreen and
+  // is_trusted_window_fullscreen and set kPinned/kTrustedPinned as a fullscreen
+  // type when it's supported.
   PlatformFullscreenType fullscreen_type =
       window_states.is_immersive_fullscreen
           ? PlatformFullscreenType::kImmersive
-          : (window_states.is_fullscreen ? PlatformFullscreenType::kPlain
-                                         : PlatformFullscreenType::kNone);
+          : (IsPinnedOrFullscreen(window_states)
+                 ? PlatformFullscreenType::kPlain
+                 : PlatformFullscreenType::kNone);
   if (fullscreen_type_ != fullscreen_type) {
     // The fullscreen state change has finished and we we need to inform the
     // browser/app that the transition is done.

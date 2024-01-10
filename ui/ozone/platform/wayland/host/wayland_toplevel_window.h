@@ -92,6 +92,7 @@ class WaylandToplevelWindow : public WaylandWindow,
   void SetWindowGeometry(gfx::Size size_dip) override;
   bool IsScreenCoordinatesEnabled() const override;
   bool SupportsConfigureMinimizedState() const override;
+  bool SupportsConfigurePinnedState() const override;
   void ShowTooltip(const std::u16string& text,
                    const gfx::Point& position,
                    const PlatformWindowTooltipTrigger trigger,
