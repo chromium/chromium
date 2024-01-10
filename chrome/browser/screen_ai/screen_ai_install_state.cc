@@ -47,6 +47,22 @@ bool IsDeviceCompatible() {
   return true;
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class LibraryVerificationResult {
+  kOk = 0,
+  kVersionInvalid = 1,
+  kVersionLow = 2,
+  kPathUnexpected = 3,
+  kLoadFailed = 4,
+  kMaxValue = kLoadFailed,
+};
+
+void RecordLibraryVerificationResult(LibraryVerificationResult result) {
+  base::UmaHistogramEnumeration(
+      "Accessibility.ScreenAI.LibraryVerificationResult", result);
+}
+
 }  // namespace
 
 namespace screen_ai {
@@ -67,13 +83,24 @@ ScreenAIInstallState* ScreenAIInstallState::GetInstance() {
 }
 
 // static
-bool ScreenAIInstallState::VerifyLibraryVersion(const std::string& version) {
-  if (version >= kMinExpectedVersion) {
-    return true;
+bool ScreenAIInstallState::VerifyLibraryVersion(const base::Version& version) {
+  base::Version min_version(kMinExpectedVersion);
+  CHECK(min_version.IsValid());
+
+  if (!version.IsValid()) {
+    VLOG(0) << "Cannot verify library version.";
+    RecordLibraryVerificationResult(LibraryVerificationResult::kVersionInvalid);
+    return false;
   }
-  VLOG(0) << "Screen AI library version is expected to be at least "
-          << kMinExpectedVersion << ", but it is: " << version;
-  return false;
+
+  if (version < min_version) {
+    VLOG(0) << "Version is expected to be at least " << kMinExpectedVersion
+            << ", but it is: " << version;
+    RecordLibraryVerificationResult(LibraryVerificationResult::kVersionLow);
+    return false;
+  }
+
+  return true;
 }
 
 // static
@@ -83,11 +110,13 @@ bool ScreenAIInstallState::VerifyLibraryAvailablity(
   // returns the same directory as `install_dir`.
   base::FilePath binary_path = screen_ai::GetLatestComponentBinaryPath();
   if (binary_path.DirName() != install_dir) {
-    VLOG(0) << "Screen AI library is installed in an unexpected folder.";
+    RecordLibraryVerificationResult(LibraryVerificationResult::kPathUnexpected);
+    VLOG(0) << "Library is installed in an unexpected folder.";
     return false;
   }
 
 #if !BUILDFLAG(IS_WIN)
+  RecordLibraryVerificationResult(LibraryVerificationResult::kOk);
   return true;
 #else
   // Sometimes the library cannot be loaded due to an installation error or OS
@@ -96,12 +125,14 @@ bool ScreenAIInstallState::VerifyLibraryAvailablity(
   base::NativeLibrary library =
       base::LoadNativeLibrary(binary_path, &lib_error);
   bool available = (library != nullptr);
-  base::UmaHistogramBoolean("Accessibility.ScreenAI.LibraryAvailableOnVerify",
-                            available);
   base::UmaHistogramSparse("Accessibility.ScreenAI.LibraryAccessResultOnVerify",
                            lib_error.code);
   if (available) {
     base::UnloadNativeLibrary(library);
+    RecordLibraryVerificationResult(LibraryVerificationResult::kOk);
+  } else {
+    RecordLibraryVerificationResult(LibraryVerificationResult::kLoadFailed);
+    VLOG(0) << "Library could not be loaded.";
   }
 
   return available;

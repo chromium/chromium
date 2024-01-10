@@ -7,7 +7,9 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/task/thread_pool.h"
 #include "base/values.h"
+#include "base/version.h"
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/crx_file/id_util.h"
@@ -64,10 +66,25 @@ void ScreenAIComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
     base::Value::Dict manifest) {
-  screen_ai::ScreenAIInstallState::GetInstance()->SetComponentFolder(
-      install_dir);
   VLOG(1) << "Screen AI Component ready, version " << version.GetString()
           << " in " << install_dir.value();
+
+  // Verifying library availability requires I/O and hence a blocking thread.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(&screen_ai::ScreenAIInstallState::VerifyLibraryAvailablity,
+                     install_dir),
+      base::BindOnce(
+          [](base::FilePath install_dir, bool library_available) {
+            auto* state = screen_ai::ScreenAIInstallState::GetInstance();
+            if (library_available) {
+              state->SetComponentFolder(install_dir);
+            } else {
+              state->SetState(screen_ai::ScreenAIInstallState::State::kFailed);
+            }
+          },
+          install_dir));
 }
 
 bool ScreenAIComponentInstallerPolicy::VerifyInstallation(
@@ -75,17 +92,15 @@ bool ScreenAIComponentInstallerPolicy::VerifyInstallation(
     const base::FilePath& install_dir) const {
   VLOG(1) << "Verifying Screen AI component in " << install_dir.value();
 
+  base::Version version;
+  DCHECK(!version.IsValid());
+
   const base::Value* version_value = manifest.Find("version");
-  if (!version_value || !version_value->is_string()) {
-    VLOG(0) << "Cannot verify Screen AI library version.";
-    return false;
-  }
-  if (!screen_ai::ScreenAIInstallState::VerifyLibraryVersion(
-          version_value->GetString())) {
-    return false;
+  if (version_value && version_value->is_string()) {
+    version = base::Version(version_value->GetString());
   }
 
-  return screen_ai::ScreenAIInstallState::VerifyLibraryAvailablity(install_dir);
+  return screen_ai::ScreenAIInstallState::VerifyLibraryVersion(version);
 }
 
 base::FilePath ScreenAIComponentInstallerPolicy::GetRelativeInstallDir() const {

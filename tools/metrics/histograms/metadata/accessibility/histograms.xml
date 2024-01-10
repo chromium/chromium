@@ -2242,16 +2242,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Accessibility.ScreenAI.LibraryAvailableOnVerify"
-    enum="BooleanSuccess" expires_after="2024-06-30">
-  <owner>rhalavati@chromium.org</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Records library load result for Chrome Screen AI after the component is
-    verified.
-  </summary>
-</histogram>
-
 <histogram name="Accessibility.ScreenAI.LibraryLoadDetailedResultOnWindows"
     enum="WinGetLastError" expires_after="2024-06-30">
   <owner>rhalavati@chromium.org</owner>
@@ -2262,14 +2252,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Accessibility.ScreenAI.LibraryPathVerified"
-    enum="BooleanSuccess" expires_after="2023-11-21">
+<histogram name="Accessibility.ScreenAI.LibraryVerificationResult"
+    enum="LibraryVerificationResult" expires_after="2024-06-30">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
-    Deprecated in 2023-11 as it was added only to collect data to debug a crash.
-    Records if the library path matched the heuristics for chrome_screen_ai.dll
-    when the component is verified.
+    Records the result of ScreenAI component verification in start up or after
+    component update.
   </summary>
 </histogram>
 

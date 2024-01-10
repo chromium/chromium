@@ -23943,6 +23943,14 @@ Called by update_permissions_policy_enum.py.-->
   <int value="5" label="IO Error"/>
 </enum>
 
+<enum name="LibraryVerificationResult">
+  <int value="0" label="OK"/>
+  <int value="1" label="Invalid version value"/>
+  <int value="2" label="Low version"/>
+  <int value="3" label="Unexpected Path"/>
+  <int value="4" label="Load failed"/>
+</enum>
+
 <enum name="LinkGenerationCopiedLinkType">
   <int value="0" label="Copied from new right-click menu generation"/>
   <int value="1" label="Copied from existing highlight right-click menu"/>
