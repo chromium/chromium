@@ -6607,6 +6607,14 @@
     "expiry_milestone": 134
   },
   {
+    "name": "privacy-sandbox-internals",
+    "owners": [
+      "kmg@google.com",
+      "koilos@google.com"
+    ],
+    "expiry_milestone": 134
+  },
+  {
     "name": "privacy-sandbox-proactive-topics-blocking",
     "owners": [
       "sauski@chromium.org",

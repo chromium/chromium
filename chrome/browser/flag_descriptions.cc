@@ -2911,6 +2911,10 @@ const char kPrivacySandboxEnrollmentOverridesDescription[] =
     "enrolled and attested into the Privacy Sandbox experiment. See: "
     "https://developer.chrome.com/en/docs/privacy-sandbox/enroll/";
 
+const char kPrivacySandboxInternalsName[] = "Privacy Sandbox Internals Page";
+const char kPrivacySandboxInternalsDescription[] =
+    "Enables the chrome://privacy-sandbox-internals debugging page.";
+
 const char kPrivacySandboxProactiveTopicsBlockingName[] =
     "Privacy Sandbox Proactive Topics Blocking";
 const char kPrivacySandboxProactiveTopicsBlockingDescription[] =

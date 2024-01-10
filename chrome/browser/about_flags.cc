@@ -8399,6 +8399,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(privacy_sandbox::kPrivacySandboxAdsNoticeCCT)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+    {"privacy-sandbox-internals",
+     flag_descriptions::kPrivacySandboxInternalsName,
+     flag_descriptions::kPrivacySandboxInternalsDescription, kOsAll,
+     FEATURE_VALUE_TYPE(privacy_sandbox::kPrivacySandboxInternalsDevUI)},
+
     {"privacy-sandbox-proactive-topics-blocking",
      flag_descriptions::kPrivacySandboxProactiveTopicsBlockingName,
      flag_descriptions::kPrivacySandboxProactiveTopicsBlockingDescription,
