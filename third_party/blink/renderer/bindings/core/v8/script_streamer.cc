@@ -389,6 +389,7 @@ class SourceStream : public v8::ScriptCompiler::ExternalSourceStream {
  private:
   void SetFinished(ResourceScriptStreamer::LoadingState state) {
     load_state_ = state;
+    data_pipe_.reset();
   }
 
   // TODO(leszeks): Make this a DCHECK-only flag.
