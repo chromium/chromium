@@ -308,12 +308,14 @@ public class ReadAloudController
 
                         @Override
                         protected void onTabSelected(Tab tab) {
-                            Log.d(
-                                    TAG,
-                                    "onTabSelected called for "
-                                            + tab.getUrl().getPossiblyInvalidSpec());
                             super.onTabSelected(tab);
-                            maybeCheckReadability(tab.getUrl());
+                            if (tab != null && tab.getUrl() != null) {
+                                Log.d(
+                                        TAG,
+                                        "onTabSelected called for "
+                                                + tab.getUrl().getPossiblyInvalidSpec());
+                                maybeCheckReadability(tab.getUrl());
+                            }
                         }
 
                         @Override
