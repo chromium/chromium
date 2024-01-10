@@ -986,8 +986,17 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerVotingBrowserTest,
   // the test to hang on Mac.
   autofill::test::DisableSystemServices(browser()->profile()->GetPrefs());
 
+  // The form should not be hosted on localhost to enable sending
+  // crowdsourcing votes.
+  const std::string kTestSignonRealm = "example.com";
+  // This fixture is needed to allow password filling on page load.
+  SetUrlAsTrustworthy(
+      embedded_test_server()->GetURL(kTestSignonRealm, "/").spec());
+
   // Visit a signup form.
-  NavigateToFile("/password/signup_form.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(kTestSignonRealm,
+                                                "/password/signup_form.html")));
 
   // Enter a password and save it.
   PasswordsNavigationObserver first_observer(WebContents());
@@ -1009,7 +1018,9 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerVotingBrowserTest,
   }
 
   // Now navigate to a login form that has similar HTML markup.
-  NavigateToFile("/password/password_form.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(
+                     kTestSignonRealm, "/password/password_form.html")));
 
   // Simulate a user click to force an autofill of the form's DOM value, not
   // just the suggested value.
