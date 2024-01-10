@@ -333,8 +333,10 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
         View toolbarHairline = mControlContainer.findViewById(R.id.toolbar_hairline);
         updateTopMargin(toolbarHairline, topControlHeight);
 
-        // Optionally, update the find toolbar and toolbar drop target views.
-        updateViewStubTopMargin(R.id.find_toolbar_stub, R.id.find_toolbar, mTabStripHeight);
+        // Update the find toolbar and toolbar drop target views. Do not update find_toolbar_stub
+        // since it is only used for phones.
+        // TODO (crbug.com/1517059): Let FindToolbar itself decide how to set the top margin.
+        updateViewStubTopMargin(R.id.find_toolbar_tablet_stub, R.id.find_toolbar, topControlHeight);
         updateViewStubTopMargin(
                 R.id.target_view_stub, R.id.toolbar_drag_drop_target_view, mTabStripHeight);
 
@@ -369,9 +371,9 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
     private void updateViewStubTopMargin(int viewStubId, int inflatedViewId, int topMargin) {
         View view = mControlContainer.findViewById(inflatedViewId);
         if (view != null) {
-            // View is not yet inflated.
             updateTopMargin(view, topMargin);
         } else {
+            // View is not yet inflated.
             View viewStub = mControlContainer.findViewById(viewStubId);
             updateTopMargin(viewStub, topMargin);
         }

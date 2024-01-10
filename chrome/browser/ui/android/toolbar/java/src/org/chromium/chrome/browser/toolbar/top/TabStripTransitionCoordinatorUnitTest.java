@@ -363,7 +363,7 @@ public class TabStripTransitionCoordinatorUnitTest {
                 mSpyControlContainer.toolbarLayout.getTopMargin());
         Assert.assertEquals(
                 "Top margin is wrong for findToolbar.",
-                tabStripHeight,
+                tabStripHeight + TEST_TOOLBAR_HEIGHT,
                 mSpyControlContainer.findToolbar.getTopMargin());
         Assert.assertEquals(
                 "Top margin is wrong for dropTargetView.",
@@ -453,7 +453,7 @@ public class TabStripTransitionCoordinatorUnitTest {
                     .findViewById(R.id.toolbar_hairline);
             doReturn(controlContainer.findToolbar)
                     .when(controlContainer)
-                    .findViewById(R.id.find_toolbar_stub);
+                    .findViewById(R.id.find_toolbar_tablet_stub);
             doReturn(controlContainer.dropTargetView)
                     .when(controlContainer)
                     .findViewById(R.id.target_view_stub);
@@ -489,11 +489,11 @@ public class TabStripTransitionCoordinatorUnitTest {
                             ViewGroup.LayoutParams.MATCH_PARENT);
             sourceParams.topMargin = TEST_TAB_STRIP_HEIGHT + TEST_TOOLBAR_HEIGHT;
             addView(toolbarHairline, new MarginLayoutParams(sourceParams));
+            addView(findToolbar, new MarginLayoutParams(sourceParams));
 
             sourceParams.topMargin = TEST_TAB_STRIP_HEIGHT;
             sourceParams.height = TEST_TOOLBAR_HEIGHT;
             addView(toolbarLayout, new MarginLayoutParams(sourceParams));
-            addView(findToolbar, new MarginLayoutParams(sourceParams));
             addView(dropTargetView, new MarginLayoutParams(sourceParams));
         }
     }

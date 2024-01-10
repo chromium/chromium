@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.resources.ResourceManager;
+import org.chromium.ui.util.TokenHolder;
 
 import java.util.List;
 import java.util.function.BooleanSupplier;
@@ -121,6 +122,9 @@ public class TopToolbarCoordinator implements Toolbar {
      * components and send the rendering toolbar color to the ToolbarColorObserver.
      */
     private ToolbarColorObserverManager mToolbarColorObserverManager;
+
+    /** Token used to block the tab strip transition when find in page toolbar is showing. */
+    private int mFindToolbarToken = TokenHolder.INVALID_TOKEN;
 
     /**
      * Creates a new {@link TopToolbarCoordinator}.
@@ -502,6 +506,15 @@ public class TopToolbarCoordinator implements Toolbar {
      */
     public void handleFindLocationBarStateChange(boolean showing) {
         mToolbarLayout.handleFindLocationBarStateChange(showing);
+        if (mTabStripTransitionCoordinator != null) {
+            if (showing) {
+                mFindToolbarToken =
+                        mTabStripTransitionCoordinator.requestDeferTabStripTransitionToken();
+            } else {
+                mTabStripTransitionCoordinator.releaseTabStripToken(mFindToolbarToken);
+                mFindToolbarToken = TokenHolder.INVALID_TOKEN;
+            }
+        }
     }
 
     /** Sets whether the urlbar should be hidden on first page load. */
