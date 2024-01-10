@@ -1,0 +1,5 @@
+CONSOLE ERROR: Unsafe attempt to initiate navigation for frame with URL 'close-top.html'. The frame attempting navigation of the top-level window is sandboxed, but the flag of 'allow-top-navigation' or 'allow-top-navigation-by-user-activation' is not set.
+
+This test verifies that a sandboxed IFrame can close a top-level frame with allow-top-navigation.
+
+Start Test
