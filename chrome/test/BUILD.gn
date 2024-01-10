@@ -4802,6 +4802,7 @@ if (!is_android && !is_fuchsia) {
         "../browser/ui/ash/shelf/browser_shortcut_shelf_item_controller_browsertest.cc",
         "../browser/ui/ash/shelf/chrome_shelf_controller_browsertest.cc",
         "../browser/ui/ash/shelf/extension_shelf_context_menu_browsertest.cc",
+        "../browser/ui/ash/shelf/standalone_window_migration_nudge_browsertest.cc",
         "../browser/ui/ash/shelf_browsertest.cc",
         "../browser/ui/ash/system_tray_client_impl_browsertest.cc",
         "../browser/ui/ash/system_tray_tray_cast_browsertest_media_router_chromeos.cc",

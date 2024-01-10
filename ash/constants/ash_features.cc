@@ -1503,6 +1503,12 @@ BASE_FEATURE(kSnoopingProtection,
              "SnoopingProtection",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables message to notify users of apps that previously opened in the browser
+// are now opening in standalone windows.
+BASE_FEATURE(kStandaloneWindowMigrationUx,
+             "StandaloneWindowMigrationUx",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether to start AssistantAudioDecoder service on demand (at query
 // response time).
 BASE_FEATURE(kStartAssistantAudioDecoderOnDemand,
@@ -3630,6 +3636,11 @@ bool IsScreenSaverDurationEnabled() {
 bool IsSnoopingProtectionEnabled() {
   return base::FeatureList::IsEnabled(kSnoopingProtection) &&
          switches::HasHps();
+}
+
+bool IsStandaloneWindowMigrationUxEnabled() {
+  return base::FeatureList::IsEnabled(kStandaloneWindowMigrationUx) &&
+         base::FeatureList::IsEnabled(chromeos::features::kCrosShortstand);
 }
 
 bool IsStartAssistantAudioDecoderOnDemandEnabled() {
