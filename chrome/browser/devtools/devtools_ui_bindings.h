@@ -22,6 +22,9 @@
 #include "chrome/browser/devtools/devtools_settings.h"
 #include "chrome/browser/devtools/devtools_targets_ui.h"
 #include "chrome/browser/devtools/visual_logging.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/themes/theme_service_observer.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_frontend_host.h"
@@ -44,7 +47,8 @@ class ContentInfoBarManager;
 class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
                            public DevToolsAndroidBridge::DeviceCountListener,
                            public content::DevToolsAgentHostClient,
-                           public DevToolsFileHelper::Delegate {
+                           public DevToolsFileHelper::Delegate,
+                           public ThemeServiceObserver {
  public:
   class Delegate {
    public:
@@ -108,6 +112,9 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
       const scoped_refptr<content::DevToolsAgentHost>& agent_host);
   void Detach();
   bool IsAttachedTo(content::DevToolsAgentHost* agent_host);
+
+  // ThemeServiceObserver implementation
+  void OnThemeChanged() override;
 
   static base::Value::Dict GetSyncInformationForProfile(Profile* profile);
 

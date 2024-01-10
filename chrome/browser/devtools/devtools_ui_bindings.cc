@@ -681,6 +681,8 @@ DevToolsUIBindings::DevToolsUIBindings(content::WebContents* web_contents)
   // Register on-load actions.
   embedder_message_dispatcher_ =
       DevToolsEmbedderMessageDispatcher::CreateForDevToolsFrontend(this);
+  ThemeServiceFactory::GetForProfile(profile_->GetOriginalProfile())
+      ->AddObserver(this);
 }
 
 DevToolsUIBindings::~DevToolsUIBindings() {
@@ -1840,6 +1842,10 @@ bool DevToolsUIBindings::IsAttachedTo(content::DevToolsAgentHost* agent_host) {
   // TODO(caseq): find better way to track attached targets.
   return initial_target_id_.empty() ? agent_host_.get() == agent_host
                                     : initial_target_id_ == agent_host->GetId();
+}
+
+void DevToolsUIBindings::OnThemeChanged() {
+  CallClientMethod("DevToolsAPI", "colorThemeChanged");
 }
 
 void DevToolsUIBindings::CallClientMethod(
