@@ -16785,21 +16785,6 @@
             ]
         }
     ],
-    "SeedAccountsRevampAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SeedAccountsRevamp"
-                    ]
-                }
-            ]
-        }
-    ],
     "SegmentationCompactionFix": [
         {
             "platforms": [
