@@ -268,9 +268,8 @@ source_set("session_migration") {
     ":session_constants",
     ":session_internal_util",
     "//base",
-    "//components/sessions",
-    "//components/sessions:session_id",
     "//ios/chrome/browser/sessions/proto",
+    "//ios/web/public",
     "//ios/web/public/session",
     "//ios/web/public/session/proto",
   ]
