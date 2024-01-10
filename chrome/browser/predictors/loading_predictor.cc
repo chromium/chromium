@@ -260,10 +260,7 @@ ResourcePrefetchPredictor* LoadingPredictor::resource_prefetch_predictor() {
 }
 
 PreconnectManager* LoadingPredictor::preconnect_manager() {
-  if (shutdown_) {
-    return nullptr;
-  }
-
+  CHECK(!shutdown_);
   if (!preconnect_manager_) {
     preconnect_manager_ =
         std::make_unique<PreconnectManager>(GetWeakPtr(), profile_);
@@ -273,12 +270,8 @@ PreconnectManager* LoadingPredictor::preconnect_manager() {
 }
 
 PrefetchManager* LoadingPredictor::prefetch_manager() {
-  if (!base::FeatureList::IsEnabled(features::kLoadingPredictorPrefetch))
-    return nullptr;
-
-  if (shutdown_) {
-    return nullptr;
-  }
+  CHECK(base::FeatureList::IsEnabled(features::kLoadingPredictorPrefetch));
+  CHECK(!shutdown_);
 
   if (!prefetch_manager_) {
     prefetch_manager_ =
@@ -373,9 +366,9 @@ void LoadingPredictor::CleanupAbandonedHintsAndNavigations(
 
 void LoadingPredictor::MaybeAddPreconnect(const GURL& url,
                                           PreconnectPrediction prediction) {
-  DCHECK(!shutdown_);
+  CHECK(!shutdown_);
   if (!prediction.prefetch_requests.empty()) {
-    DCHECK(base::FeatureList::IsEnabled(features::kLoadingPredictorPrefetch));
+    CHECK(base::FeatureList::IsEnabled(features::kLoadingPredictorPrefetch));
     prefetch_manager()->Start(url, std::move(prediction.prefetch_requests));
   }
 
