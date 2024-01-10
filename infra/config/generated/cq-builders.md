@@ -641,7 +641,7 @@ as required builders.
   * Experiment percentage: 10.0
 
 * [lacros-amd64-generic-rel-renamed](https://ci.chromium.org/p/chromium/builders/try/lacros-amd64-generic-rel-renamed) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""lacros-amd64-generic-rel-renamed""))
-  * Experiment percentage: 1.0
+  * Experiment percentage: 10.0
 
 * [linux-chromeos-compile-siso-dbg](https://ci.chromium.org/p/chromium/builders/try/linux-chromeos-compile-siso-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-chromeos-compile-siso-dbg""))
   * Experiment percentage: 10.0
