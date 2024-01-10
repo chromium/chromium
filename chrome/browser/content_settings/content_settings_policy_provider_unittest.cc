@@ -63,7 +63,7 @@ TEST_F(PolicyProviderTest, DefaultGeolocationContentSetting) {
 
   EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule->primary_pattern);
   EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule->secondary_pattern);
-  EXPECT_EQ(CONTENT_SETTING_BLOCK, ValueToContentSetting(rule->value()));
+  EXPECT_EQ(CONTENT_SETTING_BLOCK, ValueToContentSetting(rule->value));
 
   provider.ShutdownOnUIThread();
 }
@@ -86,7 +86,7 @@ TEST_F(PolicyProviderTest, ManagedDefaultContentSettings) {
 
   EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule->primary_pattern);
   EXPECT_EQ(ContentSettingsPattern::Wildcard(), rule->secondary_pattern);
-  EXPECT_EQ(CONTENT_SETTING_BLOCK, ValueToContentSetting(rule->value()));
+  EXPECT_EQ(CONTENT_SETTING_BLOCK, ValueToContentSetting(rule->value));
 
   provider.ShutdownOnUIThread();
 }

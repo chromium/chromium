@@ -40,10 +40,10 @@ class RuleIteratorImpl : public RuleIterator {
 
   std::unique_ptr<Rule> Next() override {
     DCHECK(HasNext());
-    auto to_return = std::make_unique<UnownedRule>(
+    auto to_return = std::make_unique<Rule>(
         current_rule_->first.primary_pattern,
-        current_rule_->first.secondary_pattern, &current_rule_->second.value,
-        auto_lock_, current_rule_->second.metadata);
+        current_rule_->first.secondary_pattern,
+        current_rule_->second.value.Clone(), current_rule_->second.metadata);
     ++current_rule_;
     return to_return;
   }

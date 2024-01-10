@@ -136,7 +136,7 @@ class ChannelsRuleIterator : public content_settings::RuleIterator {
     content_settings::RuleMetaData metadata;
     metadata.set_last_modified(channel.timestamp);
     std::unique_ptr<content_settings::Rule> rule =
-        std::make_unique<content_settings::OwnedRule>(
+        std::make_unique<content_settings::Rule>(
             ContentSettingsPattern::FromURLNoWildcard(GURL(channel.origin)),
             ContentSettingsPattern::Wildcard(),
             base::Value(ChannelStatusToContentSetting(channel.status)),
@@ -459,7 +459,7 @@ void NotificationChannelsProviderAndroid::CreateChannelForRule(
   DCHECK(!origin.opaque());
   const std::string origin_string = origin.Serialize();
   ContentSetting content_setting =
-      content_settings::ValueToContentSetting(rule.value());
+      content_settings::ValueToContentSetting(rule.value);
   switch (content_setting) {
     case CONTENT_SETTING_ALLOW:
       CreateChannelIfRequired(origin_string,

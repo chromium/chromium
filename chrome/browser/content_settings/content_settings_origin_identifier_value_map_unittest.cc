@@ -214,13 +214,13 @@ TEST(OriginIdentifierValueMapTest, IterateNonempty) {
   ASSERT_TRUE(rule_iterator->HasNext());
   std::unique_ptr<content_settings::Rule> rule = rule_iterator->Next();
   EXPECT_EQ(sub_pattern, rule->primary_pattern);
-  EXPECT_EQ(2, content_settings::ValueToContentSetting(rule->value()));
+  EXPECT_EQ(2, content_settings::ValueToContentSetting(rule->value));
   EXPECT_EQ(t2, rule->metadata.last_modified());
 
   ASSERT_TRUE(rule_iterator->HasNext());
   rule = rule_iterator->Next();
   EXPECT_EQ(pattern, rule->primary_pattern);
-  EXPECT_EQ(1, content_settings::ValueToContentSetting(rule->value()));
+  EXPECT_EQ(1, content_settings::ValueToContentSetting(rule->value));
   EXPECT_EQ(t1, rule->metadata.last_modified());
 }
 
@@ -252,7 +252,7 @@ TEST(OriginIdentifierValueMapTest, UpdateLastModified) {
     ASSERT_TRUE(rule_iterator->HasNext());
     std::unique_ptr<content_settings::Rule> rule = rule_iterator->Next();
     EXPECT_EQ(sub_pattern, rule->primary_pattern);
-    EXPECT_EQ(2, content_settings::ValueToContentSetting(rule->value()));
+    EXPECT_EQ(2, content_settings::ValueToContentSetting(rule->value));
     EXPECT_EQ(t1, rule->metadata.last_modified());
     ASSERT_FALSE(rule->metadata.expiration().is_null());
     EXPECT_GT(rule->metadata.expiration(), base::Time::Now());
@@ -261,7 +261,7 @@ TEST(OriginIdentifierValueMapTest, UpdateLastModified) {
 
     rule = rule_iterator->Next();
     EXPECT_EQ(pattern, rule->primary_pattern);
-    EXPECT_EQ(1, content_settings::ValueToContentSetting(rule->value()));
+    EXPECT_EQ(1, content_settings::ValueToContentSetting(rule->value));
     EXPECT_EQ(t1, rule->metadata.last_modified());
     ASSERT_TRUE(rule->metadata.expiration().is_null());
     EXPECT_EQ(rule->metadata.session_model(),
@@ -280,11 +280,11 @@ TEST(OriginIdentifierValueMapTest, UpdateLastModified) {
     ASSERT_TRUE(rule_iterator->HasNext());
     std::unique_ptr<content_settings::Rule> rule = rule_iterator->Next();
     EXPECT_EQ(sub_pattern, rule->primary_pattern);
-    EXPECT_EQ(2, content_settings::ValueToContentSetting(rule->value()));
+    EXPECT_EQ(2, content_settings::ValueToContentSetting(rule->value));
     EXPECT_EQ(t1, rule->metadata.last_modified());
     rule = rule_iterator->Next();
     EXPECT_EQ(pattern, rule->primary_pattern);
-    EXPECT_EQ(3, content_settings::ValueToContentSetting(rule->value()));
+    EXPECT_EQ(3, content_settings::ValueToContentSetting(rule->value));
     EXPECT_EQ(t2, rule->metadata.last_modified());
     ASSERT_FALSE(rule_iterator->HasNext());
   }

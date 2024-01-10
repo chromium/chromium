@@ -9,7 +9,7 @@
 
 namespace content_settings {
 
-std::unique_ptr<OwnedRule> ProviderInterface::GetRule(
+std::unique_ptr<Rule> ProviderInterface::GetRule(
     const GURL& primary_url,
     const GURL& secondary_url,
     ContentSettingsType content_type,
@@ -26,9 +26,7 @@ std::unique_ptr<OwnedRule> ProviderInterface::GetRule(
              content_settings::features::kActiveContentSettingExpiry) ||
          rule->metadata.expiration().is_null() ||
          rule->metadata.expiration() >= base::Time::Now())) {
-      return std::make_unique<OwnedRule>(
-          std::move(rule->primary_pattern), std::move(rule->secondary_pattern),
-          rule->TakeValue(), std::move(rule->metadata));
+      return rule;
     }
   }
   return nullptr;

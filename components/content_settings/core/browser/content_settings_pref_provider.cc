@@ -265,7 +265,7 @@ bool PrefProvider::UpdateSetting(
     if (!updated) {
       return false;
     }
-    base::Value value = rule->TakeValue();
+    base::Value value = std::move(rule->value);
     RuleMetaData metadata = std::move(rule->metadata);
     ContentSettingsPattern primary_pattern = std::move(rule->primary_pattern);
     ContentSettingsPattern secondary_pattern =
@@ -333,7 +333,7 @@ absl::optional<base::TimeDelta> PrefProvider::RenewContentSetting(
                rule.secondary_pattern.Matches(secondary_url) &&
                (!setting_to_match.has_value() ||
                 setting_to_match.value() ==
-                    content_settings::ValueToContentSetting(rule.value()));
+                    content_settings::ValueToContentSetting(rule.value));
       },
       [&](Rule& rule) -> bool {
         // Only settings whose lifetimes are non-zero can be

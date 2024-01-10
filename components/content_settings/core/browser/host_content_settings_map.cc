@@ -376,7 +376,7 @@ ContentSetting HostContentSettingsMap::GetDefaultContentSettingFromProvider(
       std::unique_ptr<content_settings::Rule> rule = rule_iterator->Next();
       if (rule->primary_pattern == wildcard &&
           rule->secondary_pattern == wildcard) {
-        return content_settings::ValueToContentSetting(rule->value());
+        return content_settings::ValueToContentSetting(rule->value);
       }
     }
   }
@@ -951,7 +951,7 @@ void HostContentSettingsMap::AddSettingsForOneType(
 
   while (rule_iterator->HasNext()) {
     std::unique_ptr<content_settings::Rule> rule = rule_iterator->Next();
-    base::Value value = rule->TakeValue();
+    base::Value value = std::move(rule->value);
 
     // We may be adding settings for only specific rule types. If that's the
     // case and this setting isn't a match, don't add it.
@@ -1206,8 +1206,8 @@ base::Value HostContentSettingsMap::GetContentSettingValueAndPatterns(
   if (metadata) {
     *metadata = std::move(rule->metadata);
   }
-  DCHECK(!rule->value().is_none());
-  return rule->TakeValue();
+  DCHECK(!rule->value.is_none());
+  return std::move(rule->value);
 }
 
 void HostContentSettingsMap::

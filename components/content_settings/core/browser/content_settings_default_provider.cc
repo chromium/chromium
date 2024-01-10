@@ -95,9 +95,9 @@ class DefaultRuleIterator : public RuleIterator {
   std::unique_ptr<Rule> Next() override {
     DCHECK(HasNext());
     is_done_ = true;
-    return std::make_unique<OwnedRule>(ContentSettingsPattern::Wildcard(),
-                                       ContentSettingsPattern::Wildcard(),
-                                       std::move(value_), RuleMetaData{});
+    return std::make_unique<Rule>(ContentSettingsPattern::Wildcard(),
+                                  ContentSettingsPattern::Wildcard(),
+                                  std::move(value_), RuleMetaData{});
   }
 
  private:
@@ -231,7 +231,7 @@ std::unique_ptr<RuleIterator> DefaultProvider::GetRuleIterator(
   return std::make_unique<DefaultRuleIterator>(it->second.Clone());
 }
 
-std::unique_ptr<OwnedRule> DefaultProvider::GetRule(
+std::unique_ptr<Rule> DefaultProvider::GetRule(
     const GURL& primary_url,
     const GURL& secondary_url,
     ContentSettingsType content_type,
@@ -253,9 +253,9 @@ std::unique_ptr<OwnedRule> DefaultProvider::GetRule(
     return nullptr;
   }
 
-  return std::make_unique<OwnedRule>(ContentSettingsPattern::Wildcard(),
-                                     ContentSettingsPattern::Wildcard(),
-                                     it->second.Clone(), RuleMetaData{});
+  return std::make_unique<Rule>(ContentSettingsPattern::Wildcard(),
+                                ContentSettingsPattern::Wildcard(),
+                                it->second.Clone(), RuleMetaData{});
 }
 
 void DefaultProvider::ClearAllContentSettingsRules(
