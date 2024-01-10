@@ -538,4 +538,143 @@ IN_PROC_BROWSER_TEST_F(OSSettingsDevicePeripheralAndSplitEnabled,
                        DevicePageStylus) {
   RunSettingsTest("device_page/stylus_test.js");
 }
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, InternetPageCellularSetupDialog) {
+  RunSettingsTest("internet_page/cellular_setup_dialog_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       InternetPageEsimInstallErrorDialog) {
+  RunSettingsTest("internet_page/esim_install_error_dialog_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, InternetPageEsimRenameDialog) {
+  RunSettingsTest("internet_page/esim_rename_dialog_test.js");
+}
+
+class OSSettingsInternetHotspotEnabled : public OSSettingsMochaTest {
+ protected:
+  OSSettingsInternetHotspotEnabled() {
+    scoped_feature_list_.InitAndEnableFeature(ash::features::kHotspot);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(OSSettingsInternetHotspotEnabled,
+                       InternetPageHotspotConfigDialog) {
+  RunSettingsTest("internet_page/hotspot_config_dialog_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsInternetHotspotEnabled,
+                       InternetPageHotspotSubpage) {
+  RunSettingsTest("internet_page/hotspot_subpage_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsInternetHotspotEnabled,
+                       InternetPageHotspotSummaryItem) {
+  RunSettingsTest("internet_page/hotspot_summary_item_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, InternetPageInternetConfig) {
+  RunSettingsTest("internet_page/internet_config_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, InternetPageInternetDetailMenu) {
+  RunSettingsTest("internet_page/internet_detail_menu_test.js");
+}
+
+class OSSettingsInternetApnAndPasspointEnabled : public OSSettingsMochaTest {
+ protected:
+  OSSettingsInternetApnAndPasspointEnabled() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled=*/
+        {
+            ash::features::kApnRevamp,
+            ash::features::kPasspointSettings,
+            ash::features::kPasspointARCSupport,
+        },
+        /*disabled=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(OSSettingsInternetApnAndPasspointEnabled,
+                       InternetPageInternetDetailSubpage) {
+  RunSettingsTest("internet_page/internet_detail_subpage_test.js");
+}
+
+class OSSettingsInternetPasspointEnabled : public OSSettingsMochaTest {
+ protected:
+  OSSettingsInternetPasspointEnabled() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled=*/
+        {
+            ash::features::kPasspointSettings,
+            ash::features::kPasspointARCSupport,
+        },
+        /*disabled=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(OSSettingsInternetPasspointEnabled,
+                       InternetPageInternetKnownNetworksSubpage) {
+  RunSettingsTest("internet_page/internet_known_networks_subpage_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, InternetPageInternetSubpageMenu) {
+  RunSettingsTest("internet_page/internet_subpage_menu_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, InternetPageInternetSubpage) {
+  RunSettingsTest("internet_page/internet_subpage_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, InternetPageNetworkAlwaysOnVpn) {
+  RunSettingsTest("internet_page/network_always_on_vpn_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       InternetPageNetworkDeviceInfoDialog) {
+  RunSettingsTest("internet_page/network_device_info_dialog_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, InternetPageNetworkProxySection) {
+  RunSettingsTest("internet_page/network_proxy_section_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, InternetPageNetworkSummary) {
+  RunSettingsTest("internet_page/network_summary_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, InternetPageNetworkSummaryItem) {
+  RunSettingsTest("internet_page/network_summary_item_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsInternetPasspointEnabled,
+                       InternetPagePasspointSubpage) {
+  RunSettingsTest("internet_page/passpoint_subpage_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsInternetPasspointEnabled,
+                       InternetPagePasspointRemoveDialog) {
+  RunSettingsTest("internet_page/passpoint_remove_dialog_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       InternetPageSettingsTrafficCounters) {
+  RunSettingsTest("internet_page/settings_traffic_counters_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       InternetPageTetherConnectionDialog) {
+  RunSettingsTest("internet_page/tether_connection_dialog_test.js");
+}
+
 }  // namespace ash::settings
