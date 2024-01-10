@@ -11,8 +11,8 @@ source_set("drive") {
   ]
   deps = [
     "//base",
-    "//ios/chrome/browser/drive/model:drive_file_uploader",
     "//ios/chrome/browser/drive/model:drive_service",
+    "//ios/chrome/browser/drive/model:test_support",
     "//ios/public/provider/chrome/browser/drive:drive_api",
   ]
 }

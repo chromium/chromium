@@ -4,17 +4,7 @@
 
 #import "ios/chrome/test/providers/drive/test_drive_service.h"
 
-#import "ios/chrome/browser/drive/model/drive_file_uploader.h"
-
-// Test implementation for `DriveFileUploader`.
-class TestDriveFileUploader final : public DriveFileUploader {
- public:
-  TestDriveFileUploader(id<SystemIdentity> identity) : identity_(identity) {}
-  id<SystemIdentity> GetIdentity() const final { return identity_; }
-
- private:
-  id<SystemIdentity> identity_;
-};
+#import "ios/chrome/browser/drive/model/test_drive_file_uploader.h"
 
 namespace drive {
 

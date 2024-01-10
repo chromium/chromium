@@ -1,0 +1,111 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef IOS_CHROME_BROWSER_DRIVE_MODEL_TEST_DRIVE_FILE_UPLOADER_H_
+#define IOS_CHROME_BROWSER_DRIVE_MODEL_TEST_DRIVE_FILE_UPLOADER_H_
+
+#import "base/functional/callback_helpers.h"
+#import "base/memory/weak_ptr.h"
+#import "ios/chrome/browser/drive/model/drive_file_uploader.h"
+
+@protocol SystemIdentity;
+
+// Test implementation for `DriveFileUploader`.
+class TestDriveFileUploader final : public DriveFileUploader {
+ public:
+  explicit TestDriveFileUploader(id<SystemIdentity> identity);
+  ~TestDriveFileUploader() final;
+
+  // Sets folder search result to be reported by `SearchSaveToDriveFolder()`.
+  void SetFolderSearchResult(const DriveFolderResult& result);
+  // Sets folder creation result to be reported by `CreateSaveToDriveFolder()`.
+  void SetFolderCreationResult(const DriveFolderResult& result);
+  // Sets file upload progress elements to be reported by `UploadFile()`.
+  void SetFileUploadProgressElements(
+      std::vector<DriveFileUploadProgress> progress_elements);
+  // Sets file upload progress result to be reported by `UploadFile()`.
+  void SetFileUploadResult(const DriveFileUploadResult& result);
+  // Sets `quit_closure_`.
+  void SetQuitClosure(base::RepeatingClosure quit_closure);
+
+  // Returns `folder_name` passed to `SearchSaveToDriveFolder()`.
+  NSString* GetSearchedFolderName() const;
+  // Returns `folder_name` passed to `CreateSaveToDriveFolder()`.
+  NSString* GetCreatedFolderName() const;
+  // Returns `file_url` passed to `UploadFile()`.
+  NSURL* GetUploadedFileUrl() const;
+  // Returns `file_name` passed to `UploadFile()`.
+  NSString* GetUploadedFileName() const;
+  // Returns `file_mime_type` passed to `UploadFile()`.
+  NSString* GetUploadedFileMimeType() const;
+  // Returns `folder_identifier` passed to `UploadFile()`.
+  NSString* GetUploadedFileFolderIdentifier() const;
+
+  // `DriveFileUploader` overrides.
+  id<SystemIdentity> GetIdentity() const final;
+  bool IsExecutingQuery() const final;
+  void CancelCurrentQuery() final;
+  void SearchSaveToDriveFolder(
+      NSString* folder_name,
+      DriveFolderCompletionCallback completion_callback) final;
+  void CreateSaveToDriveFolder(
+      NSString* folder_name,
+      DriveFolderCompletionCallback completion_callback) final;
+  void UploadFile(NSURL* file_url,
+                  NSString* file_name,
+                  NSString* file_mime_type,
+                  NSString* folder_identifier,
+                  DriveFileUploadProgressCallback progress_callback,
+                  DriveFileUploadCompletionCallback completion_callback) final;
+
+ private:
+  // Calls `completion_callback` with `folder_search_result` and calls
+  // `quit_closure_`.
+  void ReportFolderSearchResult(
+      DriveFolderCompletionCallback completion_callback,
+      DriveFolderResult folder_search_result);
+  // Calls `completion_callback` with `folder_creation_result` and calls
+  // `quit_closure_`.
+  void ReportFolderCreationResult(
+      DriveFolderCompletionCallback completion_callback,
+      DriveFolderResult folder_creation_result);
+  // Calls `progress_callback` with `file_upload_progress` and calls
+  // `quit_closure_`.
+  void ReportFileUploadProgress(
+      DriveFileUploadProgressCallback progress_callback,
+      DriveFileUploadProgress file_upload_progress);
+  // Calls `completion_callback` with `file_upload_result` and calls
+  // `quit_closure_`.
+  void ReportFileUploadResult(
+      DriveFileUploadCompletionCallback completion_callback,
+      DriveFileUploadResult file_upload_result);
+
+  // Runs `quit_closure_`.
+  void RunQuitClosure();
+
+  id<SystemIdentity> identity_;
+
+  // Values passed to `DriveFileUploader` query methods.
+  NSString* searched_folder_name_;
+  NSString* created_folder_name_;
+  NSURL* uploaded_file_url_;
+  NSString* uploaded_file_name_;
+  NSString* uploaded_file_mime_type_;
+  NSString* uploaded_file_folder_identifier_;
+
+  // Results/progress to be reported by callbacks of DriveFileUploader` methods.
+  std::optional<DriveFolderResult> folder_search_result_;
+  std::optional<DriveFolderResult> folder_creation_result_;
+  std::vector<DriveFileUploadProgress> file_upload_progress_elements_;
+  std::optional<DriveFileUploadResult> file_upload_result_;
+
+  // Quit closure.
+  base::RepeatingClosure quit_closure_ = base::DoNothing();
+
+  // Weak pointer factory, for callbacks. Can be used to cancel any pending
+  // tasks by invalidating all weak pointers.
+  base::WeakPtrFactory<TestDriveFileUploader> callbacks_weak_ptr_factory_{this};
+};
+
+#endif  // IOS_CHROME_BROWSER_DRIVE_MODEL_TEST_DRIVE_FILE_UPLOADER_H_

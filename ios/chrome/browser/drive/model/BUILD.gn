@@ -92,6 +92,15 @@ source_set("drive_service_factory") {
   ]
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "test_drive_file_uploader.h",
+    "test_drive_file_uploader.mm",
+  ]
+  public_deps = [ ":drive_file_uploader" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -106,6 +115,7 @@ source_set("unit_tests") {
     ":drive_service_factory",
     ":drive_tab_helper",
     ":drive_upload_task",
+    ":test_support",
     "//base/test:test_support",
     "//ios/chrome/browser/drive/model:upload_task",
     "//ios/chrome/browser/shared/model/browser_state:test_support",

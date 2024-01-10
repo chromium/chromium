@@ -45,32 +45,108 @@ void DriveUploadTask::Start() {
     // If upload is in progress, cancelled or completed, do nothing.
     return;
   }
+  upload_progress_.reset();
+  upload_result_.reset();
   SetState(State::kInProgress);
-  // TODO(crbug.com/1495354): Start upload.
+  SearchFolderThenCreateFolderOrDirectlyUploadFile();
 }
 
 void DriveUploadTask::Cancel() {
-  // TODO(crbug.com/1495354): Cancel upload.
+  if (uploader_->IsExecutingQuery()) {
+    uploader_->CancelCurrentQuery();
+  }
+  upload_progress_.reset();
+  upload_result_.reset();
   SetState(State::kCancelled);
 }
 
 float DriveUploadTask::GetProgress() const {
-  // TODO(crbug.com/1495354): Return actual progress of upload.
-  return 0;
+  if (!upload_progress_ ||
+      upload_progress_->total_bytes_expected_to_upload == 0) {
+    return 0;
+  }
+  return static_cast<float>(upload_progress_->total_bytes_uploaded) /
+         upload_progress_->total_bytes_expected_to_upload;
 }
 
 NSURL* DriveUploadTask::GetResponseLink() const {
-  // TODO(crbug.com/1495354): If upload has succeeded, return link to open
-  // uploaded file.
-  return nil;
+  if (!upload_result_) {
+    return nil;
+  }
+  return [NSURL URLWithString:upload_result_->file_link];
 }
 
 NSError* DriveUploadTask::GetError() const {
-  // TODO(crbug.com/1495354): If upload has failed, return error object.
-  return nil;
+  if (!upload_result_) {
+    return nil;
+  }
+  return upload_result_->error;
 }
 
 #pragma mark - Private
+
+void DriveUploadTask::SearchFolderThenCreateFolderOrDirectlyUploadFile() {
+  // Search a destination Drive folder using
+  // `SearchSaveToDriveFolder(folder_name, ...)`;
+  uploader_->SearchSaveToDriveFolder(
+      base::SysUTF8ToNSString(folder_name_),
+      base::BindOnce(&DriveUploadTask::CreateFolderOrDirectlyUploadFile,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void DriveUploadTask::CreateFolderOrDirectlyUploadFile(
+    DriveFolderResult folder_search_result) {
+  // If folder search failed, update state and result with the error object.
+  if (folder_search_result.error) {
+    upload_result_ =
+        DriveFileUploadResult({.error = folder_search_result.error});
+    SetState(State::kFailed);
+    return;
+  }
+  // If the first step returned an existing folder, upload file directly.
+  if (folder_search_result.folder_identifier) {
+    UploadFile(folder_search_result);
+    return;
+  }
+  // Otherwise, create a destination Drive folder using
+  // `CreateSaveToDriveFolder(folder_name, ...)`;
+  uploader_->CreateSaveToDriveFolder(
+      base::SysUTF8ToNSString(folder_name_),
+      base::BindOnce(&DriveUploadTask::UploadFile,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void DriveUploadTask::UploadFile(DriveFolderResult folder_result) {
+  // If `folder_result` contains an error, then a destination folder did not
+  // exist and could not be created, update state and result with the error
+  // object.
+  if (folder_result.error) {
+    upload_result_ = DriveFileUploadResult({.error = folder_result.error});
+    SetState(State::kFailed);
+    return;
+  }
+  // If a destination folder was created/found then upload the file at
+  // `file_url` using `UploadFile(file_url, ...)`.
+  uploader_->UploadFile(
+      base::apple::FilePathToNSURL(file_path_),
+      base::apple::FilePathToNSString(suggested_file_name_),
+      base::SysUTF8ToNSString(file_mime_type_), folder_result.folder_identifier,
+      base::BindRepeating(&DriveUploadTask::OnDriveFileUploadProgress,
+                          weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&DriveUploadTask::OnDriveFileUploadResult,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void DriveUploadTask::OnDriveFileUploadProgress(
+    DriveFileUploadProgress progress) {
+  upload_progress_ = progress;
+  OnUploadUpdated();
+}
+
+void DriveUploadTask::OnDriveFileUploadResult(DriveFileUploadResult result) {
+  upload_result_ = result;
+  SetState(result.error == nil ? State::kComplete : State::kFailed);
+}
 
 void DriveUploadTask::SetState(State state) {
   state_ = state;
