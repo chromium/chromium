@@ -6,10 +6,8 @@
 
 #import "base/containers/flat_set.h"
 #import "base/containers/span.h"
-#import "base/feature_list.h"
 #import "base/notreached.h"
 #import "base/ranges/algorithm.h"
-#import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager_client.h"
 #import "components/password_manager/core/browser/ui/affiliated_group.h"
@@ -41,8 +39,6 @@ bool ShouldShowLocalOnlyIcon(const CredentialUIEntry& credential,
     return false;
   }
 
-  CHECK(base::FeatureList::IsEnabled(
-      password_manager::features::kEnablePasswordsAccountStorage));
   return true;
 }
 

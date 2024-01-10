@@ -8,13 +8,11 @@
 #import <utility>
 
 #import "base/check.h"
-#import "base/feature_list.h"
 #import "base/functional/callback_helpers.h"
 #import "base/no_destructor.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/password_manager/core/browser/affiliation/affiliations_prefetcher.h"
-#import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/browser/password_store/login_database.h"
 #import "components/password_manager/core/browser/password_store/password_store_built_in_backend.h"
 #import "components/password_manager/core/browser/password_store_factory_util.h"
@@ -32,9 +30,6 @@ scoped_refptr<password_manager::PasswordStoreInterface>
 IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
     ChromeBrowserState* browser_state,
     ServiceAccessType access_type) {
-  CHECK(base::FeatureList::IsEnabled(
-      password_manager::features::kEnablePasswordsAccountStorage));
-
   // `browser_state` gets always redirected to a non-Incognito one below, so
   // Incognito & IMPLICIT_ACCESS means that incognito browsing session would
   // result in traces in the normal BrowserState without the user knowing it.
@@ -67,9 +62,6 @@ IOSChromeAccountPasswordStoreFactory::~IOSChromeAccountPasswordStoreFactory() =
 scoped_refptr<RefcountedKeyedService>
 IOSChromeAccountPasswordStoreFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  CHECK(base::FeatureList::IsEnabled(
-      password_manager::features::kEnablePasswordsAccountStorage));
-
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
 
