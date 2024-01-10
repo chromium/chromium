@@ -48,8 +48,8 @@ class COMPONENT_EXPORT(APP_UPDATE) AppStorage
 
   // AppRegistryCache::Observer overrides:
   void OnAppUpdate(const AppUpdate& update) override;
-  void OnAppsInitialized(const std::vector<AppPtr>& deltas,
-                         apps::AppType app_type) override;
+  void OnAppTypePublishing(const std::vector<AppPtr>& deltas,
+                           apps::AppType app_type) override;
   void OnAppRegistryCacheWillBeDestroyed(AppRegistryCache* cache) override;
 
   // Invoked when reading the app info data from the AppStorage file is

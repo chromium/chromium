@@ -63,8 +63,10 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
     // for the first time after the system startup. AppRegistryCache's internal
     // variables haven't been updated, so `states_` and `deltas_in_progress_`
     // are having the old app info, not include any new app info in `delta`.
-    virtual void OnAppsInitialized(const std::vector<AppPtr>& deltas,
-                                   apps::AppType app_type) {}
+    //
+    // Please use OnAppTypeInitialized if possible.
+    virtual void OnAppTypePublishing(const std::vector<AppPtr>& deltas,
+                                     apps::AppType app_type) {}
 
     // Called when the AppRegistryCache object (the thing that this observer
     // observes) will be destroyed. In response, the observer, `this`, should
@@ -188,9 +190,23 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
   friend class AppServiceProxyBase;
   friend class AppServiceProxyLacros;
 
+  // Called by AppServiceProxy::OnApps when publishers publish changes on apps,
+  // to notifies all observers of state-and-delta AppUpdate's and then merges
+  // the cached states with the deltas. If `should_notify_initialized` is true,
+  // notify observers `app_type` has been initialized by calling
+  // `OnAppTypeInitialized`.
+  //
+  // Please use AppServiceProxy::OnApps if possible. For tests without Profile,
+  // e.g. unittests, please use OnAppsForTesting.
+  void OnApps(std::vector<AppPtr> deltas,
+              apps::AppType app_type,
+              bool should_notify_initialized);
+
   // Notifies all observers of state-and-delta AppUpdate's (the state comes
   // from the internal cache, the delta comes from the argument) and then
-  // merges the cached states with the deltas.
+  // merges the cached states with the deltas. This interface can be used to
+  // update apps for multiple app types, and it won't notify observers the
+  // initialized status.
   //
   // Notification and merging might be delayed until after OnApps returns. For
   // example, suppose that the initial set of states is (a0, b0, c0) for three
@@ -206,14 +222,12 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
   // The callee will consume the deltas. An apps::AppPtr has the ownership
   // semantics of a unique_ptr, and will be deleted when out of scope. The
   // caller presumably calls OnApps(std::move(deltas)).
-  //
-  // Please use AppServiceProxy::OnApps if possible. For tests without Profile,
-  // e.g. unittests, please use OnAppsForTesting.
-  void OnApps(std::vector<AppPtr> deltas,
-              apps::AppType app_type,
-              bool should_notify_initialized);
+  void OnApps(std::vector<AppPtr> deltas);
 
   void DoOnApps(std::vector<AppPtr> deltas);
+
+  // Notifies all observers that apps of `app_type` have been initialized.
+  void InitApps(apps::AppType app_type);
 
   void OnAppTypeInitialized();
 

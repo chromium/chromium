@@ -126,7 +126,7 @@ void AppRegistryCache::OnApps(std::vector<AppPtr> deltas,
     DCHECK_NE(apps::AppType::kUnknown, app_type);
 
     for (auto& obs : observers_) {
-      obs.OnAppsInitialized(deltas, app_type);
+      obs.OnAppTypePublishing(deltas, app_type);
     }
 
     if (!IsAppTypeInitialized(app_type)) {
@@ -134,6 +134,10 @@ void AppRegistryCache::OnApps(std::vector<AppPtr> deltas,
     }
   }
 
+  OnApps(std::move(deltas));
+}
+
+void AppRegistryCache::OnApps(std::vector<AppPtr> deltas) {
   if (!deltas_in_progress_.empty()) {
     std::move(deltas.begin(), deltas.end(),
               std::back_inserter(deltas_pending_));
@@ -241,6 +245,18 @@ void AppRegistryCache::DoOnApps(std::vector<AppPtr> deltas) {
     }
   }
   deltas_in_progress_.clear();
+}
+
+void AppRegistryCache::InitApps(apps::AppType app_type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
+
+  CHECK_NE(apps::AppType::kUnknown, app_type);
+
+  if (!IsAppTypeInitialized(app_type)) {
+    in_progress_initialized_app_types_.insert(app_type);
+  }
+
+  OnAppTypeInitialized();
 }
 
 void AppRegistryCache::OnAppTypeInitialized() {
