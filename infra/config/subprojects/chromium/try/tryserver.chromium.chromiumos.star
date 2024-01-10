@@ -298,7 +298,7 @@ Lacros builder that runs Tast tests and gtests on ChromeOS devices via Skylab"""
     contact_team_email = "chrome-desktop-engprod@google.com",
     main_list_view = "try",
     tryjob = try_.job(
-        experiment_percentage = 10,
+        experiment_percentage = 100,
     ),
 )
 
