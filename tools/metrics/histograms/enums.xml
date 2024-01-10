@@ -26819,6 +26819,7 @@ from previous Chrome versions.
   <int value="-1271441871" label="AmbientColor:enabled"/>
   <int value="-1270634957" label="PhoneHubUseBle:enabled"/>
   <int value="-1270241570" label="TerminalDev:disabled"/>
+  <int value="-1270163583" label="AccessibilityPageZoomEnhancements:enabled"/>
   <int value="-1270082532" label="BluetoothRevamp:disabled"/>
   <int value="-1269962982" label="SyncUSSPasswords:disabled"/>
   <int value="-1269625228" label="InstantHotspotRebrand:disabled"/>
@@ -30889,6 +30890,7 @@ from previous Chrome versions.
   <int value="651562604" label="RawClipboard:enabled"/>
   <int value="651844675" label="EasyUnlockPromotions:enabled"/>
   <int value="652149678" label="EnableBoundSessionCredentials:disabled"/>
+  <int value="652290286" label="AccessibilityPageZoomEnhancements:disabled"/>
   <int value="652561231" label="CustomContextMenu:enabled"/>
   <int value="653308913" label="ServiceWorkerSubresourceFilter:enabled"/>
   <int value="653795860" label="HelpAppReleaseNotes:disabled"/>

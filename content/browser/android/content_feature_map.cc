@@ -23,6 +23,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &blink::features::kStylusRichGestures,
     &features::kAccessibilityIncludeLongClickAction,
     &features::kAccessibilityPageZoom,
+    &features::kAccessibilityPageZoomEnhancements,
     &features::kAccessibilityPerformanceFiltering,
     &features::kAutoDisableAccessibilityV2,
     &features::kFedCm,

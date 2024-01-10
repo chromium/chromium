@@ -3815,6 +3815,12 @@ const char kAccessibilityPageZoomDescription[] =
     "Whether the UI and underlying code for page zoom should be enabled to"
     " allow a user to increase/decrease the web contents zoom factor.";
 
+const char kAccessibilityPageZoomEnhancementsName[] =
+    "Accessibility Page Zoom Enhancements";
+const char kAccessibilityPageZoomEnhancementsDescription[] =
+    "When enabled, will show enhancements to the Page Zoom feature based on "
+    "user feedback from the v1 version (e.g. reset button, better IPH, etc).";
+
 const char kAccessibilityPerformanceFilteringName[] =
     "Accessibility Performance Filtering";
 const char kAccessibilityPerformanceFilteringDescription[] =

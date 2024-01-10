@@ -1253,6 +1253,12 @@ BASE_FEATURE(kAccessibilityPageZoom,
 const base::FeatureParam<bool> kAccessibilityPageZoomOSLevelAdjustment{
     &kAccessibilityPageZoom, "AdjustForOSLevel", true};
 
+// Enables the use of enhancements to the Page Zoom feature based on user
+// feedback from the v1 version (e.g. reset button, better IPH, etc).
+BASE_FEATURE(kAccessibilityPageZoomEnhancements,
+             "AccessibilityPageZoomEnhancements",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Allows the use of "Smart Zoom", an alternative form of page zoom, and
 // enables the associated UI.
 BASE_FEATURE(kSmartZoom, "SmartZoom", base::FEATURE_DISABLED_BY_DEFAULT);
