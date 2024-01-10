@@ -16,6 +16,7 @@
 #include "chromeos/ash/components/chaps_util/key_helper.h"
 #include "crypto/scoped_test_nss_db.h"
 #include "net/cert/x509_certificate.h"
+#include "net/cert/x509_util_nss.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -890,6 +891,60 @@ TEST_F(Pkcs12ReaderTest, CheckRelationEcKey) {
 
     EXPECT_EQ(result, Pkcs12ReaderStatusCode::kSuccess);
     EXPECT_TRUE(is_related);
+  }
+}
+
+TEST_F(Pkcs12ReaderTest, IsCertInSlot) {
+  crypto::ScopedTestNSSDB nss_test_db_;
+
+  // Empty cert, operation will fail.
+  {
+    PK11SlotInfo* slot = nss_test_db_.slot();
+    scoped_refptr<net::X509Certificate> cert = nullptr;
+    bool is_cert_present = false;
+
+    Pkcs12ReaderStatusCode result =
+        pkcs12Reader_->IsCertInSlot(slot, cert, is_cert_present);
+
+    EXPECT_EQ(result, Pkcs12ReaderStatusCode::kCertificateDataMissed);
+  }
+
+  // Empty slot, operation will fail.
+  {
+    PK11SlotInfo* slot = nullptr;
+    scoped_refptr<net::X509Certificate> cert = GetTestCert();
+    bool is_cert_present = false;
+
+    Pkcs12ReaderStatusCode result =
+        pkcs12Reader_->IsCertInSlot(slot, cert, is_cert_present);
+
+    EXPECT_EQ(result, Pkcs12ReaderStatusCode::kMissedSlotInfo);
+  }
+
+  // Slot and cert provided, slot is empty, cert will be not found.
+  {
+    bool is_cert_present = true;
+    scoped_refptr<net::X509Certificate> cert = GetTestCert();
+
+    Pkcs12ReaderStatusCode result =
+        pkcs12Reader_->IsCertInSlot(nss_test_db_.slot(), cert, is_cert_present);
+
+    EXPECT_EQ(result, Pkcs12ReaderStatusCode::kSuccess);
+    EXPECT_FALSE(is_cert_present);
+  }
+
+  // Slot and cert provided, cert is already stored in slot, cert will be found.
+  {
+    bool is_cert_present = false;
+    scoped_refptr<net::X509Certificate> cert = GetTestCert();
+    PK11SlotInfo* slot = nss_test_db_.slot();
+    net::ImportClientCertToSlot(cert.get(), slot);
+
+    Pkcs12ReaderStatusCode result =
+        pkcs12Reader_->IsCertInSlot(slot, cert, is_cert_present);
+
+    EXPECT_EQ(result, Pkcs12ReaderStatusCode::kSuccess);
+    EXPECT_TRUE(is_cert_present);
   }
 }
 

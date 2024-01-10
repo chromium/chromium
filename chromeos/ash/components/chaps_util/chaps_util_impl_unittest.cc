@@ -700,6 +700,21 @@ class FakePkcs12Reader : public Pkcs12Reader {
     return Pkcs12Reader::BignumToBytes(bignum);
   }
 
+  Pkcs12ReaderStatusCode IsCertInSlot(
+      PK11SlotInfo* slot,
+      const scoped_refptr<net::X509Certificate>& cert,
+      bool& is_cert_present) const override {
+    is_cert_in_slot_called_++;
+    if (is_cert_in_slot_override_.has_value()) {
+      is_cert_present = is_cert_in_slot_override_.value();
+      return Pkcs12ReaderStatusCode::kSuccess;
+    }
+    if (is_cert_in_slot_status_ != Pkcs12ReaderStatusCode::kSuccess) {
+      return is_cert_in_slot_status_;
+    }
+    return Pkcs12Reader::IsCertInSlot(slot, cert, is_cert_present);
+  }
+
   mutable int get_pkcs12_key_and_cert_called_ = 0;
   mutable bssl::UniquePtr<STACK_OF(X509)> fake_certs_;
   Pkcs12ReaderStatusCode get_pkcs12_key_and_cert_status_ =
@@ -738,6 +753,10 @@ class FakePkcs12Reader : public Pkcs12Reader {
   mutable int find_key_by_cert_called_ = 0;
   std::optional<Pkcs12ReaderStatusCode> find_key_by_cert_status_;
   std::optional<Pkcs12ReaderStatusCode> find_key_by_der_cert_status_;
+  mutable int is_cert_in_slot_called_ = 0;
+  std::optional<bool> is_cert_in_slot_override_;
+  Pkcs12ReaderStatusCode is_cert_in_slot_status_ =
+      Pkcs12ReaderStatusCode::kSuccess;
 
   std::optional<std::vector<uint8_t>> bignum_to_bytes_value_ = std::nullopt;
 };
@@ -1511,6 +1530,45 @@ TEST_F(ChapsUtilPKCS12ImportTest, CertsSearchInSlot20TimesPKCS12ImportFailed) {
 
   EXPECT_EQ(cert_data.GetCkByte(CKA_LABEL), expected_encoded_label);
   EXPECT_EQ(fake_pkcs12_reader_.is_certs_with_nickname_in_slots_called_, 21);
+  EXPECT_TRUE(import_result);
+  EXPECT_TRUE(KeyImportDone());
+}
+
+// IsCertInSlot() failed, cert will not be installed in case of error.
+// Import will fail because there are no certificates to be installed
+TEST_F(ChapsUtilPKCS12ImportTest, IsCertInSlotFailedImportFailed) {
+  fake_pkcs12_reader_.is_cert_in_slot_status_ =
+      Pkcs12ReaderStatusCode::kCertificateDataMissed;
+
+  bool import_result = RunImportPkcs12Certificate();
+
+  EXPECT_EQ(fake_pkcs12_reader_.get_label_called_, 1);
+  EXPECT_EQ(fake_pkcs12_reader_.is_certs_with_nickname_in_slots_called_, 1);
+  EXPECT_EQ(fake_pkcs12_reader_.is_cert_in_slot_called_, 1);
+  EXPECT_FALSE(import_result);
+  EXPECT_TRUE(KeyImportNeverDone());
+}
+
+// IsCertInSlot() has found already installed cert in slot.
+// Import will fail because there are no certificates to be installed.
+TEST_F(ChapsUtilPKCS12ImportTest, IsCertInSlotTrueImportFailed) {
+  fake_pkcs12_reader_.is_cert_in_slot_override_ = true;
+
+  bool import_result = RunImportPkcs12Certificate();
+
+  EXPECT_EQ(fake_pkcs12_reader_.is_cert_in_slot_called_, 1);
+  EXPECT_FALSE(import_result);
+  EXPECT_TRUE(KeyImportNeverDone());
+}
+
+// IsCertInSlot() did not find installed cert in the slot.
+// Import will succeed.
+TEST_F(ChapsUtilPKCS12ImportTest, IsCertInSlotFalseImportSucc) {
+  fake_pkcs12_reader_.is_cert_in_slot_override_ = false;
+
+  bool import_result = RunImportPkcs12Certificate();
+
+  EXPECT_EQ(fake_pkcs12_reader_.is_cert_in_slot_called_, 1);
   EXPECT_TRUE(import_result);
   EXPECT_TRUE(KeyImportDone());
 }

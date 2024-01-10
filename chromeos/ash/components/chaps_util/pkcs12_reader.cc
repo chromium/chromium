@@ -335,4 +335,28 @@ Pkcs12ReaderStatusCode Pkcs12Reader::GetCertFromDerData(
   return Pkcs12ReaderStatusCode::kSuccess;
 }
 
+Pkcs12ReaderStatusCode Pkcs12Reader::IsCertInSlot(
+    PK11SlotInfo* slot,
+    const scoped_refptr<net::X509Certificate>& cert,
+    bool& is_cert_present) const {
+  is_cert_present = false;
+
+  if (!cert) {
+    return Pkcs12ReaderStatusCode::kCertificateDataMissed;
+  }
+  if (!slot) {
+    return Pkcs12ReaderStatusCode::kMissedSlotInfo;
+  }
+
+  net::ScopedCERTCertificate nss_cert =
+      net::x509_util::CreateCERTCertificateFromX509Certificate(cert.get());
+
+  CERTCertificate* result =
+      PK11_FindCertFromDERCert(slot, nss_cert.get(), /*wincx=*/nullptr);
+  if (result) {
+    is_cert_present = true;
+  }
+  return Pkcs12ReaderStatusCode::kSuccess;
+}
+
 }  // namespace chromeos

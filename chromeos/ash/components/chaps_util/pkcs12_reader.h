@@ -176,6 +176,13 @@ class COMPONENT_EXPORT(CHAPS_UTIL) Pkcs12Reader {
       const unsigned char* der_cert_data,
       int der_cert_len,
       bssl::UniquePtr<X509>& x509) const;
+
+  // Check if certificate (`cert`) is present in specific 'slot'.
+  // Returns status code.
+  virtual Pkcs12ReaderStatusCode IsCertInSlot(
+      PK11SlotInfo* slot,
+      const scoped_refptr<net::X509Certificate>& cert,
+      bool& is_cert_present) const;
 };
 }  // namespace chromeos
 

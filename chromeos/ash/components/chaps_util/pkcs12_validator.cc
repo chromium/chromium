@@ -207,6 +207,27 @@ Pkcs12ReaderStatusCode GetNickname(PK11SlotInfo* slot,
   return Pkcs12ReaderStatusCode::kSuccess;
 }
 
+Pkcs12ReaderStatusCode CanFindInstalledCert(PK11SlotInfo* slot,
+                                            X509* cert,
+                                            const Pkcs12Reader& pkcs12_reader,
+                                            bool& is_cert_installed) {
+  scoped_refptr<net::X509Certificate> scoped_cert;
+  Pkcs12ReaderStatusCode scoped_cert_result =
+      GetScopedCert(cert, pkcs12_reader, scoped_cert);
+  if (scoped_cert_result != Pkcs12ReaderStatusCode::kSuccess) {
+    LOG(ERROR) << MakePkcs12CertImportErrorMessage(scoped_cert_result);
+    return scoped_cert_result;
+  }
+
+  Pkcs12ReaderStatusCode res =
+      pkcs12_reader.IsCertInSlot(slot, scoped_cert, is_cert_installed);
+  if (res != Pkcs12ReaderStatusCode::kSuccess) {
+    LOG(ERROR) << MakePkcs12CertImportErrorMessage(res);
+  }
+
+  return res;
+}
+
 Pkcs12ReaderStatusCode CanFindInstalledKey(PK11SlotInfo* slot,
                                            const CertData& cert,
                                            const Pkcs12Reader& pkcs12_reader,
@@ -299,6 +320,19 @@ Pkcs12ReaderStatusCode ValidateAndPrepareCertData(
                             get_cert_nickname_result);
         continue;
       }
+    }
+
+    bool is_cert_installed = false;
+    Pkcs12ReaderStatusCode cert_installed_result =
+        CanFindInstalledCert(slot, cert, pkcs12_reader, is_cert_installed);
+    if (cert_installed_result != Pkcs12ReaderStatusCode::kSuccess) {
+      LOG(ERROR) << "Failed to find installed cert in slot due to: "
+                 << MakePkcs12CertImportErrorMessage(cert_installed_result);
+      continue;
+    }
+    if (is_cert_installed) {
+      LOG(WARNING) << "Cert is already installed, skipping";
+      continue;
     }
 
     CertData& cert_data = valid_certs_data.emplace_back();
