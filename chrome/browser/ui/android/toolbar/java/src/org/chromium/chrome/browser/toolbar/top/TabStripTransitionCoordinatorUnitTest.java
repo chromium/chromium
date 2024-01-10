@@ -321,7 +321,7 @@ public class TabStripTransitionCoordinatorUnitTest {
 
     @Test
     public void transitionFinishedUMASuccess() {
-        setDeviceWidthDp(480);
+        setDeviceWidthDp(NARROW_WINDOW_WIDTH);
         doReturn(TEST_TOOLBAR_HEIGHT)
                 .when(mBrowserControlsVisibilityManager)
                 .getTopControlsHeight();
@@ -337,7 +337,7 @@ public class TabStripTransitionCoordinatorUnitTest {
 
     @Test
     public void transitionFinishedUMAInterrupted() {
-        setDeviceWidthDp(480);
+        setDeviceWidthDp(NARROW_WINDOW_WIDTH);
         doReturn(TEST_TOOLBAR_HEIGHT)
                 .when(mBrowserControlsVisibilityManager)
                 .getTopControlsHeight();
