@@ -4,7 +4,6 @@
 
 #include <memory>
 
-#include "ash/controls/gradient_layer_delegate.h"
 #include "ash/controls/scroll_view_gradient_helper.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/compositor/layer.h"

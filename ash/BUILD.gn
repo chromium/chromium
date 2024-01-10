@@ -471,8 +471,6 @@ component("ash") {
     "controls/contextual_nudge.h",
     "controls/contextual_tooltip.cc",
     "controls/contextual_tooltip.h",
-    "controls/gradient_layer_delegate.cc",
-    "controls/gradient_layer_delegate.h",
     "controls/rounded_scroll_bar.cc",
     "controls/rounded_scroll_bar.h",
     "controls/scroll_view_gradient_helper.cc",
