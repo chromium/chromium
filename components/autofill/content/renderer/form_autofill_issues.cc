@@ -104,6 +104,14 @@ void MaybeAppendInputWithEmptyIdAndNameDevtoolsIssue(
   }
 }
 
+int GetShadowHostDOMNodeId(const WebFormControlElement& element) {
+  WebElement host = element.OwnerShadowHost();
+  if (host.IsNull()) {
+    return /*blink::kInvalidDOMNodeId*/ 0;
+  }
+  return host.GetDomNodeId();
+}
+
 void MaybeAppendDuplicateIdForInputDevtoolsIssue(
     const WebVector<WebFormControlElement>& elements,
     std::vector<blink::WebAutofillClient::FormIssue>& form_issues) {
@@ -120,9 +128,8 @@ void MaybeAppendDuplicateIdForInputDevtoolsIssue(
   base::ranges::sort(elements_with_id_attr, [](const WebFormControlElement& a,
                                                const WebFormControlElement& b) {
     return std::forward_as_tuple(a.GetIdAttribute(),
-                                 a.OwnerShadowHost().GetDomNodeId()) <
-           std::forward_as_tuple(b.GetIdAttribute(),
-                                 b.OwnerShadowHost().GetDomNodeId());
+                                 GetShadowHostDOMNodeId(a)) <
+           std::forward_as_tuple(b.GetIdAttribute(), GetShadowHostDOMNodeId(b));
   });
 
   for (auto it = elements_with_id_attr.begin();
@@ -130,8 +137,7 @@ void MaybeAppendDuplicateIdForInputDevtoolsIssue(
             it, elements_with_id_attr.end(),
             [](const WebFormControlElement& a, const WebFormControlElement& b) {
               return a.GetIdAttribute() == b.GetIdAttribute() &&
-                     a.OwnerShadowHost().GetDomNodeId() ==
-                         b.OwnerShadowHost().GetDomNodeId();
+                     GetShadowHostDOMNodeId(a) == GetShadowHostDOMNodeId(b);
             })) != elements_with_id_attr.end();
        it++) {
     bool current_element_not_added =
