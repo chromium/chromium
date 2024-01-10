@@ -106,24 +106,25 @@ base::Value::Dict NetLogHttpStreamProtoParams(NextProto negotiated_protocol) {
   return dict;
 }
 
-HttpStreamFactory::Job::Job(Delegate* delegate,
-                            JobType job_type,
-                            HttpNetworkSession* session,
-                            const HttpRequestInfo& request_info,
-                            RequestPriority priority,
-                            const ProxyInfo& proxy_info,
-                            const SSLConfig& server_ssl_config,
-                            url::SchemeHostPort destination,
-                            GURL origin_url,
-                            NextProto alternative_protocol,
-                            quic::ParsedQuicVersion quic_version,
-                            bool is_websocket,
-                            bool enable_ip_based_pooling,
-                            NetLog* net_log)
+HttpStreamFactory::Job::Job(
+    Delegate* delegate,
+    JobType job_type,
+    HttpNetworkSession* session,
+    const HttpRequestInfo& request_info,
+    RequestPriority priority,
+    const ProxyInfo& proxy_info,
+    const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
+    url::SchemeHostPort destination,
+    GURL origin_url,
+    NextProto alternative_protocol,
+    quic::ParsedQuicVersion quic_version,
+    bool is_websocket,
+    bool enable_ip_based_pooling,
+    NetLog* net_log)
     : request_info_(request_info),
       priority_(priority),
       proxy_info_(proxy_info),
-      server_ssl_config_(server_ssl_config),
+      allowed_bad_certs_(allowed_bad_certs),
       net_log_(
           NetLogWithSource::Make(net_log, NetLogSourceType::HTTP_STREAM_JOB)),
       io_callback_(
@@ -177,14 +178,6 @@ HttpStreamFactory::Job::Job(Delegate* delegate,
   // `ProxyChain`, but the full `ProxyInfo` is passed back to
   // `HttpNetworkTransaction`, which consumes additional fields.
   DCHECK(!proxy_info_.is_empty());
-
-  // TODO(https://crbug.com/1498285):  Remove this and move
-  // `disable_cert_verification_network_fetches` handling down to the socket
-  // layer.
-  bool disable_cert_verification_network_fetches =
-      !!(request_info_.load_flags & LOAD_DISABLE_CERT_NETWORK_FETCHES);
-  server_ssl_config_.disable_cert_verification_network_fetches =
-      disable_cert_verification_network_fetches;
 
   // QUIC can only be spoken to servers, never to proxies.
   if (alternative_protocol == kProtoQUIC) {
@@ -773,6 +766,17 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
   DCHECK(proxy_info_.proxy_chain().IsValid());
   next_state_ = STATE_INIT_CONNECTION_COMPLETE;
 
+  SSLConfig server_ssl_config;
+  // TODO(https://crbug.com/1498285):  Remove this and move
+  // `disable_cert_verification_network_fetches` handling down to the socket
+  // layer.
+  bool disable_cert_verification_network_fetches =
+      !!(request_info_.load_flags & LOAD_DISABLE_CERT_NETWORK_FETCHES);
+  server_ssl_config.disable_cert_verification_network_fetches =
+      disable_cert_verification_network_fetches;
+
+  server_ssl_config.allowed_bad_certs = allowed_bad_certs_;
+
   if (using_ssl_) {
     // Prior to HTTP/2 and SPDY, some servers use TLS renegotiation to request
     // TLS client authentication after the HTTP request was sent. Allow
@@ -783,22 +787,22 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
     // server to request a renegotiation immediately before sending the
     // connection preface as waiting for the preface would cost the round trip
     // that False Start otherwise saves.
-    server_ssl_config_.renego_allowed_default = true;
-    server_ssl_config_.renego_allowed_for_protos.push_back(kProtoHTTP11);
+    server_ssl_config.renego_allowed_default = true;
+    server_ssl_config.renego_allowed_for_protos.push_back(kProtoHTTP11);
   }
 
   // TODO(mmenke): This should be set in ClientSocketFactory. There's a bit of a
   // problem, though. This is overwritten some ways down with "{kProtoHTTP11}"
   // in the WebSocket case, and ProxyResolvingClientSocket leaves it empty, so
   // there are three different values of this we want.
-  server_ssl_config_.alpn_protos = session_->GetAlpnProtos();
-  server_ssl_config_.application_settings = session_->GetApplicationSettings();
+  server_ssl_config.alpn_protos = session_->GetAlpnProtos();
+  server_ssl_config.application_settings = session_->GetApplicationSettings();
 
   // TODO(https://crbug.com/964642): Also enable 0-RTT for TLS proxies.
-  server_ssl_config_.early_data_enabled = session_->params().enable_early_data;
+  server_ssl_config.early_data_enabled = session_->params().enable_early_data;
 
   if (using_quic_)
-    return DoInitConnectionImplQuic();
+    return DoInitConnectionImplQuic(server_ssl_config.GetCertVerifyFlags());
 
   // Check first if there is a pushed stream matching the request, or an HTTP/2
   // connection this request can pool to.  If so, then go straight to using
@@ -866,7 +870,7 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
   if (http_server_properties) {
     http_server_properties->MaybeForceHTTP11(
         url::SchemeHostPort(request_info_.url),
-        request_info_.network_anonymization_key, &server_ssl_config_);
+        request_info_.network_anonymization_key, &server_ssl_config);
   }
 
   if (job_type_ == PRECONNECT) {
@@ -881,7 +885,7 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
 
     return PreconnectSocketsForHttpRequest(
         destination_, request_info_.load_flags, priority_, session_,
-        proxy_info_, server_ssl_config_, request_info_.privacy_mode,
+        proxy_info_, server_ssl_config, request_info_.privacy_mode,
         request_info_.network_anonymization_key,
         request_info_.secure_dns_policy, net_log_, num_streams_,
         std::move(callback));
@@ -902,7 +906,7 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
     // this will not change the application protocol (HTTP/1.1 is default), it
     // provides hardens against cross-protocol attacks and allows for the False
     // Start (RFC 7918) optimization.
-    SSLConfig websocket_server_ssl_config = server_ssl_config_;
+    SSLConfig websocket_server_ssl_config = server_ssl_config;
     websocket_server_ssl_config.alpn_protos = {kProtoHTTP11};
     return InitSocketHandleForWebSocketRequest(
         destination_, request_info_.load_flags, priority_, session_,
@@ -913,13 +917,14 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
 
   return InitSocketHandleForHttpRequest(
       destination_, request_info_.load_flags, priority_, session_, proxy_info_,
-      server_ssl_config_, request_info_.privacy_mode,
+      server_ssl_config, request_info_.privacy_mode,
       request_info_.network_anonymization_key, request_info_.secure_dns_policy,
       request_info_.socket_tag, net_log_, connection_.get(), io_callback_,
       proxy_auth_callback);
 }
 
-int HttpStreamFactory::Job::DoInitConnectionImplQuic() {
+int HttpStreamFactory::Job::DoInitConnectionImplQuic(
+    int server_cert_verifier_flags) {
   url::SchemeHostPort destination;
   GURL url(request_info_.url);
   int cert_verifier_flags;
@@ -944,7 +949,7 @@ int HttpStreamFactory::Job::DoInitConnectionImplQuic() {
   } else {
     DCHECK(using_ssl_);
     destination = destination_;
-    cert_verifier_flags = server_ssl_config_.GetCertVerifyFlags();
+    cert_verifier_flags = server_cert_verifier_flags;
   }
   DCHECK(url.SchemeIs(url::kHttpsScheme));
   bool require_dns_https_alpn =
@@ -1324,7 +1329,7 @@ HttpStreamFactory::JobFactory::CreateJob(
     const HttpRequestInfo& request_info,
     RequestPriority priority,
     const ProxyInfo& proxy_info,
-    const SSLConfig& server_ssl_config,
+    const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
     url::SchemeHostPort destination,
     GURL origin_url,
     bool is_websocket,
@@ -1334,7 +1339,7 @@ HttpStreamFactory::JobFactory::CreateJob(
     quic::ParsedQuicVersion quic_version) {
   return std::make_unique<HttpStreamFactory::Job>(
       delegate, job_type, session, request_info, priority, proxy_info,
-      server_ssl_config, std::move(destination), origin_url,
+      allowed_bad_certs, std::move(destination), origin_url,
       alternative_protocol, quic_version, is_websocket, enable_ip_based_pooling,
       net_log);
 }

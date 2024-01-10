@@ -41,11 +41,12 @@ TEST(HttpStreamRequestTest, SetPriority) {
   request_info.url = GURL("http://www.example.com/");
   auto job_controller = std::make_unique<HttpStreamFactory::JobController>(
       factory, &request_delegate, session.get(), &job_factory, request_info,
-      /* is_preconnect = */ false,
-      /* is_websocket = */ false,
-      /* enable_ip_based_pooling = */ true,
-      /* enable_alternative_services = */ true,
-      /* delay_main_job_with_available_spdy_session = */ true, SSLConfig());
+      /*is_preconnect=*/false,
+      /*is_websocket=*/false,
+      /*enable_ip_based_pooling=*/true,
+      /*enable_alternative_services=*/true,
+      /*delay_main_job_with_available_spdy_session=*/true,
+      /*allowed_bad_certs=*/std::vector<SSLConfig::CertAndStatus>());
   HttpStreamFactory::JobController* job_controller_raw_ptr =
       job_controller.get();
   factory->job_controller_set_.insert(std::move(job_controller));

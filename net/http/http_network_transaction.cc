@@ -67,7 +67,6 @@
 #include "net/spdy/spdy_session.h"
 #include "net/spdy/spdy_session_pool.h"
 #include "net/ssl/ssl_cert_request_info.h"
-#include "net/ssl/ssl_config.h"
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "net/ssl/ssl_info.h"
 #include "net/ssl/ssl_private_key.h"
@@ -883,18 +882,16 @@ int HttpNetworkTransaction::DoCreateStream() {
   // they can also be disabled when retrying after a QUIC error).
   if (!enable_ip_based_pooling_)
     DCHECK(!enable_alternative_services_);
-  SSLConfig server_ssl_config;
-  server_ssl_config.allowed_bad_certs = observed_bad_certs_;
   if (ForWebSocketHandshake()) {
     stream_request_ =
         session_->http_stream_factory()->RequestWebSocketHandshakeStream(
-            *request_, priority_, server_ssl_config, this,
-            websocket_handshake_stream_base_create_helper_,
+            *request_, priority_, /*allowed_bad_certs=*/observed_bad_certs_,
+            this, websocket_handshake_stream_base_create_helper_,
             enable_ip_based_pooling_, enable_alternative_services_, net_log_);
   } else {
     stream_request_ = session_->http_stream_factory()->RequestStream(
-        *request_, priority_, server_ssl_config, this, enable_ip_based_pooling_,
-        enable_alternative_services_, net_log_);
+        *request_, priority_, /*allowed_bad_certs=*/observed_bad_certs_, this,
+        enable_ip_based_pooling_, enable_alternative_services_, net_log_);
   }
   DCHECK(stream_request_.get());
   return ERR_IO_PENDING;
@@ -1775,7 +1772,7 @@ int HttpNetworkTransaction::HandleIOError(int error) {
     case RetryReason::kWrongVersionOnEarlyData:
       net_log_.AddEventWithNetErrorCode(
           NetLogEventType::HTTP_TRANSACTION_RESTART_AFTER_ERROR, error);
-      // Disable early data on the SSLConfig on a reset.
+      // Disable early data on a reset.
       can_send_early_data_ = false;
       ResetConnectionAndRequestForResend(*retry_reason);
       error = OK;

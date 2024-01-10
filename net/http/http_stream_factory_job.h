@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -30,6 +31,7 @@
 #include "net/socket/ssl_client_socket.h"
 #include "net/spdy/spdy_session_key.h"
 #include "net/spdy/spdy_session_pool.h"
+#include "net/ssl/ssl_config.h"
 #include "url/scheme_host_port.h"
 
 namespace net {
@@ -149,7 +151,7 @@ class HttpStreamFactory::Job
       const HttpRequestInfo& request_info,
       RequestPriority priority,
       const ProxyInfo& proxy_info,
-      const SSLConfig& server_ssl_config,
+      const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
       url::SchemeHostPort destination,
       GURL origin_url,
       NextProto alternative_protocol,
@@ -281,7 +283,10 @@ class HttpStreamFactory::Job
   int DoLoop(int result);
   int StartInternal();
   int DoInitConnectionImpl();
-  int DoInitConnectionImplQuic();
+  // `server_cert_verifier_flags` are the cert verifier flags if connecting to a
+  // QUIC server. If making non-tunnelled requests to a QUIC proxy, they will be
+  // ignored.
+  int DoInitConnectionImplQuic(int server_cert_verifier_flags);
 
   // If this is a QUIC alt job, then this function is called when host
   // resolution completes. It's called with the next result after host
@@ -369,7 +374,7 @@ class HttpStreamFactory::Job
   const HttpRequestInfo request_info_;
   RequestPriority priority_;
   const ProxyInfo proxy_info_;
-  SSLConfig server_ssl_config_;
+  const std::vector<SSLConfig::CertAndStatus> allowed_bad_certs_;
   const NetLogWithSource net_log_;
 
   const CompletionRepeatingCallback io_callback_;
@@ -494,7 +499,7 @@ class HttpStreamFactory::JobFactory {
       const HttpRequestInfo& request_info,
       RequestPriority priority,
       const ProxyInfo& proxy_info,
-      const SSLConfig& server_ssl_config,
+      const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
       url::SchemeHostPort destination,
       GURL origin_url,
       bool is_websocket,

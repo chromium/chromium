@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/cancelable_callback.h"
 #include "base/memory/raw_ptr.h"
@@ -16,6 +17,7 @@
 #include "net/http/http_stream_factory_job.h"
 #include "net/http/http_stream_request.h"
 #include "net/spdy/spdy_session_pool.h"
+#include "net/ssl/ssl_config.h"
 
 namespace net {
 
@@ -42,7 +44,7 @@ class HttpStreamFactory::JobController
                 bool enable_ip_based_pooling,
                 bool enable_alternative_services,
                 bool delay_main_job_with_available_spdy_session,
-                const SSLConfig& server_ssl_config);
+                const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs);
 
   ~JobController() override;
 
@@ -361,7 +363,7 @@ class HttpStreamFactory::JobController
   std::unique_ptr<ProxyResolutionRequest> proxy_resolve_request_;
   const HttpRequestInfo request_info_;
   ProxyInfo proxy_info_;
-  const SSLConfig server_ssl_config_;
+  const std::vector<SSLConfig::CertAndStatus> allowed_bad_certs_;
   int num_streams_ = 0;
   HttpStreamRequest::StreamType stream_type_;
   RequestPriority priority_ = IDLE;

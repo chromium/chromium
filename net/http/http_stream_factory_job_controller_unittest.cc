@@ -310,7 +310,8 @@ class HttpStreamFactoryJobControllerTestBase : public TestWithTaskEnvironment {
           factory_, &request_delegate_, session_.get(), &job_factory_,
           request_info, is_preconnect_, /*is_websocket=*/false,
           enable_ip_based_pooling_, enable_alternative_services_,
-          delay_main_job_with_available_spdy_session_, SSLConfig());
+          delay_main_job_with_available_spdy_session_,
+          /*allowed_bad_certs=*/std::vector<SSLConfig::CertAndStatus>());
       job_controller_ = job_controller.get();
       HttpStreamFactoryPeer::AddJobController(factory_,
                                               std::move(job_controller));
@@ -605,7 +606,8 @@ class JobControllerReconsiderProxyAfterErrorTest
         factory_, &request_delegate_, session_.get(), &default_job_factory_,
         request_info, is_preconnect_, /*is_websocket=*/false,
         enable_ip_based_pooling_, enable_alternative_services_,
-        delay_main_job_with_available_spdy_session_, SSLConfig());
+        delay_main_job_with_available_spdy_session_,
+        /*allowed_bad_certs=*/std::vector<SSLConfig::CertAndStatus>());
     auto* job_controller_ptr = job_controller.get();
     HttpStreamFactoryPeer::AddJobController(factory_,
                                             std::move(job_controller));
@@ -3665,7 +3667,8 @@ TEST_P(HttpStreamFactoryJobControllerTest,
         factory_, &request_delegate, session_.get(), &job_factory_,
         request_info, is_preconnect_, /*is_websocket=*/false,
         enable_ip_based_pooling_, enable_alternative_services_,
-        delay_main_job_with_available_spdy_session_, SSLConfig());
+        delay_main_job_with_available_spdy_session_,
+        /*allowed_bad_certs=*/std::vector<SSLConfig::CertAndStatus>());
     auto* job_controller_ptr = job_controller.get();
     HttpStreamFactoryPeer::AddJobController(factory_,
                                             std::move(job_controller));
@@ -3799,7 +3802,8 @@ TEST_P(HttpStreamFactoryJobControllerTest, SpdySessionInterruptsPreconnect) {
       factory_, &preconnect_request_delegate, session_.get(), &job_factory_,
       request_info, /*is_preconnect=*/true, /*is_websocket=*/false,
       enable_ip_based_pooling_, enable_alternative_services_,
-      delay_main_job_with_available_spdy_session_, SSLConfig());
+      delay_main_job_with_available_spdy_session_,
+      /*allowed_bad_certs=*/std::vector<SSLConfig::CertAndStatus>());
   auto* job_controller_ptr = job_controller.get();
   HttpStreamFactoryPeer::AddJobController(factory_, std::move(job_controller));
   job_controller_ptr->Preconnect(1);
@@ -3922,7 +3926,8 @@ TEST_P(HttpStreamFactoryJobControllerTest,
           other_request_info, /*is_preconnect=*/true,
           /*is_websocket=*/false, /*enable_ip_based_pooling=*/true,
           enable_alternative_services_,
-          delay_main_job_with_available_spdy_session_, SSLConfig());
+          delay_main_job_with_available_spdy_session_,
+          /*allowed_bad_certs=*/std::vector<SSLConfig::CertAndStatus>());
   auto* preconnect_job_controller_ptr = preconnect_job_controller.get();
   HttpStreamFactoryPeer::AddJobController(factory_,
                                           std::move(preconnect_job_controller));
@@ -3954,7 +3959,8 @@ TEST_P(HttpStreamFactoryJobControllerTest,
         other_request_info, /*is_preconnect=*/false,
         /*is_websocket=*/false, /*enable_ip_based_pooling=*/true,
         enable_alternative_services_,
-        delay_main_job_with_available_spdy_session_, SSLConfig());
+        delay_main_job_with_available_spdy_session_,
+        /*allowed_bad_certs=*/std::vector<SSLConfig::CertAndStatus>());
     auto* job_controller_ptr = job_controller.get();
     HttpStreamFactoryPeer::AddJobController(factory_,
                                             std::move(job_controller));
@@ -4020,7 +4026,8 @@ TEST_F(JobControllerLimitMultipleH2Requests, MultipleRequests) {
         factory_, request_delegates[i].get(), session_.get(), &job_factory_,
         request_info, is_preconnect_, /*is_websocket=*/false,
         enable_ip_based_pooling_, enable_alternative_services_,
-        delay_main_job_with_available_spdy_session_, SSLConfig());
+        delay_main_job_with_available_spdy_session_,
+        /*allowed_bad_certs=*/std::vector<SSLConfig::CertAndStatus>());
     auto* job_controller_ptr = job_controller.get();
     HttpStreamFactoryPeer::AddJobController(factory_,
                                             std::move(job_controller));
@@ -4114,7 +4121,8 @@ TEST_F(JobControllerLimitMultipleH2Requests,
           factory_, request_delegates[i].get(), session_.get(), &job_factory_,
           request_info, is_preconnect_, /*is_websocket=*/false,
           enable_ip_based_pooling_, enable_alternative_services_,
-          delay_main_job_with_available_spdy_session_, SSLConfig());
+          delay_main_job_with_available_spdy_session_,
+          /*allowed_bad_certs=*/std::vector<SSLConfig::CertAndStatus>());
       auto* job_controller_ptr = job_controller.get();
       HttpStreamFactoryPeer::AddJobController(factory_,
                                               std::move(job_controller));
@@ -4191,7 +4199,8 @@ TEST_F(JobControllerLimitMultipleH2Requests, MultipleRequestsFirstRequestHang) {
         factory_, request_delegates[i].get(), session_.get(), &job_factory_,
         request_info, is_preconnect_, /*is_websocket=*/false,
         enable_ip_based_pooling_, enable_alternative_services_,
-        delay_main_job_with_available_spdy_session_, SSLConfig());
+        delay_main_job_with_available_spdy_session_,
+        /*allowed_bad_certs=*/std::vector<SSLConfig::CertAndStatus>());
     auto* job_controller_ptr = job_controller.get();
     HttpStreamFactoryPeer::AddJobController(factory_,
                                             std::move(job_controller));
@@ -4265,7 +4274,8 @@ TEST_F(JobControllerLimitMultipleH2Requests,
         factory_, request_delegates[i].get(), session_.get(), &job_factory_,
         request_info, is_preconnect_, /*is_websocket=*/false,
         enable_ip_based_pooling_, enable_alternative_services_,
-        delay_main_job_with_available_spdy_session_, SSLConfig());
+        delay_main_job_with_available_spdy_session_,
+        /*allowed_bad_certs=*/std::vector<SSLConfig::CertAndStatus>());
     auto* job_controller_ptr = job_controller.get();
     HttpStreamFactoryPeer::AddJobController(factory_,
                                             std::move(job_controller));
@@ -4321,7 +4331,8 @@ TEST_F(JobControllerLimitMultipleH2Requests, MultiplePreconnects) {
         factory_, request_delegates[i].get(), session_.get(), &job_factory_,
         request_info, is_preconnect_, /*is_websocket=*/false,
         enable_ip_based_pooling_, enable_alternative_services_,
-        delay_main_job_with_available_spdy_session_, SSLConfig());
+        delay_main_job_with_available_spdy_session_,
+        /*allowed_bad_certs=*/std::vector<SSLConfig::CertAndStatus>());
     auto* job_controller_ptr = job_controller.get();
     HttpStreamFactoryPeer::AddJobController(factory_,
                                             std::move(job_controller));
@@ -4370,7 +4381,8 @@ TEST_F(JobControllerLimitMultipleH2Requests, H1NegotiatedForFirstRequest) {
         factory_, request_delegates[i].get(), session_.get(), &job_factory_,
         request_info, is_preconnect_, /*is_websocket=*/false,
         enable_ip_based_pooling_, enable_alternative_services_,
-        delay_main_job_with_available_spdy_session_, SSLConfig());
+        delay_main_job_with_available_spdy_session_,
+        /*allowed_bad_certs=*/std::vector<SSLConfig::CertAndStatus>());
     auto* job_controller_ptr = job_controller.get();
     HttpStreamFactoryPeer::AddJobController(factory_,
                                             std::move(job_controller));
@@ -4433,7 +4445,8 @@ TEST_F(JobControllerLimitMultipleH2Requests, QuicJobNotThrottled) {
       factory_, &request_delegate_, session_.get(), &default_job_factory,
       request_info, is_preconnect_, /*is_websocket=*/false,
       enable_ip_based_pooling_, enable_alternative_services_,
-      delay_main_job_with_available_spdy_session_, SSLConfig());
+      delay_main_job_with_available_spdy_session_,
+      /*allowed_bad_certs=*/std::vector<SSLConfig::CertAndStatus>());
   auto* job_controller_ptr = job_controller.get();
   HttpStreamFactoryPeer::AddJobController(factory_, std::move(job_controller));
   request_ = job_controller_ptr->Start(
@@ -4537,7 +4550,8 @@ class HttpStreamFactoryJobControllerPreconnectTest
         /* is_websocket = */ false,
         /* enable_ip_based_pooling = */ true,
         /* enable_alternative_services = */ true,
-        /* delay_main_job_with_available_spdy_session = */ true, SSLConfig());
+        /* delay_main_job_with_available_spdy_session = */ true,
+        /*allowed_bad_certs=*/std::vector<SSLConfig::CertAndStatus>());
     job_controller_ = job_controller.get();
     HttpStreamFactoryPeer::AddJobController(factory_,
                                             std::move(job_controller));
@@ -4997,7 +5011,8 @@ class HttpStreamFactoryJobControllerDnsHttpsAlpnTest
         factory_, request_delegate, session_.get(), &default_job_factory_,
         request_info, is_preconnect_, /*is_websocket=*/false,
         enable_ip_based_pooling_, enable_alternative_services_,
-        delay_main_job_with_available_spdy_session_, SSLConfig());
+        delay_main_job_with_available_spdy_session_,
+        /*allowed_bad_certs=*/std::vector<SSLConfig::CertAndStatus>());
     *job_controller = controller.get();
     HttpStreamFactoryPeer::AddJobController(factory_, std::move(controller));
   }

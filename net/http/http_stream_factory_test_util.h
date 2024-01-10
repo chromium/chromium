@@ -6,6 +6,7 @@
 #define NET_HTTP_HTTP_STREAM_FACTORY_TEST_UTIL_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -16,6 +17,7 @@
 #include "net/http/http_stream_request.h"
 #include "net/proxy_resolution/proxy_info.h"
 #include "net/socket/next_proto.h"
+#include "net/ssl/ssl_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/scheme_host_port.h"
 
@@ -92,20 +94,21 @@ class MockHttpStreamRequestDelegate : public HttpStreamRequest::Delegate {
 
 class MockHttpStreamFactoryJob : public HttpStreamFactory::Job {
  public:
-  MockHttpStreamFactoryJob(HttpStreamFactory::Job::Delegate* delegate,
-                           HttpStreamFactory::JobType job_type,
-                           HttpNetworkSession* session,
-                           const HttpRequestInfo& request_info,
-                           RequestPriority priority,
-                           ProxyInfo proxy_info,
-                           const SSLConfig& server_ssl_config,
-                           url::SchemeHostPort destination,
-                           GURL origin_url,
-                           NextProto alternative_protocol,
-                           quic::ParsedQuicVersion quic_version,
-                           bool is_websocket,
-                           bool enable_ip_based_pooling,
-                           NetLog* net_log);
+  MockHttpStreamFactoryJob(
+      HttpStreamFactory::Job::Delegate* delegate,
+      HttpStreamFactory::JobType job_type,
+      HttpNetworkSession* session,
+      const HttpRequestInfo& request_info,
+      RequestPriority priority,
+      ProxyInfo proxy_info,
+      const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
+      url::SchemeHostPort destination,
+      GURL origin_url,
+      NextProto alternative_protocol,
+      quic::ParsedQuicVersion quic_version,
+      bool is_websocket,
+      bool enable_ip_based_pooling,
+      NetLog* net_log);
 
   ~MockHttpStreamFactoryJob() override;
 
@@ -129,7 +132,7 @@ class TestJobFactory : public HttpStreamFactory::JobFactory {
       const HttpRequestInfo& request_info,
       RequestPriority priority,
       const ProxyInfo& proxy_info,
-      const SSLConfig& server_ssl_config,
+      const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
       url::SchemeHostPort destination,
       GURL origin_url,
       bool is_websocket,

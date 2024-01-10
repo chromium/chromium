@@ -287,8 +287,8 @@ TEST_F(HttpsWithDnsOverHttpsTest, EndToEnd) {
   request_info.url = http_server.GetURL("localhost", "/preconnect");
 
   std::unique_ptr<HttpStreamRequest> request(factory->RequestStream(
-      request_info, DEFAULT_PRIORITY, SSLConfig(), &request_delegate, false,
-      false, NetLogWithSource()));
+      request_info, DEFAULT_PRIORITY, /*allowed_bad_certs=*/{},
+      &request_delegate, false, false, NetLogWithSource()));
   loop.Run();
 
   ClientSocketPool::GroupId group_id(
