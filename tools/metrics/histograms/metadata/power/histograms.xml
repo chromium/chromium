@@ -1322,6 +1322,23 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Power.DisplayAfterResumeDurationMs{PowerSource}" units="ms"
+    expires_after="2024-05-26">
+  <owner>mhiramat@google.com</owner>
+  <owner>cros-suspend-resume@google.com</owner>
+  <summary>
+    The time that the user process took to display UI on the Chrome OS device
+    from suspend-to-RAM and suspend-to-Disk state, which starts when user
+    processes are woken up by the kernel, and stops when SetIsProjecting signal
+    is caught by power_manager. This is recorded when resuming from suspend. The
+    device is on {PowerSource} when the metrics is recorded.
+  </summary>
+  <token key="PowerSource">
+    <variant name="OnAC" summary="charging"/>
+    <variant name="OnBattery" summary="battery"/>
+  </token>
+</histogram>
+
 <histogram name="Power.ExternalBrightnessRequestResult"
     enum="ExternalDisplaySendResult" expires_after="M100">
   <owner>puthik@chromium.org</owner>
@@ -1675,8 +1692,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.KernelResumeTimeOnBattery" units="ms"
-    expires_after="M85">
+    expires_after="2024-05-26">
   <owner>tbroch@chromium.org</owner>
+  <owner>mhiramat@google.com</owner>
   <summary>
     The time that the kernel took to resume the Chrome OS device from
     suspend-to-RAM state when running on battery at pre-suspend time.
