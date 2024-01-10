@@ -9,6 +9,7 @@
 #include <iterator>
 #include <numeric>
 
+#include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -536,6 +537,9 @@ bool FormField::ParseInAnyOrder(
 bool FormField::ParseEmptyLabel(ParsingContext& context,
                                 AutofillScanner* scanner,
                                 raw_ptr<AutofillField>* match) {
+  // Temporarily disable logging of matches for empty labels. They don't contain
+  // a lot of insights but occur somewhat often.
+  base::AutoReset disable_logging(&context.log_manager, nullptr);
   return ParseFieldSpecificsWithLegacyPattern(
       context, scanner, kEmptyLabelRegex,
       MatchParams(
@@ -545,8 +549,7 @@ bool FormField::ParseEmptyLabel(ParsingContext& context,
            FormControlType::kInputTelephone, FormControlType::kInputText,
            FormControlType::kSelectOne, FormControlType::kSelectList,
            FormControlType::kTextArea}),
-      match,
-      /*logging=*/{});
+      match, "kEmptyLabelRegex");
 }
 
 // static
