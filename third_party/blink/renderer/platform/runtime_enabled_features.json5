@@ -3697,8 +3697,7 @@
     },
     {
       name: "StorageBuckets",
-      status: "experimental",
-      origin_trial_feature_name: "StorageBuckets",
+      status: "stable",
     },
     {
       // Gates the `durability()` method on a storage bucket and the property in

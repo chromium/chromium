@@ -5720,6 +5720,7 @@ interface Navigator
     getter serial
     getter serviceWorker
     getter storage
+    getter storageBuckets
     getter usb
     getter userActivation
     getter userAgent
@@ -8436,6 +8437,24 @@ interface Storage
     method key
     method removeItem
     method setItem
+interface StorageBucket
+    attribute @@toStringTag
+    getter caches
+    getter indexedDB
+    getter name
+    method constructor
+    method estimate
+    method expires
+    method getDirectory
+    method persist
+    method persisted
+    method setExpires
+interface StorageBucketManager
+    attribute @@toStringTag
+    method constructor
+    method delete
+    method keys
+    method open
 interface StorageEvent : Event
     attribute @@toStringTag
     getter key

@@ -1284,6 +1284,23 @@ interface ServiceWorkerRegistration : EventTarget
     method unregister
     method update
     setter onupdatefound
+interface StorageBucket
+    attribute @@toStringTag
+    getter caches
+    getter indexedDB
+    getter name
+    method constructor
+    method estimate
+    method expires
+    method getDirectory
+    method persisted
+    method setExpires
+interface StorageBucketManager
+    attribute @@toStringTag
+    method constructor
+    method delete
+    method keys
+    method open
 interface StorageManager : EventTarget
     attribute @@toStringTag
     method constructor
@@ -2910,6 +2927,7 @@ interface WorkerNavigator
     getter platform
     getter product
     getter storage
+    getter storageBuckets
     getter userAgent
     getter userAgentData
     method clearAppBadge
