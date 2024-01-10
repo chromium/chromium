@@ -11578,24 +11578,15 @@
                 {
                     "name": "AndroidExperiments",
                     "params": {
-                        "AdditionalRelatedQueries": "5",
-                        "AdditionalTrendingQueries": "5"
+                        "QueryTilesShowAboveTrends": "true",
+                        "QueryTilesShowAsCarousel": "true"
                     },
                     "enable_features": [
-                        "AdaptiveSuggestionsVisibleGroupEligibilityUpdate",
-                        "AndroidAuxiliarySearch",
-                        "NewTabPageTilesTitleWrapAround",
                         "OmniboxDynamicMaxAutocomplete",
-                        "OmniboxFocusTriggersSRPZeroSuggest",
-                        "OmniboxHeaderPaddingUpdate",
                         "OmniboxMaxURLMatches",
-                        "OmniboxMostVisitedTilesDynamicSpacing",
-                        "OmniboxMostVisitedTilesFadingOnTablet",
-                        "OmniboxMostVisitedTilesOnSrp",
-                        "OmniboxMostVisitedTilesTitleWrapAround",
-                        "OmniboxRemoveSuggestionHeaderChevron",
-                        "OmniboxRetainSuggestionsWithHeaders",
-                        "OmniboxUIExperimentMaxAutocompleteMatches"
+                        "OmniboxQueryTilesInZPSOnNTP",
+                        "OmniboxUIExperimentMaxAutocompleteMatches",
+                        "QueryTiles"
                     ]
                 }
             ]
@@ -14608,25 +14599,6 @@
                     },
                     "enable_features": [
                         "QuicDoesNotUseFeatures"
-                    ]
-                }
-            ]
-        }
-    ],
-    "QueryTiles": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Disabled",
-                    "enable_features": [
-                        "QueryTilesDisableCountryOverride"
-                    ],
-                    "disable_features": [
-                        "QueryTiles",
-                        "QueryTilesInNTP"
                     ]
                 }
             ]
