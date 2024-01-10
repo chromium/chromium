@@ -53,12 +53,18 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "pdf/buildflags.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/display/display_switches.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/geometry/point.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "chrome/browser/pdf/test_pdf_viewer_stream_manager.h"
+#include "pdf/pdf_features.h"
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/test/shell_test_api.h"
@@ -265,15 +271,17 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
   EXPECT_EQ(expected_url, new_contents->GetLastCommittedURL());
 }
 
-class ChromeSitePerProcessPDFTest : public ChromeSitePerProcessTest {
+#if BUILDFLAG(ENABLE_PDF)
+class ChromeSitePerProcessGuestViewPDFTest : public ChromeSitePerProcessTest {
  public:
-  ChromeSitePerProcessPDFTest() : test_guest_view_manager_(nullptr) {}
+  ChromeSitePerProcessGuestViewPDFTest() : test_guest_view_manager_(nullptr) {}
 
-  ChromeSitePerProcessPDFTest(const ChromeSitePerProcessPDFTest&) = delete;
-  ChromeSitePerProcessPDFTest& operator=(const ChromeSitePerProcessPDFTest&) =
-      delete;
+  ChromeSitePerProcessGuestViewPDFTest(
+      const ChromeSitePerProcessGuestViewPDFTest&) = delete;
+  ChromeSitePerProcessGuestViewPDFTest& operator=(
+      const ChromeSitePerProcessGuestViewPDFTest&) = delete;
 
-  ~ChromeSitePerProcessPDFTest() override {}
+  ~ChromeSitePerProcessGuestViewPDFTest() override = default;
 
   void SetUpOnMainThread() override {
     ChromeSitePerProcessTest::SetUpOnMainThread();
@@ -296,7 +304,7 @@ class ChromeSitePerProcessPDFTest : public ChromeSitePerProcessTest {
 // This test verifies that when navigating an OOPIF to a page with <embed>-ed
 // PDF, the guest is properly created, and by removing the embedder frame, the
 // guest is properly destroyed (https://crbug.com/649856).
-IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessPDFTest,
+IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessGuestViewPDFTest,
                        EmbeddedPDFInsideCrossOriginFrame) {
   // Navigate to a page with an <iframe>.
   GURL main_url(embedded_test_server()->GetURL("a.com", "/iframe.html"));
@@ -329,6 +337,70 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessPDFTest,
 
   EXPECT_EQ(0U, test_guest_view_manager()->GetCurrentGuestCount());
 }
+
+class ChromeSitePerProcessOopifPDFTest : public ChromeSitePerProcessTest {
+ public:
+  ChromeSitePerProcessOopifPDFTest() {
+    feature_list()->Reset();
+    feature_list()->InitAndEnableFeature(chrome_pdf::features::kPdfOopif);
+  }
+
+  ChromeSitePerProcessOopifPDFTest(const ChromeSitePerProcessOopifPDFTest&) =
+      delete;
+  ChromeSitePerProcessOopifPDFTest& operator=(
+      const ChromeSitePerProcessOopifPDFTest&) = delete;
+
+  ~ChromeSitePerProcessOopifPDFTest() override = default;
+
+  pdf::PdfViewerStreamManager* GetPdfViewerStreamManager() {
+    return pdf::PdfViewerStreamManager::FromWebContents(
+        browser()->tab_strip_model()->GetActiveWebContents());
+  }
+};
+
+// This test verifies that when navigating an OOPIF to a page with <embed>-ed
+// PDF, the PDF viewer stream manager is properly created, and by removing the
+// embedder frame, the stream manager is properly destroyed.
+IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessOopifPDFTest,
+                       EmbeddedPDFInsideCrossOriginFrame) {
+  // Navigate to a page with an <iframe>.
+  GURL main_url(embedded_test_server()->GetURL("a.com", "/iframe.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+
+  // Initially, the stream manager shouldn't be created.
+  EXPECT_FALSE(GetPdfViewerStreamManager());
+
+  content::WebContents* active_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  auto* test_pdf_viewer_stream_manager =
+      pdf::TestPdfViewerStreamManager::CreateForWebContents(
+          active_web_contents);
+
+  // Navigate subframe to a cross-site page with an embedded PDF.
+  GURL frame_url =
+      embedded_test_server()->GetURL("b.com", "/page_with_embedded_pdf.html");
+
+  // Ensure the page finishes loading without crashing.
+  EXPECT_TRUE(NavigateIframeToURL(active_web_contents, "test", frame_url));
+
+  // Wait until the PDF is fully loaded.
+  test_pdf_viewer_stream_manager->WaitUntilPdfLoaded();
+
+  // The primary main frame shouldn't be the PDF embedder and shouldn't have a
+  // PDF stream.
+  auto* primary_main_frame = active_web_contents->GetPrimaryMainFrame();
+  ASSERT_FALSE(
+      test_pdf_viewer_stream_manager->GetStreamContainer(primary_main_frame));
+  EXPECT_TRUE(GetPdfViewerStreamManager());
+
+  // Now detach the frame and observe that the stream manager is destroyed.
+  EXPECT_TRUE(
+      ExecJs(primary_main_frame,
+             "document.body.removeChild(document.querySelector('iframe'));"));
+
+  EXPECT_FALSE(GetPdfViewerStreamManager());
+}
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 // A helper class to verify that a "mailto:" external protocol request succeeds.
 class MailtoExternalProtocolHandlerDelegate
