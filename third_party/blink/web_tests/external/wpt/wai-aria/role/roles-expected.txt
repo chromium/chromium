@@ -1,0 +1,112 @@
+This is a testharness.js-based test.
+Found 54 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] role: alert
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role: alertdialog
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role: application
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role: article
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role: banner
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role: blockquote
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role: button
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role: caption
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role: checkbox
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role: code
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role: combobox
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role: complementary
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role: contentinfo
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role: definition
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role: deletion
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role: dialog
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role: document
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role: emphasis
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role: feed
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role: figure
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role: generic
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role: group
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role: heading
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role: insertion
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role: link
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role: log
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role: main
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role: marquee
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role: math
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role: meter
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role: navigation
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role: note
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role: paragraph
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role: progressbar
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role: radio
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role: radiogroup
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role: scrollbar
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role: search
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role: searchbox
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role: separator
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role: slider
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role: spinbutton
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role: status
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role: strong
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role: subscript
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role: suggestion
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role: superscript
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role: switch
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role: term
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role: textbox
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role: time
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role: timer
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role: toolbar
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role: tooltip
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+Harness: the test ran to completion.
+

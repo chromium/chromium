@@ -1,4 +1,29 @@
 This is a testharness.js-based test.
-Harness Error. harness_status.status = 1 , harness_status.message = Uncaught ReferenceError: AriaUtils is not defined
+[FAIL] el-b
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] el-bdi
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] el-bdo
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] el-data
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] el-div
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] el-i
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] el-li-orphaned
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] el-pre
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] el-q
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] el-samp
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] el-small
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] el-span
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] el-u
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
 Harness: the test ran to completion.
 

@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+[FAIL] span role is cell (in div with row role, in div with rowgroup role, in div with table role)
+  assert_equals: <span role="cell" data-testname="span role is cell (in div with row role, in div with rowgroup role, in div with table role)" data-expectedrole="cell" class="ex">x</span> expected "cell" but got "gridcell"
+[FAIL] orphan span role is cell
+  assert_equals: <span role="cell" data-testname="orphan span role is cell" data-expectedrole="cell" class="ex">x</span> expected "cell" but got "gridcell"
+Harness: the test ran to completion.

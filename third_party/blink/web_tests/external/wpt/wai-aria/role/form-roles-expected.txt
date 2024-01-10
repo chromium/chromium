@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] form without label
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] form with label
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+Harness: the test ran to completion.
+

@@ -1,0 +1,21 @@
+This is a testharness.js-based test.
+[FAIL] div role is caption (in div with table role)
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] orphan p role is caption
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] span role is cell (in div with row role, in div with rowgroup role, in div with table role)
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] orphan span role is cell
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] span role is columnheader (in div with row role, in div with rowgroup role, in div with table role)
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] div role is row (in div with rowgroup role, in div with table role)
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] div role is rowgroup (in div with table role)
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] role is rowheader (in div with row role, in div with rowgroup role, in div with table role)
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] div role is table
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+Harness: the test ran to completion.
+

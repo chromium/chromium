@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+[FAIL] el-thead
+  assert_equals: <thead data-testname="el-thead" data-expectedrole="rowgroup" class="ex">\n    <tr data-testname="el-tr-thead" data-expectedrole="row" class="ex">\n      <th data-testname="el-th" data-expectedrole="columnheader" class="ex">a</th>\n      <th>b</th>\n      <th>c</th>\n    </tr>\n  </thead> expected "rowgroup" but got "none"
+[FAIL] el-tbody
+  assert_equals: <tbody data-testname="el-tbody" data-expectedrole="rowgroup" class="ex">\n    <tr data-testname="el-tr-tbody" data-expectedrole="row" class="ex">\n      <th data-testname="el-th-in-row" data-expectedrole="rowheader" class="ex">1</th>\n      <td data-testname="el-td" data-expectedrole="cell" class="ex">2</td>\n      <td>3</td>\n    </tr>\n    <tr>\n      <th>4</th>\n      <td>5</td>\n      <td>6</td>\n    </tr>\n  </tbody> expected "rowgroup" but got "none"
+[FAIL] el-td
+  assert_equals: <td data-testname="el-td" data-expectedrole="cell" class="ex">2</td> expected "cell" but got "gridcell"
+[FAIL] el-tfoot
+  assert_equals: <tfoot data-testname="el-tfoot" data-expectedrole="rowgroup" class="ex">\n    <tr>\n      <th>x</th>\n      <th>y</th>\n      <th>z</th>\n    </tr>\n  </tfoot> expected "rowgroup" but got "none"
+Harness: the test ran to completion.

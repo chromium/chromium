@@ -1,4 +1,260 @@
 This is a testharness.js-based test.
-Harness Error. harness_status.status = 1 , harness_status.message = Uncaught ReferenceError: AriaUtils is not defined
+Found 128 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] address no name
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] address aria-label
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] address aria-labelledby
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] address title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] address aria-labelledby vs aria-label vs title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] address aria-labelledby vs aria-label
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] address aria-labelledby vs title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] address aria-label vs title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] aside no name
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] aside aria-label
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] aside aria-labelledby
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] aside title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] aside aria-labelledby vs aria-label vs title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] aside aria-labelledby vs aria-label
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] aside aria-labelledby vs title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] aside aria-label vs title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] blockquote no name
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] blockquote aria-label
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] blockquote aria-labelledby
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] blockquote title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] blockquote aria-labelledby vs aria-label vs title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] blockquote aria-labelledby vs aria-label
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] blockquote aria-labelledby vs title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] blockquote aria-label vs title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] details no name
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] details aria-label
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] details aria-labelledby
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] details title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] details aria-labelledby vs aria-label vs title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] details aria-labelledby vs aria-label
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] details aria-labelledby vs title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] details aria-label vs title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] figure no name
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] figure aria-label
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] figure aria-labelledby
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] figure title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] figure aria-labelledby vs aria-label vs title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] figure aria-labelledby vs aria-label
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] figure aria-labelledby vs title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] figure aria-label vs title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] footer no name
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] footer aria-label
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] footer aria-labelledby
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] footer title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] footer aria-labelledby vs aria-label vs title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] footer aria-labelledby vs aria-label
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] footer aria-labelledby vs title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] footer aria-label vs title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] form no name
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] form aria-label
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] form aria-labelledby
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] form title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] form aria-labelledby vs aria-label vs title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] form aria-labelledby vs aria-label
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] form aria-labelledby vs title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] form aria-label vs title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] hgroup no name
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] hgroup aria-label
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] hgroup aria-labelledby
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] hgroup title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] hgroup aria-labelledby vs aria-label vs title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] hgroup aria-labelledby vs aria-label
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] hgroup aria-labelledby vs title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] hgroup aria-label vs title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] hr no name
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] hr aria-label
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] hr aria-labelledby
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] hr title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] hr aria-labelledby vs aria-label vs title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] hr aria-labelledby vs aria-label
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] hr aria-labelledby vs title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] hr aria-label vs title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] ol no name
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] ol aria-label
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] ol aria-labelledby
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] ol title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] ol aria-labelledby vs aria-label vs title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] ol aria-labelledby vs aria-label
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] ol aria-labelledby vs title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] ol aria-label vs title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] main no name
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] main aria-label
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] main aria-labelledby
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] main title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] main aria-labelledby vs aria-label vs title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] main aria-labelledby vs aria-label
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] main aria-labelledby vs title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] main aria-label vs title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] menu no name
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] menu aria-label
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] menu aria-labelledby
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] menu title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] menu aria-labelledby vs aria-label vs title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] menu aria-labelledby vs aria-label
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] menu aria-labelledby vs title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] menu aria-label vs title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] nav no name
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] nav aria-label
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] nav aria-labelledby
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] nav title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] nav aria-labelledby vs aria-label vs title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] nav aria-labelledby vs aria-label
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] nav aria-labelledby vs title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] nav aria-label vs title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] search no name
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] search aria-label
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] search aria-labelledby
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] search title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] search aria-labelledby vs aria-label vs title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] search aria-labelledby vs aria-label
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] search aria-labelledby vs title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] search aria-label vs title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] section no name
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] section aria-label
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] section aria-labelledby
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] section title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] section aria-labelledby vs aria-label vs title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] section aria-labelledby vs aria-label
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] section aria-labelledby vs title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] section aria-label vs title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] ul no name
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] ul aria-label
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] ul aria-labelledby
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] ul title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] ul aria-labelledby vs aria-label vs title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] ul aria-labelledby vs aria-label
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] ul aria-labelledby vs title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
+[FAIL] ul aria-label vs title
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_label is not a function"
 Harness: the test ran to completion.
 
