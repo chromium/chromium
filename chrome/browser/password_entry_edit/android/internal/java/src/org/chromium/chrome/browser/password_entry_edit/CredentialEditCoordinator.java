@@ -16,8 +16,6 @@ import org.chromium.chrome.browser.password_manager.settings.PasswordAccessReaut
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-import java.lang.ref.WeakReference;
-
 /** Creates the credential edit UI and is responsible for managing it. */
 class CredentialEditCoordinator implements ComponentStateDelegate {
     private final CredentialEntryFragmentViewBase mFragmentView;
@@ -53,8 +51,7 @@ class CredentialEditCoordinator implements ComponentStateDelegate {
         mMediator =
                 new CredentialEditMediator(
                         mReauthenticationHelper,
-                        new ConfirmationDialogHelper(
-                                new WeakReference<>(mFragmentView.getContext())),
+                        new ConfirmationDialogHelper(mFragmentView.getContext()),
                         credentialActionDelegate,
                         this::handleHelp,
                         fragmentView instanceof BlockedCredentialFragmentView);
