@@ -41,6 +41,10 @@ class AshIntegrationTest : public InteractiveAshTest {
   // your test starts Lacros.
   void SetUpCommandLineForLacros(base::CommandLine* command_line);
 
+  // Sets up the Lacros browser manager. Call this from
+  // SetUpInProcessBrowserTestFixture() if your test starts Lacros.
+  void SetUpLacrosBrowserManager();
+
   // Waits for Ash to be ready for Lacros, including starting the "Exo" Wayland
   // server. Call this method if your test starts Lacros, otherwise Exo may not
   // be ready and Lacros may not start.

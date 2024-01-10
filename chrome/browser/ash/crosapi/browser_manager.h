@@ -329,6 +329,11 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   void set_device_ownership_waiter_for_testing(
       std::unique_ptr<DeviceOwnershipWaiter> device_ownership_waiter);
 
+  // Skips device ownership fetch. Use set_device_ownership_waiter_for_testing()
+  // above if possible. Use this method only if your test must set up the
+  // behavior before BrowserManager is initialized.
+  static void SkipDeviceOwnershipWaitForTesting(bool skip);
+
   void set_relaunch_requested_for_testing(bool relaunch_requested);
 
   // Disable most of BrowserManager's functionality such that it never tries to

@@ -47,6 +47,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
@@ -143,6 +144,10 @@ BrowserManager* g_instance = nullptr;
 // Global flag to disable most of BrowserManager for testing.
 // Read by the BrowserManager constructor.
 bool g_disabled_for_testing = false;
+
+// Global flag to skip the device ownership fetch. Global because some tests
+// need to set this value before BrowserManager is constructed.
+bool g_skip_device_ownership_wait_for_testing = false;
 
 constexpr char kLacrosCannotLaunchNotificationID[] =
     "lacros_cannot_launch_notification_id";
@@ -1473,6 +1478,12 @@ void BrowserManager::WaitForDeviceOwnerFetchedAndThen(
     bool launching_at_login_screen) {
   CHECK(state_ == State::PRE_LAUNCHED || state_ == State::PREPARING_FOR_LAUNCH);
   SetState(State::WAITING_OWNER_FETCH);
+  if (g_skip_device_ownership_wait_for_testing) {
+    CHECK_IS_TEST();
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                             std::move(cb));
+    return;
+  }
   device_ownership_waiter_called_ = true;
   device_ownership_waiter_->WaitForOwnershipFetched(std::move(cb),
                                                     launching_at_login_screen);
@@ -1836,6 +1847,12 @@ BrowserManager::ScopedUnsetAllKeepAliveForTesting::
 
 void BrowserManager::KillLacrosForTesting() {
   browser_launcher_.TriggerTerminate(/*exit_code=*/1);
+}
+
+// static
+void BrowserManager::SkipDeviceOwnershipWaitForTesting(bool skip) {
+  CHECK_IS_TEST();
+  g_skip_device_ownership_wait_for_testing = skip;
 }
 
 }  // namespace crosapi

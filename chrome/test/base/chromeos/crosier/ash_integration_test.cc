@@ -15,6 +15,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ui/ash/chrome_browser_main_extra_parts_ash.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/chromeos/crosier/chromeos_integration_login_mixin.h"
@@ -51,6 +52,16 @@ void AshIntegrationTest::SetUpCommandLineForLacros(
   std::unique_ptr<base::Environment> env(base::Environment::Create());
   CHECK(scoped_temp_dir_xdg_.CreateUniqueTempDir());
   env->SetVar("XDG_RUNTIME_DIR", scoped_temp_dir_xdg_.GetPath().AsUTF8Unsafe());
+}
+
+void AshIntegrationTest::SetUpLacrosBrowserManager() {
+  // Skip the device owner lookup for Lacros. This mirrors what we do in ash
+  // browser tests. See AshBrowserTestStarter::SetUpBrowserManager(). This
+  // function does not use crosapi::FakeDeviceOwnershipWaiter because if the
+  // test uses BrowserManager::Get() to install the fake waiter (e.g. in
+  // SetUpOnMainThread) often the existing device ownership waiter has already
+  // been called and its too late to install the fake.
+  crosapi::BrowserManager::SkipDeviceOwnershipWaitForTesting(true);
 }
 
 void AshIntegrationTest::WaitForAshFullyStarted() {
