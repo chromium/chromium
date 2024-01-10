@@ -965,11 +965,12 @@
   },
   {
     "prefix": "text-antialias",
+    "owners": ["drott@chromium.org"],
     "platforms": ["Linux", "Mac", "Win", "Fuchsia"],
     "bases": [],
     "args": ["--enable-font-antialiasing",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
+    "expires": "Jan 1, 2025"
   },
   {
     "prefix": "hdr",
