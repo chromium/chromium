@@ -21352,7 +21352,8 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 3
         },
         "test": "cronet_test_instrumentation_apk",
         "test_id_prefix": "ninja://components/cronet/android:cronet_test_instrumentation_apk/"
@@ -21965,7 +21966,8 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 3
         },
         "test": "cronet_test_instrumentation_apk",
         "test_id_prefix": "ninja://components/cronet/android:cronet_test_instrumentation_apk/"
@@ -22420,7 +22422,8 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 3
         },
         "test": "cronet_test_instrumentation_apk",
         "test_id_prefix": "ninja://components/cronet/android:cronet_test_instrumentation_apk/"
@@ -22870,7 +22873,8 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 3
         },
         "test": "cronet_test_instrumentation_apk",
         "test_id_prefix": "ninja://components/cronet/android:cronet_test_instrumentation_apk/"
@@ -23408,7 +23412,8 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 3
         },
         "test": "cronet_test_instrumentation_apk",
         "test_id_prefix": "ninja://components/cronet/android:cronet_test_instrumentation_apk/"
@@ -23856,7 +23861,8 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 3
         },
         "test": "cronet_test_instrumentation_apk",
         "test_id_prefix": "ninja://components/cronet/android:cronet_test_instrumentation_apk/"
@@ -24303,7 +24309,8 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 3
         },
         "test": "cronet_test_instrumentation_apk",
         "test_id_prefix": "ninja://components/cronet/android:cronet_test_instrumentation_apk/"
@@ -24751,7 +24758,8 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 3
         },
         "test": "cronet_test_instrumentation_apk",
         "test_id_prefix": "ninja://components/cronet/android:cronet_test_instrumentation_apk/"
@@ -25198,7 +25206,8 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 3
         },
         "test": "cronet_test_instrumentation_apk",
         "test_id_prefix": "ninja://components/cronet/android:cronet_test_instrumentation_apk/"
@@ -25645,7 +25654,8 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 3
         },
         "test": "cronet_test_instrumentation_apk",
         "test_id_prefix": "ninja://components/cronet/android:cronet_test_instrumentation_apk/"
@@ -26093,7 +26103,8 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 3
         },
         "test": "cronet_test_instrumentation_apk",
         "test_id_prefix": "ninja://components/cronet/android:cronet_test_instrumentation_apk/"

@@ -1703,6 +1703,9 @@ targets.legacy_basic_suite(
             mixins = [
                 "emulator-enable-network",
             ],
+            swarming = targets.swarming(
+                shards = 3,
+            ),
         ),
         "cronet_tests_android": targets.legacy_test_config(),
         "cronet_unittests_android": targets.legacy_test_config(),
