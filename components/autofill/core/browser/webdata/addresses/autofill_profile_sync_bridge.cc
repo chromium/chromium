@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/webdata/autofill_profile_sync_bridge.h"
+#include "components/autofill/core/browser/webdata/addresses/autofill_profile_sync_bridge.h"
 
 #include <memory>
 #include <unordered_set>
@@ -16,7 +16,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/proto/autofill_sync.pb.h"
 #include "components/autofill/core/browser/webdata/addresses/address_autofill_table.h"
-#include "components/autofill/core/browser/webdata/autofill_profile_sync_difference_tracker.h"
+#include "components/autofill/core/browser/webdata/addresses/autofill_profile_sync_difference_tracker.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"

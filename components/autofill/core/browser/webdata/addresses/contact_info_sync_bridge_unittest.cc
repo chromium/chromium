@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/webdata/contact_info_sync_bridge.h"
+#include "components/autofill/core/browser/webdata/addresses/contact_info_sync_bridge.h"
 
 #include <memory>
 #include <string_view>

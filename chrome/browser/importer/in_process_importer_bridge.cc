@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <iterator>
+
 #include "base/files/file_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -14,15 +16,13 @@
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
 #include "chrome/common/importer/imported_bookmark_entry.h"
 #include "chrome/common/importer/importer_autofill_form_data_entry.h"
-#include "components/autofill/core/browser/webdata/autocomplete_entry.h"
+#include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
 #include "components/favicon_base/favicon_usage_data.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_parser.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "ui/base/l10n/l10n_util.h"
-
-#include <iterator>
 
 namespace {
 

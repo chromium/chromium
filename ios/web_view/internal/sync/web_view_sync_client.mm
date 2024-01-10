@@ -11,7 +11,7 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/notreached.h"
-#import "components/autofill/core/browser/webdata/autofill_profile_sync_bridge.h"
+#import "components/autofill/core/browser/webdata/addresses/autofill_profile_sync_bridge.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/metrics/demographics/user_demographics.h"
