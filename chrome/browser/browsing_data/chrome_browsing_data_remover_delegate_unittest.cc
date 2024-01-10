@@ -256,6 +256,7 @@ using testing::ByRef;
 using testing::Eq;
 using testing::FloatEq;
 using testing::Invoke;
+using testing::IsEmpty;
 using testing::MakeMatcher;
 using testing::Matcher;
 using testing::MatcherInterface;
@@ -4059,30 +4060,33 @@ TEST_F(ChromeBrowsingDataRemoverDelegateEnabledPasswordsTest,
   EXPECT_EQ(failed_data_types, constants::DATA_TYPE_ACCOUNT_PASSWORDS);
 }
 
-TEST_F(ChromeBrowsingDataRemoverDelegateEnabledPasswordsTest,
+TEST_F(ChromeBrowsingDataRemoverDelegateTest,
        GetDomainsForDeferredCookieDeletion) {
   auto* storage_partition = GetProfile()->GetDefaultStoragePartition();
   auto* delegate = GetProfile()->GetBrowsingDataRemoverDelegate();
 
   auto domains = delegate->GetDomainsForDeferredCookieDeletion(
       storage_partition, constants::DATA_TYPE_ACCOUNT_PASSWORDS);
-  EXPECT_EQ(domains.size(), 1u);
-  EXPECT_EQ(domains[0], "google.com");
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_THAT(domains, IsEmpty());
+#else
+  EXPECT_THAT(domains, UnorderedElementsAre("google.com"));
+#endif
 
   domains = delegate->GetDomainsForDeferredCookieDeletion(
       storage_partition, constants::DATA_TYPE_PASSWORDS);
-  EXPECT_EQ(domains.size(), 0u);
+  EXPECT_THAT(domains, IsEmpty());
 
   domains = delegate->GetDomainsForDeferredCookieDeletion(
       storage_partition, constants::ALL_DATA_TYPES);
-  EXPECT_EQ(domains.size(), 0u);
+  EXPECT_THAT(domains, IsEmpty());
 
   content::StoragePartition* non_default_storage_partition =
       GetProfile()->GetStoragePartition(content::StoragePartitionConfig::Create(
           GetProfile(), "domain", /*partition_name=*/"", /*in_memory=*/false));
   domains = delegate->GetDomainsForDeferredCookieDeletion(
       non_default_storage_partition, constants::DATA_TYPE_ACCOUNT_PASSWORDS);
-  EXPECT_EQ(domains.size(), 0u);
+  EXPECT_THAT(domains, IsEmpty());
 }
 
 // Verify that clearing secure payment confirmation credentials data works.

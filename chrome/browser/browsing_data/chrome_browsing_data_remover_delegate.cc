@@ -293,10 +293,11 @@ std::vector<std::string>
 ChromeBrowsingDataRemoverDelegate::GetDomainsForDeferredCookieDeletion(
     content::StoragePartition* storage_partition,
     uint64_t remove_mask) {
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kEnablePasswordsAccountStorage)) {
-    return {};
-  }
+#if BUILDFLAG(IS_ANDROID)
+  // On Android the identity model isn't based on Gaia cookies, so they can be
+  // wiped immediately without influencing the wiping of account-scoped data.
+  return {};
+#else
   // The Google/Gaia cookies we care about live in the default StoragePartition.
   if (!storage_partition->GetConfig().is_default() ||
       (remove_mask & constants::DEFERRED_COOKIE_DELETION_DATA_TYPES) == 0) {
@@ -316,6 +317,7 @@ ChromeBrowsingDataRemoverDelegate::GetDomainsForDeferredCookieDeletion(
     domains.insert(domain);
   }
   return {domains.begin(), domains.end()};
+#endif
 }
 
 void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
