@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/test/supervised_user/api_mock_setup_mixin.h"
+
 #include <string>
 
 #include "base/command_line.h"
@@ -10,8 +12,8 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/test/supervised_user/api_mock_setup_mixin.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/supervised_user/core/common/pref_names.h"
@@ -41,9 +43,13 @@ class FamilyFetchedLock {
   FamilyFetchedLock() = delete;
   explicit FamilyFetchedLock(raw_ptr<InProcessBrowserTest> test_base)
       : test_base_(test_base) {
-    CHECK(test_base->browser()->profile())
-        << "Must be acquitted and initialized after the profile was "
-           "initialized too.";
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    Profile* profile = ProfileManager::GetActiveUserProfile();
+#else
+    Profile* profile = test_base_->browser()->profile();
+#endif
+    CHECK(profile) << "Must be acquitted and initialized after the profile was "
+                      "initialized too.";
     pref_change_registrar_.Init(GetPrefService());
     pref_change_registrar_.Add(
         std::string(prefs::kSupervisedUserCustodianName),
@@ -73,7 +79,11 @@ class FamilyFetchedLock {
   }
 
   PrefService* GetPrefService() const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    return ProfileManager::GetActiveUserProfile()->GetPrefs();
+#else
     return test_base_->browser()->profile()->GetPrefs();
+#endif
   }
 
   raw_ptr<InProcessBrowserTest> test_base_;

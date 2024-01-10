@@ -12,6 +12,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -173,7 +174,11 @@ void SupervisionMixin::ConfigureIdentityTestEnvironment() {
 }
 
 Profile* SupervisionMixin::GetProfile() const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return ProfileManager::GetActiveUserProfile();
+#else
   return test_base_->browser()->profile();
+#endif
 }
 
 signin::IdentityTestEnvironment* SupervisionMixin::GetIdentityTestEnvironment()

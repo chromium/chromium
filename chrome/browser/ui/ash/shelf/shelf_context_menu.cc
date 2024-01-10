@@ -63,6 +63,8 @@ void UninstallApp(Profile* profile, const std::string& app_id) {
 }  // namespace
 
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kShelfCloseMenuItem);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kShelfContextMenuNewWindowMenuItem);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kShelfContextMenuIncognitoWindowMenuItem);
 
 // static
 std::unique_ptr<ShelfContextMenu> ShelfContextMenu::Create(
@@ -316,10 +318,7 @@ void ShelfContextMenu::AddContextMenuOption(ui::SimpleMenuModel* menu_model,
         type, string_id,
         ui::ImageModel::FromVectorIcon(icon, ui::kColorAshSystemUIMenuIcon,
                                        ash::kAppContextMenuIconSize));
-    if (type == ash::MENU_CLOSE) {
-      menu_model->SetElementIdentifierAt(
-          menu_model->GetIndexOfCommandId(type).value(), kShelfCloseMenuItem);
-    }
+    MaybeSetElementIdentifier(menu_model, type);
     return;
   }
   // If the MenuType is a check item.
@@ -335,4 +334,29 @@ void ShelfContextMenu::AddContextMenuOption(ui::SimpleMenuModel* menu_model,
     return;
   }
   menu_model->AddItemWithStringId(type, string_id);
+}
+
+void ShelfContextMenu::MaybeSetElementIdentifier(
+    ui::SimpleMenuModel* menu_model,
+    ash::CommandId type) {
+  ui::ElementIdentifier id;
+  switch (type) {
+    case ash::MENU_CLOSE:
+      id = kShelfCloseMenuItem;
+      break;
+    case ash::APP_CONTEXT_MENU_NEW_WINDOW:
+      id = kShelfContextMenuNewWindowMenuItem;
+      break;
+    case ash::APP_CONTEXT_MENU_NEW_INCOGNITO_WINDOW:
+      id = kShelfContextMenuIncognitoWindowMenuItem;
+      break;
+    default:
+      break;
+  }
+
+  if (!id || !menu_model) {
+    return;
+  }
+  menu_model->SetElementIdentifierAt(
+      menu_model->GetIndexOfCommandId(type).value(), id);
 }
