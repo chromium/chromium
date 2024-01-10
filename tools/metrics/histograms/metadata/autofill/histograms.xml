@@ -136,8 +136,8 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="Autofill.PaymentBubble.Show">
-  <variant name="FirstShow" summary="first-show"/>
-  <variant name="Reshows" summary="re-show"/>
+  <variant name=".FirstShow" summary="first-show"/>
+  <variant name=".Reshows" summary="re-show"/>
 </variants>
 
 <!-- TODO(crbug.com/1472892): Rename PaymentsRpcCardType since we add LocalCard here. -->
@@ -257,6 +257,14 @@ chromium-metrics-reviews@google.com.
   <variant name="SettingsPage" summary="settings page enrollment flow"/>
   <variant name="Unknown" summary="uncategorized enrollment source"/>
   <variant name="Upstream" summary="credit card uploading enrollment flow"/>
+</variants>
+
+<variants name="AutofillCreditCardSaveType">
+  <variant name="" summary="aggregated across all situations"/>
+  <variant name=".RequestingCardholderName"
+      summary="explicitly requesting cardholder name"/>
+  <variant name=".RequestingExpirationDate"
+      summary="explicitly requesting expiration date"/>
 </variants>
 
 <variants name="AutofillCreditCardWebauthnOptInOrigin">
@@ -1422,44 +1430,40 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Autofill.CreditCardInfoBar{AutofillCreditCardInfoBarSaveType}"
+<histogram
+    name="Autofill.CreditCardInfoBar{AutofillCreditCardInfoBarSaveType}{SaveType}"
     enum="AutofillCreditCardInfoBar" expires_after="2024-07-01">
   <owner>jsaul@google.com</owner>
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     The relative frequency with which users accept, deny, or ignore the Autofill
-    credit card info bar prompt. {AutofillCreditCardInfoBarSaveType}
+    credit card info bar prompt. {AutofillCreditCardInfoBarSaveType},
+    {SaveType}.
   </summary>
   <token key="AutofillCreditCardInfoBarSaveType">
     <variant name=".Local" summary="Local credit card save"/>
     <variant name=".Server" summary="Server/upload credit card save"/>
   </token>
+  <token key="SaveType" variants="AutofillCreditCardSaveType"/>
 </histogram>
 
-<histogram
-    name="Autofill.CreditCardSaveFlowResult.{SaveDestination}{SaveSituation}"
+<histogram name="Autofill.CreditCardSaveFlowResult.{SaveDestination}{SaveType}"
     enum="AutofillCreditCardSaveFlowResult" expires_after="2024-07-01">
   <owner>jsaul@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     The relative frequency with which users accept, deny, or ignore the Autofill
     credit card prompt when card is saved to for a {SaveDestination} save,
-    {SaveSituation}. Note that this metric concerns the result of final save,
-    rather than the CTR of the prompt, and this metric should record when a
-    decision of whether card will be saved or not is made.
+    {SaveType}. Note that this metric concerns the result of final save, rather
+    than the CTR of the prompt, and this metric should record when a decision of
+    whether card will be saved or not is made.
   </summary>
   <token key="SaveDestination">
     <variant name="Local" summary="local"/>
     <variant name="Server" summary="server"/>
   </token>
-  <token key="SaveSituation">
-    <variant name="" summary="aggregated across all situations"/>
-    <variant name=".RequestingCardholderName"
-        summary="explicitly requesting cardholder name"/>
-    <variant name=".RequestingExpirationDate"
-        summary="explicitly requesting expiration date"/>
-  </token>
+  <token key="SaveType" variants="AutofillCreditCardSaveType"/>
 </histogram>
 
 <histogram name="Autofill.CreditCardsDeletedForDisuse" units="units"
@@ -2592,7 +2596,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Autofill.LocalCardMigrationBubbleOffer.{ShowType}"
+<histogram name="Autofill.LocalCardMigrationBubbleOffer{ShowType}"
     enum="AutofillLocalCardMigrationBubbleOffer" expires_after="2024-07-01">
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
@@ -2603,7 +2607,7 @@ chromium-metrics-reviews@google.com.
   <token key="ShowType" variants="Autofill.PaymentBubble.Show"/>
 </histogram>
 
-<histogram name="Autofill.LocalCardMigrationBubbleResult.{ShowType}"
+<histogram name="Autofill.LocalCardMigrationBubbleResult{ShowType}"
     enum="AutofillLocalCardMigrationBubbleResult" expires_after="2024-07-01">
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
@@ -3057,8 +3061,7 @@ chromium-metrics-reviews@google.com.
   <token key="BubbleType" variants="Autofill.OfferNotification.Type"/>
 </histogram>
 
-<histogram
-    name="Autofill.OfferNotificationBubbleResult.{BubbleType}.{ShowType}"
+<histogram name="Autofill.OfferNotificationBubbleResult.{BubbleType}{ShowType}"
     enum="AutofillOfferNotificationBubbleResult" expires_after="2024-07-01">
   <owner>siyua@chromium.org</owner>
   <owner>jsaul@google.com</owner>
@@ -3332,7 +3335,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Autofill.PaymentMethods.MandatoryReauth.OptInBubbleOffer.{ShowType}"
+    name="Autofill.PaymentMethods.MandatoryReauth.OptInBubbleOffer{ShowType}"
     enum="MandatoryReauthOptInBubbleOffer" expires_after="2024-07-01">
   <owner>justinleewells@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -3347,7 +3350,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Autofill.PaymentMethods.MandatoryReauth.OptInBubbleResult.{ShowType}"
+    name="Autofill.PaymentMethods.MandatoryReauth.OptInBubbleResult{ShowType}"
     enum="MandatoryReauthOptInBubbleResult" expires_after="2024-07-01">
   <owner>justinleewells@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -4090,41 +4093,49 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Autofill.SaveCreditCardPromptOffer{AutofillSaveCreditCardPromptDestination}"
+    name="Autofill.SaveCreditCardPromptOffer{SaveDestination}{ShowType}{SaveType}"
     enum="AutofillSavePaymentMethodPromptOfferEnum" expires_after="2024-07-01">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     The relative frequency with which the Autofill save credit card prompt is
-    shown or not to save credit card {AutofillSaveCreditCardPromptDestination}.
-    Logged when the flow is triggered and the prompt should be shown.
+    shown or not to save credit card {SaveDestination}, {SaveType}. Logged when
+    the flow is triggered and the prompt should be shown. It was a {ShowType}.
   </summary>
-  <token key="AutofillSaveCreditCardPromptDestination"
+  <token key="SaveDestination"
       variants="AutofillSaveCreditCardPromptDestination">
     <variant name=""/>
   </token>
+  <token key="ShowType" variants="Autofill.PaymentBubble.Show">
+    <variant name=""/>
+  </token>
+  <token key="SaveType" variants="AutofillCreditCardSaveType"/>
 </histogram>
 
 <histogram
-    name="Autofill.SaveCreditCardPromptResult{AutofillSaveCreditCardPromptDestination}"
+    name="Autofill.SaveCreditCardPromptResult{SaveDestination}{ShowType}{SaveType}"
     enum="AutofillSavePaymentMethodPromptResultEnum" expires_after="2024-07-01">
   <owner>jsaul@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     The relative frequency with which users accept or deny the Autofill save
-    credit card prompt to save credit card
-    {AutofillSaveCreditCardPromptDestination}. Logged when the prompt closes.
+    credit card prompt to save credit card {SaveDestination}. Logged when the
+    prompt closes.
   </summary>
-  <token key="AutofillSaveCreditCardPromptDestination"
+  <token key="SaveDestination"
       variants="AutofillSaveCreditCardPromptDestination">
     <variant name=""/>
   </token>
+  <token key="ShowType" variants="Autofill.PaymentBubble.Show">
+    <variant name=""/>
+  </token>
+  <token key="SaveType" variants="AutofillCreditCardSaveType"/>
 </histogram>
 
 <histogram
-    name="Autofill.SaveCvcPromptOffer{AutofillSaveCreditCardPromptDestination}.{ShowType}"
+    name="Autofill.SaveCvcPromptOffer{AutofillSaveCreditCardPromptDestination}{ShowType}"
     enum="AutofillSavePaymentMethodPromptOfferEnum" expires_after="2024-07-01">
   <owner>vishwasuppoor@google.com</owner>
   <owner>siyua@chromium.org</owner>
@@ -4140,7 +4151,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Autofill.SaveCvcPromptResult{AutofillSaveCreditCardPromptDestination}.{ShowType}"
+    name="Autofill.SaveCvcPromptResult{AutofillSaveCreditCardPromptDestination}{ShowType}"
     enum="AutofillSavePaymentMethodPromptResultEnum" expires_after="2024-07-01">
   <owner>vishwasuppoor@google.com</owner>
   <owner>siyua@chromium.org</owner>
@@ -4155,7 +4166,7 @@ chromium-metrics-reviews@google.com.
   <token key="ShowType" variants="Autofill.PaymentBubble.Show"/>
 </histogram>
 
-<histogram name="Autofill.SaveIbanPromptOffer{IbanTypeToBeSaved}.{ShowType}"
+<histogram name="Autofill.SaveIbanPromptOffer{IbanTypeToBeSaved}{ShowType}"
     enum="AutofillSavePaymentMethodPromptOfferEnum" expires_after="2024-07-01">
   <owner>jsaul@google.com</owner>
   <owner>qihuizhao@google.com</owner>
@@ -4180,7 +4191,7 @@ chromium-metrics-reviews@google.com.
   <token key="IbanTypeToBeSaved" variants="IbanTypeToBeSaved"/>
 </histogram>
 
-<histogram name="Autofill.SaveIbanPromptResult{IbanTypeToBeSaved}.{ShowType}"
+<histogram name="Autofill.SaveIbanPromptResult{IbanTypeToBeSaved}{ShowType}"
     enum="AutofillSavePaymentMethodPromptResultEnum" expires_after="2024-07-01">
   <owner>jsaul@google.com</owner>
   <owner>qihuizhao@google.com</owner>
@@ -5429,7 +5440,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Autofill.VirtualCardEnrollBubble.Result.{EnrollmentSource}.{ShowType}{PreviousStrikes}"
+    name="Autofill.VirtualCardEnrollBubble.Result.{EnrollmentSource}{ShowType}{PreviousStrikes}"
     enum="AutofillVirtualCardEnrollBubbleResult" expires_after="2024-07-01">
   <owner>alexandertekle@google.com</owner>
   <owner>siyua@chromium.org</owner>
@@ -5490,7 +5501,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Autofill.VirtualCardManualFallbackBubble.Result.{ShowType}"
+<histogram name="Autofill.VirtualCardManualFallbackBubble.Result{ShowType}"
     enum="AutofillVirtualCardManualFallbackBubbleResult"
     expires_after="2024-07-01">
   <owner>siyua@chromium.org</owner>
