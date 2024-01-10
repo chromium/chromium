@@ -8008,7 +8008,6 @@ if (!is_fuchsia) {
         "../browser/ui/webui/privacy_sandbox/privacy_sandbox_dialog_handler_unittest.cc",
         "../browser/ui/webui/realbox/realbox_handler_unittest.cc",
         "../browser/ui/webui/sanitized_image_source_unittest.cc",
-        "../browser/ui/webui/search_engine_choice/icon_utils_unittest.cc",
         "../browser/ui/webui/settings/downloads_handler_unittest.cc",
         "../browser/ui/webui/settings/hats_handler_unittest.cc",
         "../browser/ui/webui/settings/metrics_reporting_handler_unittest.cc",

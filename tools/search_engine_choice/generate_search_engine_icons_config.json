@@ -60,14 +60,14 @@
   },
   // The default icon filenames are '{engine}_xxxhdpi.png' and 'xxxhdpi.png'.
   "non_default_icon_filenames": {
-    "brave": "brave_logo_",
-    "duckduckgo": "logo_",
-    "ecosia": "logo_",
-    "info": "ic_launcher_",
-    "lilo": "ic_launcher_blue_round_",
-    "metager": "ic_launcher_round_",
-    "yahoo": "favicon_y19_",
-    "yandex": "yandex_icon_",
-    "yep": "yep-widget-icon-"
+    "brave": "brave_logo_xxxhdpi.png",
+    "duckduckgo": "logo_xxxhdpi.png",
+    "ecosia": "logo_xxxhdpi.png",
+    "info": "ic_launcher_xxxhdpi.png",
+    "lilo": "ic_launcher_blue_round_xxxhdpi.png",
+    "metager": "ic_launcher_round_xxxhdpi.png",
+    "yahoo": "favicon_y19_xxxhdpi.png",
+    "yandex": "yandex_icon_xxxhdpi.png",
+    "yep": "yep-widget-icon-xxxhdpi.png"
   }
 }
