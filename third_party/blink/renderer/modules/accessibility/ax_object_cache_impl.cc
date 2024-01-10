@@ -1403,8 +1403,6 @@ AXObject* AXObjectCacheImpl::RepairChildrenOfIncludedParent(Node* child) {
       // parents and children are both always included in the tree.
       // Create the child with the aria-owns parent as its parent.
       GetOrCreate(ancestor, ax_owner);
-      // Process all aria-owns updates to make sure the relation is valid.
-      relation_cache_->ProcessUpdatesWithCleanLayout();
       if (AXObject* ax_owned_child = Get(ancestor)) {
         if (IsAriaOwned(ax_owned_child) &&
             ax_owned_child->CachedParentObject() == ax_owner) {
