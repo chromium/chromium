@@ -34,8 +34,11 @@
 #include "content/public/browser/web_ui_url_loader_factory.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/url_constants.h"
+#include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
+#include "net/cookies/site_for_cookies.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/cpp/simple_url_loader_stream_consumer.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -203,6 +206,9 @@ void SaveFileManager::SaveURL(
     SaveItemId save_item_id,
     const GURL& url,
     const Referrer& referrer,
+    const net::IsolationInfo& isolation_info,
+    network::mojom::RequestMode request_mode,
+    bool is_outermost_main_frame,
     int render_process_host_id,
     int render_view_routing_id,
     int render_frame_routing_id,
@@ -257,13 +263,14 @@ void SaveFileManager::SaveURL(
     request->referrer = referrer.url;
     request->priority = net::DEFAULT_PRIORITY;
     request->load_flags = net::LOAD_SKIP_CACHE_VALIDATION;
-
-    // To avoid https://crbug.com/974312, downloads initiated by Save-Page-As
-    // should be treated as navigations. This definitely makes sense for the
-    // top-level page (e.g. in SAVE_PAGE_TYPE_AS_ONLY_HTML mode). This is
-    // probably also okay for subresources downloaded in
-    // SAVE_PAGE_TYPE_AS_COMPLETE_HTML mode.
-    request->mode = network::mojom::RequestMode::kNavigate;
+    request->mode = request_mode;
+    if (request_mode == network::mojom::RequestMode::kNavigate) {
+      request->update_first_party_url_on_redirect = true;
+    }
+    request->is_outermost_main_frame = is_outermost_main_frame;
+    request->trusted_params = network::ResourceRequest::TrustedParams();
+    request->trusted_params->isolation_info = isolation_info;
+    request->site_for_cookies = isolation_info.site_for_cookies();
 
     network::mojom::URLLoaderFactory* factory = nullptr;
     mojo::Remote<network::mojom::URLLoaderFactory> factory_remote;

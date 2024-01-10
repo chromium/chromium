@@ -28,6 +28,7 @@
 #include "content/public/browser/download_manager_delegate.h"
 #include "content/public/browser/save_page_type.h"
 #include "content/public/common/referrer.h"
+#include "net/base/isolation_info.h"
 #include "net/base/net_errors.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-forward.h"
@@ -413,6 +414,10 @@ class CONTENT_EXPORT SavePackage
   const GURL page_url_;
   base::FilePath saved_main_file_path_;
   base::FilePath saved_main_directory_path_;
+
+  // Isolation info for network state partitioning.
+  const net::IsolationInfo page_isolation_info_;
+  bool page_is_outermost_main_frame_;
 
   // The title of the page the user wants to save.
   const std::u16string title_;

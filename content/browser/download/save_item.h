@@ -11,6 +11,8 @@
 #include "base/memory/raw_ptr.h"
 #include "content/browser/download/save_types.h"
 #include "content/public/common/referrer.h"
+#include "net/base/isolation_info.h"
+#include "services/network/public/cpp/request_mode.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -29,6 +31,9 @@ class SaveItem {
 
   SaveItem(const GURL& url,
            const Referrer& referrer,
+           const net::IsolationInfo& isolation_info,
+           network::mojom::RequestMode request_mode,
+           bool is_outermost_main_frame,
            SavePackage* package,
            SaveFileCreateInfo::SaveFileSource save_source,
            int frame_tree_node_id,
@@ -59,6 +64,9 @@ class SaveItem {
   const base::FilePath& full_path() const { return full_path_; }
   const GURL& url() const { return url_; }
   const Referrer& referrer() const { return referrer_; }
+  const net::IsolationInfo& isolation_info() const { return isolation_info_; }
+  network::mojom::RequestMode request_mode() const { return request_mode_; }
+  bool is_outermost_main_frame() const { return is_outermost_main_frame_; }
   int frame_tree_node_id() const { return frame_tree_node_id_; }
   int container_frame_tree_node_id() const {
     return container_frame_tree_node_id_;
@@ -83,6 +91,11 @@ class SaveItem {
   // The URL for this save item.
   GURL url_;
   Referrer referrer_;
+
+  // Request config details for isolation.
+  net::IsolationInfo isolation_info_;
+  network::mojom::RequestMode request_mode_;
+  bool is_outermost_main_frame_;
 
   // Frame tree node id, if this save item represents a frame
   // (otherwise FrameTreeNode::kFrameTreeNodeInvalidId).
