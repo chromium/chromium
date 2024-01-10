@@ -391,12 +391,6 @@ const CGFloat kIPHVerticalOffset = -5;
   [self reset];
   [self.navigator openPasswordManager];
 
-  // The keyboard and keyboard accessory unexpectedly appear after
-  // authentication when entering the Password Manager. Resigning the first
-  // responder here fixes the issue without removing the focus on the underlying
-  // web view's field. See crbug.com/1494929.
-    [GetFirstResponder() resignFirstResponder];
-
   UMA_HISTOGRAM_ENUMERATION(
       "PasswordManager.ManagePasswordsReferrer",
       password_manager::ManagePasswordsReferrer::kPasswordsAccessorySheet);
