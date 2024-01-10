@@ -770,7 +770,6 @@ void DownloadBubbleSecurityView::OnDownloadUpdated(
   if (is_different_download || danger_type_changed) {
     warning_time_ = base::Time::Now();
     ui_info_ = DownloadItemModel(download).GetBubbleUIInfo();
-    download::DownloadDangerType old_danger_type = danger_type_;
     danger_type_ = download->GetDangerType();
     // If this represents a "terminal" state of a deep scan, or if the download
     // is otherwise no longer dangerous, we return to the primary dialog. Note
@@ -783,7 +782,7 @@ void DownloadBubbleSecurityView::OnDownloadUpdated(
       // the primary dialog anyway.
       return;
     }
-    UpdateViews(old_danger_type);
+    UpdateViews();
   }
 }
 
@@ -799,18 +798,10 @@ void DownloadBubbleSecurityView::SetUIInfoForTesting(
   UpdateViews();
 }
 
-void DownloadBubbleSecurityView::UpdateViews(
-    download::DownloadDangerType old_danger_type) {
+void DownloadBubbleSecurityView::UpdateViews() {
   CHECK(IsInitialized());
-  // TODO(crbug.com/1478390): This should become a CHECK eventually.
-  if (!ui_info_.HasSubpage()) {
-    SCOPED_CRASH_KEY_NUMBER("DownloadBubble", "bad_update_from_type",
-                            old_danger_type);
-    SCOPED_CRASH_KEY_NUMBER("DownloadBubble", "bad_update_to_type",
-                            danger_type_);
-    base::debug::DumpWithoutCrashing(FROM_HERE);
-    return;
-  }
+  CHECK(ui_info_.HasSubpage());
+
   // Our multiline labels need to know the width of the bubble in order to size
   // themselves appropriately (see `GetMinimumLabelWidth`). This means that we
   // must reset fields that increase the width of the bubble before update. This
