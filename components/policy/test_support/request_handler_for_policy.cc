@@ -56,8 +56,9 @@ std::unique_ptr<HttpResponse> RequestHandlerForPolicy::HandleRequest(
   };
 
   std::string request_device_token;
-  if (!GetDeviceTokenFromRequest(request, &request_device_token))
+  if (!GetDeviceTokenFromRequest(request, &request_device_token)) {
     return CreateHttpResponse(net::HTTP_UNAUTHORIZED, "Invalid device token.");
+  }
 
   em::DeviceManagementResponse device_management_response;
   const ClientStorage::ClientInfo* client_info =
@@ -215,7 +216,7 @@ bool RequestHandlerForPolicy::ProcessCloudPolicy(
 
   policy_data.SerializeToString(fetch_response->mutable_policy_data());
 
-  if (fetch_request.signature_type() == em::PolicyFetchRequest::SHA1_RSA) {
+  if (fetch_request.signature_type() != em::PolicyFetchRequest::NONE) {
     // Sign the serialized policy data.
     if (!signing_key->Sign(fetch_response->policy_data(),
                            fetch_request.signature_type(),
@@ -250,6 +251,9 @@ bool RequestHandlerForPolicy::ProcessCloudPolicy(
       error_msg->assign("Error signing new_public_key");
       return false;
     }
+
+    fetch_response->set_policy_data_signature_type(
+        fetch_request.signature_type());
   }
 
   return true;
