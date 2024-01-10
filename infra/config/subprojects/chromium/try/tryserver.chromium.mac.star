@@ -84,7 +84,7 @@ try_.builder(
     ],
     gn_args = "ci/mac-osxbeta-rel",
     builderless = False,
-    os = os.MAC_13,
+    os = os.MAC_DEFAULT,
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -716,7 +716,7 @@ ios_builder(
         "ci/ios16-beta-simulator",
     ],
     gn_args = "ci/ios16-beta-simulator",
-    os = os.MAC_13,
+    os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
@@ -736,7 +736,7 @@ ios_builder(
     name = "ios17-beta-simulator",
     mirrors = ["ci/ios17-beta-simulator"],
     gn_args = "ci/ios17-beta-simulator",
-    os = os.MAC_13,
+    os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
 )
 
@@ -744,7 +744,7 @@ ios_builder(
     name = "ios17-sdk-simulator",
     mirrors = ["ci/ios17-sdk-simulator"],
     gn_args = "ci/ios17-sdk-simulator",
-    os = os.MAC_13,
+    os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
     xcode = xcode.x15betabots,
 )

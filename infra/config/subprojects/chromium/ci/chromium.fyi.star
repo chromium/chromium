@@ -970,7 +970,7 @@ ci.builder(
     ),
     builderless = False,
     cores = 12,
-    os = os.MAC_13,
+    os = os.MAC_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "mac",
         short_name = "beta",
@@ -2337,7 +2337,7 @@ fyi_ios_builder(
             "xctest",
         ],
     ),
-    os = os.MAC_13,
+    os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
     console_view_entry = [
         consoles.console_view_entry(
@@ -2375,7 +2375,7 @@ fyi_ios_builder(
             "xctest",
         ],
     ),
-    os = os.MAC_13,
+    os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
     console_view_entry = [
         consoles.console_view_entry(
@@ -2411,7 +2411,7 @@ fyi_ios_builder(
             "xctest",
         ],
     ),
-    os = os.MAC_13,
+    os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
     console_view_entry = [
         consoles.console_view_entry(
@@ -2451,7 +2451,7 @@ fyi_ios_builder(
             "xctest",
         ],
     ),
-    os = os.MAC_13,
+    os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "iOS|iOS16",
