@@ -43,12 +43,16 @@ class KeyboardShortcutData {
   const std::vector<ui::KeyboardCode> shortcut_key_codes() const {
     return shortcut_key_codes_;
   }
+  const std::vector<double> embedding() const { return embedding_; }
+
+  void SetEmbedding(std::vector<double>& embedding);
 
  private:
   // ID of the message resource describing the action the shortcut performs.
   int description_message_id_;
-  // The description (corresponding to |description_message_id|) of the shortcut
-  // action e.g. "Dock a window on the right".
+
+  // The description (corresponding to |description_message_id_|) of the
+  // shortcut action e.g. "Dock a window on the right".
   std::u16string description_;
 
   // ID of the message template resource used to list the keys making up the
@@ -58,6 +62,9 @@ class KeyboardShortcutData {
   // The VKEY codes of the key and each modifier comprising the shortcut. See
   // ash/public/cpp/keyboard_shortcut_item.h for more detail.
   std::vector<ui::KeyboardCode> shortcut_key_codes_;
+
+  // Embedding representation of the |description_| used for Manatee search.
+  std::vector<double> embedding_;
 };
 
 }  // namespace app_list

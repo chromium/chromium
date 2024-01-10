@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/ash/app_list/search/keyboard_shortcut_data.h"
+#include "chrome/browser/ash/app_list/search/manatee/manatee_cache.h"
 #include "chrome/browser/ash/app_list/search/search_provider.h"
 
 class Profile;
@@ -32,6 +33,10 @@ class KeyboardShortcutProvider : public SearchProvider {
   void SetSearchHandlerForTesting(ash::shortcut_ui::SearchHandler* handler) {
     search_handler_ = handler;
   }
+  // Callback function to be run after list of shortcuts is sent for
+  // processing.
+  void OnManateeShortcutsResponseCallback(
+      std::vector<std::vector<double>>& reply);
 
  private:
   using ShortcutDataAndScores =
@@ -46,6 +51,12 @@ class KeyboardShortcutProvider : public SearchProvider {
       std::vector<ash::shortcut_customization::mojom::SearchResultPtr>);
 
   const raw_ptr<Profile> profile_;
+
+  std::unique_ptr<ManateeCache> manatee_cache_;
+
+  // A check for whether the |embedding_| field of KeyboardShortcutData has been
+  // set.
+  bool is_embeddings_set_ = false;
 
   // A full collection of keyboard shortcuts, against which a query is compared
   // during a search.

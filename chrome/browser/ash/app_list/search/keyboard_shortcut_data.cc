@@ -35,4 +35,8 @@ KeyboardShortcutData::KeyboardShortcutData(const KeyboardShortcutData&) =
 
 KeyboardShortcutData::~KeyboardShortcutData() = default;
 
+void KeyboardShortcutData::SetEmbedding(std::vector<double>& embedding) {
+  embedding_ = embedding;
+}
+
 }  // namespace app_list

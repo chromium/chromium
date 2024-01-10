@@ -15,14 +15,20 @@
 #include "ash/webui/shortcut_customization_ui/backend/search/search_handler.h"
 #include "ash/webui/shortcut_customization_ui/shortcuts_app_manager.h"
 #include "ash/webui/shortcut_customization_ui/shortcuts_app_manager_factory.h"
+#include "base/check_op.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/ash/app_list/search/keyboard_shortcut_data.h"
 #include "chrome/browser/ash/app_list/search/keyboard_shortcut_result.h"
 #include "chrome/browser/ash/app_list/search/search_controller.h"
+#include "chrome/browser/ash/app_list/search/search_features.h"
 #include "chrome/browser/ash/app_list/search/types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
+#include "content/public/browser/storage_partition.h"
 
 namespace app_list {
 
@@ -70,7 +76,12 @@ void RemoveDisabledShortcuts(
 }  // namespace
 
 KeyboardShortcutProvider::KeyboardShortcutProvider(Profile* profile)
-    : SearchProvider(ControlCategory::kHelp), profile_(profile) {
+    : SearchProvider(ControlCategory::kHelp),
+      profile_(profile),
+      manatee_cache_(std::make_unique<ManateeCache>(
+          profile,
+          profile->GetDefaultStoragePartition()
+              ->GetURLLoaderFactoryForBrowserProcess())) {
   DCHECK(profile_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -89,6 +100,19 @@ KeyboardShortcutProvider::~KeyboardShortcutProvider() = default;
 
 void KeyboardShortcutProvider::Start(const std::u16string& query) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (search_features::isLauncherManateeForKeyboardShortcutsEnabled() &&
+      !is_embeddings_set_) {
+    std::vector<std::string> descriptions;
+    for (const auto& shortcut : shortcut_data_) {
+      descriptions.push_back(base::UTF16ToUTF8(shortcut.description()));
+    }
+
+    manatee_cache_->RegisterCallback(base::BindOnce(
+        &KeyboardShortcutProvider::OnManateeShortcutsResponseCallback,
+        base::Unretained(this)));
+    manatee_cache_->UrlLoader(descriptions);
+  }
 
   // Cancel all previous searches.
   weak_factory_.InvalidateWeakPtrs();
@@ -121,6 +145,17 @@ void KeyboardShortcutProvider::StopQuery() {
 
 ash::AppListSearchResultType KeyboardShortcutProvider::ResultType() const {
   return ash::AppListSearchResultType::kKeyboardShortcut;
+}
+
+// Assumes that |shortcut_data_| has not changed since
+// initialisation.
+void KeyboardShortcutProvider::OnManateeShortcutsResponseCallback(
+    std::vector<std::vector<double>>& reply) {
+  CHECK_EQ(shortcut_data_.size(), reply.size());
+  for (size_t i = 0; i < reply.size(); ++i) {
+    shortcut_data_[i].SetEmbedding(reply[i]);
+  }
+  is_embeddings_set_ = true;
 }
 
 void KeyboardShortcutProvider::ProcessShortcutList() {
