@@ -26,6 +26,7 @@ import json
 import logging
 import os
 from pathlib import Path
+import resource
 import socket
 import subprocess
 import sys
@@ -136,13 +137,33 @@ class SessionManagerRunner(threading.Thread):
 
     def run(self):
         try:
+            container_root_dir = "/run/containers"
+            os.makedirs(container_root_dir, mode=0o755, exist_ok=True)
+
+            sm_env = {}
+            sm_env["CONTAINER_ROOT_DIR"] = container_root_dir
+
+            # Set limits etc before execute session_manager. This should match
+            # the limits in `ui.conf`.
+            def preexec():
+                resource.setrlimit(resource.RLIMIT_NICE, (40, 40))
+                resource.setrlimit(resource.RLIMIT_RTPRIO, (10, 10))
+
             args = [
+                "/usr/bin/runcon",
+                "-t",
+                "cros_session_manager",
                 "/sbin/session_manager",
                 ("--chrome-command=%s" % str(THIS_FILE.parent / "fake_chrome")),
             ]
             logging.info("Starting session manager: args=%s", str(args))
             self._session_manager_proc = subprocess.Popen(
-                args, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+                args,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.STDOUT,
+                cwd="/",
+                env=sm_env,
+                preexec_fn=preexec)
 
             _wait_for_fake_chrome()
             _send_code_and_string(self._sock, 0, "started")

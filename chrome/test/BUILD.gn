@@ -287,6 +287,15 @@ static_library("test_support") {
         "base/chromeos/crosier/supervised_user_login_delegate.cc",
         "base/chromeos/crosier/supervised_user_login_delegate.h",
       ]
+
+      if (is_chrome_branded) {
+        sources += [
+          "base/chromeos/crosier/adb_helper.cc",
+          "base/chromeos/crosier/adb_helper.h",
+          "base/chromeos/crosier/chromeos_integration_arc_mixin.cc",
+          "base/chromeos/crosier/chromeos_integration_arc_mixin.h",
+        ]
+      }
     }
 
     deps += [
@@ -1153,7 +1162,10 @@ if (is_chromeos && is_chromeos_device) {
       ]
 
       if (is_chrome_branded && is_chromeos_ash) {
-        sources += [ "base/chromeos/crosier/test_accounts_test.cc" ]
+        sources += [
+          "../browser/ash/arc/arc_integration_test.cc",
+          "base/chromeos/crosier/test_accounts_test.cc",
+        ]
       }
 
       data = [
