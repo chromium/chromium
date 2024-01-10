@@ -3066,6 +3066,12 @@ void QuicChromiumClientSession::StartProbing(
       base::BindOnce(&QuicChromiumClientSession::FinishStartProbing,
                      weak_factory_.GetWeakPtr(), std::move(probing_callback),
                      std::move(probing_socket), network, peer_address);
+
+  if (current_migration_cause_ != UNKNOWN_CAUSE &&
+      !MidMigrationCallbackForTesting().is_null()) {
+    std::move(MidMigrationCallbackForTesting()).Run();  // IN-TEST
+  }
+
   stream_factory_->ConnectAndConfigureSocket(
       std::move(configure_callback), probing_socket_ptr,
       ToIPEndPoint(peer_address), network, session_key_.socket_tag());
