@@ -43,19 +43,20 @@ auto MatchesResultSection(const PickerSearchResults::Section& section) {
 
 TEST_F(PickerCategoryViewTest, CreatesResultsSections) {
   PickerCategoryView view(base::DoNothing());
-  const PickerSearchResults kSearchResults({{
+  const PickerSearchResults kResults({{
       PickerSearchResults::Section(u"Saved",
                                    {{PickerSearchResult(u"Result A")}}),
       PickerSearchResults::Section(
           u"Recently used",
           {{PickerSearchResult(u"Result B"), PickerSearchResult(u"Result C")}}),
   }});
-  view.SetResults(kSearchResults);
+  view.SetResults(kResults);
 
+  EXPECT_THAT(view.children(), SizeIs(kResults.sections().size()));
   EXPECT_THAT(
       view.section_views_for_testing(),
-      ElementsAre(Pointee(MatchesResultSection(kSearchResults.sections()[0])),
-                  Pointee(MatchesResultSection(kSearchResults.sections()[1]))));
+      ElementsAre(Pointee(MatchesResultSection(kResults.sections()[0])),
+                  Pointee(MatchesResultSection(kResults.sections()[1]))));
 }
 
 TEST_F(PickerCategoryViewTest, LeftClickSelectsResult) {

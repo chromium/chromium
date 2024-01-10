@@ -30,6 +30,7 @@ void PickerSearchResultsView::SetSearchResults(
   search_results_ = search_results;
 
   section_views_.clear();
+  RemoveAllChildViews();
   for (const auto& section : search_results_.sections()) {
     auto* section_view =
         AddChildView(std::make_unique<PickerSectionView>(section.heading()));

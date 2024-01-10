@@ -50,6 +50,7 @@ TEST_F(PickerSearchResultsViewTest, CreatesResultsSections) {
   }});
   view.SetSearchResults(kSearchResults);
 
+  EXPECT_THAT(view.children(), SizeIs(kSearchResults.sections().size()));
   EXPECT_THAT(
       view.section_views_for_testing(),
       ElementsAre(Pointee(MatchesResultSection(kSearchResults.sections()[0])),
@@ -70,6 +71,7 @@ TEST_F(PickerSearchResultsViewTest, UpdatesResultsSections) {
   }});
   view.SetSearchResults(kUpdatedSearchResults);
 
+  EXPECT_THAT(view.children(), SizeIs(kUpdatedSearchResults.sections().size()));
   EXPECT_THAT(view.section_views_for_testing(),
               ElementsAre(Pointee(
                   MatchesResultSection(kUpdatedSearchResults.sections()[0]))));
