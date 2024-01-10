@@ -2482,6 +2482,8 @@ static_library("ui") {
       "../ash/app_list/search/search_controller.h",
       "../ash/app_list/search/search_controller_factory.cc",
       "../ash/app_list/search/search_controller_factory.h",
+      "../ash/app_list/search/search_engine.cc",
+      "../ash/app_list/search/search_engine.h",
       "../ash/app_list/search/search_features.cc",
       "../ash/app_list/search/search_features.h",
       "../ash/app_list/search/search_metrics_manager.cc",

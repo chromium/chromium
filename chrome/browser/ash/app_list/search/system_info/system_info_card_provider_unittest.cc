@@ -311,8 +311,9 @@ class SystemInfoCardProviderTest : public testing::Test {
     arc_service_manager_ = std::make_unique<arc::ArcServiceManager>();
     profile_ = std::make_unique<TestingProfile>();
     search_controller_ = std::make_unique<TestSearchController>();
-    provider_ = std::make_unique<SystemInfoCardProvider>(profile_.get());
-    provider_->set_controller(search_controller_.get());
+    auto provider = std::make_unique<SystemInfoCardProvider>(profile_.get());
+    provider_ = provider.get();
+    search_controller_->AddProvider(std::move(provider));
 
     // Create and register My files directory.
     // By emulating chromeos running, GetMyFilesFolderForProfile will return the
@@ -330,7 +331,7 @@ class SystemInfoCardProviderTest : public testing::Test {
   }
 
   void TearDown() override {
-    provider_.reset();
+    provider_ = nullptr;
     search_controller_.reset();
     profile_.reset();
     arc_service_manager_.reset();
@@ -348,14 +349,16 @@ class SystemInfoCardProviderTest : public testing::Test {
     return search_controller_->last_results();
   }
 
-  void StartSearch(const std::u16string& query) { provider_->Start(query); }
+  void StartSearch(const std::u16string& query) {
+    search_controller_->StartSearch(query);
+  }
 
   content::BrowserTaskEnvironment task_environment_;
   ::ash::mojo_service_manager::FakeMojoServiceManager fake_service_manager_;
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
   std::unique_ptr<Profile> profile_;
   std::unique_ptr<TestSearchController> search_controller_;
-  std::unique_ptr<SystemInfoCardProvider> provider_;
+  raw_ptr<SystemInfoCardProvider> provider_;
 };
 
 TEST_F(SystemInfoCardProviderTest, Version) {
@@ -489,7 +492,7 @@ TEST_F(SystemInfoCardProviderTest, Cpu) {
                             {new_temp_1, new_temp_2, new_temp_3},
                             {core_1_speed, core_2_speed});
 
-  StartSearch(u"cpu usage");
+  StartSearch(u"cpu");
   Wait();
 
   ASSERT_FALSE(results().empty());
@@ -577,7 +580,7 @@ TEST_F(SystemInfoCardProviderTest, Memory) {
   EXPECT_EQ(results()[0]->system_info_answer_card_data()->bar_chart_percentage,
             75);
 
-  StartSearch(u"memory usage");
+  StartSearch(u"memory");
   Wait();
 
   ASSERT_FALSE(results().empty());

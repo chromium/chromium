@@ -46,6 +46,7 @@ class AppSearchDataSource;
 class SearchMetricsManager;
 class SearchSessionMetricsManager;
 class SearchProvider;
+class SearchEngine;
 
 // Long queries will be truncated down to this length.
 constexpr int kMaxAllowedQueryLength = 500;
@@ -112,7 +113,7 @@ class SearchController {
                           ash::SearchResultActionType action);
 
   // Update the controller with the given results.
-  virtual void SetResults(const SearchProvider* provider, Results results);
+  virtual void SetResults(ResultType result_type, Results results);
 
   // Publishes results to ash.
   void Publish();
@@ -170,9 +171,9 @@ class SearchController {
   // Rank the results of |provider_type|.
   void Rank(ResultType provider_type);
 
-  void SetSearchResults(const SearchProvider* provider);
+  void SetSearchResults(ResultType result_type);
 
-  void SetZeroStateResults(const SearchProvider* provider);
+  void SetZeroStateResults(ResultType result_type);
 
   void OnZeroStateTimedOut();
 
@@ -226,7 +227,8 @@ class SearchController {
 
   std::unique_ptr<AppSearchDataSource> app_search_data_source_;
 
-  std::vector<std::unique_ptr<SearchProvider>> providers_;
+  // TODO(b/315709613):Temporary before it is moved to a new service.
+  std::unique_ptr<SearchEngine> search_engine_;
 
   const raw_ptr<AppListModelUpdater> model_updater_;
   const raw_ptr<AppListControllerDelegate> list_controller_;

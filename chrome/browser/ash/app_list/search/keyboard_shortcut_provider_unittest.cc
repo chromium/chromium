@@ -326,7 +326,7 @@ TEST_F(CustomizableKeyboardShortcutProviderTest, FourQualifiedReturnThree) {
       {0.9, 0.8, 0.7, 0.53, 0.5, 0.4});
   search_handler_->SetSearchResults(std::move(search_results));
 
-  provider_->Start(u"fake query");
+  StartSearch(u"fake query");
   Wait();
 
   EXPECT_EQ(kMaxResults, results().size());
@@ -342,7 +342,7 @@ TEST_F(CustomizableKeyboardShortcutProviderTest, NoneQualifiedReturnEmpty) {
       CreateFakeSearchResultsWithSpecifiedScores({0.51, 0.51, 0.5});
   search_handler_->SetSearchResults(std::move(search_results));
 
-  provider_->Start(u"fake query");
+  StartSearch(u"fake query");
   Wait();
 
   EXPECT_TRUE(results().empty());
@@ -356,7 +356,7 @@ TEST_F(CustomizableKeyboardShortcutProviderTest,
       CreateFakeSearchResultsWithSpecifiedScores({0.9, 0.8, 0.51, 0.51, 0.5});
   search_handler_->SetSearchResults(std::move(search_results));
 
-  provider_->Start(u"fake query");
+  StartSearch(u"fake query");
   Wait();
 
   const size_t results_count = 2;
@@ -376,7 +376,7 @@ TEST_F(CustomizableKeyboardShortcutProviderTest,
        AcceleratorState::kDisabledByUser});
   search_handler_->SetSearchResults(std::move(search_results));
 
-  provider_->Start(u"fake query");
+  StartSearch(u"fake query");
   Wait();
 
   const size_t results_count = 3;

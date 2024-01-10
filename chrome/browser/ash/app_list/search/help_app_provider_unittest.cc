@@ -109,7 +109,7 @@ class HelpAppProviderTest : public AppListTestBase {
 
   // Starts a search and waits for the query to be sent.
   void StartSearch(const std::u16string& query) {
-    provider_->Start(query);
+    search_controller_.StartSearch(query);
     task_environment()->RunUntilIdle();
   }
 

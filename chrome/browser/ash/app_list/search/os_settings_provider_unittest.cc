@@ -183,14 +183,15 @@ class OsSettingsProviderTest : public testing::Test {
         mojom::Section::kBluetooth, mojom::Setting::kFastPairSavedDevices,
         std::make_optional(mojom::Subpage::kBluetoothSavedDevices));
 
-    provider_ = std::make_unique<OsSettingsProvider>(profile_, &mock_handler_,
-                                                     &fake_hierarchy_);
-    provider_->set_controller(search_controller_.get());
+    auto provider = std::make_unique<OsSettingsProvider>(
+        profile_, &mock_handler_, &fake_hierarchy_);
+    provider_ = provider.get();
+    search_controller_->AddProvider(std::move(provider));
     task_environment_.RunUntilIdle();
   }
 
   void TearDown() override {
-    provider_.reset();
+    provider_ = nullptr;
     search_controller_.reset();
     profile_ = nullptr;
     profile_manager_->DeleteTestingProfile("name");
@@ -203,7 +204,7 @@ class OsSettingsProviderTest : public testing::Test {
 
   // Starts a search and waits for the query to be sent.
   void StartSearch(const std::u16string& query) {
-    provider_->Start(query);
+    search_controller_->StartSearch(query);
     base::RunLoop().RunUntilIdle();
   }
 
@@ -220,7 +221,7 @@ class OsSettingsProviderTest : public testing::Test {
  private:
   std::unique_ptr<TestingProfileManager> profile_manager_;
   raw_ptr<TestingProfile> profile_;
-  std::unique_ptr<OsSettingsProvider> provider_;
+  raw_ptr<OsSettingsProvider> provider_;
 };
 
 TEST_F(OsSettingsProviderTest, Basic) {
