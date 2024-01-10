@@ -715,7 +715,8 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Family picker: dialog canceled"/>
   <int value="10" label="Family picker: 'View family' clicked"/>
   <int value="11" label="Confirmation dialog: sharing canceled/interrupted"/>
-  <int value="12" label="Confirmation dialog: 'Learn more' clicked"/>
+  <int value="12"
+      label="(DEPRECATED in M122) Confirmation dialog: 'Learn more' clicked"/>
   <int value="13" label="Confirmation dialog: 'Change password' clicked"/>
   <int value="14" label="Dialog header: 'Help icon button' clicked"/>
 </enum>

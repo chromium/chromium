@@ -24,12 +24,14 @@ export enum PasswordSharingActions {
   FAMILY_PICKER_CANCELED = 9,
   FAMILY_PICKER_VIEW_FAMILY_CLICKED = 10,
   CONFIRMATION_DIALOG_SHARING_CANCELED = 11,
+  /*  Deprecated in M122 (b/317798360).
   CONFIRMATION_DIALOG_LEARN_MORE_CLICKED = 12,
+  */
   CONFIRMATION_DIALOG_CHANGE_PASSWORD_CLICKED = 13,
   DIALOG_HEADER_HELP_ICON_BUTTON_CLICKED = 14,
   // Must be last.
   COUNT = 15,
-  // LINT.ThenChange(//tools/metrics/histograms/enums.xml)
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/password/enums.xml)
 }
 
 export function recordPasswordSharingInteraction(

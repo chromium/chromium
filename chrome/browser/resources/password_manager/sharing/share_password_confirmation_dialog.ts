@@ -135,7 +135,6 @@ export class SharePasswordConfirmationDialogElement extends
           'sharePasswordConfirmationDescriptionMultipleRecipients', {
             substitutions: [
               this.passwordName,
-              this.i18n('passwordSharingLearnMoreURL'),
             ],
           });
     }
@@ -144,7 +143,6 @@ export class SharePasswordConfirmationDialogElement extends
           substitutions: [
             this.recipients[0].displayName,
             this.passwordName,
-            this.i18n('passwordSharingLearnMoreURL'),
           ],
         });
   }
@@ -170,14 +168,6 @@ export class SharePasswordConfirmationDialogElement extends
             this.passwordName,
       ],
     });
-  }
-
-  private onDescriptionClick_(e: Event) {
-    const element = e.target as HTMLElement;
-    if (element.tagName === 'A') {
-      recordPasswordSharingInteraction(
-          PasswordSharingActions.CONFIRMATION_DIALOG_LEARN_MORE_CLICKED);
-    }
   }
 
   private onFooterClick_(e: Event) {
