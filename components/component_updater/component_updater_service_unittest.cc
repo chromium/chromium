@@ -229,7 +229,7 @@ void OnDemandTester::OnDemandComplete(update_client::Error error) {
 
 std::unique_ptr<ComponentUpdateService> TestComponentUpdateServiceFactory(
     scoped_refptr<Configurator> config) {
-  DCHECK(config);
+  EXPECT_TRUE(config);
   return std::make_unique<CrxUpdateService>(
       config, std::make_unique<MockUpdateScheduler>(),
       base::MakeRefCounted<MockUpdateClient>(), "");

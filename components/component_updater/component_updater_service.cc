@@ -199,7 +199,7 @@ bool CrxUpdateService::RegisterComponent(
   item.component = ToCrxComponent(component);
   const auto inserted =
       component_states_.insert(std::make_pair(component.app_id, item));
-  DCHECK(inserted.second);
+  CHECK(inserted.second);
 
   // Start the timer if this is the first component registered. The first timer
   // event occurs after an interval defined by the component update
@@ -219,8 +219,6 @@ bool CrxUpdateService::UnregisterComponent(const std::string& id) {
     return false;
   }
 
-  DCHECK_EQ(id, it->first);
-
   // Delay the uninstall of the component if the component is being updated.
   if (update_client_->IsUpdating(id)) {
     components_pending_unregistration_.push_back(id);
@@ -232,8 +230,6 @@ bool CrxUpdateService::UnregisterComponent(const std::string& id) {
 
 bool CrxUpdateService::DoUnregisterComponent(const std::string& id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  DCHECK(ready_callbacks_.find(id) == ready_callbacks_.end());
 
   const bool result = components_.find(id)->second.installer->Uninstall();
 
@@ -348,8 +344,6 @@ void CrxUpdateService::OnDemandUpdate(const std::string& id,
 
 bool CrxUpdateService::OnDemandUpdateWithCooldown(const std::string& id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  DCHECK(GetComponent(id));
 
   // Check if the request is too soon.
   const auto* component_state(GetComponentState(id));
@@ -526,8 +520,8 @@ std::unique_ptr<ComponentUpdateService> ComponentUpdateServiceFactory(
     scoped_refptr<Configurator> config,
     std::unique_ptr<UpdateScheduler> scheduler,
     const std::string& brand) {
-  DCHECK(config);
-  DCHECK(scheduler);
+  CHECK(config);
+  CHECK(scheduler);
   auto update_client = update_client::UpdateClientFactory(config);
   return std::make_unique<CrxUpdateService>(config, std::move(scheduler),
                                             std::move(update_client), brand);

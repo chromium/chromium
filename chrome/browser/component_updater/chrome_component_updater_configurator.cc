@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -113,11 +114,11 @@ class ChromeConfigurator : public update_client::Configurator {
 ChromeConfigurator::ChromeConfigurator(const base::CommandLine* cmdline,
                                        PrefService* pref_service)
     : configurator_impl_(ComponentUpdaterCommandLineConfigPolicy(cmdline),
-                         false),
+                         /*require_encryption=*/false),
       pref_service_(pref_service),
       persisted_data_(
           update_client::CreatePersistedData(pref_service, nullptr)) {
-  DCHECK(pref_service_);
+  CHECK(pref_service_);
 }
 
 base::TimeDelta ChromeConfigurator::InitialDelay() const {
