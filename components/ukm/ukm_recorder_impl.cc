@@ -1086,7 +1086,7 @@ void UkmRecorderImpl::AddEntry(mojom::UkmEntryPtr entry) {
     return;
   }
 
-  // Log a corresponding entry to UMA so we get a per-metric breakdown of UKM
+  // Log a corresponding entry to UMA so we get a per-event breakdown of UKM
   // entry counts.
   // Truncate the unsigned 64-bit hash to 31 bits, to
   // make it a suitable histogram sample.
@@ -1118,33 +1118,41 @@ void UkmRecorderImpl::LoadExperimentSamplingInfo() {
 void UkmRecorderImpl::LoadExperimentSamplingParams(
     const std::map<std::string, std::string>& params) {
   for (const auto& kv : params) {
-    const std::string& key = kv.first;
-    if (key.length() == 0)
+    const std::string& event_name = kv.first;
+    const std::string& event_param = kv.second;
+    if (event_name.empty()) {
       continue;
+    }
 
-    // Keys starting with an underscore are global configuration.
-    if (key.at(0) == '_') {
-      if (key == "_default_sampling") {
-        int sampling;
-        // We only load non-negative global sampling rates.
-        if (base::StringToInt(kv.second, &sampling) && sampling >= 0)
-          default_sampling_rate_ = sampling;
+    int sampling_rate = -1;
+
+    // Special string value used in the experiment configs for the default
+    // global configuration.
+    if (event_name == "_default_sampling") {
+      // Sampling rates must be non-negative integers.
+      if (base::StringToInt(event_param, &sampling_rate) &&
+          sampling_rate >= 0) {
+        default_sampling_rate_ = sampling_rate;
       }
       continue;
     }
 
     // Anything else is an event name.
-    int sampling;
-    auto hash = base::HashMetricName(key);
-    if (base::StringToInt(kv.second, &sampling)) {
-      // If the parameter is a number then that's the sampling rate.
-      if (sampling >= 0)
-        event_sampling_rates_[hash] = sampling;
+    auto event_hash = base::HashMetricName(event_name);
+    // TODO(b/298075109#comment9): decouple numerical parameters and event
+    // groupings.
+    if (base::StringToInt(event_param, &sampling_rate)) {
+      // If the parameter parses as a non-negative integer N, it's the sampling
+      // rate meaning that the event should be sampled 1-in-N.
+      if (sampling_rate >= 0) {
+        event_sampling_rates_[event_hash] = sampling_rate;
+      }
     } else {
-      // If the parameter is a string then it's the name of another metric
-      // to which it should be slaved. This allows different metrics to be
-      // sampled in or out together.
-      event_sampling_master_[hash] = base::HashMetricName(kv.second);
+      // If the parameter of an event E is a string, then it's the
+      // name of some other event F. This means that event E should be sampled
+      // at the same rate, and sampled in and out together with event F at the
+      // page load level.
+      event_sampling_master_[event_hash] = base::HashMetricName(event_param);
     }
   }
 }
