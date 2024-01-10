@@ -13,6 +13,7 @@
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
+#include "components/content_settings/core/browser/content_settings_rule.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_metadata.h"
@@ -94,6 +95,11 @@ class OriginIdentifierValueMap {
   // destroyed.
   std::unique_ptr<RuleIterator> GetRuleIterator(
       ContentSettingsType content_type) const LOCKS_EXCLUDED(lock_);
+
+  std::unique_ptr<Rule> GetRule(const GURL& primary_url,
+                                const GURL& secondary_url,
+                                ContentSettingsType content_type) const
+      LOCKS_EXCLUDED(lock_);
 
   OriginIdentifierValueMap();
 

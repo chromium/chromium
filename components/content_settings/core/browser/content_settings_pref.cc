@@ -191,6 +191,16 @@ std::unique_ptr<RuleIterator> ContentSettingsPref::GetRuleIterator(
   return value_map_.GetRuleIterator(content_type_);
 }
 
+std::unique_ptr<Rule> ContentSettingsPref::GetRule(const GURL& primary_url,
+                                                   const GURL& secondary_url,
+                                                   bool off_the_record) const {
+  if (off_the_record) {
+    return off_the_record_value_map_.GetRule(primary_url, secondary_url,
+                                             content_type_);
+  }
+  return value_map_.GetRule(primary_url, secondary_url, content_type_);
+}
+
 void ContentSettingsPref::SetWebsiteSetting(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,

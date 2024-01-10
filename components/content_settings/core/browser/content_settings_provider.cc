@@ -24,8 +24,7 @@ std::unique_ptr<Rule> ProviderInterface::GetRule(
         rule->secondary_pattern.Matches(secondary_url) &&
         (base::FeatureList::IsEnabled(
              content_settings::features::kActiveContentSettingExpiry) ||
-         rule->metadata.expiration().is_null() ||
-         rule->metadata.expiration() >= base::Time::Now())) {
+         !rule->metadata.IsExpired())) {
       return rule;
     }
   }

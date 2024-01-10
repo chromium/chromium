@@ -47,6 +47,39 @@ TEST(OriginIdentifierValueMapTest, SetGetValue) {
                                   ContentSettingsType::POPUPS));
 }
 
+TEST(OriginIdentifierValueMapTest, GetRule) {
+  content_settings::OriginIdentifierValueMap map;
+
+  EXPECT_EQ(nullptr, map.GetRule(GURL("http://www.google.com"),
+                                 GURL("http://www.google.com"),
+                                 ContentSettingsType::COOKIES));
+
+  {
+    base::AutoLock lock(map.GetLock());
+    map.SetValue(ContentSettingsPattern::FromString("[*.]google.com"),
+                 ContentSettingsPattern::FromString("[*.]google.com"),
+                 ContentSettingsType::COOKIES, base::Value(1), {});
+  }
+
+  auto rule =
+      map.GetRule(GURL("http://www.google.com"), GURL("http://www.google.com"),
+                  ContentSettingsType::COOKIES);
+  ASSERT_TRUE(rule);
+  EXPECT_EQ(base::Value(1), rule->value);
+
+  EXPECT_EQ(nullptr, map.GetRule(GURL("http://www.google.com"),
+                                 GURL("http://www.youtube.com"),
+                                 ContentSettingsType::COOKIES));
+
+  EXPECT_EQ(nullptr, map.GetRule(GURL("http://www.youtube.com"),
+                                 GURL("http://www.google.com"),
+                                 ContentSettingsType::COOKIES));
+
+  EXPECT_EQ(nullptr, map.GetRule(GURL("http://www.google.com"),
+                                 GURL("http://www.google.com"),
+                                 ContentSettingsType::POPUPS));
+}
+
 TEST(OriginIdentifierValueMapTest, SetValueReturnsChanges) {
   content_settings::OriginIdentifierValueMap map;
   base::AutoLock lock(map.GetLock());

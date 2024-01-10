@@ -161,6 +161,20 @@ std::unique_ptr<RuleIterator> PrefProvider::GetRuleIterator(
   return GetPref(content_type)->GetRuleIterator(off_the_record);
 }
 
+std::unique_ptr<Rule> PrefProvider::GetRule(
+    const GURL& primary_url,
+    const GURL& secondary_url,
+    ContentSettingsType content_type,
+    bool off_the_record,
+    const PartitionKey& partition_key) const {
+  if (!supports_type(content_type)) {
+    return nullptr;
+  }
+
+  return GetPref(content_type)
+      ->GetRule(primary_url, secondary_url, off_the_record);
+}
+
 // TODO(b/307193732): handle the PartitionKey in all relevant methods.
 bool PrefProvider::SetWebsiteSetting(
     const ContentSettingsPattern& primary_pattern,

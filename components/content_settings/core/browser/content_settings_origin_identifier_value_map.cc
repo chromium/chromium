@@ -10,11 +10,13 @@
 #include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "base/values.h"
 #include "components/content_settings/core/browser/content_settings_rule.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/features.h"
 #include "url/gurl.h"
 
 namespace content_settings {
@@ -92,6 +94,33 @@ std::unique_ptr<RuleIterator> OriginIdentifierValueMap::GetRuleIterator(
   return std::make_unique<RuleIteratorImpl>(
       it->second.begin(), it->second.end(), std::move(auto_lock),
       std::move(iterating));
+}
+
+std::unique_ptr<Rule> OriginIdentifierValueMap::GetRule(
+    const GURL& primary_url,
+    const GURL& secondary_url,
+    ContentSettingsType content_type) const {
+  base::AutoLock lock(lock_);
+  auto it = entries_.find(content_type);
+  if (it == entries_.end()) {
+    return nullptr;
+  }
+
+  // Iterate the entries in until a match is found. Since the rules are
+  // stored in the order of decreasing precedence, the most specific match
+  // is found first.
+  for (const auto& entry : it->second) {
+    if (entry.first.primary_pattern.Matches(primary_url) &&
+        entry.first.secondary_pattern.Matches(secondary_url) &&
+        (base::FeatureList::IsEnabled(
+             content_settings::features::kActiveContentSettingExpiry) ||
+         !entry.second.metadata.IsExpired())) {
+      return std::make_unique<Rule>(
+          entry.first.primary_pattern, entry.first.secondary_pattern,
+          entry.second.value.Clone(), entry.second.metadata);
+    }
+  }
+  return nullptr;
 }
 
 size_t OriginIdentifierValueMap::size() const {

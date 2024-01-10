@@ -29,6 +29,10 @@ void RuleMetaData::SetExpirationAndLifetime(base::Time expiration,
   lifetime_ = lifetime;
 }
 
+bool RuleMetaData::IsExpired() const {
+  return !expiration().is_null() && expiration() < base::Time::Now();
+}
+
 bool RuleMetaData::operator==(const RuleMetaData& other) const {
   return std::tie(last_modified_, last_used_, last_visited_, expiration_,
                   session_model_, lifetime_) ==
