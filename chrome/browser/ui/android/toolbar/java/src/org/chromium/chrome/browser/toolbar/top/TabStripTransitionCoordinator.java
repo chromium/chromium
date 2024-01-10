@@ -19,6 +19,7 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.Observer;
@@ -267,6 +268,7 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
                     "TransitionFinishedObserver is not cleared when new transition starts. This"
                             + " means previous transition was not finished properly.");
             notifyTransitionFinished();
+            recordTabStripTransitionFinished(false);
         }
 
         // TODO(crbug.com/1509013): Request directly instead of using observer interface.
@@ -347,6 +349,7 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
         // If top control is already at steady state, notify right away.
         if (isTopControlAtSteadyState()) {
             notifyTransitionFinished();
+            recordTabStripTransitionFinished(true);
             return;
         }
         // Otherwise, wait for the content offset to read steady state before notifying.
@@ -362,6 +365,7 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
                             boolean needsAnimate) {
                         if (isTopControlAtSteadyState()) {
                             notifyTransitionFinished();
+                            recordTabStripTransitionFinished(true);
                         }
                     }
                 };
@@ -418,6 +422,11 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
         for (var observer : mTabStripHeightObservers) {
             observer.onTransitionFinished();
         }
+    }
+
+    private void recordTabStripTransitionFinished(boolean finished) {
+        RecordHistogram.recordBooleanHistogram(
+                "Android.DynamicTopChrome.TabStripTransition.Finished", finished);
     }
 
     /**

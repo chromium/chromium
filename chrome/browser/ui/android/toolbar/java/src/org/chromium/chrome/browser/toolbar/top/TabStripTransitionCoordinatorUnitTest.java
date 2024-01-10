@@ -38,6 +38,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
@@ -315,6 +316,40 @@ public class TabStripTransitionCoordinatorUnitTest {
                 /* beginOffset= */ TEST_TAB_STRIP_HEIGHT + TEST_TOOLBAR_HEIGHT,
                 /* endOffset= */ TEST_TOOLBAR_HEIGHT);
         assertTabStripHeightForMargins(0);
+    }
+
+    @Test
+    public void transitionFinishedUMASuccess() {
+        setDeviceWidthDp(480);
+        doReturn(TEST_TOOLBAR_HEIGHT)
+                .when(mBrowserControlsVisibilityManager)
+                .getTopControlsHeight();
+
+        try (HistogramWatcher ignored =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.DynamicTopChrome.TabStripTransition.Finished", true)) {
+            runOffsetTransitionForBrowserControlManager(
+                    /* beginOffset= */ TEST_TAB_STRIP_HEIGHT + TEST_TOOLBAR_HEIGHT,
+                    /* endOffset= */ TEST_TOOLBAR_HEIGHT);
+        }
+    }
+
+    @Test
+    public void transitionFinishedUMAInterrupted() {
+        setDeviceWidthDp(480);
+        doReturn(TEST_TOOLBAR_HEIGHT)
+                .when(mBrowserControlsVisibilityManager)
+                .getTopControlsHeight();
+
+        int midOffset = TEST_TOOLBAR_HEIGHT + TEST_TAB_STRIP_HEIGHT / 2;
+        mTopControlsContentOffset = midOffset;
+        getBrowserControlsObserver().onControlsOffsetChanged(0, 0, 0, 0, false);
+
+        try (HistogramWatcher ignored =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.DynamicTopChrome.TabStripTransition.Finished", false)) {
+            setDeviceWidthDp(600);
+        }
     }
 
     /** Run #onControlsOffsetChanged, changing content offset from |beginOffset| to |endOffset|. */

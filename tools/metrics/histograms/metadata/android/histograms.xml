@@ -1234,6 +1234,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.DynamicTopChrome.TabStripTransition.Finished"
+    enum="Boolean" expires_after="2024-07-04">
+  <owner>wenyufu@chromium.org</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    On tablets, when the width of the tab strip passes a certain threshold, the
+    tab strip will start a transition to show / hide it from the top toolbar.
+    This records true when tab strip transition finishes successfully, or false
+    when a new transition starts before an ongoing transition dispatched the
+    finished signal.
+  </summary>
+</histogram>
+
 <histogram name="Android.Event.ActionDown" enum="InputDeviceSource"
     expires_after="2024-06-02">
   <owner>mvanouwerkerk@chromium.org</owner>
