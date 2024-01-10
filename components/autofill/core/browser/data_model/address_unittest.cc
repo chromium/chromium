@@ -474,13 +474,13 @@ TEST_F(AddressTest, TestMergeStructuredAddresses) {
   // The merging should maintain the value because address2 is not more
   // recently used.
   address1.MergeStructuredAddress(address2,
-                                  /*newer_use_more_recently_used=*/false);
+                                  /*newer_was_more_recently_used=*/false);
   EXPECT_EQ(address1.GetRawInfo(ADDRESS_HOME_ZIP), u"12345");
 
   // Once it is more recently used, the value from address2 should be copied
   // into address1.
   address1.MergeStructuredAddress(address2,
-                                  /*newer_use_more_recently_used=*/true);
+                                  /*newer_was_more_recently_used=*/true);
   EXPECT_EQ(address1.GetRawInfo(ADDRESS_HOME_ZIP), u"1234");
 
   // With a second incompatible ZIP code the addresses are not mergeable

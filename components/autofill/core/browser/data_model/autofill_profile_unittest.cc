@@ -487,7 +487,7 @@ TEST(AutofillProfileTest, CreateInferredLabels) {
       ToRawPointerVector(profiles),
       /*suggested_fields=*/std::nullopt,
       /*triggering_field_type=*/std::nullopt,
-      /*ecluded_fields=*/{}, /*minimal_fields_shown=*/3, "en-US", &labels);
+      /*excluded_fields=*/{}, /*minimal_fields_shown=*/3, "en-US", &labels);
   EXPECT_EQ(u"John Doe, 666 Erebus St., Elysium", labels[0]);
   EXPECT_EQ(u"Jane Doe, 123 Letha Shore., Dis", labels[1]);
 
@@ -505,7 +505,7 @@ TEST(AutofillProfileTest, CreateInferredLabels) {
   // Three fields at least, from suggested fields - no filter.
   AutofillProfile::CreateInferredLabels(
       ToRawPointerVector(profiles), suggested_fields,
-      /*triggering_field_type=*/std::nullopt, /*ecluded_fields=*/{},
+      /*triggering_field_type=*/std::nullopt, /*excluded_fields=*/{},
       /*minimal_fields_shown=*/3, "en-US", &labels);
   EXPECT_EQ(u"Elysium, CA 91111", labels[0]);
   EXPECT_EQ(u"Dis, CA 91222", labels[1]);
@@ -697,7 +697,7 @@ TEST(AutofillProfileTest, CreateInferredLabelsSkipsEmptyFields) {
       ToRawPointerVector(profiles),
       /*suggested_fields=*/std::nullopt,
       /*triggering_field_type=*/std::nullopt,
-      /*ecluded_fields=*/{}, /*minimal_fields_shown=*/3, "en-US", &labels);
+      /*excluded_fields=*/{}, /*minimal_fields_shown=*/3, "en-US", &labels);
   ASSERT_EQ(3U, labels.size());
   EXPECT_EQ(u"John Doe, doe@example.com, Gogole", labels[0]);
   EXPECT_EQ(u"John Doe, doe@example.com, Ggoole", labels[1]);

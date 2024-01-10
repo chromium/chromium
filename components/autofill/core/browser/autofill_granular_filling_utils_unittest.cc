@@ -53,7 +53,7 @@ TEST(
   //`FieldTypeGroup::kName` triggering field.
   EXPECT_EQ(GetTargetServerFieldsForTypeAndLastTargetedFields(
                 GetAddressFieldsForGroupFilling(),
-                /*triggering_field_type=*/NAME_FIRST),
+                /*trigger_field_type=*/NAME_FIRST),
             GetFieldTypesOfGroup(FieldTypeGroup::kName));
 
   //`FieldTypeGroup::kCompany` triggering field.
@@ -61,19 +61,19 @@ TEST(
   // `FieldTypeGroup::kAddress`.
   EXPECT_EQ(GetTargetServerFieldsForTypeAndLastTargetedFields(
                 GetFieldTypesOfGroup(FieldTypeGroup::kName),
-                /*triggering_field_type=*/COMPANY_NAME),
+                /*trigger_field_type=*/COMPANY_NAME),
             GetAddressFieldsForGroupFilling());
 
   //`FieldTypeGroup::kAddress` triggering field.
   EXPECT_EQ(GetTargetServerFieldsForTypeAndLastTargetedFields(
                 GetFieldTypesOfGroup(FieldTypeGroup::kName),
-                /*triggering_field_type=*/ADDRESS_HOME_LINE1),
+                /*trigger_field_type=*/ADDRESS_HOME_LINE1),
             GetAddressFieldsForGroupFilling());
 
   //`FieldTypeGroup::kEmail` triggering field.
   EXPECT_EQ(GetTargetServerFieldsForTypeAndLastTargetedFields(
                 GetAddressFieldsForGroupFilling(),
-                /*triggering_field_type=*/EMAIL_ADDRESS),
+                /*trigger_field_type=*/EMAIL_ADDRESS),
             GetFieldTypesOfGroup(FieldTypeGroup::kEmail));
 }
 
