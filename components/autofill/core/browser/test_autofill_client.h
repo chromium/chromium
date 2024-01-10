@@ -281,7 +281,7 @@ class TestAutofillClientTemplate : public T {
   }
 #endif
 
-  void ShowAutofillSettings(PopupType popup_type) override {}
+  void ShowAutofillSettings(FillingProduct main_filling_product) override {}
 
   VirtualCardEnrollmentManager* GetVirtualCardEnrollmentManager() override {
     return form_data_importer_->GetVirtualCardEnrollmentManager();
@@ -465,7 +465,7 @@ class TestAutofillClientTemplate : public T {
   }
 
   void UpdatePopup(const std::vector<Suggestion>& suggestions,
-                   PopupType popup_type,
+                   FillingProduct main_filling_product,
                    AutofillSuggestionTriggerSource trigger_source) override {}
 
   void HideAutofillPopup(PopupHidingReason reason) override {

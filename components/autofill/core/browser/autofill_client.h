@@ -20,6 +20,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_trigger_details.h"
 #include "components/autofill/core/browser/country_type.h"
+#include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/risk_data_loader.h"
 #include "components/autofill/core/browser/ui/fast_checkout_client.h"
@@ -539,7 +540,7 @@ class AutofillClient : public RiskDataLoader {
 #endif
 
   // Causes the Autofill settings UI to be shown.
-  virtual void ShowAutofillSettings(PopupType popup_type) = 0;
+  virtual void ShowAutofillSettings(FillingProduct main_filling_product) = 0;
 
   // Show the OTP unmask dialog to accept user-input OTP value.
   virtual void ShowCardUnmaskOtpInputDialog(
@@ -817,7 +818,7 @@ class AutofillClient : public RiskDataLoader {
   // `trigger_source` indicates the reason for updating the popup. (However, the
   // password manager makes no distinction).
   virtual void UpdatePopup(const std::vector<Suggestion>& suggestions,
-                           PopupType popup_type,
+                           FillingProduct main_filling_product,
                            AutofillSuggestionTriggerSource trigger_source) = 0;
 
   // Hide the Autofill popup if one is currently showing.

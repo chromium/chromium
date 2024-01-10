@@ -521,7 +521,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
             main_filling_product == FillingProduct::kCreditCard ||
             main_filling_product == FillingProduct::kIban);
       autofill_metrics::LogAutofillSelectedManageEntry(main_filling_product);
-      manager_->client().ShowAutofillSettings(popup_type_);
+      manager_->client().ShowAutofillSettings(main_filling_product);
       break;
     }
     case PopupItemId::kEditAddressProfile: {

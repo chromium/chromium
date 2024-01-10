@@ -147,7 +147,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   std::unique_ptr<webauthn::InternalAuthenticator>
   CreateCreditCardInternalAuthenticator(AutofillDriver* driver) override;
 
-  void ShowAutofillSettings(PopupType popup_type) override;
+  void ShowAutofillSettings(FillingProduct main_filling_product) override;
   void ShowCardUnmaskOtpInputDialog(
       const CardUnmaskChallengeOption& challenge_option,
       base::WeakPtr<OtpUnmaskDelegate> delegate) override;
@@ -253,7 +253,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
       AutofillSuggestionTriggerSource trigger_source) const override;
   std::optional<PopupScreenLocation> GetPopupScreenLocation() const override;
   void UpdatePopup(const std::vector<Suggestion>& suggestions,
-                   PopupType popup_type,
+                   FillingProduct main_filling_product,
                    AutofillSuggestionTriggerSource trigger_source) override;
   void HideAutofillPopup(PopupHidingReason reason) override;
   void UpdateOfferNotification(

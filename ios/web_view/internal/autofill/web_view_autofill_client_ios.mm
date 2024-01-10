@@ -209,7 +209,8 @@ translate::TranslateDriver* WebViewAutofillClientIOS::GetTranslateDriver() {
   return nullptr;
 }
 
-void WebViewAutofillClientIOS::ShowAutofillSettings(PopupType popup_type) {
+void WebViewAutofillClientIOS::ShowAutofillSettings(
+    FillingProduct main_filling_product) {
   NOTREACHED();
 }
 
@@ -321,7 +322,7 @@ AutofillClient::PopupOpenArgs WebViewAutofillClientIOS::GetReopenPopupArgs(
 
 void WebViewAutofillClientIOS::UpdatePopup(
     const std::vector<Suggestion>& suggestions,
-    PopupType popup_type,
+    FillingProduct main_filling_product,
     AutofillSuggestionTriggerSource trigger_source) {
   NOTIMPLEMENTED();
 }

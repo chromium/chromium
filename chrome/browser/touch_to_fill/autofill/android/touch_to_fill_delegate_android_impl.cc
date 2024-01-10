@@ -242,7 +242,7 @@ void TouchToFillDelegateAndroidImpl::OnCreditCardScanned(
 }
 
 void TouchToFillDelegateAndroidImpl::ShowCreditCardSettings() {
-  manager_->client().ShowAutofillSettings(PopupType::kCreditCards);
+  manager_->client().ShowAutofillSettings(FillingProduct::kCreditCard);
 }
 
 void TouchToFillDelegateAndroidImpl::SuggestionSelected(std::string unique_id,

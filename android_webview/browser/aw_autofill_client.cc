@@ -161,7 +161,8 @@ translate::TranslateDriver* AwAutofillClient::GetTranslateDriver() {
   return nullptr;
 }
 
-void AwAutofillClient::ShowAutofillSettings(autofill::PopupType popup_type) {
+void AwAutofillClient::ShowAutofillSettings(
+    autofill::FillingProduct main_filling_product) {
   NOTIMPLEMENTED();
 }
 
@@ -248,7 +249,7 @@ autofill::AutofillClient::PopupOpenArgs AwAutofillClient::GetReopenPopupArgs(
 
 void AwAutofillClient::UpdatePopup(
     const std::vector<autofill::Suggestion>& suggestions,
-    autofill::PopupType popup_type,
+    autofill::FillingProduct main_filling_product,
     autofill::AutofillSuggestionTriggerSource trigger_source) {
   NOTIMPLEMENTED();
 }

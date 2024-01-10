@@ -837,7 +837,7 @@ void PasswordAutofillManager::UpdatePopup(
     return;
   }
   autofill_client_->UpdatePopup(
-      suggestions, autofill::PopupType::kPasswords,
+      suggestions, autofill::FillingProduct::kPassword,
       autofill::AutofillSuggestionTriggerSource::kPasswordManager);
 }
 

@@ -271,7 +271,8 @@ GeoIpCountryCode ChromeAutofillClientIOS::GetVariationConfigCountryCode()
           : std::string());
 }
 
-void ChromeAutofillClientIOS::ShowAutofillSettings(PopupType popup_type) {
+void ChromeAutofillClientIOS::ShowAutofillSettings(
+    FillingProduct main_filling_product) {
   NOTREACHED();
 }
 
@@ -490,7 +491,7 @@ AutofillClient::PopupOpenArgs ChromeAutofillClientIOS::GetReopenPopupArgs(
 
 void ChromeAutofillClientIOS::UpdatePopup(
     const std::vector<Suggestion>& suggestions,
-    PopupType popup_type,
+    FillingProduct main_filling_product,
     AutofillSuggestionTriggerSource trigger_source) {
   NOTIMPLEMENTED();
 }

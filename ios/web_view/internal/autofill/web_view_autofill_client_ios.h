@@ -78,7 +78,7 @@ class WebViewAutofillClientIOS : public AutofillClient {
   security_state::SecurityLevel GetSecurityLevelForUmaHistograms() override;
   const translate::LanguageState* GetLanguageState() override;
   translate::TranslateDriver* GetTranslateDriver() override;
-  void ShowAutofillSettings(PopupType popup_type) override;
+  void ShowAutofillSettings(FillingProduct main_filling_product) override;
   void ShowUnmaskPrompt(
       const CreditCard& card,
       const CardUnmaskPromptOptions& card_unmask_prompt_options,
@@ -119,7 +119,7 @@ class WebViewAutofillClientIOS : public AutofillClient {
   AutofillClient::PopupOpenArgs GetReopenPopupArgs(
       AutofillSuggestionTriggerSource trigger_source) const override;
   void UpdatePopup(const std::vector<Suggestion>& suggestions,
-                   PopupType popup_type,
+                   FillingProduct main_filling_product,
                    AutofillSuggestionTriggerSource trigger_source) override;
   void HideAutofillPopup(PopupHidingReason reason) override;
   bool IsAutocompleteEnabled() const override;

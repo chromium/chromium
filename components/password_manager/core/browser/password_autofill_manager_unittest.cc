@@ -74,7 +74,7 @@ const char16_t kAliceUsername[] = u"alice";
 const char16_t kAlicePassword[] = u"password";
 const char16_t kAliceAccountStoredPassword[] = u"account-stored-password";
 
-using autofill::PopupType;
+using autofill::FillingProduct;
 using autofill::Suggestion;
 using autofill::SuggestionVectorIconsAre;
 using autofill::SuggestionVectorIdsAre;
@@ -227,7 +227,7 @@ class MockAutofillClient : public autofill::TestAutofillClient {
   MOCK_METHOD(void,
               UpdatePopup,
               (const std::vector<autofill::Suggestion>&,
-               PopupType,
+               FillingProduct,
                autofill::AutofillSuggestionTriggerSource),
               (override));
   MOCK_METHOD(void,
@@ -692,7 +692,7 @@ TEST_F(PasswordAutofillManagerTest,
                       autofill::PopupItemId::kPasswordEntry,
                       autofill::PopupItemId::kAllSavedPasswordsEntry,
                       autofill::PopupItemId::kPasswordAccountStorageOptIn),
-                  PopupType::kPasswords,
+                  FillingProduct::kPassword,
                   autofill::AutofillSuggestionTriggerSource::kPasswordManager))
       .WillOnce(testing::SaveArg<0>(&suggestions));
   EXPECT_CALL(client, TriggerReauthForPrimaryAccount);
@@ -729,7 +729,7 @@ TEST_F(PasswordAutofillManagerTest,
               autofill::PopupItemId::kPasswordEntry,
               autofill::PopupItemId::kAllSavedPasswordsEntry,
               autofill::PopupItemId::kPasswordAccountStorageOptInAndGenerate),
-          PopupType::kPasswords,
+          FillingProduct::kPassword,
           autofill::AutofillSuggestionTriggerSource::kPasswordManager))
       .WillOnce(testing::SaveArg<0>(&suggestions));
   EXPECT_CALL(client, TriggerReauthForPrimaryAccount);
@@ -806,7 +806,7 @@ TEST_F(PasswordAutofillManagerTest, FailedOptInAndFillUpdatesPopup) {
                 autofill::PopupItemId::kPasswordEntry,
                 autofill::PopupItemId::kAllSavedPasswordsEntry,
                 autofill::PopupItemId::kPasswordAccountStorageOptIn),
-            PopupType::kPasswords,
+            FillingProduct::kPassword,
             autofill::AutofillSuggestionTriggerSource::kPasswordManager))
         .WillOnce(testing::SaveArg<0>(&suggestions));
   });
@@ -859,7 +859,7 @@ TEST_F(PasswordAutofillManagerTest, FailedOptInAndGenerateUpdatesPopup) {
                 autofill::PopupItemId::kPasswordEntry,
                 autofill::PopupItemId::kAllSavedPasswordsEntry,
                 autofill::PopupItemId::kPasswordAccountStorageOptInAndGenerate),
-            PopupType::kPasswords,
+            FillingProduct::kPassword,
             autofill::AutofillSuggestionTriggerSource::kPasswordManager))
         .WillOnce(testing::SaveArg<0>(&suggestions));
   });
@@ -974,7 +974,7 @@ TEST_F(PasswordAutofillManagerTest, SuccessfullOptInMayShowEmptyState) {
       autofill_client,
       UpdatePopup(SuggestionVectorIdsAre(
                       autofill::PopupItemId::kPasswordAccountStorageEmpty),
-                  PopupType::kPasswords,
+                  FillingProduct::kPassword,
                   autofill::AutofillSuggestionTriggerSource::kPasswordManager));
 
   password_autofill_manager_->DeleteFillData();
@@ -1017,7 +1017,7 @@ TEST_F(PasswordAutofillManagerTest,
                       autofill::PopupItemId::kSeparator,
 #endif
                       autofill::PopupItemId::kAllSavedPasswordsEntry),
-                  PopupType::kPasswords,
+                  FillingProduct::kPassword,
                   autofill::AutofillSuggestionTriggerSource::kPasswordManager));
 
   password_autofill_manager_->DeleteFillData();

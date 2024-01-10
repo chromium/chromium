@@ -496,36 +496,43 @@ ChromeAutofillClient::CreateCreditCardInternalAuthenticator(
 #endif
 }
 
-void ChromeAutofillClient::ShowAutofillSettings(PopupType popup_type) {
-  DCHECK(popup_type != PopupType::kPasswords);
+void ChromeAutofillClient::ShowAutofillSettings(
+    FillingProduct main_filling_product) {
+  DCHECK(main_filling_product != FillingProduct::kPassword);
 #if BUILDFLAG(IS_ANDROID)
-  switch (popup_type) {
-    case PopupType::kAddresses:
+  switch (main_filling_product) {
+    case FillingProduct::kAddress:
       ShowAutofillProfileSettings(web_contents());
       return;
-    case PopupType::kCreditCards:
+    case FillingProduct::kCreditCard:
       ShowAutofillCreditCardSettings(web_contents());
       return;
-    case PopupType::kAutocomplete:
-    case PopupType::kIbans:
-    case PopupType::kPasswords:
-    case PopupType::kUnspecified:
+    case FillingProduct::kAutocomplete:
+    case FillingProduct::kCompose:
+    case FillingProduct::kIban:
+    case FillingProduct::kMerchantPromoCode:
+    case FillingProduct::kPassword:
+    case FillingProduct::kPlusAddresses:
+    case FillingProduct::kNone:
       NOTREACHED();
   }
 #else
   Browser* browser = chrome::FindBrowserWithTab(web_contents());
   if (browser) {
-    switch (popup_type) {
-      case PopupType::kAddresses:
+    switch (main_filling_product) {
+      case FillingProduct::kAddress:
         chrome::ShowSettingsSubPage(browser, chrome::kAddressesSubPage);
         return;
-      case PopupType::kCreditCards:
-      case PopupType::kIbans:
+      case FillingProduct::kCreditCard:
+      case FillingProduct::kIban:
         chrome::ShowSettingsSubPage(browser, chrome::kPaymentsSubPage);
         return;
-      case PopupType::kAutocomplete:
-      case PopupType::kPasswords:
-      case PopupType::kUnspecified:
+      case FillingProduct::kAutocomplete:
+      case FillingProduct::kCompose:
+      case FillingProduct::kMerchantPromoCode:
+      case FillingProduct::kPassword:
+      case FillingProduct::kPlusAddresses:
+      case FillingProduct::kNone:
         NOTREACHED();
     }
   }
@@ -1100,18 +1107,18 @@ ChromeAutofillClient::GetPopupScreenLocation() const {
 
 void ChromeAutofillClient::UpdatePopup(
     const std::vector<Suggestion>& suggestions,
-    PopupType popup_type,
+    FillingProduct main_filling_product,
     AutofillSuggestionTriggerSource trigger_source) {
   if (!popup_controller_.get())
     return;  // Update only if there is a popup.
 
   // When a form changes dynamically, |popup_controller_| may hold a delegate of
   // the wrong type, so updating the popup would call into the wrong delegate.
-  // Hence, just close the existing popup (crbug/1113241).
-  // The cast is needed to access AutofillPopupController::GetPopupType().
-  if (popup_type !=
+  // Hence, just close the existing popup (crbug/1113241). The cast is needed to
+  // access AutofillPopupController::GetMainFillingProduct().
+  if (main_filling_product !=
       static_cast<const AutofillPopupController*>(popup_controller_.get())
-          ->GetPopupType()) {
+          ->GetMainFillingProduct()) {
     popup_controller_->Hide(PopupHidingReason::kStaleData);
     return;
   }
