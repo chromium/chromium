@@ -26,7 +26,8 @@ namespace {
 
 void WorkerThreadFunc(
     WorkerBackingThread* thread,
-    scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner) {
+    scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
+    CrossThreadOnceClosure quit_closure) {
   thread->InitializeOnBackingThread(
       WorkerBackingThreadStartupData::CreateDefault());
 
@@ -54,7 +55,7 @@ void WorkerThreadFunc(
 
   thread->ShutdownOnBackingThread();
   PostCrossThreadTask(*main_thread_task_runner, FROM_HERE,
-                      CrossThreadBindOnce(&test::ExitRunLoop));
+                      CrossThreadBindOnce(std::move(quit_closure)));
 }
 
 TEST(DOMWrapperWorldTest, Basic) {
@@ -123,7 +124,7 @@ TEST(DOMWrapperWorldTest, Basic) {
   DOMWrapperWorld::AllWorldsInIsolate(isolate, worlds);
   EXPECT_EQ(worlds.size(), initial_worlds.size());
   worlds.clear();
-
+  base::RunLoop loop;
   // Start a worker thread and create worlds on that.
   std::unique_ptr<WorkerBackingThread> thread =
       std::make_unique<WorkerBackingThread>(
@@ -131,11 +132,13 @@ TEST(DOMWrapperWorldTest, Basic) {
               .SetThreadNameForTest("DOMWrapperWorld test thread"));
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner =
       blink::scheduler::GetSingleThreadTaskRunnerForTesting();
-  PostCrossThreadTask(*thread->BackingThread().GetTaskRunner(), FROM_HERE,
-                      CrossThreadBindOnce(&WorkerThreadFunc,
-                                          CrossThreadUnretained(thread.get()),
-                                          std::move(main_thread_task_runner)));
-  test::EnterRunLoop();
+  PostCrossThreadTask(
+      *thread->BackingThread().GetTaskRunner(), FROM_HERE,
+      CrossThreadBindOnce(&WorkerThreadFunc,
+                          CrossThreadUnretained(thread.get()),
+                          std::move(main_thread_task_runner),
+                          CrossThreadOnceClosure(loop.QuitClosure())));
+  loop.Run();
 
   // Worlds on the worker thread should not be visible from the main thread.
   DOMWrapperWorld::AllWorldsInIsolate(isolate, worlds);

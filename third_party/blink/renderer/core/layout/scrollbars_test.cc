@@ -283,23 +283,24 @@ class ScrollbarsTestWithVirtualTimer : public ScrollbarsTest {
         VirtualTimeController::VirtualTimePolicy::kAdvance);
   }
 
-  void StopVirtualTimeAndExitRunLoop() {
+  void StopVirtualTimeAndExitRunLoop(base::OnceClosure quit_closure) {
     GetVirtualTimeController()->SetVirtualTimePolicy(
         VirtualTimeController::VirtualTimePolicy::kPause);
-    test::ExitRunLoop();
+    std::move(quit_closure).Run();
   }
 
   // Some task queues may have repeating v8 tasks that run forever so we impose
   // a hard (virtual) time limit.
   void RunTasksForPeriod(base::TimeDelta delay) {
+    base::RunLoop loop;
     TimeAdvance();
     scheduler::GetSingleThreadTaskRunnerForTesting()->PostDelayedTask(
         FROM_HERE,
         WTF::BindOnce(
             &ScrollbarsTestWithVirtualTimer::StopVirtualTimeAndExitRunLoop,
-            WTF::Unretained(this)),
+            WTF::Unretained(this), loop.QuitClosure()),
         delay);
-    test::EnterRunLoop();
+    loop.Run();
   }
 
   VirtualTimeController* GetVirtualTimeController() {

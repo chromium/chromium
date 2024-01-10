@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/run_loop.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -36,13 +37,14 @@ namespace {
 
 // Used as a debugger task. Waits for a signal from the main thread.
 void WaitForSignalTask(WorkerThread* worker_thread,
-                       base::WaitableEvent* waitable_event) {
+                       base::WaitableEvent* waitable_event,
+                       CrossThreadOnceClosure quit_closure) {
   EXPECT_TRUE(worker_thread->IsCurrentThread());
 
   worker_thread->DebuggerTaskStarted();
   // Notify the main thread that the debugger task is waiting for the signal.
   PostCrossThreadTask(*worker_thread->GetParentTaskRunnerForTesting(),
-                      FROM_HERE, CrossThreadBindOnce(&test::ExitRunLoop));
+                      FROM_HERE, CrossThreadBindOnce(std::move(quit_closure)));
   waitable_event->Wait();
   worker_thread->DebuggerTaskFinished();
 }
@@ -76,7 +78,8 @@ struct NestedWorkerHelper {
 
 void CreateNestedWorkerThenTerminateParent(
     WorkerThread* parent_thread,
-    NestedWorkerHelper* nested_worker_helper) {
+    NestedWorkerHelper* nested_worker_helper,
+    CrossThreadOnceClosure quit_closure) {
   EXPECT_TRUE(parent_thread->IsCurrentThread());
 
   nested_worker_helper->reporting_proxy =
@@ -116,7 +119,7 @@ void CreateNestedWorkerThenTerminateParent(
   parent_thread->ChildThreadStartedOnWorkerThread(
       nested_worker_helper->worker_thread.get());
   PostCrossThreadTask(*parent_thread->GetParentTaskRunnerForTesting(),
-                      FROM_HERE, CrossThreadBindOnce(&test::ExitRunLoop));
+                      FROM_HERE, CrossThreadBindOnce(std::move(quit_closure)));
 }
 
 void VerifyParentAndChildAreTerminated(WorkerThread* parent_thread,
@@ -364,6 +367,7 @@ TEST_F(WorkerThreadTest,
 
 TEST_F(WorkerThreadTest, Terminate_WhileDebuggerTaskIsRunningOnInitialization) {
   constexpr base::TimeDelta kDelay = base::Milliseconds(10);
+  base::RunLoop loop;
   SetForcibleTerminationDelay(kDelay);
 
   EXPECT_CALL(*reporting_proxy_, DidCreateWorkerGlobalScope(_)).Times(1);
@@ -404,10 +408,11 @@ TEST_F(WorkerThreadTest, Terminate_WhileDebuggerTaskIsRunningOnInitialization) {
       *worker_thread_->GetTaskRunner(TaskType::kInternalInspector), FROM_HERE,
       CrossThreadBindOnce(&WaitForSignalTask,
                           CrossThreadUnretained(worker_thread_.get()),
-                          CrossThreadUnretained(&waitable_event)));
+                          CrossThreadUnretained(&waitable_event),
+                          CrossThreadOnceClosure(loop.QuitClosure())));
 
   // Wait for the debugger task.
-  test::EnterRunLoop();
+  loop.Run();
   {
     base::AutoLock lock(worker_thread_->lock_);
     EXPECT_EQ(1, worker_thread_->debugger_task_counter_);
@@ -437,6 +442,7 @@ TEST_F(WorkerThreadTest, Terminate_WhileDebuggerTaskIsRunningOnInitialization) {
 
 TEST_F(WorkerThreadTest, Terminate_WhileDebuggerTaskIsRunning) {
   constexpr base::TimeDelta kDelay = base::Milliseconds(10);
+  base::RunLoop loop;
   SetForcibleTerminationDelay(kDelay);
 
   ExpectReportingCalls();
@@ -450,10 +456,11 @@ TEST_F(WorkerThreadTest, Terminate_WhileDebuggerTaskIsRunning) {
       *worker_thread_->GetTaskRunner(TaskType::kInternalInspector), FROM_HERE,
       CrossThreadBindOnce(&WaitForSignalTask,
                           CrossThreadUnretained(worker_thread_.get()),
-                          CrossThreadUnretained(&waitable_event)));
+                          CrossThreadUnretained(&waitable_event),
+                          CrossThreadOnceClosure(loop.QuitClosure())));
 
   // Wait for the debugger task.
-  test::EnterRunLoop();
+  loop.Run();
   {
     base::AutoLock lock(worker_thread_->lock_);
     EXPECT_EQ(1, worker_thread_->debugger_task_counter_);
@@ -483,6 +490,7 @@ TEST_F(WorkerThreadTest, Terminate_WhileDebuggerTaskIsRunning) {
 
 // TODO(https://crbug.com/1072997): This test occasionally crashes.
 TEST_F(WorkerThreadTest, DISABLED_TerminateWorkerWhileChildIsLoading) {
+  base::RunLoop loop;
   ExpectReportingCalls();
   Start();
   worker_thread_->WaitForInit();
@@ -493,8 +501,9 @@ TEST_F(WorkerThreadTest, DISABLED_TerminateWorkerWhileChildIsLoading) {
       *worker_thread_->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
       CrossThreadBindOnce(&CreateNestedWorkerThenTerminateParent,
                           CrossThreadUnretained(worker_thread_.get()),
-                          CrossThreadUnretained(&nested_worker_helper)));
-  test::EnterRunLoop();
+                          CrossThreadUnretained(&nested_worker_helper),
+                          CrossThreadBindOnce(loop.QuitClosure())));
+  loop.Run();
 
   base::WaitableEvent waitable_event;
   PostCrossThreadTask(

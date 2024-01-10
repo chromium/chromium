@@ -61,29 +61,17 @@ base::FilePath WebTestsFilePath() {
 }  // namespace
 
 void RunPendingTasks() {
-  // If we are already in a RunLoop fail. A posted task to exit the another
-  // nested run loop will never execute and lead to a timeout.
-  DCHECK(!base::RunLoop::IsRunningOnCurrentThread());
+  base::RunLoop loop;
   scheduler::GetSingleThreadTaskRunnerForTesting()->PostTask(
-      FROM_HERE, WTF::BindOnce(&ExitRunLoop));
-  EnterRunLoop();
+      FROM_HERE, WTF::BindOnce(loop.QuitWhenIdleClosure()));
+  loop.Run();
 }
 
 void RunDelayedTasks(base::TimeDelta delay) {
-  // If we are already in a RunLoop fail. A posted task to exit the another
-  // nested run loop will never execute and lead to a timeout.
-  DCHECK(!base::RunLoop::IsRunningOnCurrentThread());
+  base::RunLoop loop;
   scheduler::GetSingleThreadTaskRunnerForTesting()->PostDelayedTask(
-      FROM_HERE, WTF::BindOnce(&ExitRunLoop), delay);
-  EnterRunLoop();
-}
-
-void EnterRunLoop() {
-  base::RunLoop().Run();
-}
-
-void ExitRunLoop() {
-  base::RunLoop::QuitCurrentWhenIdleDeprecated();
+      FROM_HERE, WTF::BindOnce(loop.QuitWhenIdleClosure()), delay);
+  loop.Run();
 }
 
 void YieldCurrentThread() {

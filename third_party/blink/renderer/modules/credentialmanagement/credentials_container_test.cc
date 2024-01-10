@@ -68,7 +68,7 @@ class MockCredentialManager : public mojom::blink::CredentialManager {
     if (get_callback_)
       return;
 
-    test::EnterRunLoop();
+    loop_.Run();
   }
 
   void InvokeGetCallback() {
@@ -91,7 +91,7 @@ class MockCredentialManager : public mojom::blink::CredentialManager {
            const WTF::Vector<::blink::KURL>& federations,
            GetCallback callback) override {
     get_callback_ = std::move(callback);
-    test::ExitRunLoop();
+    loop_.Quit();
   }
 
  private:
@@ -99,6 +99,7 @@ class MockCredentialManager : public mojom::blink::CredentialManager {
 
   GetCallback get_callback_;
   bool disconnected_ = false;
+  base::RunLoop loop_;
 };
 
 class CredentialManagerTestingContext {

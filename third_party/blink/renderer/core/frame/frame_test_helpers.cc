@@ -118,15 +118,17 @@ namespace {
 //    progress, it exits the run loop.
 // 7. At this point, all parsing, resource loads, and layout should be finished.
 
-void RunServeAsyncRequestsTask(scoped_refptr<base::TaskRunner> task_runner) {
+void RunServeAsyncRequestsTask(scoped_refptr<base::TaskRunner> task_runner,
+                               base::OnceClosure quit_closure) {
   // TODO(kinuko,toyoshim): Create a mock factory and use it instead of
   // getting the platform's one. (crbug.com/751425)
   URLLoaderMockFactory::GetSingletonInstance()->ServeAsynchronousRequests();
   if (TestWebFrameClient::IsLoading()) {
-    task_runner->PostTask(
-        FROM_HERE, WTF::BindOnce(&RunServeAsyncRequestsTask, task_runner));
+    task_runner->PostTask(FROM_HERE,
+                          WTF::BindOnce(&RunServeAsyncRequestsTask, task_runner,
+                                        std::move(quit_closure)));
   } else {
-    test::ExitRunLoop();
+    std::move(quit_closure).Run();
   }
 }
 
@@ -250,11 +252,13 @@ void ReloadFrameBypassingCache(WebLocalFrame* frame) {
 }
 
 void PumpPendingRequestsForFrameToLoad(WebLocalFrame* frame) {
+  base::RunLoop loop;
   scoped_refptr<base::TaskRunner> task_runner =
       frame->GetTaskRunner(blink::TaskType::kInternalTest);
   task_runner->PostTask(FROM_HERE,
-                        WTF::BindOnce(&RunServeAsyncRequestsTask, task_runner));
-  test::EnterRunLoop();
+                        WTF::BindOnce(&RunServeAsyncRequestsTask, task_runner,
+                                      loop.QuitClosure()));
+  loop.Run();
 }
 
 void FillNavigationParamsResponse(WebNavigationParams* params) {
