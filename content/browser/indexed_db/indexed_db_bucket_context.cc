@@ -730,6 +730,7 @@ void IndexedDBBucketContext::FillInMetadata(
     database_list.push_back(std::move(db_info));
   }
   info->databases = std::move(database_list);
+  std::move(result).Run(std::move(info));
 }
 
 void IndexedDBBucketContext::CompactBackingStoreForTesting() {

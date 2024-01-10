@@ -386,6 +386,11 @@ void IndexedDBContextImpl::OnBucketInfoReady(
                     std::vector<storage::mojom::IdbBucketMetadataPtr>>>
       bucket_map;
 
+  if (!indexeddb_factory_) {
+    std::move(callback).Run(is_incognito(), {});
+    return;
+  }
+
   for (const auto& quota_error_or_bucket_info : bucket_infos) {
     if (!quota_error_or_bucket_info.has_value()) {
       continue;
@@ -455,7 +460,6 @@ void IndexedDBContextImpl::OnBucketInfoReady(
   }
 
   std::sort(origins.begin(), origins.end());
-
   std::move(callback).Run(is_incognito(), std::move(origins));
 }
 
