@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_dashboard_controller.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_view_factory.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_chip_model.h"
@@ -51,11 +52,12 @@ constexpr auto kDismissDelay = base::Seconds(6);
 // should be longer.
 constexpr auto kDismissDelayForAbusiveOrigins = kDismissDelay * 3;
 
+constexpr auto kLHSIndicatorCollapseAnimationDuration = base::Milliseconds(250);
+
 base::TimeDelta GetAnimationDuration(base::TimeDelta duration) {
   return gfx::Animation::ShouldRenderRichAnimation() ? duration
                                                      : base::TimeDelta();
 }
-
 }  // namespace
 
 class BubbleButtonController : public views::ButtonController {
@@ -82,10 +84,12 @@ class BubbleButtonController : public views::ButtonController {
 ChipController::ChipController(
     Browser* browser,
     OmniboxChipButton* chip_view,
-    PermissionDashboardView* permission_dashboard_view)
+    PermissionDashboardView* permission_dashboard_view,
+    PermissionDashboardController* permission_dashboard_controller)
     : browser_(browser),
       chip_(chip_view),
-      permission_dashboard_view_(permission_dashboard_view) {
+      permission_dashboard_view_(permission_dashboard_view),
+      permission_dashboard_controller_(permission_dashboard_controller) {
   chip_->SetVisible(false);
 }
 
@@ -147,12 +151,20 @@ void ChipController::OnRequestDecided(
       GetLocationBarView()->GetWidget()->GetTopLevelWidget()->IsFullscreen() ||
       permission_action == permissions::PermissionAction::IGNORED ||
       permission_action == permissions::PermissionAction::DISMISSED ||
-      permission_action == permissions::PermissionAction::REVOKED) {
+      permission_action == permissions::PermissionAction::REVOKED ||
+      // Do not show the confirmation chip for Camera and Mic because they will
+      // be displayed as LHS indicator.
+      (base::FeatureList::IsEnabled(
+           content_settings::features::kLeftHandSideActivityIndicators) &&
+       (permission_prompt_model_->content_settings_type() ==
+            ContentSettingsType::MEDIASTREAM_CAMERA ||
+        permission_prompt_model_->content_settings_type() ==
+            ContentSettingsType::MEDIASTREAM_MIC))) {
     // Reset everything and hide chip if:
     // - `LocationBarView` isn't visible
-    // - `kConfirmationChip` isn't enabled
-    // - Permission request was ignored or denied as we do not confirm such
+    // - Permission request was ignored or dismissed as we do not confirm such
     // actions.
+    // - LHS indicator is displayed.
     ResetPermissionPromptChip();
   } else {
     HandleConfirmation(permission_action);
@@ -216,8 +228,12 @@ void ChipController::OnWidgetActivationChanged(views::Widget* widget,
       prompt_bubble_widget->GetPrimaryWindowWidget()->IsVisible();
 }
 
-bool ChipController::ShouldWaitForConfirmationToComplete() {
+bool ChipController::ShouldWaitForConfirmationToComplete() const {
   return is_confirmation_showing_ && collapse_timer_.IsRunning();
+}
+
+bool ChipController::ShouldWaitForLHSIndicatorToCollapse() const {
+  return permission_dashboard_controller_->is_verbose();
 }
 
 void ChipController::InitializePermissionPrompt(
@@ -243,7 +259,8 @@ void ChipController::InitializePermissionPrompt(
   // a request chip is shown --> only once a confirmation should be displayed,
   // the chip should become visible.
   chip_->SetVisible(false);
-  if (permission_dashboard_view_) {
+  if (permission_dashboard_view_ &&
+      !permission_dashboard_view_->GetIndicatorChip()->GetVisible()) {
     permission_dashboard_view_->SetVisible(false);
   }
   permission_prompt_model_ =
@@ -272,6 +289,15 @@ void ChipController::InitializePermissionPrompt(
 
 void ChipController::ShowPermissionPrompt(
     base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate) {
+  if (permission_dashboard_controller_ &&
+      permission_dashboard_controller_->SuppressVerboseIndicator()) {
+    delay_prompt_timer_.Start(
+        FROM_HERE, kLHSIndicatorCollapseAnimationDuration,
+        base::BindOnce(&ChipController::ShowPermissionPrompt,
+                       weak_factory_.GetWeakPtr(), delegate));
+    return;
+  }
+
   if (ShouldWaitForConfirmationToComplete()) {
     delay_prompt_timer_.Start(
         FROM_HERE, collapse_timer_.GetCurrentDelay(),
@@ -444,9 +470,7 @@ void ChipController::HandleConfirmation(
     is_confirmation_showing_ = true;
 
     // AnimateToFit isn't working for `PermissionDashboardView`.
-    if (chip_->GetVisible() &&
-        !base::FeatureList::IsEnabled(
-            content_settings::features::kLeftHandSideActivityIndicators)) {
+    if (chip_->GetVisible()) {
       chip_->AnimateToFit(GetAnimationDuration(base::Milliseconds(200)));
     } else {
       // No request chip was shown, always expand independently of what contents
@@ -517,7 +541,8 @@ void ChipController::HideChip() {
     return;
 
   chip_->SetVisible(false);
-  if (permission_dashboard_view_) {
+  if (permission_dashboard_view_ &&
+      !permission_dashboard_view_->GetIndicatorChip()->GetVisible()) {
     permission_dashboard_view_->SetVisible(false);
   }
   // When the chip visibility changed from visible -> hidden, the locationbar

@@ -285,8 +285,7 @@ bool ContentSettingImageView::IsBubbleShowing() const {
   return bubble_view_ != nullptr;
 }
 
-ContentSettingImageModel::ImageType ContentSettingImageView::GetTypeForTesting()
-    const {
+ContentSettingImageModel::ImageType ContentSettingImageView::GetType() const {
   return content_setting_image_model_->image_type();
 }
 

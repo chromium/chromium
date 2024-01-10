@@ -8,20 +8,25 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
+#include "base/timer/timer.h"
+#include "chrome/browser/ui/views/location_bar/omnibox_chip_button.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_view.h"
+#include "ui/views/view_tracker.h"
 
 class Browser;
 class LocationBarView;
 class ChipController;
+class ContentSettingImageModel;
 
-class PermissionDashboardController {
+class PermissionDashboardController : public OmniboxChipButton::Observer {
  public:
   PermissionDashboardController(
       Browser* browser,
       LocationBarView* location_bar_view,
       PermissionDashboardView* permission_dashboard_view);
 
-  ~PermissionDashboardController();
+  ~PermissionDashboardController() override;
   PermissionDashboardController(const PermissionDashboardController&) = delete;
   PermissionDashboardController& operator=(
       const PermissionDashboardController&) = delete;
@@ -34,11 +39,49 @@ class PermissionDashboardController {
     return permission_dashboard_view_;
   }
 
+  // This method updates UI based on `ContentSettingImageModel` state. Returns
+  // `true` if there are user-visible changes, otherwise returns `false`.
+  bool Update(ContentSettingImageModel* indicator_model, bool force_hide);
+
+  // OmniboxChipButton::Observer
+  void OnChipVisibilityChanged(bool is_visible) override;
+  void OnExpandAnimationEnded() override;
+  void OnCollapseAnimationEnded() override;
+
+  bool is_verbose() const { return is_verbose_; }
+
+  // Returns `true` if currently visible verbose indicator should be suppressed
+  // by e.g. an incoming permission request and `collapse_timer_` will fired if
+  // running. Return `false` otherwise.
+  bool SuppressVerboseIndicator();
+
  private:
+  void StartCollapseTimer();
+  void Collapse(bool hide);
+  void HideIndicators();
+  void ShowPageInfoDialog();
+  // Actions executed when the user closes the page info dialog.
+  void OnPageInfoBubbleClosed(views::Widget::ClosedReason closed_reason,
+                              bool reload_prompt);
+  void OnIndicatorsChipButtonPressed();
+  std::u16string GetIndicatorTitle(ContentSettingImageModel* model);
+
+  raw_ptr<Browser> browser_;
   raw_ptr<LocationBarView> location_bar_view_;
   raw_ptr<PermissionDashboardView> permission_dashboard_view_;
-
   std::unique_ptr<ChipController> request_chip_controller_;
+  // A timer used to collapse indicators after a delay.
+  base::OneShotTimer collapse_timer_;
+  // A flag that reflects a visual condition of the LHS indicator chip.
+  // `true` - is used for a verbose state that includes an icon + text. Its
+  // appearance is accompanied by an expand and collapse animation.
+  // `false` - is used for a collapsed (not verbose) state that includes only an
+  // icon. It appears without animation.
+  bool is_verbose_ = false;
+  views::ViewTracker page_info_bubble_tracker_;
+  base::ScopedObservation<OmniboxChipButton, OmniboxChipButton::Observer>
+      observation_{this};
+  base::WeakPtrFactory<PermissionDashboardController> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERMISSIONS_CHIP_PERMISSION_DASHBOARD_CONTROLLER_H_

@@ -6,11 +6,13 @@
 #define CHROME_BROWSER_UI_VIEWS_PERMISSIONS_PERMISSION_PROMPT_CHIP_MODEL_H_
 
 #include <string>
+
 #include "base/check.h"
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/views/location_bar/omnibox_chip_theme.h"
 #include "chrome/browser/ui/views/permissions/chip_controller.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_request_manager.h"
@@ -59,6 +61,10 @@ class PermissionPromptChipModel {
 
   permissions::PermissionAction GetUserDecision() { return user_decision_; }
 
+  ContentSettingsType content_settings_type() const {
+    return content_settings_type_;
+  }
+
  private:
   // Delegate holding the current request.
   base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate_;
@@ -82,6 +88,8 @@ class PermissionPromptChipModel {
   // A flag that indicates if a chip should start in the verbose form or as an
   // icon only.
   bool should_expand_ = true;
+
+  ContentSettingsType content_settings_type_;
 
   permissions::PermissionAction user_decision_ =
       permissions::PermissionAction::NUM;

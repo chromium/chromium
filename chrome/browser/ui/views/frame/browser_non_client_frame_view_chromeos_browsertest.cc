@@ -862,7 +862,7 @@ class WebAppNonClientFrameViewAshTest
 
     return *base::ranges::find(*content_setting_views_,
                                ContentSettingImageModel::ImageType::GEOLOCATION,
-                               &ContentSettingImageView::GetTypeForTesting);
+                               &ContentSettingImageView::GetType);
   }
 
   void SimulateClickOnView(views::View* view) {

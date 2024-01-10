@@ -315,6 +315,12 @@ void OmniboxChipButton::SetChipIcon(const gfx::VectorIcon& icon) {
   UpdateIconAndColors();
 }
 
+void OmniboxChipButton::SetChipIcon(const gfx::VectorIcon* icon) {
+  icon_ = icon;
+
+  UpdateIconAndColors();
+}
+
 void OmniboxChipButton::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }

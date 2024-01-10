@@ -245,7 +245,7 @@ class PermissionChipInteractiveTest : public InProcessBrowserTest {
         BrowserView::GetBrowserViewForBrowser(browser())->GetLocationBarView();
     return **base::ranges::find(
         location_bar_view->GetContentSettingViewsForTest(), image_type,
-        &ContentSettingImageView::GetTypeForTesting);
+        &ContentSettingImageView::GetType);
   }
 
   // Create an <iframe> inside |parent_rfh|, and navigate it toward |url|.

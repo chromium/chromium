@@ -453,6 +453,16 @@ class PageSpecificContentSettings
   // This method is called when audio or video activity indicator is closed.
   void OnActivityIndicatorBubbleClosed(ContentSettingsType type);
 
+  // Returns `true` if an activity indicator is displaying for
+  // `ContentSettingsType`. Returns `false` otherwise.
+  bool IsIndicatorVisible(ContentSettingsType type) const;
+  // Save `ContentSettingsType` to a set of currently displaying activity
+  // indicators.
+  void OnPermissionIndicatorShown(ContentSettingsType type);
+  // Remove `ContentSettingsType` from a set of currently displaying activity
+  // indicators.
+  void OnPermissionIndicatorHidden(ContentSettingsType type);
+
   void set_media_stream_access_origin_for_testing(const GURL& url) {
     media_stream_access_origin_ = url;
   }
@@ -487,9 +497,9 @@ class PageSpecificContentSettings
 
   // This methods is called when a camera and/or mic blocked indicator is
   // displayed.
-  void OnMediaBlockedIndicatorsShown(ContentSettingsType type);
+  void StartBlockedIndicatorTimer(ContentSettingsType type);
 
-  void OnMediaBlockedIndicatorsDismiss(ContentSettingsType type);
+  void HideMediaBlockedIndicator(ContentSettingsType type);
 
   // content_settings::Observer implementation.
   void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
@@ -620,6 +630,10 @@ class PageSpecificContentSettings
   // A timer to removed a blocked media indicator.
   std::map<ContentSettingsType, base::OneShotTimer>
       media_blocked_indicator_timer_;
+
+  // Stores `ContentSettingsType` that is currently displaying. It is used only
+  // for the Left-Hand Side indicators.
+  std::set<ContentSettingsType> visible_indicators_;
 
   // Observer to watch for content settings changed.
   base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>

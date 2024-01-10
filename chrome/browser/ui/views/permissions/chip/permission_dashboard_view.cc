@@ -15,11 +15,6 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/style/platform_style.h"
 
-namespace {
-// Indicator chip and request chip have an overlap.
-int kChipOverlaps;
-}  // namespace
-
 PermissionDashboardView::PermissionDashboardView() {
   SetVisible(false);
 
@@ -38,9 +33,6 @@ PermissionDashboardView::PermissionDashboardView() {
   // It is unclear which chip will be shown first, hence hide both of them.
   request_chip_->SetVisible(false);
   indicator_chip_->SetVisible(false);
-
-  kChipOverlaps = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      DISTANCE_OMNIBOX_CHIPS_OVERLAP);
 }
 
 PermissionDashboardView::~PermissionDashboardView() = default;
@@ -60,8 +52,9 @@ gfx::Size PermissionDashboardView::CalculatePreferredSize() const {
   }
 
   gfx::Size second_chip_size = request_chip_->GetPreferredSize();
-  int width =
-      first_chip_size.width() + second_chip_size.width() - kChipOverlaps;
+  int width = first_chip_size.width() + second_chip_size.width() -
+              ChromeLayoutProvider::Get()->GetDistanceMetric(
+                  DISTANCE_OMNIBOX_CHIPS_OVERLAP);
   int height = first_chip_size.height();
 
   return gfx::Size(width, height);
@@ -82,8 +75,9 @@ gfx::Size PermissionDashboardView::GetMinimumSize() const {
 
   gfx::Size first_chip_size = indicator_chip_->GetMinimumSize();
   gfx::Size second_chip_size = request_chip_->GetMinimumSize();
-  int width =
-      first_chip_size.width() + second_chip_size.width() - kChipOverlaps;
+  int width = first_chip_size.width() + second_chip_size.width() -
+              ChromeLayoutProvider::Get()->GetDistanceMetric(
+                  DISTANCE_OMNIBOX_CHIPS_OVERLAP);
   int height = first_chip_size.height();
 
   return gfx::Size(width, height);

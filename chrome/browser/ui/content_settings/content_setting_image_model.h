@@ -97,6 +97,8 @@ class ContentSettingImageModel {
 
   bool is_visible() const { return is_visible_; }
 
+  bool is_blocked() const { return is_blocked_; }
+
   // Retrieve the icon that represents this content setting. Blocked content
   // settings icons will have a blocked badge.
   gfx::Image GetIcon(SkColor icon_color) const;
@@ -126,7 +128,7 @@ class ContentSettingImageModel {
 
   bool IsMacRestoreLocationPermissionExperimentActive();
 
-  const gfx::VectorIcon* get_icon_for_testing() const { return icon_; }
+  const gfx::VectorIcon* icon() const { return icon_; }
 
  protected:
   // Note: image_type_should_notify_accessibility by itself does not guarantee
@@ -167,6 +169,7 @@ class ContentSettingImageModel {
 
  private:
   bool is_visible_ = false;
+  bool is_blocked_ = false;
 
   raw_ptr<const gfx::VectorIcon> icon_;
   raw_ptr<const gfx::VectorIcon> icon_badge_;

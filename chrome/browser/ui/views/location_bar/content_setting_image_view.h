@@ -90,8 +90,16 @@ class ContentSettingImageView : public IconLabelBubbleView,
   bool IsBubbleShowing() const override;
   void AnimationEnded(const gfx::Animation* animation) override;
 
-  ContentSettingImageModel::ImageType GetTypeForTesting() const;
+  // Returns a type that current ContentSettingImageView represents.
+  ContentSettingImageModel::ImageType GetType() const;
+
   views::Widget* GetBubbleWidgetForTesting() const;
+
+  ContentSettingImageModel* content_setting_image_model() const {
+    return content_setting_image_model_.get();
+  }
+
+  Delegate* delegate() const { return delegate_; }
 
   void reset_animation_for_testing() {
     IconLabelBubbleView::ResetSlideAnimation(true);
@@ -101,7 +109,7 @@ class ContentSettingImageView : public IconLabelBubbleView,
   }
 
   const gfx::VectorIcon* get_icon_for_testing() const {
-    return content_setting_image_model_->get_icon_for_testing();
+    return content_setting_image_model_->icon();
   }
 
   const gfx::VectorIcon* get_icon_badge_for_testing() const {

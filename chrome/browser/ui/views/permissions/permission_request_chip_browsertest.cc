@@ -404,7 +404,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipBrowserUiTest,
   // The chip is visible as we show the confirmation.
   EXPECT_TRUE(lbv->GetChipController()->IsPermissionPromptChipVisible());
   EXPECT_FALSE(lbv->GetChipController()->IsBubbleShowing());
-  EXPECT_TRUE(lbv->GetChipController()->is_confirmation_showing_for_testing());
+  EXPECT_TRUE(lbv->GetChipController()->is_confirmation_showing());
   EXPECT_TRUE(
       lbv->GetChipController()->is_collapse_timer_running_for_testing());
   EXPECT_FALSE(lbv->GetChipController()
@@ -413,7 +413,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipBrowserUiTest,
   lbv->GetChipController()->fire_collapse_timer_for_testing();
 
   EXPECT_FALSE(lbv->GetChipController()->IsPermissionPromptChipVisible());
-  EXPECT_FALSE(lbv->GetChipController()->is_confirmation_showing_for_testing());
+  EXPECT_FALSE(lbv->GetChipController()->is_confirmation_showing());
   EXPECT_FALSE(
       lbv->GetChipController()->is_collapse_timer_running_for_testing());
   EXPECT_FALSE(lbv->GetChipController()

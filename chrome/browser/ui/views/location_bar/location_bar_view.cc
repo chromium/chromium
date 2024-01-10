@@ -1178,9 +1178,22 @@ bool LocationBarView::RefreshContentSettingViews() {
   bool visibility_changed = false;
   for (ContentSettingImageView* v : content_setting_views_) {
     const bool was_visible = v->GetVisible();
-    v->Update();
-    if (was_visible != v->GetVisible())
-      visibility_changed = true;
+    // The Left-Hand Side indicators currently supports only
+    // `ImageType::MEDIASTREAM`.
+    if (v->GetType() == ContentSettingImageModel::ImageType::MEDIASTREAM &&
+        // WebApps do not support the Left-Hand Side indicators.
+        !web_app::AppBrowserController::IsWebApp(browser_) &&
+        base::FeatureList::IsEnabled(
+            content_settings::features::kLeftHandSideActivityIndicators)) {
+      visibility_changed |= permission_dashboard_controller()->Update(
+          v->content_setting_image_model(),
+          v->delegate()->ShouldHideContentSettingImage());
+    } else {
+      v->Update();
+      if (was_visible != v->GetVisible()) {
+        visibility_changed = true;
+      }
+    }
   }
   return visibility_changed;
 }
@@ -1508,7 +1521,12 @@ void LocationBarView::OnTouchUiChanged() {
 }
 
 bool LocationBarView::ShouldChipOverrideLocationIcon() {
-  return GetChipController()->chip()->GetVisible();
+  if (permission_dashboard_view_) {
+    return permission_dashboard_view_->GetIndicatorChip()->GetVisible() ||
+           permission_dashboard_view_->GetRequestChip()->GetVisible();
+  }
+
+  return chip_controller_ && chip_controller_->chip()->GetVisible();
 }
 
 bool LocationBarView::IsEditingOrEmpty() const {

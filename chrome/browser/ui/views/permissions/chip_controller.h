@@ -22,6 +22,7 @@
 class PermissionPromptChipModel;
 class LocationBarView;
 class PermissionDashboardView;
+class PermissionDashboardController;
 // ButtonController that NotifyClick from being called when the
 // BubbleOwnerDelegate's bubble is showing. Otherwise the bubble will show again
 // immediately after being closed via losing focus.
@@ -43,9 +44,11 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
                        public BubbleOwnerDelegate,
                        public OmniboxChipButton::Observer {
  public:
-  ChipController(Browser* browser,
-                 OmniboxChipButton* chip_view,
-                 PermissionDashboardView* permission_dashboard_view = nullptr);
+  ChipController(
+      Browser* browser,
+      OmniboxChipButton* chip_view,
+      PermissionDashboardView* permission_dashboard_view = nullptr,
+      PermissionDashboardController* permission_dashboard_controller = nullptr);
 
   ~ChipController() override;
   ChipController(const ChipController&) = delete;
@@ -148,10 +151,7 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
     return active_chip_permission_request_manager_;
   }
 
-  bool is_confirmation_showing_for_testing() const {
-    CHECK_IS_TEST();
-    return is_confirmation_showing_;
-  }
+  bool is_confirmation_showing() const { return is_confirmation_showing_; }
 
   bool is_waiting_for_confirmation_collapse_for_testing() const {
     CHECK_IS_TEST();
@@ -159,7 +159,8 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   }
 
  private:
-  bool ShouldWaitForConfirmationToComplete();
+  bool ShouldWaitForConfirmationToComplete() const;
+  bool ShouldWaitForLHSIndicatorToCollapse() const;
   void AnimateExpand();
 
   // Confirmation chip.
@@ -215,8 +216,10 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   // The chip view this controller modifies.
   raw_ptr<OmniboxChipButton> chip_;
 
-  // `PermissionDashboardView` is owner of OmniboxChipButton.
+  // `PermissionDashboardView` is an owner of OmniboxChipButton.
   raw_ptr<PermissionDashboardView> permission_dashboard_view_;
+  // `PermissionDashboardController` is an owner of this.
+  raw_ptr<PermissionDashboardController> permission_dashboard_controller_;
 
   // The time when the request chip was displayed.
   base::TimeTicks request_chip_shown_time_;
