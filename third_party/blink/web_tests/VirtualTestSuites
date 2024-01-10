@@ -200,7 +200,8 @@
              "--enable-gpu-rasterization",
              "--enable-accelerated-2d-canvas",
              "--disable-features=CanvasOopRasterization"],
-    "expires": "Jul 1, 2023"
+    "owners": ["ikilpatrick@chromium.org"],
+    "expires": "Jul 1, 2024"
   },
 
   "This never expires because it tests a shipping configuration",
@@ -427,7 +428,8 @@
               "external/wpt/css/css-paint-api/hidpi"],
     "args": ["--force-device-scale-factor=2",
              "--enable-threaded-compositing"],
-    "expires": "Jul 1, 2023"
+    "owners": ["fserb@chromium.org"],
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "scalefactor200",
@@ -975,7 +977,8 @@
     "bases": [],
     "args": ["--force-color-profile=scrgb-linear",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
+    "owners": ["fserb@chromium.org"],
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "color-spin",
@@ -983,7 +986,8 @@
     "bases": [],
     "args": ["--force-color-profile=color-spin-gamma24",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
+    "owners": ["fserb@chromium.org"],
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "wide-gamut",
@@ -1288,7 +1292,8 @@
               "--enable-accelerated-2d-canvas",
               "--enable-gpu-rasterization",
               "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
+    "owners": ["fserb@chromium.org", "vasilyt@chromium.org"],
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "disable-frequency-capping-for-overlay-popup-detection",
@@ -1390,7 +1395,8 @@
     ],
     "args": ["--enable-fake-no-alloc-direct-call-for-testing",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
+    "owners": ["fserb@chromium.org"],
+    "expires": "Jul 1, 2024"
   },
   {
     "prefix": "view-transition",
