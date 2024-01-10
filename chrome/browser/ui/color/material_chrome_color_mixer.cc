@@ -66,6 +66,10 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
       AdjustHighlightColorForContrast(ui::kColorSysPrimary,
                                       kColorDownloadShelfBackground);
 
+  // Extensions colors.
+  mixer[kColorExtensionsMenuText] = {ui::kColorSysOnSurface};
+  mixer[kColorExtensionsMenuSecondaryText] = {ui::kColorSysOnSurfaceSubtle};
+
   // Permission Prompt colors.
   mixer[kColorPermissionPromptRequestText] = {ui::kColorSysOnSurfaceSubtle};
 
