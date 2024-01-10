@@ -917,8 +917,7 @@ bool CloudOpenTask::InitAndShowDialog(DialogPage dialog_page) {
   if (dialog_page == DialogPage::kFileHandlerDialog) {
     // Callback to show the dialog after the tasks have been found.
     fm_tasks::FindTasksCallback find_all_types_of_tasks_callback =
-        base::BindOnce(IgnoreResult(&CloudOpenTask::ShowDialog), this,
-                       std::move(args));
+        base::BindOnce(&CloudOpenTask::ShowDialog, this, std::move(args));
     // Find the file tasks that can open the `file_urls_` and then run
     // `ShowDialog`.
     FindTasksForDialog(std::move(find_all_types_of_tasks_callback));
