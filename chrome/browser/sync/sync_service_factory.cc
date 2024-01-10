@@ -165,13 +165,20 @@ std::unique_ptr<KeyedService> BuildSyncService(
       std::make_unique<syncer::SyncServiceImpl>(std::move(init_params));
   sync_service->Initialize();
 
-  // Notify PasswordStore of complete initialisation to resolve a circular
+  // Notify the PasswordStore of complete initialisation to resolve a circular
   // dependency.
-  auto password_store = ProfilePasswordStoreFactory::GetForProfile(
+  auto profile_password_store = ProfilePasswordStoreFactory::GetForProfile(
       profile, ServiceAccessType::EXPLICIT_ACCESS);
   // PasswordStoreInterface may be null in tests.
-  if (password_store) {
-    password_store->OnSyncServiceInitialized(sync_service.get());
+  if (profile_password_store) {
+    profile_password_store->OnSyncServiceInitialized(sync_service.get());
+  }
+
+  auto account_password_store = AccountPasswordStoreFactory::GetForProfile(
+      profile, ServiceAccessType::EXPLICIT_ACCESS);
+
+  if (account_password_store) {
+    account_password_store->OnSyncServiceInitialized(sync_service.get());
   }
 
   // Notify PasswordReceiverService of complete initialization to resolve a
