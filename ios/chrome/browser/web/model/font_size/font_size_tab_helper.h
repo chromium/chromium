@@ -83,6 +83,9 @@ class FontSizeTabHelper : public web::WebFramesManager::Observer,
   // 150%) taking all sources into account (system level and user zoom).
   int GetFontSize() const;
 
+  // Used in callbacks related to `notification_observer_`.
+  void OnContentSizeCategoryChanged();
+
   // Set the zoom level correctly for a new navigation.
   void NewPageZoom();
 
@@ -110,6 +113,10 @@ class FontSizeTabHelper : public web::WebFramesManager::Observer,
   void WebStateDestroyed(web::WebState* web_state) override;
   void DidFinishNavigation(web::WebState* web_state,
                            web::NavigationContext* context) override;
+  void WebStateRealized(web::WebState* web_state) override;
+
+  // Helper used to create notification observer.
+  void CreateNotificationObserver();
 
   // web::WebFramesManager::Observer
   void WebFrameBecameAvailable(web::WebFramesManager* web_frames_manager,
@@ -119,6 +126,8 @@ class FontSizeTabHelper : public web::WebFramesManager::Observer,
   web::WebState* web_state_ = nullptr;
   // Whether the Text Zoom UI is active
   bool text_zoom_ui_active_ = false;
+  // Holds references to NSNotification callback observer.
+  id notification_observer_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
 

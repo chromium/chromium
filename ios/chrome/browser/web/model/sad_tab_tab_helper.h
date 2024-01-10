@@ -65,7 +65,7 @@ class SadTabTabHelper : public web::WebStateUserData<SadTabTabHelper>,
   void ReloadTab();
 
   // Called when the app becomes active.
-  void OnAppDidBecomeActive(NSNotification* notification);
+  void OnAppDidBecomeActive();
 
   // WebStateObserver:
   void WasShown(web::WebState* web_state) override;
@@ -76,6 +76,10 @@ class SadTabTabHelper : public web::WebStateUserData<SadTabTabHelper>,
   void DidFinishNavigation(web::WebState* web_state,
                            web::NavigationContext* navigation_context) override;
   void WebStateDestroyed(web::WebState* web_state) override;
+  void WebStateRealized(web::WebState* web_state) override;
+
+  // Helper used to create notification observer.
+  void CreateNotificationObserver();
 
   // The WebState this instance is observing. Will be null after
   // WebStateDestroyed has been called.
@@ -109,8 +113,7 @@ class SadTabTabHelper : public web::WebStateUserData<SadTabTabHelper>,
   __weak id<SadTabTabHelperDelegate> delegate_ = nil;
 
   // Observer for UIApplicationDidBecomeActiveNotification.
-  __strong NotificationObserverBridge* application_did_become_active_observer_ =
-      nil;
+  id background_notification_observer_;
 
   base::WeakPtrFactory<SadTabTabHelper> weak_factory_{this};
 

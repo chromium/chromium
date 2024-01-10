@@ -102,19 +102,10 @@ FontSizeTabHelper::FontSizeTabHelper(web::WebState* web_state)
     : web_state_(web_state), weak_factory_(this) {
   DCHECK(ios::provider::IsTextZoomEnabled());
   web_state->AddObserver(this);
-  FontSizeJavaScriptFeature* feature = FontSizeJavaScriptFeature::GetInstance();
-  feature->GetWebFramesManager(web_state)->AddObserver(this);
 
-  base::WeakPtr<FontSizeTabHelper> weak_this = weak_factory_.GetWeakPtr();
-  [NSNotificationCenter.defaultCenter
-      addObserverForName:UIContentSizeCategoryDidChangeNotification
-                  object:nil
-                   queue:nil
-              usingBlock:^(NSNotification* note) {
-                if (weak_this) {
-                  weak_this->SetPageFontSize(GetFontSize());
-                }
-              }];
+  if (web_state->IsRealized()) {
+    CreateNotificationObserver();
+  }
 }
 
 FontSizeTabHelper::~FontSizeTabHelper() {}
@@ -242,6 +233,10 @@ int FontSizeTabHelper::GetFontSize() const {
   return dynamic_type_multiplier * GetCurrentUserZoomMultiplier() * 100;
 }
 
+void FontSizeTabHelper::OnContentSizeCategoryChanged() {
+  SetPageFontSize(GetFontSize());
+}
+
 void FontSizeTabHelper::WebStateDestroyed(web::WebState* web_state) {
   web_state->RemoveObserver(this);
   FontSizeJavaScriptFeature* feature = FontSizeJavaScriptFeature::GetInstance();
@@ -262,6 +257,27 @@ void FontSizeTabHelper::DidFinishNavigation(web::WebState* web_state,
   if (IsGoogleCachedAMPPage()) {
     NewPageZoom();
   }
+}
+
+void FontSizeTabHelper::WebStateRealized(web::WebState* web_state) {
+  CHECK(!notification_observer_, base::NotFatalUntil::M125);
+  CreateNotificationObserver();
+}
+
+void FontSizeTabHelper::CreateNotificationObserver() {
+  FontSizeJavaScriptFeature* feature = FontSizeJavaScriptFeature::GetInstance();
+  feature->GetWebFramesManager(web_state_)->AddObserver(this);
+
+  base::RepeatingCallback<void(NSNotification*)> callback =
+      base::IgnoreArgs<NSNotification*>(
+          base::BindRepeating(&FontSizeTabHelper::OnContentSizeCategoryChanged,
+                              weak_factory_.GetWeakPtr()));
+
+  notification_observer_ = [[NSNotificationCenter defaultCenter]
+      addObserverForName:UIContentSizeCategoryDidChangeNotification
+                  object:nil
+                   queue:nil
+              usingBlock:base::CallbackToBlock(callback)];
 }
 
 void FontSizeTabHelper::WebFrameBecameAvailable(
