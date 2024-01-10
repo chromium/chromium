@@ -44,7 +44,7 @@ FragmentItemsInVisualOrder(const LayoutObject& query_root) {
       }
       items = fragment.Items();
       for (const auto& item : fragment.Items()->Items()) {
-        if (item.Type() == FragmentItem::kSvgText) {
+        if (item.IsSvgText()) {
           item_list.push_back(&item);
         }
       }
@@ -56,11 +56,11 @@ FragmentItemsInVisualOrder(const LayoutObject& query_root) {
     items = &cursor.Items();
     for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
       const FragmentItem& item = *cursor.CurrentItem();
-      if (item.Type() == FragmentItem::kSvgText) {
+      if (item.IsSvgText()) {
         item_list.push_back(&item);
       } else if (InlineCursor descendants = cursor.CursorForDescendants()) {
         for (; descendants; descendants.MoveToNext()) {
-          if (descendants.CurrentItem()->Type() == FragmentItem::kSvgText) {
+          if (descendants.CurrentItem()->IsSvgText()) {
             item_list.push_back(descendants.CurrentItem());
           }
         }
@@ -139,7 +139,7 @@ std::tuple<const FragmentItem*, gfx::RectF> ScaledCharacterRectInContainer(
   auto [item, item_text, start_ifc_offset, end_ifc_offset] =
       FindFragmentItemForAddressableCodeUnitIndex(query_root, code_unit_index);
   DCHECK(item);
-  DCHECK_EQ(item->Type(), FragmentItem::kSvgText);
+  DCHECK(item->IsSvgText());
   if (item->IsHiddenForPaint()) {
     return {item, gfx::RectF()};
   }
@@ -154,7 +154,7 @@ gfx::PointF StartOrEndPosition(const LayoutObject& query_root,
                                unsigned index,
                                QueryPosition pos) {
   auto [item, char_rect] = ScaledCharacterRectInContainer(query_root, index);
-  DCHECK_EQ(item->Type(), FragmentItem::kSvgText);
+  DCHECK(item->IsSvgText());
   if (item->IsHiddenForPaint()) {
     return gfx::PointF();
   }
@@ -234,7 +234,7 @@ gfx::PointF SvgTextQuery::EndPositionOfCharacter(unsigned index) const {
 
 gfx::RectF SvgTextQuery::ExtentOfCharacter(unsigned index) const {
   auto [item, char_rect] = ScaledCharacterRectInContainer(query_root_, index);
-  DCHECK_EQ(item->Type(), FragmentItem::kSvgText);
+  DCHECK(item->IsSvgText());
   if (item->IsHiddenForPaint()) {
     return gfx::RectF();
   }
@@ -249,7 +249,7 @@ float SvgTextQuery::RotationOfCharacter(unsigned index) const {
   auto [item, item_text, start_ifc_offset, end_ifc_offset] =
       FindFragmentItemForAddressableCodeUnitIndex(query_root_, index);
   DCHECK(item);
-  DCHECK_EQ(item->Type(), FragmentItem::kSvgText);
+  DCHECK(item->IsSvgText());
   if (item->IsHiddenForPaint()) {
     return 0.0f;
   }

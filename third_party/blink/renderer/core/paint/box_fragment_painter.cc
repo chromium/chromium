@@ -115,7 +115,7 @@ inline bool IsVisibleToHitTest(const ComputedStyle& style,
 inline bool IsVisibleToHitTest(const FragmentItem& item,
                                const HitTestRequest& request) {
   const ComputedStyle& style = item.Style();
-  if (item.Type() != FragmentItem::kSvgText) {
+  if (!item.IsSvgText()) {
     return IsVisibleToPaint(item, style) && IsVisibleToHitTest(style, request);
   }
 
@@ -1527,7 +1527,6 @@ void BoxFragmentPainter::PaintInlineItems(const PaintInfo& paint_info,
     }
     switch (item->Type()) {
       case FragmentItem::kText:
-      case FragmentItem::kSvgText:
       case FragmentItem::kGeneratedText:
         if (!item->IsHiddenForPaint())
           PaintTextItem(*cursor, paint_info, paint_offset, parent_offset);
@@ -2101,8 +2100,7 @@ bool BoxFragmentPainter::HitTestTextItem(const HitTestContext& hit_test,
   if (!IsVisibleToHitTest(text_item, hit_test.result->GetHitTestRequest()))
     return false;
 
-  if (text_item.Type() == FragmentItem::kSvgText &&
-      text_item.HasSvgTransformForBoundingBox()) {
+  if (text_item.IsSvgText() && text_item.HasSvgTransformForBoundingBox()) {
     const gfx::QuadF quad = text_item.SvgUnscaledQuad();
     if (!hit_test.location.Intersects(quad))
       return false;

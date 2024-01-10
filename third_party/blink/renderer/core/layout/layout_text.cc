@@ -629,9 +629,9 @@ void LayoutText::AbsoluteQuadsForRange(Vector<gfx::QuadF>& quads,
       if (UNLIKELY(text_combine))
         rect = text_combine->AdjustRectForBoundingBox(rect);
       gfx::QuadF quad;
-      if (item.Type() == FragmentItem::kSvgText) {
+      if (const SvgFragmentData* svg_data = item.GetSvgFragmentData()) {
         gfx::RectF float_rect(rect);
-        float_rect.Offset(item.GetSvgFragmentData()->rect.OffsetFromOrigin());
+        float_rect.Offset(svg_data->rect.OffsetFromOrigin());
         quad = item.BuildSvgTransformForBoundingBox().MapQuad(
             gfx::QuadF(float_rect));
         const float scaling_factor = item.SvgScalingFactor();

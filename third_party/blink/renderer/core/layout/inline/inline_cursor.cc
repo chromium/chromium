@@ -100,7 +100,6 @@ bool ShouldIgnoreForPositionForPoint(const FragmentItem& item) {
     case FragmentItem::kGeneratedText:
       return true;
     case FragmentItem::kText:
-    case FragmentItem::kSvgText:
       if (UNLIKELY(item.IsLayoutObjectDestroyedOrMoved())) {
         // See http://crbug.com/1217079
         NOTREACHED() << item;
@@ -504,7 +503,7 @@ PhysicalRect InlineCursor::CurrentLocalSelectionRectForText(
   const PhysicalRect selection_rect =
       CurrentLocalRect(selection_status.start, selection_status.end);
   LogicalRect logical_rect = Current().ConvertChildToLogical(selection_rect);
-  if (Current()->Type() == FragmentItem::kSvgText) {
+  if (Current()->IsSvgText()) {
     return Current().ConvertChildToPhysical(logical_rect);
   }
   // Let LocalRect for line break have a space width to paint line break
@@ -834,7 +833,6 @@ PositionWithAffinity InlineCursor::PositionForPointInChild(
   const FragmentItem& child_item = *CurrentItem();
   switch (child_item.Type()) {
     case FragmentItem::kText:
-    case FragmentItem::kSvgText:
       return child_item.PositionForPointInText(
           point_in_container - child_item.OffsetInContainerFragment(), *this);
     case FragmentItem::kGeneratedText:
