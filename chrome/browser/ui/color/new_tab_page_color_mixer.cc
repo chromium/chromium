@@ -358,6 +358,8 @@ void AddNewTabPageColorMixer(ui::ColorProvider* provider,
   mixer[kColorRealboxResultsBackgroundHovered] =
       ui::SetAlpha(gfx::kGoogleGrey900,
                    /* 10% opacity */ 0.1 * SK_AlphaOPAQUE);
+  mixer[kColorRealboxResultsButtonHover] = {
+      kColorRealboxResultsBackgroundHovered};
 
   mixer[kColorRealboxResultsActionChip] = {SkColorSetRGB(0xA8, 0xC7, 0xFA)};
   mixer[kColorRealboxResultsActionChipIcon] = {SkColorSetRGB(0x0B, 0x57, 0xD0)};
