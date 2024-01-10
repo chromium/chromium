@@ -1655,6 +1655,19 @@ BASE_FEATURE(kFFmpegAllowLists,
              "FFmpegAllowLists",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables sending MediaLog to the log stream, which is useful for easier
+// development by ensuring logs can be seen without a remote desktop session.
+// Only affects builds when DCHECK is on for non-ERROR logs (ERROR logs are
+// always sent to the log stream). Enabled by default on Android and ChromeOS.
+BASE_FEATURE(kMediaLogToConsole,
+             "MediaLogToConsole",
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
+
 #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
 // Allows decoding of theora / vp3 content.
 BASE_FEATURE(kTheoraVideoCodec,
