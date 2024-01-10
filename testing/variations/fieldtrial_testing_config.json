@@ -1127,6 +1127,28 @@
             ]
         }
     ],
+    "AutofillContentEditableChangeEvents": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillContentEditableChangeEvents"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillConvergeToExtremeLengthStreetAddress": [
         {
             "platforms": [

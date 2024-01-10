@@ -557,8 +557,7 @@ void AutofillAgent::ContentEditableDidChange(const WebElement& element) {
   DCHECK(MaybeWasOwnedByFrame(element, unsafe_render_frame()));
   if (!base::FeatureList::IsEnabled(
           features::kAutofillContentEditableChangeEvents) ||
-      !base::FeatureList::IsEnabled(features::kAutofillContentEditables) ||
-      !base::FeatureList::IsEnabled(features::kAutofillTextAreaChangeEvents)) {
+      !base::FeatureList::IsEnabled(features::kAutofillContentEditables)) {
     return;
   }
   // TODO(crbug.com/1494479): Add throttling to avoid sending this event for
