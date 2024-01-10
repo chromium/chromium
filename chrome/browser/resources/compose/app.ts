@@ -212,6 +212,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
 
   private animator_: ComposeAppAnimator;
   private apiProxy_: ComposeApiProxy = ComposeApiProxyImpl.getInstance();
+  private bodyResizeObserver_: ResizeObserver;
   enableAnimations: boolean;
   private eventTracker_: EventTracker = new EventTracker();
   private router_: ComposeDialogCallbackRouter = this.apiProxy_.getRouter();
@@ -261,11 +262,16 @@ export class ComposeAppElement extends ComposeAppElementBase {
         this.saveComposeAppState_();
       }
     });
+    this.bodyResizeObserver_ = new ResizeObserver(() => {
+      this.requestUpdateScroll();
+    });
+    this.bodyResizeObserver_.observe(this.$.body);
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.eventTracker_.removeAll();
+    this.bodyResizeObserver_.disconnect();
   }
 
   private debounceSaveComposeAppState_() {
@@ -513,7 +519,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
       this.animator_.transitionToFinalOutput();
     }
     this.partialResponse_ = undefined;
-    this.requestUpdateScroll();
+
     switch (this.lastTriggerElement_) {
       case TriggerElement.SUBMIT_INPUT:
         this.$.textarea.focusEditButton();

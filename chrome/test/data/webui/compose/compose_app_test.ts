@@ -168,7 +168,7 @@ suite('ComposeApp', () => {
         app.$.resultContainer.textContent!.includes('Refreshed output.'));
   });
 
-  test('UpdatesScrollableBodyAfterResults', async () => {
+  test('UpdatesScrollableBodyAfterResize', async () => {
     assertTrue(app.$.body.hasAttribute('scrollable'));
 
     mockInput('Some fake input.');
@@ -185,6 +185,16 @@ suite('ComposeApp', () => {
         app.$.body, () => app.$.body.classList.contains('can-scroll'));
     assertEquals(220, app.$.body.offsetHeight);
     assertTrue(220 < app.$.body.scrollHeight);
+
+    // Mock resizing result container down to a 50px height. This should result
+    // in the body changing height, triggering the updates to the CSS classes.
+    // At this point, 50px is too short to scroll, so it should not have the
+    // 'can-scroll' class.
+    app.$.resultContainer.style.minHeight = '50px';
+    app.$.resultContainer.style.height = '50px';
+    app.$.resultContainer.style.overflow = 'hidden';
+    await whenCheck(
+        app.$.body, () => !app.$.body.classList.contains('can-scroll'));
   });
 
   test('FirstRunAndMsbbStateDetermineViewState', async () => {
