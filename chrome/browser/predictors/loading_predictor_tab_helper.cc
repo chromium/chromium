@@ -170,45 +170,53 @@ enum class LcppHintStatus {
 // would be sent to the renderer process upon navigation commit.
 void MaybeSetLCPPNavigationHint(content::NavigationHandle& navigation_handle,
                                 LoadingPredictor& predictor) {
-  if (blink::LcppEnabled()) {
-    const GURL& navigation_url = navigation_handle.GetURL();
-    absl::optional<LcppData> lcpp_data =
-        predictor.resource_prefetch_predictor()->GetLcppData(navigation_url);
-    if (!lcpp_data) {
-      base::UmaHistogramEnumeration(
-          "LoadingPredictor.SetLCPPNavigationHint.Status",
-          LcppHintStatus::kNoLcppData);
-      return;
-    }
-    if (!IsValidLcppStat(lcpp_data->lcpp_stat())) {
-      base::UmaHistogramEnumeration(
-          "LoadingPredictor.SetLCPPNavigationHint.Status",
-          LcppHintStatus::kInvalidLcppStat);
-      return;
-    }
-    absl::optional<blink::mojom::LCPCriticalPathPredictorNavigationTimeHint>
-        hint = ConvertLcppDataToLCPCriticalPathPredictorNavigationTimeHint(
-            *lcpp_data);
-    if (hint) {
-      navigation_handle.SetLCPPNavigationHint(*hint);
-      base::UmaHistogramEnumeration(
-          "LoadingPredictor.SetLCPPNavigationHint.Status",
-          LcppHintStatus::kSucceedToSet);
-    } else {
-      base::UmaHistogramEnumeration(
-          "LoadingPredictor.SetLCPPNavigationHint.Status",
-          LcppHintStatus::kConversionFailure);
-    }
+  if (!blink::LcppEnabled() || !navigation_handle.IsInOutermostMainFrame() ||
+      navigation_handle.IsSameDocument()) {
+    return;
+  }
+  const GURL& navigation_url = navigation_handle.GetURL();
+  if (!navigation_url.is_valid() || !navigation_url.SchemeIsHTTPOrHTTPS()) {
+    return;
+  }
+  absl::optional<LcppData> lcpp_data =
+      predictor.resource_prefetch_predictor()->GetLcppData(navigation_url);
+  if (!lcpp_data) {
+    base::UmaHistogramEnumeration(
+        "LoadingPredictor.SetLCPPNavigationHint.Status",
+        LcppHintStatus::kNoLcppData);
+    return;
+  }
+  if (!IsValidLcppStat(lcpp_data->lcpp_stat())) {
+    base::UmaHistogramEnumeration(
+        "LoadingPredictor.SetLCPPNavigationHint.Status",
+        LcppHintStatus::kInvalidLcppStat);
+    return;
+  }
+  absl::optional<blink::mojom::LCPCriticalPathPredictorNavigationTimeHint>
+      hint = ConvertLcppDataToLCPCriticalPathPredictorNavigationTimeHint(
+          *lcpp_data);
+  if (hint) {
+    navigation_handle.SetLCPPNavigationHint(*hint);
+    base::UmaHistogramEnumeration(
+        "LoadingPredictor.SetLCPPNavigationHint.Status",
+        LcppHintStatus::kSucceedToSet);
+  } else {
+    base::UmaHistogramEnumeration(
+        "LoadingPredictor.SetLCPPNavigationHint.Status",
+        LcppHintStatus::kConversionFailure);
   }
 }
 
 void MaybePrewarmMainResourceAndSubresourcesOnNavigation(
     content::NavigationHandle& navigation_handle,
     LoadingPredictor& predictor) {
-  if (navigation_handle.IsInOutermostMainFrame() && blink::LcppEnabled() &&
-      blink::features::kHttpDiskCachePrewarmingTriggerOnNavigation.Get()) {
-    predictor.MaybePrewarmResources(navigation_handle.GetURL());
+  if (!blink::LcppEnabled() ||
+      !blink::features::kHttpDiskCachePrewarmingTriggerOnNavigation.Get() ||
+      !navigation_handle.IsInOutermostMainFrame() ||
+      navigation_handle.IsSameDocument()) {
+    return;
   }
+  predictor.MaybePrewarmResources(navigation_handle.GetURL());
 }
 
 NavigationId GetNextId() {
@@ -313,13 +321,14 @@ void LoadingPredictorTabHelper::DidStartNavigation(
   if (!predictor_)
     return;
 
-  if (!IsHandledNavigation(navigation_handle))
-    return;
-
   MaybeSetLCPPNavigationHint(*navigation_handle, *predictor_);
 
   MaybePrewarmMainResourceAndSubresourcesOnNavigation(*navigation_handle,
                                                       *predictor_);
+
+  if (!IsHandledNavigation(navigation_handle)) {
+    return;
+  }
 
   PageData& page_data = PageData::CreateForNavigationHandle(*navigation_handle);
 
@@ -361,13 +370,14 @@ void LoadingPredictorTabHelper::DidRedirectNavigation(
   if (!predictor_)
     return;
 
-  if (!IsHandledNavigation(navigation_handle))
-    return;
-
   MaybeSetLCPPNavigationHint(*navigation_handle, *predictor_);
 
   MaybePrewarmMainResourceAndSubresourcesOnNavigation(*navigation_handle,
                                                       *predictor_);
+
+  if (!IsHandledNavigation(navigation_handle)) {
+    return;
+  }
 
   auto* page_data = PageData::GetForNavigationHandle(*navigation_handle);
   // PageData may not be created in DidStartNavigation if IsHandledNavigation()
