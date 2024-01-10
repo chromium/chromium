@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.readaloud;
 
 import org.chromium.chrome.browser.tab.Tab;
 
+import java.util.HashSet;
+
 /**
  * Interface providing access to ReadAloud page readability checking.
  * Page can only be played if it's readable, which is true if (among others) there's enough text to
@@ -61,4 +63,13 @@ public interface ReadAloudReadabilityHooks {
      * @param callback callback to get result
      */
     default void isPageReadable(Tab tab, String url, ReadabilityCallback callback) {}
+
+    /**
+     * Get the languages that are compatible with the voices.
+     *
+     * @return a hashset of compatible languages with the voices.
+     */
+    default HashSet<String> getCompatibleLanguages() {
+        return new HashSet<String>();
+    }
 }
