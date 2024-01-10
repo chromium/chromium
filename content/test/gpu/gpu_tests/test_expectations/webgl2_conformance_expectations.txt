@@ -263,6 +263,9 @@ crbug.com/angleproject/6748 [ angle-swiftshader passthrough ] WebglExtension_KHR
 # The Mac OpenGL driver doesn't support shader images, and therefore does not support PLS.
 crbug.com/1421437 [ mac passthrough angle-opengl ] WebglExtension_WEBGL_shader_pixel_local_storage [ Skip ]
 
+# Fragment position generation rounds incorrectly on intel line primitives.
+crbug.com/1507168 [ chromeos intel passthrough ] deqp/functional/gles3/clipping.html [ Failure ]
+
 ###############################
 # Temporary Skip Expectations #
 ###############################
@@ -875,7 +878,7 @@ crbug.com/1500045 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance2/r
 crbug.com/1507164 [ chromeos cros-chrome chromeos-board-volteer ] conformance2/rendering/blitframebuffer-filter-outofbounds.html [ Failure ]
 crbug.com/1507166 [ chromeos cros-chrome chromeos-board-volteer ] conformance2/textures/canvas_sub_rectangle/tex-2d-r8ui-red_integer-unsigned_byte.html [ Failure ]
 crbug.com/1507166 [ chromeos cros-chrome chromeos-board-volteer ] conformance2/textures/webgl_canvas/tex-2d-r8ui-red_integer-unsigned_byte.html [ Failure ]
-crbug.com/1507168 [ chromeos cros-chrome chromeos-board-volteer passthrough ] deqp/functional/gles3/clipping.html [ Failure ]
+
 
 #####################
 # Lacros failures #
