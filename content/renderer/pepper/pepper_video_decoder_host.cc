@@ -562,6 +562,8 @@ gpu::Mailbox PepperVideoDecoderHost::CreateSharedImage(gfx::Size size) {
   auto* sii = context_provider->SharedImageInterface();
   auto* rii = context_provider->RasterInterface();
 
+  // These shared images have the contents of VideoFrames copied into them via
+  // the raster interface and then are read and/or written by the plugin via GL.
   auto client_shared_image = sii->CreateSharedImage(
       viz::SinglePlaneFormat::kRGBA_8888, size, gfx::ColorSpace(),
       kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType,
