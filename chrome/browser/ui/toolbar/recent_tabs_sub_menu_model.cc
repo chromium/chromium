@@ -841,6 +841,8 @@ void RecentTabsSubMenuModel::ClearTabsFromOtherDevices() {
   weak_ptr_factory_for_other_devices_tab_.InvalidateWeakPtrs();
 
   other_devices_tab_navigation_items_.clear();
+
+  device_sub_menu_items_.clear();
 }
 
 sync_sessions::OpenTabsUIDelegate*
