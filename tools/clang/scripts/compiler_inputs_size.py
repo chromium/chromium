@@ -193,10 +193,10 @@ def main():
                                    'for a build target.')
   parser.add_argument('build_dir', type=str, help='Chromium build dir')
   parser.add_argument('commands',
-                      type=argparse.FileType('r'),
+                      type=argparse.FileType('r', errors='ignore'),
                       help='File with the output of "ninja -t commands"')
   parser.add_argument('deps',
-                      type=argparse.FileType('r'),
+                      type=argparse.FileType('r', errors='ignore'),
                       help='File with the output of "ninja -t deps"')
   args = parser.parse_args()
 
