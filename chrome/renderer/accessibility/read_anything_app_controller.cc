@@ -1578,6 +1578,12 @@ ReadAnythingAppController::GetNextNodes(int max_text_length) {
 // so we should implement a method of retrieving previous text from AXPosition
 std::vector<ui::AXNodeID> ReadAnythingAppController::GetPreviousText(
     int max_text_length) {
+  // If GetPreviousText is called before the tree is initialized or before
+  // there are any processed granularities, return an empty vector.
+  if (processed_granularities_on_current_page_.size() == 0) {
+    return std::vector<ui::AXNodeID>();
+  }
+
   // If we've reached the beginning of the content, we should continue to return
   // the text grouping, so don't decrement below 0.
   if (processed_granularity_index_ > 0) {

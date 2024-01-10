@@ -2871,3 +2871,15 @@ TEST_F(ReadAnythingAppControllerTest, GetPreviousText_ReturnsExpectedNodes) {
   next_node_ids = GetNextText();
   EXPECT_EQ((int)next_node_ids.size(), 0);
 }
+
+TEST_F(ReadAnythingAppControllerTest, GetPreviousText_EmptyTree) {
+  // If InitAXPosition hasn't been called, GetPreviousText should return
+  // nothing.
+  std::vector<ui::AXNodeID> previous_node_ids = GetPreviousText();
+  EXPECT_EQ((int)previous_node_ids.size(), 0);
+
+  // GetNextTextStartIndex and GetNextTextEndIndex should return -1  on an
+  // invalid id.
+  EXPECT_EQ(GetNextTextStartIndex(0), -1);
+  EXPECT_EQ(GetNextTextEndIndex(0), -1);
+}
