@@ -5301,7 +5301,7 @@ void RenderProcessHostImpl::OnProcessLaunched() {
 #else
     priority_.visible = child_process_launcher_->GetProcess().GetPriority() ==
                         base::Process::Priority::kUserBlocking;
-#endif  // BUILDFLAG(IS_MAC)
+#endif
 
     // Only update the priority on startup if boosting is enabled (to avoid
     // reintroducing https://crbug.com/560446#c13 while pending views only
