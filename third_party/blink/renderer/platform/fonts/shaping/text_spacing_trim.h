@@ -24,6 +24,10 @@ inline bool ShouldTrimAdjacent(TextSpacingTrim value) {
   return value != TextSpacingTrim::kSpaceAll;
 }
 
+inline bool ShouldTrimStartOfParagraph(TextSpacingTrim value) {
+  return value == TextSpacingTrim::kTrimStart;
+}
+
 inline bool ShouldTrimStartOfWrappedLine(TextSpacingTrim value) {
   return value == TextSpacingTrim::kSpaceFirst ||
          value == TextSpacingTrim::kTrimStart;

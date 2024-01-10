@@ -111,6 +111,8 @@ class ReusingTextShaper final {
         shaper_(data->text_content),
         allow_shape_cache_(allow_shape_cache) {}
 
+  void SetOptions(ShapeOptions options) { options_ = options; }
+
   scoped_refptr<const ShapeResult> Shape(const InlineItem& start_item,
                                          const Font& font,
                                          unsigned end_offset) {
@@ -132,6 +134,7 @@ class ReusingTextShaper final {
     return result;
   }
 
+ private:
   scoped_refptr<ShapeResult> ShapeWithoutCache(const InlineItem& start_item,
                                                const Font& font,
                                                unsigned end_offset) {
@@ -164,6 +167,7 @@ class ReusingTextShaper final {
                                    reusable_shape_result->StartIndex()),
                           shape_result.get());
         offset = shape_result->EndIndex();
+        options_.han_kerning_start = false;
       }
       DCHECK_LT(offset, reusable_shape_result->EndIndex());
       DCHECK(shape_result->NumCharacters() == 0 ||
@@ -181,7 +185,6 @@ class ReusingTextShaper final {
     return shape_result;
   }
 
- private:
   void AppendShapeResult(const ShapeResult& shape_result, ShapeResult* target) {
     DCHECK(target->NumCharacters() == 0 ||
            target->EndIndex() == shape_result.StartIndex());
@@ -229,17 +232,20 @@ class ReusingTextShaper final {
     if (data_.segments) {
       return data_.segments->ShapeText(
           &shaper_, &font, direction, start_offset, end_offset,
-          base::checked_cast<unsigned>(&start_item - data_.items.begin()));
+          base::checked_cast<unsigned>(&start_item - data_.items.begin()),
+          options_);
     }
     RunSegmenter::RunSegmenterRange range =
         start_item.CreateRunSegmenterRange();
     range.end = end_offset;
-    return shaper_.Shape(&font, direction, start_offset, end_offset, range);
+    return shaper_.Shape(&font, direction, start_offset, end_offset, range,
+                         options_);
   }
 
   InlineItemsData& data_;
   const HeapVector<InlineItem>* const reusable_items_;
   HarfBuzzShaper shaper_;
+  ShapeOptions options_;
   const bool allow_shape_cache_;
 };
 
@@ -1317,6 +1323,7 @@ void InlineNode::ShapeText(InlineItemsData* data,
 
   // Provide full context of the entire node to the shaper.
   ReusingTextShaper shaper(data, previous_items, allow_shape_cache);
+  bool is_next_start_of_paragraph = true;
 
   DCHECK(!data->segments ||
          data->segments->EndOffset() == text_content.length());
@@ -1325,6 +1332,7 @@ void InlineNode::ShapeText(InlineItemsData* data,
     InlineItem& start_item = (*items)[index];
     if (start_item.Type() != InlineItem::kText || !start_item.Length()) {
       index++;
+      is_next_start_of_paragraph = start_item.IsForcedLineBreak();
       continue;
     }
 
@@ -1342,6 +1350,15 @@ void InlineNode::ShapeText(InlineItemsData* data,
              font.GetFontDescription().WidthVariant() != kRegularWidth);
     }
 #endif
+    shaper.SetOptions({
+        .han_kerning_start =
+            is_next_start_of_paragraph &&
+            RuntimeEnabledFeatures::CSSTextSpacingTrimEnabled() &&
+            ShouldTrimStartOfParagraph(
+                font.GetFontDescription().GetTextSpacingTrim()) &&
+            HanKerning::MaybeOpen(text_content[start_item.StartOffset()]),
+    });
+    is_next_start_of_paragraph = false;
     TextDirection direction = start_item.Direction();
     unsigned end_index = index + 1;
     unsigned end_offset = start_item.EndOffset();
