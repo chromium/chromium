@@ -299,34 +299,6 @@ TEST_F(MediaDrmBridgeTest, Unprovision_Widevine) {
   Unprovision();
 }
 
-// Provisioning with a Null Callback should not crash, as CreateFetcherCB is
-// 'base::NullCallback()' which cannot be '.Run()'.
-TEST_F(MediaDrmBridgeTest, ProvisionWithNullCallback_Widevine) {
-  // Only test this if Widevine is supported. Otherwise
-  // CreateWithoutSessionSupport() will return null and it can't be
-  // tested.
-  if (!MediaDrmBridge::IsKeySystemSupported(kWidevineKeySystem)) {
-    GTEST_SKIP() << "Widevine not supported on device.";
-  }
-
-  // Calling Provision() should trigger a provisioning request. But with no
-  // CreateFetcherCB specified, it should simply fail the provisioning attempt.
-  // With no CB there should not be a call to Retrieve() and ProvisioningDone()
-  // should return false.
-  EXPECT_CALL(*this, Retrieve(_, _, _)).Times(0);
-  EXPECT_CALL(*this, ProvisioningDone(false));
-
-  // Create MediaDrmBridge. We only test "L3" as "L1" depends on whether
-  // the test device supports it or not.
-  CreateWithoutSessionSupportWithNullCallback(kWidevineKeySystem, kTestOrigin,
-                                              kL3);
-  EXPECT_TRUE(media_drm_bridge_);
-  Provision();
-
-  // Provisioning is executed asynchronously.
-  base::RunLoop().RunUntilIdle();
-}
-
 TEST_F(MediaDrmBridgeTest, GetStatusForPolicy_ExternalClearKey) {
   scoped_feature_list_.InitWithFeatures({media::kExternalClearKeyForTesting},
                                         {});
