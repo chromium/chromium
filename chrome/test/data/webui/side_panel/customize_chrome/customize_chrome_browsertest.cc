@@ -74,8 +74,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCustomizeChromeTest, ChromeColors) {
   RunTest("side_panel/customize_chrome/chrome_colors_test.js", "mocha.run()");
 }
 
-// TODO(crbug.com/1514888): Re-enable this test
-IN_PROC_BROWSER_TEST_F(SidePanelCustomizeChromeTest, DISABLED_WallpaperSearch) {
+IN_PROC_BROWSER_TEST_F(SidePanelCustomizeChromeTest, WallpaperSearch) {
   RunTest(
       "side_panel/customize_chrome/wallpaper_search/wallpaper_search_test.js",
       "mocha.run()");

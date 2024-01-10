@@ -172,7 +172,8 @@ suite('WallpaperSearchTest', () => {
           'true');
     });
 
-    test('unselects hue', async () => {
+    // TODO(crbug.com/1514888, b/319445205): Re-enable this test.
+    test.skip('unselects hue', async () => {
       createWallpaperSearchElementWithDescriptors();
       await flushTasks();
       assertTrue(wallpaperSearchElement.$.deleteSelectedHueButton.hidden);
@@ -688,7 +689,8 @@ suite('WallpaperSearchTest', () => {
       assertEquals('foobar', args[0][1].style);
     });
 
-    test('current history theme is checked', async () => {
+    // TODO(crbug.com/1514888, b/319445205): Re-enable this test.
+    test.skip('current history theme is checked', async () => {
       createWallpaperSearchElement();
 
       wallpaperSearchCallbackRouterRemote.setHistory([
