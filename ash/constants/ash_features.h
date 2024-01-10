@@ -1070,6 +1070,8 @@ bool IsHoldingSpaceWallpaperNudgeEnabledCounterfactually();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsHoldingSpaceWallpaperNudgeForceEligibilityEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsHoldingSpaceWallpaperNudgeForceEligibilityAcceleratedRateLimitingEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHomeButtonQuickAppAccessEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHomeButtonWithTextEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHostnameSettingEnabled();

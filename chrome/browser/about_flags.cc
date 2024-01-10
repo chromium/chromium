@@ -2904,6 +2904,26 @@ const FeatureEntry::FeatureVariation kHoldingSpaceWallpaperNudgeVariations[] = {
      std::size(kHoldingSpaceWallpaperNudgeDropToPinDisabled), nullptr},
 };
 
+const FeatureEntry::FeatureParam
+    kHoldingSpaceWallpaperNudgeForceEligibilityAcceleratedRateLimitingDisabled
+        [] = {{"accelerated-rate-limiting-enabled", "false"}};
+const FeatureEntry::FeatureParam
+    kHoldingSpaceWallpaperNudgeForceEligibilityAcceleratedRateLimitingEnabled
+        [] = {{"accelerated-rate-limiting-enabled", "true"}};
+const FeatureEntry::FeatureVariation
+    kHoldingSpaceWallpaperNudgeForceEligibilityVariations[] = {
+        {"with no count limit or timeout",
+         kHoldingSpaceWallpaperNudgeForceEligibilityAcceleratedRateLimitingDisabled,
+         std::size(
+             kHoldingSpaceWallpaperNudgeForceEligibilityAcceleratedRateLimitingDisabled),
+         nullptr},
+        {"with count limit and a reduced 1 minute timeout",
+         kHoldingSpaceWallpaperNudgeForceEligibilityAcceleratedRateLimitingEnabled,
+         std::size(
+             kHoldingSpaceWallpaperNudgeForceEligibilityAcceleratedRateLimitingEnabled),
+         nullptr},
+};
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -9823,8 +9843,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kHoldingSpaceWallpaperNudgeForceEligibilityName,
      flag_descriptions::kHoldingSpaceWallpaperNudgeForceEligibilityDescription,
      kOsCrOS,
-     FEATURE_VALUE_TYPE(
-         ash::features::kHoldingSpaceWallpaperNudgeForceEligibility)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         ash::features::kHoldingSpaceWallpaperNudgeForceEligibility,
+         kHoldingSpaceWallpaperNudgeForceEligibilityVariations,
+         "HoldingSpaceWallpaperNudgeForceEligibility")},
     {"enable-welcome-tour", flag_descriptions::kWelcomeTourName,
      flag_descriptions::kWelcomeTourDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kWelcomeTour)},

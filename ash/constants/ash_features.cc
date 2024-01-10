@@ -1480,6 +1480,11 @@ BASE_FEATURE(kHoldingSpaceWallpaperNudgeForceEligibility,
              "HoldingSpaceWallpaperNudgeForceEligibility",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<bool>
+    kHoldingSpaceWallpaperNudgeForceEligibilityRateAcceleratedLimitingEnabled{
+        &kHoldingSpaceWallpaperNudgeForceEligibility,
+        "accelerated-rate-limiting-enabled", false};
+
 BASE_FEATURE(kHomeButtonQuickAppAccess,
              "HomeButtonQuickAppAccess",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -3600,6 +3605,12 @@ bool IsHoldingSpaceWallpaperNudgeEnabled() {
 bool IsHoldingSpaceWallpaperNudgeEnabledCounterfactually() {
   return IsHoldingSpaceWallpaperNudgeEnabled() &&
          kHoldingSpaceWallpaperNudgeEnabledCounterfactually.Get();
+}
+
+bool IsHoldingSpaceWallpaperNudgeForceEligibilityAcceleratedRateLimitingEnabled() {
+  return IsHoldingSpaceWallpaperNudgeForceEligibilityEnabled() &&
+         kHoldingSpaceWallpaperNudgeForceEligibilityRateAcceleratedLimitingEnabled
+             .Get();
 }
 
 bool IsHoldingSpaceWallpaperNudgeForceEligibilityEnabled() {
