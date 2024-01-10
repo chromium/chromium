@@ -43,7 +43,12 @@ enum class PlatformWindowState {
   kSnappedPrimary,
   kSnappedSecondary,
   kFloated,
+  kPinnedFullscreen,
+  kTrustedPinnedFullscreen,
 };
+
+COMPONENT_EXPORT(PLATFORM_WINDOW)
+bool IsPlatformWindowStateFullscreen(PlatformWindowState state);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 enum class PlatformFullscreenType {

@@ -122,8 +122,8 @@ void BrowserDesktopWindowTreeHostLacros::OnWindowStateChanged(
                                                     new_window_show_state);
 
   bool fullscreen_changed =
-      new_window_show_state == ui::PlatformWindowState::kFullScreen ||
-      old_window_show_state == ui::PlatformWindowState::kFullScreen;
+      ui::IsPlatformWindowStateFullscreen(new_window_show_state) ||
+      ui::IsPlatformWindowStateFullscreen(old_window_show_state);
   if (old_window_show_state != new_window_show_state && fullscreen_changed) {
     // If the browser view initiated this state change,
     // BrowserView::ProcessFullscreen will no-op, so this call is harmless.

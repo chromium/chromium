@@ -556,12 +556,9 @@ void WaylandToplevelWindow::HandleAuraToplevelConfigure(
     state_ = PlatformWindowState::kFullScreen;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   } else if (window_states.is_pinned_fullscreen) {
-    // TODO(crbug.com/1512518): Use kPinnedFullscreen when it's supported.
-    state_ = PlatformWindowState::kFullScreen;
+    state_ = PlatformWindowState::kPinnedFullscreen;
   } else if (window_states.is_trusted_pinned_fullscreen) {
-    // TODO(crbug.com/1512518): Use kTrustedPinnedFullscreen when it's
-    // supported.
-    state_ = PlatformWindowState::kFullScreen;
+    state_ = PlatformWindowState::kTrustedPinnedFullscreen;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   } else if (window_states.is_maximized) {
     state_ = PlatformWindowState::kMaximized;
@@ -1025,16 +1022,27 @@ void WaylandToplevelWindow::SendToDeskAtIndex(int index) {
 }
 
 void WaylandToplevelWindow::Pin(bool trusted) {
-  if (auto* zaura_surface = GetZAuraSurface()) {
-    zaura_surface->SetPin(trusted);
-    connection()->Flush();
+  if (SupportsConfigurePinnedState()) {
+    auto new_state = trusted ? PlatformWindowState::kTrustedPinnedFullscreen
+                             : PlatformWindowState::kPinnedFullscreen;
+    SetWindowState(new_state, display::kInvalidDisplayId);
+  } else {
+    if (auto* zaura_surface = GetZAuraSurface()) {
+      zaura_surface->SetPin(trusted);
+    }
   }
 }
 
 void WaylandToplevelWindow::Unpin() {
-  if (auto* zaura_surface = GetZAuraSurface()) {
-    zaura_surface->UnsetPin();
-    connection()->Flush();
+  if (SupportsConfigurePinnedState()) {
+    auto new_state = previous_state_ == PlatformWindowState::kMaximized
+                         ? previous_state_
+                         : PlatformWindowState::kNormal;
+    SetWindowState(new_state, display::kInvalidDisplayId);
+  } else {
+    if (auto* zaura_surface = GetZAuraSurface()) {
+      zaura_surface->UnsetPin();
+    }
   }
 }
 
@@ -1107,8 +1115,19 @@ void WaylandToplevelWindow::TriggerStateChanges() {
   } else if (state_ == PlatformWindowState::kFullScreen) {
     shell_toplevel_->SetFullscreen(
         GetWaylandOutputForDisplayId(fullscreen_display_id_));
+  } else if (state_ == PlatformWindowState::kPinnedFullscreen ||
+             state_ == PlatformWindowState::kTrustedPinnedFullscreen) {
+    if (auto* zaura_surface = GetZAuraSurface()) {
+      zaura_surface->SetPin(state_ ==
+                            PlatformWindowState::kTrustedPinnedFullscreen);
+    }
   } else if (previous_state_ == PlatformWindowState::kFullScreen) {
     shell_toplevel_->UnSetFullscreen();
+  } else if (previous_state_ == PlatformWindowState::kPinnedFullscreen ||
+             previous_state_ == PlatformWindowState::kTrustedPinnedFullscreen) {
+    if (auto* zaura_surface = GetZAuraSurface()) {
+      zaura_surface->UnsetPin();
+    }
   } else if (state_ == PlatformWindowState::kMaximized) {
     shell_toplevel_->SetMaximized();
   } else if (state_ == PlatformWindowState::kNormal) {

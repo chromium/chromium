@@ -56,6 +56,10 @@ chromeos::WindowStateType ToChromeosWindowStateType(
       return chromeos::WindowStateType::kSecondarySnapped;
     case ui::PlatformWindowState::kFloated:
       return chromeos::WindowStateType::kFloated;
+    case ui::PlatformWindowState::kPinnedFullscreen:
+      return chromeos::WindowStateType::kPinned;
+    case ui::PlatformWindowState::kTrustedPinnedFullscreen:
+      return chromeos::WindowStateType::kTrustedPinned;
   }
 }
 
