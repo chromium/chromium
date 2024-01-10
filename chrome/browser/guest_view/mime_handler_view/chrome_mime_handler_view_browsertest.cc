@@ -69,6 +69,11 @@ using guest_view::GuestViewManager;
 using guest_view::TestGuestViewManager;
 using guest_view::TestGuestViewManagerFactory;
 
+namespace {
+// The value of the data is "content to read\n".
+const char kDataUrlCsv[] = "data:text/csv;base64,Y29udGVudCB0byByZWFkCg==";
+}  // namespace
+
 class ChromeMimeHandlerViewTest : public extensions::ExtensionApiTest {
  public:
   ChromeMimeHandlerViewTest() = default;
@@ -400,7 +405,6 @@ IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest, NonAsciiHeaders) {
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest, DataUrl) {
-  const char* kDataUrlCsv = "data:text/csv;base64,Y29udGVudCB0byByZWFkCg==";
   RunTestWithUrl(GURL(kDataUrlCsv));
 }
 
@@ -654,12 +658,11 @@ IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest, RejectPointLock) {
 
 IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest,
                        GuestDevToolsReloadsEmbedder) {
-  GURL data_url("data:application/pdf,foo");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), data_url));
+  GURL data_url(kDataUrlCsv);
+  RunTestWithUrl(data_url);
   auto* embedder_web_contents =
       browser()->tab_strip_model()->GetWebContentsAt(0);
   auto* guest_view = GetGuestViewManager()->WaitForSingleGuestViewCreated();
-  ASSERT_TRUE(guest_view);
   EXPECT_NE(embedder_web_contents->GetPrimaryMainFrame(),
             guest_view->GetGuestMainFrame());
   TestMimeHandlerViewGuest::WaitForGuestLoadStartThenStop(guest_view);
@@ -686,10 +689,10 @@ IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest,
 IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest,
                        MimeHandlerViewInDisplayNoneFrameForGoogleApps) {
   GURL data_url(
-      "data:text/html, <iframe src='data:application/pdf,foo' "
-      "style='display:none'></iframe>,foo2");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), data_url));
-  ASSERT_TRUE(GetGuestViewManager()->WaitForSingleGuestViewCreated());
+      base::StringPrintf("data:text/html, <iframe src='%s' "
+                         "style='display:none'></iframe>,foo2",
+                         kDataUrlCsv));
+  RunTestWithUrl(data_url);
 }
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
