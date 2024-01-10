@@ -79,7 +79,9 @@
 #endif
 
 #if BUILDFLAG(ENABLE_PDF)
+#include "base/test/with_feature_override.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
+#include "pdf/pdf_features.h"
 #endif
 
 namespace extensions {
@@ -2084,8 +2086,20 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsZoomTest, CannotZoomInvalidTab) {
 }
 
 #if BUILDFLAG(ENABLE_PDF)
+class ExtensionApiPdfTest : public base::test::WithFeatureOverride,
+                            public ExtensionApiTest {
+ public:
+  ExtensionApiPdfTest()
+      : base::test::WithFeatureOverride(chrome_pdf::features::kPdfOopif) {}
+};
+
 // Regression test for crbug.com/660498.
-IN_PROC_BROWSER_TEST_F(ExtensionApiTest, TemporaryAddressSpoof) {
+IN_PROC_BROWSER_TEST_P(ExtensionApiPdfTest, TemporaryAddressSpoof) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (IsParamFeatureEnabled()) {
+    GTEST_SKIP();
+  }
+
   ASSERT_TRUE(StartEmbeddedTestServer());
   content::WebContents* first_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -2139,6 +2153,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, TemporaryAddressSpoof) {
   // avoid a race during browser teardown (see crbug.com/882213).
   ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
 }
+
+// TODO(crbug.com/1445746): Stop testing both modes after OOPIF PDF viewer
+// launches.
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(ExtensionApiPdfTest);
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 // Tests how chrome.windows.create behaves when setSelfAsOpener parameter is
