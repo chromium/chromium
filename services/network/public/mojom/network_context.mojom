@@ -433,6 +433,10 @@ struct NetworkContextParams {
   // is not set, then no tokens are available.
   pending_remote<IpProtectionConfigGetter>? ip_protection_config_getter;
 
+  // A receiver for notifications from the browser to the IP Protection
+  // ProxyDelegate.
+  pending_receiver<IpProtectionProxyDelegate>? ip_protection_proxy_delegate;
+
   // When PAC quick checking is enabled, DNS lookups for PAC script's host are
   // timed out aggressively. This prevents hanging all network request on DNS
   // lookups that are slow or are blockholed, at the cost of making it more
@@ -901,7 +905,7 @@ struct BlindSignedAuthToken {
 // The proxy layer to fetch batches of tokens for.
 enum IpProtectionProxyLayer {kProxyA, kProxyB};
 
-// A source for new BlindSignedAuthTokens.
+// A source for IP protection information from the browser process.
 interface IpProtectionConfigGetter {
   // Try to get a batch of new tokens.
   //
@@ -924,6 +928,26 @@ interface IpProtectionConfigGetter {
   // This method will return an up-to-date list, possibly fetching that list
   // remotely before returning it.
   GetProxyList() => (array<array<string>>? proxy_list);
+};
+
+// Access to the IP Protection ProxyDelegate in the network service process.
+interface IpProtectionProxyDelegate {
+  // Used to facilitate cross-process testing of the IP Protection feature. This
+  // method will:
+  //  - Disable active cache management and reset the IP Protection cache to a
+  //    no-tokens and no-cooldown state, and,
+  //  - Return the current cooldown if one has been set, or,
+  //  - Initiate an IP Protection token request to the browser process and
+  //    return either a returned token or the returned cooldown time
+  VerifyIpProtectionConfigGetterForTesting()
+      => (BlindSignedAuthToken? bsa_token,
+          mojo_base.mojom.Time? try_again_after);
+
+  // Indicates that the IP Protection config cache in the Network Service should
+  // no longer wait before requesting tokens from the browser process (called in
+  // response to user account status changes that allow IP Protection to start
+  // working as expected).
+  InvalidateIpProtectionConfigCacheTryAgainAfterTime();
 };
 
 // Represents a distinct context for making network requests, with its own
@@ -1495,23 +1519,6 @@ interface NetworkContext {
                               string sct_list) => (int32 error_code,
                                                    CertVerifyResult cv_result,
                                                    bool pkp_bypassed);
-
-  // Used to facilitate cross-process testing of the IP Protection feature. This
-  // method will:
-  //  - Disable active cache management and reset the IP Protection cache to a
-  //    no-tokens and no-cooldown state, and,
-  //  - Return the current cooldown if one has been set, or,
-  //  - Initiate an IP Protection token request to the browser process and
-  //    return either a returned token or the returned cooldown time
-  VerifyIpProtectionConfigGetterForTesting()
-      => (BlindSignedAuthToken? bsa_token,
-          mojo_base.mojom.Time? try_again_after);
-
-  // Indicates that the IP Protection config cache in the Network Service should
-  // no longer wait before requesting tokens from the browser process (called in
-  // response to user account status changes that allow IP Protection to start
-  // working as expected).
-  InvalidateIpProtectionConfigCacheTryAgainAfterTime();
 
   // Adds explicitly-specified data as if it was processed from an
   // HSTS header. Used by tests and implementation of chrome://net-internals.

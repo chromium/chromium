@@ -26,10 +26,12 @@ namespace network {
 // IpProtectionProxyDelegate is used to support IP protection, by injecting
 // proxies for requests where IP should be protected.
 class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyDelegate
-    : public net::ProxyDelegate {
+    : public net::ProxyDelegate,
+      public mojom::IpProtectionProxyDelegate {
  public:
   IpProtectionProxyDelegate(
-      NetworkServiceProxyAllowList* network_service_proxy_allow_list);
+      NetworkServiceProxyAllowList* network_service_proxy_allow_list,
+      std::unique_ptr<IpProtectionConfigCache> ipp_config_cache);
 
   IpProtectionProxyDelegate(const IpProtectionProxyDelegate&) = delete;
   IpProtectionProxyDelegate& operator=(const IpProtectionProxyDelegate&) =
@@ -37,10 +39,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyDelegate
 
   ~IpProtectionProxyDelegate() override;
 
-  void SetIpProtectionConfigCache(
-      std::unique_ptr<IpProtectionConfigCache> ipp_config_cache) {
-    ipp_config_cache_ = std::move(ipp_config_cache);
-  }
+  void SetReceiver(
+      mojo::PendingReceiver<network::mojom::IpProtectionProxyDelegate>
+          pending_receiver);
 
   // net::ProxyDelegate implementation:
   void OnResolveProxy(
@@ -60,9 +61,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyDelegate
   void SetProxyResolutionService(
       net::ProxyResolutionService* proxy_resolution_service) override;
 
-  IpProtectionConfigCache* GetIpProtectionConfigCache() {
-    return ipp_config_cache_.get();
-  }
+  // mojom::IpProtectionProxyDelegate implementation:
+  void VerifyIpProtectionConfigGetterForTesting(
+      VerifyIpProtectionConfigGetterForTestingCallback callback) override;
+  void InvalidateIpProtectionConfigCacheTryAgainAfterTime() override;
+
+  void OnIpProtectionConfigAvailableForTesting(
+      VerifyIpProtectionConfigGetterForTestingCallback callback);
 
  private:
   friend class IpProtectionProxyDelegateTest;
@@ -70,12 +75,17 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionProxyDelegate
 
   // Returns the equivalent of replacing all DIRECT proxies in
   // `existing_proxy_list` with the proxies in `custom_proxy_list`.
-  net::ProxyList MergeProxyRules(const net::ProxyList& existing_proxy_list,
-                                 const net::ProxyList& custom_proxy_list) const;
+  static net::ProxyList MergeProxyRules(
+      const net::ProxyList& existing_proxy_list,
+      const net::ProxyList& custom_proxy_list);
 
   const raw_ptr<NetworkServiceProxyAllowList> network_service_proxy_allow_list_;
 
   std::unique_ptr<IpProtectionConfigCache> ipp_config_cache_;
+
+  mojo::Receiver<network::mojom::IpProtectionProxyDelegate> receiver_{this};
+
+  base::WeakPtrFactory<IpProtectionProxyDelegate> weak_factory_{this};
 };
 
 }  // namespace network

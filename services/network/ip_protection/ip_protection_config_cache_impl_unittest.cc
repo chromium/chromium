@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "services/network/ip_protection/ip_protection_config_cache_impl.h"
+
 #include <deque>
 #include <utility>
 #include <vector>
@@ -10,7 +12,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "services/network/ip_protection/ip_protection_config_cache_impl.h"
 #include "services/network/ip_protection/ip_protection_proxy_list_manager.h"
 #include "services/network/ip_protection/ip_protection_proxy_list_manager_impl.h"
 #include "services/network/public/mojom/network_context.mojom-shared.h"
@@ -81,16 +82,14 @@ class IpProtectionConfigCacheImplTest : public testing::Test {
  protected:
   IpProtectionConfigCacheImplTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        receiver_(nullptr),
-        ipp_config_cache_(std::make_unique<IpProtectionConfigCacheImpl>(
-            receiver_.BindNewPipeAndPassRemote())) {}
+        ipp_config_cache_(
+            std::make_unique<IpProtectionConfigCacheImpl>(mojo::NullRemote())) {
+  }
 
   base::HistogramTester histogram_tester_;
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-
-  mojo::Receiver<network::mojom::IpProtectionConfigGetter> receiver_;
 
   // The IpProtectionConfigCache being tested.
   std::unique_ptr<IpProtectionConfigCacheImpl> ipp_config_cache_;

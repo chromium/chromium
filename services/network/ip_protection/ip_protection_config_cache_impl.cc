@@ -25,25 +25,25 @@ IpProtectionConfigCacheImpl::IpProtectionConfigCacheImpl(
   // Proxy list is null upon cache creation.
   ipp_proxy_list_manager_ = nullptr;
 
+  // This type may be constructed without a getter, for testing/experimental
+  // purposes. In that case, the list manager and cache managers do not exist.
   if (config_getter.is_valid()) {
     config_getter_.Bind(std::move(config_getter));
+
+    ipp_proxy_list_manager_ =
+        std::make_unique<IpProtectionProxyListManagerImpl>(&config_getter_);
+
+    ipp_token_cache_managers_[network::mojom::IpProtectionProxyLayer::kProxyA] =
+        std::make_unique<IpProtectionTokenCacheManagerImpl>(
+            &config_getter_, network::mojom::IpProtectionProxyLayer::kProxyA);
+
+    ipp_token_cache_managers_[network::mojom::IpProtectionProxyLayer::kProxyB] =
+        std::make_unique<IpProtectionTokenCacheManagerImpl>(
+            &config_getter_, network::mojom::IpProtectionProxyLayer::kProxyB);
   }
 }
 
 IpProtectionConfigCacheImpl::~IpProtectionConfigCacheImpl() = default;
-
-void IpProtectionConfigCacheImpl::SetUp() {
-  ipp_proxy_list_manager_ =
-      std::make_unique<IpProtectionProxyListManagerImpl>(&config_getter_);
-
-  ipp_token_cache_managers_[network::mojom::IpProtectionProxyLayer::kProxyA] =
-      std::make_unique<IpProtectionTokenCacheManagerImpl>(
-          &config_getter_, network::mojom::IpProtectionProxyLayer::kProxyA);
-
-  ipp_token_cache_managers_[network::mojom::IpProtectionProxyLayer::kProxyB] =
-      std::make_unique<IpProtectionTokenCacheManagerImpl>(
-          &config_getter_, network::mojom::IpProtectionProxyLayer::kProxyB);
-}
 
 bool IpProtectionConfigCacheImpl::AreAuthTokensAvailable() {
   // Verify there is at least one cache manager and all have available tokens.

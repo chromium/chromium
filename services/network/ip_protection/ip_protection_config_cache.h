@@ -24,9 +24,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCache {
  public:
   virtual ~IpProtectionConfigCache() = default;
 
-  // Initializes the proxy chain list and token managers for the cache.
-  virtual void SetUp() = 0;
-
   // Check whether tokens are available in all token caches.
   //
   // This function is called on every URL load, so it should complete quickly.

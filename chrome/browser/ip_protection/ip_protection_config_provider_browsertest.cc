@@ -20,6 +20,8 @@
 #include "content/public/browser/network_service_util.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/features.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_context.mojom-test-utils.h"
@@ -184,16 +186,14 @@ IN_PROC_BROWSER_TEST_F(IpProtectionConfigProviderBrowserTest,
       std::make_unique<IpProtectionConfigGetterInterceptor>(getter, token,
                                                             expiration);
 
-  network::mojom::NetworkContext* network_context =
-      browser()->profile()->GetDefaultStoragePartition()->GetNetworkContext();
-
   // To test that the Network Service can successfully request tokens, use the
   // test method on NetworkContext that will have it request tokens and then
   // send back the first token that it receives.
   base::test::TestFuture<network::mojom::BlindSignedAuthTokenPtr,
                          absl::optional<base::Time>>
       future;
-  network_context->VerifyIpProtectionConfigGetterForTesting(
+  auto* ipp_proxy_delegate = getter->last_remote_for_testing();
+  ipp_proxy_delegate->VerifyIpProtectionConfigGetterForTesting(
       future.GetCallback());
   const network::mojom::BlindSignedAuthTokenPtr& result =
       future.Get<network::mojom::BlindSignedAuthTokenPtr>();
@@ -203,12 +203,7 @@ IN_PROC_BROWSER_TEST_F(IpProtectionConfigProviderBrowserTest,
 
   // Now create a new incognito mode profile (with a different associated
   // network context) and see whether we can request tokens from that.
-  Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
-  network::mojom::NetworkContext* incognito_network_context =
-      incognito_browser->profile()
-          ->GetDefaultStoragePartition()
-          ->GetNetworkContext();
-  ASSERT_NE(network_context, incognito_network_context);
+  CreateIncognitoBrowser(browser()->profile());
 
   // We need a new interceptor that will intercept messages corresponding to the
   // incognito mode network context's `mojo::Receiver()`.
@@ -219,7 +214,9 @@ IN_PROC_BROWSER_TEST_F(IpProtectionConfigProviderBrowserTest,
 
   // Verify that we can get tokens from the incognito mode profile.
   future.Clear();
-  incognito_network_context->VerifyIpProtectionConfigGetterForTesting(
+  auto* incognito_ipp_proxy_delegate = getter->last_remote_for_testing();
+  ASSERT_NE(incognito_ipp_proxy_delegate, ipp_proxy_delegate);
+  incognito_ipp_proxy_delegate->VerifyIpProtectionConfigGetterForTesting(
       future.GetCallback());
   const network::mojom::BlindSignedAuthTokenPtr& incognito_result =
       future.Get<network::mojom::BlindSignedAuthTokenPtr>();
@@ -229,7 +226,7 @@ IN_PROC_BROWSER_TEST_F(IpProtectionConfigProviderBrowserTest,
 
   // Ensure that we can still get tokens from the main profile.
   future.Clear();
-  network_context->VerifyIpProtectionConfigGetterForTesting(
+  ipp_proxy_delegate->VerifyIpProtectionConfigGetterForTesting(
       future.GetCallback());
   const network::mojom::BlindSignedAuthTokenPtr& second_attempt_result =
       future.Get<network::mojom::BlindSignedAuthTokenPtr>();
@@ -286,6 +283,7 @@ IN_PROC_BROWSER_TEST_F(IpProtectionConfigProviderBrowserTest,
 
   network::mojom::NetworkContext* main_profile_network_context =
       browser()->profile()->GetDefaultStoragePartition()->GetNetworkContext();
+  auto* main_profile_ipp_proxy_delegate = provider->last_remote_for_testing();
 
   Browser* incognito_profile_browser =
       CreateIncognitoBrowser(browser()->profile());
@@ -294,7 +292,11 @@ IN_PROC_BROWSER_TEST_F(IpProtectionConfigProviderBrowserTest,
       incognito_profile_browser->profile()
           ->GetDefaultStoragePartition()
           ->GetNetworkContext();
+  auto* incognito_profile_ipp_proxy_delegate =
+      provider->last_remote_for_testing();
   ASSERT_NE(main_profile_network_context, incognito_profile_network_context);
+  ASSERT_NE(main_profile_ipp_proxy_delegate,
+            incognito_profile_ipp_proxy_delegate);
 
   auto incognito_profile_auth_token_getter_interceptor =
       std::make_unique<IpProtectionConfigGetterInterceptor>(
@@ -324,15 +326,15 @@ IN_PROC_BROWSER_TEST_F(IpProtectionConfigProviderBrowserTest,
   base::test::TestFuture<network::mojom::BlindSignedAuthTokenPtr,
                          absl::optional<base::Time>>
       future;
-  main_profile_network_context->VerifyIpProtectionConfigGetterForTesting(
+  main_profile_ipp_proxy_delegate->VerifyIpProtectionConfigGetterForTesting(
       future.GetCallback());
   const absl::optional<base::Time>& main_profile_first_attempt_result =
       future.Get<absl::optional<base::Time>>();
   EXPECT_EQ(main_profile_first_attempt_result.value(), dont_retry);
 
   future.Clear();
-  incognito_profile_network_context->VerifyIpProtectionConfigGetterForTesting(
-      future.GetCallback());
+  incognito_profile_ipp_proxy_delegate
+      ->VerifyIpProtectionConfigGetterForTesting(future.GetCallback());
   const absl::optional<base::Time>& incognito_profile_first_attempt_result =
       future.Get<absl::optional<base::Time>>();
   EXPECT_EQ(incognito_profile_first_attempt_result.value(), dont_retry);
@@ -346,15 +348,15 @@ IN_PROC_BROWSER_TEST_F(IpProtectionConfigProviderBrowserTest,
   // Run the test again and check that the network service is still in a
   // cooldown phase.
   future.Clear();
-  main_profile_network_context->VerifyIpProtectionConfigGetterForTesting(
+  main_profile_ipp_proxy_delegate->VerifyIpProtectionConfigGetterForTesting(
       future.GetCallback());
   const absl::optional<base::Time>& main_profile_second_attempt_result =
       future.Get<absl::optional<base::Time>>();
   EXPECT_EQ(main_profile_second_attempt_result.value(), dont_retry);
 
   future.Clear();
-  incognito_profile_network_context->VerifyIpProtectionConfigGetterForTesting(
-      future.GetCallback());
+  incognito_profile_ipp_proxy_delegate
+      ->VerifyIpProtectionConfigGetterForTesting(future.GetCallback());
   const absl::optional<base::Time>& incognito_profile_second_attempt_result =
       future.Get<absl::optional<base::Time>>();
   EXPECT_EQ(incognito_profile_second_attempt_result.value(), dont_retry);
@@ -377,7 +379,7 @@ IN_PROC_BROWSER_TEST_F(IpProtectionConfigProviderBrowserTest,
   // Verify that cooldown timers in the network context have been reset and
   // that we can now request tokens successfully.
   future.Clear();
-  main_profile_network_context->VerifyIpProtectionConfigGetterForTesting(
+  main_profile_ipp_proxy_delegate->VerifyIpProtectionConfigGetterForTesting(
       future.GetCallback());
   const network::mojom::BlindSignedAuthTokenPtr&
       main_profile_third_attempt_result =
@@ -387,8 +389,8 @@ IN_PROC_BROWSER_TEST_F(IpProtectionConfigProviderBrowserTest,
   EXPECT_EQ(main_profile_third_attempt_result->expiration, expiration);
 
   future.Clear();
-  incognito_profile_network_context->VerifyIpProtectionConfigGetterForTesting(
-      future.GetCallback());
+  incognito_profile_ipp_proxy_delegate
+      ->VerifyIpProtectionConfigGetterForTesting(future.GetCallback());
   const network::mojom::BlindSignedAuthTokenPtr&
       incognito_profile_third_attempt_result =
           future.Get<network::mojom::BlindSignedAuthTokenPtr>();

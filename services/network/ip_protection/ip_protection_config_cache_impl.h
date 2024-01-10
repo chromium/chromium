@@ -34,7 +34,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCacheImpl
   ~IpProtectionConfigCacheImpl() override;
 
   // IpProtectionConfigCache implementation.
-  void SetUp() override;
   bool AreAuthTokensAvailable() override;
   absl::optional<network::mojom::BlindSignedAuthTokenPtr> GetAuthToken(
       size_t chain_index) override;

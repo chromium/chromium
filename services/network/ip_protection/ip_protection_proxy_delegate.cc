@@ -17,6 +17,7 @@
 #include "net/http/http_util.h"
 #include "net/proxy_resolution/proxy_info.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
+#include "services/network/ip_protection/ip_protection_token_cache_manager_impl.h"
 #include "services/network/masked_domain_list/network_service_proxy_allow_list.h"
 #include "services/network/url_loader.h"
 #include "url/url_constants.h"
@@ -24,10 +25,18 @@
 namespace network {
 
 IpProtectionProxyDelegate::IpProtectionProxyDelegate(
-    NetworkServiceProxyAllowList* network_service_proxy_allow_list)
-    : network_service_proxy_allow_list_(network_service_proxy_allow_list) {}
+    NetworkServiceProxyAllowList* network_service_proxy_allow_list,
+    std::unique_ptr<IpProtectionConfigCache> ipp_config_cache)
+    : network_service_proxy_allow_list_(network_service_proxy_allow_list),
+      ipp_config_cache_(std::move(ipp_config_cache)) {}
 
 IpProtectionProxyDelegate::~IpProtectionProxyDelegate() = default;
+
+void IpProtectionProxyDelegate::SetReceiver(
+    mojo::PendingReceiver<network::mojom::IpProtectionProxyDelegate>
+        pending_receiver) {
+  receiver_.Bind(std::move(pending_receiver));
+}
 
 void IpProtectionProxyDelegate::OnResolveProxy(
     const GURL& url,
@@ -178,9 +187,99 @@ net::Error IpProtectionProxyDelegate::OnTunnelHeadersReceived(
 void IpProtectionProxyDelegate::SetProxyResolutionService(
     net::ProxyResolutionService* proxy_resolution_service) {}
 
+void IpProtectionProxyDelegate::VerifyIpProtectionConfigGetterForTesting(
+    VerifyIpProtectionConfigGetterForTestingCallback callback) {
+  CHECK(ipp_config_cache_);
+  auto* ipp_token_cache_manager_impl =
+      static_cast<IpProtectionTokenCacheManagerImpl*>(
+          ipp_config_cache_
+              ->GetIpProtectionTokenCacheManagerForTesting(  // IN-TEST
+                  network::mojom::IpProtectionProxyLayer::kProxyA));
+  CHECK(ipp_token_cache_manager_impl);
+
+  // If active cache management is enabled (the default), disable it and do a
+  // one-time reset of the state. Since the browser process will be driving this
+  // test, this makes it easier to reason about the state of
+  // `ipp_config_cache_` (for instance, if the browser process sends less
+  // than the requested number of tokens, the network service won't immediately
+  // request more).
+  if (ipp_token_cache_manager_impl->IsCacheManagementEnabledForTesting()) {
+    ipp_token_cache_manager_impl->DisableCacheManagementForTesting(  // IN-TEST
+        base::BindOnce(
+            [](base::WeakPtr<IpProtectionProxyDelegate> weak_ptr,
+               VerifyIpProtectionConfigGetterForTestingCallback callback) {
+              DCHECK(weak_ptr);
+              // Drain auth tokens.
+              auto& ipp_config_cache = weak_ptr->ipp_config_cache_;
+              ipp_config_cache->InvalidateTryAgainAfterTime();
+              while (ipp_config_cache->AreAuthTokensAvailable()) {
+                ipp_config_cache->GetAuthToken(0);  // kProxyA.
+              }
+              // Call `PostTask()` instead of invoking the Verify method again
+              // directly so that if `DisableCacheManagementForTesting()` needed
+              // to wait for a `TryGetAuthTokens()` call to finish, then we
+              // ensure that the stored callback has been cleared before the
+              // Verify method tries to call `TryGetAuthTokens()` again.
+              base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                  FROM_HERE,
+                  base::BindOnce(&IpProtectionProxyDelegate::
+                                     VerifyIpProtectionConfigGetterForTesting,
+                                 weak_ptr, std::move(callback)));
+            },
+            weak_factory_.GetWeakPtr(), std::move(callback)));
+    return;
+  }
+
+  // If there is a cooldown in effect, then don't send any tokens and instead
+  // send back the try again after time.
+  base::Time try_auth_tokens_after =
+      ipp_token_cache_manager_impl
+          ->try_get_auth_tokens_after_for_testing();  // IN-TEST
+  if (!try_auth_tokens_after.is_null()) {
+    std::move(callback).Run(nullptr, try_auth_tokens_after);
+    return;
+  }
+
+  ipp_token_cache_manager_impl
+      ->SetOnTryGetAuthTokensCompletedForTesting(  // IN-TEST
+          base::BindOnce(&IpProtectionProxyDelegate::
+                             OnIpProtectionConfigAvailableForTesting,
+                         weak_factory_.GetWeakPtr(), std::move(callback)));
+  ipp_token_cache_manager_impl->CallTryGetAuthTokensForTesting();  // IN-TEST
+}
+
+void IpProtectionProxyDelegate::OnIpProtectionConfigAvailableForTesting(
+    VerifyIpProtectionConfigGetterForTestingCallback callback) {
+  auto* ipp_token_cache_manager_impl =
+      static_cast<IpProtectionTokenCacheManagerImpl*>(
+          ipp_config_cache_
+              ->GetIpProtectionTokenCacheManagerForTesting(  // IN-TEST
+                  network::mojom::IpProtectionProxyLayer::kProxyA));
+
+  absl::optional<network::mojom::BlindSignedAuthTokenPtr> result =
+      ipp_config_cache_->GetAuthToken(0);  // kProxyA.
+  if (result.has_value()) {
+    std::move(callback).Run(std::move(result).value(), absl::nullopt);
+    return;
+  }
+  base::Time try_auth_tokens_after =
+      ipp_token_cache_manager_impl
+          ->try_get_auth_tokens_after_for_testing();  // IN-TEST
+  std::move(callback).Run(nullptr, try_auth_tokens_after);
+}
+
+void IpProtectionProxyDelegate::
+    InvalidateIpProtectionConfigCacheTryAgainAfterTime() {
+  if (!ipp_config_cache_) {
+    return;
+  }
+  ipp_config_cache_->InvalidateTryAgainAfterTime();
+}
+
+// static
 net::ProxyList IpProtectionProxyDelegate::MergeProxyRules(
     const net::ProxyList& existing_proxy_list,
-    const net::ProxyList& custom_proxy_list) const {
+    const net::ProxyList& custom_proxy_list) {
   net::ProxyList merged_proxy_list;
   for (const auto& existing_chain : existing_proxy_list.AllChains()) {
     if (existing_chain.is_direct()) {

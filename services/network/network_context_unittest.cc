@@ -7821,15 +7821,6 @@ TEST_F(NetworkContextExpectBadMessageTest, DataUrl) {
   AssertBadMessage();
 }
 
-TEST_F(NetworkContextTest, InvalidateIpProtectionConfigCacheTryAgainAfterTime) {
-  std::unique_ptr<NetworkContext> network_context =
-      CreateContextWithParams(CreateNetworkContextParamsForTesting());
-  // If the network context shouldn't participate in IP Protection, calling
-  // `InvalidateIpProtectionConfigCacheTryAgainAfterTime()` isn't expected but
-  // shouldn't cause a crash.
-  network_context->InvalidateIpProtectionConfigCacheTryAgainAfterTime();
-}
-
 class NetworkContextBrowserCookieTest
     : public NetworkContextTest,
       public testing::WithParamInterface</*should_add_browser_cookies=*/bool> {

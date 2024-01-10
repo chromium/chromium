@@ -21,7 +21,10 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
@@ -99,9 +102,12 @@ class IpProtectionConfigProvider
 
   static IpProtectionConfigProvider* Get(Profile* profile);
 
-  void AddReceiver(
+  // Add bidirectional pipes to a new network service.
+  void AddNetworkService(
       mojo::PendingReceiver<network::mojom::IpProtectionConfigGetter>
-          pending_receiver);
+          pending_receiver,
+      mojo::PendingRemote<network::mojom::IpProtectionProxyDelegate>
+          pending_remote);
 
   mojo::ReceiverSet<network::mojom::IpProtectionConfigGetter>&
   receivers_for_testing() {
@@ -109,6 +115,9 @@ class IpProtectionConfigProvider
   }
   mojo::ReceiverId receiver_id_for_testing() {
     return receiver_id_for_testing_;
+  }
+  network::mojom::IpProtectionProxyDelegate* last_remote_for_testing() {
+    return remotes_.Get(remote_id_for_testing_);
   }
 
   // Like `SetUp()`, but providing values for each of the member variables.
@@ -249,18 +258,27 @@ class IpProtectionConfigProvider
       IpProtectionTryGetAuthTokensResult::kSuccess;
   absl::optional<base::TimeDelta> last_try_get_auth_tokens_backoff_;
 
-  // The `mojo::Receiver` objects corresponding to the `mojo::PendingRemote`
-  // objects that get passed to the per-profile NetworkContexts in the network
-  // service for requesting blind-signed auth tokens. At any given time there
-  // should only be two receivers, one for the main profile and another one if
-  // an associated incognito window is opened. If one of the corresponding
-  // Network Contexts restarts, the corresponding receiver will automatically be
-  // removed and a new one bound as part of the Network Context initialization
-  // flow.
+  // The `mojo::Receiver` objects allowing the network service to call methods
+  // on `this`.
+  //
+  // At any given time there should only be two receivers, one for the main
+  // profile and another one if an associated incognito window is opened.
+  // If one of the corresponding Network Contexts restarts, the
+  // corresponding receiver will automatically be removed and a new one
+  // bound as part of the Network Context initialization flow.
   mojo::ReceiverSet<network::mojom::IpProtectionConfigGetter> receivers_;
+
+  // Similar to `receivers_`, but containing remotes for all existing
+  // IpProtectionProxyDelegates.
+  mojo::RemoteSet<network::mojom::IpProtectionProxyDelegate> remotes_;
+
   // The `mojo::ReceiverId` of the most recently added `mojo::Receiver`, for
   // testing.
   mojo::ReceiverId receiver_id_for_testing_;
+
+  // The `mojo::RemoteSetElementId` of the most recently added `mojo::Remote`,
+  // for testing.
+  mojo::RemoteSetElementId remote_id_for_testing_;
 
   // This must be the last member in this class.
   base::WeakPtrFactory<IpProtectionConfigProvider> weak_ptr_factory_{this};

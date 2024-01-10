@@ -338,9 +338,6 @@ class TestNetworkContext : public mojom::NetworkContext {
   void FlushCachedClientCertIfNeeded(
       const net::HostPortPair& host,
       const scoped_refptr<net::X509Certificate>& certificate) override {}
-  void VerifyIpProtectionConfigGetterForTesting(
-      VerifyIpProtectionConfigGetterForTestingCallback callback) override {}
-  void InvalidateIpProtectionConfigCacheTryAgainAfterTime() override {}
   void SetCookieDeprecationLabel(
       const absl::optional<std::string>& label) override {}
 };

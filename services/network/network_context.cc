@@ -1927,117 +1927,6 @@ void NetworkContext::VerifyCertificateForTesting(
       request, net::NetLogWithSource());
 }
 
-void NetworkContext::VerifyIpProtectionConfigGetterForTesting(
-    VerifyIpProtectionConfigGetterForTestingCallback callback) {
-  // This method assumes that the proxy delegate and auth token cache have been
-  // initialized.
-  CHECK(proxy_delegate_);
-
-  // TODO(crbug.com/1476881): this mojom method should move to the
-  // IpProtectionProxyDelegate class.
-  IpProtectionProxyDelegate* proxy_delegate =
-      static_cast<IpProtectionProxyDelegate*>(proxy_delegate_.get());
-  auto* ipp_config_cache = proxy_delegate->GetIpProtectionConfigCache();
-  CHECK(ipp_config_cache);
-  auto* ipp_token_cache_manager_impl =
-      static_cast<IpProtectionTokenCacheManagerImpl*>(
-          ipp_config_cache
-              ->GetIpProtectionTokenCacheManagerForTesting(  // IN-TEST
-                  network::mojom::IpProtectionProxyLayer::kProxyA));
-  CHECK(ipp_token_cache_manager_impl);
-
-  // If active cache management is enabled (the default), disable it and do a
-  // one-time reset of the state. Since the browser process will be driving this
-  // test, this makes it easier to reason about the state of
-  // `ipp_config_cache` (for instance, if the browser process sends less
-  // than the requested number of tokens, the network service won't immediately
-  // request more).
-  if (ipp_token_cache_manager_impl->IsCacheManagementEnabledForTesting()) {
-    ipp_token_cache_manager_impl->DisableCacheManagementForTesting(  // IN-TEST
-        base::BindOnce(
-            [](base::WeakPtr<NetworkContext> weak_ptr,
-               VerifyIpProtectionConfigGetterForTestingCallback callback,
-               IpProtectionProxyDelegate* proxy_delegate) {
-              // If this callback is called then `ipp_config_cache` is
-              // still alive, which means that this `NetworkContext` is alive as
-              // well.
-              CHECK(weak_ptr);
-              auto* ipp_config_cache =
-                  proxy_delegate->GetIpProtectionConfigCache();
-              ipp_config_cache->InvalidateTryAgainAfterTime();
-              while (ipp_config_cache->AreAuthTokensAvailable()) {
-                ipp_config_cache->GetAuthToken(0);  // kProxyA.
-              }
-              // Call `PostTask()` instead of invoking the Verify method again
-              // directly so that if `DisableCacheManagementForTesting()` needed
-              // to wait for a `TryGetAuthTokens()` call to finish, then we
-              // ensure that the stored callback has been cleared before the
-              // Verify method tries to call `TryGetAuthTokens()` again.
-              base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-                  FROM_HERE,
-                  base::BindOnce(
-                      &NetworkContext::VerifyIpProtectionConfigGetterForTesting,
-                      weak_ptr, std::move(callback)));
-            },
-            weak_factory_.GetWeakPtr(), std::move(callback), proxy_delegate));
-    return;
-  }
-
-  // If there is a cooldown in effect, then don't send any tokens and instead
-  // send back the try again after time.
-  base::Time try_auth_tokens_after =
-      ipp_token_cache_manager_impl
-          ->try_get_auth_tokens_after_for_testing();  // IN-TEST
-  if (!try_auth_tokens_after.is_null()) {
-    std::move(callback).Run(nullptr, try_auth_tokens_after);
-    return;
-  }
-
-  ipp_token_cache_manager_impl
-      ->SetOnTryGetAuthTokensCompletedForTesting(  // IN-TEST
-          base::BindOnce(
-              &NetworkContext::OnIpProtectionConfigAvailableForTesting,
-              weak_factory_.GetWeakPtr(), std::move(callback)));
-  ipp_token_cache_manager_impl->CallTryGetAuthTokensForTesting();  // IN-TEST
-}
-
-// TODO(crbug.com/1476881): this should move to IpProtectionProxyDelegate
-void NetworkContext::OnIpProtectionConfigAvailableForTesting(
-    VerifyIpProtectionConfigGetterForTestingCallback callback) {
-  IpProtectionProxyDelegate* proxy_delegate =
-      static_cast<IpProtectionProxyDelegate*>(proxy_delegate_.get());
-  auto* ipp_config_cache = proxy_delegate->GetIpProtectionConfigCache();
-  auto* ipp_token_cache_manager_impl =
-      static_cast<IpProtectionTokenCacheManagerImpl*>(
-          ipp_config_cache
-              ->GetIpProtectionTokenCacheManagerForTesting(  // IN-TEST
-                  network::mojom::IpProtectionProxyLayer::kProxyA));
-
-  absl::optional<network::mojom::BlindSignedAuthTokenPtr> result =
-      ipp_config_cache->GetAuthToken(0);  // kProxyA.
-  if (result.has_value()) {
-    std::move(callback).Run(std::move(result).value(), absl::nullopt);
-    return;
-  }
-  base::Time try_auth_tokens_after =
-      ipp_token_cache_manager_impl
-          ->try_get_auth_tokens_after_for_testing();  // IN-TEST
-  std::move(callback).Run(nullptr, try_auth_tokens_after);
-}
-
-void NetworkContext::InvalidateIpProtectionConfigCacheTryAgainAfterTime() {
-  if (!proxy_delegate_) {
-    return;
-  }
-  IpProtectionProxyDelegate* proxy_delegate =
-      static_cast<IpProtectionProxyDelegate*>(proxy_delegate_.get());
-  auto* ipp_config_cache = proxy_delegate->GetIpProtectionConfigCache();
-  if (!ipp_config_cache) {
-    return;
-  }
-  ipp_config_cache->InvalidateTryAgainAfterTime();
-}
-
 void NetworkContext::PreconnectSockets(
     uint32_t num_streams,
     const GURL& original_url,
@@ -2375,14 +2264,14 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
   // custom proxy configs, or IpProtection, using the proxy allowlist.
   auto* nspal = network_service_->network_service_proxy_allow_list();
   if (!params_->initial_custom_proxy_config && nspal->IsEnabled()) {
+    auto ipp_config_cache = std::make_unique<IpProtectionConfigCacheImpl>(
+        std::move(params_->ip_protection_config_getter));
     std::unique_ptr<IpProtectionProxyDelegate> proxy_delegate =
-        std::make_unique<IpProtectionProxyDelegate>(nspal);
-    if (params_->ip_protection_config_getter) {
-      proxy_delegate->SetIpProtectionConfigCache(
-          std::make_unique<IpProtectionConfigCacheImpl>(
-              std::move(params_->ip_protection_config_getter)));
-      proxy_delegate->GetIpProtectionConfigCache()->SetUp();
-    }
+
+        std::make_unique<IpProtectionProxyDelegate>(
+            nspal, std::move(ipp_config_cache));
+    proxy_delegate->SetReceiver(
+        std::move(params_->ip_protection_proxy_delegate));
     proxy_delegate_ = proxy_delegate.get();
     builder.set_proxy_delegate(std::move(proxy_delegate));
   } else if (params_->initial_custom_proxy_config ||
