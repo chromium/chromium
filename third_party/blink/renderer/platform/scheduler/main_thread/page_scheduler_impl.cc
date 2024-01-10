@@ -521,32 +521,44 @@ void PageSchedulerImpl::WriteIntoTrace(perfetto::TracedValue context,
   dict.Add("is_frozen", is_frozen_);
   dict.Add("is_page_freezable", IsBackgrounded());
 
-  dict.Add("cpu_time_budget_pool", [&](perfetto::TracedValue context) {
-    cpu_time_budget_pool_->WriteIntoTrace(std::move(context), now);
-  });
-  dict.Add("foreground_wake_up_budget_pool",
-           [&](perfetto::TracedValue context) {
-             foreground_wake_up_budget_pool_->WriteIntoTrace(std::move(context),
-                                                             now);
-           });
-  dict.Add("unimportant_wake_up_budget_pool",
-           [&](perfetto::TracedValue context) {
-             unimportant_wake_up_budget_pool_->WriteIntoTrace(
-                 std::move(context), now);
-           });
-  dict.Add("hidden_wake_up_budget_pool", [&](perfetto::TracedValue context) {
-    hidden_wake_up_budget_pool_->WriteIntoTrace(std::move(context), now);
-  });
-  dict.Add("same_origin_intensive_wake_up_budget_pool",
-           [&](perfetto::TracedValue context) {
-             same_origin_intensive_wake_up_budget_pool_->WriteIntoTrace(
-                 std::move(context), now);
-           });
-  dict.Add("cross_origin_intensive_wake_up_budget_pool",
-           [&](perfetto::TracedValue context) {
-             cross_origin_intensive_wake_up_budget_pool_->WriteIntoTrace(
-                 std::move(context), now);
-           });
+  if (cpu_time_budget_pool_) {
+    dict.Add("cpu_time_budget_pool", [&](perfetto::TracedValue context) {
+      cpu_time_budget_pool_->WriteIntoTrace(std::move(context), now);
+    });
+  }
+  if (foreground_wake_up_budget_pool_) {
+    dict.Add("foreground_wake_up_budget_pool",
+             [&](perfetto::TracedValue context) {
+               foreground_wake_up_budget_pool_->WriteIntoTrace(
+                   std::move(context), now);
+             });
+  }
+  if (unimportant_wake_up_budget_pool_) {
+    dict.Add("unimportant_wake_up_budget_pool",
+             [&](perfetto::TracedValue context) {
+               unimportant_wake_up_budget_pool_->WriteIntoTrace(
+                   std::move(context), now);
+             });
+  }
+  if (hidden_wake_up_budget_pool_) {
+    dict.Add("hidden_wake_up_budget_pool", [&](perfetto::TracedValue context) {
+      hidden_wake_up_budget_pool_->WriteIntoTrace(std::move(context), now);
+    });
+  }
+  if (same_origin_intensive_wake_up_budget_pool_) {
+    dict.Add("same_origin_intensive_wake_up_budget_pool",
+             [&](perfetto::TracedValue context) {
+               same_origin_intensive_wake_up_budget_pool_->WriteIntoTrace(
+                   std::move(context), now);
+             });
+  }
+  if (cross_origin_intensive_wake_up_budget_pool_) {
+    dict.Add("cross_origin_intensive_wake_up_budget_pool",
+             [&](perfetto::TracedValue context) {
+               cross_origin_intensive_wake_up_budget_pool_->WriteIntoTrace(
+                   std::move(context), now);
+             });
+  }
 
   dict.Add("frame_schedulers", frame_schedulers_);
 }
