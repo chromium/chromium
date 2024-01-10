@@ -26,7 +26,7 @@ namespace {
 // and adds entries {client_name, switch} to `kClientFeatureMap`.
 // TODO(crbug.com/1513684): Convert to MakeFixedFlatMap().
 const auto kClientFeatureMap =
-    base::MakeFixedFlatMapNonConsteval<std::string, const base::Feature*>({
+    base::MakeFixedFlatMap<std::string_view, const base::Feature*>({
         {"launcher_query_analytics_v1",
          &features::kFederatedLauncherQueryAnalyticsTask},
         {"launcher_query_analytics_v2",
@@ -44,19 +44,20 @@ const auto kClientFeatureMap =
 base::flat_map<std::string, std::string> GetClientLaunchStage() {
   static const base::NoDestructor<base::flat_map<std::string, std::string>>
       client_launch_stage_map([] {
-        base::flat_map<std::string, std::string> map;
-        for (const auto& kv : kClientFeatureMap) {
-          if (!base::FeatureList::IsEnabled(*kv.second)) {
-            map[kv.first] = "";
+        std::vector<std::pair<std::string, std::string>> map;
+        for (const auto& [name, feature] : kClientFeatureMap) {
+          if (!base::FeatureList::IsEnabled(*feature)) {
+            map.push_back({std::string(name), std::string()});
           } else {
-            base::FeatureParam<std::string> launch_stage{kv.second,
+            base::FeatureParam<std::string> launch_stage{feature,
                                                          "launch_stage", ""};
-            if (!launch_stage.Get().empty()) {
-              map[kv.first] = launch_stage.Get();
+            if (std::string stage = launch_stage.Get(); !stage.empty()) {
+              map.push_back({std::string(name), std::move(stage)});
             }
           }
         }
-        return map;
+        return base::flat_map<std::string, std::string>(base::sorted_unique,
+                                                        std::move(map));
       }());
 
   return *client_launch_stage_map;
