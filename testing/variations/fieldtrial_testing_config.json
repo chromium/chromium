@@ -14140,6 +14140,26 @@
             ]
         }
     ],
+    "PrivacySandboxInternalsDevUI": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Dogfood",
+                    "enable_features": [
+                        "PrivacySandboxInternalsDevUI"
+                    ]
+                }
+            ]
+        }
+    ],
     "PrivacySandboxV3": [
         {
             "platforms": [
