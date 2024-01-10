@@ -305,7 +305,7 @@ BASE_FEATURE(kEnableADPFRendererMain,
 // session.
 BASE_FEATURE(kEnableADPFAsyncThreadsVerification,
              "EnableADPFAsyncThreadsVerification",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, surface activation and draw do not block on dependencies.
 BASE_FEATURE(kDrawImmediatelyWhenInteractive,
