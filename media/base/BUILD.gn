@@ -138,6 +138,7 @@ source_set("base") {
     "channel_mixer.h",
     "channel_mixing_matrix.cc",
     "channel_mixing_matrix.h",
+    "codec_worker_impl.h",
     "color_plane_layout.cc",
     "color_plane_layout.h",
     "container_names.cc",
@@ -420,6 +421,14 @@ source_set("base") {
       "libvpx_thread_wrapper.h",
     ]
     deps += [ "//third_party/libvpx" ]
+  }
+
+  if (enable_libaom) {
+    sources += [
+      "libaom_thread_wrapper.cc",
+      "libaom_thread_wrapper.h",
+    ]
+    deps += [ "//third_party/libaom" ]
   }
 
   if (is_linux && !is_castos) {

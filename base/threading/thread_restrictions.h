@@ -309,10 +309,17 @@ namespace media {
 class AudioInputDevice;
 class AudioOutputDevice;
 class BlockingUrlProtocol;
+template <class WorkerInterface,
+          class WorkerImpl,
+          class Worker,
+          class WorkerStatus,
+          WorkerStatus StatusNotOk,
+          WorkerStatus StatusOk,
+          WorkerStatus StatusWork>
+class CodecWorkerImpl;
 class FileVideoCaptureDeviceFactory;
 class MojoVideoEncodeAccelerator;
 class PaintCanvasVideoRenderer;
-class VpxChangeStateScopedAllowBaseSyncPrimitives;
 class V4L2DevicePoller;  // TODO(1513721): remove this.
 }  // namespace media
 namespace memory_instrumentation {
@@ -752,9 +759,16 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedAllowBaseSyncPrimitives {
   friend class leveldb::port::CondVar;
   friend class nearby::chrome::ScheduledExecutor;
   friend class nearby::chrome::SubmittableExecutor;
-  friend class media::VpxChangeStateScopedAllowBaseSyncPrimitives;
   friend class media::AudioOutputDevice;
   friend class media::BlockingUrlProtocol;
+  template <class WorkerInterface,
+            class WorkerImpl,
+            class Worker,
+            class WorkerStatus,
+            WorkerStatus StatusNotOk,
+            WorkerStatus StatusOk,
+            WorkerStatus StatusWork>
+  friend class media::CodecWorkerImpl;
   friend class media::MojoVideoEncodeAccelerator;
   friend class mojo::core::ScopedIPCSupport;
   friend class net::MultiThreadedCertVerifierScopedAllowBaseSyncPrimitives;
