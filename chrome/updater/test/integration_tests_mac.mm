@@ -481,4 +481,8 @@ void ExpectAppVersion(UpdaterScope scope,
   EXPECT_EQ(version, app_version);
 }
 
+void ExpectPrepareToRunBundleSuccess(const base::FilePath& bundle_path) {
+  EXPECT_TRUE(PrepareToRunBundle(bundle_path));
+}
+
 }  // namespace updater::test

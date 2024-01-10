@@ -173,8 +173,8 @@ bool CopyKeystoneBundle(UpdaterScope scope) {
     return false;
   }
 
-  if (!RemoveQuarantineAttributes(dest_keystone_bundle_path)) {
-    VLOG(1) << "Couldn't remove quarantine bits for Keystone.";
+  if (!PrepareToRunBundle(dest_keystone_bundle_path)) {
+    VLOG(1) << "Gatekeeper may prompt for Keystone shim.";
   }
 
   return true;

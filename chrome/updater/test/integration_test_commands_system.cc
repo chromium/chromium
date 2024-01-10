@@ -424,7 +424,13 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
   void DeleteLegacyUpdater() const override {
     RunCommand("delete_legacy_updater");
   }
-#endif  // BUILDFLAG(IS_WIN)
+
+  void ExpectPrepareToRunBundleSuccess(
+      const base::FilePath& bundle_path) const override {
+    RunCommand("expect_prepare_to_run_bundle_success",
+               {Param("bundle_path", bundle_path.MaybeAsASCII())});
+  }
+#endif  // BUILDFLAG(IS_MAC)
 
   void ExpectLegacyUpdaterMigrated() const override {
     RunCommand("expect_legacy_updater_migrated");

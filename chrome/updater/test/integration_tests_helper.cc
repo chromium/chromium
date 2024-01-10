@@ -432,6 +432,8 @@ void AppTestHelper::FirstTaskRun() {
            WithSystemScope(Wrap(&PrivilegedHelperInstall))},
           {"delete_legacy_updater",
            WithSystemScope(Wrap(&DeleteLegacyUpdater))},
+          {"expect_prepare_to_run_bundle_success",
+           WithSwitch("bundle_path", Wrap(&ExpectPrepareToRunBundleSuccess))},
 #endif  // BUILDFLAG(IS_MAC)
           {"expect_legacy_updater_migrated",
            WithSystemScope(Wrap(&ExpectLegacyUpdaterMigrated))},

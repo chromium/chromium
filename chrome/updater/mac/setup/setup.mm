@@ -232,8 +232,8 @@ int DoSetup(UpdaterScope scope) {
   if (!install_dir) {
     return kErrorFailedToGetInstallDir;
   }
-  if (!RemoveQuarantineAttributes(*install_dir)) {
-    VLOG(1) << "RemoveQuarantineAttributes failed. Gatekeeper may prompt.";
+  if (!PrepareToRunBundle(*install_dir)) {
+    VLOG(1) << "PrepareToRunBundle failed. Gatekeeper may prompt.";
   }
 
   // If there is no Current symlink, create one now.

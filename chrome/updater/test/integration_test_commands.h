@@ -151,6 +151,8 @@ class IntegrationTestCommands
 #if BUILDFLAG(IS_MAC)
   virtual void PrivilegedHelperInstall() const = 0;
   virtual void DeleteLegacyUpdater() const = 0;
+  virtual void ExpectPrepareToRunBundleSuccess(
+      const base::FilePath& bundle_path) const = 0;
 #endif  // BUILDFLAG(IS_WIN)
   virtual void ExpectLegacyUpdaterMigrated() const = 0;
   virtual void RunRecoveryComponent(const std::string& app_id,

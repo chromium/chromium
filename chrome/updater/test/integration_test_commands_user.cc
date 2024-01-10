@@ -369,7 +369,12 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
   void DeleteLegacyUpdater() const override {
     updater::test::DeleteLegacyUpdater(updater_scope_);
   }
-#endif  // BUILDFLAG(IS_WIN)
+
+  void ExpectPrepareToRunBundleSuccess(
+      const base::FilePath& bundle_path) const override {
+    updater::test::ExpectPrepareToRunBundleSuccess(bundle_path);
+  }
+#endif  // BUILDFLAG(IS_MAC)
 
   void ExpectLegacyUpdaterMigrated() const override {
     updater::test::ExpectLegacyUpdaterMigrated(updater_scope_);

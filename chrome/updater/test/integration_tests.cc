@@ -536,6 +536,9 @@ class IntegrationTest : public ::testing::Test {
 #if BUILDFLAG(IS_MAC)
   void PrivilegedHelperInstall() { test_commands_->PrivilegedHelperInstall(); }
   void DeleteLegacyUpdater() { test_commands_->DeleteLegacyUpdater(); }
+  void ExpectPrepareToRunBundleSuccess(const base::FilePath& bundle_path) {
+    test_commands_->ExpectPrepareToRunBundleSuccess(bundle_path);
+  }
 #endif  // BUILDFLAG(IS_MAC)
 
   void ExpectAppInstalled(const std::string& appid,
@@ -1520,6 +1523,21 @@ TEST_F(IntegrationTest, RepairUpdater) {
   ASSERT_TRUE(WaitForUpdaterExit());
   ASSERT_TRUE(base::PathExists(*ksadmin_path));
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+// Only macOS software needs to try to suppress user-visible Gatekeeper popups.
+TEST_F(IntegrationTest, SmokeTestPrepareToRunBundle) {
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+  ASSERT_NO_FATAL_FAILURE(ExpectVersionActive(kUpdaterVersion));
+  ASSERT_TRUE(WaitForUpdaterExit());
+
+  std::optional<base::FilePath> updater_path =
+      GetUpdaterAppBundlePath(GetTestScope());
+  ASSERT_TRUE(updater_path);
+  ASSERT_NO_FATAL_FAILURE(ExpectPrepareToRunBundleSuccess(*updater_path));
+
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 

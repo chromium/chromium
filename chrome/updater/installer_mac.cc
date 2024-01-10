@@ -25,8 +25,8 @@ AppInstallerResult RunApplicationInstaller(
     bool usage_stats_enabled,
     const base::TimeDelta& timeout,
     InstallProgressCallback /*progress_callback*/) {
-  if (!RemoveQuarantineAttributes(app_installer)) {
-    VLOG(1) << "Failed to remove quarantine attributes from " << app_installer;
+  if (!PrepareToRunBundle(app_installer)) {
+    VLOG(0) << "Prep failed -- Gatekeeper may prompt for " << app_installer;
   }
 
   VLOG(1) << "Running application install at " << app_installer;
