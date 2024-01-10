@@ -685,6 +685,10 @@ BeforeUnloadBlockingDelegate::GetJavaScriptDialogManager(WebContents* source) {
   return this;
 }
 
+bool BeforeUnloadBlockingDelegate::IsBackForwardCacheSupported() {
+  return true;
+}
+
 void BeforeUnloadBlockingDelegate::RunJavaScriptDialog(
     WebContents* web_contents,
     RenderFrameHost* render_frame_host,

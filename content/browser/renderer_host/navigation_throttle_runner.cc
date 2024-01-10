@@ -12,6 +12,7 @@
 #include "content/browser/preloading/prerender/prerender_navigation_throttle.h"
 #include "content/browser/preloading/prerender/prerender_subframe_navigation_throttle.h"
 #include "content/browser/renderer_host/ancestor_throttle.h"
+#include "content/browser/renderer_host/back_forward_cache_subframe_navigation_throttle.h"
 #include "content/browser/renderer_host/blocked_scheme_navigation_throttle.h"
 #include "content/browser/renderer_host/http_error_navigation_throttle.h"
 #include "content/browser/renderer_host/isolated_web_app_throttle.h"
@@ -255,6 +256,14 @@ void NavigationThrottleRunner::
   // Defer cross-origin about:srcdoc subframe loading during prerendering state.
   AddThrottle(
       PrerenderSubframeNavigationThrottle::MaybeCreateThrottleFor(request));
+
+  // Defer subframe navigation in bfcached page.
+  if (base::FeatureList::IsEnabled(
+          features::kEnableBackForwardCacheForOngoingSubframeNavigation)) {
+    AddThrottle(
+        BackForwardCacheSubframeNavigationThrottle::MaybeCreateThrottleFor(
+            request));
+  }
 
   // Insert all testing NavigationThrottles last.
   throttles_.insert(throttles_.end(),

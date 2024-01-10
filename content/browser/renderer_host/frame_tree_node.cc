@@ -899,6 +899,23 @@ bool FrameTreeNode::HasNavigation() {
   return false;
 }
 
+bool FrameTreeNode::HasPendingCommitNavigation() {
+  // Same-RenderFrameHost navigation is committing:
+  if (current_frame_host()->HasPendingCommitNavigation()) {
+    return true;
+  }
+
+  // Cross-RenderFrameHost navigation is committing:
+  RenderFrameHostImpl* speculative_frame_host =
+      render_manager()->speculative_frame_host();
+  if (speculative_frame_host &&
+      speculative_frame_host->HasPendingCommitNavigation()) {
+    return true;
+  }
+
+  return false;
+}
+
 bool FrameTreeNode::IsFencedFrameRoot() const {
   return fenced_frame_status_ == FencedFrameStatus::kFencedFrameRoot;
 }

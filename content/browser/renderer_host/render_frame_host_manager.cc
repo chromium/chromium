@@ -1566,11 +1566,29 @@ RenderFrameHostManager::GetFrameHostForNavigation(
   if (request->IsSameDocument())
     base::debug::DumpWithoutCrashing();
 
-  // Even though prerendering is considered an inactive state (i.e., not allowed
-  // to show any UI changes) it is still allowed to navigate, fetch, load and
-  // run documents in the background.
-  if ((current_frame_host()->lifecycle_state() !=
-       LifecycleStateImpl::kPrerendering)) {
+  // Navigations for inactive frames should be disallowed, except for the
+  // following two cases:
+  // 1) Prerendering. Even though prerendering is
+  // considered an inactive state (i.e., not allowed to show any UI changes) it
+  // is still allowed to navigate, fetch, load and run documents in the
+  // background.
+  // 2) Subframes before ReadyToCommit in bfcached pages. Currently, when
+  // kEnableBackForwardCacheForOngoingSubframeNavigation is enabled, we only
+  // allow the page to be cached if subframe navigations don't need URL loaders
+  // and haven't reached the pending commit stage. Find more details in
+  // https://crbug.com/1511153.
+  if (base::FeatureList::IsEnabled(
+          features::kEnableBackForwardCacheForOngoingSubframeNavigation) &&
+      current_frame_host()->lifecycle_state() ==
+          LifecycleStateImpl::kInBackForwardCache) {
+    CHECK(!request->NeedsUrlLoader());
+  }
+  if (!(current_frame_host()->lifecycle_state() ==
+            LifecycleStateImpl::kPrerendering ||
+        (base::FeatureList::IsEnabled(
+             features::kEnableBackForwardCacheForOngoingSubframeNavigation) &&
+         current_frame_host()->lifecycle_state() ==
+             LifecycleStateImpl::kInBackForwardCache))) {
     // Inactive frames should never be navigated. If this happens, log a
     // DumpWithoutCrashing to understand the root cause. See
     // https://crbug.com/926820 and https://crbug.com/927705.

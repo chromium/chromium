@@ -145,6 +145,14 @@ BASE_FEATURE(kEnableBackForwardCacheForScreenReader,
              "EnableBackForwardCacheForScreenReader",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enable back/forward cache when a page which has subframe(s) with ongoing
+// navigation(s) is navigated. Currently, this is only for navigations without
+// URLLoaders. This flag should be removed once the https://crbug.com/1511153 is
+// resolved.
+BASE_FEATURE(kEnableBackForwardCacheForOngoingSubframeNavigation,
+             "EnableBackForwardCacheForOngoingSubframeNavigation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables error reporting for JS errors inside DevTools frontend host
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kEnableDevToolsJsErrorReporting,

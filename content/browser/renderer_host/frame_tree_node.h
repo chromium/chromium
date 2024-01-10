@@ -469,6 +469,13 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   // NavigationRequest.
   bool HasNavigation();
 
+  // Returns true if there are any navigations happening in FrameTreeNode that
+  // is pending commit (i.e. between ReadyToCommit and DidCommit). Note that
+  // those navigations won't live in the FrameTreeNode itself, as they will
+  // already be owned by the committing RenderFrameHost (either the current
+  // RenderFrameHost or the speculative RenderFrameHost).
+  bool HasPendingCommitNavigation();
+
   // Fenced frames (meta-bug crbug.com/1111084):
   // Note that these two functions cannot be invoked from a FrameTree's or
   // its root node's constructor since they require the frame tree and the

@@ -1081,11 +1081,27 @@ void BackForwardCacheImpl::NotRestoredReasonBuilder::
     }
   }
 
-  // Do not cache if we have navigations in any of the subframes.
-  if (rfh->GetParentOrOuterDocument() &&
-      rfh->frame_tree_node()->HasNavigation()) {
-    result.No(
-        BackForwardCacheMetrics::NotRestoredReason::kSubframeIsNavigating);
+  // Handle ongoing navigations in subframes.
+  // - When kEnableBackForwardCacheForOngoingSubframeNavigation is enabled, we
+  // only allow the page to be cached if subframe navigations don't need URL
+  // loaders and haven't reached the pending commit stage (if there are
+  // other type of navigations in any of the subframes, we disallow BFCache).
+  // - When kEnableBackForwardCacheForOngoingSubframeNavigation is disabled, do
+  // not cache if any navigation is ongoing in any of the subframes.
+  if (rfh->GetParentOrOuterDocument()) {
+    if (base::FeatureList::IsEnabled(
+            features::kEnableBackForwardCacheForOngoingSubframeNavigation)) {
+      NavigationRequest* nav_request =
+          rfh->frame_tree_node()->navigation_request();
+      if ((nav_request && nav_request->NeedsUrlLoader()) ||
+          rfh->frame_tree_node()->HasPendingCommitNavigation()) {
+        result.No(
+            BackForwardCacheMetrics::NotRestoredReason::kSubframeIsNavigating);
+      }
+    } else if (rfh->frame_tree_node()->HasNavigation()) {
+      result.No(
+          BackForwardCacheMetrics::NotRestoredReason::kSubframeIsNavigating);
+    }
   }
 }
 
