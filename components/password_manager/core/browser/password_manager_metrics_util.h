@@ -829,8 +829,7 @@ void LogGaiaPasswordHashChange(GaiaPasswordHashChange event,
                                bool is_sync_password);
 
 // Log whether a sync password hash saved.
-void LogIsSyncPasswordHashSaved(IsSyncPasswordHashSaved state,
-                                bool is_under_advanced_protection);
+void LogIsSyncPasswordHashSaved(IsSyncPasswordHashSaved state);
 
 // Log whether the saved password is protected by Phishguard. To preserve
 // privacy of individual data points, we will log with 10% noise.

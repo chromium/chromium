@@ -655,11 +655,9 @@ StoreMetricsReporter::StoreMetricsReporter(
     const syncer::SyncService* sync_service,
     PrefService* prefs,
     password_manager::PasswordReuseManager* password_reuse_manager,
-    bool is_under_advanced_protection,
     base::OnceClosure done_callback)
     : profile_store_(profile_store),
       account_store_(account_store),
-      is_under_advanced_protection_(is_under_advanced_protection),
       done_callback_(std::move(done_callback)) {
   DCHECK(prefs);
 
@@ -704,8 +702,7 @@ StoreMetricsReporter::StoreMetricsReporter(
   // May be null in tests.
   if (profile_store) {
     if (password_reuse_manager) {
-      password_reuse_manager->ReportMetrics(sync_username_,
-                                            is_under_advanced_protection_);
+      password_reuse_manager->ReportMetrics(sync_username_);
     }
   }
 

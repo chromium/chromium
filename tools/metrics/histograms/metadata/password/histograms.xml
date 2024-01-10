@@ -1750,18 +1750,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="PasswordManager.IsSyncPasswordHashSavedForAdvancedProtectionUser"
-    enum="IsSyncPasswordHashSaved" expires_after="2024-02-04">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    This metric is recorded shortly after Chrome Startup, only for Advanced
-    Protection users. This is a subset of
-    PasswordManager.IsSyncPasswordHashSaved.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.ItemSelected.OffTheRecord" units="units"
     expires_after="2024-06-30">
   <owner>arabm@chromium.org</owner>

@@ -80,8 +80,9 @@ void LeakDialogMetricsRecorder::LogLeakDialogTypeAndDismissalReason(
                                 reason);
 
   // For UKM, sample the recorded events.
-  if (base::RandDouble() > ukm_sampling_rate_)
+  if (base::RandDouble() > ukm_sampling_rate_) {
     return;
+  }
 
   // The entire event is made up of these two fields, so we can build and
   // record it in one step.
@@ -323,15 +324,9 @@ void LogGaiaPasswordHashChange(GaiaPasswordHashChange event,
   }
 }
 
-void LogIsSyncPasswordHashSaved(IsSyncPasswordHashSaved state,
-                                bool is_under_advanced_protection) {
+void LogIsSyncPasswordHashSaved(IsSyncPasswordHashSaved state) {
   base::UmaHistogramEnumeration("PasswordManager.IsSyncPasswordHashSaved",
                                 state);
-  if (is_under_advanced_protection) {
-    base::UmaHistogramEnumeration(
-        "PasswordManager.IsSyncPasswordHashSavedForAdvancedProtectionUser",
-        state);
-  }
 }
 
 void LogIsPasswordProtected(bool is_password_protected) {

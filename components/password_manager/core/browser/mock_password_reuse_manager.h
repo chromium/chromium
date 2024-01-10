@@ -24,10 +24,7 @@ class MockPasswordReuseManager : public PasswordReuseManager {
                signin::IdentityManager* identity_manager,
                std::unique_ptr<SharedPreferencesDelegate> shared_pref_delegate),
               (override));
-  MOCK_METHOD(void,
-              ReportMetrics,
-              (const std::string& username, bool is_under_advanced_protection),
-              (override));
+  MOCK_METHOD(void, ReportMetrics, (const std::string& username), (override));
   MOCK_METHOD(void,
               CheckReuse,
               (const std::u16string& input,

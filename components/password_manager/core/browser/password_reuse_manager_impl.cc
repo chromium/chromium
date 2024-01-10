@@ -189,9 +189,7 @@ void PasswordReuseManagerImpl::Init(
 #endif
 }
 
-void PasswordReuseManagerImpl::ReportMetrics(
-    const std::string& username,
-    bool is_under_advanced_protection) {
+void PasswordReuseManagerImpl::ReportMetrics(const std::string& username) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   if (username.empty())
     return;
@@ -201,8 +199,7 @@ void PasswordReuseManagerImpl::ReportMetrics(
                                              /*is_gaia_password=*/true)
           ? metrics_util::IsSyncPasswordHashSaved::SAVED_VIA_LIST_PREF
           : metrics_util::IsSyncPasswordHashSaved::NOT_SAVED;
-  metrics_util::LogIsSyncPasswordHashSaved(hash_password_state,
-                                           is_under_advanced_protection);
+  metrics_util::LogIsSyncPasswordHashSaved(hash_password_state);
 }
 
 void PasswordReuseManagerImpl::CheckReuse(

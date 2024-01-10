@@ -38,7 +38,6 @@ class StoreMetricsReporter : public PasswordStoreConsumer {
                        const syncer::SyncService* sync_service,
                        PrefService* prefs,
                        PasswordReuseManager* password_reuse_manager,
-                       bool is_under_advanced_protection,
                        base::OnceClosure done_call);
   StoreMetricsReporter(const StoreMetricsReporter&) = delete;
   StoreMetricsReporter& operator=(const StoreMetricsReporter&) = delete;
@@ -58,8 +57,6 @@ class StoreMetricsReporter : public PasswordStoreConsumer {
   // stores, to ensure they're still alive when the delayed task runs.
   scoped_refptr<PasswordStoreInterface> profile_store_;
   scoped_refptr<PasswordStoreInterface> account_store_;
-
-  bool is_under_advanced_protection_;
 
   std::string sync_username_;
 

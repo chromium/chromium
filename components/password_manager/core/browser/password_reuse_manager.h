@@ -45,8 +45,7 @@ class PasswordReuseManager : public KeyedService {
                         shared_pref_delegate = nullptr) = 0;
 
   // Log whether a sync password hash saved.
-  virtual void ReportMetrics(const std::string& username,
-                             bool is_under_advanced_protection) = 0;
+  virtual void ReportMetrics(const std::string& username) = 0;
 
   // Checks that some suffix of |input| equals to a password saved on another
   // registry controlled domain than |domain|.

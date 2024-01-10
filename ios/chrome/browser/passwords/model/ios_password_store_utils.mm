@@ -62,7 +62,6 @@ class StoreMetricReporterHelper : public base::SupportsUserData::Data {
         password_manager::StoreMetricsReporter>(
         profile_store, account_store, sync_service, pref_service,
         password_reuse_manager,
-        /*is_under_advanced_protection=*/false,
         base::BindOnce(
             &StoreMetricReporterHelper::RemoveInstanceFromBrowserStateUserData,
             weak_ptr_factory_.GetWeakPtr()));

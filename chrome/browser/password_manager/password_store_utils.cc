@@ -30,19 +30,6 @@ namespace {
 constexpr char kPasswordStoreMetricsReporterKey[] =
     "PasswordStoreMetricsReporterKey";
 
-// Whether the primary account of the current profile is under Advanced
-// Protection - a type of Google Account that helps protect our most at-risk
-// users.
-bool IsUnderAdvancedProtection(Profile* profile) {
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-  return safe_browsing::AdvancedProtectionStatusManagerFactory::GetForProfile(
-             profile)
-      ->IsUnderAdvancedProtection();
-#else
-  return false;
-#endif
-}
-
 // A class used to delay the construction of StoreMetricsReporter by 30 seconds.
 class StoreMetricReporterHelper : public base::SupportsUserData::Data {
  public:
@@ -76,7 +63,7 @@ class StoreMetricReporterHelper : public base::SupportsUserData::Data {
     metrics_reporter_ =
         std::make_unique<password_manager::StoreMetricsReporter>(
             profile_store, account_store, sync_service, pref_service,
-            password_reuse_manager, IsUnderAdvancedProtection(profile_),
+            password_reuse_manager,
             base::BindOnce(
                 &StoreMetricReporterHelper::RemoveInstanceFromProfileUserData,
                 weak_ptr_factory_.GetWeakPtr()));
