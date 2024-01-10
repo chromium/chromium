@@ -550,11 +550,10 @@ class StateKeys {
 // This is a step in enrollment state fetch (see Sequence class below).
 class EnrollmentState {
  public:
-  struct Response {
+  struct Result {
     base::Value::Dict dict;
     AutoEnrollmentState state;
   };
-  using Result = base::expected<Response, AutoEnrollmentState>;
   using CompletionCallback = base::OnceCallback<void(Result)>;
 
   EnrollmentState() = default;
@@ -592,25 +591,25 @@ class EnrollmentState {
                              result.dm_status);
     base::UmaHistogramSparse(kUMAStateDeterminationStateRequestNetworkErrorCode,
                              -result.net_error);
-    switch (result.dm_status) {
-      case DM_STATUS_SUCCESS: {
-        if (!result.response.has_device_state_retrieval_response()) {
-          LOG(ERROR) << "Server failed to provide unified enrollment response.";
-          return std::move(completion_callback)
-              .Run(base::unexpected(kAutoEnrollmentLegacyServerError));
-        }
-        break;
-      }
-      case DM_STATUS_REQUEST_FAILED: {
+    if (result.dm_status != DM_STATUS_SUCCESS) {
+      const auto error =
+          AutoEnrollmentDMServerError::FromDMServerJobResult(result);
+
+      if (error.network_error.has_value()) {
         LOG(ERROR) << "Enrollment state query connection error";
-        return std::move(completion_callback)
-            .Run(base::unexpected(kAutoEnrollmentLegacyConnectionError));
-      }
-      default: {
+      } else {
         LOG(ERROR) << "Enrollment state query server error";
-        return std::move(completion_callback)
-            .Run(base::unexpected(kAutoEnrollmentLegacyServerError));
       }
+
+      return std::move(completion_callback)
+          .Run(Result{.state = base::unexpected(error)});
+    }
+
+    if (!result.response.has_device_state_retrieval_response()) {
+      LOG(ERROR) << "Server failed to provide unified enrollment response.";
+      return std::move(completion_callback)
+          .Run(Result{.state = base::unexpected(
+                          AutoEnrollmentStateRetrievalResponseError{})});
     }
 
     const auto state_response =
@@ -629,39 +628,39 @@ class EnrollmentState {
   void ParseInitialStateResponse(
       const em::DeviceInitialEnrollmentStateResponse& state_response,
       CompletionCallback completion_callback) {
-    Response response;
+    Result result;
     std::string mode;
-    std::tie(response.state, mode) =
+    std::tie(result.state, mode) =
         ConvertInitialEnrollmentMode(state_response.initial_enrollment_mode());
     if (!mode.empty()) {
-      response.dict.Set(kDeviceStateMode, mode);
+      result.dict.Set(kDeviceStateMode, mode);
     }
 
     if (state_response.has_management_domain()) {
-      response.dict.Set(kDeviceStateManagementDomain,
-                        state_response.management_domain());
+      result.dict.Set(kDeviceStateManagementDomain,
+                      state_response.management_domain());
     }
 
     if (state_response.has_is_license_packaged_with_device()) {
-      response.dict.Set(kDeviceStatePackagedLicense,
-                        state_response.is_license_packaged_with_device());
+      result.dict.Set(kDeviceStatePackagedLicense,
+                      state_response.is_license_packaged_with_device());
     }
 
     if (state_response.has_license_packaging_sku()) {
-      response.dict.Set(
+      result.dict.Set(
           kDeviceStateLicenseType,
           ConvertLicenseType(state_response.license_packaging_sku()));
     }
 
     if (state_response.has_assigned_upgrade_type()) {
-      response.dict.Set(
+      result.dict.Set(
           kDeviceStateAssignedUpgradeType,
           ConvertAssignedUpgradeType(state_response.assigned_upgrade_type()));
     }
 
     if (state_response.has_disabled_state()) {
-      response.dict.Set(kDeviceStateDisabledMessage,
-                        state_response.disabled_state().message());
+      result.dict.Set(kDeviceStateDisabledMessage,
+                      state_response.disabled_state().message());
     }
 
     VLOG(1) << "Initial enrollment mode = '" << mode << "', "
@@ -669,39 +668,39 @@ class EnrollmentState {
                                                                  : "no")
             << " packaged license.";
 
-    return std::move(completion_callback).Run(base::ok(std::move(response)));
+    return std::move(completion_callback).Run(std::move(result));
   }
 
   void ParseSecondaryStateResponse(
       const em::DeviceStateRetrievalResponse& state_response,
       CompletionCallback completion_callback) {
-    Response response;
+    Result result;
     std::string mode;
-    std::tie(response.state, mode) =
+    std::tie(result.state, mode) =
         ConvertRestoreMode(state_response.restore_mode());
     if (!mode.empty()) {
-      response.dict.Set(kDeviceStateMode, mode);
+      result.dict.Set(kDeviceStateMode, mode);
     }
 
     if (state_response.has_management_domain()) {
-      response.dict.Set(kDeviceStateManagementDomain,
-                        state_response.management_domain());
+      result.dict.Set(kDeviceStateManagementDomain,
+                      state_response.management_domain());
     }
 
     if (state_response.has_disabled_state()) {
-      response.dict.Set(kDeviceStateDisabledMessage,
-                        state_response.disabled_state().message());
+      result.dict.Set(kDeviceStateDisabledMessage,
+                      state_response.disabled_state().message());
     }
 
     if (ash::features::IsAutoEnrollmentKioskInOobeEnabled() &&
         state_response.has_license_type()) {
-      response.dict.Set(kDeviceStateLicenseType,
-                        ConvertAutoEnrollmentLicenseType(
-                            state_response.license_type().license_type()));
+      result.dict.Set(kDeviceStateLicenseType,
+                      ConvertAutoEnrollmentLicenseType(
+                          state_response.license_type().license_type()));
     }
 
     VLOG(1) << "Received restore mode " << mode;
-    return std::move(completion_callback).Run(base::ok(std::move(response)));
+    return std::move(completion_callback).Run(std::move(result));
   }
 
   void StoreResponse(PrefService* local_state, const base::Value::Dict& dict) {
@@ -998,12 +997,12 @@ class EnrollmentStateFetcherImpl::Sequence {
   void OnStateRequestDone(EnrollmentState::Result result) {
     ReportStepDurationAndResetTimer(kUMASuffixStateRequest);
     base::UmaHistogramBoolean(kUMAStateDeterminationStateReturned,
-                              result.has_value());
-    if (!result.has_value()) {
-      return ReportResult(result.error());
+                              result.state.has_value());
+    if (result.state.has_value()) {
+      state_.StoreResponse(local_state_, result.dict);
     }
-    state_.StoreResponse(local_state_, result->dict);
-    return ReportResult(result->state);
+
+    return ReportResult(result.state);
   }
 
   // Helpers

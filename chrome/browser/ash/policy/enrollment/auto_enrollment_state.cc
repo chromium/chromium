@@ -69,6 +69,9 @@ AutoEnrollmentLegacyError AutoEnrollmentErrorToLegacyError(
           [](AutoEnrollmentPsmError error) {
             return AutoEnrollmentLegacyError::kServerError;
           },
+          [](AutoEnrollmentStateRetrievalResponseError) {
+            return AutoEnrollmentLegacyError::kServerError;
+          },
       },
       error);
 }

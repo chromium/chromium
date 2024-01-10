@@ -558,15 +558,6 @@ class AutoEnrollmentClientImpl::InitialServerStateAvailabilityRequester
   CompletionCallback completion_callback_;
 };
 
-enum class AutoEnrollmentClientImpl::ServerStateRetrievalResult {
-  // Indicates that request has been successful and server state is available.
-  kSuccess = 0,
-  // Indicates a connection error during request.
-  kConnectionError = 1,
-  // Indicates an invalid response from server.
-  kServerError = 2,
-};
-
 // Responsible fro resolving server state status for both force re-enrollment
 // and initial enrollment.
 class AutoEnrollmentClientImpl::ServerStateRetriever {
@@ -645,24 +636,24 @@ class AutoEnrollmentClientImpl::ServerStateRetriever {
 
     base::UmaHistogramSparse(kUMAHashDanceRequestStatus + uma_suffix_,
                              result.dm_status);
-    // TODO(crbug.com/1312919): Check `result.dm_status` for specific errors.
     if (result.dm_status != DM_STATUS_SUCCESS) {
       LOG(ERROR) << "Auto enrollment error: " << result.dm_status;
-      if (result.dm_status == DM_STATUS_REQUEST_FAILED)
+
+      const auto error =
+          AutoEnrollmentDMServerError::FromDMServerJobResult(result);
+      if (error.network_error.has_value()) {
         base::UmaHistogramSparse(kUMAHashDanceNetworkErrorCode + uma_suffix_,
-                                 -result.net_error);
-      RunCallback(result.dm_status == DM_STATUS_REQUEST_FAILED
-                      ? ServerStateRetrievalResult::kConnectionError
-                      : ServerStateRetrievalResult::kServerError);
-      return;
+                                 -error.network_error.value());
+      }
+      return RunCallback(base::unexpected(error));
     }
 
     std::optional<AutoEnrollmentStateMessageProcessor::ParsedResponse>
         parsed_response_result =
             state_download_message_processor_->ParseResponse(result.response);
     if (!parsed_response_result) {
-      RunCallback(ServerStateRetrievalResult::kServerError);
-      return;
+      return RunCallback(
+          base::unexpected(AutoEnrollmentStateRetrievalResponseError{}));
     }
 
     AutoEnrollmentStateMessageProcessor::ParsedResponse& parsed_response =
@@ -697,7 +688,7 @@ class AutoEnrollmentClientImpl::ServerStateRetriever {
     local_state_->SetDict(prefs::kServerBackedDeviceState, std::move(state));
 
     device_state_available_ = true;
-    RunCallback(ServerStateRetrievalResult::kSuccess);
+    RunCallback(base::ok());
   }
 
   void RunCallback(ServerStateRetrievalResult result) {
@@ -813,8 +804,7 @@ void AutoEnrollmentClientImpl::Retry() {
       RequestServerStateAvailability();
       break;
 
-    case State::kRequestStateRetrievalConnectionError:
-    case State::kRequestStateRetrievalServerError:
+    case State::kRequestStateRetrievalError:
       RequestStateRetrieval();
       break;
 
@@ -883,8 +873,7 @@ void AutoEnrollmentClientImpl::OnServerStateAvailabilityCompleted(
 
 void AutoEnrollmentClientImpl::RequestStateRetrieval() {
   DCHECK(state_ == State::kRequestServerStateAvailabilitySuccess ||
-         state_ == State::kRequestStateRetrievalConnectionError ||
-         state_ == State::kRequestStateRetrievalServerError);
+         state_ == State::kRequestStateRetrievalError);
   DCHECK(server_state_availability_requester_->GetServerStateIfObtained());
   DCHECK(
       server_state_availability_requester_->GetServerStateIfObtained().value());
@@ -900,21 +889,14 @@ void AutoEnrollmentClientImpl::OnStateRetrievalCompleted(
     ServerStateRetrievalResult result) {
   DCHECK(state_ == State::kRequestingStateRetrieval);
 
-  switch (result) {
-    case ServerStateRetrievalResult::kSuccess:
-      DCHECK(server_state_retriever_->GetAutoEnrollmentStateIfObtained());
-      state_ = State::kFinished;
-      ReportFinished();
-      break;
-    case ServerStateRetrievalResult::kConnectionError:
-      state_ = State::kRequestStateRetrievalConnectionError;
-      ReportProgress(kAutoEnrollmentLegacyConnectionError);
-      break;
-    case ServerStateRetrievalResult::kServerError:
-      state_ = State::kRequestStateRetrievalServerError;
-      ReportProgress(kAutoEnrollmentLegacyServerError);
-      break;
+  if (!result.has_value()) {
+    state_ = State::kRequestStateRetrievalError;
+    return ReportProgress(base::unexpected(result.error()));
   }
+
+  DCHECK(server_state_retriever_->GetAutoEnrollmentStateIfObtained());
+  state_ = State::kFinished;
+  ReportFinished();
 }
 
 void AutoEnrollmentClientImpl::ReportProgress(AutoEnrollmentState state) const {

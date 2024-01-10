@@ -93,7 +93,7 @@ class AutoEnrollmentClientImpl final : public AutoEnrollmentClient {
   // Responsible for resolving server state status for both Forced Re-Enrollment
   // (FRE) and Initial Enrollment.
   class ServerStateRetriever;
-  enum class ServerStateRetrievalResult;
+  using ServerStateRetrievalResult = base::expected<void, AutoEnrollmentError>;
 
   enum class State {
     // Initial state until `Start` or `Retry` are called. Resolves into
@@ -126,12 +126,10 @@ class AutoEnrollmentClientImpl final : public AutoEnrollmentClient {
     // Reached from:
     // * `kRequestServerStateAvailabilitySuccess` after server state
     // availability request succeeded the state is available.
-    // * `kRequestStateRetrievalConnectionError` on `Retry`.
-    // * `kRequestStateRetrievalServerError` on `Retry`.
+    // * `kRequestStateRetrievalError` on `Retry`.
     // Resolves into:
-    // * `kRequestStateRetrievalConnectionError` if request fails due to
-    // connection error.
-    // * `kRequestStateRetrievalServerError` if response is invalid.
+    // * `kRequestStateRetrievalError` if request fails due to
+    // connection error or invalid response.
     // * `kFinished` if response is valid and state is retrieved.
     kRequestingStateRetrieval,
     // Indicate connection or server errors during state retrieval request.
@@ -139,8 +137,7 @@ class AutoEnrollmentClientImpl final : public AutoEnrollmentClient {
     // * `kRequestingStateRetrieval` if request fails.
     // Resolves into:
     // * `kRequestingStateRetrieval` on `Retry`.
-    kRequestStateRetrievalConnectionError,
-    kRequestStateRetrievalServerError,
+    kRequestStateRetrievalError,
     // Indicates the client has finished its requests and has the answer for
     // final `AutoEnrollmentState` status.
     // Reached from:

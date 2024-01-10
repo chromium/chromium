@@ -72,13 +72,20 @@ struct AutoEnrollmentPsmError {
   constexpr bool operator==(const AutoEnrollmentPsmError&) const = default;
 };
 
+// Represents an error due to an invalid response from DMServer.
+struct AutoEnrollmentStateRetrievalResponseError {
+  constexpr bool operator==(
+      const AutoEnrollmentStateRetrievalResponseError&) const = default;
+};
+
 using AutoEnrollmentError =
     std::variant<AutoEnrollmentLegacyError,
                  AutoEnrollmentSafeguardTimeoutError,
                  AutoEnrollmentSystemClockSyncError,
                  AutoEnrollmentDMServerError,
                  AutoEnrollmentStateAvailabilityResponseError,
-                 AutoEnrollmentPsmError>;
+                 AutoEnrollmentPsmError,
+                 AutoEnrollmentStateRetrievalResponseError>;
 
 // Indicates the current state of the auto-enrollment check.
 using AutoEnrollmentState =
