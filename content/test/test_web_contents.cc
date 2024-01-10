@@ -383,7 +383,8 @@ void TestWebContents::SaveFrameWithHeaders(
     const Referrer& referrer,
     const std::string& headers,
     const std::u16string& suggested_filename,
-    RenderFrameHost* rfh) {
+    RenderFrameHost* rfh,
+    bool is_subresource) {
   save_frame_headers_ = headers;
   suggested_filename_ = suggested_filename;
 }

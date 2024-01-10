@@ -488,7 +488,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
                             const Referrer& referrer,
                             const std::string& headers,
                             const std::u16string& suggested_filename,
-                            RenderFrameHost* rfh) override;
+                            RenderFrameHost* rfh,
+                            bool is_subresource) override;
   void GenerateMHTML(const MHTMLGenerationParams& params,
                      base::OnceCallback<void(int64_t)> callback) override;
   void GenerateMHTMLWithResult(

@@ -4147,9 +4147,11 @@ void RenderViewContextMenu::ExecSaveAs() {
                                blink::network_utils::ImageAcceptHeader());
   }
   content::Referrer referrer = CreateReferrer(url, params_);
+  bool is_subresource = params_.media_type != ContextMenuDataMediaType::kNone &&
+                        !params_.is_image_media_plugin_document;
   source_web_contents_->SaveFrameWithHeaders(url, referrer, headers.ToString(),
                                              params_.suggested_filename,
-                                             target_frame_host);
+                                             target_frame_host, is_subresource);
 }
 
 void RenderViewContextMenu::ExecExitFullscreen() {

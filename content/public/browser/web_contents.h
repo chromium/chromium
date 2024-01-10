@@ -1047,12 +1047,15 @@ class WebContents : public PageNavigator,
   // Format of |headers| is a new line separated list of key value pairs:
   // "<key1>: <value1>\r\n<key2>: <value2>". The saving is performed in the
   // context of `rfh`. For example, the associated navigation isolation info
-  // will be used for making the network request.
+  // will be used for making the network request. If `is_subresource` is true,
+  // the URL is assumed to correspond to a subresource loaded in the frame,
+  // as opposed to the main (generally, document) resource.
   virtual void SaveFrameWithHeaders(const GURL& url,
                                     const Referrer& referrer,
                                     const std::string& headers,
                                     const std::u16string& suggested_filename,
-                                    RenderFrameHost* rfh) = 0;
+                                    RenderFrameHost* rfh,
+                                    bool is_subresource) = 0;
 
   // Generate an MHTML representation of the current page conforming to the
   // settings provided by |params| and returning final status information via

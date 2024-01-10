@@ -57,6 +57,7 @@ bool StructTraits<blink::mojom::UntrustworthyContextMenuParamsDataView,
   out->x = data.x();
   out->y = data.y();
   out->has_image_contents = data.has_image_contents();
+  out->is_image_media_plugin_document = data.is_image_media_plugin_document();
   out->media_flags = data.media_flags();
   out->spellcheck_enabled = data.spellcheck_enabled();
   out->is_editable = data.is_editable();

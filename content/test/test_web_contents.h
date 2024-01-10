@@ -211,7 +211,8 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
                             const Referrer& referrer,
                             const std::string& headers,
                             const std::u16string& suggested_filename,
-                            RenderFrameHost* rfh) override;
+                            RenderFrameHost* rfh,
+                            bool is_subresource) override;
   void ReattachToOuterWebContentsFrame() override {}
   void SetPageFrozen(bool frozen) override;
   bool IsBackForwardCacheSupported() override;

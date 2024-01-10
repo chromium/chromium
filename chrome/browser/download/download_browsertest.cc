@@ -155,6 +155,7 @@
 #include "third_party/blink/public/common/switches.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/gfx/geometry/point_conversions.h"
 
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
@@ -2771,12 +2772,14 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, MAYBE_SaveLargeImage) {
 
 // A EmbeddedTestServer::HandleRequestCallback function that checks for requests
 // with query string ?allow-post-only, and returns a 404 response if the method
-// is not POST.
+// is not POST. Similar for ?allow-get-only.
 static std::unique_ptr<net::test_server::HttpResponse>
-FilterPostOnlyURLsHandler(const net::test_server::HttpRequest& request) {
+FilterMethodSpecificURLsHandler(const net::test_server::HttpRequest& request) {
   std::unique_ptr<net::test_server::BasicHttpResponse> response;
-  if (request.relative_url.find("?allow-post-only") != std::string::npos &&
-      request.method != net::test_server::METHOD_POST) {
+  if ((request.relative_url.find("?allow-post-only") != std::string::npos &&
+       request.method != net::test_server::METHOD_POST) ||
+      (request.relative_url.find("?allow-get-only") != std::string::npos &&
+       request.method != net::test_server::METHOD_GET)) {
     response = std::make_unique<net::test_server::BasicHttpResponse>();
     response->set_code(net::HTTP_NOT_FOUND);
   }
@@ -2785,7 +2788,7 @@ FilterPostOnlyURLsHandler(const net::test_server::HttpRequest& request) {
 
 IN_PROC_BROWSER_TEST_F(DownloadTest, SavePageNonHTMLViaPost) {
   embedded_test_server()->RegisterRequestHandler(
-      base::BindRepeating(&FilterPostOnlyURLsHandler));
+      base::BindRepeating(&FilterMethodSpecificURLsHandler));
   embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   ASSERT_TRUE(embedded_test_server()->Start());
   EnableFileChooser(true);
@@ -2846,6 +2849,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, SavePageNonHTMLViaPost) {
       blink::mojom::ContextMenuDataMediaType::kImage;
   context_menu_params.src_url = jpeg_url;
   context_menu_params.page_url = jpeg_url;
+  context_menu_params.is_image_media_plugin_document = true;
   TestRenderViewContextMenu menu(*web_contents->GetPrimaryMainFrame(),
                                  context_menu_params);
   menu.Init();
@@ -2862,6 +2866,56 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, SavePageNonHTMLViaPost) {
   ASSERT_EQ(2u, download_items.size());
   ASSERT_EQ(jpeg_url, download_items[0]->GetOriginalUrl());
   ASSERT_EQ(jpeg_url, download_items[1]->GetOriginalUrl());
+}
+
+IN_PROC_BROWSER_TEST_F(DownloadTest, SaveImageInPostPage) {
+  embedded_test_server()->RegisterRequestHandler(
+      base::BindRepeating(&FilterMethodSpecificURLsHandler));
+  embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
+  ASSERT_TRUE(embedded_test_server()->Start());
+  EnableFileChooser(true);
+  std::vector<raw_ptr<DownloadItem, VectorExperimental>> download_items;
+  GetDownloads(browser(), &download_items);
+  ASSERT_TRUE(download_items.empty());
+
+  // Navigate to a form page.
+  GURL form_url =
+      embedded_test_server()->GetURL("/downloads/page_with_image.html");
+  GURL jpeg_url =
+      embedded_test_server()->GetURL("/downloads/image.jpg?allow-get-only");
+  ASSERT_TRUE(form_url.is_valid());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), form_url));
+
+  // Submit the form.
+  WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::TestNavigationObserver navigation_observer(web_contents, 1);
+  EXPECT_TRUE(content::ExecJs(web_contents, "document.forms[0].submit()"));
+  navigation_observer.Wait();
+  EXPECT_EQ(form_url, web_contents->GetURL());
+
+  // Try to download the image via a context menu.
+  // The context menu is actually opened to check that it computes the right
+  // params, since the renderer is responsible for part of this check.
+  content::DownloadTestObserverTerminal waiter(
+      DownloadManagerForBrowser(browser()), 1,
+      content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL);
+  ContextMenuWaiter context_menu_waiter(IDC_CONTENT_CONTEXT_SAVEIMAGEAS);
+  gfx::Point right_click_point = gfx::ToFlooredPoint(
+      content::GetCenterCoordinatesOfElementWithId(web_contents, "image"));
+  content::SimulateMouseClickAt(
+      web_contents, 0, blink::WebMouseEvent::Button::kRight, right_click_point);
+  context_menu_waiter.WaitForMenuOpenAndClose();
+  waiter.WaitForFinished();
+  EXPECT_EQ(1u, waiter.NumDownloadsSeenInState(DownloadItem::COMPLETE));
+  CheckDownloadStates(1, DownloadItem::COMPLETE);
+
+  // Validate that the correct file was downloaded via the context menu.
+  download_items.clear();
+  GetDownloads(browser(), &download_items);
+  EXPECT_TRUE(DidShowFileChooser());
+  ASSERT_EQ(1u, download_items.size());
+  ASSERT_EQ(jpeg_url, download_items[0]->GetOriginalUrl());
 }
 
 // TODO(crbug.com/1326326): Flaky on lacros.

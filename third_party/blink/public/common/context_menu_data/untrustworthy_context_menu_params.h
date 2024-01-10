@@ -68,6 +68,11 @@ struct BLINK_COMMON_EXPORT UntrustworthyContextMenuParams {
   // non-empty contents.
   bool has_image_contents;
 
+  // This is true if the context menu was invoked on an image, media or plugin
+  // document. In these cases the resource for the hit-tested element might be
+  // the main resource, not a subresource.
+  bool is_image_media_plugin_document;
+
   // These are the parameters for the media element that the context menu
   // was invoked on.
   int media_flags;

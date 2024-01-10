@@ -5622,7 +5622,8 @@ void WebContentsImpl::SaveFrame(const GURL& url,
                                 const Referrer& referrer,
                                 RenderFrameHost* rfh) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::SaveFrame");
-  SaveFrameWithHeaders(url, referrer, std::string(), std::u16string(), rfh);
+  SaveFrameWithHeaders(url, referrer, std::string(), std::u16string(), rfh,
+                       /*is_subresource=*/false);
 }
 
 void WebContentsImpl::SaveFrameWithHeaders(
@@ -5630,7 +5631,8 @@ void WebContentsImpl::SaveFrameWithHeaders(
     const Referrer& referrer,
     const std::string& headers,
     const std::u16string& suggested_filename,
-    RenderFrameHost* rfh) {
+    RenderFrameHost* rfh,
+    bool is_subresource) {
   DCHECK(rfh);
   auto& rfhi = *static_cast<RenderFrameHostImpl*>(rfh);
 
@@ -5661,7 +5663,7 @@ void WebContentsImpl::SaveFrameWithHeaders(
   }
 
   int64_t post_id = -1;
-  if (rfhi.is_main_frame()) {
+  if (rfhi.is_main_frame() && !is_subresource) {
     NavigationEntry* entry =
         rfhi.frame_tree()->controller().GetLastCommittedEntry();
     if (entry) {
