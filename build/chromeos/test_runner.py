@@ -634,6 +634,7 @@ class GTestTest(RemoteTest):
       ]
 
     device_test_script_contents.append(test_invocation)
+    device_test_script_contents.append('TEST_RETURN_CODE=$?')
 
     # (Re)start ui after all tests are done. This is for developer convenienve.
     # Without this, the device would remain in a black screen which looks like
@@ -650,6 +651,10 @@ class GTestTest(RemoteTest):
           'kill $TEST_SUDO_HELPER_PID',
           'unlink ${TEST_SUDO_HELPER_PATH}',
       ])
+
+    # This command should always be the last bash commandline so infra can
+    # correctly get the error code from test invocations.
+    device_test_script_contents.append('exit $TEST_RETURN_CODE')
 
     self._on_device_script = self.write_test_script_to_disk(
         device_test_script_contents)
