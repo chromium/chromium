@@ -1254,6 +1254,11 @@
       origin_trial_type: "deprecation",
     },
     {
+      // https://html.spec.whatwg.org/multipage/dnd.html#dom-datatransfer-cleardata
+      name: "DataTransferClearStringItems",
+      status: "stable",
+    },
+    {
       name: "DateInputInlineBlock",
       status: "test",
     },
