@@ -4152,6 +4152,9 @@ struct GatherTester {
 };
 
 TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorGather) {
+  // DML_GATHER_OPERATOR_DESC support for 1~8 dimensions was introduced in
+  // DML_FEATURE_LEVEL_3_0.
+  SKIP_TEST_IF(!adapter_->IsDMLFeatureLevelSupported(DML_FEATURE_LEVEL_3_0));
   {
     // Test gather with 1-D input, 1-D indices and axis = 0 with data type
     // uint32.
@@ -4220,24 +4223,6 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorGather) {
         .Test();
   }
   {
-    // Test gather with 6-D input, 0-D indices and axis = 5 with data type
-    // int32.
-    GatherTester<float, int32_t>{
-        .input = {.type = mojom::Operand::DataType::kFloat32,
-                  .dimensions = {1, 1, 1, 1, 1, 5},
-                  // [[[[[[1, 2, 3, 4, 5]]]]]] with shape (1, 1, 1, 1, 1, 5)
-                  .values = {1, 2, 3, 4, 5}},
-        .indices = {.type = mojom::Operand::DataType::kInt32,
-                    .dimensions = {},
-                    .values = {3}},
-        .axis = 5,
-        .output = {.type = mojom::Operand::DataType::kFloat32,
-                   .dimensions = {1, 1, 1, 1, 1},
-                   // [[[[[4]]]]] with shape (1, 1, 1, 1, 1)
-                   .values = {4}}}
-        .Test();
-  }
-  {
     // Test gather with 1-D input, 0-D indices and axis = 0 with data type
     // uint32.
     GatherTester<int32_t, uint32_t>{
@@ -4251,6 +4236,81 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorGather) {
         .output = {.type = mojom::Operand::DataType::kInt32,
                    .dimensions = {},
                    .values = {3}}}
+        .Test();
+  }
+  {
+    // Test gather with 6-D input, 0-D indices and axis = 0 with data type
+    // int32.
+    GatherTester<float, int32_t>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {2, 1, 1, 1, 1, 5},
+                  // [[[[[[1 2 3 4  5]]]]]
+                  //  [[[[[6 7 8 9 10]]]]]] with shape (2, 1, 1, 1, 1, 5)
+                  .values = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}},
+        .indices = {.type = mojom::Operand::DataType::kInt32,
+                    .dimensions = {},
+                    .values = {1}},
+        .axis = 0,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 1, 1, 5},
+                   // [[[[[6 7 8 9 10]]]]] with shape (1, 1, 1, 1, 5)
+                   .values = {6, 7, 8, 9, 10}}}
+        .Test();
+  }
+  {
+    // Test gather with 3-D input, 0-D indices and axis = 1 with data type
+    // int64.
+    GatherTester<float, int64_t>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {3, 4, 2},
+                  // [[[ 1  2]
+                  //   [ 3  4]
+                  //   [ 5  6]
+                  //   [ 7  8]]
+                  //  [[ 9 10]
+                  //   [11 12]
+                  //   [13 14]
+                  //   [15 16]]
+                  //  [[17 18]
+                  //   [19 20]
+                  //   [21 22]
+                  //   [23 24]]] with shape (3, 4, 2)
+                  .values = {1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12,
+                             13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24}},
+        .indices = {.type = mojom::Operand::DataType::kInt64,
+                    .dimensions = {},
+                    .values = {2}},
+        .axis = 1,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {3, 2},
+                   // [[ 5  6]
+                   //  [13 14]
+                   //  [21 22]] with shape (3, 2)
+                   .values = {5, 6, 13, 14, 21, 22}}}
+        .Test();
+  }
+  {
+    // Test gather with 5-D input, 0-D indices and axis = 4 with data type
+    // int32.
+    GatherTester<int32_t, int32_t>{
+        .input = {.type = mojom::Operand::DataType::kInt32,
+                  .dimensions = {2, 1, 1, 3, 2},
+                  // [[[[[ 1  2]
+                  //     [ 3  4]
+                  //     [ 5  6]]]]
+                  //  [[[[ 7  8]
+                  //     [ 9 10]
+                  //     [11 12]]]]] with shape (2, 1, 1, 3, 2)
+                  .values = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}},
+        .indices = {.type = mojom::Operand::DataType::kInt32,
+                    .dimensions = {},
+                    .values = {1}},
+        .axis = 4,
+        .output = {.type = mojom::Operand::DataType::kInt32,
+                   .dimensions = {2, 1, 1, 3},
+                   // [[[[ 2  4  6]]]
+                   //  [[[ 8 10 12]]]] with shape (2, 1, 1, 3)
+                   .values = {2, 4, 6, 8, 10, 12}}}
         .Test();
   }
   {

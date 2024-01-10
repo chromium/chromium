@@ -1652,8 +1652,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGather(
       id_to_node_output_map, gather->indices_operand_id);
   auto indices_tensor_desc = indices->GetTensorDesc();
   size_t indices_rank = indices_tensor_desc.GetDimensions().size();
-  if (base::MakeStrictNum(indices_rank) >
-      std::numeric_limits<uint32_t>::max()) {
+  if (!base::MakeCheckedNum(indices_rank).IsValid<uint32_t>()) {
     return base::unexpected(
         CreateError(mojom::Error::Code::kUnknownError,
                     "The indices rank of gather operator is too large."));
@@ -1667,22 +1666,36 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGather(
   size_t input_rank = input_tensor_desc.GetDimensions().size();
   size_t output_rank = output_tensor_desc.GetDimensions().size();
   size_t expanded_rank = std::max(input_rank, output_rank);
-  CHECK_GE(expanded_rank, indices_rank);
 
-  // Expand all tensor ranks to expanded_rank, which DML_GATHER_OPERATOR_DESC
-  // validation requires.
-  // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_gather_operator_desc
+  // According to the DirectML documentation
+  // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_gather_operator_desc,
+  // the parameters `InputTensor`, `OutputTensor` and `IndicesTensor` must have
+  // the same dimension count.
   input_tensor_desc.EnsureMinimumRank(expanded_rank,
                                       TensorDesc::Alignment::kTrailing);
   indices_tensor_desc.EnsureMinimumRank(expanded_rank,
                                         TensorDesc::Alignment::kTrailing);
-  output_tensor_desc.EnsureMinimumRank(expanded_rank,
-                                       TensorDesc::Alignment::kTrailing);
 
-  auto expanded_axis =
-      base::MakeCheckedNum<size_t>(expanded_rank - input_rank) +
-      base::checked_cast<size_t>(gather->axis);
-  if (!expanded_axis.IsValid<uint32_t>()) {
+  uint32_t axis = gather->axis;
+  if (output_rank < input_rank) {
+    // There is only one case in which `output_rank` is less than `input_rank`,
+    // that is when indices is scalar. In this case, a one value should be
+    // inserted at the `axis` position of the output dimensions, because the
+    // indices dimensions is set to {1} since DirectML requires the tensor
+    // dimension count to be at least 1.
+    CHECK_EQ(indices_rank, 1u);
+    CHECK_EQ(output_rank, input_rank - 1);
+
+    auto output_dimensions = input_tensor_desc.GetDimensions();
+    CHECK_LT(axis, output_dimensions.size());
+    output_dimensions[axis] = 1;
+    output_tensor_desc = TensorDesc(output_tensor_desc.GetDataType(),
+                                    std::move(output_dimensions));
+  }
+
+  auto expanded_axis = base::MakeCheckedNum(expanded_rank) - input_rank +
+                       base::checked_cast<size_t>(axis);
+  if (!expanded_axis.AssignIfValid<uint32_t>(&axis)) {
     return base::unexpected(
         CreateError(mojom::Error::Code::kUnknownError,
                     "The axis of gather operator is too large."));
@@ -1699,7 +1712,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGather(
       .IndicesTensor = &indices_tensor_desc.GetDMLTensorDesc(),
       .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
       // The axis dimension of InputTensor to gather on.
-      .Axis = expanded_axis.ValueOrDie<uint32_t>(),
+      .Axis = axis,
       // The number of actual index dimensions within the IndicesTensor.
       .IndexDimensions = base::checked_cast<uint32_t>(indices_rank)};
 
