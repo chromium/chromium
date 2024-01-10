@@ -18,6 +18,12 @@ TEST(SimpleComboboxModelTest, StringItems) {
   EXPECT_EQ(u"item0", model.GetItemAt(0));
   EXPECT_TRUE(model.IsItemSeparatorAt(1));
   EXPECT_EQ(u"item2", model.GetItemAt(2));
+
+  // Update items.
+  model.UpdateItemList({ui::SimpleComboboxModel::Item(u"item3"),
+                        ui::SimpleComboboxModel::Item(u"item4")});
+  EXPECT_EQ(u"item3", model.GetItemAt(0));
+  EXPECT_EQ(u"item4", model.GetItemAt(1));
 }
 
 TEST(SimpleComboboxModelTest, ComboboxItems) {
