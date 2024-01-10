@@ -391,7 +391,8 @@ class CORE_EXPORT LayoutText : public LayoutObject {
 
   void DeleteTextBoxes();
 
-  String SecureText(const String& plain, UChar mask) const;
+  std::pair<String, TextOffsetMap> SecureText(const String& plain,
+                                              UChar mask) const;
 
   bool IsText() const final {
     NOT_DESTROYED();

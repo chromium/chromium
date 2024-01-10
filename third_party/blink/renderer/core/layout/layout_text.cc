@@ -895,26 +895,36 @@ String LayoutText::TransformAndSecureText(const String& original,
     String transformed =
         style->ApplyTextTransform(original, PreviousCharacter(), &offset_map);
 
+    UChar mask = 0;
     // We use the same characters here as for list markers.
     // See CollectUACounterStyleRules() in ua_counter_style_map.cc.
     switch (style->TextSecurity()) {
       case ETextSecurity::kNone:
         return transformed;
       case ETextSecurity::kCircle:
-        return SecureText(transformed, kWhiteBulletCharacter);
+        mask = kWhiteBulletCharacter;
+        break;
       case ETextSecurity::kDisc:
-        return SecureText(transformed, kBulletCharacter);
+        mask = kBulletCharacter;
+        break;
       case ETextSecurity::kSquare:
-        return SecureText(transformed, kBlackSquareCharacter);
+        mask = kBlackSquareCharacter;
+        break;
     }
+    auto [masked, secure_map] = SecureText(transformed, mask);
+    if (!secure_map.IsEmpty()) {
+      offset_map = TextOffsetMap(offset_map, secure_map);
+    }
+    return masked;
   }
   return original;
 }
 
-String LayoutText::SecureText(const String& plain, UChar mask) const {
+std::pair<String, TextOffsetMap> LayoutText::SecureText(const String& plain,
+                                                        UChar mask) const {
   NOT_DESTROYED();
   if (!plain.length()) {
-    return plain;
+    return std::make_pair(plain, TextOffsetMap());
   }
 
   int last_typed_character_offset_to_reveal = -1;
@@ -926,13 +936,38 @@ String LayoutText::SecureText(const String& plain, UChar mask) const {
       revealed_text = plain[last_typed_character_offset_to_reveal];
   }
 
+  if (RuntimeEnabledFeatures::MaskingGraphemeClustersEnabled()) {
+    StringBuilder builder;
+    // `mask` always needs a 16bit buffer.
+    builder.Reserve16BitCapacity(plain.length());
+    TextOffsetMap offset_map;
+    for (unsigned offset = 0; offset < plain.length();) {
+      unsigned cluster_size = LengthOfGraphemeCluster(plain, offset);
+      unsigned next_offset = offset + cluster_size;
+      if (last_typed_character_offset_to_reveal >= 0) {
+        unsigned last_typed_offset =
+            base::checked_cast<unsigned>(last_typed_character_offset_to_reveal);
+        if (offset <= last_typed_offset && last_typed_offset < next_offset) {
+          builder.Append(StringView(plain, offset, cluster_size));
+          offset = next_offset;
+          continue;
+        }
+      }
+      builder.Append(mask);
+      offset = next_offset;
+      if (cluster_size != 1) {
+        offset_map.Append(offset, builder.length());
+      }
+    }
+    return std::make_pair(builder.ToString(), offset_map);
+  }
   String masked = plain;
   masked.Fill(mask);
   if (last_typed_character_offset_to_reveal >= 0) {
     masked.replace(last_typed_character_offset_to_reveal, 1,
                    String(&revealed_text, 1u));
   }
-  return masked;
+  return std::make_pair(masked, TextOffsetMap());
 }
 
 void LayoutText::SetTextIfNeeded(String text) {

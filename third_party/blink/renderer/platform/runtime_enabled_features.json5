@@ -2322,6 +2322,12 @@
       status: "stable",
     },
     {
+      // crbug.com/486880
+      name: "MaskingGraphemeClusters",
+      status: "test",
+      depends_on: ["OffsetMappingUnitVariable"],
+    },
+    {
       name:"MeasureMemory",
       status:"stable",
       base_feature: "none",
