@@ -68,6 +68,9 @@ class GLTextureImageBacking : public ClearTrackingSharedImageBacking {
 
   std::vector<GLTextureHolder> textures_;
   std::vector<sk_sp<GrPromiseImageTexture>> cached_promise_textures_;
+
+  // TODO(crbug.com/1434885) - Remove it after the data is collected.
+  std::string debug_label_from_client_;
 };
 
 }  // namespace gpu
