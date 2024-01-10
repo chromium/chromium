@@ -38,6 +38,7 @@ export enum ContentSettingsTypes {
   MIXEDSCRIPT = 'mixed-script',
   NOTIFICATIONS = 'notifications',
   PAYMENT_HANDLER = 'payment-handler',
+  PERFORMANCE = 'performance',
   POPUPS = 'popups',
   PRIVATE_NETWORK_DEVICES = 'private-network-devices',
   PROTECTED_CONTENT = 'protected-content',

@@ -6,12 +6,14 @@
 
 #include <set>
 #include "build/build_config.h"
+#include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/custom_handlers/protocol_handler.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
+#include "components/url_matcher/url_util.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/host_zoom_map.h"
@@ -101,6 +103,22 @@ void SiteSettingsCounter::Count() {
           ->GetNeverPromptSitesBetween(period_start, period_end);
   for (const auto& site : never_prompt_sites)
     hosts.insert(site);
+
+  const base::Value::List& discard_exception_list = pref_service_->GetList(
+      performance_manager::user_tuning::prefs::kTabDiscardingExceptions);
+  for (const auto& site : discard_exception_list) {
+    url_matcher::util::FilterComponents components;
+
+    bool is_valid = url_matcher::util::FilterToComponents(
+        site.GetString(), &components.scheme, &components.host,
+        &components.match_subdomains, &components.port, &components.path,
+        &components.query);
+    if (is_valid && !components.host.empty()) {
+      hosts.insert(components.host);
+    } else {
+      empty_host_pattern++;
+    }
+  }
 
   ReportResult(hosts.size() + empty_host_pattern);
 }

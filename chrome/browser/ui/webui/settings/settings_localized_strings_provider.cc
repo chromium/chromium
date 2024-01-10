@@ -3242,6 +3242,9 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
      IDS_SETTINGS_ANTI_ABUSE_THINGS_TO_CONSIDER_HEADER},
     {"antiAbuseThingsToConsiderSectionOne",
      IDS_SETTINGS_ANTI_ABUSE_THINGS_TO_CONSIDER_SECTION_ONE},
+    {"siteSettingsPerformance", IDS_SITE_SETTINGS_TYPE_PERFORMANCE},
+    {"siteSettingsPerformanceSublabel",
+     IDS_SITE_SETTINGS_TYPE_PERFORMANCE_SUBLABEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 

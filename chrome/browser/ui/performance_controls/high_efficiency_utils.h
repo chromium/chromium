@@ -26,6 +26,9 @@ bool IsSiteInExceptionsList(PrefService* pref_service, const std::string& site);
 void AddSiteToExceptionsList(PrefService* pref_service,
                              const std::string& site);
 
+// Clears all discard exception prefs.
+void ClearSiteExceptionsList(PrefService* pref_service);
+
 // Returns how much memory was saved through discarding `contents`
 uint64_t GetDiscardedMemorySavingsInBytes(content::WebContents* contents);
 
