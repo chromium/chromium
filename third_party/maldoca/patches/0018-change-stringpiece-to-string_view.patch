@@ -1,0 +1,36 @@
+diff --git a/third_party/maldoca/src/maldoca/base/testing/protocol-buffer-matchers.cc b/third_party/maldoca/src/maldoca/base/testing/protocol-buffer-matchers.cc
+index 6ab942751e..5d1b36ab26 100644
+--- a/third_party/maldoca/src/maldoca/base/testing/protocol-buffer-matchers.cc
++++ b/third_party/maldoca/src/maldoca/base/testing/protocol-buffer-matchers.cc
+@@ -34,7 +34,7 @@ namespace internal {
+ 
+ using absl::string_view;
+ using std::string;
+-using RegExpStringPiece = re2::StringPiece;
++using RegExpStringPiece = absl::string_view;
+ 
+ // Utilities.
+ 
+@@ -395,4 +395,4 @@ bool ProtoMatcherBase::MatchAndExplain(
+ 
+ }  // namespace internal
+ }  // namespace testing
+-}  // namespace maldoca
+\ No newline at end of file
++}  // namespace maldoca
+diff --git a/third_party/maldoca/src/maldoca/ole/vba.cc b/third_party/maldoca/src/maldoca/ole/vba.cc
+index 7d1883fd58..a3a25b4761 100644
+--- a/third_party/maldoca/src/maldoca/ole/vba.cc
++++ b/third_party/maldoca/src/maldoca/ole/vba.cc
+@@ -337,9 +337,8 @@ uint32_t ExtractMalformedOrOrphan(
+     return false;
+   }
+ 
+-  // TODO(somebody): replace with absl::string_view when RE2 is in absl
+-  re2::StringPiece result;
+-  re2::StringPiece code_stream(vba_code_stream);
++  absl::string_view result;
++  absl::string_view code_stream(vba_code_stream);
+   uint32_t number_vba_code_chunks = 0;
+   while (RE2::FindAndConsume(&code_stream, *kAttributeRE, &result)) {
+     const uint32_t offset = result.data() - vba_code_stream.data() - 3;

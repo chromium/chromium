@@ -337,9 +337,8 @@ uint32_t ExtractMalformedOrOrphan(
     return false;
   }
 
-  // TODO(somebody): replace with absl::string_view when RE2 is in absl
-  re2::StringPiece result;
-  re2::StringPiece code_stream(vba_code_stream);
+  absl::string_view result;
+  absl::string_view code_stream(vba_code_stream);
   uint32_t number_vba_code_chunks = 0;
   while (RE2::FindAndConsume(&code_stream, *kAttributeRE, &result)) {
     const uint32_t offset = result.data() - vba_code_stream.data() - 3;
