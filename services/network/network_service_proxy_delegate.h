@@ -82,10 +82,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
   void OnCustomProxyConfigUpdated(
       mojom::CustomProxyConfigPtr proxy_config,
       OnCustomProxyConfigUpdatedCallback callback) override;
-  void MarkProxiesAsBad(base::TimeDelta bypass_duration,
-                        const net::ProxyList& bad_proxies,
-                        MarkProxiesAsBadCallback callback) override;
-  void ClearBadProxiesCache() override;
 
   mojom::CustomProxyConfigPtr proxy_config_;
   mojo::Receiver<mojom::CustomProxyConfigClient> receiver_;

@@ -148,15 +148,6 @@ struct CertVerifierServiceRemoteParams {
 // Client to update the custom proxy config.
 interface CustomProxyConfigClient {
   OnCustomProxyConfigUpdated(CustomProxyConfig proxy_config) => ();
-
-  // Marks the custom proxies in |bad_proxies| as temporarily bad, so they are
-  // not layered onto the proxy resolution results for subsequent requests.
-  MarkProxiesAsBad(mojo_base.mojom.TimeDelta bypass_duration,
-                   ProxyList bad_proxies) => ();
-
-  // Clears the list of bad proxy servers that has been cached in the proxy
-  // resolution service.
-  ClearBadProxiesCache();
 };
 
 // Sent by TrustedURLLoaderHeaderClient to perform modifications for a request.

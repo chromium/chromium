@@ -197,35 +197,6 @@ void NetworkServiceProxyDelegate::OnCustomProxyConfigUpdated(
   std::move(callback).Run();
 }
 
-void NetworkServiceProxyDelegate::MarkProxiesAsBad(
-    base::TimeDelta bypass_duration,
-    const net::ProxyList& bad_proxies_list,
-    MarkProxiesAsBadCallback callback) {
-  std::vector<net::ProxyChain> bad_proxies = bad_proxies_list.AllChains();
-
-  // Synthesize a suitable |ProxyInfo| to add the proxies to the
-  // |ProxyRetryInfoMap| of the proxy service.
-  //
-  // TODO(eroman): Support this more directly on ProxyResolutionService.
-  net::ProxyList proxy_list;
-  for (const auto& bad_proxy : bad_proxies) {
-    proxy_list.AddProxyChain(bad_proxy);
-  }
-  proxy_list.AddProxyChain(net::ProxyChain::Direct());
-
-  net::ProxyInfo proxy_info;
-  proxy_info.UseProxyList(proxy_list);
-
-  proxy_resolution_service_->MarkProxiesAsBadUntil(
-      proxy_info, bypass_duration, bad_proxies, net::NetLogWithSource());
-
-  std::move(callback).Run();
-}
-
-void NetworkServiceProxyDelegate::ClearBadProxiesCache() {
-  proxy_resolution_service_->ClearBadProxiesCache();
-}
-
 bool NetworkServiceProxyDelegate::IsInProxyConfig(
     const net::ProxyChain& proxy_chain) const {
   if (!proxy_chain.IsValid() || proxy_chain.is_direct()) {
