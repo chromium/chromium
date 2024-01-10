@@ -134,6 +134,11 @@ NSArray<RecipientInfoForIOSDisplay*>* _recipients;
         [NSString stringWithFormat:@"%@ %@", kFamilyPickerInfoButtonID,
                                    _recipients[indexPath.row].email];
     cell.accessoryView = infoButton;
+
+    // Make the cell a non-accessible element to make the info button accessible
+    // to VoiceOver.
+    cell.isAccessibilityElement = NO;
+    infoButton.isAccessibilityElement = YES;
   }
 
   return cell;
