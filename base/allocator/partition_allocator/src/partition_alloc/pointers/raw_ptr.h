@@ -23,7 +23,6 @@
 #include "partition_alloc/partition_alloc_buildflags.h"
 #include "partition_alloc/partition_alloc_config.h"
 #include "partition_alloc/partition_alloc_forward.h"
-#include "partition_alloc/pointers/raw_ptr_exclusion.h"
 #include "partition_alloc/raw_ptr_buildflags.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -913,9 +912,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
     return ptr;
   }
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #union, #global-scope, #constexpr-ctor-field-initializer
-  RAW_PTR_EXCLUSION T* wrapped_ptr_;
+  T* wrapped_ptr_;
 
   template <typename U, base::RawPtrTraits R>
   friend class raw_ptr;
