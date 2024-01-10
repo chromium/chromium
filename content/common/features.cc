@@ -543,12 +543,6 @@ BASE_FEATURE(kWebAssemblyDynamicTiering,
              "WebAssemblyDynamicTiering",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If WebGL Image Chromium is allowed, this feature controls whether it is
-// enabled.
-BASE_FEATURE(kWebGLImageChromium,
-             "WebGLImageChromium",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Use GpuMemoryBuffer backed VideoFrames in media streams.
 BASE_FEATURE(kWebRtcUseGpuMemoryBufferVideoFrames,
              "WebRTC-UseGpuMemoryBufferVideoFrames",

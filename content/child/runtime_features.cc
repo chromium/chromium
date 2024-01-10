@@ -90,8 +90,7 @@ void SetRuntimeFeatureDefaultsForPlatform(
       command_line.HasSwitch(
           blink::switches::kEnableGpuMemoryBufferCompositorResources) &&
       !command_line.HasSwitch(switches::kDisableWebGLImageChromium) &&
-      !command_line.HasSwitch(switches::kDisableGpu) &&
-      base::FeatureList::IsEnabled(features::kWebGLImageChromium);
+      !command_line.HasSwitch(switches::kDisableGpu);
 #else
   const bool enable_web_gl_image_chromium =
       command_line.HasSwitch(switches::kEnableWebGLImageChromium);
