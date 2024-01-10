@@ -61,8 +61,27 @@ class OsFeedbackInteractiveUiTest : public InteractiveAshTest {
   }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // Query to pierce through Shadow DOM to find the send feedback link.
+  const DeepQuery kReportIssueMenuItemQuery = {
+      "os-settings-ui", "os-settings-main", "main-page-container",
+      "os-about-page",  "#reportIssue",
+  };
+
   auto LaunchAboutChromeOsPage() {
     return Do([&]() { CreateBrowserWindow(GURL(kAboutChromeOsUrl)); });
+  }
+
+  // Enters lower-case text into the focused html input element.
+  auto EnterLowerCaseText(const std::string& text) {
+    return Do([&]() {
+      for (char c : text) {
+        ui_controls::SendKeyPress(
+            /*window=*/nullptr,
+            static_cast<ui::KeyboardCode>(ui::VKEY_A + (c - 'a')),
+            /*control=*/false, /*shift=*/false,
+            /*alt=*/false, /*command=*/false);
+      }
+    });
   }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
@@ -157,15 +176,7 @@ IN_PROC_BROWSER_TEST_F(OsFeedbackInteractiveUiTest, OpenFromAboutChromeOsPage) {
   base::AddFeatureIdTagToTestResult(
       "screenplay-3f028d06-0100-4b5b-b1f3-99ceeaf3d62b");
 
-  ASSERT_TRUE(CreateBrowserWindow(GURL(kBlankUrl)));
-  // Query to pierce through Shadow DOM to find the send feedback link.
-  const DeepQuery kReportIssueMenuItemQuery = {
-      "os-settings-ui", "os-settings-main", "main-page-container",
-      "os-about-page",  "#reportIssue",
-  };
-
   RunTestSequence(
-      InstrumentTab(kNewTabWebContentsId),
       InstrumentNextTab(kAboutChromeOsWebContentsId, AnyBrowser()),
       Log("Opening the about ChromeOS page"), LaunchAboutChromeOsPage(),
       WaitForWebContentsReady(kAboutChromeOsWebContentsId,
@@ -177,6 +188,52 @@ IN_PROC_BROWSER_TEST_F(OsFeedbackInteractiveUiTest, OpenFromAboutChromeOsPage) {
       Log("Clicking the send feedback link"),
       ClickElement(kAboutChromeOsWebContentsId, kReportIssueMenuItemQuery),
       FlushEvents(), WaitForFeedbackSWAReady(kOsFeedbackWebContentsId));
+}
+
+IN_PROC_BROWSER_TEST_F(OsFeedbackInteractiveUiTest, OpenFromSetingsSearch) {
+  // Query to pierce through Shadow DOM to find the search input element.
+  const DeepQuery kSearchInputElementQuery = {
+      "os-settings-ui",          "os-toolbar",   "os-settings-search-box",
+      "cr-toolbar-search-field", "#searchInput",
+  };
+  // Query to pierce through Shadow DOM to find the selected search result row.
+  const DeepQuery kSelectedSearchResultRowQuery = {
+      "os-settings-ui",
+      "os-toolbar",
+      "os-settings-search-box",
+      "os-search-result-row[selected]",
+  };
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOsSettingsWebContentsId);
+  GURL os_settings_url("chrome://os-settings");
+
+  RunTestSequence(
+      Log("Opening the Os Settings app"),
+      InstrumentNextTab(kOsSettingsWebContentsId, AnyBrowser()),
+      Do([&]() { CreateBrowserWindow(GURL(os_settings_url)); }),
+      WaitForWebContentsReady(kOsSettingsWebContentsId, GURL(os_settings_url)),
+      WaitForElementExists(kOsSettingsWebContentsId, kSearchInputElementQuery),
+
+      Log("Searching for \"send feedback\""),
+      ExecuteJsAt(kOsSettingsWebContentsId, kSearchInputElementQuery,
+                  " el => el.focus()"),
+      EnterLowerCaseText("send feedback"), FlushEvents(),
+
+      Log("Clicking the selected search result"),
+      WaitForElementExists(kOsSettingsWebContentsId,
+                           kSelectedSearchResultRowQuery),
+      ClickElement(kOsSettingsWebContentsId, kSelectedSearchResultRowQuery),
+      FlushEvents(),
+
+      Log("Waiting for the send feedback link ready"),
+      WaitForElementExists(kOsSettingsWebContentsId, kReportIssueMenuItemQuery),
+
+      Log("Clicking the send feedback link"),
+      ClickElement(kOsSettingsWebContentsId, kReportIssueMenuItemQuery),
+      FlushEvents(),
+
+      InstrumentNextTab(kOsFeedbackWebContentsId, AnyBrowser()),
+      WaitForFeedbackSWAReady(kOsFeedbackWebContentsId));
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
