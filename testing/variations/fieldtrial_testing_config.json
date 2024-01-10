@@ -8532,48 +8532,39 @@
             ],
             "experiments": [
                 {
-                    "name": "ControlWith10000MetadataGrants",
-                    "params": {
-                        "Metadata": "H4sIAHAre2UC/wMAAAAAAAAAAAA="
-                    },
-                    "enable_features": [
-                        "TpcdMetadataGrants"
-                    ],
+                    "name": "Control",
                     "disable_features": [
                         "HostIndexedMetadataGrants"
                     ]
                 },
                 {
-                    "name": "EnabledWith100MetadataGrants",
+                    "name": "EnabledWith500Threshold",
                     "params": {
-                        "Metadata": "H4sIAHAre2UC/wMAAAAAAAAAAAA=",
-                        "MetadataGrantsThreshold": "100"
+                        "MetadataGrantsThreshold": "500",
+                        "UseTestMetadata": "10000"
                     },
                     "enable_features": [
-                        "HostIndexedMetadataGrants",
-                        "TpcdMetadataGrants"
+                        "HostIndexedMetadataGrants"
                     ]
                 },
                 {
-                    "name": "EnabledWith1000MetadataGrants",
+                    "name": "EnabledWith5000Threshold",
                     "params": {
-                        "Metadata": "H4sIAHAre2UC/wMAAAAAAAAAAAA=",
-                        "MetadataGrantsThreshold": "1000"
+                        "MetadataGrantsThreshold": "5000",
+                        "UseTestMetadata": "10000"
                     },
                     "enable_features": [
-                        "HostIndexedMetadataGrants",
-                        "TpcdMetadataGrants"
+                        "HostIndexedMetadataGrants"
                     ]
                 },
                 {
-                    "name": "EnabledWith10000MetadataGrants",
+                    "name": "EnabledWith10000Threshold",
                     "params": {
-                        "Metadata": "H4sIAHAre2UC/wMAAAAAAAAAAAA=",
-                        "MetadataGrantsThreshold": "10000"
+                        "MetadataGrantsThreshold": "10000",
+                        "UseTestMetadata": "10000"
                     },
                     "enable_features": [
-                        "HostIndexedMetadataGrants",
-                        "TpcdMetadataGrants"
+                        "HostIndexedMetadataGrants"
                     ]
                 }
             ]
