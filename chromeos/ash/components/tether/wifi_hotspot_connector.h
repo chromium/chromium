@@ -75,6 +75,9 @@ class WifiHotspotConnector : public NetworkStateHandlerObserver {
                                                  const std::string& password);
   void OnConnectionTimeout();
 
+  void OnWifiConnectionSucceeded();
+  void OnWifiConnectionFailed(const std::string& error_name);
+
   void SetTestDoubles(std::unique_ptr<base::OneShotTimer> test_timer,
                       base::Clock* test_clock,
                       scoped_refptr<base::TaskRunner> test_task_runner);
