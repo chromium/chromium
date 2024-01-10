@@ -98,6 +98,11 @@ std::string ServerTypesToString(const AutofillField* field) {
   const std::vector<
       AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction>&
       server_types = field->server_predictions();
+
+  if (server_types.empty()) {
+    return "pending";
+  }
+
   std::ostringstream buffer;
   for (const auto& field_prediction : server_types) {
     if (buffer.tellp() > 0) {  // Add comma if buffer is not empty.
@@ -263,7 +268,10 @@ std::vector<FormDataPredictions> FormStructure::GetFieldTypePredictions(
       annotated_field.signature = field->FieldSignatureAsStr();
       annotated_field.heuristic_type =
           FieldTypeToStringView(field->heuristic_type());
-      annotated_field.server_type = FieldTypeToStringView(field->server_type());
+      if (!field->server_predictions().empty()) {
+        annotated_field.server_type =
+            FieldTypeToStringView(field->server_type());
+      }
       annotated_field.html_type = FieldTypeToStringView(field->html_type());
       annotated_field.overall_type = field->Type().ToString();
       annotated_field.parseable_name =

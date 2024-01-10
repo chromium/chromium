@@ -437,6 +437,14 @@ enum FieldType {
   // TODO(b/294195764): Deprecate after fully rolling out new predictions.
   SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES = 160,
 
+  // SERVER_RESPONSE_PENDING is not exposed as an enum value to prevent
+  // confusion. It is never sent by the server nor sent for voting. The purpose
+  // is merely to have a well defined value in the debug attributes if
+  // chrome://flags/#show-autofill-type-predictions is enabled. This is not
+  // the same as NO_SERVER_DATA, which indicates that the server has no
+  // classification for the field.
+  // SERVER_RESPONSE_PENDING = 161;
+
   // No new types can be added without a corresponding change to the Autofill
   // server.
   // This enum must be kept in sync with FieldType from
@@ -447,7 +455,7 @@ enum FieldType {
   // If the newly added type is a storable type of AutofillProfile, update
   // AutofillProfile.StorableTypes in
   // tools/metrics/histograms/metadata/autofill/histograms.xml.
-  MAX_VALID_FIELD_TYPE = 161,
+  MAX_VALID_FIELD_TYPE = 162,
 };
 // LINT.ThenChange(//chrome/common/extensions/api/autofill_private.idl)
 
@@ -538,7 +546,7 @@ constexpr FieldType ToSafeFieldType(std::underlying_type_t<FieldType> raw_value,
            // Reserved for server-side only use.
            !(111 <= t && t <= 113) && t != 127 && !(130 <= t && t <= 132) &&
            t != 134 && !(137 <= t && t <= 139) && !(145 <= t && t <= 150) &&
-           t != 153 && t != 155 && t != 158 && t != 159;
+           t != 153 && t != 155 && t != 158 && t != 159 && t != 161;
   };
   return IsValid(raw_value) ? static_cast<FieldType>(raw_value)
                             : fallback_value;
