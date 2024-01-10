@@ -1,7 +1,7 @@
 # This workflow will check out wpt and run the WebDriver BiDi tests against our
 # implementation.
 
-name: WPT
+name: WPT detailed
 
 # Declare default permissions as read only.
 permissions: read-all
@@ -13,8 +13,6 @@ env:
   PIP_DISABLE_PIP_VERSION_CHECK: 1
 
 on:
-  merge_group:
-  pull_request:
   push:
     branches: 'main'
   workflow_dispatch:
@@ -206,7 +204,7 @@ jobs:
           name: ${{ matrix.kind }}-${{ matrix.head }}-wpt-metadata
           path: wpt-metadata/${{ matrix.kind }}/${{ matrix.head }}
       - name: Upload artifacts
-        if: success() || failure()
+        if: always()
         uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392 # v4.0.0
         with:
           name: ${{ matrix.kind }}-${{ matrix.head }}-artifacts

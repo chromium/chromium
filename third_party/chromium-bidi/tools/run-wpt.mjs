@@ -33,10 +33,14 @@ function log(message) {
 function usage() {
   log(
     `Usage:
+      [BROWSER_BIN=<path, default: download pinned chrome>]
       [CHROMEDRIVER=<true | default: false>]
       [HEADLESS=<true | default: false>]
       [MANIFEST=<default: 'MANIFEST.json'>]
       [RUN_TESTS=<default: true | false>]
+      [TIMEOUT_MULTIPLIER=<number, default: 4>]
+      [THIS_CHUNK=<number, default: 1>]
+      [TOTAL_CHUNKS=<number, default: 1>]
       [UPDATE_EXPECTATIONS=<true | default: false>]
       [VERBOSE==<true | default: false>]
       [WPT_REPORT=<default: 'wptreport.json'>]
@@ -78,6 +82,12 @@ const RUN_TESTS = process.env.RUN_TESTS || 'true';
 
 // Multiplier relative to standard test timeout to use.
 const TIMEOUT_MULTIPLIER = process.env.TIMEOUT_MULTIPLIER || '4';
+
+// The current chunk number. Required for shard testing.
+const THIS_CHUNK = process.env.THIS_CHUNK || '1';
+
+// The total number of chunks. Required for shard testing.
+const TOTAL_CHUNKS = process.env.TOTAL_CHUNKS || '1';
 
 // Whether to update the WPT expectations after running the tests.
 const UPDATE_EXPECTATIONS = process.env.UPDATE_EXPECTATIONS || 'false';
@@ -126,6 +136,12 @@ if (RUN_TESTS === 'true') {
     TIMEOUT_MULTIPLIER,
     '--run-by-dir',
     '1',
+    '--total-chunks',
+    TOTAL_CHUNKS,
+    '--this-chunk',
+    THIS_CHUNK,
+    '--chunk-type',
+    'hash',
   ];
 
   if (VERBOSE === 'true') {

@@ -1,6 +1,7 @@
-# This workflow will run headful and headless E2E tests.
+# This workflow will check out wpt and run the WebDriver BiDi tests against our
+# implementation sharded without generating report or updating expectations.
 
-name: E2E tests
+name: WPT quick
 
 # Declare default permissions as read only.
 permissions: read-all
@@ -18,6 +19,10 @@ on:
     branches: 'main'
   workflow_dispatch:
     inputs:
+      tests:
+        description: Tests to run (e.g. 'network/combined/')
+        required: false
+        type: string
       verbose:
         description: Verbose logging
         default: false
@@ -29,26 +34,30 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  e2e-required:
-    name: '[Required] e2e sink'
-    needs: [e2e]
+  wpt-required:
+    name: '[Required] WPT sink'
+    needs: [wpt]
     runs-on: ubuntu-latest
     if: always()
     steps:
-      - if: ${{ needs.e2e.result != 'success' }}
+      - if: ${{ needs.wpt.result != 'success' }}
         run: 'exit 1'
       - run: 'exit 0'
-  e2e:
+  wpt:
+    name: ${{ matrix.this_chunk }}/${{ matrix.total_chunks }} ${{ matrix.kind }}-${{ matrix.head }}
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        # TODO(#876): Add Windows CI.
-        os: [ubuntu-latest, macos-latest]
-        head: [headful, headless]
-    runs-on: ${{ matrix.os }}
+        kind: [chromedriver, mapper]
+        head: [headless, headful]
+        total_chunks: [6]
+        this_chunk: [1, 2, 3, 4, 5, 6]
     steps:
       - name: Checkout
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          submodules: true
       - name: Set up Node.js
         uses: actions/setup-node@b39b52d1213e96004bfcb1c61a8a6fa8ab84f3e8 # v4.0.1
         with:
@@ -57,6 +66,18 @@ jobs:
       - uses: google/wireit@f3a3c79c553122e2fe5829eeac7d815326502903 # setup-github-actions-caching/v1
       - name: Install and build npm dependencies
         run: npm ci
+      - name: Setup dirs
+        run: mkdir -p out
+      - name: Set up Python
+        uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # v5.0.0
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      - name: Set up virtualenv
+        run: pip install virtualenv
+      - name: Set up hosts
+        run: ./wpt make-hosts-file | sudo tee -a /etc/hosts
+        working-directory: wpt
       - name: Setup cache for browser binaries
         uses: actions/cache@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2
         with:
@@ -65,36 +86,25 @@ jobs:
       - name: Install pinned browser
         id: browser
         run: node tools/install-browser.mjs --github
-      - name: Set up Python
-        uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # v5.0.0
-        with:
-          python-version: '3.11'
-          cache: pipenv
-      - name: Install pipenv
-        run: pip install pipenv
-      - name: Install python dependencies
-        run: pipenv install
-      - name: Run E2E tests
-        if: matrix.os == 'ubuntu-latest' && matrix.head == 'headful'
-        timeout-minutes: 20
+      - name: Run WPT tests
+        timeout-minutes: 60
         run: >
           xvfb-run --auto-servernum
-          npm run e2e-${{ matrix.head }}
-        # For verbose logging, set `DEBUG: 'bidi:mapper:*'` and `VERBOSE: true`.
+          npm run wpt -- "webdriver/tests/bidi/${{ github.event.inputs.tests }}"
         env:
           BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
+          CHROMEDRIVER: ${{ matrix.kind == 'chromedriver' }}
+          HEADLESS: ${{ matrix.head!='headful' }}
+          THIS_CHUNK: ${{ matrix.this_chunk }}
+          TOTAL_CHUNKS: ${{ matrix.total_chunks }}
+          UPDATE_EXPECTATIONS: false
           VERBOSE: ${{ github.event.inputs.verbose }}
-      - name: Run E2E tests
-        if: matrix.os != 'ubuntu-latest' || (matrix.os == 'ubuntu-latest' && matrix.head == 'headless')
-        timeout-minutes: 20
-        run: npm run e2e-${{ matrix.head }}
-        # For verbose logging, set `DEBUG: 'bidi:mapper:*'` and `VERBOSE: true`.
-        env:
-          BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
-          VERBOSE: ${{ github.event.inputs.verbose }}
+          WPT_REPORT: out/wptreport.${{ matrix.kind }}-${{ matrix.head }}.json
       - name: Upload artifacts
         if: always()
         uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392 # v4.0.0
         with:
-          name: ${{ matrix.os }}-${{ matrix.head }}-artifacts
-          path: logs
+          name: ${{ matrix.kind }}-${{ matrix.head }}-${{ matrix.this_chunk }}.${{ matrix.total_chunks }}-artifacts
+          path: |
+            logs
+            out
