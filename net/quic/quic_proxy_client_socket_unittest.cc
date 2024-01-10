@@ -124,10 +124,8 @@ class QuicProxyClientSocketTest
     quiche::QuicheVariableLengthIntegerLength retry_token_length_length =
         quiche::VARIABLE_LENGTH_INTEGER_LENGTH_0;
     quiche::QuicheVariableLengthIntegerLength length_length =
-        quic::QuicVersionHasLongHeaderLengths(version.transport_version) &&
-                include_version
-            ? quiche::VARIABLE_LENGTH_INTEGER_LENGTH_2
-            : quiche::VARIABLE_LENGTH_INTEGER_LENGTH_0;
+        include_version ? quiche::VARIABLE_LENGTH_INTEGER_LENGTH_2
+                        : quiche::VARIABLE_LENGTH_INTEGER_LENGTH_0;
     size_t min_data_length = 1;
     size_t min_packet_length =
         quic::test::TaggingEncrypter(quic::ENCRYPTION_FORWARD_SECURE)

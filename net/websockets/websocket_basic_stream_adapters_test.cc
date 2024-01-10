@@ -1195,7 +1195,6 @@ class WebSocketQuicStreamAdapterTest
   std::unique_ptr<quic::QuicReceivedPacket> ConstructServerDataPacket(
       uint64_t packet_number,
       base::StringPiece data) {
-    DCHECK(version_.HasIetfQuicFrames());
     quiche::QuicheBuffer buffer = quic::HttpEncoder::SerializeDataFrameHeader(
         data.size(), quiche::SimpleBufferAllocator::Get());
     return server_maker_.MakeDataPacket(

@@ -483,16 +483,10 @@ class QuicTestPacketMaker {
 
   bool ShouldIncludeVersion() const;
 
-  quic::QuicPacketNumberLength GetPacketNumberLength() const;
-
   quic::QuicConnectionId DestinationConnectionId() const;
   quic::QuicConnectionId SourceConnectionId() const;
 
-  quic::QuicConnectionIdIncluded HasDestinationConnectionId() const;
-  quic::QuicConnectionIdIncluded HasSourceConnectionId() const;
-
   quic::QuicStreamId GetFirstBidirectionalStreamId() const;
-  quic::QuicStreamId GetHeadersStreamId() const;
 
   std::string GenerateHttp3SettingsData();
   std::string GenerateHttp3PriorityData(spdy::SpdyPriority spdy_priority,

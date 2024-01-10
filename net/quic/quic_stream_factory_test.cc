@@ -13217,12 +13217,6 @@ TEST_P(QuicStreamFactoryTest,
 }
 
 TEST_P(QuicStreamFactoryTest, YieldAfterPackets) {
-  if (!version_.SupportsClientConnectionIds()) {
-    // When the version allows omitting the connection ID in short headers,
-    // this test lacks the proper initialization for clients to successfully
-    // process the packet.
-    return;
-  }
   Initialize();
   factory_->set_is_quic_known_to_work_on_current_network(true);
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
@@ -13272,12 +13266,6 @@ TEST_P(QuicStreamFactoryTest, YieldAfterPackets) {
 }
 
 TEST_P(QuicStreamFactoryTest, YieldAfterDuration) {
-  if (!version_.SupportsClientConnectionIds()) {
-    // When the version allows omitting the connection ID in short headers,
-    // this test lacks the proper initialization for clients to successfully
-    // process the packet.
-    return;
-  }
   Initialize();
   factory_->set_is_quic_known_to_work_on_current_network(true);
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
