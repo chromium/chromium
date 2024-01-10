@@ -15,6 +15,8 @@
 #include "base/time/time.h"
 #include "chrome/browser/ip_protection/ip_protection_config_http.h"
 #include "chrome/browser/ip_protection/ip_protection_config_provider_factory.h"
+#include "components/privacy_sandbox/tracking_protection_settings.h"
+#include "components/privacy_sandbox/tracking_protection_settings_observer.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
@@ -71,10 +73,12 @@ enum class IpProtectionTryGetAuthTokensResult {
 class IpProtectionConfigProvider
     : public KeyedService,
       public network::mojom::IpProtectionConfigGetter,
-      public signin::IdentityManager::Observer {
+      public signin::IdentityManager::Observer,
+      public privacy_sandbox::TrackingProtectionSettingsObserver {
  public:
   IpProtectionConfigProvider(
       signin::IdentityManager* identity_manager,
+      privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
       Profile* profile);
 
   ~IpProtectionConfigProvider() override;
@@ -182,6 +186,11 @@ class IpProtectionConfigProvider
   // The object used to get an OAuth token. `identity_manager_` will be set to
   // nullptr after `Shutdown()` is called, but will otherwise be non-null.
   raw_ptr<signin::IdentityManager> identity_manager_;
+  // Used to retrieve whether the user has enabled IP protection via settings.
+  // `tracking_protection_settings_` will be set to nullptr after `Shutdown()`
+  // is called, but will otherwise be non-null.
+  raw_ptr<privacy_sandbox::TrackingProtectionSettings>
+      tracking_protection_settings_;
   // The `Profile` object associated with this
   // `IpProtectionConfigProvider()`. Will be reset to nullptr after
   // `Shutdown()` is called.
@@ -212,6 +221,9 @@ class IpProtectionConfigProvider
   void OnErrorStateOfRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info,
       const GoogleServiceAuthError& error) override;
+
+  // TrackingProtectionSettingsObserver:
+  void OnIpProtectionEnabledChanged() override;
 
   // The BlindSignAuth implementation used to fetch blind-signed auth tokens. A
   // raw pointer to `url_loader_factory_` gets passed to

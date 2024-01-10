@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "chrome/browser/ip_protection/ip_protection_config_provider.h"
 #include "chrome/browser/ip_protection/ip_protection_switches.h"
+#include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -57,6 +58,7 @@ IpProtectionConfigProviderFactory::IpProtectionConfigProviderFactory()
     : ProfileKeyedServiceFactory("IpProtectionConfigProviderFactory",
                                  CreateProfileSelections()) {
   DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(TrackingProtectionSettingsFactory::GetInstance());
 }
 
 IpProtectionConfigProviderFactory::~IpProtectionConfigProviderFactory() =
@@ -68,7 +70,7 @@ IpProtectionConfigProviderFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<IpProtectionConfigProvider>(
       IdentityManagerFactory::GetForProfile(profile),
-      profile);
+      TrackingProtectionSettingsFactory::GetForProfile(profile), profile);
 }
 
 bool IpProtectionConfigProviderFactory::ServiceIsCreatedWithBrowserContext()

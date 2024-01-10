@@ -14,6 +14,7 @@
 #include "chrome/browser/ip_protection/get_proxy_config.pb.h"
 #include "chrome/browser/ip_protection/ip_protection_config_http.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -26,10 +27,15 @@
 
 IpProtectionConfigProvider::IpProtectionConfigProvider(
     signin::IdentityManager* identity_manager,
+    privacy_sandbox::TrackingProtectionSettings* tracking_protection_settings,
     Profile* profile)
-    : identity_manager_(identity_manager), profile_(profile) {
+    : identity_manager_(identity_manager),
+      tracking_protection_settings_(tracking_protection_settings),
+      profile_(profile) {
   CHECK(identity_manager);
   identity_manager_->AddObserver(this);
+  CHECK(tracking_protection_settings);
+  tracking_protection_settings_->AddObserver(this);
 }
 
 void IpProtectionConfigProvider::SetUp() {
@@ -514,6 +520,9 @@ void IpProtectionConfigProvider::Shutdown() {
   CHECK(identity_manager_);
   identity_manager_->RemoveObserver(this);
   identity_manager_ = nullptr;
+  CHECK(tracking_protection_settings_);
+  tracking_protection_settings_->RemoveObserver(this);
+  tracking_protection_settings_ = nullptr;
   profile_ = nullptr;
   // If we are shutting down, we can't process messages anymore because we rely
   // on having `identity_manager_` to get the OAuth token. Thus, just reset the
@@ -600,4 +609,8 @@ bool IpProtectionConfigProvider::CanRequestOAuthToken() {
   }
 
   return identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+}
+
+void IpProtectionConfigProvider::OnIpProtectionEnabledChanged() {
+  // TODO(brgoldstein): Update IP protection state based on user settings.
 }

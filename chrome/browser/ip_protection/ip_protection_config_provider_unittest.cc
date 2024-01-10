@@ -13,6 +13,9 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/ip_protection/get_proxy_config.pb.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_prefs.h"
+#include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
@@ -190,11 +193,17 @@ enum class PrimaryAccountBehavior {
 class IpProtectionConfigProviderTest : public testing::Test {
  protected:
   IpProtectionConfigProviderTest()
-      : expiration_time_(base::Time::Now() + base::Hours(1)) {}
+      : expiration_time_(base::Time::Now() + base::Hours(1)) {
+    privacy_sandbox::RegisterProfilePrefs(prefs()->registry());
+  }
 
   void SetUp() override {
-    getter_ = std::make_unique<IpProtectionConfigProvider>(IdentityManager(),
-                                                           /*profile=*/nullptr);
+    tracking_protection_settings_ =
+        std::make_unique<privacy_sandbox::TrackingProtectionSettings>(
+            prefs(), /*onboarding_service=*/nullptr, /*is_incognito=*/false);
+    getter_ = std::make_unique<IpProtectionConfigProvider>(
+        IdentityManager(), tracking_protection_settings_.get(),
+        /*profile=*/nullptr);
     bsa_ = std::make_unique<MockBlindSignAuth>();
     getter_->SetUpForTesting(
         std::make_unique<MockIpProtectionConfigHttp>(absl::nullopt),
@@ -300,6 +309,8 @@ class IpProtectionConfigProviderTest : public testing::Test {
     }
   }
 
+  TestingPrefServiceSimple* prefs() { return &prefs_; }
+
   // Converts a mock token value and expiration time into the struct that will
   // be passed to the network service, including the formatting that the
   // `IpProtectionConfigProvider()` will do.
@@ -336,6 +347,10 @@ class IpProtectionConfigProviderTest : public testing::Test {
   base::Time expiration_time_;
 
   base::HistogramTester histogram_tester_;
+
+  TestingPrefServiceSimple prefs_;
+  std::unique_ptr<privacy_sandbox::TrackingProtectionSettings>
+      tracking_protection_settings_;
 
   std::unique_ptr<IpProtectionConfigProvider> getter_;
   // Note: In the real implementation, `IpProtectionConfigProvider()` owns the
