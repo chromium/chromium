@@ -2127,10 +2127,7 @@
         'experiment_percentage': 100,
       },
       'linux-lacros-tester-rel': {
-        # Only retry the individual failed tests instead of rerunning entire
-        # shards.
-        # crbug.com/1475852
-        'retry_only_failed_tests': True,
+        'ci_only': True,
       },
       'linux-ubsan-fyi-rel': {
         'swarming': {
