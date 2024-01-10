@@ -357,16 +357,6 @@ class PasswordAutofillManagerTest : public testing::Test {
     return l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_MANAGE_PASSWORDS);
   }
 
-  Suggestion::Icon GetManagePasswordsIcon() {
-    // The "Manage passwords" entry only has an icon if
-    // kEnablePasswordsAccountStorage is enabled.
-    if (base::FeatureList::IsEnabled(
-            password_manager::features::kEnablePasswordsAccountStorage)) {
-      return Suggestion::Icon::kSettings;
-    }
-    return Suggestion::Icon::kNoIcon;
-  }
-
   void ExpectAndAllowAuthentication(
       device_reauth::MockDeviceAuthenticator* authenticator) {
     // Allow authentication.
@@ -1392,8 +1382,7 @@ TEST_F(PasswordAutofillManagerTest,
 #if !BUILDFLAG(IS_ANDROID)
                                Suggestion::Icon::kNoIcon,
 #endif
-
-                               GetManagePasswordsIcon()));
+                               Suggestion::Icon::kSettings));
   EXPECT_THAT(
       open_args.suggestions,
       SuggestionVectorMainTextsAre(
@@ -1451,7 +1440,7 @@ TEST_F(PasswordAutofillManagerTest,
 #if !BUILDFLAG(IS_ANDROID)
                                        Suggestion::Icon::kNoIcon,
 #endif
-                                       GetManagePasswordsIcon()));
+                                       Suggestion::Icon::kSettings));
 
   EXPECT_THAT(open_args.suggestions,
               SuggestionVectorMainTextsAre(

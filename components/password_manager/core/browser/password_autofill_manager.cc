@@ -228,11 +228,7 @@ void MaybeAppendManagePasswordsEntry(
           ? IDS_PASSWORD_MANAGER_MANAGE_PASSWORDS_AND_PASSKEYS
           : IDS_PASSWORD_MANAGER_MANAGE_PASSWORDS));
   suggestion.popup_item_id = autofill::PopupItemId::kAllSavedPasswordsEntry;
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kEnablePasswordsAccountStorage)) {
-    // The UI code will pick up an icon from the resources based on the string.
-    suggestion.icon = autofill::Suggestion::Icon::kSettings;
-  }
+  suggestion.icon = autofill::Suggestion::Icon::kSettings;
   // The UI code will pick up an icon from the resources based on the string.
   suggestion.trailing_icon = autofill::Suggestion::Icon::kGooglePasswordManager;
   suggestions->push_back(std::move(suggestion));
