@@ -5,6 +5,7 @@
 #ifndef UI_DISPLAY_TYPES_DISPLAY_COLOR_MANAGEMENT_H_
 #define UI_DISPLAY_TYPES_DISPLAY_COLOR_MANAGEMENT_H_
 
+#include <memory>
 #include <vector>
 
 #include "third_party/skia/modules/skcms/skcms.h"
@@ -24,6 +25,10 @@ class DISPLAY_TYPES_EXPORT GammaCurve {
   ~GammaCurve();
   GammaCurve& operator=(const GammaCurve& other);
 
+  // Return a gamma curve that is composed of curve `f` applied after curve
+  // `g`.
+  static GammaCurve MakeConcat(const GammaCurve& f, const GammaCurve& g);
+
   // Returns true if this was set to an empty LUT and is therefore the identity
   // function.
   bool IsDefaultIdentity() const { return lut_.empty(); }
@@ -42,10 +47,15 @@ class DISPLAY_TYPES_EXPORT GammaCurve {
   const std::vector<GammaRampRGBEntry>& lut() const { return lut_; }
 
  private:
+  float Evaluate(float x, size_t channel) const;
+
   // An array of RGB samples that specify a look-up table (LUT) that uniformly
   // samples the unit interval. This may have any number of entries (including
   // 0 which evaluates to identity and 1 which evaluates to a constant).
   std::vector<GammaRampRGBEntry> lut_;
+
+  // A curve to apply before applying `lut_`.
+  std::unique_ptr<GammaCurve> pre_curve_;
 };
 
 // A structure that contains color calibration information extracted from an

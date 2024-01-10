@@ -134,4 +134,58 @@ TEST(DisplayTest, GammaCurve) {
   EXPECT_EQ(8, b);
 }
 
+TEST(DisplayTest, GammaCurveMakeConcat) {
+  std::vector<GammaRampRGBEntry> lut_f;
+  std::vector<GammaRampRGBEntry> lut_g;
+  lut_f.resize(1024);
+  for (size_t i = 0; i < lut_f.size(); ++i) {
+    float x = i / (lut_f.size() - 1.f);
+    float r = x * x;
+    float g = x * x * x;
+    float b = x * x * x * x;
+    lut_f[i].r = static_cast<uint16_t>(std::round(65535.f * r));
+    lut_f[i].g = static_cast<uint16_t>(std::round(65535.f * g));
+    lut_f[i].b = static_cast<uint16_t>(std::round(65535.f * b));
+  }
+
+  lut_g.resize(512);
+  for (size_t i = 0; i < lut_g.size(); ++i) {
+    float x = i / (lut_g.size() - 1.f);
+    float r = 0.5f * x;
+    float g = 0.5f + 0.5f * x;
+    float b = x;
+    lut_g[i].r = static_cast<uint16_t>(std::round(65535.f * r));
+    lut_g[i].g = static_cast<uint16_t>(std::round(65535.f * g));
+    lut_g[i].b = static_cast<uint16_t>(std::round(65535.f * b));
+  }
+
+  GammaCurve curve_f(lut_f);
+  GammaCurve curve_g(lut_g);
+  GammaCurve curve = GammaCurve::MakeConcat(curve_f, curve_g);
+
+  for (size_t i = 0; i < 256; ++i) {
+    float x = i / 255.f;
+
+    // Apply g.
+    float r = 0.5f * x;
+    float g = 0.5f + 0.5f * x;
+    float b = x;
+
+    // Apply f.
+    r = r * r;
+    g = g * g * g;
+    b = b * b * b * b;
+
+    // Compare.
+    uint16_t actual_r;
+    uint16_t actual_g;
+    uint16_t actual_b;
+    curve.Evaluate(x, actual_r, actual_g, actual_b);
+
+    EXPECT_LT(std::abs(r - actual_r / 65535.f), 0.01);
+    EXPECT_LT(std::abs(g - actual_g / 65535.f), 0.01);
+    EXPECT_LT(std::abs(b - actual_b / 65535.f), 0.01);
+  }
+}
+
 }  // namespace display
