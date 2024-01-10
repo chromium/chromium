@@ -3081,6 +3081,16 @@
         <message name="IDS_SEA_PEN_EXPERIMENT_LABEL" desc="Label for experiment item indicating the feature is experimental.">
           Experiment
         </message>
+        <message name="IDS_SEA_PEN_ERROR_NO_INTERNET" desc="Error message displayed when there is no internet connection.">
+          No internet. Connect to the internet and try again.
+        </message>
+        <message name="IDS_SEA_PEN_ERROR_RESOURCE_EXHAUSTED" desc="Error message displayed when the resource is exhausted.">
+          We're at capacity. Please come back in a bit.
+        </message>
+        <message name="IDS_SEA_PEN_ERROR_GENERIC" desc="Error message displayed when an error occurs.">
+          Something went wrong. Try again.
+        </message>
+
 
         <!-- Traffic Counters UI -->
         <message name="IDS_TRAFFIC_COUNTERS_UNKNOWN" desc="Traffic counters related to an unknown source">

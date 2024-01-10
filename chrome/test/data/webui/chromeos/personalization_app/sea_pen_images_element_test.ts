@@ -120,19 +120,67 @@ suite('SeaPenImagesElementTest', function() {
         'should be 2 feedback buttons per thumbnail');
   });
 
-  test('display error state', async () => {
+  test('display no network error state', async () => {
+    personalizationStore.data.wallpaper.seaPen.thumbnailResponseStatusCode =
+        MantaStatusCode.kNoInternetConnection;
+
+    seaPenImagesElement = initElement(SeaPenImagesElement);
+    await waitAfterNextRender(seaPenImagesElement);
+
+    const errorMessage = seaPenImagesElement.shadowRoot!.querySelector(
+                             '.error-message') as HTMLElement;
+    assertTrue(!!errorMessage);
+    assertEquals(
+        seaPenImagesElement.i18n('seaPenErrorNoInternet'),
+        errorMessage!.innerText);
+    const imageHeading = seaPenImagesElement.shadowRoot!.querySelector(
+                             '.wallpaper-collections-heading') as HTMLElement;
+    assertFalse(
+        !!imageHeading,
+        'image heading should not be displayed when an error is present');
+  });
+
+  test('display resource exhausted error state', async () => {
+    personalizationStore.data.wallpaper.seaPen.thumbnailResponseStatusCode =
+        MantaStatusCode.kResourceExhausted;
+
+    seaPenImagesElement = initElement(SeaPenImagesElement);
+    await waitAfterNextRender(seaPenImagesElement);
+
+    const errorMessage = seaPenImagesElement.shadowRoot!.querySelector(
+                             '.error-message') as HTMLElement;
+    assertTrue(!!errorMessage, 'an error message should be displayed');
+    assertEquals(
+        seaPenImagesElement.i18n('seaPenErrorResourceExhausted'),
+        errorMessage!.innerText);
+    const imageHeading = seaPenImagesElement.shadowRoot!.querySelector(
+                             '.wallpaper-collections-heading') as HTMLElement;
+    assertFalse(
+        !!imageHeading,
+        'image heading should not be displayed when an error is present');
+  });
+
+  test('display generic error state', async () => {
     personalizationStore.data.wallpaper.seaPen.thumbnailResponseStatusCode =
         MantaStatusCode.kGenericError;
 
     seaPenImagesElement = initElement(SeaPenImagesElement);
     await waitAfterNextRender(seaPenImagesElement);
 
-    const errorMessage =
-        seaPenImagesElement.shadowRoot!.querySelector('#error');
-    assertTrue(!!errorMessage);
+    const errorMessage = seaPenImagesElement.shadowRoot!.querySelector(
+                             '.error-message') as HTMLElement;
+    assertTrue(!!errorMessage, 'an error message should be displayed');
+    assertEquals(
+        seaPenImagesElement.i18n('seaPenErrorGeneric'),
+        errorMessage!.innerText);
+    const imageHeading = seaPenImagesElement.shadowRoot!.querySelector(
+                             '.wallpaper-collections-heading') as HTMLElement;
+    assertFalse(
+        !!imageHeading,
+        'image heading should not be displayed when an error is present');
   });
 
-  test('hide error state', async () => {
+  test('hide error state on success', async () => {
     personalizationStore.data.wallpaper.seaPen.thumbnailResponseStatusCode =
         MantaStatusCode.kOk;
 
@@ -140,7 +188,21 @@ suite('SeaPenImagesElementTest', function() {
     await waitAfterNextRender(seaPenImagesElement);
 
     const errorMessage =
-        seaPenImagesElement.shadowRoot!.querySelector('#error');
-    assertFalse(!!errorMessage);
+        seaPenImagesElement.shadowRoot!.querySelector('.error-message');
+    assertFalse(!!errorMessage, 'error messages should be hidden on success');
+  });
+
+  test('hide error state while loading', async () => {
+    personalizationStore.data.wallpaper.seaPen.thumbnailResponseStatusCode =
+        MantaStatusCode.kGenericError;
+    personalizationStore.data.wallpaper.seaPen.loading.thumbnails = true;
+
+    seaPenImagesElement = initElement(SeaPenImagesElement);
+    await waitAfterNextRender(seaPenImagesElement);
+
+    const errorMessage =
+        seaPenImagesElement.shadowRoot!.querySelector('.error-message');
+    assertFalse(
+        !!errorMessage, 'error messages should be hidden while loading');
   });
 });

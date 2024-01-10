@@ -364,6 +364,9 @@ void AddStrings(content::WebUIDataSource* source) {
       {"seaPenDeleteWallpaper", IDS_SEA_PEN_DELETE_WALLPAPER},
       {"seaPenCreateMore", IDS_SEA_PEN_CREATE_MORE},
       {"seaPenAbout", IDS_SEA_PEN_ABOUT},
+      {"seaPenErrorNoInternet", IDS_SEA_PEN_ERROR_NO_INTERNET},
+      {"seaPenErrorResourceExhausted", IDS_SEA_PEN_ERROR_RESOURCE_EXHAUSTED},
+      {"seaPenErrorGeneric", IDS_SEA_PEN_ERROR_GENERIC},
       {"seaPenExperimentLabel", IDS_SEA_PEN_EXPERIMENT_LABEL}};
 
   source->AddLocalizedStrings(kLocalizedStrings);

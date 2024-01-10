@@ -85,63 +85,92 @@
     background-color: var(--cros-bg-color);
     margin-inline: 0;
   }
+
+  .error-container {
+    align-items: center;
+    display: flex;
+    flex-flow: column nowrap;
+    height: 100%;
+    justify-content: center;
+    width: 100%;
+  }
+
+  iron-icon[icon='personalization-shared-illo:network_error'] {
+    --iron-icon-width: 400px;
+    --iron-icon-height: 177px;
+    top: -24px;
+  }
+
+  .error-message {
+    font: var(--cros-body-1-font);
+    margin: 0 12px 0 12px;
+    max-width: 316px;
+    position: relative;
+    top: -12px;
+  }
 </style>
-<h2 class="wallpaper-collections-heading">
-  [[i18n('seaPenWallpaperPoweredByGoogle')]]
-</h2>
 <template is="dom-if" if="[[showError_]]" restamp>
-  <div id="error">error message</div>
+  <div class="error-container">
+    <!-- TODO(b/319171051): Add other error images when available. -->
+    <iron-icon icon="personalization-shared-illo:network_error"></iron-icon>
+    <p class="error-message">[[getErrorMessage_(thumbnailResponseStatusCode_)]]</p>
+  </div>
 </template>
-<template is="dom-if" if="[[thumbnailsLoading_]]" restamp>
-  <iron-list class="thumbnail-placeholder-list" items="[[getPlaceholders_(4)]]" grid>
-    <template>
-      <div class="thumbnail-placeholder-container">
-        <sparkle-placeholder class="thumbnail-placeholder" index="[[index]]">
-        </sparkle-placeholder>
-      </div>
-    </template>
-  </iron-list>
-</template>
-<template is="dom-if" if="[[shouldShowThumbnailPlaceholders_(thumbnailsLoading_, thumbnails_)]]">
-  <iron-list class="thumbnail-placeholder-list" items="[[getPlaceholders_(4)]]" grid>
-    <template>
-      <div class="thumbnail-placeholder-container">
-        <div class="thumbnail-placeholder"></div>
-      </div>
-    </template>
-  </iron-list>
-</template>
-<template is="dom-if" if="[[shouldShowImageThumbnails_(thumbnailsLoading_, thumbnails_)]]">
-  <iron-list id="grid"
-      items="[[thumbnails_]]"
-      grid
-      role="listbox">
-    <template>
-      <div class="thumbnail-item-container">
-        <div class="feedback-icon-container">
-          <div class="feedback-icon-container-inner">
-            <cr-icon-button class="thumb-icon-button" iron-icon="cr:thumbs-up"
-                role="button" on-click="onClickThumbsUp_">
-            </cr-icon-button>
-            <cr-icon-button class="thumb-icon-button" iron-icon="cr:thumbs-down"
-                role="button" on-click="onClickThumbsDown_">
-            </cr-icon-button>
-          </div>
-          <div class="feedback-icon-container-shadow-left"></div>
-          <div class="feedback-icon-container-shadow-top"></div>
+<template is="dom-if" if="[[!showError_]]" restamp>
+  <h2 class="wallpaper-collections-heading">
+    [[i18n('seaPenWallpaperPoweredByGoogle')]]
+  </h2>
+  <template is="dom-if" if="[[thumbnailsLoading_]]" restamp>
+    <iron-list class="thumbnail-placeholder-list" items="[[getPlaceholders_(4)]]" grid>
+      <template>
+        <div class="thumbnail-placeholder-container">
+          <sparkle-placeholder class="thumbnail-placeholder" index="[[index]]">
+          </sparkle-placeholder>
         </div>
-        <wallpaper-grid-item
-            class="sea-pen-image"
-            index="[[index]]"
-            data-sea-pen-image
-            aria-posinset$="[[getAriaIndex_(index)]]"
-            on-wallpaper-grid-item-selected="onThumbnailSelected_"
-            role="option"
-            selected="[[isThumbnailSelected_(item, pendingSelected_)]]"
-            src="[[item.image]]"
-            tabindex$="[[tabIndex]]">
-        </wallpaper-grid-item>
-      </div>
-    </template>
-  </iron-list>
+      </template>
+    </iron-list>
+  </template>
+  <template is="dom-if" if="[[shouldShowThumbnailPlaceholders_(thumbnailsLoading_, thumbnails_)]]">
+    <iron-list class="thumbnail-placeholder-list" items="[[getPlaceholders_(4)]]" grid>
+      <template>
+        <div class="thumbnail-placeholder-container">
+          <div class="thumbnail-placeholder"></div>
+        </div>
+      </template>
+    </iron-list>
+  </template>
+  <template is="dom-if" if="[[shouldShowImageThumbnails_(thumbnailsLoading_, thumbnails_)]]">
+    <iron-list id="grid"
+        items="[[thumbnails_]]"
+        grid
+        role="listbox">
+      <template>
+        <div class="thumbnail-item-container">
+          <div class="feedback-icon-container">
+            <div class="feedback-icon-container-inner">
+              <cr-icon-button class="thumb-icon-button" iron-icon="cr:thumbs-up"
+                  role="button" on-click="onClickThumbsUp_">
+              </cr-icon-button>
+              <cr-icon-button class="thumb-icon-button" iron-icon="cr:thumbs-down"
+                  role="button" on-click="onClickThumbsDown_">
+              </cr-icon-button>
+            </div>
+            <div class="feedback-icon-container-shadow-left"></div>
+            <div class="feedback-icon-container-shadow-top"></div>
+          </div>
+          <wallpaper-grid-item
+              class="sea-pen-image"
+              index="[[index]]"
+              data-sea-pen-image
+              aria-posinset$="[[getAriaIndex_(index)]]"
+              on-wallpaper-grid-item-selected="onThumbnailSelected_"
+              role="option"
+              selected="[[isThumbnailSelected_(item, pendingSelected_)]]"
+              src="[[item.image]]"
+              tabindex$="[[tabIndex]]">
+          </wallpaper-grid-item>
+        </div>
+      </template>
+    </iron-list>
+  </template>
 </template>

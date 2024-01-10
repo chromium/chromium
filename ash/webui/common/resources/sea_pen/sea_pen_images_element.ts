@@ -8,6 +8,7 @@
  */
 
 import 'chrome://resources/ash/common/personalization/common.css.js';
+import 'chrome://resources/ash/common/personalization/personalization_shared_icons.html.js';
 import 'chrome://resources/ash/common/sea_pen/sea_pen.css.js';
 import 'chrome://resources/ash/common/sea_pen/surface_effects/sparkle_placeholder.js';
 import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
@@ -15,12 +16,11 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 
 import {MantaStatusCode, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
-import {isNonEmptyArray} from './sea_pen_utils.js';
-
 import {selectSeaPenWallpaper} from './sea_pen_controller.js';
 import {getTemplate} from './sea_pen_images_element.html.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
+import {isNonEmptyArray} from './sea_pen_utils.js';
 
 export class SeaPenImagesElement extends WithSeaPenStore {
   static get is() {
@@ -85,6 +85,17 @@ export class SeaPenImagesElement extends WithSeaPenStore {
   private computeShowError_(
       statusCode: MantaStatusCode|null, thumbnailsLoading: boolean): boolean {
     return !!statusCode && !thumbnailsLoading;
+  }
+
+  private getErrorMessage_(statusCode: MantaStatusCode|null): string {
+    switch (statusCode) {
+      case MantaStatusCode.kNoInternetConnection:
+        return this.i18n('seaPenErrorNoInternet');
+      case MantaStatusCode.kResourceExhausted:
+        return this.i18n('seaPenErrorResourceExhausted');
+      default:
+        return this.i18n('seaPenErrorGeneric');
+    }
   }
 
   private shouldShowThumbnailPlaceholders_(
