@@ -91,12 +91,12 @@ void OpenExternal(const GURL& url) {
   NSURL* ns_url = net::NSURLWithGURL(url);
 
   // https://crbug.com/1504165
-  static auto* const crash_key = base::debug::AllocateCrashKeyString(
-      "platform_util_OpenExternal()", base::debug::CrashKeySize::Size64);
+  static auto* const crash_key_string = base::debug::AllocateCrashKeyString(
+      "platform_util_OpenExternal", base::debug::CrashKeySize::Size64);
   NSUInteger length = [ns_url absoluteString].length;
   NSString* lengthString = [NSString stringWithFormat:@"%lu", length];
-  base::debug::ScopedCrashKeyString(crash_key,
-                                    base::SysNSStringToUTF8(lengthString));
+  base::debug::ScopedCrashKeyString crash_key(
+      crash_key_string, base::SysNSStringToUTF8(lengthString));
 
   if (!ns_url || ![[NSWorkspace sharedWorkspace] openURL:ns_url]) {
     LOG(WARNING) << "NSWorkspace failed to open URL " << url;
