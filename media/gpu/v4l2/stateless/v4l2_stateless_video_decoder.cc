@@ -399,8 +399,8 @@ void V4L2StatelessVideoDecoder::ServiceDisplayQueue() {
     display_queue_.pop();
 
     auto wrapped_frame = VideoFrame::WrapVideoFrame(
-        video_frame, video_frame->format(), decoder_->GetVisibleRect(),
-        aspect_ratio_.GetNaturalSize(decoder_->GetVisibleRect()));
+        video_frame, video_frame->format(), surface->GetVisibleRect(),
+        aspect_ratio_.GetNaturalSize(surface->GetVisibleRect()));
 
     // Move the metadata associated with the surface over to the video frame.
     wrapped_frame->set_color_space(surface->ColorSpace().ToGfxColorSpace());
