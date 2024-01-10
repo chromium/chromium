@@ -60,6 +60,8 @@ struct COMPONENT_EXPORT(APP_RESTORE) AppLaunchInfo {
 
   std::string app_id;
   std::optional<int32_t> window_id;
+
+  // App launch parameters.
   std::optional<int32_t> event_flag;
   std::optional<int32_t> container;
   std::optional<int32_t> disposition;
@@ -67,17 +69,19 @@ struct COMPONENT_EXPORT(APP_RESTORE) AppLaunchInfo {
   std::optional<int32_t> arc_session_id;
   std::optional<int64_t> display_id;
   std::optional<std::string> handler_id;
+  std::vector<base::FilePath> file_paths;
+  apps::IntentPtr intent = nullptr;
+
+  // Additional info for browsers.
   std::vector<GURL> urls;
   std::optional<int32_t> active_tab_index;
   std::optional<int32_t> first_non_pinned_tab_index;
-  std::vector<base::FilePath> file_paths;
-  apps::IntentPtr intent = nullptr;
   std::optional<bool> app_type_browser;
   std::optional<std::string> app_name;
-  // For Browsers only, represents tab groups associated with this browser
-  // instance if there are any. This is only used in Desks Storage, tab groups
-  // in full restore are persistsed by sessions. This field is not converted to
-  // base::Value in base value conversions.
+  // Represents tab groups associated with this browser instance if there are
+  // any. This is only used in Desks Storage, tab groups in full restore are
+  // persisted by sessions. This field is not converted to base::Value in base
+  // value conversions.
   std::vector<tab_groups::TabGroupInfo> tab_group_infos;
   // Lacros only, the ID of the lacros profile that this browser uses.
   std::optional<uint64_t> lacros_profile_id;

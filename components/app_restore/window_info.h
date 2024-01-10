@@ -48,7 +48,7 @@ struct COMPONENT_EXPORT(APP_RESTORE) WindowInfo {
   // Virtual desk id.
   std::optional<int32_t> desk_id;
 
-  // Virtual desk guid.
+  // The GUID of the virtual desk that this window was on.
   base::Uuid desk_guid;
 
   // Current bounds in screen in coordinates. If the window has restore bounds,

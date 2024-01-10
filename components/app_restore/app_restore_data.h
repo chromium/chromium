@@ -85,43 +85,48 @@ struct COMPONENT_EXPORT(APP_RESTORE) AppRestoreData {
   bool operator!=(const AppRestoreData& other) const;
 
   // App launch parameters.
+  // TODO(sammiequon): Replace this with a `AppLaunchInfo` object.
   std::optional<int32_t> event_flag;
   std::optional<int32_t> container;
   std::optional<int32_t> disposition;
   std::optional<GURL> override_url;
   std::optional<int64_t> display_id;
   std::optional<std::string> handler_id;
+  std::vector<base::FilePath> file_paths;
+  apps::IntentPtr intent = nullptr;
+
+  // Additional info for browsers.
+  // TODO(sammiequon): Replace this with a `BrowserExtraInfo` object.
   std::vector<GURL> urls;
   std::optional<int32_t> active_tab_index;
   std::optional<int32_t> first_non_pinned_tab_index;
-  apps::IntentPtr intent = nullptr;
-  std::vector<base::FilePath> file_paths;
   std::optional<bool> app_type_browser;
   std::optional<std::string> app_name;
-  std::optional<std::u16string> title;
-
-  // Window's information.
-  std::optional<int32_t> activation_index;
-  std::optional<int32_t> desk_id;
-  std::optional<gfx::Rect> current_bounds;
-  std::optional<chromeos::WindowStateType> window_state_type;
-  std::optional<ui::WindowShowState> pre_minimized_show_state_type;
-  // For snapped windows only, this is used to determine the size of a restored
-  // snapp window, depending on the snap orientation. For example, a
-  // `snap_percentage` of 60 when the display is in portrait means the height is
-  // 60 percent of the work area height.
-  std::optional<uint32_t> snap_percentage;
-  // For Browsers only, represents tab groups associtated with this browser
+  // For Browsers only, represents tab groups associated with this browser
   // instance if there are any. This is only used in Desks Storage, tab groups
-  // in full restore are persistsed by sessions.  This field is not converted to
+  // in full restore are persisted by sessions. This field is not converted to
   // base::value in base value conversions.
   std::vector<tab_groups::TabGroupInfo> tab_group_infos;
   // Lacros only, the ID of the lacros profile that this browser uses.
   std::optional<uint64_t> lacros_profile_id;
-  // The GUID of the desk that this window was on.
+
+  // Window's information.
+  // TODO(sammiequon): Replace this with a `WindowInfo` object.
+  std::optional<int32_t> activation_index;
+  std::optional<int32_t> desk_id;
   base::Uuid desk_guid;
+  std::optional<gfx::Rect> current_bounds;
+  std::optional<chromeos::WindowStateType> window_state_type;
+  std::optional<ui::WindowShowState> pre_minimized_show_state_type;
+  // For snapped windows only, this is used to determine the size of a restored
+  // snap window, depending on the snap orientation. For example, a
+  // `snap_percentage` of 60 when the display is in portrait means the height is
+  // 60 percent of the work area height.
+  std::optional<uint32_t> snap_percentage;
+  std::optional<std::u16string> title;
 
   // Extra ARC window's information.
+  // TODO(sammiequon): Replace this with a `ArcExtraInfo` object.
   std::optional<gfx::Size> minimum_size;
   std::optional<gfx::Size> maximum_size;
   std::optional<gfx::Rect> bounds_in_root;
