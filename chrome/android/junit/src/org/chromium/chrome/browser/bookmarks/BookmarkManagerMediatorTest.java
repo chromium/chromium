@@ -38,7 +38,6 @@ import android.graphics.drawable.Drawable;
 import android.util.Pair;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
@@ -521,45 +520,13 @@ public class BookmarkManagerMediatorTest {
     }
 
     private void verifyCurrentViewTypes(int... expectedViewTypes) {
-        verifyModelListHaViewTypes(mModelList, expectedViewTypes);
-    }
-
-    private static void verifyModelListHaViewTypes(ModelList modelList, int... expectedViewTypes) {
-        assertEquals(expectedViewTypes.length, modelList.size());
-        for (int i = 0; i < expectedViewTypes.length; ++i) {
-            assertEquals(
-                    "ViewType did not match at index " + i,
-                    expectedViewTypes[i],
-                    modelList.get(i).type);
-        }
+        BookmarkModelListTestUtil.verifyModelListHaViewTypes(mModelList, expectedViewTypes);
     }
 
     private void verifyCurrentBookmarkIds(BookmarkId... expectedBookmarkIds) {
-        verifyModelListHasBookmarkIds(mModelList, expectedBookmarkIds);
+        BookmarkModelListTestUtil.verifyModelListHasBookmarkIds(mModelList, expectedBookmarkIds);
     }
 
-    private static void verifyModelListHasBookmarkIds(
-            ModelList modelList, BookmarkId... expectedBookmarkIds) {
-        assertEquals(expectedBookmarkIds.length, modelList.size());
-        for (int i = 0; i < expectedBookmarkIds.length; ++i) {
-            BookmarkId bookmarkId = getBookmarkIdFromModel(modelList.get(i).model);
-            assertEquals(
-                    "BookmarkId did not match at index " + i, expectedBookmarkIds[i], bookmarkId);
-        }
-    }
-
-    private static @Nullable BookmarkId getBookmarkIdFromModel(PropertyModel propertyModel) {
-        BookmarkListEntry bookmarkListEntry =
-                propertyModel.get(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY);
-        if (bookmarkListEntry == null) {
-            return null;
-        }
-        BookmarkItem bookmarkItem = bookmarkListEntry.getBookmarkItem();
-        if (bookmarkItem == null) {
-            return null;
-        }
-        return bookmarkItem.getId();
-    }
 
     @Test
     public void initAndLoadBookmarkModel() {

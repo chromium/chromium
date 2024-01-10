@@ -20,6 +20,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
@@ -79,6 +80,9 @@ public class FakeBookmarkModelTest {
 
         List<BookmarkId> expected = Arrays.asList(id);
         assertEquals(expected, mBookmarkModel.getChildIds(mBookmarkModel.getOtherFolderId()));
+
+        BookmarkItem item = mBookmarkModel.getBookmarkById(id);
+        assertTrue(item.isFolder());
     }
 
     @Test
@@ -166,6 +170,43 @@ public class FakeBookmarkModelTest {
         assertEquals(
                 2,
                 mBookmarkModel.getUnreadCount(
+                        mBookmarkModel.getLocalOrSyncableReadingListFolder()));
+    }
+
+    @Test
+    public void testChildCount() {
+        mBookmarkModel.addBookmark(
+                mBookmarkModel.getOtherFolderId(), 0, "title1", new GURL("https://test1.com"));
+        mBookmarkModel.addBookmark(
+                mBookmarkModel.getOtherFolderId(), 0, "title2", new GURL("https://test2.com"));
+        mBookmarkModel.addBookmark(
+                mBookmarkModel.getOtherFolderId(), 0, "title3", new GURL("https://test3.com"));
+        BookmarkId folder =
+                mBookmarkModel.addFolder(mBookmarkModel.getOtherFolderId(), 0, "folder1");
+        mBookmarkModel.addBookmark(folder, 0, "title11", new GURL("https://test11.com"));
+        mBookmarkModel.addBookmark(folder, 0, "title12", new GURL("https://test12.com"));
+        mBookmarkModel.addBookmark(folder, 0, "title13", new GURL("https://test13.com"));
+        assertEquals(4, mBookmarkModel.getChildCount(mBookmarkModel.getOtherFolderId()));
+        assertEquals(7, mBookmarkModel.getTotalBookmarkCount(mBookmarkModel.getOtherFolderId()));
+
+        mBookmarkModel.addToReadingList(
+                mBookmarkModel.getLocalOrSyncableReadingListFolder(),
+                "title1",
+                new GURL("https://test1.com"));
+        mBookmarkModel.addToReadingList(
+                mBookmarkModel.getLocalOrSyncableReadingListFolder(),
+                "title2",
+                new GURL("https://test2.com"));
+        mBookmarkModel.addToReadingList(
+                mBookmarkModel.getLocalOrSyncableReadingListFolder(),
+                "title3",
+                new GURL("https://test3.com"));
+        assertEquals(
+                3,
+                mBookmarkModel.getChildCount(mBookmarkModel.getLocalOrSyncableReadingListFolder()));
+        assertEquals(
+                3,
+                mBookmarkModel.getTotalBookmarkCount(
                         mBookmarkModel.getLocalOrSyncableReadingListFolder()));
     }
 }

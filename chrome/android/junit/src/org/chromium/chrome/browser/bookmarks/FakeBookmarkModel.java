@@ -35,7 +35,8 @@ public class FakeBookmarkModel extends BookmarkModel {
     // Factory constructor for the FakeBoomkarkModel
     public static BookmarkModel createModel() {
         // Temporary Jni mock.
-        BookmarkBridgeJni.TEST_HOOKS.setInstanceForTesting(Mockito.mock(BookmarkBridgeJni.class));
+        BookmarkBridgeJni.TEST_HOOKS.setInstanceForTesting(
+                Mockito.mock(BookmarkBridge.Natives.class));
         BookmarkModel fakeBookmarkModel = new FakeBookmarkModel();
         return fakeBookmarkModel;
     }
@@ -135,7 +136,7 @@ public class FakeBookmarkModel extends BookmarkModel {
                 parent,
                 title,
                 /* url= */ null,
-                /* isFolder= */ false,
+                /* isFolder= */ true,
                 /* isEditable= */ true,
                 /* isManaged= */ false,
                 /* read= */ false,
@@ -340,7 +341,22 @@ public class FakeBookmarkModel extends BookmarkModel {
 
         @Override
         public int getTotalBookmarkCount(long nativeBookmarkBridge, long id, int type) {
-            return mBookmarkIdToItemMap.size();
+            List<BookmarkId> children =
+                    FakeBookmarkModel.this.getChildIds(new BookmarkId(id, type));
+            int size = children.size();
+            while (!children.isEmpty()) {
+                BookmarkId childId = children.remove(0);
+                BookmarkItem childItem = FakeBookmarkModel.this.getBookmarkById(childId);
+                if (!childItem.isFolder()) {
+                    continue;
+                }
+
+                for (BookmarkId subChildId : FakeBookmarkModel.this.getChildIds(childId)) {
+                    size++;
+                    children.add(subChildId);
+                }
+            }
+            return size;
         }
 
         @Override
