@@ -1565,7 +1565,8 @@ void DismissScreensAfterSigninAndSync() {
   // case, France).
   config.additional_args.push_back("--search-engine-choice-country=FR");
   config.features_enabled.push_back(switches::kSearchEngineChoiceFre);
-  config.additional_args.push_back(std::string("-SearchEngineForceEnabled"));
+  config.additional_args.push_back("-SearchEngineForceEnabled");
+  config.additional_args.push_back("true");
   return config;
 }
 
