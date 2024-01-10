@@ -1539,7 +1539,10 @@ const std::string& NewTabPageHandler::GetSurveyTriggerIdForModuleAndInteraction(
   const base::Value::Dict* module_id_trigger_dict =
       interaction_module_id_trigger_dict_.FindDict(interaction);
   if (module_id_trigger_dict) {
-    return *module_id_trigger_dict->FindString(module_id);
+    auto* trigger_id = module_id_trigger_dict->FindString(module_id);
+    if (trigger_id) {
+      return *trigger_id;
+    }
   }
 
   return kNoTriggerId;
