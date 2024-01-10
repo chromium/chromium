@@ -748,9 +748,16 @@ def main(argv) -> int:
     # This early declaration allow graceful exit when Chromium swarming kill process before wpt starts
     handle_interrupt_signals()
 
+    host = Host()
     exit_code = exit_codes.UNEXPECTED_ERROR_EXIT_STATUS
+    # The swarming bots for Android builders are Linux, so this check won't
+    # fail them.
+    if not host.platform.is_linux():
+        logger.error(
+            '`run_wpt_tests.py` does not yet support non-Linux platforms; '
+            'follow https://crbug.com/1512219 for status.')
+        return exit_code
     try:
-        host = Host()
         adapter = WPTAdapter.from_args(host, argv)
         if adapter.options.use_upstream_wpt:
             exit_code = _run_with_upstream_wpt(host, argv)
