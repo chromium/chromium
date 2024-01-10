@@ -125,9 +125,6 @@ bool Agent::IsWindowAgent() const {
 
 void Agent::PerformMicrotaskCheckpoint() {
   event_loop_->PerformMicrotaskCheckpoint();
-  if (!event_loop_->RejectsPromisesOnEachCompletion()) {
-    rejected_promises_->ProcessQueue();
-  }
 }
 
 void Agent::Dispose() {
