@@ -2014,7 +2014,10 @@ test("blink_platform_unittests") {
     ]
   }
   if (is_ios) {
-    bundle_deps = [ ":blink_platform_unittests_bundle_data" ]
+    bundle_deps = [
+      ":blink_platform_unittests_bundle_data",
+      "//media:unit_tests_bundle_data",
+    ]
   }
 }
 
