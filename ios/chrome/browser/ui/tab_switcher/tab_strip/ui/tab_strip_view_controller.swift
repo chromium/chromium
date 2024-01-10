@@ -180,6 +180,8 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
     layout.needsUpdate = true
     diffableDataSource?.apply(snapshot, animatingDifferences: animatingDifferences)
     layout.needsUpdate = false
+
+    updateVisibleCellIdentifiers()
   }
 
   /// Creates the registrations of the different cells used in the collection view.
@@ -189,6 +191,7 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
       cell.setTitle(item.title)
       cell.loading = item.showsActivity
       cell.delegate = self
+      cell.accessibilityIdentifier = self.tabTripCellAccessibilityIdentifier(index: indexPath.item)
 
       weak var weakSelf = self
       item.fetchFavicon { (item: TabSwitcherItem?, image: UIImage?) -> Void in
@@ -256,6 +259,22 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
     let closeActions = UIMenu(options: .displayInline, children: [close, closeOthers])
 
     return UIMenu(children: [share, closeActions])
+  }
+
+  // Update visible cells identifier, following a reorg of cells.
+  func updateVisibleCellIdentifiers() {
+    for indexPath in collectionView.indexPathsForVisibleItems {
+      if let cell = collectionView.cellForItem(at: indexPath) {
+        cell.accessibilityIdentifier = tabTripCellAccessibilityIdentifier(index: indexPath.item)
+      }
+    }
+  }
+
+  // Returns the accessibility identifier to set on a TabStripCell when
+  // positioned at the given index.
+  func tabTripCellAccessibilityIdentifier(index: Int) -> String {
+    return String(
+      format: "%@%ld", TabStripConstants.CollectionView.tabStripCellPrefixIdentifier, index)
   }
 
   // MARK: - TabStripNewTabButtonDelegate
