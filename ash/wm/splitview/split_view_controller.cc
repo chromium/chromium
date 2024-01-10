@@ -824,7 +824,8 @@ void SplitViewController::AttachToBeSnappedWindow(
 
   // This must be done before we push `divider_position_` to the closest fixed
   // ratio, since the minimum size will be respected there.
-  const int new_divider_position = GetClosestFixedDividerPosition();
+  const int new_divider_position =
+      GetClosestFixedDividerPosition(divider_position_);
   const bool total_size_exceeds_work_area =
       divider_position_ + kSplitviewDividerShortSideLength +
           GetMinimumWindowLength(other_window, IsLayoutHorizontal(window)) >
@@ -885,7 +886,7 @@ void SplitViewController::SwapWindows() {
         primary_window_ ? SnapPosition::kPrimary : SnapPosition::kSecondary;
   }
 
-  divider_position_ = GetClosestFixedDividerPosition();
+  divider_position_ = GetClosestFixedDividerPosition(divider_position_);
   UpdateStateAndNotifyObservers();
   NotifyWindowSwapped();
 
@@ -1530,7 +1531,7 @@ void SplitViewController::OnDisplayMetricsChanged(
   // For other display configuration changes, we only move the divider to the
   // closest fixed position.
   if (!IsResizingWithDivider()) {
-    divider_position_ = GetClosestFixedDividerPosition();
+    divider_position_ = GetClosestFixedDividerPosition(divider_position_);
   }
 
   EndSplitViewAfterResizingAtEdgeIfAppropriate();
@@ -1821,7 +1822,7 @@ void SplitViewController::MaybeEndOverviewOnWindowResize(aura::Window* window) {
 
 void SplitViewController::CreateSplitViewDividerInClamshell() {
   CHECK(InClamshellSplitViewMode());
-  divider_position_ = GetClosestFixedDividerPosition();
+  divider_position_ = GetClosestFixedDividerPosition(divider_position_);
   split_view_divider_ =
       std::make_unique<SplitViewDivider>(this, divider_position_);
   UpdateSnappedWindowsAndDividerBounds();
@@ -2029,7 +2030,7 @@ void SplitViewController::UpdateDividerPosition(
   divider_position_ = std::max(0, divider_position_);
 }
 
-int SplitViewController::GetClosestFixedDividerPosition() {
+int SplitViewController::GetClosestFixedDividerPosition(int divider_position) {
   // The values in |kFixedPositionRatios| represent the fixed position of the
   // center of the divider while |divider_position_| represent the origin of the
   // divider rectangle. So, before calling FindClosestFixedPositionRatio,
@@ -2037,8 +2038,10 @@ int SplitViewController::GetClosestFixedDividerPosition() {
   // center of the divider, so extract the origin, unless the result is on of
   // the endpoints.
   int divider_upper_limit = GetDividerPositionUpperLimit(root_window_);
+  // TODO(b/319334795): Move this function and `divider_closest_ratio_` to
+  // SplitViewDivider.
   divider_closest_ratio_ = FindClosestPositionRatio(
-      float(divider_position_ + kSplitviewDividerShortSideLength / 2) /
+      float(divider_position + kSplitviewDividerShortSideLength / 2) /
       divider_upper_limit);
   int fixed_position = divider_upper_limit * divider_closest_ratio_;
   if (divider_closest_ratio_ > 0.f && divider_closest_ratio_ < 1.f) {
@@ -2482,7 +2485,8 @@ void SplitViewController::EndTabletResize() {
   resize_timer_.Stop();
   tablet_resize_mode_ = TabletResizeMode::kNormal;
 
-  const int target_divider_position = GetClosestFixedDividerPosition();
+  const int target_divider_position =
+      GetClosestFixedDividerPosition(divider_position_);
   // TODO(b/298515283): Separate Snap Group and tablet resize.
   if (divider_position_ == target_divider_position ||
       IsSnapGroupEnabledInClamshellMode()) {
@@ -2578,10 +2582,25 @@ void SplitViewController::OnTabletModeStarted() {
   // divider if not exists and adjust the `divider_position_` to be one
   // of the fixed positions.
   if (InSplitViewMode()) {
-    divider_position_ = GetClosestFixedDividerPosition();
+    // The windows would already have been attached before transition, in
+    // `TabletModeWindowManager::ArrangeWindowsForTabletMode()`.
+    CHECK(primary_window_ || secondary_window_);
+    const bool horizontal = IsLayoutHorizontal(root_window_);
+    const int target_divider_position =
+        primary_window_ ? GetWindowLength(primary_window_, horizontal)
+                        : GetDividerPositionUpperLimit(root_window_) -
+                              GetWindowLength(secondary_window_, horizontal);
+    // Tablet mode only supports the fixed divider positions in
+    // `kFixedPositionRatios`, so push `target_divider_position` to the closest
+    // fixed ratio.
+    const int divider_position =
+        GetClosestFixedDividerPosition(target_divider_position);
     if (!split_view_divider_) {
       split_view_divider_ =
-          std::make_unique<SplitViewDivider>(this, divider_position_);
+          std::make_unique<SplitViewDivider>(this, divider_position);
+      // TODO(b/308819668): Remove this when `divider_position` is saved in
+      // `SplitViewDivider`.
+      divider_position_ = divider_position;
     }
 
     UpdateSnappedWindowsAndDividerBounds();
@@ -2730,6 +2749,13 @@ void SplitViewController::SwapWindowsAndUpdateBounds() {
   if (secondary_window_) {
     secondary_window_->SetBoundsInScreen(primary_window_bounds, dst_display);
   }
+}
+
+void SplitViewController::SetDividerPosition(int divider_position) {
+  // TODO(b/308819668): Sanity check. Modify this to set
+  // `split_view_divider_->divider_position_` when we move it.
+  CHECK(split_view_divider_);
+  divider_position_ = divider_position;
 }
 
 }  // namespace ash
