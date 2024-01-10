@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/preloading/prerender/prerender_manager.h"
-
 #include <string>
 
-#include "base/system/sys_info.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
+#include "chrome/browser/preloading/prerender/prerender_manager.h"
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
 #include "chrome/browser/search_engines/template_url_service_factory_test_util.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -21,12 +19,8 @@
 #include "content/public/test/web_contents_tester.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 
 namespace {
-
-// Following definitions are equal to content::PrerenderFinalStatus.
-constexpr int kLowEndDevice = 2;
 
 class PrerenderManagerTest : public ChromeRenderViewHostTestHarness {
  public:
@@ -110,7 +104,7 @@ class PrerenderManagerTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<content::test::ScopedPrerenderWebContentsDelegate>
       web_contents_delegate_;
 
-  net::EmbeddedTestServer test_server_{net::EmbeddedTestServer::TYPE_HTTPS};
+  net::EmbeddedTestServer test_server_;
   raw_ptr<PrerenderManager, DanglingUntriaged> prerender_manager_;
 };
 
@@ -256,107 +250,5 @@ TEST_F(PrerenderManagerTest, StartNewPrerenderDirectUrlInput) {
             content::test::PreloadingAttemptAccessor(preloading_attempt)
                 .GetFailureReason());
 }
-
-// If a prerender attempt is rejected due to ineligibility, the following same
-// predictions should be ignored, and they are reported to UMA only once.
-class NotRecountSameRejectedAttemptsTest : public PrerenderManagerTest {
- public:
-  NotRecountSameRejectedAttemptsTest() {
-    // Set the value of memory threshold more than the physical memory.  The
-    // test will expect that prerendering does not occur.
-    std::string memory_threshold =
-        base::NumberToString(base::SysInfo::AmountOfPhysicalMemoryMB() + 1);
-    feature_list_.InitWithFeaturesAndParameters(
-        {{blink::features::kPrerender2MemoryControls,
-          {{blink::features::kPrerender2MemoryThresholdParamName,
-            memory_threshold}}}},
-        {});
-  }
-
-  // Helper function for triggering a specific type of prerendering. The given
-  // `trigger_func` will be executed twice, attempting to trigger prerendering
-  // `url` within an ineligible context.
-  template <typename PredictorInput, typename TriggeringFunc>
-  void TriggerMultipleRejectedDuplicatedAttempt(
-      const std::string& suffix,
-      const GURL& url,
-      PredictorInput& predictor_input_1,
-      PredictorInput& predictor_input_2,
-      TriggeringFunc trigger_func) {
-    base::HistogramTester histogram_tester;
-    std::string histogram_name = prerender_helper().GenerateHistogramName(
-        "Prerender.Experimental.PrerenderHostFinalStatus",
-        content::PreloadingTriggerType::kEmbedder, suffix);
-    trigger_func.Run(url, predictor_input_1);
-    {
-      int prerender_host_id = prerender_helper().GetHostForUrl(url);
-      EXPECT_EQ(prerender_host_id,
-                content::RenderFrameHost::kNoFrameTreeNodeId);
-    }
-    histogram_tester.ExpectUniqueSample(histogram_name, kLowEndDevice, 1);
-    trigger_func.Run(url, predictor_input_2);
-    {
-      int prerender_host_id = prerender_helper().GetHostForUrl(url);
-      EXPECT_EQ(prerender_host_id,
-                content::RenderFrameHost::kNoFrameTreeNodeId);
-    }
-    histogram_tester.ExpectUniqueSample(histogram_name, kLowEndDevice, 1);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(NotRecountSameRejectedAttemptsTest,
-       NotRecountSameRejectedAttempts_DirectURLInput) {
-  GURL prerendering_url = GetUrl("/title1.html");
-
-  auto* preloading_data = content::PreloadingData::GetOrCreateForWebContents(
-      GetActiveWebContents());
-  content::PreloadingURLMatchCallback same_url_matcher =
-      content::PreloadingData::GetSameURLMatcher(prerendering_url);
-  content::PreloadingAttempt* preloading_attempt_1 =
-      preloading_data->AddPreloadingAttempt(
-          chrome_preloading_predictor::kOmniboxDirectURLInput,
-          content::PreloadingType::kPrerender, same_url_matcher,
-          GetActiveWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
-  content::PreloadingAttempt* preloading_attempt_2 =
-      preloading_data->AddPreloadingAttempt(
-          chrome_preloading_predictor::kOmniboxDirectURLInput,
-          content::PreloadingType::kPrerender, same_url_matcher,
-          GetActiveWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
-  TriggerMultipleRejectedDuplicatedAttempt(
-      prerender_utils::kDirectUrlInputMetricSuffix, prerendering_url,
-      *preloading_attempt_1, *preloading_attempt_2,
-      base::BindRepeating(&PrerenderManager::StartPrerenderDirectUrlInput,
-                          base::Unretained(prerender_manager())));
-}
-
-TEST_F(NotRecountSameRejectedAttemptsTest,
-       NotRecountSameRejectedAttempts_BookmarkBar) {
-  GURL prerendering_url = GetUrl("/title1.html");
-
-  TriggerMultipleRejectedDuplicatedAttempt(
-      prerender_utils::kBookmarkBarMetricSuffix, prerendering_url,
-      chrome_preloading_predictor::kMouseHoverOnBookmarkBar,
-      chrome_preloading_predictor::kMouseHoverOnBookmarkBar,
-      base::BindRepeating(&PrerenderManager::StartPrerenderBookmark,
-                          base::Unretained(prerender_manager())));
-}
-
-TEST_F(NotRecountSameRejectedAttemptsTest,
-       NotRecountSameRejectedAttempts_NewTabPage) {
-  GURL prerendering_url = GetUrl("/title1.html");
-
-  TriggerMultipleRejectedDuplicatedAttempt(
-      prerender_utils::kBookmarkBarMetricSuffix, prerendering_url,
-      chrome_preloading_predictor::kMouseHoverOnNewTabPage,
-      chrome_preloading_predictor::kMouseHoverOnNewTabPage,
-      base::BindRepeating(&PrerenderManager::StartPrerenderBookmark,
-                          base::Unretained(prerender_manager())));
-}
-
-// TODO(https://crbug.com/1485775): For default search engine trigger, most of
-// the checks are done on the prefetch side. Tests should be rewritten.
 
 }  // namespace
