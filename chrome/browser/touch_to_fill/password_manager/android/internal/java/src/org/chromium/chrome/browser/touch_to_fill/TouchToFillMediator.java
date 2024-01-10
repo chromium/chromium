@@ -29,12 +29,15 @@ import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.We
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 
 import androidx.annotation.Px;
 
 import org.chromium.base.Callback;
-import org.chromium.base.CallbackController;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordManagerResourceProviderFactory;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties;
@@ -64,8 +67,8 @@ import org.chromium.url.GURL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.CyclicBarrier;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Contains the logic for the TouchToFill component. It sets the state of the model and reacts to
@@ -87,9 +90,6 @@ class TouchToFillMediator {
     private boolean mManagePasskeysHidesPasswords;
     private BottomSheetFocusHelper mBottomSheetFocusHelper;
     private final ImageFetcher mImageFetcher;
-    private CallbackController mCallbackController;
-    private CyclicBarrier mAvatarFetcherCyclicBarrier;
-    private List<Bitmap> mAvatarImages = Collections.synchronizedList(new ArrayList<>());
 
     public TouchToFillMediator(ImageFetcher imageFetcher) {
         mImageFetcher = imageFetcher;
@@ -141,15 +141,17 @@ class TouchToFillMediator {
                                         .getPasswordManagerIcon())
                         .build();
         sheetItems.add(new ListItem(TouchToFillProperties.ItemType.HEADER, headerModel));
-        List<Credential> sharedUnnotifiedCredentials =
-                getSharedPasswordsThatRequireNotification(credentials);
-        if (sharedUnnotifiedCredentials.size() > 0) {
-            // TODO(http://crbug.com/1504098): support the case when multiple senders have shared
-            // passwords.
-            mCallbackController = new CallbackController();
-            mAvatarFetcherCyclicBarrier = new CyclicBarrier(1, new BuildAvatarThread(headerModel));
-            requestSenderProfileImage(
-                    sharedUnnotifiedCredentials.get(0).getSenderProfileImageUrl());
+
+        Set<GURL> avatarUrls =
+                getSharedPasswordsThatRequireNotification(credentials).stream()
+                        .map(Credential::getSenderProfileImageUrl)
+                        .collect(Collectors.toSet());
+        if (!avatarUrls.isEmpty()) {
+            new GenerateAvatarTask(avatarUrls)
+                    .fetchInBackground(
+                            (roundedAvatarImage) -> {
+                                headerModel.set(AVATAR, roundedAvatarImage);
+                            });
         }
 
         int fillableItemsTotal = credentials.size() + webAuthnCredentials.size();
@@ -345,25 +347,6 @@ class TouchToFillMediator {
         mLargeIconBridge.getLargeIconForStringUrl(iconOrigin, mDesiredIconSize, setIconOrRetry);
     }
 
-    private void requestSenderProfileImage(GURL url) {
-        mCallbackController = new CallbackController();
-        final Callback<Bitmap> imageFetchedCallback =
-                mCallbackController.makeCancelable(
-                        (image) -> {
-                            if (image != null) {
-                                mAvatarImages.add(image);
-                            }
-                            try {
-                                mAvatarFetcherCyclicBarrier.await();
-                            } catch (InterruptedException | BrokenBarrierException e) {
-                            }
-                        });
-
-        mImageFetcher.fetchImage(
-                ImageFetcher.Params.create(url, ImageFetcher.PASSWORD_BOTTOM_SHEET_CLIENT_NAME),
-                imageFetchedCallback);
-    }
-
     private String getIconOrigin(String credentialOrigin, GURL siteUrl) {
         final Origin o = Origin.create(credentialOrigin);
         // TODO(crbug.com/1030230): assert o != null as soon as credential Origin must be valid.
@@ -473,17 +456,45 @@ class TouchToFillMediator {
         return sharedCredentials;
     }
 
-    class BuildAvatarThread implements Runnable {
-        private PropertyModel mHeaderModel;
+    class GenerateAvatarTask {
+        private final Set<GURL> mUrls;
+        private int mRemainingImagesCount;
+        private final List<Bitmap> mAvatarImages = Collections.synchronizedList(new ArrayList<>());
+        private Callback<Drawable> mDoneCallback;
 
-        BuildAvatarThread(PropertyModel headerModel) {
-            mHeaderModel = headerModel;
+        GenerateAvatarTask(Set<GURL> avatarUrls) {
+            mUrls = avatarUrls;
+            mRemainingImagesCount = avatarUrls.size();
         }
 
-        @Override
-        public void run() {
-            mHeaderModel.set(
-                    AVATAR,
+        void fetchInBackground(Callback<Drawable> doneCallback) {
+            mDoneCallback = doneCallback;
+            PostTask.postTask(TaskTraits.USER_VISIBLE, this::fetchAllUrls);
+        }
+
+        private void fetchAllUrls() {
+            for (GURL url : mUrls) {
+                mImageFetcher.fetchImage(
+                        ImageFetcher.Params.create(
+                                url, ImageFetcher.PASSWORD_BOTTOM_SHEET_CLIENT_NAME),
+                        this::onImageFetched);
+            }
+        }
+
+        private void onImageFetched(Bitmap image) {
+            if (image != null) {
+                mAvatarImages.add(image);
+            }
+            if (--mRemainingImagesCount == 0) {
+                PostTask.postTask(TaskTraits.UI_USER_VISIBLE, this::onAllImagesFetched);
+            }
+        }
+
+        private void onAllImagesFetched() {
+            ThreadUtils.assertOnUiThread();
+            // TODO(http://crbug.com/1504098): support the case when multiple senders
+            // have shared passwords and hence all images in `mAvatarImages` should be combined.
+            mDoneCallback.onResult(
                     AvatarGenerator.makeRoundAvatar(
                             mContext.getResources(),
                             mAvatarImages.get(0),

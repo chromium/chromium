@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.touch_to_fill;
 
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
@@ -46,6 +47,7 @@ import androidx.annotation.Px;
 
 import jp.tomorrowkey.android.gifplayer.BaseGifImage;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -61,6 +63,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
+import org.chromium.base.task.TaskTraits;
+import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -87,8 +91,10 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -97,7 +103,9 @@ import java.util.stream.StreamSupport;
  * properly.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(
+        manifest = Config.NONE,
+        shadows = {ShadowPostTask.class})
 public class TouchToFillControllerTest {
     private static final GURL TEST_URL = JUnitTestGURLs.EXAMPLE_URL;
     private static final String TEST_URL_FORMATTED =
@@ -163,6 +171,11 @@ public class TouchToFillControllerTest {
                 mMockIconBridge,
                 DESIRED_FAVICON_SIZE,
                 mMockFocusHelper);
+    }
+
+    @After
+    public void tearDown() {
+        ShadowPostTask.reset();
     }
 
     @Test
@@ -373,6 +386,14 @@ public class TouchToFillControllerTest {
     @Test
     @EnableFeatures(ChromeFeatureList.SHARED_PASSWORD_NOTIFICATION_UI)
     public void testShowSheetForOneSharedCredential() {
+        List<Integer> postedTasksTraits = new ArrayList();
+        ShadowPostTask.setTestImpl(
+                (taskTraits, task, delay) -> {
+                    assert delay == 0;
+                    // Store the traits to test that tasks are posted to the proper traits.
+                    postedTasksTraits.add(taskTraits);
+                    task.run();
+                });
         Credential sharedCredentials =
                 new Credential(
                         "Ana",
@@ -429,6 +450,10 @@ public class TouchToFillControllerTest {
         assertTrue(
                 expectedBitmap.sameAs(
                         ((BitmapDrawable) itemList.get(0).model.get(AVATAR)).getBitmap()));
+        // Two tasks have been posted, the first is to fetch the avatar imges on a non-UI task
+        // runner, and the second to update the model on a UI task runner.
+        assertThat(
+                postedTasksTraits, contains(TaskTraits.USER_VISIBLE, TaskTraits.UI_USER_VISIBLE));
     }
 
     @Test
