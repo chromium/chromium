@@ -45,6 +45,25 @@ class UkmUtilsForTest;
 
 COMPONENT_EXPORT(UKM_RECORDER) BASE_DECLARE_FEATURE(kUkmSamplingRateFeature);
 
+// Convention for console debugging messages.
+// Example usage:
+// $ ./out/Default/chrome --force-enable-metrics-reporting
+// --metrics-upload-interval=60 \
+// --vmodule=*components/ukm*=3
+enum DebuggingLogLevel {
+  // Infrequent actions such as changes to user consent, or actions that
+  // typically occur once per reporting cycle, e.g. serialization of locally
+  // recorded event data into one report and uploading the report to the UKM
+  // server.
+  Rare = 1,
+  // Frequent and recurrent actions within each reporting period, such as an
+  // event being recorded, or a new browser navigation has occurred.
+  Medium = 2,
+  // Very frequent and possibly spammy actions or checks, such as events being
+  // dropped due to disabled recording.
+  Frequent = 3,
+};
+
 namespace debug {
 class UkmDebugDataExtractor;
 }

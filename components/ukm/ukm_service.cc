@@ -235,7 +235,7 @@ UkmService::UkmService(PrefService* pref_service,
       task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
   DCHECK(pref_service_);
   DCHECK(client_);
-  DVLOG(1) << "UkmService::Constructor";
+  DVLOG(DebuggingLogLevel::Rare) << "UkmService::Constructor";
   reporting_service_.Initialize();
 
   cloned_install_subscription_ = client->AddOnClonedInstallDetectedCallback(
@@ -267,7 +267,7 @@ UkmService::~UkmService() {
 void UkmService::Initialize() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!initialize_started_);
-  DVLOG(1) << "UkmService::Initialize";
+  DVLOG(DebuggingLogLevel::Rare) << "UkmService::Initialize";
   initialize_started_ = true;
 
   DCHECK_EQ(0, report_count_);
@@ -286,7 +286,7 @@ void UkmService::Initialize() {
 
 void UkmService::EnableReporting() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DVLOG(1) << "UkmService::EnableReporting";
+  DVLOG(DebuggingLogLevel::Rare) << "UkmService::EnableReporting";
   if (reporting_service_.reporting_active()) {
     return;
   }
@@ -303,7 +303,7 @@ void UkmService::EnableReporting() {
 
 void UkmService::DisableReporting() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DVLOG(1) << "UkmService::DisableReporting";
+  DVLOG(DebuggingLogLevel::Rare) << "UkmService::DisableReporting";
 
   reporting_service_.DisableReporting();
 
@@ -316,7 +316,7 @@ void UkmService::DisableReporting() {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 void UkmService::OnAppEnterForeground() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DVLOG(1) << "UkmService::OnAppEnterForeground";
+  DVLOG(DebuggingLogLevel::Medium) << "UkmService::OnAppEnterForeground";
 
   reporting_service_.SetIsInForegound(true);
 
@@ -331,7 +331,7 @@ void UkmService::OnAppEnterForeground() {
 
 void UkmService::OnAppEnterBackground() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DVLOG(1) << "UkmService::OnAppEnterBackground";
+  DVLOG(DebuggingLogLevel::Medium) << "UkmService::OnAppEnterBackground";
 
   reporting_service_.SetIsInForegound(false);
 
@@ -359,14 +359,14 @@ void UkmService::Flush(metrics::MetricsLogsEventManager::CreateReason reason) {
 
 void UkmService::Purge() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DVLOG(1) << "UkmService::Purge";
+  DVLOG(DebuggingLogLevel::Rare) << "UkmService::Purge";
   reporting_service_.ukm_log_store()->Purge();
   UkmRecorderImpl::Purge();
 }
 
 void UkmService::PurgeExtensionsData() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DVLOG(1) << "UkmService::PurgeExtensionsData";
+  DVLOG(DebuggingLogLevel::Rare) << "UkmService::PurgeExtensionsData";
   // Filter out any extension-related data from the serialized logs in the
   // UnsentLogStore for uploading, base on having kExtensionScheme URL scheme.
   PurgeDataFromUnsentLogStore(
@@ -389,7 +389,7 @@ void UkmService::PurgeExtensionsData() {
 
 void UkmService::PurgeAppsData() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DVLOG(1) << "UkmService::PurgeAppsData";
+  DVLOG(DebuggingLogLevel::Rare) << "UkmService::PurgeAppsData";
   // Filter out any apps-related data from the serialized logs in the
   // UnsentLogStore for uploading.
   // Also purge based on source id type, because some apps don't use app://
@@ -429,6 +429,8 @@ void UkmService::PurgeMsbbData() {
 }
 
 void UkmService::ResetClientState(ResetReason reason) {
+  DVLOG(DebuggingLogLevel::Rare)
+      << "ResetClientState [reason=" << static_cast<int>(reason) << "]";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   UMA_HISTOGRAM_ENUMERATION("UKM.ResetReason", reason);
@@ -448,6 +450,8 @@ void UkmService::ResetClientState(ResetReason reason) {
 }
 
 void UkmService::OnClonedInstallDetected() {
+  DVLOG(DebuggingLogLevel::Rare)
+      << "OnClonedInstallDetected. UKM logs will be purged.";
   // Purge all logs, as they may come from a previous install. Unfortunately,
   // since the cloned install detector works asynchronously, it is possible that
   // this is called after logs were already sent. However, practically speaking,
@@ -489,14 +493,14 @@ void UkmService::OnRecorderParametersChangedImpl() {
 
 void UkmService::StartInitTask() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DVLOG(1) << "UkmService::StartInitTask";
+  DVLOG(DebuggingLogLevel::Rare) << "UkmService::StartInitTask";
   metrics_providers_.AsyncInit(base::BindOnce(&UkmService::FinishedInitTask,
                                               self_ptr_factory_.GetWeakPtr()));
 }
 
 void UkmService::FinishedInitTask() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DVLOG(1) << "UkmService::FinishedInitTask";
+  DVLOG(DebuggingLogLevel::Rare) << "UkmService::FinishedInitTask";
   initialize_complete_ = true;
   scheduler_->InitTaskComplete();
   if (initialization_complete_callback_) {
@@ -506,7 +510,7 @@ void UkmService::FinishedInitTask() {
 
 void UkmService::RotateLog() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DVLOG(1) << "UkmService::RotateLog";
+  DVLOG(DebuggingLogLevel::Rare) << "UkmService::RotateLog";
   if (!reporting_service_.ukm_log_store()->has_unsent_logs()) {
     BuildAndStoreLog(metrics::MetricsLogsEventManager::CreateReason::kPeriodic);
   }
@@ -527,8 +531,6 @@ void UkmService::AddSyncedUserNoiseBirthYearAndGenderToReport(Report* report) {
 void UkmService::BuildAndStoreLog(
     metrics::MetricsLogsEventManager::CreateReason reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DVLOG(1) << "UkmService::BuildAndStoreLog";
-
   // This may add new UKMs. This means this needs to be done before the empty
   // log suppression checks.
   metrics_providers_.ProvideCurrentSessionUKMData();
@@ -537,6 +539,7 @@ void UkmService::BuildAndStoreLog(
   bool empty = sources().empty() && entries().empty();
   UMA_HISTOGRAM_BOOLEAN("UKM.BuildAndStoreLogIsEmpty", empty);
   if (empty) {
+    DVLOG(DebuggingLogLevel::Rare) << "No local UKM data. No log created.";
     return;
   }
 
@@ -544,6 +547,8 @@ void UkmService::BuildAndStoreLog(
   report.set_client_id(client_id_);
   report.set_session_id(session_id_);
   report.set_report_id(++report_count_);
+  DVLOG(DebuggingLogLevel::Rare)
+      << "UkmService::BuildAndStoreLog [report_id=" << report_count_ << "]";
 
   const auto product = static_cast<metrics::ChromeUserMetricsExtension_Product>(
       client_->GetProduct());
