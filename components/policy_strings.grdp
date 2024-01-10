@@ -417,23 +417,26 @@ Additional details:
   <message name="IDS_POLICY_RELOAD_POLICIES" desc="Label for the button that reloads policies.">
     Reload policies
   </message>
-  <message name="IDS_POLICY_LOADING_POLICIES" desc="Screen reader message indicates policies are being loaded.">
-    Loading policies
+  <message name="IDS_POLICY_RELOADING_POLICIES" desc="Screen reader message indicating policies are being loaded.">
+    Reloading policies
   </message>
-  <message name="IDS_POLICY_LOAD_POLICIES_DONE" desc="Screen reader message indicates policies have been loaded.">
-    Policies is loaded
+  <message name="IDS_POLICY_RELOAD_POLICIES_DONE" desc="Screen reader message indicating policies have been reloaded.">
+    Policies reloaded
   </message>
   <message name="IDS_EXPORT_POLICIES_JSON" desc="Label for the button that exports policies in JSON format.">
     Export to JSON
   </message>
+  <message name="IDS_EXPORT_POLICIES_JSON_DONE" desc="Screen reader message indicating policies are exported.">
+    Exported
+  </message>
   <message name="IDS_UPLOAD_REPORT" desc="Label for the button that uplaod Chrome usage report">
     Upload Report
   </message>
-  <message name="IDS_REPORT_UPLOADING" desc="Screen reader message indicates report is being uploaded">
-    Upload Report
+  <message name="IDS_REPORT_UPLOADING" desc="Screen reader message indicating data is being sent to admin console.">
+    Sending data to admin console
   </message>
-  <message name="IDS_REPORT_UPLOADED" desc="Screen reader message indicates report has been uploaded">
-    Report is uploaded
+  <message name="IDS_REPORT_UPLOADED" desc="Screen reader message indicating data has been sent to admin console.">
+    Data sent to admin console
   </message>
   <message name="IDS_POLICY_STATUS" desc="Title of the status section.">
     Status
@@ -763,6 +766,9 @@ Additional details:
   </message>
   <message name="IDS_COPY_POLICIES_JSON" desc="Label for the button that copies policies in JSON format.">
     Copy as JSON
+  </message>
+  <message name="IDS_COPY_POLICIES_DONE" desc="Screen reader message indicating policies are copied to clipboard.">
+    Copied to clipboard
   </message>
   <message name="IDS_VIEW_POLICY_LOGS" desc="Label for the button that redirects from chrome://policy to chrome://policy/logs.">
     View logs

@@ -86,7 +86,7 @@ export class Page {
     reloadPoliciesButton.onclick = () => {
       reloadPoliciesButton!.disabled = true;
       getRequiredElement('screen-reader-message').textContent =
-          loadTimeData.getString('loadingPolicies');
+          loadTimeData.getString('reloadingPolicies');
       sendWithPromise('reloadPolicies');
     };
 
@@ -138,6 +138,8 @@ export class Page {
 
     getRequiredElement('copy-policies').onclick = () => {
       sendWithPromise('copyPoliciesJSON');
+      getRequiredElement('screen-reader-message').textContent =
+          loadTimeData.getString('copyPoliciesDone');
     };
 
     getRequiredElement('show-unset').onchange = () => {
@@ -234,6 +236,8 @@ export class Page {
         'click', {bubbles: true, cancelable: true, view: window}));
 
     document.body.removeChild(link);
+    getRequiredElement('screen-reader-message').textContent =
+        loadTimeData.getString('exportPoliciesDone');
   }
 
   createOrUpdatePolicyTable(dataModel: PolicyTableModel) {
@@ -279,10 +283,13 @@ export class Page {
    * policies values has completed.
    */
   reloadPoliciesDone() {
-    (getRequiredElement('reload-policies') as HTMLButtonElement).disabled =
-        false;
-    getRequiredElement('screen-reader-message').textContent =
-        loadTimeData.getString('loadPoliciesDone');
+    const reloadButton =
+        getRequiredElement('reload-policies') as HTMLButtonElement;
+    if (reloadButton!.disabled) {
+      reloadButton!.disabled = false;
+      getRequiredElement('screen-reader-message').textContent =
+          loadTimeData.getString('reloadPoliciesDone');
+    }
   }
 
   // <if expr="not is_chromeos">
