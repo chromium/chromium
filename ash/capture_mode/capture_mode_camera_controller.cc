@@ -881,6 +881,7 @@ void CaptureModeCameraController::RefreshCameraPreview() {
             PickSuitableCaptureFormat(initial_temp_bounds.size(),
                                       camera_info->supported_formats),
             ShouldCameraActLikeAMirror(*camera_info)));
+    camera_preview_view_->Initialize();
     ui::Layer* layer = camera_preview_widget_->GetLayer();
     layer->SetFillsBoundsOpaquely(false);
     layer->SetMasksToBounds(true);

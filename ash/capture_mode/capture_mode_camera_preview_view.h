@@ -86,6 +86,11 @@ class CameraPreviewView
     return camera_video_renderer_.should_flip_frames_horizontally();
   }
 
+  // Initializes this view to start showing the camera video frames from the
+  // associated camera device. Note that this should only be called after this
+  // view has been added to a widget (see `AddedToWidget()` below).
+  void Initialize();
+
   // Sets this camera preview collapsability to the given `value`, which will
   // update the resize button visibility.
   void SetIsCollapsible(bool value);
