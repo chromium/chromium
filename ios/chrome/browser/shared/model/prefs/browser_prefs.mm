@@ -108,12 +108,6 @@
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
-// Deprecated 09/2021
-const char kTrialGroupPrefName[] = "location_permissions.trial_group";
-
-// Deprecated 10/2021
-const char kSigninBottomSheetShownCount[] =
-    "ios.signin.bottom_sheet_shown_count";
 
 // Deprecated 03/2022
 const char kShowReadingListInBookmarkBar[] = "bookmark_bar.show_reading_list";
@@ -371,10 +365,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterBooleanPref(prefs::kLensCameraAssistedSearchPolicyAllowed,
                                 true);
-
-  registry->RegisterIntegerPref(kTrialGroupPrefName, 0);
-
-  registry->RegisterIntegerPref(kSigninBottomSheetShownCount, 0);
 
   registry->RegisterIntegerPref(kFRETrialGroupPrefName, 0);
 
@@ -724,12 +714,6 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
 // This method should be periodically pruned of year+ old migrations.
 void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
-  // Added 09/2021
-  prefs->ClearPref(kTrialGroupPrefName);
-
-  // Added 10/2021
-  prefs->ClearPref(kSigninBottomSheetShownCount);
-
   // Added 04/2022
   prefs->ClearPref(kFRETrialGroupPrefName);
 
