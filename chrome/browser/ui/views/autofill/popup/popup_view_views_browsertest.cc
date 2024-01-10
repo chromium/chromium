@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/autofill/popup/popup_view_views.h"
 
+#include <memory>
 #include <optional>
 #include <utility>
 
@@ -11,6 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autofill/mock_autofill_popup_controller.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_pixel_test.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_view_views_test_api.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -66,6 +68,16 @@ class PopupViewViewsBrowsertestBase
   PopupViewViewsBrowsertestBase() = default;
   ~PopupViewViewsBrowsertestBase() override = default;
 
+  void TearDownOnMainThread() override {
+    if (popup_has_parent_) {
+      EXPECT_CALL(controller(), ViewDestroyed);
+    }
+
+    popup_has_parent_ = false;
+    popup_parent_.reset();
+    PopupPixelTest::TearDownOnMainThread();
+  }
+
   void PrepareSuggestions(std::vector<Suggestion> suggestions) {
     controller().set_suggestions(std::move(suggestions));
   }
@@ -81,14 +93,29 @@ class PopupViewViewsBrowsertestBase
     }
   }
 
+  void ShowAndVerifyUi(bool popup_has_parent = false) {
+    popup_has_parent_ = popup_has_parent;
+    PopupPixelTest::ShowAndVerifyUi();
+  }
+
  protected:
   PopupViewViews* CreateView(MockAutofillPopupController& controller) override {
+    if (popup_has_parent_) {
+      popup_parent_ = std::make_unique<PopupViewViews>(controller.GetWeakPtr());
+      return new PopupViewViews(controller.GetWeakPtr(),
+                                test_api(*popup_parent_).GetWeakPtr(),
+                                popup_parent_->GetWidget());
+    }
     return new PopupViewViews(controller.GetWeakPtr());
   }
 
  private:
   // The index of the selected cell. No cell is selected by default.
   std::optional<CellIndex> selected_cell_;
+
+  // Controls whether the view is created as a sub-popup (i.e. having a parent).
+  bool popup_has_parent_ = false;
+  std::unique_ptr<PopupViewViews> popup_parent_;
 };
 
 class PopupViewViewsBrowsertest : public PopupViewViewsBrowsertestBase {
@@ -204,6 +231,26 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
   warning.popup_item_id = PopupItemId::kInsecureContextPaymentDisabledMessage;
   PrepareSuggestions({std::move(warning)});
   ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
+                       ScrollingInRootPopupStickyFooter) {
+  // Create many suggestions that don't fit the height and activate scrolling.
+  std::vector<PopupItemId> suggestions(20, PopupItemId::kAddressEntry);
+  suggestions.push_back(PopupItemId::kSeparator);
+  suggestions.push_back(PopupItemId::kAutofillOptions);
+  controller().set_suggestions(std::move(suggestions));
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
+                       ScrollingInNonRootPopupNonStickyFooter) {
+  // Create many suggestions that don't fit the height and activate scrolling.
+  std::vector<PopupItemId> suggestions(20, PopupItemId::kAddressEntry);
+  suggestions.push_back(PopupItemId::kSeparator);
+  suggestions.push_back(PopupItemId::kAutofillOptions);
+  controller().set_suggestions(std::move(suggestions));
+  ShowAndVerifyUi(/*popup_has_parent=*/true);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

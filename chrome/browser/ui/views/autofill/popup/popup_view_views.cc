@@ -765,16 +765,20 @@ void PopupViewViews::CreateChildViews() {
     return;
   }
 
-  // Footer items need to be in their own container because they should not be
-  // affected by scrolling behavior (they are "sticky" at the bottom) and
-  // because they have a special background color
-  footer_container_ = content_view->AddChildView(
+  auto footer_container =
       views::Builder<views::BoxLayoutView>()
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
           .SetBackground(
               views::CreateThemedSolidBackground(ui::kColorDropdownBackground))
-          .Build());
-  content_view->SetFlexForView(footer_container_, 0);
+          .Build();
+
+  if (IsFooterScrollable()) {
+    footer_container_ =
+        body_container_->AddChildView(std::move(footer_container));
+  } else {
+    footer_container_ = content_view->AddChildView(std::move(footer_container));
+    content_view->SetFlexForView(footer_container_, 0);
+  }
 
   for (; current_line_number < kSuggestions.size(); ++current_line_number) {
     DCHECK(IsFooterItem(kSuggestions, current_line_number));
@@ -947,6 +951,14 @@ void PopupViewViews::OnMouseExitedInChildren() {
                           AutoselectFirstSuggestion(false)));
 }
 
+bool PopupViewViews::IsFooterScrollable() const {
+  // Footer items of a root popup are expected to be more prioritized and
+  // therefore "sticky", i.e. not being scrollable with the whole popup content.
+  // `body_container_` is the container of regular suggestions, it must exist
+  // to place the footer there and thus make it scrollable too.
+  return parent_ && body_container_;
+}
+
 bool PopupViewViews::CanShowDropdownInBounds(const gfx::Rect& bounds) const {
   gfx::Rect element_bounds =
       gfx::ToEnclosingRect(controller_->element_bounds());
@@ -957,7 +969,8 @@ bool PopupViewViews::CanShowDropdownInBounds(const gfx::Rect& bounds) const {
   if (body_container_ && !body_container_->children().empty()) {
     min_height += body_container_->children()[0]->GetPreferredSize().height();
   }
-  if (footer_container_ && !footer_container_->children().empty()) {
+  if (footer_container_ && !footer_container_->children().empty() &&
+      !IsFooterScrollable()) {
     // The footer is not scrollable, its full height should be considered.
     min_height += footer_container_->GetPreferredSize().height();
   }

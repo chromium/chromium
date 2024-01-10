@@ -186,6 +186,11 @@ class PopupViewViews : public PopupBaseView,
   void OnMouseEnteredInChildren() override;
   void OnMouseExitedInChildren() override;
 
+  // Returns whether the footer container is scrollable with other suggestions
+  // or it is "sticky" (i.e. it has a fixed position, always visible and
+  // the non-footer suggestions are scrolled independently).
+  bool IsFooterScrollable() const;
+
   bool CanShowDropdownInBounds(const gfx::Rect& bounds) const;
 
   // Opens a sub-popup on a new row (and closes the open one if any), or just
