@@ -6,8 +6,9 @@
 
 #include <stddef.h>
 
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -26,14 +27,14 @@ class ErrorBuilder {
   ErrorBuilder& operator=(const ErrorBuilder&) = delete;
 
   // Appends a literal string |error|.
-  void Append(base::StringPiece error) {
+  void Append(std::string_view error) {
     if (!error_->empty())
       error_->append(u"; ");
     error_->append(base::UTF8ToUTF16(error));
   }
 
   // Appends a string |error| with the first %s replaced by |sub|.
-  void Append(base::StringPiece error, base::StringPiece sub) {
+  void Append(std::string_view error, std::string_view sub) {
     Append(base::StringPrintfNonConstexpr(error.data(), sub.data()));
   }
 

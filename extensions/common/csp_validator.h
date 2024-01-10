@@ -6,9 +6,9 @@
 #define EXTENSIONS_COMMON_CSP_VALIDATOR_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "extensions/common/manifest.h"
 
 namespace extensions {
@@ -41,9 +41,9 @@ class CSPParser {
   // |directive_name| is "script_src".
   // |directive_values| is ["'self'", "www.google.com"].
   struct Directive {
-    Directive(base::StringPiece directive_string,
+    Directive(std::string_view directive_string,
               std::string directive_name,
-              std::vector<base::StringPiece> directive_values);
+              std::vector<std::string_view> directive_values);
 
     Directive(const Directive&) = delete;
     Directive& operator=(const Directive&) = delete;
@@ -52,12 +52,12 @@ class CSPParser {
     Directive(Directive&&);
     Directive& operator=(Directive&&);
 
-    base::StringPiece directive_string;
+    std::string_view directive_string;
 
     // Must be lower case.
     std::string directive_name;
 
-    std::vector<base::StringPiece> directive_values;
+    std::vector<std::string_view> directive_values;
   };
 
   using DirectiveList = std::vector<Directive>;
@@ -134,7 +134,7 @@ bool ContentSecurityPolicyIsSandboxed(
 // Returns whether the given |content_security_policy| prevents remote scripts.
 // If not, populates |error|.
 bool DoesCSPDisallowRemoteCode(const std::string& content_security_policy,
-                               base::StringPiece manifest_key,
+                               std::string_view manifest_key,
                                std::u16string* error);
 
 }  // namespace csp_validator

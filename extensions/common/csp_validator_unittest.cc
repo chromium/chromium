@@ -2,14 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "extensions/common/csp_validator.h"
+
 #include <stddef.h>
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "extensions/common/csp_validator.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/install_warning.h"
 #include "extensions/common/manifest_constants.h"
@@ -575,14 +577,14 @@ TEST(ExtensionCSPValidator, ParseCSP) {
   )";
   DirectiveList expected_directives;
   expected_directives.emplace_back("deFAULt-src   'self'", "default-src",
-                                   std::vector<base::StringPiece>({"'self'"}));
+                                   std::vector<std::string_view>({"'self'"}));
   expected_directives.emplace_back("img-src *", "img-src",
-                                   std::vector<base::StringPiece>({"*"}));
+                                   std::vector<std::string_view>({"*"}));
   expected_directives.emplace_back(
       "media-src media1.com MEDIA2.com", "media-src",
-      std::vector<base::StringPiece>({"media1.com", "MEDIA2.com"}));
+      std::vector<std::string_view>({"media1.com", "MEDIA2.com"}));
   expected_directives.emplace_back("img-src 'self'", "img-src",
-                                   std::vector<base::StringPiece>({"'self'"}));
+                                   std::vector<std::string_view>({"'self'"}));
   cases.emplace_back(policy, std::move(expected_directives));
 
   for (const auto& test_case : cases) {

@@ -8,6 +8,7 @@
 
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/contains.h"
@@ -18,7 +19,6 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -572,11 +572,11 @@ ScopedLocaleForTest::ScopedLocaleForTest()
     : process_locale_(GetProcessLocale()),
       preferred_locale_(GetPreferredLocale()) {}
 
-ScopedLocaleForTest::ScopedLocaleForTest(base::StringPiece locale)
+ScopedLocaleForTest::ScopedLocaleForTest(std::string_view locale)
     : ScopedLocaleForTest(locale, locale) {}
 
-ScopedLocaleForTest::ScopedLocaleForTest(base::StringPiece process_locale,
-                                         base::StringPiece preferred_locale)
+ScopedLocaleForTest::ScopedLocaleForTest(std::string_view process_locale,
+                                         std::string_view preferred_locale)
     : ScopedLocaleForTest() {
   SetProcessLocale(std::string(process_locale));
   SetPreferredLocale(std::string(preferred_locale));

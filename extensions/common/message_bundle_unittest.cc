@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -110,8 +111,8 @@ class MessageBundleTest : public testing::Test {
   }
 
   void RemoveDictionaryPath(base::Value::Dict& dict,
-                            base::StringPiece path,
-                            base::StringPiece key) {
+                            std::string_view path,
+                            std::string_view key) {
     base::Value::Dict* value = dict.FindDictByDottedPath(path);
     ASSERT_TRUE(value);
     value->Remove(key);

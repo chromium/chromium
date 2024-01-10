@@ -8,10 +8,11 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
+
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
-#include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/values.h"
@@ -126,8 +127,8 @@ class ExtensionAPI {
                                       int context_id,
                                       const ContextData& context_data);
 
-  // Gets the StringPiece for the schema specified by |api_name|.
-  base::StringPiece GetSchemaStringPiece(const std::string& api_name);
+  // Gets the string_view for the schema specified by |api_name|.
+  std::string_view GetSchemaStringPiece(const std::string& api_name);
 
   // Gets the schema for the extension API with namespace |full_name|.
   // Ownership remains with this object.
@@ -172,10 +173,10 @@ class ExtensionAPI {
                                          const ContextData& context_data);
 
   // Loads a schema.
-  void LoadSchema(const std::string& name, const base::StringPiece& schema);
+  void LoadSchema(const std::string& name, std::string_view schema);
 
   // Same as GetSchemaStringPiece() but doesn't acquire |lock_|.
-  base::StringPiece GetSchemaStringPieceUnsafe(const std::string& api_name);
+  std::string_view GetSchemaStringPieceUnsafe(const std::string& api_name);
 
   // Same as GetAPINameFromFullName() but doesn't acquire |lock_|.
   std::string GetAPINameFromFullNameUnsafe(const std::string& full_name,

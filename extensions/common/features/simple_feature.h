@@ -12,7 +12,9 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
+
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/lazy_instance.h"
@@ -122,20 +124,20 @@ class SimpleFeature : public Feature {
   };
 
   // Setters used by generated code to create the feature.
-  // NOTE: These setters use base::StringPiece and std::initalizer_list rather
+  // NOTE: These setters use std::string_view and std::initalizer_list rather
   // than std::string and std::vector for binary size reasons. Using STL types
   // directly in the header means that code that doesn't already have that exact
   // type ends up triggering many implicit conversions which are all inlined.
   void set_blocklist(std::initializer_list<const char* const> blocklist);
   void set_channel(version_info::Channel channel) { channel_ = channel; }
-  void set_command_line_switch(base::StringPiece command_line_switch);
+  void set_command_line_switch(std::string_view command_line_switch);
   void set_component_extensions_auto_granted(bool granted) {
     component_extensions_auto_granted_ = granted;
   }
   void set_contexts(std::initializer_list<mojom::ContextType> contexts);
   void set_dependencies(std::initializer_list<const char* const> dependencies);
   void set_extension_types(std::initializer_list<Manifest::Type> types);
-  void set_feature_flag(base::StringPiece feature_flag);
+  void set_feature_flag(std::string_view feature_flag);
   void set_session_types(
       std::initializer_list<mojom::FeatureSessionType> types);
   void set_internal(bool is_internal) { is_internal_ = is_internal; }

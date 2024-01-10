@@ -4,9 +4,10 @@
 
 #include "extensions/common/extension_builder.h"
 
+#include <optional>
+#include <string_view>
 #include <utility>
 
-#include <optional>
 #include "base/json/json_reader.h"
 #include "base/strings/stringprintf.h"
 #include "components/crx_file/id_util.h"
@@ -245,7 +246,7 @@ ExtensionBuilder& ExtensionBuilder::SetManifestVersion(int manifest_version) {
   return *this;
 }
 
-ExtensionBuilder& ExtensionBuilder::AddJSON(base::StringPiece json) {
+ExtensionBuilder& ExtensionBuilder::AddJSON(std::string_view json) {
   CHECK(manifest_data_);
   std::string wrapped_json = base::StringPrintf("{%s}", json.data());
   auto parsed = base::JSONReader::ReadAndReturnValueWithError(wrapped_json);
@@ -291,13 +292,13 @@ ExtensionBuilder& ExtensionBuilder::SetID(const std::string& id) {
   return *this;
 }
 
-void ExtensionBuilder::SetManifestKeyImpl(base::StringPiece key,
+void ExtensionBuilder::SetManifestKeyImpl(std::string_view key,
                                           base::Value value) {
   CHECK(manifest_data_);
   manifest_data_->get_extra().Set(key, std::move(value));
 }
 
-void ExtensionBuilder::SetManifestPathImpl(base::StringPiece path,
+void ExtensionBuilder::SetManifestPathImpl(std::string_view path,
                                            base::Value value) {
   CHECK(manifest_data_);
   manifest_data_->get_extra().SetByDottedPath(path, std::move(value));

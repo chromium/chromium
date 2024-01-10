@@ -4,6 +4,8 @@
 
 #include "extensions/common/manifest_handlers/csp_info.h"
 
+#include <string_view>
+
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
@@ -21,7 +23,7 @@ namespace {
 namespace errors = manifest_errors;
 namespace keys = manifest_keys;
 
-std::string GetInvalidManifestKeyError(base::StringPiece key) {
+std::string GetInvalidManifestKeyError(std::string_view key) {
   return ErrorUtils::FormatErrorMessage(errors::kInvalidManifestKey, key);
 }
 

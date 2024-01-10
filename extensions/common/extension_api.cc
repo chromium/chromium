@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -37,7 +38,7 @@ namespace {
 const char* const kChildKinds[] = {"functions", "events"};
 
 base::Value::Dict LoadSchemaDictionary(const std::string& name,
-                                       const base::StringPiece& schema) {
+                                       std::string_view schema) {
   auto result = base::JSONReader::ReadAndReturnValueWithError(schema);
 
   // Tracking down http://crbug.com/121424
@@ -134,7 +135,7 @@ ExtensionAPI::OverrideSharedInstanceForTest::~OverrideSharedInstanceForTest() {
 }
 
 void ExtensionAPI::LoadSchema(const std::string& name,
-                              const base::StringPiece& schema) {
+                              std::string_view schema) {
   lock_.AssertAcquired();
   base::Value::Dict schema_dict(LoadSchemaDictionary(name, schema));
   const std::string* schema_namespace = schema_dict.FindString("namespace");
@@ -229,7 +230,7 @@ Feature::Availability ExtensionAPI::IsAvailable(
   return alias_availability.is_available() ? alias_availability : availability;
 }
 
-base::StringPiece ExtensionAPI::GetSchemaStringPiece(
+std::string_view ExtensionAPI::GetSchemaStringPiece(
     const std::string& api_name) {
   base::AutoLock lock(lock_);
   return GetSchemaStringPieceUnsafe(api_name);
@@ -245,7 +246,7 @@ const base::Value::Dict* ExtensionAPI::GetSchema(const std::string& full_name) {
   if (maybe_schema != schemas_.end()) {
     result = &maybe_schema->second;
   } else {
-    base::StringPiece schema_string = GetSchemaStringPieceUnsafe(api_name);
+    std::string_view schema_string = GetSchemaStringPieceUnsafe(api_name);
     if (schema_string.empty())
       return nullptr;
     LoadSchema(api_name, schema_string);
@@ -331,16 +332,16 @@ Feature::Availability ExtensionAPI::IsAliasAvailable(
                                              context_id, context_data);
 }
 
-base::StringPiece ExtensionAPI::GetSchemaStringPieceUnsafe(
+std::string_view ExtensionAPI::GetSchemaStringPieceUnsafe(
     const std::string& api_name) {
   lock_.AssertAcquired();
   DCHECK_EQ(api_name, GetAPINameFromFullNameUnsafe(api_name, nullptr));
   ExtensionsClient* client = ExtensionsClient::Get();
   DCHECK(client);
   if (!default_configuration_initialized_)
-    return base::StringPiece();
+    return std::string_view();
 
-  base::StringPiece schema = client->GetAPISchema(api_name);
+  std::string_view schema = client->GetAPISchema(api_name);
   return schema;
 }
 

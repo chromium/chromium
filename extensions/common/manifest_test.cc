@@ -5,14 +5,15 @@
 #include "extensions/common/manifest_test.h"
 
 #include <optional>
+#include <string_view>
 #include <utility>
+
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/path_service.h"
 #include "base/strings/pattern.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -74,11 +75,10 @@ ManifestTest::~ManifestTest() = default;
 
 // Helper class that simplifies creating methods that take either a filename
 // to a manifest or the manifest itself.
-ManifestTest::ManifestData::ManifestData(base::StringPiece name)
-    : name_(name) {}
+ManifestTest::ManifestData::ManifestData(std::string_view name) : name_(name) {}
 
 ManifestTest::ManifestData::ManifestData(base::Value::Dict manifest,
-                                         base::StringPiece name)
+                                         std::string_view name)
     : name_(name), manifest_(std::move(manifest)) {}
 
 ManifestTest::ManifestData::ManifestData(base::Value::Dict manifest)
@@ -99,7 +99,7 @@ const std::optional<base::Value::Dict>& ManifestTest::ManifestData::GetManifest(
 
 // static
 ManifestTest::ManifestData ManifestTest::ManifestData::FromJSON(
-    base::StringPiece json) {
+    std::string_view json) {
   // ParseJsonDict() will ADD_FAILURE() if `json` is not a valid dict.
   base::Value::Dict manifest_dict = base::test::ParseJsonDict(json);
   return ManifestData(std::move(manifest_dict));

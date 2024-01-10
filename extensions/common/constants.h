@@ -7,9 +7,9 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <string_view>
 
 #include "base/files/file_path.h"
-#include "base/strings/string_piece.h"
 #include "build/chromeos_buildflags.h"
 #include "extensions/common/extensions_export.h"
 
@@ -371,7 +371,7 @@ inline constexpr char kGuestModeTestExtensionId[] =
 // Returns true if this app is part of the "system UI". Generally this is UI
 // that that on other operating systems would be considered part of the OS,
 // for example the file manager.
-EXTENSIONS_EXPORT bool IsSystemUIApp(base::StringPiece extension_id);
+EXTENSIONS_EXPORT bool IsSystemUIApp(std::string_view extension_id);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -391,11 +391,11 @@ inline constexpr char kNewHighlightsAppId[] =
 
 // Returns true if this app is one of Demo Mode Chrome Apps, including
 // attract loop and highlights apps.
-EXTENSIONS_EXPORT bool IsDemoModeChromeApp(base::StringPiece extension_id);
+EXTENSIONS_EXPORT bool IsDemoModeChromeApp(std::string_view extension_id);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // True if the id matches any of the QuickOffice extension ids.
-EXTENSIONS_EXPORT bool IsQuickOfficeExtension(base::StringPiece extension_id);
+EXTENSIONS_EXPORT bool IsQuickOfficeExtension(std::string_view extension_id);
 
 // Returns if the app is managed by extension default apps. This is a hardcoded
 // list of default apps for Windows/Linux/MacOS platforms that should be
@@ -403,7 +403,7 @@ EXTENSIONS_EXPORT bool IsQuickOfficeExtension(base::StringPiece extension_id);
 // TODO(https://crbug.com/1257275): remove after deault app migration is done.
 // This function is copied from
 // chrome/browser/web_applications/extension_status_utils.h.
-EXTENSIONS_EXPORT bool IsPreinstalledAppId(base::StringPiece app_id);
+EXTENSIONS_EXPORT bool IsPreinstalledAppId(std::string_view app_id);
 
 // Error message when enterprise policy blocks scripting of webpage.
 inline constexpr char kPolicyBlockedScripting[] =

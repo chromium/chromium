@@ -9,12 +9,12 @@
 #include <cstdlib>
 #include <memory>
 #include <sstream>
+#include <string_view>
 #include <tuple>
 #include <vector>
 
 #include "base/check.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "extensions/common/permissions/api_permission.h"
@@ -159,7 +159,7 @@ bool SocketPermissionEntry::ParseHostPattern(
     result.pattern_.host = base::ToLowerASCII(result.pattern_.host);
 
     // The first component can optionally be '*' to match all subdomains.
-    std::vector<base::StringPiece> host_components =
+    std::vector<std::string_view> host_components =
         base::SplitStringPiece(result.pattern_.host, std::string{kDot},
                                base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     DCHECK(!host_components.empty());

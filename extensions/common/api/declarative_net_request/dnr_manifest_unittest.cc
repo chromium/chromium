@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -100,7 +102,7 @@ class DNRManifestTest : public testing::Test {
       EXPECT_TRUE(base::CreateDirectory(rules_path.DirName()));
 
       // Persist an empty ruleset file.
-      EXPECT_TRUE(base::WriteFile(rules_path, base::StringPiece()));
+      EXPECT_TRUE(base::WriteFile(rules_path, std::string_view()));
     }
 
     // Persist manifest file.

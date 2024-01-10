@@ -4,6 +4,8 @@
 
 #include "extensions/common/manifest_handlers/web_file_handlers_info.h"
 
+#include <string_view>
+
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
@@ -40,7 +42,7 @@ std::unique_ptr<WebFileHandlers> ParseFromList(const Extension& extension,
     return nullptr;
   }
 
-  auto get_error = [](size_t i, base::StringPiece message) {
+  auto get_error = [](size_t i, std::string_view message) {
     return ErrorUtils::FormatErrorMessageUTF16(
         manifest_errors::kInvalidWebFileHandlers, base::NumberToString(i),
         message);

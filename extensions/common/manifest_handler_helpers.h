@@ -7,9 +7,9 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 
 class ExtensionIconSet;
@@ -17,7 +17,7 @@ class ExtensionIconSet;
 namespace extensions::manifest_handler_helpers {
 
 // Tokenize a dictionary path.
-std::vector<base::StringPiece> TokenizeDictionaryPath(base::StringPiece path);
+std::vector<std::string_view> TokenizeDictionaryPath(std::string_view path);
 
 // Strips leading slashes from the file path. Returns true iff the final path is
 // not empty.

@@ -8,8 +8,8 @@
 #include <map>
 #include <set>
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "extensions/common/context_data.h"
 #include "extensions/common/hashed_extension_id.h"
 #include "extensions/common/manifest.h"
@@ -108,13 +108,13 @@ class Feature {
   virtual ~Feature();
 
   const std::string& name() const { return name_; }
-  // Note that this arg is passed as a StringPiece to avoid a lot of bloat from
+  // Note that this arg is passed as a string_view to avoid a lot of bloat from
   // inlined std::string code.
-  void set_name(base::StringPiece name);
+  void set_name(std::string_view name);
   const std::string& alias() const { return alias_; }
-  void set_alias(base::StringPiece alias);
+  void set_alias(std::string_view alias);
   const std::string& source() const { return source_; }
-  void set_source(base::StringPiece source);
+  void set_source(std::string_view source);
   bool no_parent() const { return no_parent_; }
 
   // Gets the platform the code is currently running on.

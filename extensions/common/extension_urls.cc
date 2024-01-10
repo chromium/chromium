@@ -4,6 +4,8 @@
 
 #include "extensions/common/extension_urls.h"
 
+#include <string_view>
+
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -50,8 +52,7 @@ GURL GetNewWebstoreLaunchURL() {
   return GURL(kNewChromeWebstoreBaseURL);
 }
 
-GURL AppendUtmSource(const GURL& url,
-                     const base::StringPiece& utm_source_value) {
+GURL AppendUtmSource(const GURL& url, std::string_view utm_source_value) {
   return net::AppendQueryParameter(url, "utm_source", utm_source_value);
 }
 
@@ -118,7 +119,7 @@ bool IsBlocklistUpdateUrl(const GURL& url) {
   return false;
 }
 
-bool IsSafeBrowsingUrl(const url::Origin& origin, base::StringPiece path) {
+bool IsSafeBrowsingUrl(const url::Origin& origin, std::string_view path) {
   return origin.DomainIs("sb-ssl.google.com") ||
          origin.DomainIs("safebrowsing.googleapis.com") ||
          (origin.DomainIs("safebrowsing.google.com") &&
