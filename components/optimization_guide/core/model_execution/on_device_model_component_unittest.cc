@@ -48,8 +48,7 @@ class OnDeviceModelComponentTest : public testing::Test {
         base::Time::Now());
 
     feature_list_.InitWithFeatures({features::kOptimizationGuideModelExecution,
-                                    features::kOptimizationGuideOnDeviceModel,
-                                    features::kLogOnDeviceMetricsOnStartup},
+                                    features::kOptimizationGuideOnDeviceModel},
                                    {});
   }
 
@@ -153,8 +152,7 @@ TEST_F(OnDeviceModelComponentTest, DoesNotInstallWhenFeatureNotEnabled) {
   // It should not install if any of these features are disabled.
   for (const base::Feature* feature :
        {&features::kOptimizationGuideModelExecution,
-        &features::kOptimizationGuideOnDeviceModel,
-        &features::kLogOnDeviceMetricsOnStartup}) {
+        &features::kOptimizationGuideOnDeviceModel}) {
     SCOPED_TRACE(feature->name);
     base::HistogramTester histograms;
     on_device_component_state_manager_.Reset();

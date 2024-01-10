@@ -438,7 +438,8 @@ void OptimizationGuideKeyedService::Initialize() {
             std::make_unique<OnDeviceModelComponentStateManagerDelegate>());
     on_device_component_manager_->OnStartup();
     if (base::FeatureList::IsEnabled(
-            optimization_guide::features::kLogOnDeviceMetricsOnStartup)) {
+            optimization_guide::features::kLogOnDeviceMetricsOnStartup) ||
+        optimization_guide::features::IsOnDeviceExecutionEnabled()) {
       base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(

@@ -250,8 +250,7 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
     g_execute_delay = base::TimeDelta();
     g_on_complete_response_type = on_device_model::mojom::ResponseStatus::kOk;
     feature_list_.InitWithFeaturesAndParameters(
-        {{features::kLogOnDeviceMetricsOnStartup, {}},
-         {features::kOptimizationGuideModelExecution, {}},
+        {{features::kOptimizationGuideModelExecution, {}},
          {features::kOptimizationGuideOnDeviceModel,
           {{"on_device_model_min_tokens_for_context", "10"},
            {"on_device_model_max_tokens_for_context", "22"},

@@ -1025,8 +1025,7 @@ bool CanLaunchOnDeviceModelService() {
 bool IsOnDeviceExecutionEnabled() {
   return base::FeatureList::IsEnabled(
              features::kOptimizationGuideModelExecution) &&
-         base::FeatureList::IsEnabled(kOptimizationGuideOnDeviceModel) &&
-         base::FeatureList::IsEnabled(kLogOnDeviceMetricsOnStartup);
+         base::FeatureList::IsEnabled(kOptimizationGuideOnDeviceModel);
 }
 
 base::TimeDelta GetOnDeviceModelRetentionTime() {
