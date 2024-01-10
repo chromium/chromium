@@ -133,7 +133,7 @@ class CORE_EXPORT FontBuilder {
     return FontDescription::kAutoKerning;
   }
   static TextSpacingTrim InitialTextSpacingTrim() {
-    return TextSpacingTrim::kSpaceFirst;
+    return TextSpacingTrim::kInitial;
   }
   static OpticalSizing InitialFontOpticalSizing() { return kAutoOpticalSizing; }
   static FontSmoothingMode InitialFontSmoothing() { return kAutoSmoothing; }

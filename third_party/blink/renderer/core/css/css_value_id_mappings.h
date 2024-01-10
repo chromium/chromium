@@ -455,23 +455,31 @@ inline CSSValueID PlatformEnumToCSSValueID(WhiteSpaceCollapse v) {
 template <>
 inline TextSpacingTrim CssValueIDToPlatformEnum(CSSValueID v) {
   switch (v) {
-    case CSSValueID::kSpaceFirst:
-      return TextSpacingTrim::kSpaceFirst;
+    case CSSValueID::kNormal:
+      return TextSpacingTrim::kNormal;
+    case CSSValueID::kTrimStart:
+      return TextSpacingTrim::kTrimStart;
     case CSSValueID::kSpaceAll:
       return TextSpacingTrim::kSpaceAll;
+    case CSSValueID::kSpaceFirst:
+      return TextSpacingTrim::kSpaceFirst;
     default:
       NOTREACHED();
-      return TextSpacingTrim::kSpaceFirst;
+      return TextSpacingTrim::kNormal;
   }
 }
 
 template <>
 inline CSSValueID PlatformEnumToCSSValueID(TextSpacingTrim v) {
   switch (v) {
-    case TextSpacingTrim::kSpaceFirst:
-      return CSSValueID::kSpaceFirst;
+    case TextSpacingTrim::kNormal:
+      return CSSValueID::kNormal;
+    case TextSpacingTrim::kTrimStart:
+      return CSSValueID::kTrimStart;
     case TextSpacingTrim::kSpaceAll:
       return CSSValueID::kSpaceAll;
+    case TextSpacingTrim::kSpaceFirst:
+      return CSSValueID::kSpaceFirst;
   }
   NOTREACHED();
   return CSSValueID::kNone;

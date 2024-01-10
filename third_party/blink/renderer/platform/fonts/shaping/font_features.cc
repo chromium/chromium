@@ -198,7 +198,7 @@ void FontFeatures::Initialize(const FontDescription& description) {
   const hb_tag_t chws_or_vchw =
       is_horizontal ? HB_TAG('c', 'h', 'w', 's') : HB_TAG('v', 'c', 'h', 'w');
   bool default_enable_chws =
-      description.GetTextSpacingTrim() == TextSpacingTrim::kSpaceFirst;
+      ShouldTrimAdjacent(description.GetTextSpacingTrim());
 
   const FontFeatureSettings* settings = description.FeatureSettings();
   if (UNLIKELY(settings)) {

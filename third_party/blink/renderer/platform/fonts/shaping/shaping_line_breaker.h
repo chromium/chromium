@@ -159,7 +159,7 @@ class PLATFORM_EXPORT ShapingLineBreaker {
   unsigned line_start_ = 0;
   bool dont_reshape_end_if_at_space_ = false;
   bool no_result_if_overflow_ = false;
-  TextSpacingTrim text_spacing_trim_ = TextSpacingTrim::kSpaceFirst;
+  TextSpacingTrim text_spacing_trim_ = TextSpacingTrim::kInitial;
 
   friend class ShapingLineBreakerTest;
 };

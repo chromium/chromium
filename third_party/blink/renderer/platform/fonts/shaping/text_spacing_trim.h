@@ -10,11 +10,24 @@ namespace blink {
 // Values for the `text-spacing-trim` property.
 // https://drafts.csswg.org/css-text-4/#text-spacing-trim-property
 enum class TextSpacingTrim {
-  kSpaceFirst,
+  kNormal,
   kSpaceAll,
+  kSpaceFirst,
+  kTrimStart,
+
+  kInitial = kNormal,
 };
 
-constexpr unsigned kTextSpacingTrimBitCount = 1;
+inline constexpr unsigned kTextSpacingTrimBitCount = 2;
+
+inline bool ShouldTrimAdjacent(TextSpacingTrim value) {
+  return value != TextSpacingTrim::kSpaceAll;
+}
+
+inline bool ShouldTrimStartOfWrappedLine(TextSpacingTrim value) {
+  return value == TextSpacingTrim::kSpaceFirst ||
+         value == TextSpacingTrim::kTrimStart;
+}
 
 }  // namespace blink
 

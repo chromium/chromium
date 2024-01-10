@@ -114,7 +114,7 @@ FontDescription::FontDescription()
   fields_.font_synthesis_style_ = kAutoFontSynthesisStyle;
   fields_.font_synthesis_small_caps_ = kAutoFontSynthesisSmallCaps;
   fields_.variant_position_ = kNormalVariantPosition;
-  static_assert(static_cast<unsigned>(TextSpacingTrim::kSpaceFirst) == 0);
+  static_assert(static_cast<unsigned>(TextSpacingTrim::kInitial) == 0);
 }
 
 FontDescription::FontDescription(const FontDescription&) = default;

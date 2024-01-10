@@ -1576,8 +1576,10 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kNoAutospace;
     case CSSPropertyID::kTextSpacingTrim:
       DCHECK(RuntimeEnabledFeatures::CSSTextSpacingTrimEnabled());
-      return value_id == CSSValueID::kSpaceFirst ||
-             value_id == CSSValueID::kSpaceAll;
+      return value_id == CSSValueID::kNormal ||
+             value_id == CSSValueID::kTrimStart ||
+             value_id == CSSValueID::kSpaceAll ||
+             value_id == CSSValueID::kSpaceFirst;
     case CSSPropertyID::kWebkitTextCombine:
       return value_id == CSSValueID::kNone ||
              value_id == CSSValueID::kHorizontal;
