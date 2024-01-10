@@ -84,9 +84,7 @@ interface WallpaperSearchHandler {
 
   // Searches NTP wallpaper for descriptors.
   // Returns list of sanitized image data.
-  GetWallpaperSearchResults(string descriptor_a,
-      string? descriptor_b, string? descriptor_c,
-      DescriptorDValue? descriptor_d_value)
+  GetWallpaperSearchResults(ResultDescriptors result_descriptors)
         => (WallpaperSearchStatus status, array<WallpaperSearchResult> results);
 
   // Tells the handler that wallpaper search results with `result_ids` rendered

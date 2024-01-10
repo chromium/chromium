@@ -67,11 +67,8 @@ class WallpaperSearchHandler
   // side_panel::customize_chrome::mojom::WallpaperSearchHandler:
   void GetDescriptors(GetDescriptorsCallback callback) override;
   void GetWallpaperSearchResults(
-      const std::string& descriptor_a,
-      const std::optional<std::string>& descriptor_b,
-      const std::optional<std::string>& descriptor_c,
-      side_panel::customize_chrome::mojom::DescriptorDValuePtr
-          descriptor_d_value,
+      side_panel::customize_chrome::mojom::ResultDescriptorsPtr
+          result_descriptors,
       GetWallpaperSearchResultsCallback callback) override;
   void SetResultRenderTime(const std::vector<base::Token>& result_ids,
                            double time) override;

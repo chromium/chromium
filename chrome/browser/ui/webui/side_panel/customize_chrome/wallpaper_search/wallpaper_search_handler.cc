@@ -226,10 +226,8 @@ void WallpaperSearchHandler::GetDescriptors(GetDescriptorsCallback callback) {
 }
 
 void WallpaperSearchHandler::GetWallpaperSearchResults(
-    const std::string& descriptor_a,
-    const std::optional<std::string>& descriptor_b,
-    const std::optional<std::string>& descriptor_c,
-    side_panel::customize_chrome::mojom::DescriptorDValuePtr descriptor_d_value,
+    side_panel::customize_chrome::mojom::ResultDescriptorsPtr
+        result_descriptors,
     GetWallpaperSearchResultsCallback callback) {
   callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback),
@@ -249,20 +247,21 @@ void WallpaperSearchHandler::GetWallpaperSearchResults(
   }
   optimization_guide::proto::WallpaperSearchRequest request;
   auto& descriptors = *request.mutable_descriptors();
-  descriptors.set_descriptor_a(descriptor_a);
-  if (descriptor_b.has_value()) {
-    descriptors.set_descriptor_b(*descriptor_b);
+  CHECK(result_descriptors->subject);
+  descriptors.set_descriptor_a(*result_descriptors->subject);
+  if (result_descriptors->style.has_value()) {
+    descriptors.set_descriptor_b(*result_descriptors->style);
   }
-  if (descriptor_c.has_value()) {
-    descriptors.set_descriptor_c(*descriptor_c);
+  if (result_descriptors->mood.has_value()) {
+    descriptors.set_descriptor_c(*result_descriptors->mood);
   }
-  if (descriptor_d_value) {
-    if (descriptor_d_value->is_color()) {
+  if (result_descriptors->color) {
+    if (result_descriptors->color->is_color()) {
       descriptors.set_descriptor_d(
-          skia::SkColorToHexString(descriptor_d_value->get_color()));
-    } else if (descriptor_d_value->is_hue()) {
+          skia::SkColorToHexString(result_descriptors->color->get_color()));
+    } else if (result_descriptors->color->is_hue()) {
       descriptors.set_descriptor_d(skia::SkColorToHexString(
-          HueToSkColor(descriptor_d_value->get_hue())));
+          HueToSkColor(result_descriptors->color->get_hue())));
     }
   }
   optimization_guide_keyed_service->ExecuteModel(

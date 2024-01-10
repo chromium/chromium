@@ -70,13 +70,6 @@ interface ColorDescriptor {
   name: string;
 }
 
-/* Saved descriptors for a set of results. */
-interface ResultsDescriptors {
-  a?: string|null;
-  b?: string|null;
-  c?: string|null;
-}
-
 interface ComboxItems {
   a: ComboboxGroup[];
   b: ComboboxItem[];
@@ -210,7 +203,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   private inspirationCardEnabled_: boolean;
   private loading_: boolean;
   private results_: WallpaperSearchResult[] = [];
-  private resultsDescriptors_: ResultsDescriptors = {};
+  private resultsDescriptors_: ResultDescriptors|null = null;
   private selectedDefaultColor_: string|undefined;
   private selectedDescriptorA_: string|null;
   private selectedDescriptorB_: string|null;
@@ -437,22 +430,24 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   }
 
   private getResultAriaLabel_(index: number): string {
-    assert(this.resultsDescriptors_.a);
-    if (this.resultsDescriptors_.b && this.resultsDescriptors_.c) {
+    assert(this.resultsDescriptors_ && this.resultsDescriptors_.subject);
+    if (this.resultsDescriptors_.style && this.resultsDescriptors_.mood) {
       return loadTimeData.getStringF(
-          'wallpaperSearchResultLabelBC', index + 1, this.resultsDescriptors_.a,
-          this.resultsDescriptors_.b, this.resultsDescriptors_.c);
-    } else if (this.resultsDescriptors_.b) {
+          'wallpaperSearchResultLabelBC', index + 1,
+          this.resultsDescriptors_.subject, this.resultsDescriptors_.style,
+          this.resultsDescriptors_.mood);
+    } else if (this.resultsDescriptors_.style) {
       return loadTimeData.getStringF(
-          'wallpaperSearchResultLabelB', index + 1, this.resultsDescriptors_.a,
-          this.resultsDescriptors_.b);
-    } else if (this.resultsDescriptors_.c) {
+          'wallpaperSearchResultLabelB', index + 1,
+          this.resultsDescriptors_.subject, this.resultsDescriptors_.style);
+    } else if (this.resultsDescriptors_.mood) {
       return loadTimeData.getStringF(
-          'wallpaperSearchResultLabelC', index + 1, this.resultsDescriptors_.a,
-          this.resultsDescriptors_.c);
+          'wallpaperSearchResultLabelC', index + 1,
+          this.resultsDescriptors_.subject, this.resultsDescriptors_.mood);
     }
     return loadTimeData.getStringF(
-        'wallpaperSearchResultLabel', index + 1, this.resultsDescriptors_.a);
+        'wallpaperSearchResultLabel', index + 1,
+        this.resultsDescriptors_.subject);
   }
 
   private isBackgroundSelected_(id: Token): boolean {
@@ -585,17 +580,18 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     this.results_ = [];
     this.emptyResultContainers_ = [];
     announcer.announce(this.i18n('wallpaperSearchLoadingA11yMessage'));
+    const descriptors: ResultDescriptors = {
+      subject: this.selectedDescriptorA_!,
+      style: this.selectedDescriptorB_ ?? undefined,
+      mood: this.selectedDescriptorC_ ?? undefined,
+      color: this.selectedDescriptorD_ ?? undefined,
+    };
     const {status, results} =
         await this.wallpaperSearchHandler_.getWallpaperSearchResults(
-            this.selectedDescriptorA_, this.selectedDescriptorB_,
-            this.selectedDescriptorC_, this.selectedDescriptorD_);
+            descriptors);
     this.loading_ = false;
     this.results_ = results;
-    this.resultsDescriptors_ = {
-      a: this.selectedDescriptorA_,
-      b: this.selectedDescriptorB_,
-      c: this.selectedDescriptorC_,
-    };
+    this.resultsDescriptors_ = descriptors;
     this.status_ = status;
     if (this.status_ === WallpaperSearchStatus.kOk) {
       announcer.announce(
@@ -612,16 +608,12 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   }
 
   private async onResultClick_(e: DomRepeatEvent<WallpaperSearchResult>) {
+    assert(this.resultsDescriptors_);
     recordCustomizeChromeAction(
         CustomizeChromeAction.WALLPAPER_SEARCH_RESULT_IMAGE_SELECTED);
-    const descriptors: ResultDescriptors = {
-      subject: this.selectedDescriptorA_!,
-      style: this.selectedDescriptorB_ ?? undefined,
-      mood: this.selectedDescriptorC_ ?? undefined,
-      color: this.selectedDescriptorD_ ?? undefined,
-    };
     this.wallpaperSearchHandler_.setBackgroundToWallpaperSearchResult(
-        e.model.item.id, WindowProxy.getInstance().now(), descriptors);
+        e.model.item.id, WindowProxy.getInstance().now(),
+        this.resultsDescriptors_);
   }
 
   private onStatusChange_() {

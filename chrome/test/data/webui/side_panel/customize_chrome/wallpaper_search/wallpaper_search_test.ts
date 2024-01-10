@@ -8,7 +8,7 @@ import 'chrome://customize-chrome-side-panel.top-chrome/strings.m.js';
 import {CustomizeChromeAction} from 'chrome://customize-chrome-side-panel.top-chrome/common.js';
 import {CustomizeChromePageRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
-import {Descriptors, UserFeedback, WallpaperSearchClientCallbackRouter, WallpaperSearchClientRemote, WallpaperSearchHandlerInterface, WallpaperSearchHandlerRemote, WallpaperSearchStatus} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search.mojom-webui.js';
+import {Descriptors, ResultDescriptors, UserFeedback, WallpaperSearchClientCallbackRouter, WallpaperSearchClientRemote, WallpaperSearchHandlerInterface, WallpaperSearchHandlerRemote, WallpaperSearchStatus} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search.mojom-webui.js';
 import {CustomizeChromeCombobox} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search/combobox/customize_chrome_combobox.js';
 import {DESCRIPTOR_D_VALUE, WallpaperSearchElement} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search/wallpaper_search.js';
 import {WallpaperSearchProxy} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search/wallpaper_search_proxy.js';
@@ -235,13 +235,14 @@ suite('WallpaperSearchTest', () => {
       wallpaperSearchElement.$.submitButton.click();
 
       assertEquals(1, handler.getCallCount('getWallpaperSearchResults'));
-      assertEquals('bar', handler.getArgs('getWallpaperSearchResults')[0][0]);
-      assertEquals('foo', handler.getArgs('getWallpaperSearchResults')[0][1]);
-      assertEquals('baz', handler.getArgs('getWallpaperSearchResults')[0][2]);
+      const resultDescriptors: ResultDescriptors =
+          handler.getArgs('getWallpaperSearchResults')[0];
+      assertEquals('bar', resultDescriptors.subject);
+      assertEquals('foo', resultDescriptors.style);
+      assertEquals('baz', resultDescriptors.mood);
       const skColor = hexColorToSkColor(DESCRIPTOR_D_VALUE[0]!.hex);
       assertNotEquals(skColor, {value: 0});
-      assertDeepEquals(
-          {color: skColor}, handler.getArgs('getWallpaperSearchResults')[0][3]);
+      assertDeepEquals({color: skColor}, resultDescriptors.color);
     });
 
     test('sends hue to backend', async () => {
@@ -262,7 +263,7 @@ suite('WallpaperSearchTest', () => {
 
       assertEquals(1, handler.getCallCount('getWallpaperSearchResults'));
       assertDeepEquals(
-          {hue: 10}, handler.getArgs('getWallpaperSearchResults')[0][3]);
+          {hue: 10}, handler.getArgs('getWallpaperSearchResults')[0].color);
     });
 
     test(
@@ -281,7 +282,8 @@ suite('WallpaperSearchTest', () => {
           assertNotEquals(
               undefined, wallpaperSearchElement.$.descriptorComboboxA.value);
           assertNotEquals(
-              undefined, handler.getArgs('getWallpaperSearchResults')[0][0]);
+              undefined,
+              handler.getArgs('getWallpaperSearchResults')[0].subject);
         });
 
     test('sends one descriptor value to the backend', async () => {
@@ -300,13 +302,12 @@ suite('WallpaperSearchTest', () => {
       wallpaperSearchElement.$.submitButton.click();
 
       assertEquals(1, handler.getCallCount('getWallpaperSearchResults'));
-      assertEquals('bar', handler.getArgs('getWallpaperSearchResults')[0][0]);
-      assertEquals(
-          undefined, handler.getArgs('getWallpaperSearchResults')[0][1]);
-      assertEquals(
-          undefined, handler.getArgs('getWallpaperSearchResults')[0][2]);
-      assertEquals(
-          undefined, handler.getArgs('getWallpaperSearchResults')[0][3]);
+      const resultDescriptors: ResultDescriptors =
+          handler.getArgs('getWallpaperSearchResults')[0];
+      assertEquals('bar', resultDescriptors.subject);
+      assertEquals(undefined, resultDescriptors.style);
+      assertEquals(undefined, resultDescriptors.mood);
+      assertEquals(undefined, resultDescriptors.color);
     });
 
     test('empty result shows no tiles', async () => {
