@@ -18935,10 +18935,17 @@
             ],
             "experiments": [
                 {
+                    "//0": "TODO(crbug.com/1515883): Enable IPH feature",
                     "name": "EnableUnoPhase2FollowUp",
                     "params": {
                         "event_trigger": "name:do_not_trigger_signin_iph_for_tests;comparator:>=360;window:360;storage:360"
                     },
+                    "enable_features": [
+                        "EnableBatchUploadFromBookmarksManager",
+                        "EnableReviewAccountSettingsPromo",
+                        "HistoryOptInForRestoreShortyAndReSignin",
+                        "LinkAccountSettingsToPrivacyFooter"
+                    ],
                     "disable_features": [
                         "IPH_iOSReplaceSyncPromosWithSignInPromos"
                     ]
