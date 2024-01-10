@@ -1375,23 +1375,20 @@ IN_PROC_BROWSER_TEST_F(DemoSetupGrowthFrameworkEnabledTest,
                        OnlineSetupFlowSuccessWithCampaigns) {
   base::ScopedAllowBlockingForTesting scoped_allow_blocking;
   CreateTestCampaignsFile(R"({
-      "reactiveCampaigns": {
-        "0": [
-          {
-            "id": 3,
-            "targetings": [],
-            "payload": {
-              "demoModeApp": {
-                "attractionLoop": {
-                  "videoSrcLang1": "/asset/peripherals_lang1.mp4",
-                  "videoSrcLang2": "/asset/peripherals_lang2.mp4"
-                }
-              }
+    "0": [
+      {
+        "id": 3,
+        "targetings": [],
+        "payload": {
+          "demoModeApp": {
+            "attractionLoop": {
+              "videoSrcLang1": "/asset/peripherals_lang1.mp4",
+              "videoSrcLang2": "/asset/peripherals_lang2.mp4"
             }
           }
-        ]
-      },
-      "proactiveCampaigns": {}
+        }
+      }
+    ]
   })");
 
   SimulateSetupFlowAndVerifyComplete();

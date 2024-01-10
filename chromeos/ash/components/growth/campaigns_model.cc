@@ -15,9 +15,6 @@
 namespace growth {
 namespace {
 
-inline constexpr char kReactiveCampaigns[] = "reactiveCampaigns";
-inline constexpr char kProactiveCampaigns[] = "proactiveCampaigns";
-
 inline constexpr char kTargetings[] = "targetings";
 
 inline constexpr char kId[] = "id";
@@ -54,16 +51,6 @@ inline constexpr char kPayloadPathTemplate[] = "payload.%s";
 inline constexpr char kDemoModePayloadPath[] = "demoModeApp";
 
 }  // namespace
-
-const CampaignsPerSlot* GetProactiveCampaigns(
-    const CampaignsStore* campaigns_store) {
-  return campaigns_store->FindDict(kProactiveCampaigns);
-}
-
-const CampaignsPerSlot* GetReactiveCampaigns(
-    const CampaignsStore* campaigns_store) {
-  return campaigns_store->FindDict(kReactiveCampaigns);
-}
 
 const Campaigns* GetCampaignsBySlot(const CampaignsPerSlot* campaigns_per_slot,
                                     Slot slot) {

@@ -87,8 +87,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
 
   // Campaigns store owns all campaigns, including proactive and reactive
   // campaigns.
-  CampaignsStore campaigns_store_;
-  // Campaigns matcher for selecting campaigns based on criterias.
+  CampaignsPerSlot campaigns_;
+  // Campaigns matcher for selecting campaigns based on criteria.
   CampaignsMatcher matcher_;
 
   // Maps action type to the action.

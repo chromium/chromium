@@ -420,24 +420,21 @@ IN_PROC_BROWSER_TEST_F(DemoSessionLoginWithGrowthCampaignTest,
   base::ScopedAllowBlockingForTesting scoped_allow_blocking;
 
   CreateTestCampaignsFile(R"({
-      "reactiveCampaigns": {
-        "0": [
-          {
-            "id": 3,
-            "studyId":1,
-            "targetings": [],
-            "payload": {
-              "demoModeApp": {
-                "attractionLoop": {
-                  "videoSrcLang1": "/asset/peripherals_lang1.mp4",
-                  "videoSrcLang2": "/asset/peripherals_lang2.mp4"
-                }
-              }
+    "0": [
+      {
+        "id": 3,
+        "studyId":1,
+        "targetings": [],
+        "payload": {
+          "demoModeApp": {
+            "attractionLoop": {
+              "videoSrcLang1": "/asset/peripherals_lang1.mp4",
+              "videoSrcLang2": "/asset/peripherals_lang2.mp4"
             }
           }
-        ]
-      },
-      "proactiveCampaigns": {}
+        }
+      }
+    ]
   })");
 
   OpenBrowserAndInstallSystemAppForActiveProfile();
@@ -468,16 +465,13 @@ IN_PROC_BROWSER_TEST_F(DemoSessionLoginWithGrowthCampaignTest,
   base::ScopedAllowBlockingForTesting scoped_allow_blocking;
 
   CreateTestCampaignsFile(R"({
-      "reactiveCampaigns": {
-        "0": [
-          {
-            "id": 3,
-            "targetings": [],
-            "payload": {}
-          }
-        ]
-      },
-      "proactiveCampaigns": {}
+    "0": [
+      {
+        "id": 3,
+        "targetings": [],
+        "payload": {}
+      }
+    ]
   })");
 
   OpenBrowserAndInstallSystemAppForActiveProfile();
@@ -503,36 +497,33 @@ IN_PROC_BROWSER_TEST_F(DemoSessionLoginWithGrowthCampaignTest,
   base::ScopedAllowBlockingForTesting scoped_allow_blocking;
 
   CreateTestCampaignsFile(R"({
-      "reactiveCampaigns": {
-        "0": [
+    "0": [
+      {
+        "id": 3,
+        "studyId":1,
+        "targetings": [
           {
-            "id": 3,
-            "studyId":1,
-            "targetings": [
-              {
-                "demoMode": {
-                  "retailers": ["bby", "bestbuy", "bbt"],
-                  "storeIds": ["2", "4", "6"],
-                  "countries": ["US"],
-                  "capability": {
-                    "isCloudGamingDevice": true,
-                    "isFeatureAwareDevice": true
-                  }
-                }
-              }
-            ],
-            "payload": {
-              "demoModeApp": {
-                "attractionLoop": {
-                  "videoSrcLang1": "/asset/peripherals_lang1.mp4",
-                  "videoSrcLang2": "/asset/peripherals_lang2.mp4"
-                }
+            "demoMode": {
+              "retailers": ["bby", "bestbuy", "bbt"],
+              "storeIds": ["2", "4", "6"],
+              "countries": ["US"],
+              "capability": {
+                "isCloudGamingDevice": true,
+                "isFeatureAwareDevice": true
               }
             }
           }
-        ]
-      },
-      "proactiveCampaigns": {}
+        ],
+        "payload": {
+          "demoModeApp": {
+            "attractionLoop": {
+              "videoSrcLang1": "/asset/peripherals_lang1.mp4",
+              "videoSrcLang2": "/asset/peripherals_lang2.mp4"
+            }
+          }
+        }
+      }
+    ]
   })");
 
   OpenBrowserAndInstallSystemAppForActiveProfile();
@@ -557,23 +548,20 @@ IN_PROC_BROWSER_TEST_F(DemoSessionLoginWithGrowthCampaignTest,
   base::ScopedAllowBlockingForTesting scoped_allow_blocking;
 
   CreateTestCampaignsFile(R"({
-      "reactiveCampaigns": {
-        "0": [
-          {
-            "id": 3,
-            "targetings": [],
-            "payload": {
-              "demoModeApp": {
-                "attractionLoop": {
-                  "videoSrcLang1": "/asset/peripherals_lang1.mp4",
-                  "videoSrcLang2": "/asset/peripherals_lang2.mp4"
-                }
-              }
+    "0": [
+      {
+        "id": 3,
+        "targetings": [],
+        "payload": {
+          "demoModeApp": {
+            "attractionLoop": {
+              "videoSrcLang1": "/asset/peripherals_lang1.mp4",
+              "videoSrcLang2": "/asset/peripherals_lang2.mp4"
             }
           }
-        ]
-      },
-      "proactiveCampaigns": {}
+        }
+      }
+    ]
   })");
 
   OpenBrowserAndInstallSystemAppForActiveProfile();

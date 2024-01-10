@@ -68,25 +68,6 @@ using Campaigns = base::Value::List;
 // }
 using CampaignsPerSlot = base::Value::Dict;
 
-// All campaigns including proactive and reactive campaigns. For example:
-// {
-//   "proactiveCampaigns" : {
-//     "0": [...],
-//     "1": [...]
-//   },
-//   "reactiveCampaigns" : {
-//     "3": [...],
-//     "4": [...]
-//   },
-// }
-using CampaignsStore = base::Value::Dict;
-
-const CampaignsPerSlot* GetProactiveCampaigns(
-    const CampaignsStore* campaigns_store);
-
-const CampaignsPerSlot* GetReactiveCampaigns(
-    const CampaignsStore* campaigns_store);
-
 const Campaigns* GetCampaignsBySlot(const CampaignsPerSlot* campaigns_per_slot,
                                     Slot slot);
 
@@ -108,25 +89,6 @@ std::optional<int> GetStudyId(const Campaign* campaign);
 //   "1": [...]
 // }
 using CampaignsPerSlot = base::Value::Dict;
-
-// All campaigns including proactive and reactive campaigns. For example:
-// {
-//   "proactiveCampaigns" : {
-//     "0": [...],
-//     "1": [...]
-//   },
-//   "reactiveCampaigns" : {
-//     "3": [...],
-//     "4": [...]
-//   },
-// }
-using CampaignsStore = base::Value::Dict;
-
-const CampaignsPerSlot* GetProactiveCampaigns(
-    const CampaignsStore* campaigns_store);
-
-const CampaignsPerSlot* GetReactiveCampaigns(
-    const CampaignsStore* campaigns_store);
 
 const Campaigns* GetCampaignsBySlot(const CampaignsPerSlot* campaigns_per_slot,
                                     Slot slot);

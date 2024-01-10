@@ -132,14 +132,13 @@ void CampaignsManager::OnCampaignsLoaded(
   // Load campaigns into campaigns store.
   if (campaigns_dict.has_value()) {
     // Update campaigns store.
-    campaigns_store_ = std::move(campaigns_dict.value());
+    campaigns_ = std::move(campaigns_dict.value());
   } else {
     LOG(ERROR) << "No campaign is loaded.";
   }
 
   // Load campaigns into `CampaignMatcher` for selecting campaigns.
-  matcher_.SetCampaigns(GetProactiveCampaigns(&campaigns_store_),
-                        GetReactiveCampaigns(&campaigns_store_));
+  matcher_.SetCampaigns(&campaigns_);
   campaigns_loaded_ = true;
 
   std::move(load_callback).Run();

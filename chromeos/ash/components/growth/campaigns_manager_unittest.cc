@@ -32,37 +32,34 @@ namespace {
 
 constexpr char kValidCampaignsFileTemplate[] = R"(
     {
-      "reactiveCampaigns": {
-        "0": [
-          // Invalid targeting.
-          {
-            "id": 1,
-            "targetings": [
-              []
-            ],
-            "payload": {}
-          },
-          "Invalid campaign",
-          {
-            "id": 3,
-            "studyId":1,
-            "targetings": [
-              {
-                %s
-              }
-            ],
-            "payload": {
-              "demoModeApp": {
-                "attractionLoop": {
-                  "videoSrcLang1": "/asset/peripherals_lang1.mp4",
-                  "videoSrcLang2": "/asset/peripherals_lang2.mp4"
-                }
+      "0": [
+        // Invalid targeting.
+        {
+          "id": 1,
+          "targetings": [
+            []
+          ],
+          "payload": {}
+        },
+        "Invalid campaign",
+        {
+          "id": 3,
+          "studyId":1,
+          "targetings": [
+            {
+              %s
+            }
+          ],
+          "payload": {
+            "demoModeApp": {
+              "attractionLoop": {
+                "videoSrcLang1": "/asset/peripherals_lang1.mp4",
+                "videoSrcLang2": "/asset/peripherals_lang2.mp4"
               }
             }
           }
-        ]
-      },
-      "proactiveCampaigns": {}
+        }
+      ]
     }
 )";
 
