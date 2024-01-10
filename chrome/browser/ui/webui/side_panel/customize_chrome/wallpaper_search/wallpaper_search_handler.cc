@@ -230,7 +230,8 @@ void WallpaperSearchHandler::GetInspirations(GetInspirationsCallback callback) {
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback), nullptr);
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("customize_chrome_page_handler", R"(
+      net::DefineNetworkTrafficAnnotation("customize_chrome_page_handler_image",
+                                          R"(
         semantics {
           sender: "Customize Chrome"
           description:
@@ -250,7 +251,7 @@ void WallpaperSearchHandler::GetInspirations(GetInspirationsCallback callback) {
           user_data {
             type: NONE
           }
-          last_reviewed: "2023-12-21"
+          last_reviewed: "2024-01-10"
         }
         policy {
           cookies_allowed: NO
