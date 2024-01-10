@@ -791,13 +791,6 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
     server_ssl_config.renego_allowed_for_protos.push_back(kProtoHTTP11);
   }
 
-  // TODO(mmenke): This should be set in ClientSocketFactory. There's a bit of a
-  // problem, though. This is overwritten some ways down with "{kProtoHTTP11}"
-  // in the WebSocket case, and ProxyResolvingClientSocket leaves it empty, so
-  // there are three different values of this we want.
-  server_ssl_config.alpn_protos = session_->GetAlpnProtos();
-  server_ssl_config.application_settings = session_->GetApplicationSettings();
-
   // TODO(https://crbug.com/964642): Also enable 0-RTT for TLS proxies.
   server_ssl_config.early_data_enabled = session_->params().enable_early_data;
 
@@ -865,14 +858,6 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
     establishing_tunnel_ = !UsingHttpProxyWithoutTunnel();
   }
 
-  HttpServerProperties* http_server_properties =
-      session_->http_server_properties();
-  if (http_server_properties) {
-    http_server_properties->MaybeForceHTTP11(
-        url::SchemeHostPort(request_info_.url),
-        request_info_.network_anonymization_key, &server_ssl_config);
-  }
-
   if (job_type_ == PRECONNECT) {
     DCHECK(!is_websocket_);
     DCHECK(request_info_.socket_tag == SocketTag());
@@ -897,20 +882,9 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
   if (is_websocket_) {
     DCHECK(request_info_.socket_tag == SocketTag());
     DCHECK_EQ(SecureDnsPolicy::kAllow, request_info_.secure_dns_policy);
-    // Only offer HTTP/1.1 for WebSockets. Although RFC 8441 defines WebSockets
-    // over HTTP/2, a single WSS/HTTPS origin may support HTTP over HTTP/2
-    // without supporting WebSockets over HTTP/2. Offering HTTP/2 for a fresh
-    // connection would break such origins.
-    //
-    // However, still offer HTTP/1.1 rather than skipping ALPN entirely. While
-    // this will not change the application protocol (HTTP/1.1 is default), it
-    // provides hardens against cross-protocol attacks and allows for the False
-    // Start (RFC 7918) optimization.
-    SSLConfig websocket_server_ssl_config = server_ssl_config;
-    websocket_server_ssl_config.alpn_protos = {kProtoHTTP11};
     return InitSocketHandleForWebSocketRequest(
         destination_, request_info_.load_flags, priority_, session_,
-        proxy_info_, websocket_server_ssl_config, request_info_.privacy_mode,
+        proxy_info_, server_ssl_config, request_info_.privacy_mode,
         request_info_.network_anonymization_key, net_log_, connection_.get(),
         io_callback_, proxy_auth_callback);
   }

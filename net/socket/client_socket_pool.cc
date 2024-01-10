@@ -193,9 +193,23 @@ std::unique_ptr<ConnectJob> ClientSocketPool::CreateConnectJob(
   // Force a CONNECT tunnel for websockets. If this is false, the connect job
   // may still use a tunnel for other reasons.
   bool force_tunnel = is_for_websockets_;
+
+  // Only offer HTTP/1.1 for WebSockets. Although RFC 8441 defines WebSockets
+  // over HTTP/2, a single WSS/HTTPS origin may support HTTP over HTTP/2
+  // without supporting WebSockets over HTTP/2. Offering HTTP/2 for a fresh
+  // connection would break such origins.
+  //
+  // However, still offer HTTP/1.1 rather than skipping ALPN entirely. While
+  // this will not change the application protocol (HTTP/1.1 is default), it
+  // provides hardening against cross-protocol attacks and allows for the False
+  // Start (RFC 7918) optimization.
+  ConnectJobFactory::AlpnMode alpn_mode =
+      is_for_websockets_ ? ConnectJobFactory::AlpnMode::kHttp11Only
+                         : ConnectJobFactory::AlpnMode::kHttpAll;
+
   return connect_job_factory_->CreateConnectJob(
       group_id.destination(), proxy_chain, proxy_annotation_tag,
-      socket_params->ssl_config_for_origin(), force_tunnel,
+      socket_params->ssl_config_for_origin(), alpn_mode, force_tunnel,
       group_id.privacy_mode(), resolution_callback, request_priority,
       socket_tag, group_id.network_anonymization_key(),
       group_id.secure_dns_policy(), common_connect_job_params_, delegate);

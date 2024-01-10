@@ -90,15 +90,29 @@ base::flat_set<std::string> SupportedProtocolsFromSSLConfig(
 // `alpn_protos` to only allow HTTP/1.1 negotiation.
 void ConfigureAlpn(
     const url::SchemeHostPort& server,
+    ConnectJobFactory::AlpnMode alpn_mode,
     const net::NetworkAnonymizationKey& network_anonymization_key,
     const CommonConnectJobParams& common_connect_job_params,
     SSLConfig& ssl_config) {
-  ssl_config.alpn_protos = *common_connect_job_params.alpn_protos;
-  ssl_config.application_settings =
-      *common_connect_job_params.application_settings;
-  if (common_connect_job_params.http_server_properties) {
-    common_connect_job_params.http_server_properties->MaybeForceHTTP11(
-        server, network_anonymization_key, &ssl_config);
+  switch (alpn_mode) {
+    case ConnectJobFactory::AlpnMode::kDisabled:
+      ssl_config.alpn_protos = {};
+      ssl_config.application_settings = {};
+      break;
+    case ConnectJobFactory::AlpnMode::kHttp11Only:
+      ssl_config.alpn_protos = {kProtoHTTP11};
+      ssl_config.application_settings =
+          *common_connect_job_params.application_settings;
+      break;
+    case ConnectJobFactory::AlpnMode::kHttpAll:
+      ssl_config.alpn_protos = *common_connect_job_params.alpn_protos;
+      ssl_config.application_settings =
+          *common_connect_job_params.application_settings;
+      if (common_connect_job_params.http_server_properties) {
+        common_connect_job_params.http_server_properties->MaybeForceHTTP11(
+            server, network_anonymization_key, &ssl_config);
+      }
+      break;
   }
 }
 
@@ -126,6 +140,7 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
     const ProxyChain& proxy_chain,
     const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
     const SSLConfig* ssl_config_for_origin,
+    ConnectJobFactory::AlpnMode alpn_mode,
     bool force_tunnel,
     PrivacyMode privacy_mode,
     const OnHostResolutionCallback& resolution_callback,
@@ -135,11 +150,12 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
     SecureDnsPolicy secure_dns_policy,
     const CommonConnectJobParams* common_connect_job_params,
     ConnectJob::Delegate* delegate) const {
-  return CreateConnectJob(
-      Endpoint(std::move(endpoint)), proxy_chain, proxy_annotation_tag,
-      ssl_config_for_origin, force_tunnel, privacy_mode, resolution_callback,
-      request_priority, socket_tag, network_anonymization_key,
-      secure_dns_policy, common_connect_job_params, delegate);
+  return CreateConnectJob(Endpoint(std::move(endpoint)), proxy_chain,
+                          proxy_annotation_tag, ssl_config_for_origin,
+                          alpn_mode, force_tunnel, privacy_mode,
+                          resolution_callback, request_priority, socket_tag,
+                          network_anonymization_key, secure_dns_policy,
+                          common_connect_job_params, delegate);
 }
 
 std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
@@ -160,9 +176,10 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
   SchemelessEndpoint schemeless_endpoint{using_ssl, std::move(endpoint)};
   return CreateConnectJob(
       std::move(schemeless_endpoint), proxy_chain, proxy_annotation_tag,
-      ssl_config_for_origin, force_tunnel, privacy_mode, resolution_callback,
-      request_priority, socket_tag, network_anonymization_key,
-      secure_dns_policy, common_connect_job_params, delegate);
+      ssl_config_for_origin, ConnectJobFactory::AlpnMode::kDisabled,
+      force_tunnel, privacy_mode, resolution_callback, request_priority,
+      socket_tag, network_anonymization_key, secure_dns_policy,
+      common_connect_job_params, delegate);
 }
 
 std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
@@ -170,6 +187,7 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
     const ProxyChain& proxy_chain,
     const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
     const SSLConfig* ssl_config_for_origin,
+    ConnectJobFactory::AlpnMode alpn_mode,
     bool force_tunnel,
     PrivacyMode privacy_mode,
     const OnHostResolutionCallback& resolution_callback,
@@ -212,6 +230,8 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
         ConfigureAlpn(url::SchemeHostPort(url::kHttpsScheme,
                                           proxy_server.host_port_pair().host(),
                                           proxy_server.host_port_pair().port()),
+                      // Always enable ALPN for proxies.
+                      ConnectJobFactory::AlpnMode::kHttpAll,
                       network_anonymization_key, *common_connect_job_params,
                       proxy_server_ssl_config);
       }
@@ -295,18 +315,31 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
   if (UsingSsl(endpoint)) {
     DCHECK(ssl_config_for_origin);
     scoped_refptr<TransportSocketParams> ssl_tcp_params;
+
+    SSLConfig ssl_config = *ssl_config_for_origin;
+    if (absl::holds_alternative<url::SchemeHostPort>(endpoint)) {
+      ConfigureAlpn(absl::get<url::SchemeHostPort>(endpoint), alpn_mode,
+                    network_anonymization_key, *common_connect_job_params,
+                    ssl_config);
+    } else {
+      // If ALPN is enabled, the scheme should be known.
+      DCHECK_EQ(alpn_mode, ConnectJobFactory::AlpnMode::kDisabled);
+      ssl_config.alpn_protos = {};
+      ssl_config.application_settings = {};
+    }
+
     if (proxy_chain.is_direct()) {
       ssl_tcp_params = base::MakeRefCounted<TransportSocketParams>(
           ToTransportEndpoint(endpoint), network_anonymization_key,
           secure_dns_policy, resolution_callback,
-          SupportedProtocolsFromSSLConfig(*ssl_config_for_origin));
+          SupportedProtocolsFromSSLConfig(ssl_config));
     }
     // TODO(crbug.com/1206799): Pass `endpoint` directly (preserving scheme
     // when available)?
     auto ssl_params = base::MakeRefCounted<SSLSocketParams>(
         std::move(ssl_tcp_params), std::move(socks_params),
-        std::move(http_proxy_params), ToHostPortPair(endpoint),
-        *ssl_config_for_origin, privacy_mode, network_anonymization_key);
+        std::move(http_proxy_params), ToHostPortPair(endpoint), ssl_config,
+        privacy_mode, network_anonymization_key);
     return ssl_connect_job_factory_->Create(
         request_priority, socket_tag, common_connect_job_params,
         std::move(ssl_params), delegate, /*net_log=*/nullptr);
