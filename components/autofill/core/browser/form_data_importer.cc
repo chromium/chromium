@@ -161,11 +161,10 @@ FormDataImporter::FormDataImporter(AutofillClient* client,
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
       iban_save_manager_(
           std::make_unique<IbanSaveManager>(personal_data_manager, client)),
-      local_card_migration_manager_(std::make_unique<LocalCardMigrationManager>(
-          client,
-          client->GetPaymentsNetworkInterface(),
-          app_locale,
-          personal_data_manager)),
+      local_card_migration_manager_(
+          std::make_unique<LocalCardMigrationManager>(client,
+                                                      app_locale,
+                                                      personal_data_manager)),
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
       personal_data_manager_(personal_data_manager),
       app_locale_(app_locale),
