@@ -112,8 +112,6 @@ class ScopedLogIn {
         // Guest user must use the guest user account id.
         EXPECT_EQ(account_id_, user_manager::GuestAccountId());
         return;
-      case user_manager::NUM_USER_TYPES:
-        NOTREACHED();
     }
   }
 
@@ -140,8 +138,6 @@ class ScopedLogIn {
       case user_manager::USER_TYPE_GUEST:
         fake_user_manager_->AddGuestUser();
         return;
-      case user_manager::NUM_USER_TYPES:
-        NOTREACHED();
     }
   }
 

@@ -74,7 +74,6 @@ bool ShouldShowNotification() {
     case user_manager::USER_TYPE_KIOSK_APP:
     case user_manager::USER_TYPE_ARC_KIOSK_APP:
     case user_manager::USER_TYPE_WEB_KIOSK_APP:
-    case user_manager::NUM_USER_TYPES:
       return false;
     case user_manager::USER_TYPE_REGULAR:
     case user_manager::USER_TYPE_CHILD:

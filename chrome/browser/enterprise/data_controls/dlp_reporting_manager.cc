@@ -110,9 +110,6 @@ DlpPolicyEvent_UserType GetCurrentUserType() {
     case user_manager::USER_TYPE_GUEST:
     case user_manager::USER_TYPE_CHILD:
       return DlpPolicyEvent_UserType_UNDEFINED_USER_TYPE;
-    case user_manager::NUM_USER_TYPES:
-      NOTREACHED();
-      return DlpPolicyEvent_UserType_UNDEFINED_USER_TYPE;
   }
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   switch (chromeos::BrowserParamsProxy::Get()->SessionType()) {

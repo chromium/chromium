@@ -161,9 +161,6 @@ std::string GetPrimaryAccountTypeString() {
       return "arc_kiosk_app";
     case user_manager::USER_TYPE_WEB_KIOSK_APP:
       return "web_kiosk_app";
-    case user_manager::NUM_USER_TYPES:
-      NOTREACHED();
-      break;
   }
   return std::string();
 }

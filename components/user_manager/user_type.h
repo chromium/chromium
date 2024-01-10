@@ -46,8 +46,9 @@ typedef enum {
   // Gaia account. Could be ephemeral depending on the device policy.
   // USER_TYPE_ACTIVE_DIRECTORY = 8,    // deprecated
 
-  // Maximum histogram value.
-  NUM_USER_TYPES = 10
+  // Alias for histogram.
+  kMaxValue = USER_TYPE_WEB_KIOSK_APP,
+
 } UserType;
 
 }  // namespace user_manager

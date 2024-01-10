@@ -48,8 +48,6 @@ bool IsKioskSession() {
     case user_manager::USER_TYPE_ARC_KIOSK_APP:
     case user_manager::USER_TYPE_WEB_KIOSK_APP:
       return true;
-    case user_manager::NUM_USER_TYPES:
-      NOTREACHED_NORETURN();
   }
 }
 

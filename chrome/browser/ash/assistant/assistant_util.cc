@@ -69,10 +69,6 @@ AssistantAllowedState GetErrorForUserType(const Profile* profile) {
       // This method should only be called for disallowed user types.
       NOTREACHED();
       return AssistantAllowedState::DISALLOWED_BY_ACCOUNT_TYPE;
-
-    case user_manager::NUM_USER_TYPES:
-      NOTREACHED();
-      return AssistantAllowedState::DISALLOWED_BY_ACCOUNT_TYPE;
   }
 }
 

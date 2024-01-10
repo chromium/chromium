@@ -1578,8 +1578,6 @@ void BrowserManager::PrepareLacrosPolicies() {
     case user_manager::USER_TYPE_GUEST:
     case user_manager::USER_TYPE_ARC_KIOSK_APP:
       break;
-    case user_manager::NUM_USER_TYPES:
-      NOTREACHED();
   }
 
   // The lifetime of `BrowserManager` is longer than lifetime of various

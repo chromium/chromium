@@ -73,8 +73,6 @@ User::User(const AccountId& account_id, UserType type)
       // Public accounts nor guest account do not have a real email address,
       // so they do not set |display_email_|.
       break;
-    case user_manager::NUM_USER_TYPES:
-      NOTREACHED();
   }
 
   if (type_ == user_manager::USER_TYPE_REGULAR ||
@@ -181,8 +179,8 @@ bool User::is_active() const {
 }
 
 bool User::has_gaia_account() const {
-  static_assert(user_manager::NUM_USER_TYPES == 10,
-                "NUM_USER_TYPES should equal 10");
+  static_assert(user_manager::UserType::kMaxValue == 9,
+                "kMaxValue should equal 9");
   switch (GetType()) {
     case user_manager::USER_TYPE_REGULAR:
     case user_manager::USER_TYPE_CHILD:
@@ -193,8 +191,6 @@ bool User::has_gaia_account() const {
     case user_manager::USER_TYPE_ARC_KIOSK_APP:
     case user_manager::USER_TYPE_WEB_KIOSK_APP:
       return false;
-    default:
-      NOTREACHED();
   }
   return false;
 }
@@ -259,8 +255,6 @@ bool User::IsDeviceLocalAccount() const {
     case user_manager::USER_TYPE_ARC_KIOSK_APP:
     case user_manager::USER_TYPE_WEB_KIOSK_APP:
       return true;
-    case user_manager::NUM_USER_TYPES:
-      NOTREACHED();
   }
   return false;
 }
