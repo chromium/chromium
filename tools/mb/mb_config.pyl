@@ -370,7 +370,6 @@
 
     'tryserver.chromium.chromiumos': {
       'gpu-fyi-try-chromeos-skylab-volteer': 'gpu_tests_chromeos_volteer_release_trybot_dcheck_off_no_symbols_reclient_skylab',
-      'lacros-amd64-generic-rel': 'chromeos_amd64-generic_lacros_rel_dchecks_skylab_reclient',
       'lacros-arm64-generic-rel-skylab-fyi': 'chromeos_arm64-generic_lacros_rel_skylab_reclient',
     },
 
@@ -586,10 +585,6 @@
     ],
     'chromeos_amd64-generic_lacros_official_skylab_reclient': [
       'chromeos_amd64-generic-crostoolchain_reclient', 'lacros', 'official', 'minimal_symbols', 'cfi', 'thin_lto', 'is_skylab',
-    ],
-
-    'chromeos_amd64-generic_lacros_rel_dchecks_skylab_reclient': [
-      'chromeos_amd64-generic-crostoolchain_reclient', 'lacros', 'release', 'dcheck_always_on', 'is_skylab',
     ],
 
     'chromeos_arm-generic_cfi_thin_lto_official': [

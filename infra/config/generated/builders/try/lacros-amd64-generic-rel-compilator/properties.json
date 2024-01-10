@@ -2,14 +2,14 @@
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "additional_exclusions": [
-        "infra/config/generated/builders/try/lacros-amd64-generic-rel/gn-args.json"
+        "infra/config/generated/builders/try/lacros-amd64-generic-rel-renamed/gn-args.json"
       ],
       "builder_db": {
         "entries": [
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "lacros-amd64-generic-rel",
+              "builder": "lacros-amd64-generic-rel-renamed",
               "project": "chromium"
             },
             "builder_spec": {
@@ -46,7 +46,7 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "lacros-amd64-generic-rel",
+          "builder": "lacros-amd64-generic-rel-renamed",
           "project": "chromium"
         }
       ]

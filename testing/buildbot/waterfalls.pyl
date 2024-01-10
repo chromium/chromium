@@ -1522,15 +1522,6 @@
         },
         'os_type': 'chromeos',
       },
-      'lacros-amd64-generic-rel': {
-        'additional_compile_targets': [
-          'chrome',
-        ],
-        'test_suites': {
-          'skylab_tests': 'lacros_skylab_tests_amd64_generic_rel',
-        },
-        'os_type': 'chromeos'
-      },
       'lacros-amd64-generic-rel-non-skylab': {
         'additional_compile_targets': [
           'chrome',
@@ -1538,6 +1529,15 @@
         ],
         'test_suites': {
           'gtest_tests': 'lacros_device_or_vm_tests',
+        },
+        'os_type': 'chromeos'
+      },
+      'lacros-amd64-generic-rel-renamed': {
+        'additional_compile_targets': [
+          'chrome',
+        ],
+        'test_suites': {
+          'skylab_tests': 'lacros_skylab_tests_amd64_generic_rel',
         },
         'os_type': 'chromeos'
       },

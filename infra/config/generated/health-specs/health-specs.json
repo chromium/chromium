@@ -5923,7 +5923,7 @@
           }
         ]
       },
-      "lacros-amd64-generic-rel": {
+      "lacros-amd64-generic-rel-non-skylab": {
         "contact_team_email": "chrome-desktop-engprod@google.com",
         "problem_specs": [
           {
@@ -5957,7 +5957,7 @@
           }
         ]
       },
-      "lacros-amd64-generic-rel-non-skylab": {
+      "lacros-amd64-generic-rel-renamed": {
         "contact_team_email": "chrome-desktop-engprod@google.com",
         "problem_specs": [
           {

@@ -282,16 +282,16 @@ try_.builder(
 )
 
 try_.orchestrator_builder(
-    name = "lacros-amd64-generic-rel",
+    name = "lacros-amd64-generic-rel-renamed",
     branch_selector = branches.selector.CROS_BRANCHES,
     description_html = """\
 Lacros builder that runs Tast tests and gtests on ChromeOS devices via Skylab""",
     mirrors = [
-        "ci/lacros-amd64-generic-rel",
+        "ci/lacros-amd64-generic-rel-renamed",
     ],
     gn_args = gn_args.config(
         configs = [
-            "ci/lacros-amd64-generic-rel",
+            "ci/lacros-amd64-generic-rel-renamed",
             "dcheck_always_on",
         ],
     ),

@@ -662,8 +662,9 @@ ci.builder(
 )
 
 ci.builder(
-    name = "lacros-amd64-generic-rel",
+    name = "lacros-amd64-generic-rel-renamed",
     branch_selector = branches.selector.CROS_BRANCHES,
+    description_html = "This is a renamed builder of lacros-amd64-generic-rel.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium_no_telemetry_dependencies",
