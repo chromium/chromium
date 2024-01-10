@@ -76,6 +76,8 @@ class GridLineResolver {
   const NamedGridLinesMap& ExplicitNamedLinesMap(
       GridTrackSizingDirection track_direction) const;
 
+  absl::optional<NamedGridAreaMap> NamedAreasMap() const;
+
  private:
   const NamedGridLinesMap& AutoRepeatLineNamesMap(
       GridTrackSizingDirection track_direction) const;
@@ -130,14 +132,14 @@ class GridLineResolver {
 
   bool IsSubgridded(GridTrackSizingDirection track_direction) const;
 
-  // This doesn't create a cycle as ComputeStyle doesn't have any references to
+  // This doesn't create a cycle as ComputedStyle doesn't have any references to
   // layout-time objects.
   Persistent<const ComputedStyle> style_;
 
   wtf_size_t column_auto_repetitions_{1};
   wtf_size_t row_auto_repetitions_{1};
-  wtf_size_t subgridded_column_span_size_{kNotFound};
-  wtf_size_t subgridded_row_span_size_{kNotFound};
+  wtf_size_t subgridded_columns_span_size_{kNotFound};
+  wtf_size_t subgridded_rows_span_size_{kNotFound};
 
   absl::optional<NamedGridLinesMap>
       subgridded_columns_merged_explicit_grid_line_names_;
@@ -148,6 +150,8 @@ class GridLineResolver {
       subgridded_columns_merged_implicit_grid_line_names_;
   absl::optional<NamedGridLinesMap>
       subgridded_rows_merged_implicit_grid_line_names_;
+
+  absl::optional<NamedGridAreaMap> subgrid_merged_named_areas_;
 };
 
 }  // namespace blink

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include "third_party/blink/renderer/core/layout/grid/grid_data.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_named_line_collection.h"
+#include "third_party/blink/renderer/core/style/computed_grid_template_areas.h"
 #include "third_party/blink/renderer/core/style/computed_grid_track_list.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/grid_area.h"
@@ -39,20 +40,12 @@ GridLineResolver::GridLineResolver(const ComputedStyle& grid_style,
           grid_style.GridTemplateColumns().named_grid_lines),
       subgridded_rows_merged_explicit_grid_line_names_(
           grid_style.GridTemplateRows().named_grid_lines) {
-  if (const auto& grid_template_areas = grid_style.GridTemplateAreas()) {
-    subgridded_columns_merged_implicit_grid_line_names_ =
-        grid_template_areas->implicit_named_grid_column_lines;
-    subgridded_rows_merged_implicit_grid_line_names_ =
-        grid_template_areas->implicit_named_grid_row_lines;
-  } else {
-    subgridded_columns_merged_implicit_grid_line_names_.emplace();
-    subgridded_rows_merged_implicit_grid_line_names_.emplace();
+  if (subgrid_area.columns.IsTranslatedDefinite()) {
+    subgridded_columns_span_size_ = subgrid_area.SpanSize(kForColumns);
   }
-
-  if (subgrid_area.columns.IsTranslatedDefinite())
-    subgridded_column_span_size_ = subgrid_area.SpanSize(kForColumns);
-  if (subgrid_area.rows.IsTranslatedDefinite())
-    subgridded_row_span_size_ = subgrid_area.SpanSize(kForRows);
+  if (subgrid_area.rows.IsTranslatedDefinite()) {
+    subgridded_rows_span_size_ = subgrid_area.SpanSize(kForRows);
+  }
 
   // TODO(kschmi) - use a collector design (similar to
   // `OrderedNamedLinesCollector`) to collect all of the lines first and then
@@ -116,112 +109,6 @@ GridLineResolver::GridLineResolver(const ComputedStyle& grid_style,
       // subgrid range.
       if (!merged_list.empty()) {
         subgrid_map.Set(pair.key, merged_list);
-      }
-    }
-  };
-  auto MergeImplicitLinesWithParent = [&](NamedGridLinesMap& subgrid_map,
-                                          const NamedGridLinesMap& parent_map,
-                                          GridSpan subgrid_span) -> void {
-    const wtf_size_t subgrid_span_size = subgrid_span.IntegerSpan();
-    // First, clamp the existing `subgrid_map` to the subgrid range before
-    // merging. These are positive and relative to index 0, so we only need to
-    // clamp values above `subgrid_span_size`.
-    for (const auto& pair : subgrid_map) {
-      Vector<wtf_size_t> clamped_list;
-      for (const auto& position : pair.value) {
-        if (position > subgrid_span_size)
-          clamped_list.push_back(subgrid_span_size);
-        else
-          clamped_list.push_back(position);
-      }
-      subgrid_map.Set(pair.key, clamped_list);
-    }
-
-    // Update `subgrid_map` to a merged map from a parent grid or subgrid map
-    // (`parent_map`). The map is a key-value store with keys as the implicit
-    // line name and the value as an array of ascending indices.
-    for (const auto& pair : parent_map) {
-      Vector<wtf_size_t> merged_list;
-      for (const auto& position : pair.value) {
-        auto IsGridAreaInSubgridRange = [&]() -> bool {
-          // Returns true if a given position is within either the implicit
-          // -start or -end line (or both) to comply with this part of the spec:
-          //
-          // "Note: If a named grid area only partially overlaps the subgrid,
-          // its implicitly-assigned line names will be assigned to the first
-          // and/or last line of the subgrid such that a named grid area exists
-          // representing that partially overlapped area of the subgrid".
-          // https://www.w3.org/TR/css-grid-2/#subgrid-area-inheritance
-          //
-          // TODO(kschmi): Performance can be optimized here by storing
-          // additional data on the style object for implicit lines that
-          // correlate matched implicit -start/-end pairs. Another
-          // option is to sort and iterate through adjacent -start/-end lines.
-          auto IsPositionWithinGridArea =
-              [&](const String& initial_suffix,
-                  const String& opposing_suffix) -> bool {
-            if (subgrid_span.Contains(position))
-              return true;
-            if (pair.key.EndsWith(initial_suffix)) {
-              // If the initial suffix is not in range, return true if the
-              // implicit line with the opposing suffix is within range.
-              auto line_name_without_initial_suffix = pair.key.Substring(
-                  0, pair.key.length() - initial_suffix.length());
-              const auto opposite_line_name =
-                  line_name_without_initial_suffix + opposing_suffix;
-
-              const auto& opposite_line_entry =
-                  parent_map.find(opposite_line_name);
-              if (opposite_line_entry != parent_map.end()) {
-                for (const auto& opposite_position :
-                     opposite_line_entry->value) {
-                  if (subgrid_span.Contains(opposite_position))
-                    return true;
-                }
-              }
-            }
-            return false;
-          };
-          const String start_suffix("-start");
-          const String end_suffix("-end");
-          return IsPositionWithinGridArea(start_suffix, end_suffix) ||
-                 IsPositionWithinGridArea(end_suffix, start_suffix);
-        };
-
-        // Implicit entries within the subgrid span can get inserted directly
-        // (minus the subgrid start position, because they are relative to
-        // the parent grid). For partially overlapping entries, snap to
-        // either 0 or `subgrid_span_size`.
-        const wtf_size_t subgrid_start_line = subgrid_span.StartLine();
-        if (subgrid_span.Contains(position)) {
-          merged_list.push_back(position - subgrid_span.StartLine());
-        } else if (IsGridAreaInSubgridRange()) {
-          // Clamp the parent's start/end positions if a parent grid-area
-          // partially overlaps the subgrid.
-          if (position < subgrid_start_line)
-            merged_list.push_back(0);
-          else if (position > (subgrid_start_line + subgrid_span_size))
-            merged_list.push_back(subgrid_span_size);
-        }
-
-        // If there's a name collision, merge the values and sort. These are
-        // from the subgrid and not the parent, so they are already relative to
-        // index 0 and don't need to be offset.
-        const auto& existing_entry = subgrid_map.find(pair.key);
-        if (existing_entry != subgrid_map.end()) {
-          for (const auto& value : existing_entry->value) {
-            merged_list.push_back(value);
-          }
-          std::sort(merged_list.begin(), merged_list.end());
-        }
-
-        // Override the existing subgrid's line names map with the new merged
-        // list for this particular line name entry. `merged_list` list can be
-        // empty if all entries for a particular line name are out of the
-        // subgrid range.
-        if (!merged_list.empty()) {
-          subgrid_map.Set(pair.key, merged_list);
-        }
       }
     }
   };
@@ -316,6 +203,111 @@ GridLineResolver::GridLineResolver(const ComputedStyle& grid_style,
       }
     }
   };
+
+  // Copies each entry from `style_map` into `subgrid_map`, clamping all values
+  // to be in area defined by `subgridded_columns` and `subgridded_rows`.
+  auto ClampSubgridAreas = [](NamedGridAreaMap& subgrid_map,
+                              const NamedGridAreaMap& style_map,
+                              GridArea subgrid_span) -> void {
+    const wtf_size_t subgrid_column_span =
+        subgrid_span.columns.IsTranslatedDefinite()
+            ? subgrid_span.columns.IntegerSpan()
+            : 1;
+    const wtf_size_t subgrid_row_span = subgrid_span.rows.IsTranslatedDefinite()
+                                            ? subgrid_span.rows.IntegerSpan()
+                                            : 1;
+    for (const auto& pair : style_map) {
+      auto position = pair.value;
+
+      position.columns.Intersect(0, subgrid_column_span);
+      position.rows.Intersect(0, subgrid_row_span);
+
+      GridArea clamped_area(position.rows, position.columns);
+      subgrid_map.Set(pair.key, clamped_area);
+    }
+  };
+
+  // Copies each entry from `parent` into `subgrid_map`, clamping all values
+  // to be in area defined by `subgridded_columns` and `subgridded_rows`. Grid
+  // areas that are out of the subgrid range are discarded, and areas that are
+  // partially or fully in the subgrid area are clamped to fit within the
+  // subgrid area. Areas that are defined in both the parent and subgrid map are
+  // merged according to spec.
+  auto MergeAndClampGridAreasWithParent =
+      [](NamedGridAreaMap& subgrid_map, const NamedGridAreaMap& parent_map,
+         GridArea subgrid_span, bool is_parallel_to_parent) -> void {
+    wtf_size_t subgrid_column_start_line =
+        subgrid_span.columns.IsTranslatedDefinite()
+            ? subgrid_span.columns.StartLine()
+            : 0;
+    wtf_size_t subgrid_row_start_line = subgrid_span.rows.IsTranslatedDefinite()
+                                            ? subgrid_span.rows.StartLine()
+                                            : 0;
+    wtf_size_t subgrid_column_end_line =
+        subgrid_span.columns.IsTranslatedDefinite()
+            ? subgrid_span.columns.EndLine()
+            : 1;
+    wtf_size_t subgrid_row_end_line = subgrid_span.rows.IsTranslatedDefinite()
+                                          ? subgrid_span.rows.EndLine()
+                                          : 1;
+    for (const auto& pair : parent_map) {
+      auto position = pair.value;
+      DCHECK(position.columns.IsTranslatedDefinite());
+      DCHECK(position.rows.IsTranslatedDefinite());
+
+      if (!is_parallel_to_parent) {
+        position.Transpose();
+      }
+
+      // "Note: If a named grid area only partially overlaps the subgrid, its
+      // implicitly-assigned line names will be assigned to the first and/or
+      // last line of the subgrid such that a named grid area exists
+      // representing that partially overlapped area of the subgrid..."
+      //
+      // https://www.w3.org/TR/css-grid-2/#subgrid-area-inheritance
+      //
+      // Discard grid areas that don't intersect the subgrid at all.
+      if (subgrid_span.rows.IsTranslatedDefinite() &&
+          !subgrid_span.rows.Intersects(position.rows)) {
+        continue;
+      }
+      if (subgrid_span.columns.IsTranslatedDefinite() &&
+          !subgrid_span.columns.Intersects(position.columns)) {
+        continue;
+      }
+
+      // At this point, the current grid area must be either fully or partially
+      // within the subgrid. We can safely clamp this to the subgrid range per
+      // the above quote.
+      position.columns.Intersect(subgrid_column_start_line,
+                                 subgrid_column_end_line);
+      position.rows.Intersect(subgrid_row_start_line, subgrid_row_end_line);
+
+      // Now offset the position by the subgrid's start lines, as subgrids
+      // always begin at index 0.
+      position.rows.Translate(-subgrid_row_start_line);
+      position.columns.Translate(-subgrid_column_start_line);
+
+      const auto& existing_entry = subgrid_map.find(pair.key);
+      if (existing_entry != subgrid_map.end()) {
+        // Handle overlapping entries between the subgrid and parent grid by
+        // taking the lesser value.
+        const auto& existing_position = existing_entry->value;
+        position.rows.SetStart(std::min(position.rows.StartLine(),
+                                        existing_position.rows.StartLine()));
+        position.rows.SetEnd(std::min(position.rows.EndLine(),
+                                      existing_position.rows.EndLine()));
+        position.columns.SetStart(
+            std::min(position.columns.StartLine(),
+                     existing_position.columns.StartLine()));
+        position.columns.SetEnd(std::min(position.columns.EndLine(),
+                                         existing_position.columns.EndLine()));
+      }
+
+      GridArea clamped_area(position.rows, position.columns);
+      subgrid_map.Set(pair.key, clamped_area);
+    }
+  };
   const bool is_opposite_direction_to_parent =
       grid_style.Direction() != parent_line_resolver.style_->Direction();
   const bool is_parallel_to_parent =
@@ -329,11 +321,6 @@ GridLineResolver::GridLineResolver(const ComputedStyle& grid_style,
         *subgridded_columns_merged_explicit_grid_line_names_,
         parent_line_resolver.ExplicitNamedLinesMap(track_direction_in_parent),
         subgrid_area.columns, is_opposite_direction_to_parent);
-    MergeImplicitLinesWithParent(
-        *subgridded_columns_merged_implicit_grid_line_names_,
-        parent_line_resolver.ImplicitNamedLinesMap(track_direction_in_parent),
-        subgrid_area.columns);
-    // Expand auto repeaters from the parent into the named line map.
     // TODO(kschmi): Also expand the subgrid's repeaters. Otherwise, we could
     // have issues with precedence.
     ExpandAutoRepeatTracksFromParent(
@@ -352,10 +339,6 @@ GridLineResolver::GridLineResolver(const ComputedStyle& grid_style,
         *subgridded_rows_merged_explicit_grid_line_names_,
         parent_line_resolver.ExplicitNamedLinesMap(track_direction_in_parent),
         subgrid_area.rows, is_opposite_direction_to_parent);
-    MergeImplicitLinesWithParent(
-        *subgridded_rows_merged_implicit_grid_line_names_,
-        parent_line_resolver.ImplicitNamedLinesMap(track_direction_in_parent),
-        subgrid_area.rows);
     // Expand auto repeaters from the parent into the named line map.
     // TODO(kschmi): Also expand the subgrid's repeaters. Otherwise, we could
     // have issues with precedence.
@@ -368,6 +351,41 @@ GridLineResolver::GridLineResolver(const ComputedStyle& grid_style,
         is_opposite_direction_to_parent,
         parent_line_resolver.IsSubgridded(track_direction_in_parent));
   }
+
+  // If the subgrid has grid areas defined, create a merged grid areas map and
+  // copy the map from style object, clamping values to the subgrid's range.
+  // `is_parallel_to_parent` doesn't apply, since no parent grid is involved.
+  if (grid_style.GridTemplateAreas()) {
+    subgrid_merged_named_areas_.emplace();
+    ClampSubgridAreas(*subgrid_merged_named_areas_,
+                      grid_style.GridTemplateAreas()->named_areas,
+                      subgrid_area);
+  }
+
+  absl::optional<NamedGridAreaMap> parent_areas =
+      parent_line_resolver.NamedAreasMap();
+  if (parent_line_resolver.NamedAreasMap()) {
+    // If the subgrid doesn't have any grid areas defined, emplace an empty one.
+    // We still need to call `MergeAndClampGridAreasWithParent` to copy and
+    // clamp the parent's map to the subgrid range.
+    if (!subgrid_merged_named_areas_) {
+      subgrid_merged_named_areas_.emplace();
+    }
+    MergeAndClampGridAreasWithParent(*subgrid_merged_named_areas_,
+                                     *parent_areas, subgrid_area,
+                                     is_parallel_to_parent);
+  }
+
+  // If we have a merged named grid area map, we need to generate new implicit
+  // lines based on the merged map.
+  if (subgrid_merged_named_areas_) {
+    subgridded_columns_merged_implicit_grid_line_names_ =
+        ComputedGridTemplateAreas::CreateImplicitNamedGridLinesFromGridArea(
+            *subgrid_merged_named_areas_, kForColumns);
+    subgridded_rows_merged_implicit_grid_line_names_ =
+        ComputedGridTemplateAreas::CreateImplicitNamedGridLinesFromGridArea(
+            *subgrid_merged_named_areas_, kForRows);
+  }
 }
 
 bool GridLineResolver::operator==(const GridLineResolver& other) const {
@@ -376,8 +394,8 @@ bool GridLineResolver::operator==(const GridLineResolver& other) const {
   // and the named line maps are a product of the computed style and the inputs.
   return column_auto_repetitions_ == other.column_auto_repetitions_ &&
          row_auto_repetitions_ == other.row_auto_repetitions_ &&
-         subgridded_column_span_size_ == other.subgridded_column_span_size_ &&
-         subgridded_row_span_size_ == other.subgridded_row_span_size_;
+         subgridded_columns_span_size_ == other.subgridded_columns_span_size_ &&
+         subgridded_rows_span_size_ == other.subgridded_rows_span_size_;
 }
 
 void GridLineResolver::InitialAndFinalPositionsFromStyle(
@@ -492,8 +510,9 @@ bool GridLineResolver::IsSubgridded(
 }
 
 wtf_size_t GridLineResolver::ExplicitGridColumnCount() const {
-  if (subgridded_column_span_size_ != kNotFound)
-    return subgridded_column_span_size_;
+  if (subgridded_columns_span_size_ != kNotFound) {
+    return subgridded_columns_span_size_;
+  }
 
   wtf_size_t column_count =
       style_->GridTemplateColumns().track_list.TrackCountWithoutAutoRepeat() +
@@ -506,8 +525,9 @@ wtf_size_t GridLineResolver::ExplicitGridColumnCount() const {
 }
 
 wtf_size_t GridLineResolver::ExplicitGridRowCount() const {
-  if (subgridded_row_span_size_ != kNotFound)
-    return subgridded_row_span_size_;
+  if (subgridded_rows_span_size_ != kNotFound) {
+    return subgridded_rows_span_size_;
+  }
 
   wtf_size_t row_count =
       style_->GridTemplateRows().track_list.TrackCountWithoutAutoRepeat() +
@@ -540,15 +560,15 @@ wtf_size_t GridLineResolver::AutoRepeatTrackCount(
 
 wtf_size_t GridLineResolver::SubgridSpanSize(
     GridTrackSizingDirection track_direction) const {
-  return (track_direction == kForColumns) ? subgridded_column_span_size_
-                                          : subgridded_row_span_size_;
+  return (track_direction == kForColumns) ? subgridded_columns_span_size_
+                                          : subgridded_rows_span_size_;
 }
 
 bool GridLineResolver::HasStandaloneAxis(
     GridTrackSizingDirection track_direction) const {
   return (track_direction == kForColumns)
-             ? subgridded_column_span_size_ == kNotFound
-             : subgridded_row_span_size_ == kNotFound;
+             ? subgridded_columns_span_size_ == kNotFound
+             : subgridded_rows_span_size_ == kNotFound;
 }
 
 wtf_size_t GridLineResolver::ExplicitGridSizeForSide(
@@ -628,6 +648,16 @@ const NamedGridLinesMap& GridLineResolver::ExplicitNamedLinesMap(
   return subgrid_merged_grid_line_names
              ? *subgrid_merged_grid_line_names
              : ComputedGridTrackList(track_direction).named_grid_lines;
+}
+
+absl::optional<NamedGridAreaMap> GridLineResolver::NamedAreasMap() const {
+  if (subgrid_merged_named_areas_) {
+    return *subgrid_merged_named_areas_;
+  }
+  if (auto& areas = style_->GridTemplateAreas()) {
+    return areas->named_areas;
+  }
+  return absl::nullopt;
 }
 
 const NamedGridLinesMap& GridLineResolver::AutoRepeatLineNamesMap(

@@ -483,11 +483,10 @@ TEST_F(InspectorHighlightTest, GridAreaNames) {
 
   protocol::DictionaryValue* subgrid_area_names =
       subgrid_info->getObject("areaNames");
-  EXPECT_EQ(subgrid_area_names->size(), 3u);
+  EXPECT_EQ(subgrid_area_names->size(), 6u);
 
-  // TODO(kschmi): This should include "a", "b", and "c", but it's not
-  // currently. See TODO in `BuildAreaNamePaths`.
-  WTF::Vector<WTF::String> expected_subgrid_area_names = {"d", "e", "f"};
+  WTF::Vector<WTF::String> expected_subgrid_area_names = {"a", "b", "c",
+                                                          "d", "e", "f"};
   CompareAreaNames(subgrid_area_names, expected_subgrid_area_names);
 }
 
