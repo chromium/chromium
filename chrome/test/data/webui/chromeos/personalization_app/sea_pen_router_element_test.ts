@@ -6,7 +6,7 @@ import 'chrome://personalization/strings.m.js';
 
 import {SeaPenInputQueryElement, SeaPenPaths, SeaPenRecentWallpapersElement, SeaPenRouterElement, SeaPenTemplateQueryElement, SeaPenTemplatesElement} from 'chrome://personalization/js/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {baseSetup, initElement} from './personalization_app_test_utils.js';
@@ -54,5 +54,23 @@ suite('SeaPenRouterElementTest', function() {
     assertTrue(
         !!router.shadowRoot!.querySelector(SeaPenInputQueryElement.is),
         'input query element shown on root');
+  });
+
+  test('navigates back to root if unknown path', async () => {
+    const router = initElement(SeaPenRouterElement, {basePath: '/base'});
+    router.goToRoute(SeaPenPaths.RESULTS);
+    await waitAfterNextRender(router);
+
+    assertEquals(
+        '/base/results',
+        router.shadowRoot?.querySelector('iron-location')?.path,
+        'expected path is set');
+
+    router.goToRoute('/unknown' as SeaPenPaths);
+    await waitAfterNextRender(router);
+
+    assertEquals(
+        '/base', router.shadowRoot?.querySelector('iron-location')?.path,
+        'path set back to root');
   });
 });

@@ -46,6 +46,7 @@ export class SeaPenRouterElement extends PolymerElement {
       relativePath_: {
         type: String,
         computed: 'computeRelativePath_(path_, basePath)',
+        observer: 'onRelativePathChanged_',
       },
     };
   }
@@ -103,6 +104,20 @@ export class SeaPenRouterElement extends PolymerElement {
       return null;
     }
     return path.substring(basePath.length);
+  }
+
+  private onRelativePathChanged_(relativePath: string|null) {
+    if (typeof relativePath !== 'string') {
+      // `relativePath` will be null when using Personalization breadcrumbs to
+      // navigate back to home or wallpaper. Don't reset the path, as
+      // `SeaPenRouter` may be imminently torn down.
+      return;
+    }
+    if (!Object.values(SeaPenPaths).includes(relativePath as SeaPenPaths)) {
+      // If arriving at an unknown path, go back to the root path.
+      console.warn('SeaPenRouter unknown path', relativePath);
+      this.goToRoute(SeaPenPaths.ROOT);
+    }
   }
 
   private shouldShowTextInputQuery_(
