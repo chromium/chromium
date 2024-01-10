@@ -228,7 +228,7 @@ enum class NudgeCatalogName {
   kCaptureModeEducationShortcutTutorial = 23,
   kCaptureModeEducationQuickSettingsNudge = 24,
   kGameDashboardControlsNudge = 25,
-  kWebsiteTelemetryReportingNudge = 26,
+  // [Deprecated] kWebsiteTelemetryReportingNudge = 26,
   kStandaloneWindowMigrationUx = 27,
   kMaxValue = kStandaloneWindowMigrationUx
 };
