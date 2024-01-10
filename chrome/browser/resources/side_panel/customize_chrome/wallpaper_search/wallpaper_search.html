@@ -150,6 +150,12 @@
     width: 16px;
   }
 
+  #deleteSelectedHueButton {
+    --cr-icon-image: url(icons/delete.svg);
+    margin-inline-start: 0;
+    margin-inline-end: -24px;
+  }
+
   #btnContainer {
     display: flex;
     justify-content: flex-end;
@@ -311,6 +317,12 @@
     </cr-grid>
     <cr-theme-hue-slider-dialog id="hueSlider"
         on-selected-hue-changed="onSelectedHueChanged_">
+      <cr-icon-button slot="headerSuffix" id="deleteSelectedHueButton"
+          hidden$="[[!shouldShowDeleteSelectedHueButton_(selectedHue_)]]"
+          title="$i18n{hueSliderDeleteTitle}"
+          aria-label="$i18n{hueSliderDeleteA11yLabel}"
+          on-click="onSelectedHueDelete_">
+      </cr-icon-button>
     </cr-theme-hue-slider-dialog>
     <div id="btnContainer">
       <cr-button

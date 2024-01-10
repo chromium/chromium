@@ -171,6 +171,36 @@ suite('WallpaperSearchTest', () => {
           checkedMarkedColors[0]!.parentElement!.getAttribute('aria-current'),
           'true');
     });
+
+    test('unselects hue', async () => {
+      createWallpaperSearchElementWithDescriptors();
+      await flushTasks();
+      assertTrue(wallpaperSearchElement.$.deleteSelectedHueButton.hidden);
+
+      // Select a hue and verify delete button becomes visible.
+      wallpaperSearchElement.$.hueSlider.selectedHue = 10;
+      wallpaperSearchElement.$.hueSlider.dispatchEvent(
+          new Event('selected-hue-changed'));
+      await flushTasks();
+      assertFalse(wallpaperSearchElement.$.deleteSelectedHueButton.hidden);
+
+      // Click on delete button.
+      wallpaperSearchElement.$.deleteSelectedHueButton.click();
+      await flushTasks();
+
+      // Verify there are no checked colors.
+      assertEquals(
+          0,
+          wallpaperSearchElement.shadowRoot!
+              .querySelectorAll('#descriptorMenuD button [checked]')
+              .length);
+
+      // Verify submitting does not send a hue.
+      wallpaperSearchElement.$.submitButton.click();
+      await flushTasks();
+      assertEquals(1, handler.getCallCount('getWallpaperSearchResults'));
+      assertEquals(null, handler.getArgs('getWallpaperSearchResults')[0][3]);
+    });
   });
 
   suite('Search', () => {

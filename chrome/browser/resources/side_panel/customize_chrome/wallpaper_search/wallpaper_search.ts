@@ -92,6 +92,7 @@ export interface ErrorState {
 export interface WallpaperSearchElement {
   $: {
     customColorContainer: HTMLElement,
+    deleteSelectedHueButton: HTMLElement,
     descriptorComboboxA: CustomizeChromeCombobox,
     descriptorComboboxB: CustomizeChromeCombobox,
     descriptorComboboxC: CustomizeChromeCombobox,
@@ -181,7 +182,10 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
         type: Object,
         observer: 'onColorDescriptorChange_',
       },
-      selectedHue_: Number,
+      selectedHue_: {
+        type: Number,
+        value: null,
+      },
       status_: {
         type: WallpaperSearchStatus,
         value: WallpaperSearchStatus.kOk,
@@ -213,7 +217,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   private selectedDescriptorC_: string|null;
   private selectedDescriptorD_: DescriptorDValue|null;
   private selectedFeedbackOption_: CrFeedbackOption;
-  private selectedHue_: number|undefined;
+  private selectedHue_: number|null;
   private status_: WallpaperSearchStatus;
   private theme_: Theme|undefined;
 
@@ -405,7 +409,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   }
 
   private getCustomColorCheckedStatus_(): string {
-    return this.selectedHue_ !== undefined ? 'true' : 'false';
+    return this.selectedHue_ !== null ? 'true' : 'false';
   }
 
   private getHistoryResultAriaLabel_(
@@ -489,7 +493,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   }
 
   private onDefaultColorClick_(e: DomRepeatEvent<string>) {
-    this.selectedHue_ = undefined;
+    this.selectedHue_ = null;
     this.selectedDefaultColor_ = e.model.item;
     this.selectedDescriptorD_ = {
       color: hexColorToSkColor(this.selectedDefaultColor_),
@@ -548,10 +552,17 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     this.wallpaperSearchHandler_.openHelpArticle();
   }
 
-  private async onSelectedHueChanged_() {
+  private onSelectedHueChanged_() {
     this.selectedDefaultColor_ = undefined;
     this.selectedHue_ = this.$.hueSlider.selectedHue;
     this.selectedDescriptorD_ = {hue: this.selectedHue_};
+  }
+
+  private onSelectedHueDelete_() {
+    this.selectedHue_ = null;
+    this.selectedDescriptorD_ = null;
+    this.$.hueSlider.hide();
+    this.$.customColorContainer.focus();
   }
 
   private async onSearchClick_() {
@@ -619,6 +630,10 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     } else {
       this.$.error.focus();
     }
+  }
+
+  private shouldShowDeleteSelectedHueButton_() {
+    return this.selectedHue_ !== null;
   }
 
   private shouldShowFeedbackButtons_() {
