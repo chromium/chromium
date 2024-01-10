@@ -59,7 +59,7 @@ All this is hard, so please remember to [ask for help](#Ask-for-help).
 # TL;DR Checklist for Secondary Shepherding
 (“I’m Secondary Shepherd, what do I do???”)
 
-* [*Check in on triaged issues*](#Check-In-On-Triaged-Issues] to ensure progress
+* [*Check in on triaged issues*](#Check-In-On-Triaged-Issues) to ensure progress
   is being made on medium+ severity security bugs.
 * [*Manage incoming security email*](#Manage-incoming-security-email).
 
@@ -72,7 +72,7 @@ Here are some of the importance references and resources you need or may need
 during your shepherding shift:
 
 * [Current Shepherds](https://script.google.com/a/macros/google.com/s/AKfycbz02xD4ghSzZu_tXyNRgjC95wFURATZeD_FHq0KRMHeqA-b0b9sow4NV1lhi0P2vy1j/exec)
-* [Chrome Security Bug Dashboard](https://goto.google.com/chrome-security-bugs}
+* [Chrome Security Bug Dashboard](https://goto.google.com/chrome-security-bugs)
 * [Security Severity Guidelines](severity-guidelines.md)
 * [Security Labels](security-labels.md)
 * FAQs addressing commonly-raised questions about security and what is / is not
@@ -85,7 +85,7 @@ during your shepherding shift:
   any process or policy changes since your last shift.
 * [Guidance for triage of theoretical or speculative issues](https://goto.google.com/chrome-speculative-bug-triage)
 * [Reference for common questions about security bug lifecycle](life-of-a-security-issue.md)
-[Reference for questions related to security fix merge process](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/process/merge_request.md#Security-merge-triage)
+* [Reference for questions related to security fix merge process](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/process/merge_request.md#Security-merge-triage)
   for answering questions (you do not need to approve merges).
 * [Shepherding Handoff Log](https://goto.google.com/chrome-security-shepherd-handoff)
 
@@ -458,8 +458,8 @@ yourself.
 
 [Security Labels](security-labels.md).
 
-### A bug owner is asking for security input on backporting a fix on a security
-bug I’ve shepherded. What do I do here?
+### An owner is asking for security input on backporting a security fix.
+What do I do here?
 
 You are not responsible for handling merges or approving a fix for backmerge.
 If the issue is resolved and there is a landed CL, please ensure the bug is
@@ -486,8 +486,7 @@ reach out directly to the Chrome VRP TL or ask questions in the
 [Chrome Security Shepherds chat](http://go/chrome-security-shepherds-chat), all
 VRP Panel members are also members of that chat.
 
-### There is PII or other data in this report we may not want to publicly
-disclose (either now or in the future).
+### There is PII or other data in a report we do not want to publicly disclose.
 
 For these cases, please add the `Restrict-View-SecurityEmbargo` label to the
 report. For cases of PII that can’t be permanently deleted for the report, this
@@ -523,7 +522,7 @@ cases:
 * As soon as possible, reach out the Shepherds chat for a Chrome Security
   Incident Responder, so they can take on IR Commander responsibilities.
 * Sometimes features can be switched off using feature flags – for example
-  [in permissions] ((https://docs.google.com/document/d/17JeYt3c1GgghYoxy4NKJnlxrteAX8F4x-MAzTeXqP4U).
+  [in permissions](https://docs.google.com/document/d/17JeYt3c1GgghYoxy4NKJnlxrteAX8F4x-MAzTeXqP4U).
   Check with the engineer if that is a possibility in the case of this issue.
 
 
