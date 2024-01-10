@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.xsurface_provider;
+package org.chromium.chrome.browser.feed;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -21,12 +21,12 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 
-/** Tests for ProcessScopeDependencyProviderImpl. */
+/** Tests for FeedProcessScopeDependencyProvider. */
 @RunWith(BaseRobolectricTestRunner.class)
-public final class ProcessScopeDependencyProviderImplTest {
+public final class FeedProcessScopeDependencyProviderTest {
     @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
-    ProcessScopeDependencyProviderImpl mProvider;
+    FeedProcessScopeDependencyProvider mProvider;
     boolean mMetricsReportingEnabled;
 
     private PrivacyPreferencesManager mStubPrivacyPrefsManager =
@@ -94,7 +94,7 @@ public final class ProcessScopeDependencyProviderImplTest {
 
     @Before
     public void setUp() {
-        mProvider = new ProcessScopeDependencyProviderImpl("key", mStubPrivacyPrefsManager);
+        mProvider = new FeedProcessScopeDependencyProvider("key", mStubPrivacyPrefsManager);
     }
 
     @Test
