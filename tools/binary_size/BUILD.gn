@@ -13,6 +13,7 @@ python_library("binary_size_trybot_py") {
     "supersize.json",
     "trybot_commit_size_checker.py",
     "//build/android/resource_sizes.py",
+    "//infra/config/generated/builders/try/android-binary-size/gn-args.json",
   ]
 }
 

@@ -1273,7 +1273,7 @@ gn_args.config(
 gn_args.config(
     name = "v8_release_branch",
     args = {
-        "is_on_release_branch": True,
+        "v8_is_on_release_branch": True,
     },
 )
 
