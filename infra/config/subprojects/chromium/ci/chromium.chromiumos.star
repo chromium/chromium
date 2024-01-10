@@ -442,9 +442,6 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-chromiumos-archive",
     ),
-    # TODO(crbug.com/1471166): enable gardener rotation.
-    sheriff_rotations = args.ignore_default(None),
-    tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "simple|release|x64",
         short_name = "tast",
