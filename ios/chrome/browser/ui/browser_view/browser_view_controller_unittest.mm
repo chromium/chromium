@@ -48,7 +48,7 @@
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/tabs/model/tab_helper_util.h"
-#import "ios/chrome/browser/ui/bookmarks/bookmarks_coordinator.h"
+#import "ios/chrome/browser/ui/bookmarks/home/bookmarks_coordinator.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
 #import "ios/chrome/browser/ui/browser_view/key_commands_provider.h"
 #import "ios/chrome/browser/ui/browser_view/safe_area_provider.h"

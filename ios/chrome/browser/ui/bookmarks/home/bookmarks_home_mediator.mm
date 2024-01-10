@@ -50,7 +50,7 @@
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_table_cell_title_editing.h"
 #import "ios/chrome/browser/ui/bookmarks/home/bookmark_promo_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/home/bookmarks_home_consumer.h"
-#import "ios/chrome/browser/ui/bookmarks/synced_bookmarks_bridge.h"
+#import "ios/chrome/browser/ui/bookmarks/home/synced_bookmarks_bridge.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"

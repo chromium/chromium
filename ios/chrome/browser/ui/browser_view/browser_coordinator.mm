@@ -127,7 +127,7 @@
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_coordinator.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_password_coordinator.h"
-#import "ios/chrome/browser/ui/bookmarks/bookmarks_coordinator.h"
+#import "ios/chrome/browser/ui/bookmarks/home/bookmarks_coordinator.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_coordinator.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller+private.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/bookmarks/synced_bookmarks_bridge.h"
+#import "ios/chrome/browser/ui/bookmarks/home/synced_bookmarks_bridge.h"
 
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync/service/sync_service.h"

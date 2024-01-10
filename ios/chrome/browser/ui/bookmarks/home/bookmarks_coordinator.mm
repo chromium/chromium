@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/bookmarks/bookmarks_coordinator.h"
+#import "ios/chrome/browser/ui/bookmarks/home/bookmarks_coordinator.h"
 
 #import <stdint.h>
 
@@ -44,7 +44,7 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_navigation_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_path_cache.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
-#import "ios/chrome/browser/ui/bookmarks/bookmarks_coordinator_delegate.h"
+#import "ios/chrome/browser/ui/bookmarks/home/bookmarks_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/bookmarks/editor/bookmarks_editor_coordinator.h"
 #import "ios/chrome/browser/ui/bookmarks/editor/bookmarks_editor_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_coordinator.h"

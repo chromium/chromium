@@ -63,7 +63,7 @@
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_popup_coordinator.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
-#import "ios/chrome/browser/ui/bookmarks/bookmarks_coordinator.h"
+#import "ios/chrome/browser/ui/bookmarks/home/bookmarks_coordinator.h"
 #import "ios/chrome/browser/ui/bring_android_tabs/bring_android_tabs_prompt_coordinator.h"
 #import "ios/chrome/browser/ui/bring_android_tabs/tab_list_from_android_coordinator.h"
 #import "ios/chrome/browser/ui/commerce/price_card/price_card_mediator.h"
