@@ -24,7 +24,7 @@ if [[ -z ${ABSEIL_ROOT:-} ]]; then
 fi
 
 # If we are running on Kokoro, check for a versioned Bazel binary.
-KOKORO_GFILE_BAZEL_BIN="bazel-5.1.1-darwin-x86_64"
+KOKORO_GFILE_BAZEL_BIN="bazel-7.0.0-darwin-x86_64"
 if [[ ${KOKORO_GFILE_DIR:-} ]] && [[ -f ${KOKORO_GFILE_DIR}/${KOKORO_GFILE_BAZEL_BIN} ]]; then
   BAZEL_BIN="${KOKORO_GFILE_DIR}/${KOKORO_GFILE_BAZEL_BIN}"
   chmod +x ${BAZEL_BIN}
@@ -56,6 +56,7 @@ ${BAZEL_BIN} test ... \
   --copt="-DGTEST_REMOVE_LEGACY_TEST_CASEAPI_=1" \
   --copt="-Werror" \
   --cxxopt="-std=c++14" \
+  --enable_bzlmod=false \
   --features=external_include_paths \
   --keep_going \
   --show_timestamps \
