@@ -23,6 +23,7 @@ config("fuzztest_internal_config") {
     "-Wno-shadow",
     "-Wno-unused-const-variable",
     "-Wno-unused-function",
+    "-Wno-inconsistent-missing-override",
   ]
 
   # int_utils.h depends on an SSE 4.2 intrinsic.
@@ -120,15 +121,17 @@ if (use_centipede) {
     sources = [ "src/centipede/runner_main.cc" ]
   }
 
-  # The centipede out-of-process runner executable.
-  executable("centipede") {
+  # Parts of centipede which are used for the external execution executable,
+  # but are also now built into fuzztests themselves so that they no longer
+  # depend on an external runner
+  source_set("centipede_executable_engine") {
     configs += [ ":fuzztest_internal_config" ]
     configs -= fuzzing_engine_remove_configs
     configs += fuzzing_engine_add_configs
     include_dirs = [ "src" ]
     testonly = true
+    public_deps = [ ":centipede_common" ]
     deps = [
-      ":centipede_common",
       ":fuzztest_internal",
       "//third_party/abseil-cpp:absl",
       "//third_party/abseil-cpp/absl/flags:config",
@@ -148,7 +151,6 @@ if (use_centipede) {
       "src/centipede/centipede_callbacks.cc",
       "src/centipede/centipede_default_callbacks.cc",
       "src/centipede/centipede_interface.cc",
-      "src/centipede/centipede_main.cc",
       "src/centipede/command.cc",
       "src/centipede/config_file.cc",
       "src/centipede/config_init.cc",
@@ -161,8 +163,6 @@ if (use_centipede) {
       "src/centipede/early_exit.cc",
       "src/centipede/early_exit.h",
       "src/centipede/environment.cc",
-      "src/centipede/environment_flags.cc",
-      "src/centipede/environment_flags.h",
       "src/centipede/feature_set.cc",
       "src/centipede/feature_set.h",
       "src/centipede/fuzztest_mutator.cc",
@@ -190,6 +190,26 @@ if (use_centipede) {
       # Other projects sharing fuzztest might not have boringssl.
       ldflags = [ "-lcrypto" ]
     }
+  }
+
+  # The centipede out-of-process runner executable.
+  executable("centipede") {
+    testonly = true
+    configs += [ ":fuzztest_internal_config" ]
+    configs -= fuzzing_engine_remove_configs
+    configs += fuzzing_engine_add_configs
+    deps = [
+      ":centipede_executable_engine",
+      "//third_party/abseil-cpp:absl",
+      "//third_party/abseil-cpp/absl/flags:flag",
+      "//third_party/abseil-cpp/absl/log:check",
+      "//third_party/abseil-cpp/absl/log:log",
+    ]
+    sources = [
+      "src/centipede/centipede_main.cc",
+      "src/centipede/environment_flags.cc",
+      "src/centipede/environment_flags.h",
+    ]
   }
 }
 
@@ -316,12 +336,16 @@ source_set("fuzztest") {
   deps = [
     "//testing/gtest",
     "//third_party/abseil-cpp/absl/flags:flag",
+    "//third_party/abseil-cpp/absl/log:log",
   ]
   if (use_centipede) {
     # If we are building for centipede, we want to make fuzztest executables
     # which can be used as centipede fuzzers.
     sources += [ "src/fuzztest/internal/centipede_adaptor.cc" ]
-    deps += [ ":centipede_runner_no_main" ]
+    deps += [
+      ":centipede_executable_engine",
+      ":centipede_runner_no_main",
+    ]
   } else if (use_fuzzing_engine && fuzzing_engine_supports_custom_main) {
     # Typically, libfuzzer.
     deps += [ "//testing/libfuzzer:fuzzing_engine_no_main" ]
