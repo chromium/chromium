@@ -13,8 +13,10 @@
 #include "base/time/time.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker_observer.h"
 #include "components/content_settings/core/browser/content_settings_origin_identifier_value_map.h"
+#include "components/content_settings/core/browser/content_settings_rule.h"
 #include "components/content_settings/core/browser/user_modifiable_provider.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_partition_key.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_uma_util.h"
@@ -47,6 +49,12 @@ class OneTimePermissionProvider
   std::unique_ptr<content_settings::RuleIterator> GetRuleIterator(
       ContentSettingsType content_type,
       bool incognito,
+      const content_settings::PartitionKey& partition_key) const override;
+  std::unique_ptr<content_settings::Rule> GetRule(
+      const GURL& primary_url,
+      const GURL& secondary_url,
+      ContentSettingsType content_type,
+      bool off_the_record,
       const content_settings::PartitionKey& partition_key) const override;
   bool SetWebsiteSetting(
       const ContentSettingsPattern& primary_pattern,

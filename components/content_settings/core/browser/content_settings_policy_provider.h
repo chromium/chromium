@@ -40,6 +40,12 @@ class PolicyProvider : public ObservableProvider {
       ContentSettingsType content_type,
       bool incognito,
       const PartitionKey& partition_key) const override;
+  std::unique_ptr<Rule> GetRule(
+      const GURL& primary_url,
+      const GURL& secondary_url,
+      ContentSettingsType content_type,
+      bool off_the_record,
+      const PartitionKey& partition_key) const override;
 
   bool SetWebsiteSetting(const ContentSettingsPattern& primary_pattern,
                          const ContentSettingsPattern& secondary_pattern,

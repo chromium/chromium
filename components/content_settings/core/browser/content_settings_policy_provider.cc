@@ -349,6 +349,15 @@ std::unique_ptr<RuleIterator> PolicyProvider::GetRuleIterator(
   return value_map_.GetRuleIterator(content_type);
 }
 
+std::unique_ptr<content_settings::Rule> PolicyProvider::GetRule(
+    const GURL& primary_url,
+    const GURL& secondary_url,
+    ContentSettingsType content_type,
+    bool off_the_record,
+    const content_settings::PartitionKey& partition_key) const {
+  return value_map_.GetRule(primary_url, secondary_url, content_type);
+}
+
 void PolicyProvider::GetContentSettingsFromPreferences() {
   for (const auto& entry : kPrefsForManagedContentSettingsMap) {
     // Skip unset policies.

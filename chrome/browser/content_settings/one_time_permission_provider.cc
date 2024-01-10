@@ -22,6 +22,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_metadata.h"
+#include "components/content_settings/core/common/content_settings_partition_key.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/permissions/permission_uma_util.h"
@@ -55,6 +56,19 @@ OneTimePermissionProvider::GetRuleIterator(
     return nullptr;
   }
   return value_map_.GetRuleIterator(content_type);
+}
+
+std::unique_ptr<content_settings::Rule> OneTimePermissionProvider::GetRule(
+    const GURL& primary_url,
+    const GURL& secondary_url,
+    ContentSettingsType content_type,
+    bool off_the_record,
+    const content_settings::PartitionKey& partition_key) const {
+  if (!permissions::PermissionUtil::CanPermissionBeAllowedOnce(content_type)) {
+    return nullptr;
+  }
+
+  return value_map_.GetRule(primary_url, secondary_url, content_type);
 }
 
 bool OneTimePermissionProvider::SetWebsiteSetting(
