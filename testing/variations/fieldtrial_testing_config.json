@@ -4630,28 +4630,6 @@
             ]
         }
     ],
-    "CrOSFederatedServiceV0Task": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledLauncherQueryAnalytics_20230906",
-                    "params": {
-                        "launch_stage": "prod"
-                    },
-                    "enable_features": [
-                        "FederatedLauncherQueryAnalyticsTask",
-                        "FederatedService",
-                        "FederatedServiceScheduleTasks",
-                        "FederatedTimezoneCodePhh",
-                        "LauncherQueryFederatedAnalyticsPHH"
-                    ]
-                }
-            ]
-        }
-    ],
     "CrOSHibernate": [
         {
             "platforms": [
