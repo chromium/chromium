@@ -1157,8 +1157,8 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorConv2d) {
   {
     Conv2dTester<float>{
         .input = {.type = mojom::Operand::DataType::kFloat32,
-                  .dimensions = {1, 1, 3, 3},
-                  .values = {5, 6, 7, 8, 9, 10, 11, 12, 13}},
+                  .dimensions = {1, 1, 2, 2},
+                  .values = {5, 6, 7, 8}},
         .filter = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 1, 1, 1},
                    .values = {1}},
@@ -1166,8 +1166,8 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorConv2d) {
                            Activation{.kind = mojom::Activation::Tag::kSoftplus,
                                       .softplus_steepness = 8.0}},
         .output = {.type = mojom::Operand::DataType::kFloat32,
-                   .dimensions = {1, 1, 3, 3},
-                   .values = {5, 6, 7, 8, 9, 10, 11, 12, 13}}}
+                   .dimensions = {1, 1, 2, 2},
+                   .values = {5, 6, 7, 8}}}
         .Test();
   }
   // Test conv2d with NCHW layout, float 32 data type, fusing with softsign
