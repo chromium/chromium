@@ -3963,6 +3963,7 @@ test("ash_unittests") {
     "//chromeos/ash/components/dbus/audio",
     "//chromeos/ash/components/dbus/cryptohome:cryptohome",
     "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",
+    "//chromeos/ash/components/dbus/device_management",
     "//chromeos/ash/components/dbus/dlcservice",
     "//chromeos/ash/components/dbus/dlcservice:dlcservice_proto",
     "//chromeos/ash/components/dbus/fwupd",
