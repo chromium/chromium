@@ -765,7 +765,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(
     return StoreSourceResult::InternalError();
   }
 
-  DCHECK_LT(AttributionStorageSql::kCurrentVersionNumber, 86);
+  static_assert(AttributionStorageSql::kCurrentVersionNumber < 86);
   base::UmaHistogramCustomCounts("Conversions.DbVersionOnSourceStored",
                                  kCurrentVersionNumber, /*min=*/56,
                                  /*exclusive_max=*/86, /*buckets=*/30);
