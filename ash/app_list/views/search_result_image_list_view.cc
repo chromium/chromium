@@ -118,7 +118,7 @@ SearchResultImageListView::SearchResultImageListView(
   for (size_t i = 0;
        i < SharedAppListConfig::instance().image_search_max_results(); ++i) {
     auto* image_view = image_view_container_->AddChildView(
-        std::make_unique<SearchResultImageView>(/*index=*/1, this));
+        std::make_unique<SearchResultImageView>(/*index=*/1, this, &delegate_));
     image_view->SetPaintToLayer();
     image_view->layer()->SetFillsBoundsOpaquely(false);
     image_views_.push_back(image_view);

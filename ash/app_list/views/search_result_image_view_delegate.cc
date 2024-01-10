@@ -14,24 +14,10 @@
 #include "ui/views/view_utils.h"
 
 namespace ash {
-namespace {
-SearchResultImageViewDelegate* g_instance = nullptr;
-}  // namespace
 
-// static
-SearchResultImageViewDelegate* SearchResultImageViewDelegate::Get() {
-  return g_instance;
-}
+SearchResultImageViewDelegate::SearchResultImageViewDelegate() = default;
 
-SearchResultImageViewDelegate::SearchResultImageViewDelegate() {
-  DCHECK_EQ(nullptr, g_instance);
-  g_instance = this;
-}
-
-SearchResultImageViewDelegate::~SearchResultImageViewDelegate() {
-  DCHECK_EQ(g_instance, this);
-  g_instance = nullptr;
-}
+SearchResultImageViewDelegate::~SearchResultImageViewDelegate() = default;
 
 bool SearchResultImageViewDelegate::CanStartDragForView(
     views::View* sender,

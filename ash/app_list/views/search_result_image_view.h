@@ -17,12 +17,15 @@ class ImageButton;
 namespace ash {
 class PulsingBlockView;
 class SearchResultImageListView;
+class SearchResultImageViewDelegate;
 
 // Displays a search result in the form of an unlabeled image.
 class ASH_EXPORT SearchResultImageView : public SearchResultBaseView {
  public:
   METADATA_HEADER(SearchResultImageView);
-  SearchResultImageView(int index, SearchResultImageListView* list_view);
+  SearchResultImageView(int index,
+                        SearchResultImageListView* list_view,
+                        SearchResultImageViewDelegate* image_view_delegate);
   SearchResultImageView(const SearchResultImageView&) = delete;
   SearchResultImageView& operator=(const SearchResultImageView&) = delete;
   ~SearchResultImageView() override;
