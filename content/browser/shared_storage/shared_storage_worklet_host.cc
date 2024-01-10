@@ -301,14 +301,17 @@ void SharedStorageWorkletHost::SelectURL(
         /*success=*/false, /*error_message=*/
         "Internal error: page does not exist.",
         /*result_config=*/absl::nullopt);
-    base::debug::DumpWithoutCrashing();
     return;
   }
 
-  // This channel is associated with blink::mojom::SharedStorageDocumentService.
-  // Thus both `page_` and `document_service_` should be valid.
-  DCHECK(page_);
-  DCHECK(document_service_);
+  // TODO(https://crbug.com/1505448): `document_service_` can somehow be null.
+  if (!document_service_) {
+    std::move(callback).Run(
+        /*success=*/false, /*error_message=*/
+        "Internal error: document does not exist.",
+        /*result_config=*/absl::nullopt);
+    return;
+  }
 
   if (!blink::IsValidSharedStorageURLsArrayLength(urls_with_metadata.size())) {
     // This could indicate a compromised renderer, so let's terminate it.
@@ -472,13 +475,16 @@ void SharedStorageWorkletHost::Run(
     std::move(callback).Run(
         /*success=*/false, /*error_message=*/
         "Internal error: page does not exist.");
-    base::debug::DumpWithoutCrashing();
     return;
   }
-  // This channel is associated with blink::mojom::SharedStorageDocumentService.
-  // Thus both `page_` and `document_service_` should be valid.
-  DCHECK(page_);
-  DCHECK(document_service_);
+
+  // TODO(https://crbug.com/1505448): `document_service_` can somehow be null.
+  if (!document_service_) {
+    std::move(callback).Run(
+        /*success=*/false, /*error_message=*/
+        "Internal error: document does not exist.");
+    return;
+  }
 
   if (context_id.has_value() &&
       !blink::IsValidPrivateAggregationContextId(context_id.value())) {
