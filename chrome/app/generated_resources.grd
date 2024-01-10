@@ -16726,6 +16726,11 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_IWA_INSTALLER_VERIFICATION_ERROR_SUBTITLE" desc="Subtitle of an error popup during the verification step of the Isolated Web App installer">
       This bundle might be broken or compromised. Please close this window and download it again
     </message>
+    <if expr="is_chromeos">
+        <message name="IDS_IWA_INSTALLER_SHELF_ITEM_TITLE" desc="Title of an Isolated Web App installer item on the ChromeOS Shelf.">
+          Application Installer
+        </message>
+    </if>
 
     <!-- Common WebUI elements. -->
     <message name="IDS_THUMBS_DOWN" desc="Accessibility label for a thumbs down icon that a user can click to provide negative feedback about a feature.">

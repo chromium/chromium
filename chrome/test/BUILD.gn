@@ -8530,6 +8530,7 @@ if (!is_fuchsia) {
         "../browser/ui/ash/shelf/arc_app_shelf_id_unittest.cc",
         "../browser/ui/ash/shelf/chrome_shelf_controller_unittest.cc",
         "../browser/ui/ash/shelf/chrome_shelf_prefs_unittest.cc",
+        "../browser/ui/ash/shelf/isolated_web_app_installer_shelf_item_controller_unittest.cc",
         "../browser/ui/ash/shelf/shelf_context_menu_unittest.cc",
         "../browser/ui/ash/system_tray_client_impl_unittest.cc",
         "../browser/ui/ash/user_education/chrome_user_education_delegate_unittest.cc",
