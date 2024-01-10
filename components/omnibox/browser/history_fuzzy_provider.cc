@@ -520,9 +520,6 @@ void HistoryFuzzyProvider::Start(const AutocompleteInput& input,
   if (autocomplete_input_.cursor_position() ==
       autocomplete_input_.text().length()) {
     DoAutocomplete();
-    for (AutocompleteMatch& match : matches_) {
-      match.provider = this;
-    }
   }
 }
 
@@ -673,6 +670,8 @@ int HistoryFuzzyProvider::AddConvertedMatches(const ACMatches& matches,
   // input, so clear them to prevent the ml model assigning an
   // artificially high confidence to this suggestion.
   match.scoring_signals.reset();
+
+  match.provider = this;
 
   return 1;
 }
