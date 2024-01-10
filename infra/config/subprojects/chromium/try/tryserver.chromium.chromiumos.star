@@ -114,7 +114,7 @@ try_.orchestrator_builder(
     main_list_view = "try",
     tryjob = try_.job(
         equivalent_builder = "try/chromeos-amd64-generic-rel-gtest-and-tast",
-        equivalent_builder_percentage = 1,
+        equivalent_builder_percentage = 10,
         equivalent_builder_whitelist = "chromeos-pa-with-chromium-accounts",
     ),
 )
