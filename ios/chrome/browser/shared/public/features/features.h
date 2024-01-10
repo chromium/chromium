@@ -566,4 +566,10 @@ bool IsExternalActionSchemeHandlingEnabled();
 // foreground inactive state after opening an external app.
 BASE_DECLARE_FEATURE(kInactiveNavigationAfterAppLaunchKillSwitch);
 
+// Feature flag to enable Tips Notifications.
+BASE_DECLARE_FEATURE(kIOSTipsNotifications);
+
+// Helper for whether Tips Notifications are enabled.
+bool IsIOSTipsNotificationsEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

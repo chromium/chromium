@@ -568,6 +568,11 @@ const char kIOSSharedHighlightingV2Description[] =
     "Enables improvements to text fragments UI, including a menu for removing "
     "or resharing a highlight.";
 
+const char kIOSTipsNotificationsName[] = "Tips Notifications";
+const char kIOSTipsNotificationsDescription[] =
+    "Enables Notifications with content to help new users get the most out of "
+    "the app.";
+
 const char kIPHForSafariSwitcherName[] = "IPH for Safari Switcher";
 const char kIPHForSafariSwitcherDescription[] =
     "Enables displaying IPH for users who are considered Safari Switcher";

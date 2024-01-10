@@ -4953,6 +4953,11 @@
     "expiry_milestone": 109
   },
   {
+    "name": "ios-tips-notifications",
+    "owners": ["scottyoder@google.com", "bling-get-set-up@google.com"],
+    "expiry_milestone": 125
+  },
+  {
       "name": "ip-protection-proxy-opt-out",
       "owners": [ "awillia@chromium.org", "//chrome/browser/ip_protection/OWNERS" ],
       "expiry_milestone": 128

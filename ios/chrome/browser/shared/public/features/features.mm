@@ -700,3 +700,11 @@ bool IsExternalActionSchemeHandlingEnabled() {
 BASE_FEATURE(kInactiveNavigationAfterAppLaunchKillSwitch,
              "kInactiveNavigationAfterAppLaunchKillSwitch",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kIOSTipsNotifications,
+             "IOSTipsNotifications",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsIOSTipsNotificationsEnabled() {
+  return base::FeatureList::IsEnabled(kIOSTipsNotifications);
+}
