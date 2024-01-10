@@ -154,9 +154,9 @@ class ThrottlingControllerTestHelper {
   TestCallback callback_;
   net::CompletionRepeatingCallback completion_callback_;
   MockTransaction mock_transaction_;
+  std::unique_ptr<net::ChunkedUploadDataStream> upload_data_stream_;
   std::unique_ptr<ThrottlingNetworkTransaction> transaction_;
   scoped_refptr<net::IOBuffer> buffer_;
-  std::unique_ptr<net::ChunkedUploadDataStream> upload_data_stream_;
   std::unique_ptr<MockHttpRequest> request_;
   std::unique_ptr<network::ScopedThrottlingToken> throttling_token_;
   const net::NetLogWithSource net_log_with_source_;

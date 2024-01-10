@@ -232,8 +232,7 @@ class AttributionVerificationMediator {
 
   // The key_commitment_getter_ instance is a singleton owned by NetworkService,
   // it will always outlive this.
-  const raw_ptr<const TrustTokenKeyCommitmentGetter, DanglingUntriaged>
-      key_commitment_getter_;
+  const raw_ptr<const TrustTokenKeyCommitmentGetter> key_commitment_getter_;
 
   // Relinquishes ownership during posted tasks for the potentially
   // computationally intensive cryptographic operations

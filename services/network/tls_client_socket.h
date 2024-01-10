@@ -58,8 +58,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TLSClientSocket
   void OnShutdown() override;
 
   const mojo::Remote<mojom::SocketObserver> observer_;
-  std::unique_ptr<SocketDataPump> socket_data_pump_;
+  // `socket_` must outlive `socket_data_pump_`.
   std::unique_ptr<net::SSLClientSocket> socket_;
+  std::unique_ptr<SocketDataPump> socket_data_pump_;
   mojom::TCPConnectedSocket::UpgradeToTLSCallback connect_callback_;
   bool send_ssl_info_ = false;
   const net::NetworkTrafficAnnotationTag traffic_annotation_;

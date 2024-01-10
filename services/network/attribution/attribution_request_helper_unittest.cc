@@ -153,6 +153,8 @@ class AttributionRequestHelperTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   base::HistogramTester histograms_;
+  // `trust_token_key_commitments_` must outlive `helper_`.
+  std::unique_ptr<TrustTokenKeyCommitments> trust_token_key_commitments_;
   std::unique_ptr<AttributionRequestHelper> helper_;
   GURL example_valid_request_url_ =
       GURL("https://reporting-origin.example/test/path/#123");
@@ -161,7 +163,6 @@ class AttributionRequestHelperTest : public testing::Test {
 
  private:
   std::unique_ptr<net::URLRequestContext> context_;
-  std::unique_ptr<TrustTokenKeyCommitments> trust_token_key_commitments_;
   net::TestDelegate delegate_;
 
   void CheckVerifications(const std::vector<TriggerVerification>& verifications,

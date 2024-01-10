@@ -83,7 +83,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SocketDataPump {
   void OnNetworkWriteCompleted(int result);
   void ShutdownSend();
 
-  const raw_ptr<net::StreamSocket, DanglingUntriaged> socket_;
+  const raw_ptr<net::StreamSocket> socket_;
   const raw_ptr<Delegate> delegate_;
 
   // The *stream handles will be null when there's a pending read from |socket_|

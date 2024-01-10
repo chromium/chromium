@@ -30,17 +30,14 @@ class DictionaryReference {
   ~DictionaryReference() = default;
 
   raw_ptr<SharedDictionaryStorageInMemory> storage() const { return storage_; }
-  const raw_ptr<const SharedDictionaryStorageInMemory::DictionaryInfo,
-                DanglingUntriaged>
-  dict() const {
+  const raw_ptr<const SharedDictionaryStorageInMemory::DictionaryInfo> dict()
+      const {
     return dict_;
   }
 
  private:
   raw_ptr<SharedDictionaryStorageInMemory> storage_;
-  raw_ptr<const SharedDictionaryStorageInMemory::DictionaryInfo,
-          DanglingUntriaged>
-      dict_;
+  raw_ptr<const SharedDictionaryStorageInMemory::DictionaryInfo> dict_;
 };
 
 struct LastUsedTimeLess {
@@ -198,6 +195,7 @@ void SharedDictionaryManagerInMemory::RunCacheEvictionImpl(
       break;
     }
   }
+  dictionaries.clear();  // Unneeded, and may ref. about-to-be-deleted things.
   for (auto& candidate : eviction_candidates) {
     candidate.storage()->DeleteDictionary(candidate.host(), candidate.match());
   }
