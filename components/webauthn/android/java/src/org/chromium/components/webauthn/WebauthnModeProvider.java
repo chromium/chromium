@@ -62,6 +62,7 @@ public class WebauthnModeProvider {
     }
 
     public static void setInstanceForTesting(WebauthnModeProvider webAuthnModeProvider) {
+        // Do not forget to unset the instance to avoid leaking into other test suites.
         sInstance = webAuthnModeProvider;
     }
 

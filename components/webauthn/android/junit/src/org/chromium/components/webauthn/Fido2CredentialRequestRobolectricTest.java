@@ -24,6 +24,7 @@ import androidx.test.filters.SmallTest;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
+import org.junit.After;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
@@ -144,6 +145,11 @@ public class Fido2CredentialRequestRobolectricTest {
         mRequest.overrideBrowserBridgeForTesting(mBrowserBridgeMock);
         mRequest.setCredManHelperForTesting(mCredManHelperMock);
         mRequest.setBarrierForTesting(mBarrierMock);
+    }
+
+    @After
+    public void tearDown() {
+        WebauthnModeProvider.setInstanceForTesting(null);
     }
 
     @Test
