@@ -66,6 +66,7 @@ class WallpaperSearchHandler
 
   // side_panel::customize_chrome::mojom::WallpaperSearchHandler:
   void GetDescriptors(GetDescriptorsCallback callback) override;
+  void GetInspirations(GetInspirationsCallback callback) override;
   void GetWallpaperSearchResults(
       side_panel::customize_chrome::mojom::ResultDescriptorsPtr
           result_descriptors,
@@ -101,6 +102,10 @@ class WallpaperSearchHandler
                                data_decoder::DataDecoder::ValueOrError result);
   void OnHistoryDecoded(std::vector<HistoryEntry> history,
                         std::vector<std::pair<SkBitmap, base::Token>> results);
+  void OnInspirationsRetrieved(GetInspirationsCallback callback,
+                               std::unique_ptr<std::string> response_body);
+  void OnInspirationsJsonParsed(GetInspirationsCallback callback,
+                                data_decoder::DataDecoder::ValueOrError result);
   void OnWallpaperSearchResultsRetrieved(
       GetWallpaperSearchResultsCallback callback,
       base::ElapsedTimer request_timer,
@@ -120,9 +125,10 @@ class WallpaperSearchHandler
 
   raw_ptr<Profile> profile_;
   PrefChangeRegistrar pref_change_registrar_;
-  std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
+  std::unique_ptr<network::SimpleURLLoader> descriptors_simple_url_loader_;
   std::unique_ptr<data_decoder::DataDecoder> data_decoder_;
   const raw_ref<image_fetcher::ImageDecoder> image_decoder_;
+  std::unique_ptr<network::SimpleURLLoader> inspirations_simple_url_loader_;
   const raw_ref<WallpaperSearchBackgroundManager>
       wallpaper_search_background_manager_;
   // We keep all log entries alive until the session closes because whether and

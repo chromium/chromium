@@ -152,10 +152,10 @@ class WallpaperSearchHandlerTest : public testing::Test {
     test_url_loader_factory_.ClearResponses();
   }
 
-  const std::string kDescriptorsBaseURL =
+  const std::string kGstaticBaseURL =
       "https://www.gstatic.com/chrome-wallpaper-search/";
   const std::string kDescriptorsLoadURL =
-      base::StrCat({kDescriptorsBaseURL, "descriptors_en-US.json"});
+      base::StrCat({kGstaticBaseURL, "descriptors_en-US.json"});
   void SetUpDescriptorsResponseWithData(const std::string& response) {
     test_url_loader_factory_.SetInterceptor(base::BindLambdaForTesting(
         [&](const network::ResourceRequest& request) {}));
@@ -163,6 +163,18 @@ class WallpaperSearchHandlerTest : public testing::Test {
   }
   void SetUpDescriptorsResponseWithNetworkError() {
     test_url_loader_factory_.AddResponse(kDescriptorsLoadURL, std::string(),
+                                         net::HTTP_NOT_FOUND);
+  }
+
+  const std::string kInspirationsLoadURL =
+      base::StrCat({kGstaticBaseURL, "inspirations.json"});
+  void SetUpInspirationsResponseWithData(const std::string& response) {
+    test_url_loader_factory_.SetInterceptor(base::BindLambdaForTesting(
+        [&](const network::ResourceRequest& request) {}));
+    test_url_loader_factory_.AddResponse(kInspirationsLoadURL, response);
+  }
+  void SetUpInspirationsResponseWithNetworkError() {
+    test_url_loader_factory_.AddResponse(kInspirationsLoadURL, std::string(),
                                          net::HTTP_NOT_FOUND);
   }
 
@@ -325,7 +337,7 @@ TEST_F(WallpaperSearchHandlerTest,
   const auto& descriptor_b = descriptors->descriptor_b;
   EXPECT_EQ(1u, descriptor_b.size());
   EXPECT_EQ("foo", descriptor_b[0]->label);
-  EXPECT_EQ(base::StrCat({kDescriptorsBaseURL, "bar.png"}),
+  EXPECT_EQ(base::StrCat({kGstaticBaseURL, "bar.png"}),
             descriptor_b[0]->image_path);
 
   const auto& descriptor_c = descriptors->descriptor_c;
@@ -383,7 +395,7 @@ TEST_F(WallpaperSearchHandlerTest,
   const auto& descriptor_b = descriptors_2->descriptor_b;
   EXPECT_EQ(1u, descriptor_b.size());
   EXPECT_EQ("foo", descriptor_b[0]->label);
-  EXPECT_EQ(base::StrCat({kDescriptorsBaseURL, "bar.png"}),
+  EXPECT_EQ(base::StrCat({kGstaticBaseURL, "bar.png"}),
             descriptor_b[0]->image_path);
   const auto& descriptor_c = descriptors_2->descriptor_c;
   EXPECT_EQ(1u, descriptor_c.size());
@@ -1451,4 +1463,87 @@ TEST_F(WallpaperSearchHandlerTest, SetUserFeedback) {
             qualities[0]->user_feedback());
   EXPECT_EQ(optimization_guide::proto::UserFeedback::USER_FEEDBACK_THUMBS_UP,
             qualities[1]->user_feedback());
+}
+
+TEST_F(WallpaperSearchHandlerTest, GetInspirations_Success) {
+  side_panel::customize_chrome::mojom::InspirationsPtr inspirations;
+  base::MockCallback<WallpaperSearchHandler::GetInspirationsCallback> callback;
+  EXPECT_CALL(callback, Run(_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&inspirations](side_panel::customize_chrome::mojom::InspirationsPtr
+                              inspirations_ptr_arg) {
+            inspirations = std::move(inspirations_ptr_arg);
+          }));
+  SetUpInspirationsResponseWithData(
+      R"()]}'
+        {"inspiration_a":[
+          {"background_image":"foo_1.png","thumbnail_image":"foo_2.png"},
+          {"background_image":"bar_1.png","thumbnail_image":"bar_2.png"}
+      ]})");
+  ASSERT_FALSE(inspirations);
+
+  auto handler = MakeHandler(/*session_id=*/123);
+  handler->GetInspirations(callback.Get());
+  task_environment().RunUntilIdle();
+
+  EXPECT_TRUE(inspirations);
+  const auto& inspiration_a = inspirations->inspiration_a;
+  EXPECT_EQ(2u, inspiration_a.size());
+  const auto& foo_inspiration = inspiration_a[0];
+  EXPECT_EQ(foo_inspiration->background_url,
+            base::StrCat({kGstaticBaseURL, "foo_1.png"}));
+  EXPECT_EQ(foo_inspiration->thumbnail_url,
+            base::StrCat({kGstaticBaseURL, "foo_2.png"}));
+  const auto& bar_inspiration = inspiration_a[1];
+  EXPECT_EQ(bar_inspiration->background_url,
+            base::StrCat({kGstaticBaseURL, "bar_1.png"}));
+  EXPECT_EQ(bar_inspiration->thumbnail_url,
+            base::StrCat({kGstaticBaseURL, "bar_2.png"}));
+}
+
+TEST_F(WallpaperSearchHandlerTest,
+       GetInspirations_Failure_InspirationsFormatIncorrect) {
+  side_panel::customize_chrome::mojom::InspirationsPtr inspirations;
+  base::MockCallback<WallpaperSearchHandler::GetInspirationsCallback> callback;
+  EXPECT_CALL(callback, Run(_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&inspirations](side_panel::customize_chrome::mojom::InspirationsPtr
+                              inspirations_ptr_arg) {
+            inspirations = std::move(inspirations_ptr_arg);
+          }));
+  SetUpInspirationsResponseWithData(
+      R"()]}'
+        {"inspiration_a":[
+          {"background_image":"foo_1.png"},
+          {"thumbnail_image":"bar_2.png"}
+      ]})");
+  ASSERT_FALSE(inspirations);
+
+  auto handler = MakeHandler(/*session_id=*/123);
+  handler->GetInspirations(callback.Get());
+  task_environment().RunUntilIdle();
+
+  EXPECT_FALSE(inspirations);
+}
+
+TEST_F(WallpaperSearchHandlerTest, GetInspirations_Failure_DataUnreachable) {
+  side_panel::customize_chrome::mojom::InspirationsPtr inspirations;
+  base::MockCallback<WallpaperSearchHandler::GetInspirationsCallback> callback;
+  EXPECT_CALL(callback, Run(_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&inspirations](side_panel::customize_chrome::mojom::InspirationsPtr
+                              inspirations_ptr_arg) {
+            inspirations = std::move(inspirations_ptr_arg);
+          }));
+  SetUpInspirationsResponseWithNetworkError();
+  ASSERT_FALSE(inspirations);
+
+  auto handler = MakeHandler(/*session_id=*/123);
+  handler->GetInspirations(callback.Get());
+  task_environment().RunUntilIdle();
+
+  EXPECT_FALSE(inspirations);
 }
