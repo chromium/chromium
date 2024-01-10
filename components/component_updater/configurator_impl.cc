@@ -12,6 +12,7 @@
 #include "base/enterprise_util.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
+#include "base/sequence_checker.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -52,6 +53,7 @@ ConfiguratorImpl::ConfiguratorImpl(
 ConfiguratorImpl::~ConfiguratorImpl() = default;
 
 base::TimeDelta ConfiguratorImpl::InitialDelay() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!initial_delay_.is_zero()) {
     return initial_delay_;
   }
@@ -59,18 +61,22 @@ base::TimeDelta ConfiguratorImpl::InitialDelay() const {
 }
 
 base::TimeDelta ConfiguratorImpl::NextCheckDelay() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return base::Hours(5);
 }
 
 base::TimeDelta ConfiguratorImpl::OnDemandDelay() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return fast_update_ ? base::Seconds(2) : base::Minutes(30);
 }
 
 base::TimeDelta ConfiguratorImpl::UpdateDelay() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return fast_update_ ? base::Seconds(10) : base::Minutes(15);
 }
 
 std::vector<GURL> ConfiguratorImpl::UpdateUrl() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (url_source_override_.is_valid()) {
     return {GURL(url_source_override_)};
   }
@@ -85,39 +91,48 @@ std::vector<GURL> ConfiguratorImpl::UpdateUrl() const {
 }
 
 std::vector<GURL> ConfiguratorImpl::PingUrl() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return pings_enabled_ ? UpdateUrl() : std::vector<GURL>();
 }
 
 const base::Version& ConfiguratorImpl::GetBrowserVersion() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return version_info::GetVersion();
 }
 
 std::string ConfiguratorImpl::GetOSLongName() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::string(version_info::GetOSType());
 }
 
 base::flat_map<std::string, std::string> ConfiguratorImpl::ExtraRequestParams()
     const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return extra_info_;
 }
 
 std::string ConfiguratorImpl::GetDownloadPreference() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::string();
 }
 
 bool ConfiguratorImpl::EnabledDeltas() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return deltas_enabled_;
 }
 
 bool ConfiguratorImpl::EnabledComponentUpdates() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return true;
 }
 
 bool ConfiguratorImpl::EnabledBackgroundDownloader() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return background_downloads_enabled_;
 }
 
 bool ConfiguratorImpl::EnabledCupSigning() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return true;
 }
 
@@ -125,11 +140,13 @@ bool ConfiguratorImpl::EnabledCupSigning() const {
 // Desktop embedders, such as the Windows component updater can provide a
 // meaningful implementation for this function.
 std::string ConfiguratorImpl::GetAppGuid() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return {};
 }
 
 std::unique_ptr<update_client::ProtocolHandlerFactory>
 ConfiguratorImpl::GetProtocolHandlerFactory() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::make_unique<update_client::ProtocolHandlerFactoryJSON>();
 }
 
@@ -139,12 +156,14 @@ ConfiguratorImpl::GetProtocolHandlerFactory() const {
 // component.
 update_client::UpdaterStateProvider ConfiguratorImpl::GetUpdaterStateProvider()
     const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return base::BindRepeating([](bool /*is_machine*/) {
     return base::flat_map<std::string, std::string>();
   });
 }
 
 absl::optional<bool> ConfiguratorImpl::IsMachineExternallyManaged() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   // TODO(crbug.com/1320776): For legacy compatibility, this uses
   // IsEnterpriseDevice() which effectively equates to a domain join check.
@@ -152,10 +171,11 @@ absl::optional<bool> ConfiguratorImpl::IsMachineExternallyManaged() const {
   return base::IsEnterpriseDevice();
 #else
   return absl::nullopt;
-#endif
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 }
 
 bool ConfiguratorImpl::IsConnectionMetered() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return net::NetworkChangeNotifier::GetConnectionCost() ==
          net::NetworkChangeNotifier::CONNECTION_COST_METERED;
 }
