@@ -127,6 +127,25 @@ export class TabOrganizationNotStartedElement extends
     return image || 'chrome://theme/IDR_PROFILE_AVATAR_PLACEHOLDER_LARGE';
   }
 
+  private getButtonAriaLabel_(): string {
+    switch (this.getSyncState_()) {
+      case SyncState.SIGNED_OUT:
+      case SyncState.UNSYNCED:
+        return loadTimeData.getString('notStartedButtonUnsyncedAriaLabel');
+      case SyncState.SYNC_PAUSED:
+        return loadTimeData.getString('notStartedButtonSyncPausedAriaLabel');
+      case SyncState.UNSYNCED_HISTORY:
+        return loadTimeData.getString(
+            'notStartedButtonUnsyncedHistoryAriaLabel');
+      case SyncState.SYNCED:
+        if (this.showFre) {
+          return loadTimeData.getString('notStartedButtonFREAriaLabel');
+        } else {
+          return loadTimeData.getString('notStartedButtonAriaLabel');
+        }
+    }
+  }
+
   private getButtonText_(): string {
     switch (this.getSyncState_()) {
       case SyncState.SIGNED_OUT:

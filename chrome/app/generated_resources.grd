@@ -10704,6 +10704,21 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_SYNC_PAUSED" desc="The label for the button in the not started state of the tab organization UI, when sync is paused" translateable="false">
         Sign in
       </message>
+      <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_ARIA_LABEL" desc="The a11y label for the button in the not started state of the tab organization UI, when synced" is_accessibility_with_no_ui="true">
+        Check now if tabs can be organized
+      </message>
+      <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_FRE_ARIA_LABEL" desc="The first run experience a11y label for the button in the not started state of the tab organization UI, when synced" is_accessibility_with_no_ui="true">
+        Let's go and organize your tabs
+      </message>
+      <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_UNSYNCED_ARIA_LABEL" desc="The a11y label for the button in the not started state of the tab organization UI, when not signed in or signed in but unsynced" is_accessibility_with_no_ui="true">
+        Turn on sync to let Chrome suggest tab groups
+      </message>
+      <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_UNSYNCED_HISTORY_ARIA_LABEL" desc="The a11y label for the button in the not started state of the tab organization UI, when history sync is disabled" is_accessibility_with_no_ui="true">
+        Open settings to let Chrome suggest tab groups
+      </message>
+      <message name="IDS_TAB_ORGANIZATION_NOT_STARTED_BUTTON_SYNC_PAUSED_ARIA_LABEL" desc="The a11y label for the button in the not started state of the tab organization UI, when sync is paused" is_accessibility_with_no_ui="true">
+        Sign in to let Chrome suggest tab groups
+      </message>
       <message name="IDS_TAB_ORGANIZATION_IN_PROGRESS_TITLE" desc="The header text for the in progress state in the tab organization UI" translateable="false">
         Organizing into a tab group…
       </message>
@@ -10743,7 +10758,7 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_TAB_ORGANIZATION_TIP_ACTION" desc="The actionable text of the tip in the tab organization UI" translateable="false">
         Show me how
       </message>
-      <message name="IDS_TAB_ORGANIZATION_TIP_ARIA_DESCRIPTION" desc="The a11y description of the tip in the tab organization UI" translateable="false" is_accessibility_with_no_ui="true">
+      <message name="IDS_TAB_ORGANIZATION_TIP_ARIA_DESCRIPTION" desc="The a11y label of the tip in the tab organization UI" translateable="false" is_accessibility_with_no_ui="true">
         Launch tab group tutorial
       </message>
       <message name="IDS_TAB_ORGANIZATION_DISCLAIMER" desc="The disclaimer text in the tab organization UI results state for getting more information" translateable="false">
@@ -10752,7 +10767,10 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_TAB_ORGANIZATION_LEARN_MORE" desc="The actionable text in the tab organization UI results state for getting more information" translateable="false">
         Learn more
       </message>
-      <message name="IDS_TAB_ORGANIZATION_CLOSE_TAB_ARIA_LABEL" desc="The accessible label in the tab organization UI results state for removing a tab" translateable="false" is_accessibility_with_no_ui="true">
+      <message name="IDS_TAB_ORGANIZATION_LEARN_MORE_ARIA_LABEL" desc="The accessible label in the tab organization UI results state for getting more information" is_accessibility_with_no_ui="true">
+        Learn more about using AI tools
+      </message>
+      <message name="IDS_TAB_ORGANIZATION_CLOSE_TAB_ARIA_LABEL" desc="The accessible label in the tab organization UI results state for removing a tab" is_accessibility_with_no_ui="true">
         Remove <ph name="TAB_TITLE">$1<ex>New Tab</ex></ph> from tab group
       </message>
       <message name="IDS_TAB_ORGANIZATION_CLOSE_TAB_TOOLTIP" desc="Tooltip on the button in the tab organization UI results state for removing a tab" translateable="false">
@@ -10763,6 +10781,15 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       </message>
       <message name="IDS_TAB_ORGANIZATION_REJECT_FINAL_SUGGESTION" desc="The button text in the tab organization UI results state for rejecting the current (and final) suggestion" translateable="false">
         Clear
+      </message>
+      <message name="IDS_TAB_ORGANIZATION_INPUT_ARIA_LABEL" desc="The a11y label of the tab group name input in the tab organization UI" is_accessibility_with_no_ui="true">
+        Tab group name: <ph name="NAME">$1<ex>My tab group</ex></ph>
+      </message>
+      <message name="IDS_TAB_ORGANIZATION_THUMBS_DOWN" desc="Accessibility label for the thumbs down icon that a user can click to provide negative feedback about a tab organization." is_accessibility_with_no_ui="true">
+        Thumbs down submits feedback that you dislike this tab group suggestion
+      </message>
+      <message name="IDS_TAB_ORGANIZATION_THUMBS_UP" desc="Accessibility label for the thumbs up icon that a user can click to provide positive feedback about a tab organization." is_accessibility_with_no_ui="true">
+        Thumbs up submits feedback that you like this tab group suggestion
       </message>
 
       <!-- Strings for Window Titles in Menus -->
