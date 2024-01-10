@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_IMAGE_FILE_MANAGER_H_
-#define IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_IMAGE_FILE_MANAGER_H_
+#ifndef IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_LEGACY_IMAGE_FILE_MANAGER_H_
+#define IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_LEGACY_IMAGE_FILE_MANAGER_H_
 
 #include <vector>
 
@@ -20,7 +20,9 @@ class Time;
 using ImageReadCompletionBlock = base::OnceCallback<void(UIImage* image)>;
 
 // A class to manage images stored in disk.
-@interface ImageFileManager : NSObject
+// TODO(crbug.com/1502841): Remove this class once the new implementation
+// written in Swift is used by default.
+@interface LegacyImageFileManager : NSObject
 
 // Designated initializer. `storagePath` is the file path where all images
 // managed by this ImageFileManager are stored. `storagePath` is not guaranteed
@@ -90,4 +92,4 @@ using ImageReadCompletionBlock = base::OnceCallback<void(UIImage* image)>;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_IMAGE_FILE_MANAGER_H_
+#endif  // IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_LEGACY_IMAGE_FILE_MANAGER_H_

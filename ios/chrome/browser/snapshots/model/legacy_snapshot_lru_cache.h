@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_SNAPSHOT_LRU_CACHE_H_
-#define IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_SNAPSHOT_LRU_CACHE_H_
+#ifndef IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_LEGACY_SNAPSHOT_LRU_CACHE_H_
+#define IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_LEGACY_SNAPSHOT_LRU_CACHE_H_
 
 #import <Foundation/Foundation.h>
 
@@ -12,7 +12,9 @@ class SnapshotID;
 // This class implements a cache with a limited size. Once the cache reach its
 // size limit, it will start to evict items in a Least Recently Used order
 // (where the term "used" is determined in terms of query to the cache).
-@interface SnapshotLRUCache<ObjectType> : NSObject
+// TODO(crbug.com/1502841): Remove this class once the new implementation
+// written in Swift is used by default.
+@interface LegacySnapshotLRUCache<ObjectType> : NSObject
 
 // The maximum amount of items that the cache can hold before starting to
 // evict. The value 0 is used to signify that the cache can hold an unlimited
@@ -52,4 +54,4 @@ class SnapshotID;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_SNAPSHOT_LRU_CACHE_H_
+#endif  // IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_LEGACY_SNAPSHOT_LRU_CACHE_H_

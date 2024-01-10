@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/snapshots/model/snapshot_storage.h"
-#import "ios/chrome/browser/snapshots/model/snapshot_storage+Testing.h"
 
 #import <map>
 
@@ -18,9 +17,10 @@
 #import "base/time/time.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/snapshots/model/features.h"
-#import "ios/chrome/browser/snapshots/model/image_file_manager.h"
+#import "ios/chrome/browser/snapshots/model/legacy_image_file_manager.h"
+#import "ios/chrome/browser/snapshots/model/legacy_snapshot_lru_cache.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_id.h"
-#import "ios/chrome/browser/snapshots/model/snapshot_lru_cache.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_storage+Testing.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_storage_observer.h"
 #import "ios/chrome/browser/tabs/model/features.h"
 
@@ -41,27 +41,6 @@ const NSUInteger kLRUCacheMaxCapacity = 6;
 // kLRUCacheMaxCapacity which "works fine" + on average 4 more snapshots needed
 // for pinned tabs feature.
 const NSUInteger kLRUCacheMaxCapacityForPinnedTabsEnabled = 10;
-
-// Returns true if the flag for grey optimization is enabled.
-bool IsGreySnapshotOptimizationEnabled() {
-  if (base::FeatureList::IsEnabled(kGreySnapshotOptimization)) {
-    return true;
-  }
-  return false;
-}
-
-// Returns true if the flag for grey optimization is enabled and the
-// optimization level is highest, no grey snapshot images in in-memory cache and
-// disk.
-bool IsGreySnapshotOptimizationNoCacheEnabled() {
-  if (IsGreySnapshotOptimizationEnabled()) {
-    if (kGreySnapshotOptimizationLevelParam.Get() ==
-        GreySnapshotOptimizationLevel::kDoNotStoreToDiskAndCache) {
-      return true;
-    }
-  }
-  return false;
-}
 
 }  // namespace
 
@@ -86,10 +65,10 @@ bool IsGreySnapshotOptimizationNoCacheEnabled() {
 @implementation SnapshotStorage {
   // Cache to hold color snapshots in memory. n.b. Color snapshots are not
   // kept in memory on tablets.
-  SnapshotLRUCache<UIImage*>* _lruCache;
+  LegacySnapshotLRUCache<UIImage*>* _lruCache;
 
   // File manager to read/write images from/to disk.
-  __strong ImageFileManager* _fileManager;
+  __strong LegacyImageFileManager* _fileManager;
 
   // Temporary dictionary to hold grey snapshots for tablet side swipe. This
   // will be nil before -createGreyCache is called and after -removeGreyCache
@@ -113,10 +92,11 @@ bool IsGreySnapshotOptimizationNoCacheEnabled() {
     NSUInteger cacheSize = IsPinnedTabsEnabled()
                                ? kLRUCacheMaxCapacityForPinnedTabsEnabled
                                : kLRUCacheMaxCapacity;
-    _lruCache = [[SnapshotLRUCache alloc] initWithCacheSize:cacheSize];
+    _lruCache = [[LegacySnapshotLRUCache alloc] initWithCacheSize:cacheSize];
 
-    _fileManager = [[ImageFileManager alloc] initWithStoragePath:storagePath
-                                                      legacyPath:legacyPath];
+    _fileManager =
+        [[LegacyImageFileManager alloc] initWithStoragePath:storagePath
+                                                 legacyPath:legacyPath];
 
     _observers = [SnapshotStorageObservers observers];
 
@@ -163,7 +143,7 @@ bool IsGreySnapshotOptimizationNoCacheEnabled() {
     return;
   }
 
-  __weak SnapshotLRUCache* weakLRUCache = _lruCache;
+  __weak LegacySnapshotLRUCache* weakLRUCache = _lruCache;
   [_fileManager readImageWithSnapshotID:snapshotID
                              completion:base::BindOnce(^(UIImage* image) {
                                if (image) {

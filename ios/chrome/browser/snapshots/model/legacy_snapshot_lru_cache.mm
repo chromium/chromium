@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/snapshots/model/snapshot_lru_cache.h"
+#import "ios/chrome/browser/snapshots/model/legacy_snapshot_lru_cache.h"
 
 #import <memory>
 
 #import "base/containers/lru_cache.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_id.h"
 
-@implementation SnapshotLRUCache {
+@implementation LegacySnapshotLRUCache {
   std::unique_ptr<base::LRUCache<SnapshotID, id>> _cache;
 }
 

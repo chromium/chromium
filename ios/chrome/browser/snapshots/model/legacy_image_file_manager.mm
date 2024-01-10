@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/snapshots/model/image_file_manager.h"
+#import "ios/chrome/browser/snapshots/model/legacy_image_file_manager.h"
 
 #import "base/apple/backup_util.h"
 #import "base/apple/foundation_util.h"
@@ -354,7 +354,7 @@ void DeleteAllGreyImages(const base::FilePath& directory) {
 
 }  // anonymous namespace
 
-@implementation ImageFileManager {
+@implementation LegacyImageFileManager {
   // Directory where the thumbnails are saved.
   base::FilePath _storageDirectory;
 

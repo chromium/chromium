@@ -6,31 +6,29 @@ import("//build/config/ios/swift_source_set.gni")
 
 source_set("model") {
   public = [
-    "image_file_manager.h",
+    "legacy_image_file_manager.h",
+    "legacy_snapshot_lru_cache.h",
     "snapshot_browser_agent.h",
     "snapshot_generator_delegate.h",
-    "snapshot_lru_cache.h",
-    "snapshot_scale.h",
     "snapshot_storage+Testing.h",
     "snapshot_storage.h",
     "snapshot_storage_observer.h",
     "snapshot_tab_helper.h",
   ]
   sources = [
-    "image_file_manager.mm",
+    "legacy_image_file_manager.mm",
+    "legacy_snapshot_lru_cache.mm",
     "snapshot_browser_agent.mm",
     "snapshot_generator.h",
     "snapshot_generator.mm",
-    "snapshot_lru_cache.mm",
     "snapshot_manager.h",
     "snapshot_manager.mm",
-    "snapshot_scale.mm",
     "snapshot_storage.mm",
     "snapshot_tab_helper.mm",
   ]
   deps = [
     ":features",
-    ":snapshot_id",
+    ":model_common",
     "//base",
     "//build:blink_buildflags",
     "//ios/chrome/browser/shared/model/browser",
@@ -41,7 +39,6 @@ source_set("model") {
     "//ios/chrome/browser/tabs/model:features",
     "//ios/third_party/webkit",
     "//ios/web/public",
-    "//ui/base",
     "//ui/gfx",
   ]
   frameworks = [
@@ -50,20 +47,31 @@ source_set("model") {
   ]
 }
 
-source_set("snapshot_id") {
+source_set("model_common") {
   public = [
     "snapshot_id.h",
     "snapshot_id_wrapper.h",
+    "snapshot_scale.h",
   ]
-  sources = [ "snapshot_id_wrapper.mm" ]
-  deps = [ "//base" ]
+  sources = [
+    "snapshot_id_wrapper.mm",
+    "snapshot_scale.mm",
+  ]
+  deps = [
+    "//base",
+    "//ui/base",
+  ]
 }
 
 swift_source_set("model_swift") {
   bridge_header = "snapshot_swift_bridge.h"
-  sources = [ "snapshot_lru_cache.swift" ]
+  sources = [
+    "image_file_manager.swift",
+    "snapshot_lru_cache.swift",
+  ]
   deps = [
-    ":snapshot_id",
+    ":features",
+    ":model_common",
     "//base",
   ]
 }
@@ -90,8 +98,8 @@ source_set("unit_tests") {
   deps = [
     ":features",
     ":model",
+    ":model_common",
     ":model_swift",
-    ":snapshot_id",
     ":test_utils",
     "//base",
     "//base/test:test_support",
