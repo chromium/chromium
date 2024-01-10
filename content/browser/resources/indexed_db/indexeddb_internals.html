@@ -108,9 +108,6 @@
                           <table class="indexeddb-transaction-list">
                             <tbody>
                               <tr>
-                                <th title="Process ID of the tab or SharedWorker that created the transaction">
-                                  Process ID
-                                </th>
                                 <th title="Transaction ID (unique within Process)">
                                   ID
                                 </th>
@@ -142,10 +139,6 @@
                                     "$status:stringifymojo.transactionState($this.status);
                                     $status_lower:$status.toLowerCase()"
                                   jseval="this.classList.add($status_lower)">
-
-                                <td class="indexeddb-transaction-pid"
-                                    jscontent="pid">
-                                </td>
 
                                 <td class="indexeddb-transaction-tid"
                                     jscontent="tid">
