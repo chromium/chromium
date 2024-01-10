@@ -182,7 +182,7 @@ void ExtensionsHatsHandler::PrimaryPageChanged(content::Page& page) {
         {"Number of non-trigger extensions removed",
          base::NumberToString(number_of_nontriggering_extensions_removed_)},
         {"Client Channel", client_channel_}};
-    RequestHatsSurvey(true, survey_data);
+    RequestHatsSurvey(false, survey_data);
   }
 }
 
