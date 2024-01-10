@@ -290,18 +290,12 @@ export class PersonalizationBreadcrumbElement extends WithPersonalizationStore {
 
   private onClickMenuIcon_(e: Event) {
     const targetElement = e.currentTarget as HTMLElement;
-    const menuIconContainerRect = targetElement.getBoundingClientRect();
     const config = {
-      // 8px is the padding of .menu-icon-container.
-      top: menuIconContainerRect.top - 8,
-      left: menuIconContainerRect.left - menuIconContainerRect.width / 2,
-      height: menuIconContainerRect.height,
-      width: menuIconContainerRect.width,
-      anchorAlignmentX: AnchorAlignment.CENTER,
-      anchorAlignmentY: AnchorAlignment.AFTER_END,
+      anchorAlignmentX: AnchorAlignment.AFTER_START,
+      anchorAlignmentY: AnchorAlignment.AFTER_START,
     };
     const menuElement = this.shadowRoot!.querySelector('cr-action-menu');
-    menuElement!.showAtPosition(config);
+    menuElement!.showAt(targetElement, config);
   }
 
   private onClickMenuItem_(e: Event) {
