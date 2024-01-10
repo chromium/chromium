@@ -21,6 +21,8 @@ namespace {
 constexpr CGFloat kAddressViewHorizontalPadding = 11;
 /// The size of the logo image.
 const CGFloat kLogoSize = 36;
+/// Padding between the subtitle and the `addressBarView`.
+const CGFloat kSubtitleBottomMargin = 17;
 
 }  // namespace
 
@@ -71,6 +73,7 @@ const CGFloat kLogoSize = 36;
   self.headerImage = logo;
 
   self.titleHorizontalMargin = 0;
+  self.subtitleBottomMargin = kSubtitleBottomMargin;
   self.titleText = l10n_util::GetNSString(IDS_IOS_OMNIBOX_POSITION_PROMO_TITLE);
   self.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_OMNIBOX_POSITION_PROMO_VALIDATE);
