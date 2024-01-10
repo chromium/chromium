@@ -52,6 +52,11 @@ BASE_FEATURE(kBlinkExtensionDiagnostics,
              "BlinkExtensionDiagnostics",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables ChromeOS Kiosk APIs.
+BASE_FEATURE(kBlinkExtensionKiosk,
+             "BlinkExtensionKiosk",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables handling of key press event in background.
 BASE_FEATURE(kCrosAppsBackgroundEventHandling,
              "CrosAppsBackgroundEventHandling",

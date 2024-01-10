@@ -33,6 +33,8 @@ generated_interface_sources_in_extensions_chromeos = [
   "$root_gen_dir/third_party/blink/renderer/bindings/extensions_chromeos/v8/v8_cros_diagnostics.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/extensions_chromeos/v8/v8_cros_hid.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/extensions_chromeos/v8/v8_cros_hid.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/extensions_chromeos/v8/v8_cros_kiosk.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/extensions_chromeos/v8/v8_cros_kiosk.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/extensions_chromeos/v8/v8_cros_screen.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/extensions_chromeos/v8/v8_cros_screen.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/extensions_chromeos/v8/v8_cros_telemetry.cc",

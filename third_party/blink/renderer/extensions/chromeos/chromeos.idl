@@ -16,4 +16,7 @@
 
   [RuntimeEnabled=BlinkExtensionDiagnostics,CallWith=ExecutionContext]
   readonly attribute CrosDiagnostics diagnostics;
+
+  [RuntimeEnabled=BlinkExtensionChromeOSKiosk,CallWith=ExecutionContext]
+  readonly attribute CrosKiosk kiosk;
 };

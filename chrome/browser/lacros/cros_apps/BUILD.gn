@@ -8,5 +8,8 @@ assert(is_chromeos_lacros)
 
 group("all_browser_tests") {
   testonly = true
-  deps = [ "//chrome/browser/lacros/cros_apps/api/diagnostics:browser_tests" ]
+  deps = [
+    "//chrome/browser/lacros/cros_apps/api/diagnostics:browser_tests",
+    "//chrome/browser/lacros/cros_apps/api/kiosk:browser_tests",
+  ]
 }

@@ -32,6 +32,9 @@ CreateDefaultCrosAppsApiInfo() {
           "uwsszrmaowqmxw4f262x5jozzhe5bc4tefqfa5lado674o462aoaaaic/",
       });
 
+  DEFINE_CROS_APPS_API(list, BlinkExtensionChromeOSKiosk)
+      .SetRequiredFeatures({chromeos::features::kBlinkExtensionKiosk});
+
   return list;
 }
 
