@@ -181,7 +181,6 @@ static const char kAllTracingCategories[] = "*";
         forControlEvents:UIControlEventTouchUpInside];
 
   _field.placeholder = @"Search or type URL";
-  _field.backgroundColor = [UIColor whiteColor];
   _field.tintColor = _headerBackgroundView.backgroundColor;
   [_field setContentHuggingPriority:UILayoutPriorityDefaultLow - 1
                             forAxis:UILayoutConstraintAxisHorizontal];
@@ -299,6 +298,14 @@ static const char kAllTracingCategories[] = "*";
 
   UIView* web_contents_view = _shell->web_contents()->GetNativeView().Get();
   [_contentView addSubview:web_contents_view];
+}
+
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  BOOL darkModeEnabled =
+      (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark);
+  _field.backgroundColor =
+      darkModeEnabled ? [UIColor darkGrayColor] : [UIColor whiteColor];
 }
 
 - (id)initWithShell:(content::Shell*)shell {
