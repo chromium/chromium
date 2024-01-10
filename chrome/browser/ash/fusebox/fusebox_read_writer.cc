@@ -23,6 +23,17 @@ namespace fusebox {
 
 namespace {
 
+void RunFlushCallback(ReadWriter::FlushCallback callback,
+                      int posix_error_code) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  FlushResponseProto response_proto;
+  if (posix_error_code) {
+    response_proto.set_posix_error_code(posix_error_code);
+  }
+  std::move(callback).Run(response_proto);
+}
+
 void RunRead2CallbackFailure(ReadWriter::Read2Callback callback,
                              base::File::Error error_code) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -258,6 +269,38 @@ void ReadWriter::Save() {
       fs_url_,
       base::BindOnce(&SaveCallback1, src_path, fs_url_, std::move(temp_file_),
                      close2_fs_context_, std::move(close2_callback_)));
+}
+
+void ReadWriter::Flush(scoped_refptr<storage::FileSystemContext> fs_context,
+                       FlushCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  DCHECK(!is_in_flight_);
+  is_in_flight_ = true;
+
+  if (closed_) {
+    is_in_flight_ = false;
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&RunFlushCallback, std::move(callback), EFAULT));
+    return;
+  }
+
+  if (use_temp_file_ || !fs_writer_) {
+    is_in_flight_ = false;
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&RunFlushCallback, std::move(callback), 0));
+    return;
+  }
+
+  auto pair = base::SplitOnceCallback(base::BindOnce(
+      &ReadWriter::OnDefaultFlush, weak_ptr_factory_.GetWeakPtr(),
+      std::move(callback), fs_context));
+
+  int result =
+      fs_writer_->Flush(storage::FlushMode::kDefault, std::move(pair.first));
+  if (result != net::ERR_IO_PENDING) {  // The flush was synchronous.
+    std::move(pair.second).Run(result);
+  }
 }
 
 void ReadWriter::Read(scoped_refptr<storage::FileSystemContext> fs_context,
@@ -523,6 +566,25 @@ void ReadWriter::OnWriteTempFile(base::WeakPtr<ReadWriter> weak_ptr,
   if (self->close2_callback_) {
     self->Save();
   }
+}
+
+// static
+void ReadWriter::OnDefaultFlush(
+    base::WeakPtr<ReadWriter> weak_ptr,
+    FlushCallback callback,
+    scoped_refptr<storage::FileSystemContext> fs_context,  // See § above.
+    int flush_posix_error_code) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+
+  ReadWriter* self = weak_ptr.get();
+  if (!self) {
+    flush_posix_error_code = EBUSY;
+  } else {
+    self->is_in_flight_ = false;
+  }
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&RunFlushCallback, std::move(callback),
+                                flush_posix_error_code));
 }
 
 // static
