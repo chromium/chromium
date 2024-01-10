@@ -1854,13 +1854,15 @@ union InputResult {
 
 // Input software and hardware information.
 //
-// NextMinVersion: 1, NextIndex: 2
+// NextMinVersion: 2, NextIndex: 3
 [Stable]
 struct InputInfo {
   // The touchpad library name used by the input stack.
   string touchpad_library_name@0;
   // The touchscreen devices.
   array<TouchscreenDevice> touchscreen_devices@1;
+  // The touchpad devices.
+  [MinVersion=1] array<TouchpadDevice>? touchpad_devices@2;
 };
 
 // Data of a touch screen device.
@@ -1876,6 +1878,17 @@ struct TouchscreenDevice {
   bool has_stylus@2;
   // True if there is a garage/dock switch associated with the stylus.
   bool has_stylus_garage_switch@3;
+};
+
+// Data of a touchpad device.
+//
+// NextMinVersion: 1, NextIndex: 2
+[Stable]
+struct TouchpadDevice {
+  // The input device of this touchpad.
+  InputDevice input_device@0;
+  // The kernel driver in use.
+  string driver_name@1;
 };
 
 // Data of a input device.
