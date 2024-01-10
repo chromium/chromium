@@ -112,6 +112,14 @@ function runGnGen() {
   spawnChecked(gn(), ["gen", "out/Release"], { stdio: "inherit" });
 }
 
+function gclient() {
+  return currentPlatform() == Platform.windows ? "gclient.bat" : "gclient";
+}
+
+function runGclientSync() {
+  spawnChecked(gclient(), ["sync"], { stdio: "inherit" });
+}
+
 function updateRepo(repo, treeish) {
   log(`Updating ${repo} to ${treeish}`);
   // delete git lock file if it exists on Windows
@@ -152,6 +160,8 @@ export function updateChromiumRepo() {
     path.join(chromium, "third_party", "boringssl", "src"),
     deps.boringssl
   );
+
+  runGclientSync();
 
   runGnGen();
 }
