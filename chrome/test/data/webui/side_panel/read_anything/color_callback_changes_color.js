@@ -44,6 +44,9 @@
   readAnythingApp.getBackgroundColorVar = (colorSuffix) => {
     return container.style.getPropertyValue(`--bg${colorSuffix}`);
   };
+  readAnythingApp.areColorTokensUnavailable = () => {
+    return false;
+  };
   container.style.setProperty('--fg', 'purple');
   container.style.setProperty('--fg-dark', 'white');
   container.style.setProperty('--fg-light', 'black');
