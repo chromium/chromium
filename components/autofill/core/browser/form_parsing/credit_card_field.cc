@@ -461,7 +461,7 @@ CreditCardField::CreditCardField()
       expiration_date_(nullptr),
       exp_year_type_(CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR) {}
 
-CreditCardField::~CreditCardField() {}
+CreditCardField::~CreditCardField() = default;
 
 void CreditCardField::AddClassifications(
     FieldCandidatesMap& field_candidates) const {

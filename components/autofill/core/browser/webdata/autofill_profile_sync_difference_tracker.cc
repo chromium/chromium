@@ -236,7 +236,7 @@ AutofillProfileInitialSyncDifferenceTracker::
     : AutofillProfileSyncDifferenceTracker(table) {}
 
 AutofillProfileInitialSyncDifferenceTracker::
-    ~AutofillProfileInitialSyncDifferenceTracker() {}
+    ~AutofillProfileInitialSyncDifferenceTracker() = default;
 
 optional<ModelError>
 AutofillProfileInitialSyncDifferenceTracker::IncorporateRemoteDelete(

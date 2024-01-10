@@ -58,7 +58,7 @@ LocalCardMigrationManager::LocalCardMigrationManager(
       app_locale_(app_locale),
       personal_data_manager_(personal_data_manager) {}
 
-LocalCardMigrationManager::~LocalCardMigrationManager() {}
+LocalCardMigrationManager::~LocalCardMigrationManager() = default;
 
 bool LocalCardMigrationManager::ShouldOfferLocalCardMigration(
     const std::optional<CreditCard>& extracted_credit_card,

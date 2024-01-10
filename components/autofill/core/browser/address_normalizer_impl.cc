@@ -128,7 +128,7 @@ class AddressNormalizerImpl::NormalizationRequest {
   NormalizationRequest(const NormalizationRequest&) = delete;
   NormalizationRequest& operator=(const NormalizationRequest&) = delete;
 
-  ~NormalizationRequest() {}
+  ~NormalizationRequest() = default;
 
   void OnRulesLoaded(bool success, AddressValidator* address_validator) {
     // Check if the timeout happened before the rules were loaded.

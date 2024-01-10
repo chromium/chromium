@@ -16,7 +16,7 @@ AutofillCreditCardPolicyHandler::AutofillCreditCardPolicyHandler()
     : policy::TypeCheckingPolicyHandler(policy::key::kAutofillCreditCardEnabled,
                                         base::Value::Type::BOOLEAN) {}
 
-AutofillCreditCardPolicyHandler::~AutofillCreditCardPolicyHandler() {}
+AutofillCreditCardPolicyHandler::~AutofillCreditCardPolicyHandler() = default;
 
 void AutofillCreditCardPolicyHandler::ApplyPolicySettings(
     const policy::PolicyMap& policies,

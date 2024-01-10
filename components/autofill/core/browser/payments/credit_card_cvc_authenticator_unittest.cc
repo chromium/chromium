@@ -73,7 +73,7 @@ const char16_t kTestNumber16[] = u"4234567890123456";
 
 class CreditCardCvcAuthenticatorTest : public testing::Test {
  public:
-  CreditCardCvcAuthenticatorTest() {}
+  CreditCardCvcAuthenticatorTest() = default;
 
   void SetUp() override {
     autofill_client_.SetPrefs(test::PrefServiceForTesting());

@@ -144,13 +144,13 @@ AutocompleteEntry CreateAutocompleteEntry(
 
 class AutocompleteSyncBridgeTest : public testing::Test {
  public:
-  AutocompleteSyncBridgeTest() {}
+  AutocompleteSyncBridgeTest() = default;
 
   AutocompleteSyncBridgeTest(const AutocompleteSyncBridgeTest&) = delete;
   AutocompleteSyncBridgeTest& operator=(const AutocompleteSyncBridgeTest&) =
       delete;
 
-  ~AutocompleteSyncBridgeTest() override {}
+  ~AutocompleteSyncBridgeTest() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());

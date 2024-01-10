@@ -197,7 +197,7 @@ class FingerprintDataLoader : public content::GpuDataManagerObserver {
   FingerprintDataLoader& operator=(const FingerprintDataLoader&) = delete;
 
  private:
-  ~FingerprintDataLoader() override {}
+  ~FingerprintDataLoader() override = default;
 
   // content::GpuDataManagerObserver:
   void OnGpuInfoUpdate() override;

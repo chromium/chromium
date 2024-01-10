@@ -1301,7 +1301,7 @@ class AutofillProfileSyncBridgeUpdatesUsageStatsTest
   AutofillProfileSyncBridgeUpdatesUsageStatsTest& operator=(
       const AutofillProfileSyncBridgeUpdatesUsageStatsTest&) = delete;
 
-  ~AutofillProfileSyncBridgeUpdatesUsageStatsTest() override {}
+  ~AutofillProfileSyncBridgeUpdatesUsageStatsTest() override = default;
 };
 
 TEST_P(AutofillProfileSyncBridgeUpdatesUsageStatsTest, UpdatesUsageStats) {

@@ -35,12 +35,12 @@ using base::ASCIIToUTF16;
 
 class TestCardUnmaskDelegate : public CardUnmaskDelegate {
  public:
-  TestCardUnmaskDelegate() {}
+  TestCardUnmaskDelegate() = default;
 
   TestCardUnmaskDelegate(const TestCardUnmaskDelegate&) = delete;
   TestCardUnmaskDelegate& operator=(const TestCardUnmaskDelegate&) = delete;
 
-  virtual ~TestCardUnmaskDelegate() {}
+  virtual ~TestCardUnmaskDelegate() = default;
 
   // CardUnmaskDelegate implementation.
   void OnUnmaskPromptAccepted(
@@ -108,7 +108,7 @@ class TestCardUnmaskPromptController : public CardUnmaskPromptControllerImpl {
 
 class CardUnmaskPromptControllerImplGenericTest {
  public:
-  CardUnmaskPromptControllerImplGenericTest() {}
+  CardUnmaskPromptControllerImplGenericTest() = default;
 
   CardUnmaskPromptControllerImplGenericTest(
       const CardUnmaskPromptControllerImplGenericTest&) = delete;
@@ -179,14 +179,14 @@ class CardUnmaskPromptControllerImplTest
     : public CardUnmaskPromptControllerImplGenericTest,
       public testing::Test {
  public:
-  CardUnmaskPromptControllerImplTest() {}
+  CardUnmaskPromptControllerImplTest() = default;
 
   CardUnmaskPromptControllerImplTest(
       const CardUnmaskPromptControllerImplTest&) = delete;
   CardUnmaskPromptControllerImplTest& operator=(
       const CardUnmaskPromptControllerImplTest&) = delete;
 
-  ~CardUnmaskPromptControllerImplTest() override {}
+  ~CardUnmaskPromptControllerImplTest() override = default;
 
   void SetUp() override {
     CardUnmaskPromptControllerImplGenericTest::SetUp();
@@ -820,12 +820,12 @@ struct CvcCase {
 class CvcInputValidationTest : public CardUnmaskPromptControllerImplGenericTest,
                                public testing::TestWithParam<CvcCase> {
  public:
-  CvcInputValidationTest() {}
+  CvcInputValidationTest() = default;
 
   CvcInputValidationTest(const CvcInputValidationTest&) = delete;
   CvcInputValidationTest& operator=(const CvcInputValidationTest&) = delete;
 
-  ~CvcInputValidationTest() override {}
+  ~CvcInputValidationTest() override = default;
 
   void SetUp() override {
     CardUnmaskPromptControllerImplGenericTest::SetUp();
@@ -862,13 +862,13 @@ class CvcInputAmexValidationTest
     : public CardUnmaskPromptControllerImplGenericTest,
       public testing::TestWithParam<CvcCase> {
  public:
-  CvcInputAmexValidationTest() {}
+  CvcInputAmexValidationTest() = default;
 
   CvcInputAmexValidationTest(const CvcInputAmexValidationTest&) = delete;
   CvcInputAmexValidationTest& operator=(const CvcInputAmexValidationTest&) =
       delete;
 
-  ~CvcInputAmexValidationTest() override {}
+  ~CvcInputAmexValidationTest() override = default;
 
   void SetUp() override {
     CardUnmaskPromptControllerImplGenericTest::SetUp();
@@ -914,13 +914,13 @@ class ExpirationDateValidationTest
     : public CardUnmaskPromptControllerImplGenericTest,
       public testing::TestWithParam<ExpirationDateTestCase> {
  public:
-  ExpirationDateValidationTest() {}
+  ExpirationDateValidationTest() = default;
 
   ExpirationDateValidationTest(const ExpirationDateValidationTest&) = delete;
   ExpirationDateValidationTest& operator=(const ExpirationDateValidationTest&) =
       delete;
 
-  ~ExpirationDateValidationTest() override {}
+  ~ExpirationDateValidationTest() override = default;
 
   void SetUp() override {
     CardUnmaskPromptControllerImplGenericTest::SetUp();

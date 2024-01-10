@@ -105,7 +105,7 @@ SubKeyRequester::SubKeyRequester(std::unique_ptr<Source> source,
     : address_validator_(std::move(source), std::move(storage), this),
       language_(language) {}
 
-SubKeyRequester::~SubKeyRequester() {}
+SubKeyRequester::~SubKeyRequester() = default;
 
 void SubKeyRequester::StartRegionSubKeysRequest(const std::string& region_code,
                                                 int timeout_seconds,

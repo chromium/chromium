@@ -8,8 +8,8 @@
 
 namespace autofill {
 
-TestAddressNormalizer::TestAddressNormalizer() {}
-TestAddressNormalizer::~TestAddressNormalizer() {}
+TestAddressNormalizer::TestAddressNormalizer() = default;
+TestAddressNormalizer::~TestAddressNormalizer() = default;
 
 void TestAddressNormalizer::NormalizeAddressAsync(
     const AutofillProfile& profile,

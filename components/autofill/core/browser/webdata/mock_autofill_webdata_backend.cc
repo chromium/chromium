@@ -6,8 +6,8 @@
 
 namespace autofill {
 
-MockAutofillWebDataBackend::MockAutofillWebDataBackend() {}
+MockAutofillWebDataBackend::MockAutofillWebDataBackend() = default;
 
-MockAutofillWebDataBackend::~MockAutofillWebDataBackend() {}
+MockAutofillWebDataBackend::~MockAutofillWebDataBackend() = default;
 
 }  // namespace autofill

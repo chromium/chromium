@@ -51,7 +51,7 @@ class AutofillProfileSyncDifferenceTrackerTestBase : public testing::Test {
   AutofillProfileSyncDifferenceTrackerTestBase& operator=(
       const AutofillProfileSyncDifferenceTrackerTestBase&) = delete;
 
-  ~AutofillProfileSyncDifferenceTrackerTestBase() override {}
+  ~AutofillProfileSyncDifferenceTrackerTestBase() override = default;
 
   void SetUp() override {
     // Fix a time for implicitly constructed use_dates in AutofillProfile.
@@ -134,7 +134,7 @@ class AutofillProfileSyncDifferenceTrackerTest
   AutofillProfileSyncDifferenceTrackerTest& operator=(
       const AutofillProfileSyncDifferenceTrackerTest&) = delete;
 
-  ~AutofillProfileSyncDifferenceTrackerTest() override {}
+  ~AutofillProfileSyncDifferenceTrackerTest() override = default;
 
   AutofillProfileSyncDifferenceTracker* tracker() override { return &tracker_; }
 
@@ -390,7 +390,7 @@ class AutofillProfileInitialSyncDifferenceTrackerTest
   AutofillProfileInitialSyncDifferenceTrackerTest& operator=(
       const AutofillProfileInitialSyncDifferenceTrackerTest&) = delete;
 
-  ~AutofillProfileInitialSyncDifferenceTrackerTest() override {}
+  ~AutofillProfileInitialSyncDifferenceTrackerTest() override = default;
 
   [[nodiscard]] std::optional<syncer::ModelError>
   MergeSimilarEntriesForInitialSync() {

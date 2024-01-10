@@ -22,7 +22,7 @@ TestLocalCardMigrationManager::TestLocalCardMigrationManager(
                                 personal_data_manager),
       personal_data_manager_(personal_data_manager) {}
 
-TestLocalCardMigrationManager::~TestLocalCardMigrationManager() {}
+TestLocalCardMigrationManager::~TestLocalCardMigrationManager() = default;
 
 bool TestLocalCardMigrationManager::IsCreditCardMigrationEnabled() {
   return payments::GetBillingCustomerId(personal_data_manager_) != 0;
