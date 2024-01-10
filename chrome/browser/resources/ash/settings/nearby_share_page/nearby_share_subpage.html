@@ -39,15 +39,6 @@
     margin-inline-start: var(--cr-section-padding);
   }
 
-  .enabled-toggle-off {
-    font-weight: 500;
-  }
-
-  .enabled-toggle-on {
-    color: var(--cros-text-color-prominent);
-    font-weight: 500;
-  }
-
   #setupRow {
     align-items: center;
     display: flex;
@@ -65,8 +56,7 @@
             '$i18nPolymer{deviceOn}', '$i18nPolymer{deviceOff}')]]"
         pref="{{prefs.nearby_sharing.enabled}}"
         deep-link-focus-id$="[[Setting.kNearbyShareOnOff]]"
-        class$="[[getEnabledToggleClassName_(
-            prefs.nearby_sharing.enabled.value)]]">
+        class="primary-toggle">
     </settings-toggle-button>
   </template>
   <template is="dom-if"

@@ -413,13 +413,6 @@ export class SettingsNearbyShareSubpageElement extends
         profileName, profileLabel);
   }
 
-  private getEnabledToggleClassName_(): string {
-    if (this.getPref('nearby_sharing.enabled').value) {
-      return 'enabled-toggle-on';
-    }
-    return 'enabled-toggle-off';
-  }
-
   private onOnboardingCancelled_(): void {
     // Return to main settings page multidevice section
     Router.getInstance().navigateTo(routes.MULTIDEVICE);
