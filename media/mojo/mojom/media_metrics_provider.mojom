@@ -42,6 +42,11 @@ interface MediaMetricsProvider {
              MediaURLScheme url_scheme,
              MediaStreamType stream_type);
 
+  // Called when a playback is started, i.e., right after initializing the
+  // demuxer and obtaining the metadata. The status is reported to UKM when the
+  // provider is destructed.
+  OnStarted(PipelineStatus status);
+
   // Called when a playback ends in error. The status is reported to UKM when
   // the provider is destructed.
   OnError(PipelineStatus status);

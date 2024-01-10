@@ -385,6 +385,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // call will do nothing.
   void MaybeSendOverlayInfoToDecoder();
 
+  void OnPipelineStarted(media::PipelineStatus status);
   void OnPipelineSuspended();
   void OnBeforePipelineResume();
   void OnPipelineResumed();

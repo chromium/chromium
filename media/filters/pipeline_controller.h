@@ -58,6 +58,7 @@ class MEDIA_EXPORT PipelineController {
   //   - |error_cb| is called if any operation on |pipeline_| does not result
   //     in PIPELINE_OK or its error callback is called.
   PipelineController(std::unique_ptr<Pipeline> pipeline,
+                     PipelineStatusCB started_cb,
                      SeekedCB seeked_cb,
                      SuspendedCB suspended_cb,
                      BeforeResumeCB before_resume_cb,
@@ -165,6 +166,10 @@ class MEDIA_EXPORT PipelineController {
 
   // The Pipeline we are managing state for.
   std::unique_ptr<Pipeline> pipeline_;
+
+  // Called immediately when |pipeline_| completes starting, i.e., when
+  // metadata are ready.
+  const PipelineStatusCB started_cb_;
 
   // Called after seeks (which includes Start()) upon reaching a stable state.
   // Multiple seeks result in only one callback if no stable state occurs

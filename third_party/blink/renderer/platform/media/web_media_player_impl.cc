@@ -444,6 +444,7 @@ WebMediaPlayerImpl::WebMediaPlayerImpl(
   // |pipeline_controller_|.
   pipeline_controller_ = std::make_unique<media::PipelineController>(
       std::move(pipeline),
+      base::BindRepeating(&WebMediaPlayerImpl::OnPipelineStarted, weak_this_),
       base::BindRepeating(&WebMediaPlayerImpl::OnPipelineSeeked, weak_this_),
       base::BindRepeating(&WebMediaPlayerImpl::OnPipelineSuspended, weak_this_),
       base::BindRepeating(&WebMediaPlayerImpl::OnBeforePipelineResume,
@@ -1721,6 +1722,10 @@ void WebMediaPlayerImpl::OnPipelineSeeked(bool time_updated) {
   }
 
   attempting_suspended_start_ = false;
+}
+
+void WebMediaPlayerImpl::OnPipelineStarted(media::PipelineStatus status) {
+  media_metrics_provider_->OnStarted(status);
 }
 
 void WebMediaPlayerImpl::OnPipelineSuspended() {
