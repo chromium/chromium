@@ -86,6 +86,12 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Banned GUID"/>
 </enum>
 
+<enum name="OutgoingPasswordSharingInvitationCommitError">
+  <int value="0" label="Unknown error"/>
+  <int value="1" label="Public Key verions mismatch"/>
+  <int value="2" label="Not a family member"/>
+</enum>
+
 <enum name="PendingInvalidationStatus">
   <int value="0" label="Acknowledged invalidation"/>
   <int value="1" label="Lost invalidation"/>
