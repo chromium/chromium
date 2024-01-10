@@ -437,9 +437,14 @@ void OptimizationGuideKeyedService::Initialize() {
             g_browser_process->local_state(),
             std::make_unique<OnDeviceModelComponentStateManagerDelegate>());
     on_device_component_manager_->OnStartup();
-    if (base::FeatureList::IsEnabled(
-            optimization_guide::features::kLogOnDeviceMetricsOnStartup) ||
-        optimization_guide::features::IsOnDeviceExecutionEnabled()) {
+    // With multiple profiles we only want to fetch the performance class once.
+    // This bool helps avoid fetching multiple times.
+    static bool performance_class_fetched = false;
+    if (!performance_class_fetched &&
+        (base::FeatureList::IsEnabled(
+             optimization_guide::features::kLogOnDeviceMetricsOnStartup) ||
+         optimization_guide::features::IsOnDeviceExecutionEnabled())) {
+      performance_class_fetched = true;
       base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(

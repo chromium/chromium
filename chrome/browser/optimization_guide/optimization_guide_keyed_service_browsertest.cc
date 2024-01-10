@@ -24,9 +24,11 @@
 #include "chrome/browser/optimization_guide/chrome_hints_manager.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/profile_waiter.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/optimization_guide/core/command_line_top_host_provider.h"
@@ -1236,6 +1238,38 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
   histogram_tester()->ExpectTotalCount(
       "OptimizationGuide.ModelExecution.OnDeviceModelPerformanceClass", 1);
 }
+
+// Creating multiple profiles isn't supported easily on ash and android.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
+                       LogOnDeviceMetricsSingleTimeForMultipleProfiles) {
+  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile());
+  OnDeviceModelComponentStateManager* on_device_component_state_manager =
+      OnDeviceModelComponentStateManager::GetInstanceForTesting();
+  ASSERT_TRUE(on_device_component_state_manager);
+
+  // Add a second profile which should not log performance class.
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  base::FilePath path = profile_manager->GenerateNextProfileDirectoryPath();
+  ProfileWaiter profile_waiter;
+  profile_manager->CreateProfileAsync(path, {});
+  profile_waiter.WaitForProfileAdded();
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester()
+               ->GetAllSamples(
+                   "OptimizationGuide.ModelExecution."
+                   "OnDeviceModelPerformanceClass")
+               .size() > 0;
+  }));
+
+  // Make sure all tasks have finished running.
+  content::RunAllTasksUntilIdle();
+
+  histogram_tester()->ExpectTotalCount(
+      "OptimizationGuide.ModelExecution.OnDeviceModelPerformanceClass", 1);
+}
+#endif
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 // CreateGuestBrowser() is not supported for Android or ChromeOS out of the box.
