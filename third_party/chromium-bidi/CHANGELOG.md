@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.3](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.5.2...chromium-bidi-v0.5.3) (2024-01-10)
+
+
+### Features
+
+* in `sharedId` use `loaderId` from deep serialized value ([#1631](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1631)) ([6819143](https://github.com/GoogleChromeLabs/chromium-bidi/commit/68191438866b90373faf838e86684264fdbf473e))
+
 ## [0.5.2](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.5.1...chromium-bidi-v0.5.2) (2023-12-15)
 
 
