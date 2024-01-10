@@ -39,7 +39,9 @@ enum class Promo {
       8,  // Post Restore Default Browser (native iOS alert)
   DefaultBrowserRemindMeLater = 9,  // Remind me later for default browser.
   OmniboxPosition = 10,             // Choose between top and bottom omnibox.
-  kMaxValue = OmniboxPosition,
+  DockingPromo = 11,                // Docking Promo.
+  DockingPromoRemindMeLater = 12,   // Docking Promo (Remind Me Later version).
+  kMaxValue = DockingPromoRemindMeLater,
 };
 // LINT.ThenChange(/ios/chrome/browser/promos_manager/constants.cc)
 // Also update IOSPromosManagerPromo in

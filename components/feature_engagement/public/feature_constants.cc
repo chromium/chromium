@@ -584,6 +584,12 @@ BASE_FEATURE(kIPHiOSInlinePromoEnhancedSafeBrowsingFeature,
 BASE_FEATURE(kIPHiOSTabGridSwipeLeftForIncognito,
              "IPH_iOSTabGridSwipeLeftForIncognito",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHiOSDockingPromoFeature,
+             "IPH_iOSDockingPromo",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHiOSDockingPromoRemindMeLaterFeature,
+             "IPH_iOSDockingPromoRemindMeLater",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Non-FET feature.
 BASE_FEATURE(kDefaultBrowserEligibilitySlidingWindow,

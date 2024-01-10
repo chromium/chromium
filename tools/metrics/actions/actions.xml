@@ -41024,6 +41024,9 @@ should be able to be added at any place in this file.
       label="For iOSDefaultBrowserSettingsBadge feature"/>
   <suffix name="iOSDefaultBrowserVideoPromoTrigger"
       label="For iOSDefaultBrowserVideoPromoTrigger feature"/>
+  <suffix name="iOSDockingPromoFeature" label="For iOSDockingPromo feature"/>
+  <suffix name="iOSDockingPromoRemindMeLaterFeature"
+      label="For iOSDockingPromoRemindMeLater feature"/>
   <suffix name="iOSHistoryOnOverflowMenuFeature"
       label="For iOSHistoryOnOverflowMenuFeature feature"/>
   <suffix name="iOSInlinePromoEnhancedSafeBrowsing"
