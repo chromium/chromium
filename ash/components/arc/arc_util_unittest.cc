@@ -370,27 +370,21 @@ TEST_F(ArcUtilTest, IsArcOptInVerificationDisabled) {
 
 TEST_F(ArcUtilTest, IsArcAllowedForUser) {
   TestingPrefServiceSimple local_state;
-  user_manager::FakeUserManager* fake_user_manager =
-      new user_manager::FakeUserManager(&local_state);
-  user_manager::ScopedUserManager scoped_user_manager(
-      base::WrapUnique(fake_user_manager));
+  user_manager::TypedScopedUserManager fake_user_manager(
+      std::make_unique<user_manager::FakeUserManager>(&local_state));
 
-  struct {
-    user_manager::UserType user_type;
-    bool expected_allowed;
-  } const kTestCases[] = {
-      {user_manager::USER_TYPE_REGULAR, true},
-      {user_manager::USER_TYPE_GUEST, false},
-      {user_manager::USER_TYPE_PUBLIC_ACCOUNT, true},
-      {user_manager::USER_TYPE_KIOSK_APP, false},
-      {user_manager::USER_TYPE_CHILD, true},
-      {user_manager::USER_TYPE_ARC_KIOSK_APP, true},
-  };
-  for (const auto& test_case : kTestCases) {
-    const FakeUser user(test_case.user_type);
-    EXPECT_EQ(test_case.expected_allowed, IsArcAllowedForUser(&user))
-        << "User type=" << test_case.user_type;
-  }
+  EXPECT_TRUE(IsArcAllowedForUser(fake_user_manager->AddUser(
+      AccountId::FromUserEmailGaiaId("user1@test.com", "1234567890-1"))));
+  EXPECT_FALSE(IsArcAllowedForUser(fake_user_manager->AddGuestUser(
+      AccountId::FromUserEmailGaiaId("user2@test.com", "1234567890-2"))));
+  EXPECT_TRUE(IsArcAllowedForUser(fake_user_manager->AddPublicAccountUser(
+      AccountId::FromUserEmailGaiaId("user3@test.com", "1234567890-3"))));
+  EXPECT_FALSE(IsArcAllowedForUser(fake_user_manager->AddKioskAppUser(
+      AccountId::FromUserEmailGaiaId("user4@test.com", "1234567890-4"))));
+  EXPECT_TRUE(IsArcAllowedForUser(fake_user_manager->AddChildUser(
+      AccountId::FromUserEmailGaiaId("user5@test.com", "1234567890-5"))));
+  EXPECT_TRUE(IsArcAllowedForUser(fake_user_manager->AddArcKioskAppUser(
+      AccountId::FromUserEmailGaiaId("user6@test.com", "1234567890-6"))));
 
   // An ephemeral user is a logged in user but unknown to UserManager when
   // ephemeral policy is set.

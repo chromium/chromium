@@ -82,6 +82,14 @@ const User* FakeUserManager::AddKioskAppUser(const AccountId& account_id) {
   return user;
 }
 
+const User* FakeUserManager::AddArcKioskAppUser(const AccountId& account_id) {
+  User* user = User::CreateArcKioskAppUser(account_id);
+  user->set_username_hash(GetFakeUsernameHash(account_id));
+  user_storage_.emplace_back(user);
+  users_.push_back(user);
+  return user;
+}
+
 const User* FakeUserManager::AddUserWithAffiliation(const AccountId& account_id,
                                                     bool is_affiliated) {
   User* user = User::CreateRegularUser(account_id, USER_TYPE_REGULAR);

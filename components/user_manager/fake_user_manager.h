@@ -38,6 +38,7 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
   const User* AddChildUser(const AccountId& account_id);
   const User* AddGuestUser(const AccountId& account_id);
   const User* AddKioskAppUser(const AccountId& account_id);
+  const User* AddArcKioskAppUser(const AccountId& account_id);
 
   // The same as AddUser() but allows to specify user affiliation with the
   // domain, that owns the device.
