@@ -562,6 +562,11 @@ BASE_FEATURE(kWebOTPAssertionFeaturePolicy,
              "WebOTPAssertionFeaturePolicy",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Flag guard for fix for crbug.com/1504324.
+BASE_FEATURE(kWindowOpenFileSelectFix,
+             "WindowOpenFileSelectFix",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Please keep features in alphabetical order.
 
 }  // namespace features
