@@ -604,6 +604,9 @@ class BASE_EXPORT LogMessage {
   // Gets file:line: message in a format suitable for crash reporting.
   std::string BuildCrashString() const;
 
+ protected:
+  void Flush();
+
  private:
   void Init(const char* file, int line);
 

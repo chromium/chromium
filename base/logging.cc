@@ -691,6 +691,10 @@ LogMessage::LogMessage(const char* file, int line, const char* condition)
 }
 
 LogMessage::~LogMessage() {
+  Flush();
+}
+
+void LogMessage::Flush() {
   size_t stack_start = stream_.str().length();
 #if !defined(OFFICIAL_BUILD) && !BUILDFLAG(IS_NACL) && !defined(__UCLIBC__) && \
     !BUILDFLAG(IS_AIX)
