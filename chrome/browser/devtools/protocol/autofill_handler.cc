@@ -325,6 +325,42 @@ void AutofillHandler::OnFillOrPreviewDataModelForm(
             .SetFields(std::move(profile_values))
             .Build());
   }
+  // Insert the country at the end. This is required because it is not part of
+  // `AutofillAddressUIComponent`.
+  auto country_line =
+      std::make_unique<protocol::Array<protocol::Autofill::AddressField>>();
+  country_line->push_back(
+      protocol::Autofill::AddressField::Create()
+          .SetName(FieldTypeToString(autofill::FieldType::ADDRESS_HOME_COUNTRY))
+          .SetValue(base::UTF16ToUTF8(profile_used_to_fill_form->GetInfo(
+              autofill::FieldType::ADDRESS_HOME_COUNTRY, locale)))
+          .Build());
+  profile_address_fields->push_back(protocol::Autofill::AddressFields::Create()
+                                        .SetFields(std::move(country_line))
+                                        .Build());
+  // Similarly to the `ADDRESS_HOME_COUNTRY`, also include
+  // `PHONE_HOME_WHOLE_NUMBER` and `EMAIL_ADDRESS`. However in a single line.
+  auto phone_and_email_line =
+      std::make_unique<protocol::Array<protocol::Autofill::AddressField>>();
+  phone_and_email_line->push_back(
+      protocol::Autofill::AddressField::Create()
+          .SetName(
+              FieldTypeToString(autofill::FieldType::PHONE_HOME_WHOLE_NUMBER))
+          .SetValue(base::UTF16ToUTF8(profile_used_to_fill_form->GetInfo(
+              autofill::FieldType::PHONE_HOME_WHOLE_NUMBER, locale)))
+          .Build());
+  phone_and_email_line->push_back(
+      protocol::Autofill::AddressField::Create()
+          .SetName(FieldTypeToString(autofill::FieldType::EMAIL_ADDRESS))
+          .SetValue(base::UTF16ToUTF8(profile_used_to_fill_form->GetInfo(
+              autofill::FieldType::EMAIL_ADDRESS, locale)))
+          .Build());
+
+  profile_address_fields->push_back(
+      protocol::Autofill::AddressFields::Create()
+          .SetFields(std::move(phone_and_email_line))
+          .Build());
+
   frontend_->AddressFormFilled(
       std::move(filled_fields_to_be_sent_to_devtools),
       protocol::Autofill::AddressUI::Create()
