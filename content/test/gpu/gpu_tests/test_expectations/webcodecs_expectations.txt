@@ -140,8 +140,8 @@ crbug.com/1486660 [ chromeos chromeos-board-jacuzzi ] WebCodecs_EncodeColorSpace
 
 crbug.com/1507162 [ chromeos chromeos-board-volteer ] WebCodecs_EncodingRateControl_avc1.420034_prefer-hardware_constant_3000000 [ Failure ]
 
-# MFT occasionally reports error during VEA initialization on NVIDIA GPUs. Since HEVC doesn't have software fallback, these cases may fail.
-crbug.com/1466102 [ win nvidia-0x2184 ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_* [ Skip ]
+crbug.com/1466102 [ win nvidia-0x2184 ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_* [ Failure ]
+crbug.com/1517101 [ win amd-0x7340 ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_* [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
