@@ -68,6 +68,7 @@ UIImage* DefaultFavicon() {
   UIView* _topRightCornerView;
 
   // Cell separator.
+  UIView* _leadingSeparatorView;
   UIView* _trailingSeparatorView;
   UIView* _trailingGradientView;
 
@@ -118,7 +119,10 @@ UIImage* DefaultFavicon() {
     _rightTailView = [self createTailView];
     [self addSubview:_rightTailView];
 
-    _trailingSeparatorView = [self createSepartorView];
+    _leadingSeparatorView = [self createSeparatorView];
+    [self addSubview:_leadingSeparatorView];
+
+    _trailingSeparatorView = [self createSeparatorView];
     [self addSubview:_trailingSeparatorView];
 
     _trailingGradientView = [self createGradientView];
@@ -176,12 +180,14 @@ UIImage* DefaultFavicon() {
   }
 }
 
-- (void)setSeparatorHidden:(BOOL)separatorHidden {
-  if (separatorHidden == _separatorHidden) {
-    return;
-  }
-  _separatorHidden = separatorHidden;
-  _trailingSeparatorView.hidden = _separatorHidden;
+- (void)setLeadingSeparatorHidden:(BOOL)leadingSeparatorHidden {
+  _leadingSeparatorHidden = leadingSeparatorHidden;
+  _leadingSeparatorView.hidden = leadingSeparatorHidden;
+}
+
+- (void)setTrailingSeparatorHidden:(BOOL)trailingSeparatorHidden {
+  _trailingSeparatorHidden = trailingSeparatorHidden;
+  _trailingSeparatorView.hidden = trailingSeparatorHidden;
 }
 
 - (void)setSelected:(BOOL)selected {
@@ -195,8 +201,6 @@ UIImage* DefaultFavicon() {
   self.contentView.backgroundColor = backgroundColor;
   _faviconView.tintColor = selected ? [UIColor colorNamed:kCloseButtonColor]
                                     : [UIColor colorNamed:kGrey500Color];
-  _trailingSeparatorView.backgroundColor =
-      selected ? UIColor.clearColor : [UIColor colorNamed:kGrey400Color];
   [_titleGradientView setStartColor:[backgroundColor colorWithAlphaComponent:0]
                            endColor:backgroundColor];
 
@@ -425,6 +429,19 @@ UIImage* DefaultFavicon() {
     [_rightTailView.heightAnchor constraintEqualToConstant:kCornerSize],
   ]];
 
+  /// `_leadingSeparatorView` constraints.
+  [NSLayoutConstraint activateConstraints:@[
+    [_leadingSeparatorView.trailingAnchor
+        constraintEqualToAnchor:contentView.leadingAnchor
+                       constant:-kSeparatorHorizontalInset],
+    [_leadingSeparatorView.widthAnchor
+        constraintEqualToConstant:kSeparatorWidth],
+    [_leadingSeparatorView.heightAnchor
+        constraintLessThanOrEqualToConstant:kSeparatorMaxHeight],
+    [_leadingSeparatorView.centerYAnchor
+        constraintEqualToAnchor:contentView.centerYAnchor],
+  ]];
+
   /// `_trailingSeparatorView` constraints.
   [NSLayoutConstraint activateConstraints:@[
     [_trailingSeparatorView.leadingAnchor
@@ -552,7 +569,7 @@ UIImage* DefaultFavicon() {
 }
 
 // Returns a new separator view.
-- (UIView*)createSepartorView {
+- (UIView*)createSeparatorView {
   UIView* separatorView = [[UIView alloc] init];
   separatorView.backgroundColor = [UIColor colorNamed:kGrey400Color];
   separatorView.translatesAutoresizingMaskIntoConstraints = NO;

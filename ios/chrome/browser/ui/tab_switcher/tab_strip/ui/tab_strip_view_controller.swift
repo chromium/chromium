@@ -25,6 +25,11 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
   // The New tab button.
   private let newTabButton: TabStripNewTabButton = TabStripNewTabButton(frame: .zero)
 
+  // Separator views that encapsulate the collection view. They are visible
+  // when the collection view can be scrolled.
+  private let leadingSeparatorView: TabStripSeparatorView = TabStripSeparatorView(frame: .zero)
+  private let trailingSeparatorView: TabStripSeparatorView = TabStripSeparatorView(frame: .zero)
+
   // Lastest dragged item. This property is set when the item
   // is long pressed which does not always result in a drag action.
   private var draggedItem: TabSwitcherItem?
@@ -55,7 +60,10 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
       return self.getCell(
         collectionView: collectionView, indexPath: indexPath, itemIdentifier: itemIdentifier)
     }
+
     layout.dataSource = diffableDataSource
+    layout.leadingSeparatorView = leadingSeparatorView
+    layout.trailingSeparatorView = trailingSeparatorView
   }
 
   required init?(coder: NSCoder) {
@@ -73,22 +81,35 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
     collectionView.backgroundColor = .clear
     view.addSubview(collectionView)
 
+    // Mirror the layer.
+    trailingSeparatorView.layer.transform = CATransform3DMakeScale(-1, 1, 1)
+    view.addSubview(leadingSeparatorView)
+    view.addSubview(trailingSeparatorView)
+
     newTabButton.delegate = self
     view.addSubview(newTabButton)
 
     NSLayoutConstraint.activate([
       collectionView.leadingAnchor.constraint(
-        equalTo: view.leadingAnchor, constant: TabStripConstants.CollectionView.inset),
+        equalTo: view.leadingAnchor, constant: TabStripConstants.CollectionView.horizontalInset),
       collectionView.topAnchor.constraint(
-        equalTo: view.topAnchor, constant: TabStripConstants.CollectionView.inset),
+        equalTo: view.topAnchor, constant: TabStripConstants.CollectionView.topInset),
       collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
 
       newTabButton.leadingAnchor.constraint(
-        equalTo: collectionView.trailingAnchor, constant: TabStripConstants.CollectionView.inset),
+        equalTo: collectionView.trailingAnchor,
+        constant: TabStripConstants.CollectionView.horizontalInset),
       newTabButton.trailingAnchor.constraint(equalTo: view.trailingAnchor),
       newTabButton.bottomAnchor.constraint(equalTo: view.bottomAnchor),
       newTabButton.topAnchor.constraint(equalTo: view.topAnchor),
       newTabButton.widthAnchor.constraint(equalToConstant: TabStripConstants.NewTabButton.width),
+
+      leadingSeparatorView.trailingAnchor.constraint(equalTo: collectionView.leadingAnchor),
+      trailingSeparatorView.leadingAnchor.constraint(equalTo: collectionView.trailingAnchor),
+      leadingSeparatorView.bottomAnchor.constraint(
+        equalTo: collectionView.bottomAnchor),
+      trailingSeparatorView.bottomAnchor.constraint(
+        equalTo: collectionView.bottomAnchor),
     ])
 
   }

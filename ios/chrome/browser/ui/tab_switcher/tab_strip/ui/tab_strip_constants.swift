@@ -9,9 +9,10 @@ struct TabStripConstants {
 
   /// Collection view constants.
   struct CollectionView {
-    static let inset: CGFloat = 4
     static let tabStripCellReuseIdentifier = "tabStripCellReuseIdentifier"
     static let tabStripCellPrefixIdentifier = "tabStripCellPrefixIdentifier"
+    static let topInset: CGFloat = 4
+    static let horizontalInset: CGFloat = 14
   }
 
   /// Tab item constants.
@@ -34,6 +35,18 @@ struct TabStripConstants {
 
     static let cornerRadius: CGFloat = 16
     static let symbolPointSize: CGFloat = 16
+  }
+
+  /// Separator view constants.
+  struct SeparatorView {
+    static let viewHeight: CGFloat = 40
+    static let separatorWidth: CGFloat = 2
+    static let separatorHeight: CGFloat = 12
+
+    static let leadingInset: CGFloat = 3
+    static let trailingInset: CGFloat = 8
+
+    static let separatorCornerRadius: CGFloat = 1
   }
 
 }
