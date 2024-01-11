@@ -122,6 +122,11 @@ declare_args() {
   # operations are to be applied are annotated with the AllowPtrArithmetic
   # trait,
   enable_pointer_arithmetic_trait_check = true
+
+  # Forwards all the allocation/freeing calls in shim (e.g. operator new)
+  # through malloc. Useful for using with tools that intercept malloc, e.g.
+  # heaptrack.
+  forward_through_malloc = false
 }
 
 declare_args() {
