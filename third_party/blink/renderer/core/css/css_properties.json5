@@ -5164,7 +5164,7 @@
       name: "text-spacing",
       longhands: ["text-autospace", "text-spacing-trim"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      runtime_flag: "CSSTextSpacingTrim",
+      runtime_flag: "CSSTextSpacing",
     },
     {
       name: "text-spacing-trim",

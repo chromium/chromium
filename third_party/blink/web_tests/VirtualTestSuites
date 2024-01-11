@@ -836,7 +836,7 @@
       "external/wpt/css/css-text/text-spacing-trim/"
     ],
     "args": [
-      "--enable-blink-features=CSSTextAutoSpace,CSSTextSpacingTrim",
+      "--enable-blink-features=CSSTextAutoSpace,CSSTextSpacingTrim,CSSTextSpacing",
       "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "Apr 1, 2024"
   },
