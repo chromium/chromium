@@ -157,7 +157,7 @@ payments::PaymentsAutofillClient*
 WebViewAutofillClientIOS::GetPaymentsAutofillClient() {
   if (!payments_autofill_client_) {
     payments_autofill_client_ =
-        std::make_unique<payments::IOSWebViewPaymentsAutofillClient>();
+        std::make_unique<payments::IOSWebViewPaymentsAutofillClient>(bridge_);
   }
 
   return payments_autofill_client_.get();
@@ -371,13 +371,16 @@ bool WebViewAutofillClientIOS::IsLastQueriedField(FieldGlobalId field_id) {
   return [bridge_ isLastQueriedField:field_id];
 }
 
-void WebViewAutofillClientIOS::LoadRiskData(
-    base::OnceCallback<void(const std::string&)> callback) {
-  [bridge_ loadRiskData:std::move(callback)];
-}
-
 LogManager* WebViewAutofillClientIOS::GetLogManager() const {
   return log_manager_.get();
+}
+
+void WebViewAutofillClientIOS::set_bridge(
+    id<CWVAutofillClientIOSBridge> bridge) {
+  bridge_ = bridge;
+  if (payments_autofill_client_) {
+    payments_autofill_client_->set_bridge(bridge);
+  }
 }
 
 }  // namespace autofill

@@ -28,6 +28,10 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
       delete;
   ~ChromePaymentsAutofillClient() override;
 
+  // RiskDataLoader:
+  void LoadRiskData(
+      base::OnceCallback<void(const std::string&)> callback) override;
+
 #if !BUILDFLAG(IS_ANDROID)
   void ShowLocalCardMigrationDialog(
       base::OnceClosure show_migration_dialog_closure) override;

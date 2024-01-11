@@ -134,10 +134,6 @@ class AwAutofillClient : public autofill::ContentAutofillClient {
   bool IsContextSecure() const override;
   autofill::FormInteractionsFlowId GetCurrentFormInteractionsFlowId() override;
 
-  // RiskDataLoader:
-  void LoadRiskData(
-      base::OnceCallback<void(const std::string&)> callback) override;
-
   void Dismissed(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
   void SuggestionSelected(JNIEnv* env,
                           const base::android::JavaParamRef<jobject>& obj,

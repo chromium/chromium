@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/payments/risk_data_loader.h"
 
 namespace autofill::payments {
 
@@ -14,9 +15,9 @@ namespace autofill::payments {
 // its implementations serve as the integration for platform-specific code. One
 // per WebContents, owned by the AutofillClient. Created lazily in the
 // AutofillClient when it is needed.
-class PaymentsAutofillClient {
+class PaymentsAutofillClient : public RiskDataLoader {
  public:
-  virtual ~PaymentsAutofillClient();
+  ~PaymentsAutofillClient() override;
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Runs |show_migration_dialog_closure| if the user accepts the card migration

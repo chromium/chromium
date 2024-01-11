@@ -36,6 +36,7 @@
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
@@ -731,7 +732,7 @@ void CreditCardSaveManager::OfferCardUploadSave() {
             .with_card_save_type(card_save_type),
         base::BindOnce(&CreditCardSaveManager::OnUserDidDecideOnUploadSave,
                        weak_ptr_factory_.GetWeakPtr()));
-    client_->LoadRiskData(
+    client_->GetPaymentsAutofillClient()->LoadRiskData(
         base::BindOnce(&CreditCardSaveManager::OnDidGetUploadRiskData,
                        weak_ptr_factory_.GetWeakPtr()));
 

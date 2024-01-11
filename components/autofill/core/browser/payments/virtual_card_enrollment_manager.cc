@@ -11,6 +11,7 @@
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/metrics/payments/virtual_card_enrollment_metrics.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -310,7 +311,8 @@ void VirtualCardEnrollmentManager::LoadRiskDataAndContinueFlow(
     PrefService* user_prefs,
     base::OnceCallback<void(const std::string&)> callback) {
   if (autofill_client_) {
-    autofill_client_->LoadRiskData(std::move(callback));
+    autofill_client_->GetPaymentsAutofillClient()->LoadRiskData(
+        std::move(callback));
   } else {
     // No |autofill_client_| present indicates we are in the clank settings page
     // use case, so we load risk data using a method that does not require web

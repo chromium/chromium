@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/metrics/payments/better_auth_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/card_unmask_authentication_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_payments_feature_availability.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -181,7 +182,7 @@ void FullCardRequest::GetFullCardImpl(
   }
 
   if (should_unmask_card_) {
-    autofill_client_->LoadRiskData(
+    autofill_client_->GetPaymentsAutofillClient()->LoadRiskData(
         base::BindOnce(&FullCardRequest::OnDidGetUnmaskRiskData,
                        weak_ptr_factory_.GetWeakPtr()));
   }

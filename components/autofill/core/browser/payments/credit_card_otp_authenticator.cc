@@ -8,6 +8,7 @@
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/autofill_payments_feature_availability.h"
 #include "components/autofill/core/browser/payments/otp_unmask_result.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 
 namespace autofill {
 
@@ -217,7 +218,7 @@ void CreditCardOtpAuthenticator::ShowOtpDialog() {
   // prepared. Risk data is only required for unmask request. Not required for
   // select challenge option request.
   if (risk_data_.empty()) {
-    autofill_client_->LoadRiskData(
+    autofill_client_->GetPaymentsAutofillClient()->LoadRiskData(
         base::BindOnce(&CreditCardOtpAuthenticator::OnDidGetUnmaskRiskData,
                        weak_ptr_factory_.GetWeakPtr()));
   }

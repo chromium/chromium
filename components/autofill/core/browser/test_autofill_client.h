@@ -565,11 +565,6 @@ class TestAutofillClientTemplate : public T {
     return mandatory_reauth_opt_in_prompt_was_reshown_;
   }
 
-  void LoadRiskData(
-      base::OnceCallback<void(const std::string&)> callback) override {
-    std::move(callback).Run("some risk data");
-  }
-
 #if BUILDFLAG(IS_IOS)
   bool IsLastQueriedField(FieldGlobalId field_id) override { return true; }
 #endif

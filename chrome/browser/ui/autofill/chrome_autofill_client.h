@@ -284,10 +284,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
   std::unique_ptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator()
       override;
 
-  // RiskDataLoader:
-  void LoadRiskData(
-      base::OnceCallback<void(const std::string&)> callback) override;
-
   // content::WebContentsObserver implementation.
   void PrimaryMainFrameWasResized(bool width_changed) override;
   void WebContentsDestroyed() override;

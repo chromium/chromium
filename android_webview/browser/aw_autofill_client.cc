@@ -313,11 +313,6 @@ AwAutofillClient::GetCurrentFormInteractionsFlowId() {
   return {};
 }
 
-void AwAutofillClient::LoadRiskData(
-    base::OnceCallback<void(const std::string&)> callback) {
-  NOTIMPLEMENTED();
-}
-
 void AwAutofillClient::Dismissed(JNIEnv* env,
                                  const JavaParamRef<jobject>& obj) {
   anchor_view_.Reset();

@@ -22,7 +22,6 @@
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
-#include "components/autofill/core/browser/payments/risk_data_loader.h"
 #include "components/autofill/core/browser/ui/fast_checkout_client.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
@@ -130,7 +129,7 @@ class PaymentsNetworkInterface;
 // BrowserAutofillManager is used (e.g. a single tab), so when we say "for the
 // client" below, we mean "in the execution context the client is associated
 // with" (e.g. for the tab the BrowserAutofillManager is attached to).
-class AutofillClient : public RiskDataLoader {
+class AutofillClient {
  public:
   enum class PaymentsRpcResult {
     // Empty result. Used for initializing variables and should generally
@@ -399,7 +398,7 @@ class AutofillClient : public RiskDataLoader {
   // user closing the dialog directly and not when user closes the browser tab.
   using AddressProfileDeleteDialogCallback = base::OnceCallback<void(bool)>;
 
-  ~AutofillClient() override = default;
+  virtual ~AutofillClient() = default;
 
   // Returns the channel for the installation. In branded builds, this will be
   // version_info::Channel::{STABLE,BETA,DEV,CANARY}. In unbranded builds, or

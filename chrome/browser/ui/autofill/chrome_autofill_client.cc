@@ -50,7 +50,6 @@
 #include "chrome/browser/ui/autofill/payments/iban_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/mandatory_reauth_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl.h"
-#include "chrome/browser/ui/autofill/risk_util.h"
 #include "chrome/browser/ui/autofill/save_update_address_profile_bubble_controller_impl.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
@@ -1315,11 +1314,6 @@ ChromeAutofillClient::GetDeviceAuthenticator() {
 #else
   return nullptr;
 #endif
-}
-
-void ChromeAutofillClient::LoadRiskData(
-    base::OnceCallback<void(const std::string&)> callback) {
-  risk_util::LoadRiskData(0, web_contents(), std::move(callback));
 }
 
 void ChromeAutofillClient::PrimaryMainFrameWasResized(bool width_changed) {

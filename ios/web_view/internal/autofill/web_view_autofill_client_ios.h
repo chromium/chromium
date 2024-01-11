@@ -134,13 +134,9 @@ class WebViewAutofillClientIOS : public AutofillClient {
   autofill::FormInteractionsFlowId GetCurrentFormInteractionsFlowId() override;
   bool IsLastQueriedField(FieldGlobalId field_id) override;
 
-  // RiskDataLoader:
-  void LoadRiskData(
-      base::OnceCallback<void(const std::string&)> callback) override;
-
   LogManager* GetLogManager() const override;
 
-  void set_bridge(id<CWVAutofillClientIOSBridge> bridge) { bridge_ = bridge; }
+  void set_bridge(id<CWVAutofillClientIOSBridge> bridge);
 
  private:
   PrefService* pref_service_;

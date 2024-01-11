@@ -65,7 +65,6 @@
 #import "ios/chrome/browser/ui/autofill/scoped_autofill_payment_reauth_module_override.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 #import "ios/chrome/common/channel_info.h"
-#import "ios/public/provider/chrome/browser/risk_data/risk_data_api.h"
 #import "ios/web/public/web_state.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -557,12 +556,6 @@ ChromeAutofillClientIOS::GetDeviceAuthenticator() {
   }
 
   return CreateIOSDeviceAuthenticator(reauthModule, browser_state_, params);
-}
-
-void ChromeAutofillClientIOS::LoadRiskData(
-    base::OnceCallback<void(const std::string&)> callback) {
-  std::move(callback).Run(
-      base::SysNSStringToUTF8(ios::provider::GetRiskData()));
 }
 
 std::optional<std::u16string> ChromeAutofillClientIOS::GetUserEmail() {

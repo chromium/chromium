@@ -12,6 +12,11 @@ TestPaymentsAutofillClient::TestPaymentsAutofillClient() = default;
 
 TestPaymentsAutofillClient::~TestPaymentsAutofillClient() = default;
 
+void TestPaymentsAutofillClient::LoadRiskData(
+    base::OnceCallback<void(const std::string&)> callback) {
+  std::move(callback).Run("some risk data");
+}
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 void TestPaymentsAutofillClient::ShowLocalCardMigrationDialog(
     base::OnceClosure show_migration_dialog_closure) {

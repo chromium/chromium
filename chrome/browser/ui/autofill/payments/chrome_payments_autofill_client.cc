@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/autofill/payments/chrome_payments_autofill_client.h"
 
+#include "chrome/browser/ui/autofill/risk_util.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -15,6 +16,11 @@ ChromePaymentsAutofillClient::ChromePaymentsAutofillClient(
 }
 
 ChromePaymentsAutofillClient::~ChromePaymentsAutofillClient() = default;
+
+void ChromePaymentsAutofillClient::LoadRiskData(
+    base::OnceCallback<void(const std::string&)> callback) {
+  risk_util::LoadRiskData(0, web_contents(), std::move(callback));
+}
 
 #if !BUILDFLAG(IS_ANDROID)
 void ChromePaymentsAutofillClient::ShowLocalCardMigrationDialog(

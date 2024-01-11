@@ -8,6 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/metrics/payments/card_unmask_authentication_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_payments_feature_availability.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 
 namespace autofill {
@@ -68,7 +69,7 @@ void CreditCardRiskBasedAuthenticator::Authenticate(
           autofill_client_->GetPersonalDataManager());
 
   autofill_client_->GetPaymentsNetworkInterface()->Prepare();
-  autofill_client_->LoadRiskData(
+  autofill_client_->GetPaymentsAutofillClient()->LoadRiskData(
       base::BindOnce(&CreditCardRiskBasedAuthenticator::OnDidGetUnmaskRiskData,
                      weak_ptr_factory_.GetWeakPtr()));
 }

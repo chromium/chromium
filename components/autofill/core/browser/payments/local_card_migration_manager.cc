@@ -285,7 +285,7 @@ void LocalCardMigrationManager::OnDidGetUploadDetails(
 
     // TODO(crbug.com/876895): Clean up the LoadRiskData Bind/BindRepeating
     // usages
-    client_->LoadRiskData(base::BindRepeating(
+    client_->GetPaymentsAutofillClient()->LoadRiskData(base::BindRepeating(
         &LocalCardMigrationManager::OnDidGetMigrationRiskData,
         weak_ptr_factory_.GetWeakPtr()));
     autofill_metrics::LogLocalCardMigrationDecisionMetric(

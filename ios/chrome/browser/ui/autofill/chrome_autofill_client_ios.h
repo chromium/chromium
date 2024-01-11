@@ -166,10 +166,6 @@ class ChromeAutofillClientIOS : public AutofillClient {
   std::unique_ptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator()
       override;
 
-  // RiskDataLoader:
-  void LoadRiskData(
-      base::OnceCallback<void(const std::string&)> callback) override;
-
  private:
   // Returns the account email of the signed-in user, or nullopt if there is no
   // signed-in user.

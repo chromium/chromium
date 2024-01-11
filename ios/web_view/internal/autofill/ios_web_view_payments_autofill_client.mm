@@ -6,8 +6,21 @@
 
 namespace autofill::payments {
 
-IOSWebViewPaymentsAutofillClient::IOSWebViewPaymentsAutofillClient() = default;
+IOSWebViewPaymentsAutofillClient::IOSWebViewPaymentsAutofillClient(
+    id<CWVAutofillClientIOSBridge> bridge) {
+  bridge_ = bridge;
+}
 
 IOSWebViewPaymentsAutofillClient::~IOSWebViewPaymentsAutofillClient() = default;
+
+void IOSWebViewPaymentsAutofillClient::LoadRiskData(
+    base::OnceCallback<void(const std::string&)> callback) {
+  [bridge_ loadRiskData:std::move(callback)];
+}
+
+void IOSWebViewPaymentsAutofillClient::set_bridge(
+    id<CWVAutofillClientIOSBridge> bridge) {
+  bridge_ = bridge;
+}
 
 }  // namespace autofill::payments

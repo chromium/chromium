@@ -18,6 +18,10 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
       delete;
   ~TestPaymentsAutofillClient() override;
 
+  // RiskDataLoader:
+  void LoadRiskData(
+      base::OnceCallback<void(const std::string&)> callback) override;
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void ShowLocalCardMigrationDialog(
       base::OnceClosure show_migration_dialog_closure) override;
