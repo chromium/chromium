@@ -47,13 +47,24 @@ class BASE_EXPORT WorkerThreadWaitableEvent : public WorkerThread {
   // Start() has failed or after Cleanup() has been called.
   void WakeUp();
 
+  // Joins this WorkerThread. If a Task is already running, it will be
+  // allowed to complete its execution. This can only be called once.
+  //
+  // Note: A thread that detaches before JoinForTesting() is called may still be
+  // running after JoinForTesting() returns. However, it can't run tasks after
+  // JoinForTesting() returns.
+  void JoinForTesting();
+
   // WorkerThread:
-  void JoinForTesting() override;
   void Cleanup() override;
   Delegate* delegate() override;
 
  private:
   const std::unique_ptr<Delegate> delegate_;
+
+  // Set once JoinForTesting() has been called.
+  AtomicFlag join_called_for_testing_;
+  bool join_called_for_testing() const override;
 
   ~WorkerThreadWaitableEvent() override;
 };

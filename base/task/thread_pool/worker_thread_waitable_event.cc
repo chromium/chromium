@@ -41,7 +41,9 @@ WorkerThreadWaitableEvent::WorkerThreadWaitableEvent(
   delegate_->wake_up_event_.declare_only_used_while_idle();
 }
 
-WorkerThreadWaitableEvent::~WorkerThreadWaitableEvent() = default;
+WorkerThreadWaitableEvent::~WorkerThreadWaitableEvent() {
+  Destroy();
+}
 
 void WorkerThreadWaitableEvent::JoinForTesting() {
   DCHECK(!join_called_for_testing_.IsSet());
@@ -69,6 +71,10 @@ void WorkerThreadWaitableEvent::Cleanup() {
   DCHECK(!should_exit_.IsSet());
   should_exit_.Set();
   delegate_->wake_up_event_.Signal();
+}
+
+bool WorkerThreadWaitableEvent::join_called_for_testing() const {
+  return join_called_for_testing_.IsSet();
 }
 
 void WorkerThreadWaitableEvent::WakeUp() {
