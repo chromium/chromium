@@ -7505,6 +7505,20 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
         fenced_frame_properties_->mapped_url().has_value()) {
       fenced_frame_properties_->UpdateMappedURL(GetURL());
     }
+
+    // For fenced frames with flexible permissions, pass in information needed
+    // to build a replica of the embedder's permissions policies. This does not
+    // happen for URN iframes as they can get their embedder's permissions
+    // policies directly in the renderer.
+    if (base::FeatureList::IsEnabled(
+            blink::features::kFencedFramesLocalUnpartitionedDataAccess) &&
+        GetNavigatingFrameType() == FrameType::kFencedFrameRoot &&
+        fenced_frame_properties_->effective_enabled_permissions().size() ==
+            0u) {
+      fenced_frame_properties_->UpdateParentParsedPermissionsPolicy(
+          GetParentFrameOrOuterDocument()->GetPermissionsPolicy(),
+          GetParentFrameOrOuterDocument()->GetLastCommittedOrigin());
+    }
   }
 
   // Create a view of the fenced frame properties from the perspective of the

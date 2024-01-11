@@ -4,6 +4,7 @@
 
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config_mojom_traits.h"
 
+#include "third_party/blink/common/permissions_policy/permissions_policy_mojom_traits.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame_config.mojom.h"
@@ -171,6 +172,33 @@ bool StructTraits<blink::mojom::SharedStorageBudgetMetadataDataView,
   }
   out_data->budget_to_charge = data.budget_to_charge();
   out_data->top_navigated = data.top_navigated();
+  return true;
+}
+
+// static
+const std::vector<blink::ParsedPermissionsPolicyDeclaration>&
+StructTraits<blink::mojom::ParentPermissionsInfoDataView,
+             blink::FencedFrame::ParentPermissionsInfo>::
+    parsed_permissions_policy(
+        const blink::FencedFrame::ParentPermissionsInfo& input) {
+  return input.parsed_permissions_policy;
+}
+// static
+const url::Origin& StructTraits<blink::mojom::ParentPermissionsInfoDataView,
+                                blink::FencedFrame::ParentPermissionsInfo>::
+    origin(const blink::FencedFrame::ParentPermissionsInfo& input) {
+  return input.origin;
+}
+
+// static
+bool StructTraits<blink::mojom::ParentPermissionsInfoDataView,
+                  blink::FencedFrame::ParentPermissionsInfo>::
+    Read(blink::mojom::ParentPermissionsInfoDataView data,
+         blink::FencedFrame::ParentPermissionsInfo* out_data) {
+  if (!data.ReadOrigin(&out_data->origin) ||
+      !data.ReadParsedPermissionsPolicy(&out_data->parsed_permissions_policy)) {
+    return false;
+  }
   return true;
 }
 
@@ -414,7 +442,8 @@ bool StructTraits<blink::mojom::FencedFrameConfigDataView,
       !data.ReadSharedStorageBudgetMetadata(
           &out_config->shared_storage_budget_metadata_) ||
       !data.ReadEffectiveEnabledPermissions(
-          &out_config->effective_enabled_permissions_)) {
+          &out_config->effective_enabled_permissions_) ||
+      !data.ReadParentPermissionsInfo(&out_config->parent_permissions_info_)) {
     return false;
   }
 
@@ -466,7 +495,9 @@ bool StructTraits<blink::mojom::FencedFramePropertiesDataView,
       !data.ReadSharedStorageBudgetMetadata(
           &out_properties->shared_storage_budget_metadata_) ||
       !data.ReadEffectiveEnabledPermissions(
-          &out_properties->effective_enabled_permissions_)) {
+          &out_properties->effective_enabled_permissions_) ||
+      !data.ReadParentPermissionsInfo(
+          &out_properties->parent_permissions_info_)) {
     return false;
   }
 

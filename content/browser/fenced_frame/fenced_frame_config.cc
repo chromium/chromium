@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/browser/fenced_frame/fenced_frame_config.h"
+
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/strcat.h"
@@ -10,7 +11,9 @@
 #include "base/uuid.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "services/network/public/cpp/attribution_reporting_runtime_features.h"
+#include "third_party/blink/public/common/frame/fenced_frame_permissions_policies.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 
 namespace content {
 
@@ -181,6 +184,8 @@ blink::FencedFrame::RedactedFencedFrameConfig FencedFrameConfig::RedactFor(
   redacted_config.effective_enabled_permissions_ =
       effective_enabled_permissions_;
 
+  redacted_config.parent_permissions_info_ = parent_permissions_info_;
+
   return redacted_config;
 }
 
@@ -212,7 +217,8 @@ FencedFrameProperties::FencedFrameProperties(const FencedFrameConfig& config)
                        VisibilityToContent::kOpaque),
       mode_(config.mode_),
       is_ad_component_(config.is_ad_component_),
-      effective_enabled_permissions_(config.effective_enabled_permissions_) {
+      effective_enabled_permissions_(config.effective_enabled_permissions_),
+      parent_permissions_info_(config.parent_permissions_info_) {
   if (config.shared_storage_budget_metadata_) {
     shared_storage_budget_metadata_.emplace(
         &config.shared_storage_budget_metadata_->GetValueIgnoringVisibility(),
@@ -297,6 +303,8 @@ FencedFrameProperties::RedactFor(FencedFrameEntity entity) const {
   redacted_properties.effective_enabled_permissions_ =
       effective_enabled_permissions_;
 
+  redacted_properties.parent_permissions_info_ = parent_permissions_info_;
+
   return redacted_properties;
 }
 
@@ -359,6 +367,26 @@ FencedFrameProperties::GenerateURNConfigVectorForConfigs(
         urn_uuid, FencedFrameConfig(urn_uuid, GURL(url::kAboutBlankURL)));
   }
   return nested_urn_config_pairs;
+}
+
+void FencedFrameProperties::UpdateParentParsedPermissionsPolicy(
+    const blink::PermissionsPolicy* parent_policy,
+    const url::Origin& parent_origin) {
+  // Sanity check that a fenced frame loaded through Protected Audience or
+  // Shared Storage did not reach this point. `effective_enabled_permissions_`
+  // is populated in `fenced_frame_url_mapping.cc` if loaded through an API. If
+  // loaded through any other means, the vector remains empty.
+  CHECK_EQ(effective_enabled_permissions_.size(), 0u);
+  CHECK(parent_policy);
+  std::vector<blink::ParsedPermissionsPolicyDeclaration> parsed_policies;
+  for (auto feature : blink::kFencedFrameAllowedFeatures) {
+    const blink::PermissionsPolicy::Allowlist allow_list =
+        parent_policy->GetAllowlistForFeature(feature);
+    parsed_policies.emplace_back(
+        feature, allow_list.AllowedOrigins(), allow_list.SelfIfMatches(),
+        allow_list.MatchesAll(), allow_list.MatchesOpaqueSrc());
+  }
+  parent_permissions_info_.emplace(parsed_policies, parent_origin);
 }
 
 }  // namespace content

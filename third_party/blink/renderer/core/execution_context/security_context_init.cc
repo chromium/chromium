@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
+#include "third_party/blink/public/common/frame/fenced_frame_permissions_policies.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
@@ -104,8 +105,8 @@ void SecurityContextInit::ApplyPermissionsPolicy(
     const ResourceResponse& response,
     const FramePolicy& frame_policy,
     const absl::optional<ParsedPermissionsPolicy>& isolated_app_policy,
-    const base::span<const mojom::blink::PermissionsPolicyFeature>
-        effective_enabled_permissions) {
+    const base::optional_ref<const FencedFrame::RedactedFencedFrameProperties>
+        fenced_frame_properties) {
   const url::Origin origin =
       execution_context_->GetSecurityOrigin()->ToUrlOrigin();
   // If we are a HTMLViewSourceDocument we use container, header or
@@ -170,8 +171,9 @@ void SecurityContextInit::ApplyPermissionsPolicy(
   }
 
   ParsedPermissionsPolicy container_policy;
-  if (frame.Owner())
+  if (frame.Owner() || frame.IsFencedFrameRoot()) {
     container_policy = frame_policy.container_policy;
+  }
 
   // DocumentLoader applied the sandbox flags before calling this function, so
   // they are accessible here.
@@ -200,13 +202,50 @@ void SecurityContextInit::ApplyPermissionsPolicy(
   } else {
     std::unique_ptr<PermissionsPolicy> permissions_policy;
     if (frame.IsFencedFrameRoot()) {
-      // Fenced frames have a list of required permission policies to load and
-      // can't be granted extra policies, so use the required policies instead
-      // of inheriting from its parent. Note that the parent policies must allow
-      // the required policies, which is checked separately in
-      // NavigationRequest::CheckPermissionsPoliciesForFencedFrames.
-      permissions_policy = PermissionsPolicy::CreateForFencedFrame(
-          origin, effective_enabled_permissions);
+      if (!fenced_frame_properties.has_value()) {
+        // Without fenced frame properties, there won't be a list of effective
+        // enabled permissions or information about the embedder's permissions
+        // policies, so we create a permissions policy with every permission
+        // disabled.
+        permissions_policy =
+            PermissionsPolicy::CreateFixedForFencedFrame(origin, {});
+      } else if (fenced_frame_properties->parent_permissions_info()
+                     .has_value()) {
+        // Fenced frames with flexible permissions are allowed to inherit
+        // certain permissions from their parent.
+        auto parent_permissions_policy =
+            PermissionsPolicy::CreateFromParsedPolicy(
+                fenced_frame_properties->parent_permissions_info()
+                    ->parsed_permissions_policy,
+                fenced_frame_properties->parent_permissions_info()->origin);
+
+        permissions_policy = PermissionsPolicy::CreateFlexibleForFencedFrame(
+            parent_permissions_policy.get(), container_policy, origin);
+
+        // Warn if a disallowed permissions policy is attempted to be enabled.
+        for (const auto& policy : container_policy) {
+          if (!base::Contains(blink::kFencedFrameAllowedFeatures,
+                              policy.feature)) {
+            execution_context_->AddConsoleMessage(
+                MakeGarbageCollected<ConsoleMessage>(
+                    mojom::blink::ConsoleMessageSource::kSecurity,
+                    mojom::blink::ConsoleMessageLevel::kWarning,
+                    "The permissions policy '" +
+                        GetNameForFeature(policy.feature) +
+                        "' is disallowed in fenced frames and will not be "
+                        "enabled."));
+          }
+        }
+      } else {
+        // Fenced frames with fixed permissions have a list of required
+        // permission policies to load and can't be granted extra policies, so
+        // use the required policies instead of inheriting from its parent. Note
+        // that the parent policies must allow the required policies, which is
+        // checked separately in
+        // NavigationRequest::CheckPermissionsPoliciesForFencedFrames.
+        permissions_policy = PermissionsPolicy::CreateFixedForFencedFrame(
+            origin, fenced_frame_properties->effective_enabled_permissions());
+      }
     } else {
       auto* parent_permissions_policy = frame.Tree().Parent()
                                             ? frame.Tree()

@@ -633,19 +633,35 @@ DetermineWhetherToForbidTrustTokenOperation(
   // TODO(https://crbug.com/1430514): Add WPT to test how TrustTokens behave in
   // a FencedFrame's subframe.
   if (frame->IsFencedFrameRoot()) {
-    // Fenced frames have a list of required permission policies to load and
-    // can't be granted extra policies, so use the required policies instead of
-    // inheriting from its parent. Note that the parent policies must allow the
-    // required policies, which is checked separately in
-    // NavigationRequest::CheckPermissionsPoliciesForFencedFrames.
     const std::optional<FencedFrameProperties>& fenced_frame_properties =
         frame->frame_tree_node()->GetFencedFrameProperties();
-    base::span<const blink::mojom::PermissionsPolicyFeature> permissions;
-    if (fenced_frame_properties) {
-      permissions = fenced_frame_properties->effective_enabled_permissions();
+    if (!fenced_frame_properties) {
+      // Without fenced frame properties, there won't be a list of
+      // effective enabled permissions or information about the embedder's
+      // permissions policies, so we create a permissions policy with every
+      // permission disabled.
+      subframe_policy = blink::PermissionsPolicy::CreateFixedForFencedFrame(
+          subframe_origin, {});
+    } else if (fenced_frame_properties->parent_permissions_info().has_value()) {
+      // Fenced frames with flexible permissions are allowed to inherit certain
+      // permissions from their parent's permissions policy.
+      const blink::PermissionsPolicy* parent_policy =
+          frame->GetParentOrOuterDocument()->permissions_policy();
+      blink::ParsedPermissionsPolicy container_policy =
+          commit_params.frame_policy.container_policy;
+      subframe_policy = blink::PermissionsPolicy::CreateFlexibleForFencedFrame(
+          parent_policy, container_policy, subframe_origin);
+    } else {
+      // Fenced frames with fixed permissions have a list of required permission
+      // policies to load and can't be granted extra policies, so use the
+      // required policies instead of inheriting from its parent. Note that the
+      // parent policies must allow the required policies, which is checked
+      // separately in
+      // NavigationRequest::CheckPermissionsPoliciesForFencedFrames.
+      subframe_policy = blink::PermissionsPolicy::CreateFixedForFencedFrame(
+          subframe_origin,
+          fenced_frame_properties->effective_enabled_permissions());
     }
-    subframe_policy = blink::PermissionsPolicy::CreateForFencedFrame(
-        subframe_origin, permissions);
   } else {
     // For main frame loads, the frame's permissions policy is determined
     // entirely by response headers, which are provided by the renderer.
@@ -11596,19 +11612,36 @@ void RenderFrameHostImpl::CreateWebUsbService(
 
 void RenderFrameHostImpl::ResetPermissionsPolicy() {
   if (IsFencedFrameRoot()) {
-    // Fenced frames have a list of required permission policies to load and
-    // can't be granted extra policies, so use the required policies instead of
-    // inheriting from its parent. Note that the parent policies must allow the
-    // required policies, which is checked separately in
-    // NavigationRequest::CheckPermissionsPoliciesForFencedFrames.
     const std::optional<FencedFrameProperties>& fenced_frame_properties =
         frame_tree_node()->GetFencedFrameProperties();
-    base::span<const blink::mojom::PermissionsPolicyFeature> permissions;
-    if (fenced_frame_properties) {
-      permissions = fenced_frame_properties->effective_enabled_permissions();
+    if (!fenced_frame_properties) {
+      // Without fenced frame properties, there won't be a list of
+      // effective enabled permissions or information about the embedder's
+      // permissions policies, so we create a permissions policy with every
+      // permission disabled.
+      permissions_policy_ = blink::PermissionsPolicy::CreateFixedForFencedFrame(
+          last_committed_origin_, {});
+    } else if (fenced_frame_properties->parent_permissions_info().has_value()) {
+      // Fenced frames with flexible permissions are allowed to inherit certain
+      // permissions from their parent's permissions policy.
+      const blink::PermissionsPolicy* parent_policy =
+          GetParentOrOuterDocument()->permissions_policy();
+      blink::ParsedPermissionsPolicy container_policy =
+          browsing_context_state_->effective_frame_policy().container_policy;
+      permissions_policy_ =
+          blink::PermissionsPolicy::CreateFlexibleForFencedFrame(
+              parent_policy, container_policy, last_committed_origin_);
+    } else {
+      // Fenced frames with fixed permissions have a list of required permission
+      // policies to load and can't be granted extra policies, so use the
+      // required policies instead of inheriting from its parent. Note that the
+      // parent policies must allow the required policies, which is checked
+      // separately in
+      // NavigationRequest::CheckPermissionsPoliciesForFencedFrames.
+      permissions_policy_ = blink::PermissionsPolicy::CreateFixedForFencedFrame(
+          last_committed_origin_,
+          fenced_frame_properties->effective_enabled_permissions());
     }
-    permissions_policy_ = blink::PermissionsPolicy::CreateForFencedFrame(
-        last_committed_origin_, permissions);
     return;
   }
 

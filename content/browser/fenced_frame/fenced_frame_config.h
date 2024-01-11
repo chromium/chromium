@@ -4,8 +4,8 @@
 
 // This header defines fenced frame configs, which are objects that can be
 // loaded into a fenced frame and determine its subsequent behavior. Different
-// APIs like FLEDGE and sharedStorage use fenced frame configs in order to
-// achieve different end-to-end privacy guarantees.
+// APIs like Protected Audience and Shared Storage use fenced frame configs in
+// order to achieve different end-to-end privacy guarantees.
 //
 // Certain information stored in configs may be sensitive and therefore should
 // be redacted before it is sent to a renderer process. Whether information is
@@ -32,15 +32,15 @@
 //
 // Here is a summary of the information flow:
 // * The embedder calls a config-generating API on the web platform, let's say
-//   FLEDGE, which makes an IPC to the browser.
-// * In the browser, FLEDGE generates a `FencedFrameConfig` (including the
-//   visibility of each field to different entities) and stores it in
-//   the Page's `FencedFrameURLMapping` data structure.
-// * FLEDGE constructs a `RedactedFencedFrameConfig` from the
+//   Protected Audience, which makes an IPC to the browser.
+// * In the browser, Protected Audience generates a `FencedFrameConfig`
+//   (including the visibility of each field to different entities) and stores
+//   it in the Page's `FencedFrameURLMapping` data structure.
+// * Protected Audience constructs a `RedactedFencedFrameConfig` from the
 //   `FencedFrameConfig` and the `kEmbedder` entity. The constructor
 //   automatically performs the redaction process.
 //
-// * FLEDGE returns the redacted config to the embedder's renderer.
+// * Protected Audience returns the redacted config to the embedder's renderer.
 //   `RedactedFencedFrameConfig` supports mojom type mappings for
 //   `blink::mojom::FencedFrameConfig`.
 // * Later, the embedder loads the config into a fenced frame on the web
@@ -109,6 +109,7 @@ using AdAuctionData = blink::FencedFrame::AdAuctionData;
 using DeprecatedFencedFrameMode = blink::FencedFrame::DeprecatedFencedFrameMode;
 using SharedStorageBudgetMetadata =
     blink::FencedFrame::SharedStorageBudgetMetadata;
+using ParentPermissionsInfo = blink::FencedFrame::ParentPermissionsInfo;
 
 // Different kinds of entities (renderers) that should receive different
 // views of the information in fenced frame configs.
@@ -212,8 +213,8 @@ class CONTENT_EXPORT FencedFrameProperty {
 // configuration, but some require additional processing (e.g.
 // `nested_configs`.)
 //
-// Config-generating APIs like FLEDGE's runAdAuction and sharedStorage's
-// selectURL return urns as handles to `FencedFrameConfig`s.
+// Config-generating APIs like Protected Audience's runAdAuction and
+// sharedStorage's selectURL return urns as handles to `FencedFrameConfig`s.
 // TODO(crbug.com/1417871): Use a single constructor that requires values to be
 // specified for all fields, to ensure none are accidentally omitted.
 class CONTENT_EXPORT FencedFrameConfig {
@@ -292,16 +293,16 @@ class CONTENT_EXPORT FencedFrameConfig {
   std::optional<FencedFrameProperty<bool>>
       deprecated_should_freeze_initial_size_;
 
-  // Extra data set if `mapped_url` is the result of a FLEDGE auction. Used
-  // to fill in `AdAuctionDocumentData` for the fenced frame that navigates
-  // to `mapped_url`.
+  // Extra data set if `mapped_url` is the result of a Protected Audience
+  // auction. Used to fill in `AdAuctionDocumentData` for the fenced frame that
+  // navigates to `mapped_url`.
   std::optional<FencedFrameProperty<AdAuctionData>> ad_auction_data_;
 
   // Should be invoked whenever the URN is navigated to.
   base::RepeatingClosure on_navigate_callback_;
 
   // Configurations for nested ad components.
-  // Currently only used by FLEDGE.
+  // Currently only used by Protected Audience.
   // When a fenced frame loads this configuration, these component
   // configurations will be mapped to URNs themselves, and those URNs will be
   // provided to the fenced frame for use in nested fenced frames.
@@ -335,15 +336,24 @@ class CONTENT_EXPORT FencedFrameConfig {
 
   // Contains the list of permissions policy features that need to be enabled
   // for a fenced frame with this configuration to load. APIs that load fenced
-  // frames, such as FLEDGE and Shared Storage, require certain features to be
-  // enabled in the frame's permissions policy, but they cannot be set directly
-  // by the embedder since that opens a communication channel. The API that
-  // constructs the config will set this directly. These permissions will be the
-  // only ones enabled in the fenced frame once it navigates.
-  // See entry in spec:
+  // frames, such as Protected Audience and Shared Storage, require certain
+  // features to be enabled in the frame's permissions policy, but they cannot
+  // be set directly by the embedder since that opens a communication channel.
+  // The API that constructs the config will set this directly. These
+  // permissions will be the only ones enabled in the fenced frame once it
+  // navigates. See entry in spec:
   // https://wicg.github.io/fenced-frame/#fenced-frame-config-effective-enabled-permissions
   std::vector<blink::mojom::PermissionsPolicyFeature>
       effective_enabled_permissions_;
+
+  // Fenced frames with flexible permissions are allowed to inherit certain
+  // permissions policies from their parent. However, a fenced frame's renderer
+  // process doesn't have access to its parent. Instead, we give it this
+  // information through its fenced frame properties, so that it can calculate
+  // inheritance. Right now, only FencedFrameConfigs created from JavaScript
+  // (non-Protected Audience/Shared Storage) will have a flexible permissions
+  // policy.
+  absl::optional<ParentPermissionsInfo> parent_permissions_info_;
 };
 
 // Contains a set of fenced frame properties. These are generated at
@@ -399,6 +409,14 @@ class CONTENT_EXPORT FencedFrameProperties {
   // was set to true when calling `setReportEventDataForAutomaticBeacons()`.
   void MaybeResetAutomaticBeaconData(
       blink::mojom::AutomaticBeaconType event_type);
+
+  // Stores information about a fenced frame's parent's permissions policy so
+  // that the fenced frame's renderer process can calculate permissions
+  // inheritance. This is called before the fenced frame-targeting navigation
+  // commits.
+  void UpdateParentParsedPermissionsPolicy(
+      const blink::PermissionsPolicy* parent_policy,
+      const url::Origin& parent_origin);
 
   // Attempts to retrieve the automatic beacon data for a given event type.
   const std::optional<AutomaticBeaconInfo> GetAutomaticBeaconInfo(
@@ -466,6 +484,10 @@ class CONTENT_EXPORT FencedFrameProperties {
   const std::vector<blink::mojom::PermissionsPolicyFeature>&
   effective_enabled_permissions() const {
     return effective_enabled_permissions_;
+  }
+
+  absl::optional<ParentPermissionsInfo> parent_permissions_info() const {
+    return parent_permissions_info_;
   }
 
   // Set the current FencedFrameProperties to have "opaque ads mode".
@@ -552,15 +574,23 @@ class CONTENT_EXPORT FencedFrameProperties {
 
   // Contains the list of permissions policy features that need to be enabled
   // for a fenced frame with this configuration to load. APIs that load fenced
-  // frames, such as FLEDGE and Shared Storage, require certain features to be
-  // enabled in the frame's permissions policy, but they cannot be set directly
-  // by the embedder since that opens a communication channel. The API that
-  // constructs the config will set this directly. These permissions will be the
-  // only ones enabled in the fenced frame once it navigates.
-  // See entry in spec:
+  // frames, such as Protected Audience and Shared Storage, require certain
+  // features to be enabled in the frame's permissions policy, but they cannot
+  // be set directly by the embedder since that opens a communication channel.
+  // The API that constructs the config will set this directly. These
+  // permissions will be the only ones enabled in the fenced frame once it
+  // navigates. See entry in spec:
   // https://wicg.github.io/fenced-frame/#fenced-frame-config-effective-enabled-permissions
   std::vector<blink::mojom::PermissionsPolicyFeature>
       effective_enabled_permissions_;
+
+  // Fenced frames with flexible permissions are allowed to inherit certain
+  // permissions policies from their parent. However, a fenced frame's renderer
+  // process doesn't have access to its parent. Instead, we give it this
+  // information through its fenced frame properties, so that it can calculate
+  // inheritance. Right now, only developer-created fenced frames (non-Protected
+  // Audience/Shared Storage) will have a flexible permissions policy.
+  absl::optional<ParentPermissionsInfo> parent_permissions_info_;
 };
 
 }  // namespace content

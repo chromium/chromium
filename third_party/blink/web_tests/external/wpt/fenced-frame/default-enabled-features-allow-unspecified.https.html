@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>Test default permission policy features gating (self)</title>
+<title>Test permission policies with no permissions specified</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/utils.js"></script>
@@ -11,20 +11,8 @@
 <body>
 <script>
 promise_test(async(t) => {
-  await runDefaultEnabledFeaturesTest(t, false, get_host_info().ORIGIN);
-  await runDefaultEnabledFeaturesTest(t, false, get_host_info().ORIGIN,
-      generator_api="sharedstorage");
-}, 'Same-origin fenced frame does not load when feature policies are self');
-
-promise_test(async(t) => {
-  await runDefaultEnabledFeaturesTest(t, false, get_host_info().REMOTE_ORIGIN);
-  await runDefaultEnabledFeaturesTest(t, false, get_host_info().REMOTE_ORIGIN,
-      generator_api="sharedstorage");
-}, 'Cross-origin fenced frame does not load when feature policies are self');
-
-promise_test(async(t) => {
   const fencedframe = await attachFencedFrameContext({
-        origin: get_host_info().ORIGIN});
+      origin: get_host_info().ORIGIN});
 
   await fencedframe.execute(async () => {
     assert_true(
@@ -40,16 +28,19 @@ promise_test(async(t) => {
         document.featurePolicy.allowsFeature('sync-xhr'),
         "USB access should be disallowed in the fenced frame.");
   }, []);
-}, 'Fenced frames default feature policies should inherit from parent.');
+}, 'Fenced frames should inherit features from parent if nothing specified.');
 
 promise_test(async(t) => {
   const fencedframe = await attachFencedFrameContext({
-        origin: get_host_info().REMOTE_ORIGIN});
+      origin: get_host_info().REMOTE_ORIGIN,
+      attributes: [["allow",
+          "shared-storage *; attribution-reporting *; " +
+          "private-aggregation 'none'"]]});
 
   await fencedframe.execute(async () => {
-    assert_false(
+    assert_true(
         document.featurePolicy.allowsFeature('shared-storage'),
-        "Shared storage should be disallowed in the fenced frame.");
+        "Shared storage should be allowed in the fenced frame.");
     assert_false(
         document.featurePolicy.allowsFeature('private-aggregation'),
         "Private aggregation should be disallowed in the fenced frame.");
@@ -60,7 +51,8 @@ promise_test(async(t) => {
         document.featurePolicy.allowsFeature('sync-xhr'),
         "USB access should be disallowed in the fenced frame.");
   }, []);
-}, 'Cross-origin fenced frames default feature policies follow inheritance rules.');
+}, 'Fenced frames default feature policies should inherit when using `allow` ' +
+   'but should be able to further restrict the policies.');
 
 </script>
 </body>
