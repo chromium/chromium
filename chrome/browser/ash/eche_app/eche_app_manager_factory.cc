@@ -255,7 +255,8 @@ void EcheAppManagerFactory::RegisterProfilePrefs(
   AppsAccessManagerImpl::RegisterPrefs(registry);
 }
 
-KeyedService* EcheAppManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+EcheAppManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   if (!features::IsPhoneHubEnabled() || !features::IsEcheSWAEnabled())
     return nullptr;
@@ -288,7 +289,7 @@ KeyedService* EcheAppManagerFactory::BuildServiceInstanceFor(
           secure_channel::PresenceMonitorClientImpl::Factory::Create(
               std::move(presence_monitor));
 
-  auto* eche_app_manager = new EcheAppManager(
+  std::unique_ptr<EcheAppManager> eche_app_manager = std::make_unique<EcheAppManager>(
       profile->GetPrefs(), GetSystemInfo(profile), phone_hub_manager,
       device_sync_client, multidevice_setup_client, secure_channel_client,
       std::move(presence_monitor_client),
