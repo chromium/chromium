@@ -106,6 +106,7 @@
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "chromeos/ui/frame/desks/move_to_desks_menu_delegate.h"
 #include "chromeos/ui/frame/desks/move_to_desks_menu_model.h"
 #include "chromeos/ui/wm/desks/chromeos_desks_histogram_enums.h"
@@ -3436,8 +3437,10 @@ TEST_P(
   EXPECT_TRUE(EnterOverview());
   split_view_controller()->SnapWindow(win1.get(), SnapPosition::kPrimary);
   EXPECT_EQ(win1.get(), split_view_controller()->primary_window());
-  EXPECT_FALSE(split_view_controller()->CanSnapWindow(win2.get()));
-  EXPECT_FALSE(split_view_controller()->CanSnapWindow(win3.get()));
+  EXPECT_FALSE(split_view_controller()->CanSnapWindow(
+      win2.get(), chromeos::kDefaultSnapRatio));
+  EXPECT_FALSE(split_view_controller()->CanSnapWindow(
+      win3.get(), chromeos::kDefaultSnapRatio));
 
   // Switch to |desk_2| using its |mini_view|. Split view and overview should
   // end, but |win1| should retain its snapped state.
@@ -3694,7 +3697,8 @@ TEST_P(TabletModeDesksTest, RestoringUnsnappableWindowsInSplitView) {
   views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window.get());
   widget->widget_delegate()->GetContentsView()->SetPreferredSize(
       gfx::Size(350, 100));
-  EXPECT_FALSE(split_view_controller()->CanSnapWindow(window.get()));
+  EXPECT_FALSE(split_view_controller()->CanSnapWindow(
+      window.get(), chromeos::kDefaultSnapRatio));
 
   // Change to a portrait orientation and expect it's possible to snap the
   // window.
@@ -3704,7 +3708,8 @@ TEST_P(TabletModeDesksTest, RestoringUnsnappableWindowsInSplitView) {
                               display::Display::RotationSource::ACTIVE);
   EXPECT_EQ(test_api.GetCurrentOrientation(),
             chromeos::OrientationType::kPortraitPrimary);
-  EXPECT_TRUE(split_view_controller()->CanSnapWindow(window.get()));
+  EXPECT_TRUE(split_view_controller()->CanSnapWindow(
+      window.get(), chromeos::kDefaultSnapRatio));
 
   // Snap the window in this orientation.
   split_view_controller()->SnapWindow(window.get(), SnapPosition::kPrimary);

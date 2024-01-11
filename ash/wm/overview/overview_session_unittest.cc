@@ -378,7 +378,8 @@ TEST_P(OverviewSessionTest, CloseButtonEnabledOnSnap) {
 
   ASSERT_FALSE(widget2->IsClosed());
 
-  ASSERT_TRUE(GetSplitViewController()->CanSnapWindow(window1.get()));
+  ASSERT_TRUE(GetSplitViewController()->CanSnapWindow(
+      window1.get(), chromeos::kDefaultSnapRatio));
 
   // Snap `window1` to the left side of the screen while in
   // overview.
@@ -10415,28 +10416,31 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
         CreateTestWindowInShellWithDelegate(delegate, /*id=*/-1, bounds));
     // Before setting a minimum size, expect that |window| can be snapped in
     // split view on either root window.
-    EXPECT_TRUE(
-        SplitViewController::Get(root_windows[0])->CanSnapWindow(window.get()));
-    EXPECT_TRUE(
-        SplitViewController::Get(root_windows[1])->CanSnapWindow(window.get()));
+    EXPECT_TRUE(SplitViewController::Get(root_windows[0])
+                    ->CanSnapWindow(window.get(), chromeos::kDefaultSnapRatio));
+    EXPECT_TRUE(SplitViewController::Get(root_windows[1])
+                    ->CanSnapWindow(window.get(), chromeos::kDefaultSnapRatio));
     // Either root window can accommodate a minimum size 395 wide.
     delegate->set_minimum_size(gfx::Size(395, 0));
-    EXPECT_TRUE(
-        SplitViewController::Get(root_windows[0])->CanSnapWindow(window.get()));
-    EXPECT_TRUE(
-        SplitViewController::Get(root_windows[1])->CanSnapWindow(window.get()));
+    EXPECT_TRUE(SplitViewController::Get(root_windows[0])
+                    ->CanSnapWindow(window.get(), chromeos::kDefaultSnapRatio));
+    EXPECT_TRUE(SplitViewController::Get(root_windows[1])
+                    ->CanSnapWindow(window.get(), chromeos::kDefaultSnapRatio));
     // Only the first root window can accommodate a minimum size 396 wide.
     delegate->set_minimum_size(gfx::Size(396, 0));
-    EXPECT_TRUE(
-        SplitViewController::Get(root_windows[0])->CanSnapWindow(window.get()));
+    EXPECT_TRUE(SplitViewController::Get(root_windows[0])
+                    ->CanSnapWindow(window.get(), chromeos::kDefaultSnapRatio));
     EXPECT_FALSE(
-        SplitViewController::Get(root_windows[1])->CanSnapWindow(window.get()));
+        SplitViewController::Get(root_windows[1])
+            ->CanSnapWindow(window.get(), chromeos::kDefaultSnapRatio));
     // Neither root window can accommodate a minimum size 397 wide.
     delegate->set_minimum_size(gfx::Size(397, 0));
     EXPECT_FALSE(
-        SplitViewController::Get(root_windows[0])->CanSnapWindow(window.get()));
+        SplitViewController::Get(root_windows[0])
+            ->CanSnapWindow(window.get(), chromeos::kDefaultSnapRatio));
     EXPECT_FALSE(
-        SplitViewController::Get(root_windows[1])->CanSnapWindow(window.get()));
+        SplitViewController::Get(root_windows[1])
+            ->CanSnapWindow(window.get(), chromeos::kDefaultSnapRatio));
   }
 }
 

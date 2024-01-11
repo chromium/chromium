@@ -191,8 +191,10 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   //    default divider position. (If the work area length is odd, then the
   //    right or bottom will be one pixel larger.)
   // See also the `DCHECK`s in `SnapWindow()`.
-  bool CanSnapWindow(aura::Window* window) const;
   bool CanSnapWindow(aura::Window* window, float snap_ratio) const;
+
+  // Returns true if `window` can keep snapped with the current snap ratio.
+  bool CanKeepCurrentSnapRatio(aura::Window* window) const;
 
   // Returns true if, after a window is snapped, it will get put into split
   // overview eventually.

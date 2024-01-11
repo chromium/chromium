@@ -66,7 +66,7 @@ bool CanCoverAvailableWorkspace(aura::Window* window) {
   }
   SplitViewController* split_view_controller = SplitViewController::Get(window);
   if (split_view_controller->InSplitViewMode())
-    return split_view_controller->CanSnapWindow(window);
+    return split_view_controller->CanKeepCurrentSnapRatio(window);
   return WindowState::Get(window)->IsMaximizedOrFullscreenOrPinned();
 }
 

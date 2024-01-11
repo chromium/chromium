@@ -527,11 +527,6 @@ bool SplitViewController::InTabletSplitViewMode() const {
   return InSplitViewMode() && InTabletMode();
 }
 
-bool SplitViewController::CanSnapWindow(aura::Window* window) const {
-  return CanSnapWindow(window, WindowState::Get(window)->snap_ratio().value_or(
-                                   chromeos::kDefaultSnapRatio));
-}
-
 bool SplitViewController::CanSnapWindow(aura::Window* window,
                                         float snap_ratio) const {
   if (!ShouldAllowSplitView())
@@ -555,6 +550,14 @@ bool SplitViewController::CanSnapWindow(aura::Window* window,
   return GetMinimumWindowLength(window, IsLayoutHorizontal(window)) <=
          GetDividerPositionUpperLimit(root_window_) * snap_ratio -
              kSplitviewDividerShortSideLength / 2;
+}
+
+bool SplitViewController::CanKeepCurrentSnapRatio(
+    aura::Window* snapped_window) const {
+  return CanSnapWindow(snapped_window,
+                       WindowState::Get(snapped_window)
+                           ->snap_ratio()
+                           .value_or(chromeos::kDefaultSnapRatio));
 }
 
 std::optional<float> SplitViewController::ComputeSnapRatio(
@@ -1098,7 +1101,7 @@ void SplitViewController::OnOverviewButtonTrayLongPressed(
   }
 
   // Show a toast if the window cannot be snapped.
-  if (!CanSnapWindow(target_window)) {
+  if (!CanSnapWindow(target_window, chromeos::kDefaultSnapRatio)) {
     ShowAppCannotSnapToast();
     return;
   }
@@ -1202,8 +1205,9 @@ void SplitViewController::OnWindowPropertyChanged(aura::Window* window,
     return;
   }
 
-  if (CanSnapWindow(window))
+  if (CanKeepCurrentSnapRatio(window)) {
     return;
+  }
 
   EndSplitView();
   Shell::Get()->overview_controller()->EndOverview(
@@ -1490,8 +1494,8 @@ void SplitViewController::OnDisplayMetricsChanged(
 
   // If one of the snapped windows becomes unsnappable, end the split view mode
   // directly if `IsUserSessionBlocked()`.
-  if ((primary_window_ && !CanSnapWindow(primary_window_)) ||
-      (secondary_window_ && !CanSnapWindow(secondary_window_))) {
+  if ((primary_window_ && !CanKeepCurrentSnapRatio(primary_window_)) ||
+      (secondary_window_ && !CanKeepCurrentSnapRatio(secondary_window_))) {
     if (!Shell::Get()->session_controller()->IsUserSessionBlocked())
       EndSplitView();
     return;

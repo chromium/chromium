@@ -36,6 +36,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
+#include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/layer.h"
@@ -487,7 +488,8 @@ void OverviewWindowDragController::ActivateDraggedWindow() {
     overview_session_->SelectWindow(event_source_item_);
     item_ = nullptr;
     event_source_item_ = nullptr;
-  } else if (split_view_controller->CanSnapWindow(item_->GetWindow())) {
+  } else if (split_view_controller->CanSnapWindow(
+                 item_->GetWindow(), chromeos::kDefaultSnapRatio)) {
     SnapWindow(split_view_controller,
                split_state == SplitViewController::State::kPrimarySnapped
                    ? SnapPosition::kSecondary
@@ -957,8 +959,10 @@ SnapPosition OverviewWindowDragController::GetSnapPosition(
   aura::Window* root_window = GetRootWindowBeingDraggedIn();
   SplitViewController* split_view_controller =
       SplitViewController::Get(root_window);
-  if (!split_view_controller->CanSnapWindow(item_->GetWindow()))
+  if (!split_view_controller->CanSnapWindow(item_->GetWindow(),
+                                            chromeos::kDefaultSnapRatio)) {
     return SnapPosition::kNone;
+  }
   if (split_view_controller->InSplitViewMode()) {
     // If we're trying to snap to a position that already has a snapped window:
     aura::Window* default_snapped_window =

@@ -1859,21 +1859,26 @@ TEST_F(SplitViewControllerTest, ExitTabletModeEndSplitView) {
 TEST_F(SplitViewControllerTest, SnapWindowWithMinimumSizeTest) {
   const gfx::Rect bounds(0, 0, 400, 400);
   std::unique_ptr<aura::Window> window1(CreateWindow(bounds));
-  EXPECT_TRUE(split_view_controller()->CanSnapWindow(window1.get()));
+  EXPECT_TRUE(split_view_controller()->CanSnapWindow(
+      window1.get(), chromeos::kDefaultSnapRatio));
 
   UpdateDisplay("800x600");
   aura::test::TestWindowDelegate* delegate =
       static_cast<aura::test::TestWindowDelegate*>(window1->delegate());
   delegate->set_minimum_size(gfx::Size(396, 0));
-  EXPECT_TRUE(split_view_controller()->CanSnapWindow(window1.get()));
+  EXPECT_TRUE(split_view_controller()->CanSnapWindow(
+      window1.get(), chromeos::kDefaultSnapRatio));
   delegate->set_minimum_size(gfx::Size(397, 0));
-  EXPECT_FALSE(split_view_controller()->CanSnapWindow(window1.get()));
+  EXPECT_FALSE(split_view_controller()->CanSnapWindow(
+      window1.get(), chromeos::kDefaultSnapRatio));
 
   UpdateDisplay("799x600");
   delegate->set_minimum_size(gfx::Size(395, 0));
-  EXPECT_TRUE(split_view_controller()->CanSnapWindow(window1.get()));
+  EXPECT_TRUE(split_view_controller()->CanSnapWindow(
+      window1.get(), chromeos::kDefaultSnapRatio));
   delegate->set_minimum_size(gfx::Size(396, 0));
-  EXPECT_FALSE(split_view_controller()->CanSnapWindow(window1.get()));
+  EXPECT_FALSE(split_view_controller()->CanSnapWindow(
+      window1.get(), chromeos::kDefaultSnapRatio));
 }
 
 // Test that |SplitViewController::CanSnapWindow| property checks that the
@@ -1884,22 +1889,26 @@ TEST_F(SplitViewControllerTest, CanSnapWindowWithUnresizableSnapProperty) {
   std::unique_ptr<aura::Window> window(CreateWindow(bounds));
   window->SetProperty(aura::client::kResizeBehaviorKey,
                       aura::client::kResizeBehaviorNone);
-  EXPECT_FALSE(split_view_controller()->CanSnapWindow(window.get()));
+  EXPECT_FALSE(split_view_controller()->CanSnapWindow(
+      window.get(), chromeos::kDefaultSnapRatio));
 
   // Clamshell mode supports unresizable snapping.
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
   window->SetProperty(kUnresizableSnappedSizeKey, new gfx::Size(300, 0));
-  EXPECT_TRUE(split_view_controller()->CanSnapWindow(window.get()));
+  EXPECT_TRUE(split_view_controller()->CanSnapWindow(
+      window.get(), chromeos::kDefaultSnapRatio));
 
   // Tablet mode doesn't support unresizable snapping.
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-  EXPECT_FALSE(split_view_controller()->CanSnapWindow(window.get()));
+  EXPECT_FALSE(split_view_controller()->CanSnapWindow(
+      window.get(), chromeos::kDefaultSnapRatio));
 
   // If the display is too small for the unresizable snapping, it can't be
   // snapped.
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
   UpdateDisplay("200x100");
-  EXPECT_FALSE(split_view_controller()->CanSnapWindow(window.get()));
+  EXPECT_FALSE(split_view_controller()->CanSnapWindow(
+      window.get(), chromeos::kDefaultSnapRatio));
 }
 
 // Tests that the snapped window can not be moved outside of work area when its
@@ -1927,7 +1936,8 @@ TEST_F(SplitViewControllerTest, ResizingSnappedWindowWithMinimumSizeTest) {
       screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
           window1.get());
   ToggleOverview();
-  EXPECT_TRUE(split_view_controller()->CanSnapWindow(window1.get()));
+  EXPECT_TRUE(split_view_controller()->CanSnapWindow(
+      window1.get(), chromeos::kDefaultSnapRatio));
   split_view_controller()->SnapWindow(window1.get(), SnapPosition::kPrimary);
   delegate1->set_minimum_size(
       gfx::Size(display_bounds.width() * 0.4f, display_bounds.height()));
@@ -1973,7 +1983,8 @@ TEST_F(SplitViewControllerTest, ResizingSnappedWindowWithMinimumSizeTest) {
           window1.get());
   delegate1->set_minimum_size(
       gfx::Size(display_bounds.width(), display_bounds.height() * 0.4f));
-  EXPECT_TRUE(split_view_controller()->CanSnapWindow(window1.get()));
+  EXPECT_TRUE(split_view_controller()->CanSnapWindow(
+      window1.get(), chromeos::kDefaultSnapRatio));
   split_view_controller()->SnapWindow(window1.get(), SnapPosition::kPrimary);
   EXPECT_TRUE(window1->layer()->GetTargetTransform().IsIdentity());
   divider_bounds = split_view_divider()->GetDividerBoundsInScreen(false);
@@ -2003,7 +2014,8 @@ TEST_F(SplitViewControllerTest, ResizingSnappedWindowWithMinimumSizeTest) {
           window1.get());
   delegate1->set_minimum_size(
       gfx::Size(display_bounds.width() * 0.4f, display_bounds.height()));
-  EXPECT_TRUE(split_view_controller()->CanSnapWindow(window1.get()));
+  EXPECT_TRUE(split_view_controller()->CanSnapWindow(
+      window1.get(), chromeos::kDefaultSnapRatio));
   split_view_controller()->SnapWindow(window1.get(), SnapPosition::kSecondary);
   EXPECT_TRUE(window1->layer()->GetTargetTransform().IsIdentity());
 
@@ -2034,7 +2046,8 @@ TEST_F(SplitViewControllerTest, ResizingSnappedWindowWithMinimumSizeTest) {
           window1.get());
   delegate1->set_minimum_size(
       gfx::Size(display_bounds.width(), display_bounds.height() * 0.4f));
-  EXPECT_TRUE(split_view_controller()->CanSnapWindow(window1.get()));
+  EXPECT_TRUE(split_view_controller()->CanSnapWindow(
+      window1.get(), chromeos::kDefaultSnapRatio));
   split_view_controller()->SnapWindow(window1.get(), SnapPosition::kSecondary);
   EXPECT_TRUE(window1->layer()->GetTargetTransform().IsIdentity());
 

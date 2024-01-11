@@ -148,7 +148,7 @@ TabletModeWindowState::TabletModeWindowState(aura::Window* window,
   WindowState* state = WindowState::Get(window);
   current_state_type_ = state->GetStateType();
   DCHECK(!snap || SplitViewController::Get(Shell::GetPrimaryRootWindow())
-                      ->CanSnapWindow(window));
+                      ->CanKeepCurrentSnapRatio(window));
 
   // Snapped and floated windows maintain their state; other windows become
   // maximized if possible, centered with a backdrop if not possible.
@@ -523,16 +523,6 @@ void TabletModeWindowState::UpdateWindow(WindowState* window_state,
   }
 }
 
-WindowStateType TabletModeWindowState::GetSnappedWindowStateType(
-    WindowState* window_state,
-    WindowStateType target_state) {
-  DCHECK(chromeos::IsSnappedWindowStateType(target_state));
-  return SplitViewController::Get(Shell::GetPrimaryRootWindow())
-                 ->CanSnapWindow(window_state->window())
-             ? target_state
-             : window_state->GetWindowTypeOnMaximizable();
-}
-
 WindowStateType TabletModeWindowState::AdjustStateForTabletMode(
     WindowState* window_state,
     WindowStateType current_state_type) {
@@ -605,7 +595,8 @@ void TabletModeWindowState::CycleTabletSnap(WindowState* window_state,
     return;
   }
   // If |window| can snap in split view, then snap |window| in |snap_position|.
-  if (split_view_controller->CanSnapWindow(window)) {
+  if (split_view_controller->CanSnapWindow(window,
+                                           chromeos::kDefaultSnapRatio)) {
     split_view_controller->SnapWindow(
         window, snap_position, WindowSnapActionSource::kKeyboardShortcutToSnap);
     window_state->ReadOutWindowCycleSnapAction(

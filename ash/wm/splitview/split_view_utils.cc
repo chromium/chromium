@@ -24,6 +24,7 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/time/time.h"
+#include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "components/app_restore/window_properties.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/base/hit_test.h"
@@ -434,7 +435,8 @@ void MaybeRestoreSplitView(bool refresh_snapped_windows) {
         Shell::Get()->mru_window_tracker()->BuildWindowListIgnoreModal(
             kActiveDesk);
     for (aura::Window* window : windows) {
-      if (!split_view_controller->CanSnapWindow(window)) {
+      if (!split_view_controller->CanSnapWindow(window,
+                                                chromeos::kDefaultSnapRatio)) {
         // Since we are in tablet mode, and this window is not snappable, we
         // should maximize it.
         WindowState::Get(window)->Maximize();
@@ -588,7 +590,8 @@ SnapPosition GetSnapPosition(aura::Window* root_window,
                              int minimum_drag_distance,
                              int horizontal_edge_inset,
                              int vertical_edge_inset) {
-  if (!SplitViewController::Get(root_window)->CanSnapWindow(window)) {
+  if (!SplitViewController::Get(root_window)
+           ->CanSnapWindow(window, chromeos::kDefaultSnapRatio)) {
     return SnapPosition::kNone;
   }
 

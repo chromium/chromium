@@ -78,7 +78,8 @@ class TabletModeMultitaskMenuView : public views::View {
     uint8_t buttons = chromeos::MultitaskMenuView::kFullscreen;
 
     auto* split_view_controller = SplitViewController::Get(window);
-    if (split_view_controller->CanSnapWindow(window)) {
+    if (split_view_controller->CanSnapWindow(window,
+                                             chromeos::kDefaultSnapRatio)) {
       buttons |= chromeos::MultitaskMenuView::kHalfSplit;
     }
 

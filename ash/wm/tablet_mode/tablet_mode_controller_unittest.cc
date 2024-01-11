@@ -43,6 +43,7 @@
 #include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
+#include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/base/hit_test.h"
@@ -1388,7 +1389,8 @@ TEST_F(TabletModeControllerTest,
       gfx::Size(display_bounds.width() * 0.67f, display_bounds.height()));
   WindowState* left_window_state = WindowState::Get(left_window.get());
   ASSERT_TRUE(left_window_state->CanSnap());
-  ASSERT_FALSE(split_view_controller()->CanSnapWindow(left_window.get()));
+  ASSERT_FALSE(split_view_controller()->CanSnapWindow(
+      left_window.get(), chromeos::kDefaultSnapRatio));
   WindowSnapWMEvent snap_to_left(WM_EVENT_CYCLE_SNAP_PRIMARY);
   left_window_state->OnWMEvent(&snap_to_left);
   std::unique_ptr<aura::Window> right_window =
@@ -1418,7 +1420,8 @@ TEST_F(TabletModeControllerTest,
       gfx::Size(display_bounds.width() * 0.67f, display_bounds.height()));
   WindowState* right_window_state = WindowState::Get(right_window.get());
   ASSERT_TRUE(right_window_state->CanSnap());
-  ASSERT_FALSE(split_view_controller()->CanSnapWindow(right_window.get()));
+  ASSERT_FALSE(split_view_controller()->CanSnapWindow(
+      right_window.get(), chromeos::kDefaultSnapRatio));
   WindowSnapWMEvent snap_to_right(WM_EVENT_CYCLE_SNAP_SECONDARY);
   right_window_state->OnWMEvent(&snap_to_right);
   wm::ActivateWindow(right_window.get());
@@ -1447,7 +1450,8 @@ TEST_F(TabletModeControllerTest,
       gfx::Size(display_bounds.width() * 0.67f, display_bounds.height()));
   WindowState* right_window_state = WindowState::Get(right_window.get());
   ASSERT_TRUE(right_window_state->CanSnap());
-  ASSERT_FALSE(split_view_controller()->CanSnapWindow(right_window.get()));
+  ASSERT_FALSE(split_view_controller()->CanSnapWindow(
+      right_window.get(), chromeos::kDefaultSnapRatio));
   WindowSnapWMEvent snap_to_right(WM_EVENT_CYCLE_SNAP_SECONDARY);
   right_window_state->OnWMEvent(&snap_to_right);
   ASSERT_EQ(left_window.get(), window_util::GetActiveWindow());
@@ -1475,7 +1479,8 @@ TEST_F(TabletModeControllerTest,
       gfx::Size(display_bounds.width() * 0.67f, display_bounds.height()));
   WindowState* left_window_state = WindowState::Get(left_window.get());
   ASSERT_TRUE(left_window_state->CanSnap());
-  ASSERT_FALSE(split_view_controller()->CanSnapWindow(left_window.get()));
+  ASSERT_FALSE(split_view_controller()->CanSnapWindow(
+      left_window.get(), chromeos::kDefaultSnapRatio));
   WindowSnapWMEvent snap_to_left(WM_EVENT_CYCLE_SNAP_PRIMARY);
   left_window_state->OnWMEvent(&snap_to_left);
   std::unique_ptr<aura::Window> right_window =

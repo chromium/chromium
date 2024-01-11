@@ -55,7 +55,8 @@ bool IsCarryOverCandidateForSplitView(
     size_t i,
     aura::Window* root_window) {
   return windows.size() > i && windows[i]->GetRootWindow() == root_window &&
-         SplitViewController::Get(root_window)->CanSnapWindow(windows[i]);
+         SplitViewController::Get(root_window)
+             ->CanKeepCurrentSnapRatio(windows[i]);
 }
 
 // When switching to clamshell mode if all the following
