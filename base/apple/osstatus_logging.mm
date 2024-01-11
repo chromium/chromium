@@ -8,8 +8,6 @@
 
 #include <iomanip>
 
-#include "base/immediate_crash.h"
-
 namespace logging {
 
 std::string DescriptionFromOSStatus(OSStatus err) {
@@ -26,18 +24,8 @@ OSStatusLogMessage::OSStatusLogMessage(const char* file_path,
     : LogMessage(file_path, line, severity), status_(status) {}
 
 OSStatusLogMessage::~OSStatusLogMessage() {
-  AppendError();
-}
-
-void OSStatusLogMessage::AppendError() {
   stream() << ": " << DescriptionFromOSStatus(status_) << " (" << status_
            << ")";
-}
-
-OSStatusLogMessageFatal::~OSStatusLogMessageFatal() {
-  AppendError();
-  Flush();
-  base::ImmediateCrash();
 }
 
 }  // namespace logging
