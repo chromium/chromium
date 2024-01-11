@@ -52,4 +52,10 @@ public interface ModuleDelegateHost {
 
     /** Returns whether the home surface has scrollable MV tiles. */
     boolean showScrollableMvt();
+
+    /**
+     * Returns the start margin of the magic stack in pixel. It is used to calculate the scrolling
+     * offset of the recyclerview item.
+     */
+    int getStartMargin();
 }

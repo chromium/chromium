@@ -15,6 +15,8 @@ import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.chrome.browser.magic_stack.ModuleRegistry.OnViewCreatedCallback;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
@@ -55,6 +57,17 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
                 new LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(linearLayoutManager);
 
+        // Add pager indicator.
+        recyclerView.addItemDecoration(
+                new CirclePagerIndicatorDecoration(
+                        activity,
+                        moduleDelegateHost.getUiConfig(),
+                        moduleDelegateHost.getStartMargin(),
+                        SemanticColorUtils.getDefaultIconColorSecondary(activity),
+                        activity.getColor(
+                                org.chromium.components.browser_ui.styles.R.color
+                                        .color_primary_with_alpha_15),
+                        DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)));
         PagerSnapHelper snapHelper = new PagerSnapHelper();
         snapHelper.attachToRecyclerView(recyclerView);
 
