@@ -201,6 +201,12 @@ void RunInProfileSafely(const base::FilePath& profile_dir,
                         base::OnceCallback<void(Profile*)> callback,
                         ProfileLoadFailureBehavior on_failure);
 
+// Allows application to terminate when the last Browser is closed by releasing
+// the keep alive object held by the |AppController|. Note that all commands
+// received after this call will be ignored, which is OK since the application
+// is being terminated anyway.
+void AllowApplicationToTerminate();
+
 // Waits for the TabRestoreService to have loaded its entries, then calls
 // OpenWindowWithRestoredTabs().
 //

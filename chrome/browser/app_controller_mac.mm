@@ -803,6 +803,12 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
   }
 }
 
+- (void)allowApplicationToTerminate {
+  // Tell BrowserList to stop the RunLoop and terminate the application when the
+  // last Browser is closed.
+  _keepAlive.reset();
+}
+
 - (BOOL)runConfirmQuitPanel {
   // If there are no windows, quit immediately.
   if (BrowserList::GetInstance()->empty() &&
@@ -2224,6 +2230,10 @@ void RunInProfileSafely(const base::FilePath& profile_dir,
   g_browser_process->profile_manager()->CreateProfileAsync(
       profile_dir,
       base::BindOnce(&OnProfileLoaded, std::move(callback), on_failure));
+}
+
+void AllowApplicationToTerminate() {
+  [AppController.sharedController allowApplicationToTerminate];
 }
 
 // static
