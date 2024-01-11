@@ -208,7 +208,6 @@ public class MerchantTrustSignalsCoordinatorTest {
                 .getSiteEngagementScore(any(Profile.class), any(String.class));
         doReturn(mMockPrefService).when(mCoordinator).getPrefService();
         doReturn(mMockDrawable).when(mCoordinator).getStoreIconDrawable();
-        doReturn(false).when(mCoordinator).isStoreInfoFeatureEnabled();
         doReturn(true).when(mCoordinator).isOnSecureWebsite(any(WebContents.class));
     }
 
@@ -575,7 +574,6 @@ public class MerchantTrustSignalsCoordinatorTest {
     @SmallTest
     @Test
     public void testMaybeShowStoreIcon() {
-        doReturn(true).when(mCoordinator).isStoreInfoFeatureEnabled();
         mCoordinator.setOmniboxIconController(mMockIconController);
 
         mCoordinator.maybeShowStoreIcon(null, true);
