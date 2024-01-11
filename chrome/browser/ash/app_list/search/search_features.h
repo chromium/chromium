@@ -18,10 +18,6 @@ BASE_DECLARE_FEATURE(kLauncherKeywordExtractionScoring);
 // Federated analytics for launcher queries, via Private Heavy Hitters (PHH).
 BASE_DECLARE_FEATURE(kLauncherQueryFederatedAnalyticsPHH);
 
-// Federated analytics for launcher queries, via Private Heavy Hitters (PHH),
-// version 2.
-BASE_DECLARE_FEATURE(kLauncherQueryFederatedAnalyticsPHHVersion2);
-
 // Change relevance score in Drive Files, Local Files, Help App, Keyboard
 // shortcuts, OS Settings and personalization app to all be based on a fuzzy
 // match
@@ -51,7 +47,6 @@ BASE_DECLARE_FEATURE(kLauncherManateeForKeyboardShortcuts);
 bool IsLauncherGameSearchEnabled();
 bool IsLauncherKeywordExtractionScoringEnabled();
 bool IsLauncherQueryFederatedAnalyticsPHHEnabled();
-bool IsLauncherQueryFederatedAnalyticsPHHVersion2Enabled();
 bool IsLauncherImageSearchEnabled();
 bool IsLauncherImageSearchIcaEnabled();
 bool IsLauncherImageSearchOcrEnabled();
