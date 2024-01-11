@@ -297,7 +297,7 @@
 <translation id="3283504360622356314">{0,plural, =1{ఫైల్‌ను ఎడిట్ చేయండి}other{ఫైల్‌లను ఎడిట్ చేయండి}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
 <translation id="3291996639387199448">కీ దశ</translation>
-<translation id="3294437725009624529">అతిథి</translation>
+<translation id="3294437725009624529">గెస్ట్</translation>
 <translation id="3303855915957856445">ఆ సెర్చ్ కోసం ఫలితాలు ఏవీ దొరకలేదు</translation>
 <translation id="3305294846493618482">మరిన్ని</translation>
 <translation id="3310640316857623290">DNS ప్రతిస్పందన సమయం అనుమతించదగిన పరిమితికి మించి ఉంది</translation>
@@ -591,7 +591,7 @@
 <translation id="5423849171846380976">సక్రియం చేయబడింది</translation>
 <translation id="5430931332414098647">తక్షణ టెథెరింగ్</translation>
 <translation id="5431318178759467895">రంగు</translation>
-<translation id="5457599981699367932">అతిథి లాగా బ్రౌజ్ చేయండి</translation>
+<translation id="5457599981699367932">గెస్ట్ లాగా బ్రౌజ్ చేయండి</translation>
 <translation id="54609108002486618">నిర్వహించబడింది</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} ప్రయత్నం మిగిలి ఉంది}other{{0} ప్రయత్నాలు మిగిలి ఉన్నాయి}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>

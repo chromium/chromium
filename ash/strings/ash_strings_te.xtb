@@ -551,7 +551,7 @@
 <translation id="3289674678944039601">అడాప్టర్ ద్వారా ఛార్జ్ అవుతోంది</translation>
 <translation id="3290356915286466215">అసురక్షితమైనది</translation>
 <translation id="3291862315280588024">మునుపటి పదం ప్రారంభానికి తరలించు</translation>
-<translation id="3294437725009624529">అతిథి</translation>
+<translation id="3294437725009624529">గెస్ట్</translation>
 <translation id="3298690094479023523">మీ PIN లేదా పాస్‌వర్డ్‌ను వెరిఫై చేయడం ఇంకా సాధ్యం కాలేదు. మళ్లీ ట్రై చేయండి.</translation>
 <translation id="3300193645498960160">మ్యూట్‌లో ఉన్నప్పుడు మీరు మాట్లాడితే, మీకు నోటిఫికేషన్ అందుతుంది. ఆడియో మీ పరికరం నుండి ఎన్నడూ పోదు.</translation>
 <translation id="3306386552969601301"><ph name="DEVICE_NAME" /> హాట్‌స్పాట్‌కు <ph name="DEVICECOUNT" /> పరికరాలు కనెక్ట్ చేయబడ్డాయి</translation>
@@ -1282,7 +1282,7 @@
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6119972796024789243">కలర్ కరెక్షన్</translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> డౌన్‌లోడ్‌ను నిర్ధారించండి</translation>
-<translation id="612734058257491180">అతిథి సెషన్‌లో Google Assistant పని చేయదు.</translation>
+<translation id="612734058257491180">గెస్ట్ సెషన్‌లో Google Assistant పని చేయదు.</translation>
 <translation id="6129953537138746214">ఖాళీ</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> కోసం 'డైలాగ్‌ను తీసివేయండి'ని తెరవండి</translation>
 <translation id="6141988275892716286">డౌన్‌లోడ్‌ను నిర్ధారించండి</translation>

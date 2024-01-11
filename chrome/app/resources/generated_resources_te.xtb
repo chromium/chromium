@@ -132,7 +132,7 @@
 <translation id="1095879482467973146">వెబ్‌లో Google Password Manager</translation>
 <translation id="109647177154844434">Parallels desktopను అన్‌ఇన్‌స్టాల్ చేస్తే మీ Windows యొక్క ఇమేజ్ తొలగించబడుతుంది. ఇందులో దాని యాప్‌లు, సెట్టింగ్‌లు, డేటా ఉంటాయి. మీరు ఖచ్చితంగా కొనసాగించాలనుకుంటున్నారా?</translation>
 <translation id="1097016918605049747">ఈ పేజీని అనువదించడం సాధ్యపడలేదు</translation>
-<translation id="1097658378307015415">సైన్ ఇన్ చేయడానికి ముందుగా, దయచేసి <ph name="NETWORK_ID" /> నెట్‌వర్క్‌ను యాక్టివేట్ చేయడానికి అతిథి లాగా ప్రవేశించండి</translation>
+<translation id="1097658378307015415">సైన్ ఇన్ చేయడానికి ముందుగా, దయచేసి <ph name="NETWORK_ID" /> నెట్‌వర్క్‌ను యాక్టివేట్ చేయడానికి గెస్ట్ లాగా ప్రవేశించండి</translation>
 <translation id="1099383081182863812">మీ Chromecastను మీరు
     <ph name="BEGIN_LINK" />
     Google Home యాప్‌<ph name="END_LINK" />లో చూడగలుగుతున్నారా?</translation>
@@ -729,7 +729,7 @@
 <translation id="1571041387761170095">బలహీనమైన లేదా వేరే చోట వాడిన పాస్‌వర్డ్‌లు ఏవీ లేవు</translation>
 <translation id="1571304935088121812">వినియోగదారు పేరును కాపీ చేస్తుంది</translation>
 <translation id="1571738973904005196">ట్యాబ్‌ను చూడండి: <ph name="TAB_ORIGIN" /></translation>
-<translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (అతిథి)</translation>
+<translation id="1572139610531470719"><ph name="WINDOW_TITLE" /> (గెస్ట్)</translation>
 <translation id="1572266655485775982">Wi-Fiని ప్రారంభించండి</translation>
 <translation id="1572876035008611720">మీ ఈమెయిల్‌ను నమోదు చేయండి</translation>
 <translation id="1573127087832371028">సమస్యను వివరించండి</translation>
@@ -1599,7 +1599,7 @@
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 పంక్తి చూపబడలేదు&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> పంక్తులు చూపబడలేదు&gt;}}</translation>
 <translation id="2215070081105889450">ఆడియోను షేర్ చేయడానికి బదులుగా ట్యాబ్ లేదా స్క్రీన్‌ను షేర్ చేయండి</translation>
 <translation id="2218019600945559112">మౌస్ మరియు టచ్‌ప్యాడ్</translation>
-<translation id="2218515861914035131">సాధారణ వచనం లాగా అతికించండి</translation>
+<translation id="2218515861914035131">సాధారణ టెక్స్ట్ లాగా పేస్ట్ చేయండి</translation>
 <translation id="221872881068107022">రివర్స్ స్క్రోలింగ్</translation>
 <translation id="2219007152108311874">ప్రతి సందర్శనకూ ముందు అడగాలి</translation>
 <translation id="2220409419896228519">మీకు ఇష్టమైన Google యాప్‌లకు బుక్‌మార్క్‌లను జోడించండి</translation>
@@ -2870,7 +2870,7 @@
 <translation id="3201422919974259695">అందుబాటులో గల USB పరికరాలు ఇక్కడ కనిపిస్తాయి.</translation>
 <translation id="3202131003361292969">పాథ్‌</translation>
 <translation id="3202499879214571401">స్క్రీన్‌ను <ph name="DEVICE_NAME" />లో ప్రసారం చేయడాన్ని పాజ్ చేయండి</translation>
-<translation id="3202578601642193415">సరిక్రొత్తది</translation>
+<translation id="3202578601642193415">కొత్తది</translation>
 <translation id="3204648577100496185">ఈ యాప్‌తో అనుబంధించబడిన డేటా ఈ పరికరం నుండి తీసివేయబడవచ్చు</translation>
 <translation id="3207344462385471911">మీ ఇటీవలి యాక్టివిటీ ఆధారంగా, మీకు ఆసక్తి ఉండే అవకాశం గల సెర్చ్ సూచనలు, షాపింగ్ డిస్కౌంట్‌లు మీకు ప్రదర్శించబడుతున్నాయి.
         <ph name="BREAK" />
@@ -2982,7 +2982,7 @@
 <translation id="3293181007446299124">మీ బ్రౌజింగ్ హిస్టరీ మీ పరికరంలో ప్రైవేట్‌గా ఉంచబడుతుంది, అలాగే మీ గుర్తింపును సురక్షితంగా ఉంచడానికి రిపోర్ట్‌లు ఆలస్యంగా పంపబడతాయి</translation>
 <translation id="3293644607209440645">ఈ పేజీని పంపండి</translation>
 <translation id="32939749466444286">Linux కంటైనర్ ప్రారంభించబడలేదు. దయచేసి మళ్లీ ట్రై చేయండి.</translation>
-<translation id="3294437725009624529">అతిథి</translation>
+<translation id="3294437725009624529">గెస్ట్</translation>
 <translation id="3294686910656423119">వినియోగ గణాంకాలు, క్రాష్ రిపోర్ట్‌లు</translation>
 <translation id="3295241308788901889">ఒక ట్యాబ్ ప్రసారం చేయబడుతోంది</translation>
 <translation id="3297105622164376095">థర్డ్-పార్టీ సైన్ ఇన్ ప్రాంప్ట్‌లను చూపించడానికి అనుమతించబడుతుంది</translation>
@@ -3671,7 +3671,7 @@
 <translation id="3826086052025847742">ChromeOS Flex లాగ్‌లు</translation>
 <translation id="3826440694796503677">మరిన్ని Google ఖాతాలను చేర్చడాన్ని మీ నిర్వాహకుడు నిలిపివేశారు</translation>
 <translation id="3827774300009121996">&amp;పూర్తి స్క్రీన్</translation>
-<translation id="3828029223314399057">బుక్‌మార్క్‌లను వెతకండి</translation>
+<translation id="3828029223314399057">బుక్‌మార్క్‌లను సెర్చ్ చేయండి</translation>
 <translation id="3828953470056652895">నేను <ph name="BEGIN_LINK1" />Google సర్వీస్ నియమాలు<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome, అలాగే ChromeOS అదనపు సర్వీస్ నియమాలు<ph name="END_LINK2" />, అలాగే <ph name="BEGIN_LINK3" />Play సర్వీస్ నియమాలను<ph name="END_LINK3" /> చదివి అంగీకరిస్తున్నాను.</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - అధిక మెమరీని వినియోగించింది - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">SMB ఫైల్ షేర్</translation>
@@ -4664,7 +4664,7 @@
 <translation id="4633757335284074492">Google Driveలో బ్యాకప్ చేయండి. సులభంగా డేటాను పునరుద్ధరించండి లేదా ఏ సమయంలో అయినా పరికరాన్ని మార్చండి. ఈ బ్యాకప్‌లో యాప్ డేటా కూడా ఉంటుంది. బ్యాకప్‌లు Googleకు అప్‌లోడ్ అవుతాయి, మీ చిన్నారి Google ఖాతా పాస్‌వర్డ్‌ను ఉపయోగించి ఎన్‌క్రిప్ట్ చేయబడతాయి.</translation>
 <translation id="4634575639321169635">పని కోసం లేదా వ్యక్తిగత వినియోగం కోసం ఈ పరికరాన్ని సెటప్ చేయండి</translation>
 <translation id="4635072447747973225">Crostiniని అన్ఇన్‌స్టాల్ చేయండి</translation>
-<translation id="4635398712689569051">అతిథి వినియోగదారులకు <ph name="PAGE_NAME" /> అందుబాటులో లేదు.</translation>
+<translation id="4635398712689569051">గెస్ట్ వినియోగదారులకు <ph name="PAGE_NAME" /> అందుబాటులో లేదు.</translation>
 <translation id="4636187126182557415">సిస్టమ్ ప్రాధాన్యతలు</translation>
 <translation id="4636682061478263818">Drive ఫైళ్లు</translation>
 <translation id="4636930964841734540">సమాచారం</translation>
@@ -4785,7 +4785,7 @@
 <translation id="4726710355753484204">జూమ్ - ఇన్ చేయడానికి Ctrl + Alt + ప్రకాశాన్ని పెంచే కీలను ఉపయోగించండి.
 జూమ్ - అవుట్ చేయడానికి Ctrl + Alt + ప్రకాశాన్ని తగ్గించే కీలను ఉపయోగించండి.</translation>
 <translation id="4726710629007580002">ఈ ఎక్స్‌టెన్ష‌న్‌ను ఇన్‌స్టాల్ చేయడానికి ప్రయత్నిస్తున్నప్పుడు హెచ్చరికలు చేయబడ్డాయి:</translation>
-<translation id="4727847987444062305">నిర్వాహిత అతిథి సెషన్</translation>
+<translation id="4727847987444062305">నిర్వాహిత గెస్ట్ సెషన్</translation>
 <translation id="4728558894243024398">ప్లాట్‌ఫారమ్</translation>
 <translation id="4730492586225682674">స్టైలస్ లాక్ స్క్రీన్‌పై తాజా గమనిక</translation>
 <translation id="4730888769809690665"><ph name="SITE" /> కోసం నోటిఫికేషన్‌లకు అనుమతి ఉంది</translation>
@@ -7057,7 +7057,7 @@
 <translation id="6583328141350416497">డౌన్‌లోడ్‌ను కొనసాగించండి</translation>
 <translation id="6584878029876017575">Microsoft Lifetime Signing</translation>
 <translation id="6585584201072946561">వెబ్ బ్రౌజర్‌కు టెక్స్ట్ సైజ్, ఫాంట్‌ను అనుకూలంగా మార్చండి</translation>
-<translation id="6586099239452884121">అతిథి బ్రౌజింగ్</translation>
+<translation id="6586099239452884121">గెస్ట్ బ్రౌజింగ్</translation>
 <translation id="6586213706115310390">మీరు "Ok Google" అని చెప్పడం ద్వారా మీ Assistantను యాక్సెస్ చేయండి.</translation>
 <translation id="6586451623538375658">ప్రాథమిక మౌస్ బటన్‌ను మార్చు</translation>
 <translation id="6588043302623806746">సెక్యూర్ DNSను ఉపయోగించండి</translation>
@@ -7566,7 +7566,7 @@
 <translation id="6978121630131642226">సెర్చ్ ఇంజిన్‌లు</translation>
 <translation id="6978717888677691380">మీరు బ్లాక్ చేసిన సైట్‌లు</translation>
 <translation id="6979041727349121225">ఎనర్జీ సేవర్</translation>
-<translation id="6979044105893951891">నిర్వాహిత అతిథి సెషన్‌లను ప్రారంభించడం మరియు విడిచిపెట్టడం</translation>
+<translation id="6979044105893951891">నిర్వాహిత గెస్ట్ సెషన్‌లను ప్రారంభించడం మరియు విడిచిపెట్టడం</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">మ్యూట్ (డిఫాల్ట్)</translation>
 <translation id="6979737339423435258">మొత్తం సమయం</translation>
@@ -7942,7 +7942,7 @@
 <translation id="7296503797589217366"><ph name="FOLDER_TITLE" /> ఫోల్డర్‌ను ఎంచుకోండి</translation>
 <translation id="7297726121602187087">ముదురు ఆకుపచ్చ రంగు</translation>
 <translation id="7298195798382681320">సిఫార్సు చేయబడినవి</translation>
-<translation id="7299337219131431707">అతిథి బ్రౌజింగ్‌ను ప్రారంభించండి</translation>
+<translation id="7299337219131431707">గెస్ట్ బ్రౌజింగ్‌ను ప్రారంభించండి</translation>
 <translation id="7299515639584427954">సపోర్ట్ చేయబడిన లింక్‌ల కోసం ఆటోమేటిక్ యాప్‌ను మార్చాలా?</translation>
 <translation id="7299588179200441056"><ph name="URL" /> - <ph name="FOLDER" /></translation>
 <translation id="7301470816294041580">"Ok Google, ఇది ఏ పాట?" లేదా "Ok Google, నా స్క్రీన్‌పై ఏముంది?" అని మీరు అడగవచ్చు</translation>
@@ -10069,7 +10069,7 @@
 <translation id="8949304443659090542">Chrome బ్రౌజర్ సింక్‌ను మేనేజ్ చేయండి</translation>
 <translation id="895054485242522631">మోషన్ సెన్సార్‌లను సైట్‌లు ఉపయోగించగలవు</translation>
 <translation id="8951256747718668828">ఒక ఎర్రర్ కారణంగా పునరుద్ధరించడం పూర్తి కాలేదు</translation>
-<translation id="8951465597020890363">ఏదేమైనా అతిథి మోడ్‌ను మూసివేయాలా?</translation>
+<translation id="8951465597020890363">ఏదేమైనా గెస్ట్ మోడ్‌ను మూసివేయాలా?</translation>
 <translation id="8952831374766033534">కాన్ఫిగరేషన్ ఎంపికకు మద్దతు లేదు: <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">ఛార్జింగ్‌లో ఉన్నప్పుడు</translation>
 <translation id="895347679606913382">ప్రారంభిస్తోంది...</translation>
