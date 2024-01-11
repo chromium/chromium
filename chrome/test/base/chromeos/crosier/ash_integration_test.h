@@ -12,10 +12,6 @@
 #include "chrome/test/base/chromeos/crosier/chromeos_integration_test_mixin.h"
 #include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chrome/test/base/chromeos/crosier/chromeos_integration_arc_mixin.h"
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
 namespace base {
 class CommandLine;
 }
@@ -59,10 +55,6 @@ class AshIntegrationTest : public InteractiveAshTest {
 
   ChromeOSIntegrationLoginMixin& login_mixin() { return login_mixin_; }
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  ChromeOSIntegrationArcMixin& arc_mixin() { return arc_mixin_; }
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
  private:
   // Overrides the Gaia URL to point to a local test server that produces an
   // error, which is expected behavior in test environments.
@@ -74,11 +66,6 @@ class AshIntegrationTest : public InteractiveAshTest {
 
   // Login support.
   ChromeOSIntegrationLoginMixin login_mixin_{&mixin_host_};
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // ARC is only supported on the branded build.
-  ChromeOSIntegrationArcMixin arc_mixin_{&mixin_host_, login_mixin_};
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   // Directory used by Wayland/Lacros in environment variable XDG_RUNTIME_DIR.
   base::ScopedTempDir scoped_temp_dir_xdg_;
