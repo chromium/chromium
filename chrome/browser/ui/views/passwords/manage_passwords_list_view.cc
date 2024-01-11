@@ -35,7 +35,14 @@ ManagePasswordsListView::ManagePasswordsListView(
   for (const std::unique_ptr<password_manager::PasswordForm>& password_form :
        credentials) {
     std::optional<ui::ImageModel> store_icon = std::nullopt;
-    if (password_form->IsUsingAccountStore()) {
+    if (base::FeatureList::IsEnabled(
+            password_manager::features::kButterOnDesktopFollowup)) {
+      if (!password_form->IsUsingAccountStore()) {
+        store_icon = ui::ImageModel::FromVectorIcon(
+            vector_icons::kNotUploadedIcon, gfx::kPlaceholderColor,
+            gfx::kFaviconSize);
+      }
+    } else if (password_form->IsUsingAccountStore()) {
       store_icon = ui::ImageModel::FromVectorIcon(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
           vector_icons::kGoogleGLogoIcon,
@@ -44,6 +51,7 @@ ManagePasswordsListView::ManagePasswordsListView(
 #endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
           gfx::kPlaceholderColor, gfx::kFaviconSize);
     }
+
     // TODO(crbug.com/1382017): Add a tooltip if needed.
     AddChildView(std::make_unique<RichHoverButton>(
         base::BindRepeating(

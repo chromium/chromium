@@ -158,6 +158,7 @@ aggregate_vector_icons("components_vector_icons") {
     "not_secure_warning.icon",
     "not_secure_warning_chrome_refresh.icon",
     "not_secure_warning_off_chrome_refresh.icon",
+    "not_uploaded.icon",
     "notification_warning.icon",
     "notifications.icon",
     "notifications_chrome_refresh.icon",
