@@ -161,15 +161,20 @@ void SaveCardOfferBubbleViews::AddedToWidget() {
   // Set the header image.
   ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
 
+  bool is_cvc_save_bubble =
+      controller()->GetBubbleType() == BubbleType::LOCAL_CVC_SAVE ||
+      controller()->GetBubbleType() == BubbleType::UPLOAD_CVC_SAVE;
   auto image_view = std::make_unique<ThemeTrackingNonAccessibleImageView>(
       *bundle.GetImageSkiaNamed(
-          base::FeatureList::IsEnabled(
-              features::kAutofillEnableNewSaveCardBubbleUi)
+          is_cvc_save_bubble ? IDR_SAVE_CVC
+          : base::FeatureList::IsEnabled(
+                features::kAutofillEnableNewSaveCardBubbleUi)
               ? IDR_SAVE_CARD_SECURELY
               : IDR_SAVE_CARD),
       *bundle.GetImageSkiaNamed(
-          base::FeatureList::IsEnabled(
-              features ::kAutofillEnableNewSaveCardBubbleUi)
+          is_cvc_save_bubble ? IDR_SAVE_CVC_DARK
+          : base::FeatureList::IsEnabled(
+                features ::kAutofillEnableNewSaveCardBubbleUi)
               ? IDR_SAVE_CARD_SECURELY_DARK
               : IDR_SAVE_CARD_DARK),
       base::BindRepeating(&views::BubbleDialogDelegate::GetBackgroundColor,
