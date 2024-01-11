@@ -3397,7 +3397,7 @@ are declared in tools/grit/grit_rule.gni.
                desc="Status text for a download item that is being checked for malware.">
         Checking for malware...
       </message>
-      
+
       <!-- Web App Window Title string -->
       <message name="IDS_WEB_APP_WITH_APP_TITLE" desc="Title of the web app window with app_title.">
         <ph name="APP_NAME">$1<ex>Sample App</ex></ph> - <ph name="APP_TITLE">$2<ex>News</ex></ph>
@@ -6400,7 +6400,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Extensions allowed on this site
       </message>
       <message name="IDS_EXTENSIONS_MENU_SITE_SETTINGS_TOGGLE_OFF_TOOLTIP" desc="Tooltip text for the site setting toggle button when is off.'">
-        Extensions not allowed on this site
+        Extensions are not allowed on this site
       </message>
        <message name="IDS_EXTENSIONS_MENU_SITE_SETTINGS_TOGGLE_ACCESSIBLE_NAME" desc="Accessibility string for the site setting toggle button.">
         Allow extensions on this site
@@ -6415,7 +6415,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         No extensions need access to this site
       </message>
       <message name="IDS_EXTENSIONS_MENU_MESSAGE_SECTION_USER_BLOCKED_ACCESS_TEXT" desc="Text of the message section when the user blocked access to this site to all extensions.">
-        Extensions are blocked on this site
+        Extensions are not allowed on this site
       </message>
       <message name="IDS_EXTENSIONS_MENU_MESSAGE_SECTION_ENTERPRISE_TOOLTIP_ICON_TEXT" desc="Text of the info tooltip icon in the message section when the user blocked access to this site to all extensions but extensions installed by admin still have access.">
         Extensions installed by your administrator can still read and change sites
