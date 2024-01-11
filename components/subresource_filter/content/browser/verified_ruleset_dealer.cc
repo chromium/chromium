@@ -93,7 +93,12 @@ VerifiedRulesetDealer::Handle::Handle(
       dealer_(new VerifiedRulesetDealer,
               base::OnTaskRunnerDeleter(std::move(task_runner))) {}
 
-VerifiedRulesetDealer::Handle::~Handle() = default;
+VerifiedRulesetDealer::Handle::~Handle() {
+  // The `base::SequencedTaskRunner` that `task_runner_` points to is owned by
+  // `dealer_`. Make sure to clear it before `dealer_` is destroyed to avoid
+  // holding a dangling pointer.
+  task_runner_ = nullptr;
+}
 
 void VerifiedRulesetDealer::Handle::GetDealerAsync(
     base::OnceCallback<void(VerifiedRulesetDealer*)> callback) {
