@@ -32,6 +32,11 @@ BASE_DECLARE_FEATURE(kEnableComposeLanguageBypass);
 
 // Controls whether or not the Compose WebUI dialog has animations.
 BASE_DECLARE_FEATURE(kEnableComposeWebUIAnimations);
+
+// Controls whether to enable the dogfood footer when on device evaluation is
+// used.
+BASE_DECLARE_FEATURE(kEnableComposeOnDeviceDogfoodFooter);
+
 }  // namespace compose::features
 
 #endif  // COMPONENTS_COMPOSE_CORE_BROWSER_COMPOSE_FEATURES_H_

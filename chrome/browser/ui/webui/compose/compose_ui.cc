@@ -82,6 +82,10 @@ ComposeUI::ComposeUI(content::WebUI* web_ui)
   source->AddBoolean("enableAnimations",
                      base::FeatureList::IsEnabled(
                          compose::features::kEnableComposeWebUIAnimations));
+  source->AddBoolean(
+      "enableOnDeviceDogfoodFooter",
+      base::FeatureList::IsEnabled(
+          compose::features::kEnableComposeOnDeviceDogfoodFooter));
 }
 
 ComposeUI::~ComposeUI() = default;

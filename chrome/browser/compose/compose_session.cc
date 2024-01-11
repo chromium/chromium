@@ -72,9 +72,12 @@ bool IsValidComposePrompt(const std::string& prompt) {
 }
 
 const char kComposeBugReportURL[] = "https://goto.google.com/ccbrfd";
+const char kOnDeviceComposeBugReportURL[] = "https://goto.google.com/ccbrfdod";
 const char kComposeLearnMorePageURL[] =
     "https://support.google.com/chrome?p=help_me_write";
 const char kComposeFeedbackSurveyURL[] = "https://goto.google.com/ccfsfd";
+const char kOnDeviceComposeFeedbackSurveyURL[] =
+    "https://goto.google.com/ccfsfdod";
 
 void LogComposeRewriteReason(const compose::mojom::StyleModifiersPtr& style) {
   if (style && style->is_tone()) {
@@ -539,9 +542,15 @@ void ComposeSession::Undo(UndoCallback callback) {
 }
 
 void ComposeSession::OpenBugReportingLink() {
+  const char* url = kComposeBugReportURL;
+  if (most_recent_ok_state_ && most_recent_ok_state_->mojo_state() &&
+      most_recent_ok_state_->mojo_state()
+          ->response->on_device_evaluation_used) {
+    url = kOnDeviceComposeBugReportURL;
+  }
   web_contents_->OpenURL(content::OpenURLParams(
-      GURL(kComposeBugReportURL), content::Referrer(),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
+      GURL(url), content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui::PAGE_TRANSITION_LINK,
       /* is_renderer_initiated= */ false));
 }
 
@@ -553,9 +562,15 @@ void ComposeSession::OpenComposeLearnMorePage() {
 }
 
 void ComposeSession::OpenFeedbackSurveyLink() {
+  const char* url = kComposeFeedbackSurveyURL;
+  if (most_recent_ok_state_ && most_recent_ok_state_->mojo_state() &&
+      most_recent_ok_state_->mojo_state()
+          ->response->on_device_evaluation_used) {
+    url = kOnDeviceComposeFeedbackSurveyURL;
+  }
   web_contents_->OpenURL(content::OpenURLParams(
-      GURL(kComposeFeedbackSurveyURL), content::Referrer(),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
+      GURL(url), content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui::PAGE_TRANSITION_LINK,
       /* is_renderer_initiated= */ false));
 }
 

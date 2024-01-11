@@ -570,6 +570,11 @@ export class ComposeAppElement extends ComposeAppElementBase {
     return Boolean(this.response_?.onDeviceEvaluationUsed);
   }
 
+  private showOnDeviceDogfoodFooter_(): boolean {
+    return Boolean(this.response_?.onDeviceEvaluationUsed) &&
+        loadTimeData.getBoolean('enableOnDeviceDogfoodFooter');
+  }
+
   private acceptButtonText_(): string {
     return this.textSelected_ ? this.i18n('replaceButton') :
                                 this.i18n('insertButton');

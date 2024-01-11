@@ -31,4 +31,9 @@ BASE_FEATURE(kEnableComposeLanguageBypass,
 BASE_FEATURE(kEnableComposeWebUIAnimations,
              "ComposeWebUIAnimations",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEnableComposeOnDeviceDogfoodFooter,
+             "EnableComposeOnDeviceDogfoodFooter",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace compose::features
