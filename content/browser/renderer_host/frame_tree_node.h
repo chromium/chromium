@@ -41,7 +41,6 @@
 namespace content {
 
 class NavigationRequest;
-class RenderFrameHostImpl;
 class NavigationEntryImpl;
 class FrameTree;
 
@@ -193,14 +192,20 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
     return current_frame_host()->GetLastCommittedURL();
   }
 
-  // Note that the current RenderFrameHost might not exist yet when calling this
-  // during FrameTreeNode initialization. In this case the FrameTreeNode must be
-  // on the initial empty document. Refer RFHI::is_initial_empty_document for a
-  // more details.
+  // Moves this frame out of the initial empty document state, which is a
+  // one-way change for FrameTreeNode (i.e., it cannot go back into the initial
+  // empty document state).
+  void set_not_on_initial_empty_document() {
+    is_on_initial_empty_document_ = false;
+  }
+
+  // Returns false if the frame has committed a document that is not the initial
+  // empty document, or if the current document's input stream has been opened
+  // with document.open(), causing the document to lose its "initial empty
+  // document" status. For more details, see the definition of
+  // `is_on_initial_empty_document_`.
   bool is_on_initial_empty_document() const {
-    return current_frame_host()
-               ? current_frame_host()->is_initial_empty_document()
-               : true;
+    return is_on_initial_empty_document_;
   }
 
   // Returns whether the frame's owner element in the parent document is
@@ -694,7 +699,6 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   void SetFocusedFrame(SiteInstanceGroup* source) override;
   void DidChangeReferrerPolicy(
       network::mojom::ReferrerPolicy referrer_policy) override;
-
   // Updates the user activation state in the browser frame tree and in the
   // frame trees in all renderer processes except the renderer for this node
   // (which initiated the update).  Returns |false| if the update tries to
@@ -706,9 +710,8 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   bool UpdateUserActivationState(
       blink::mojom::UserActivationUpdateType update_type,
       blink::mojom::UserActivationNotificationType notification_type) override;
-
   void DidConsumeHistoryUserActivation() override;
-
+  void DidOpenDocumentInputStream() override;
   std::unique_ptr<NavigationRequest>
   CreateNavigationRequestForSynchronousRendererCommit(
       RenderFrameHostImpl* render_frame_host,
@@ -854,6 +857,33 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   // If the url from the the last BeginNavigation is about:srcdoc, this value
   // stores the srcdoc_attribute's value for re-use in history navigations.
   std::string srcdoc_value_;
+
+  // Whether this frame is still on the initial about:blank document or the
+  // synchronously committed about:blank document committed at frame creation,
+  // and its "initial empty document"-ness is still true.
+  // This will be false if either of these has happened:
+  // - The current RenderFrameHost commits a cross-document navigation that is
+  //   not the synchronously committed about:blank document per:
+  //   https://html.spec.whatwg.org/multipage/browsers.html#creating-browsing-contexts:is-initial-about:blank
+  // - The document's input stream has been opened with document.open(), per
+  //   https://html.spec.whatwg.org/multipage/dynamic-markup-insertion.html#opening-the-input-stream:is-initial-about:blank
+  // NOTE: we treat both the "initial about:blank document" and the
+  // "synchronously committed about:blank document" as the initial empty
+  // document. In the future, we plan to remove the synchronous about:blank
+  // commit so that this state will only be true if the frame is on the
+  // "initial about:blank document". See also:
+  // - https://github.com/whatwg/html/issues/6863
+  // - https://crbug.com/1215096
+  //
+  // Note that cross-document navigations update this state at
+  // DidCommitNavigation() time. Thus, this is still true when a cross-document
+  // navigation from an initial empty document is in the pending-commit window,
+  // after sending the CommitNavigation IPC but before receiving
+  // DidCommitNavigation().  This is in contrast to
+  // has_committed_any_navigation(), which is updated in CommitNavigation().
+  // TODO(alexmos): Consider updating this at CommitNavigation() time as well to
+  // match the has_committed_any_navigation() behavior.
+  bool is_on_initial_empty_document_ = true;
 
   // Whether the frame's owner element in the parent document is collapsed.
   bool is_collapsed_ = false;

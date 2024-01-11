@@ -850,6 +850,12 @@ void FrameTreeNode::DidConsumeHistoryUserActivation() {
   }
 }
 
+void FrameTreeNode::DidOpenDocumentInputStream() {
+  // document.open causes the document to lose its "initial empty document"
+  // status.
+  set_not_on_initial_empty_document();
+}
+
 void FrameTreeNode::PruneChildFrameNavigationEntries(
     NavigationEntryImpl* entry) {
   for (size_t i = 0; i < current_frame_host()->child_count(); ++i) {

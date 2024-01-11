@@ -88,6 +88,10 @@ class RenderFrameHostOwner {
   // has been consumed, in response to an event in the renderer process.
   virtual void DidConsumeHistoryUserActivation() = 0;
 
+  // Called when document.open occurs, which causes the frame to no longer be in
+  // an initial empty document state.
+  virtual void DidOpenDocumentInputStream() = 0;
+
   // Creates a NavigationRequest  for a synchronous navigation that has
   // committed in the renderer process. Those are:
   // - same-document renderer-initiated navigations.
