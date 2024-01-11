@@ -17,6 +17,7 @@
 #include "base/containers/lru_cache.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/tick_clock.h"
@@ -715,7 +716,7 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
 
   raw_ptr<const base::TickClock, DanglingUntriaged> tick_clock_ = nullptr;
 
-  raw_ptr<base::SequencedTaskRunner, DanglingUntriaged> task_runner_ = nullptr;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_ = nullptr;
 
   const raw_ptr<SSLConfigService> ssl_config_service_;
 

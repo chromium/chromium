@@ -1238,8 +1238,9 @@ int QuicStreamFactory::Create(const QuicSessionKey& session_key,
 
   // TODO(rtenneti): |task_runner_| is used by the Job. Initialize task_runner_
   // in the constructor after WebRequestActionWithThreadsTest.* tests are fixed.
-  if (!task_runner_)
-    task_runner_ = base::SequencedTaskRunner::GetCurrentDefault().get();
+  if (!task_runner_) {
+    task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
+  }
 
   if (!tick_clock_)
     tick_clock_ = base::DefaultTickClock::GetInstance();
@@ -2005,7 +2006,7 @@ bool QuicStreamFactory::CreateSessionHelper(
                                       server_info);
 
   QuicChromiumPacketWriter* writer =
-      new QuicChromiumPacketWriter(socket.get(), task_runner_);
+      new QuicChromiumPacketWriter(socket.get(), task_runner_.get());
   quic::QuicConnection* connection = new quic::QuicConnection(
       connection_id, quic::QuicSocketAddress(), ToQuicSocketAddress(addr),
       helper_.get(), alarm_factory_.get(), writer, true /* owns_writer */,
@@ -2046,7 +2047,7 @@ bool QuicStreamFactory::CreateSessionHelper(
       params_.max_migrations_to_non_default_network_on_path_degrading,
       yield_after_packets_, yield_after_duration_, cert_verify_flags, config,
       std::move(crypto_config_handle), dns_resolution_start_time,
-      dns_resolution_end_time, tick_clock_, task_runner_,
+      dns_resolution_end_time, tick_clock_, task_runner_.get(),
       std::move(socket_performance_watcher), endpoint_result,
       net_log.net_log());
 
