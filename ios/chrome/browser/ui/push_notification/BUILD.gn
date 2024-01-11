@@ -2,6 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("confirmation_presenter") {
-  sources = [ "notifications_confirmation_presenter.h" ]
+source_set("presenters") {
+  sources = [
+    "notifications_alert_presenter.h",
+    "notifications_confirmation_presenter.h",
+  ]
 }

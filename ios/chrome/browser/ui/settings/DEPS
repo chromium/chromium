@@ -10,6 +10,7 @@ include_rules = [
   "+ios/chrome/browser/ui/autofill/cells/autofill_edit_item.h",
   "+ios/chrome/browser/ui/default_promo/default_browser_instructions_view.h",
   "+ios/chrome/browser/ui/bubble",
+  "+ios/chrome/browser/ui/push_notification/notifications_alert_presenter.h",
 ]
 
 specific_include_rules = {

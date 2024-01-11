@@ -30,7 +30,6 @@ source_set("feed_top_section") {
     "//components/sync/base:features",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/discover_feed/model:constants",
-    "//ios/chrome/browser/push_notification/model:alert_presenter",
     "//ios/chrome/browser/push_notification/model:push_notification_client",
     "//ios/chrome/browser/push_notification/model:push_notification_service",
     "//ios/chrome/browser/shared/coordinator/alert",
@@ -51,6 +50,7 @@ source_set("feed_top_section") {
     "//ios/chrome/browser/ui/ntp",
     "//ios/chrome/browser/ui/ntp:constants",
     "//ios/chrome/browser/ui/ntp:utils",
+    "//ios/chrome/browser/ui/push_notification:presenters",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
   ]
