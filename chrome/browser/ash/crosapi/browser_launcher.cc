@@ -373,6 +373,11 @@ void SetUpFeatures(const LaunchParamsFromBackground& params,
     parameters.command_line.AppendSwitch(
         switches::kEnableLacrosSharedComponentsDir);
   }
+
+  if (params.enable_fork_zygotes_at_login_screen) {
+    parameters.command_line.AppendSwitch(
+        switches::kEnableLacrosForkZygotesAtLoginScreen);
+  }
 }
 
 }  // namespace

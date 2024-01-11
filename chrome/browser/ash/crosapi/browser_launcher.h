@@ -66,6 +66,9 @@ class BrowserLauncher {
     // Sets true if Lacros uses a shared components directory.
     bool enable_shared_components_dir = false;
 
+    // Sets true if Lacros forks Zygotes at login screen.
+    bool enable_fork_zygotes_at_login_screen = false;
+
     // Any additional args to start lacros with.
     std::vector<std::string> lacros_additional_args;
   };

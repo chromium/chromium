@@ -350,6 +350,9 @@ BrowserLauncher::LaunchParamsFromBackground DoLacrosBackgroundWorkPreLaunch(
     clear_shared_resource_file = true;
   }
 
+  params.enable_fork_zygotes_at_login_screen = base::FeatureList::IsEnabled(
+      browser_util::kLacrosForkZygotesAtLoginScreen);
+
   // Clear shared resource file cache if it's initial lacros launch after ash
   // reboot. If not, rename shared resource file cache to temporal name on
   // Lacros launch.
