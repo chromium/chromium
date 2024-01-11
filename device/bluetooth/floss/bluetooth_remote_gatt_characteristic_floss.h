@@ -159,6 +159,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristicFloss
   // so the lifetime of the two objects are tied together.
   raw_ptr<BluetoothRemoteGattServiceFloss> service_;
 
+  // Address of the device this characteristic and parent service belongs to.
+  std::string device_address_;
+
   base::WeakPtrFactory<BluetoothRemoteGattCharacteristicFloss>
       weak_ptr_factory_{this};
 };
