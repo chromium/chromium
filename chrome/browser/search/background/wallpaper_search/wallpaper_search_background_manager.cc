@@ -213,11 +213,12 @@ void WallpaperSearchBackgroundManager::SelectLocalBackgroundImage(
                   chrome::kChromeUIUntrustedNewTabPageBackgroundFilename)),
           base::BindOnce(&WallpaperSearchBackgroundManager::
                              SetBackgroundToLocalResourceWithId,
-                         weak_ptr_factory_.GetWeakPtr(), id, std::move(timer)));
+                         weak_ptr_factory_.GetWeakPtr(), id, std::move(timer),
+                         bitmap));
+    } else {
+      ntp_custom_background_service_->UpdateCustomLocalBackgroundColorAsync(
+          gfx::Image::CreateFrom1xBitmap(bitmap));
     }
-
-    ntp_custom_background_service_->UpdateCustomLocalBackgroundColorAsync(
-        gfx::Image::CreateFrom1xBitmap(bitmap));
   }
 }
 
@@ -260,8 +261,11 @@ WallpaperSearchBackgroundManager::SaveCurrentBackgroundToHistory(
 
 void WallpaperSearchBackgroundManager::SetBackgroundToLocalResourceWithId(
     const base::Token& id,
-    base::ElapsedTimer timer) {
+    base::ElapsedTimer timer,
+    const SkBitmap& bitmap) {
   ntp_custom_background_service_->SetBackgroundToLocalResourceWithId(id);
+  ntp_custom_background_service_->UpdateCustomLocalBackgroundColorAsync(
+      gfx::Image::CreateFrom1xBitmap(bitmap));
   UmaHistogramMediumTimes(
       "NewTabPage.WallpaperSearch.SetResultThemeProcessingLatency",
       timer.Elapsed());

@@ -50,7 +50,8 @@ class WallpaperSearchBackgroundManager {
 
  private:
   void SetBackgroundToLocalResourceWithId(const base::Token& id,
-                                          base::ElapsedTimer timer);
+                                          base::ElapsedTimer timer,
+                                          const SkBitmap& bitmap);
 
   raw_ptr<NtpCustomBackgroundService> ntp_custom_background_service_;
   raw_ptr<Profile> profile_;
