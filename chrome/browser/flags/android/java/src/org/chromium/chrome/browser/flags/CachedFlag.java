@@ -45,14 +45,16 @@ public class CachedFlag extends Flag {
 
     /**
      * Rules from highest to lowest priority:
-     * 1. If the flag has been forced by @EnableFeatures/@DisableFeatures or
-     *    {@link CachedFlag#setForTesting}, the forced value is returned.
-     * 2. If a value was previously returned in the same run, the same value is returned for
-     *    consistency.
-     * 3. If native is loaded, the value from {@link ChromeFeatureList} is returned.
-     * 4. If in a previous run, the value from {@link ChromeFeatureList} was cached to SharedPrefs,
-     *    it is returned.
-     * 5. The default value passed as a parameter is returned.
+     *
+     * <ul>
+     *   <li>1. If the flag has been forced by @EnableFeatures/@DisableFeatures or {@link
+     *       CachedFlag#setForTesting}, the forced value is returned.
+     *   <li>2. If a value was previously returned in the same run, the same value is returned for
+     *       consistency.
+     *   <li>3. If in a previous run, the value from {@link ChromeFeatureList} was cached to
+     *       SharedPrefs, it is returned.
+     *   <li>4. The |defaultValue| passed as a constructor parameter is returned.
+     * </ul>
      */
     @Override
     public boolean isEnabled() {
@@ -94,7 +96,7 @@ public class CachedFlag extends Flag {
 
     @Override
     protected void clearInMemoryCachedValueForTesting() {
-        // ValuesReturned is cleared by CachedFeatureFlags#resetFlagsForTesting().
+        // ValuesReturned is cleared by CachedFlagUtils#resetFlagsForTesting().
     }
 
     /**
@@ -106,10 +108,6 @@ public class CachedFlag extends Flag {
     @VisibleForTesting
     @Deprecated
     public void setForTesting(@Nullable Boolean value) {
-        setValueReturnedForTesting(value);
-    }
-
-    private void setValueReturnedForTesting(@Nullable Boolean value) {
         synchronized (ValuesReturned.sBoolValues) {
             ValuesReturned.sBoolValues.put(getSharedPreferenceKey(), value);
         }
@@ -136,9 +134,12 @@ public class CachedFlag extends Flag {
     @Deprecated
     public static void setFeaturesForTesting(Map<String, Boolean> features) {
         for (Map.Entry<String, Boolean> entry : features.entrySet()) {
-            CachedFlag possibleCachedFlag = ChromeFeatureList.sAllCachedFlags.get(entry.getKey());
-            if (possibleCachedFlag != null) {
-                possibleCachedFlag.setValueReturnedForTesting(entry.getValue());
+            String featureName = entry.getKey();
+            Boolean flagValue = entry.getValue();
+            String sharedPreferencesKey =
+                    CachedFlagsSharedPreferences.FLAGS_CACHED.createKey(featureName);
+            synchronized (ValuesReturned.sBoolValues) {
+                ValuesReturned.sBoolValues.put(sharedPreferencesKey, flagValue);
             }
         }
     }
