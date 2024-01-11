@@ -28,7 +28,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
-#include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_manager.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
@@ -79,19 +78,6 @@ bool IconInfosContainIconURL(const std::vector<apps::IconInfo>& icon_infos,
   return false;
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-void LogIsolatedWebAppInstallResult(
-    std::vector<web_app::IsolatedWebAppPolicyManager::EphemeralAppInstallResult>
-        result) {
-  for (size_t i = 0; i < result.size(); ++i) {
-    if (result[i] != web_app::IsolatedWebAppPolicyManager::
-                         EphemeralAppInstallResult::kSuccess) {
-      DLOG(WARNING) << "Could not force-install IWA number " << i + 1
-                    << " failed. Error: " << static_cast<int>(result[i]);
-    }
-  }
-}
-#endif
 
 // Policy installed apps are only allowed on:
 // 1. ChromeOS guest sessions (current only on Ash).
@@ -256,14 +242,6 @@ void WebAppPolicyManager::InitChangeRegistrarAndRefreshPolicy(
     RefreshPolicyInstalledApps(/*allow_close_and_relaunch=*/false);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-    pref_change_registrar_.Add(
-        prefs::kIsolatedWebAppInstallForceList,
-        base::BindRepeating(
-            &WebAppPolicyManager::RefreshPolicyInstalledIsolatedWebApps,
-            weak_ptr_factory_.GetWeakPtr()));
-    RefreshPolicyInstalledIsolatedWebApps();
-#endif
   } else {
     if (policy_settings_and_force_installs_applied_) {
       std::move(policy_settings_and_force_installs_applied_).Run();
@@ -415,52 +393,6 @@ void WebAppPolicyManager::RefreshPolicyInstalledApps(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-void WebAppPolicyManager::RefreshPolicyInstalledIsolatedWebApps() {
-  const base::Value::List& isolated_web_apps =
-      pref_service_->GetList(prefs::kIsolatedWebAppInstallForceList);
-  if (isolated_web_apps.empty()) {
-    return;
-  }
-
-  if (iwa_policy_manager_) {
-    // Isolated web apps have already been processed.
-    LOG(WARNING) << "Updating of the IWA is not yet supported.";
-    return;
-  }
-
-  std::vector<IsolatedWebAppExternalInstallOptions> all_iwa_install_options;
-  all_iwa_install_options.reserve(isolated_web_apps.size());
-  for (const auto& policy_entry : isolated_web_apps) {
-    const base::expected<IsolatedWebAppExternalInstallOptions, std::string>
-        options = IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(
-            policy_entry);
-    if (options.has_value()) {
-      all_iwa_install_options.push_back(options.value());
-    } else {
-      LOG(ERROR) << "Could not interprete IWA force-install policy: "
-                 << options.error();
-    }
-  }
-
-  auto url_loader_factory = profile_->GetURLLoaderFactory();
-
-  WebAppProvider* const web_app_provider =
-      web_app::WebAppProvider::GetForWebApps(profile_);
-  if (!web_app_provider) {
-    LOG(ERROR) << "Can't force-install isolated apps: No web app provider";
-    return;
-  }
-  std::unique_ptr<IsolatedWebAppPolicyManager::IwaInstallCommandWrapper>
-      installer = std::make_unique<
-          IsolatedWebAppPolicyManager::IwaInstallCommandWrapperImpl>(
-          web_app_provider);
-  iwa_policy_manager_ = std::make_unique<IsolatedWebAppPolicyManager>(
-      profile_->GetPath(), all_iwa_install_options, url_loader_factory,
-      std::move(installer), base::BindOnce(&LogIsolatedWebAppInstallResult));
-  iwa_policy_manager_->InstallEphemeralApps();
-}
-#endif
 
 void WebAppPolicyManager::ParsePolicySettings() {
   // No need to validate the types or values of the policy members because we

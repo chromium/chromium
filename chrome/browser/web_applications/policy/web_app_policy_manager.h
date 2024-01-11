@@ -143,9 +143,6 @@ class WebAppPolicyManager {
   void InitChangeRegistrarAndRefreshPolicy(bool enable_pwa_support);
 
   void RefreshPolicyInstalledApps(bool allow_close_and_relaunch = false);
-#if BUILDFLAG(IS_CHROMEOS)
-  void RefreshPolicyInstalledIsolatedWebApps();
-#endif
   void ParsePolicySettings();
   void RefreshPolicySettings();
   void OnAppsSynchronized(
@@ -225,9 +222,6 @@ class WebAppPolicyManager {
 
   base::OnceClosure policy_settings_and_force_installs_applied_;
 
-#if BUILDFLAG(IS_CHROMEOS)
-  std::unique_ptr<IsolatedWebAppPolicyManager> iwa_policy_manager_;
-#endif
 
   base::WeakPtrFactory<WebAppPolicyManager> weak_ptr_factory_{this};
 };

@@ -164,7 +164,7 @@ std::vector<IsolatedWebAppExternalInstallOptions> GenerateInstallOptions() {
 }
 
 class TestIwaInstallCommandWrapper
-    : public IsolatedWebAppPolicyManager::IwaInstallCommandWrapper {
+    : public internal::BulkIwaInstaller::IwaInstallCommandWrapper {
  public:
   TestIwaInstallCommandWrapper() = default;
   void Install(
@@ -195,9 +195,10 @@ class TestIwaInstallCommandWrapper
 
 }  // namespace
 
-class IsolatedWebAppPolicyManagerTest : public ::testing::Test {
+namespace internal {
+class BulkIwaInstallerTest : public ::testing::Test {
  public:
-  IsolatedWebAppPolicyManagerTest()
+  BulkIwaInstallerTest()
       : shared_url_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_factory_)) {}
@@ -250,39 +251,39 @@ class IsolatedWebAppPolicyManagerTest : public ::testing::Test {
 // This test case represents the regular flow of force installing IWA for
 // ephemeral session. The install options will cover cases of success as well as
 // legitimate failures.
-TEST_F(IsolatedWebAppPolicyManagerTest, MgsRegularFlow) {
+TEST_F(BulkIwaInstallerTest, MgsRegularFlow) {
   auto expected_results =
-      std::vector<IsolatedWebAppPolicyManager::EphemeralAppInstallResult>(
+      std::vector<internal::BulkIwaInstaller::EphemeralAppInstallResult>(
           all_install_options_.size());
 
   expected_results.at(0) =
-      IsolatedWebAppPolicyManager::EphemeralAppInstallResult::kSuccess;
+      internal::BulkIwaInstaller::EphemeralAppInstallResult::kSuccess;
   expected_results.at(1) =
-      IsolatedWebAppPolicyManager::EphemeralAppInstallResult::kSuccess;
-  expected_results.at(2) = IsolatedWebAppPolicyManager::
+      internal::BulkIwaInstaller::EphemeralAppInstallResult::kSuccess;
+  expected_results.at(2) = internal::BulkIwaInstaller::
       EphemeralAppInstallResult::kErrorUpdateManifestDownloadFailed;
-  expected_results.at(3) = IsolatedWebAppPolicyManager::
+  expected_results.at(3) = internal::BulkIwaInstaller::
       EphemeralAppInstallResult::kErrorUpdateManifestParsingFailed;
-  expected_results.at(4) = IsolatedWebAppPolicyManager::
+  expected_results.at(4) = internal::BulkIwaInstaller::
       EphemeralAppInstallResult::kErrorWebBundleUrlCantBeDetermined;
-  expected_results.at(5) = IsolatedWebAppPolicyManager::
+  expected_results.at(5) = internal::BulkIwaInstaller::
       EphemeralAppInstallResult::kErrorCantCreateIwaDirectory;
-  expected_results.at(6) = IsolatedWebAppPolicyManager::
+  expected_results.at(6) = internal::BulkIwaInstaller::
       EphemeralAppInstallResult::kErrorCantDownloadWebBundle;
-  expected_results.at(7) = IsolatedWebAppPolicyManager::
+  expected_results.at(7) = internal::BulkIwaInstaller::
       EphemeralAppInstallResult::kErrorCantInstallFromWebBundle;
   base::test::TestFuture<
-      std::vector<IsolatedWebAppPolicyManager::EphemeralAppInstallResult>>
+      std::vector<internal::BulkIwaInstaller::EphemeralAppInstallResult>>
       future;
-  IsolatedWebAppPolicyManager manager(
+  BulkIwaInstaller installer(
       dir_.GetPath(), all_install_options_, shared_url_loader_factory_,
       std::make_unique<TestIwaInstallCommandWrapper>(), future.GetCallback());
-  manager.InstallEphemeralApps();
+  installer.InstallEphemeralApps();
 
   EXPECT_EQ(future.Get(), expected_results);
 
   const base::FilePath iwa_root_dir = dir_.GetPath().Append(
-      IsolatedWebAppPolicyManager::kEphemeralIwaRootDirectory);
+      internal::BulkIwaInstaller::kEphemeralIwaRootDirectory);
   ASSERT_TRUE(base::DirectoryExists(iwa_root_dir));
 
   // There should be 2 directories that represent successfully installed apps.
@@ -298,69 +299,70 @@ TEST_F(IsolatedWebAppPolicyManagerTest, MgsRegularFlow) {
 
   EXPECT_TRUE(base::PathExists(
       iwa_root_dir.Append(kWebBundleId1)
-          .Append(IsolatedWebAppPolicyManager::kMainSignedWebBundleFileName)));
+          .Append(internal::BulkIwaInstaller::kMainSignedWebBundleFileName)));
   EXPECT_TRUE(base::PathExists(
       iwa_root_dir.Append(kWebBundleId2)
-          .Append(IsolatedWebAppPolicyManager::kMainSignedWebBundleFileName)));
+          .Append(internal::BulkIwaInstaller::kMainSignedWebBundleFileName)));
 }
 
 // If there is no MGS we don't create root directory for the IWAs.
-TEST_F(IsolatedWebAppPolicyManagerTest, RegularUserDirectoryForIwaNotCreated) {
+TEST_F(BulkIwaInstallerTest, RegularUserDirectoryForIwaNotCreated) {
   test_managed_guest_session_.reset();
   auto expected_results =
-      std::vector<IsolatedWebAppPolicyManager::EphemeralAppInstallResult>(
+      std::vector<internal::BulkIwaInstaller::EphemeralAppInstallResult>(
           all_install_options_.size(),
-          IsolatedWebAppPolicyManager::EphemeralAppInstallResult::
+          internal::BulkIwaInstaller::EphemeralAppInstallResult::
               kErrorNotEphemeralSession);
   base::test::TestFuture<
-      std::vector<IsolatedWebAppPolicyManager::EphemeralAppInstallResult>>
+      std::vector<internal::BulkIwaInstaller::EphemeralAppInstallResult>>
       future;
-  IsolatedWebAppPolicyManager manager(
+  BulkIwaInstaller installer(
       dir_.GetPath(), all_install_options_, shared_url_loader_factory_,
       std::make_unique<TestIwaInstallCommandWrapper>(), future.GetCallback());
-  manager.InstallEphemeralApps();
+  installer.InstallEphemeralApps();
 
   EXPECT_EQ(future.Get(), expected_results);
   EXPECT_FALSE(base::DirectoryExists(dir_.GetPath().Append(
-      IsolatedWebAppPolicyManager::kEphemeralIwaRootDirectory)));
+      internal::BulkIwaInstaller::kEphemeralIwaRootDirectory)));
 }
 
 // Return error if the root directory exists.
-TEST_F(IsolatedWebAppPolicyManagerTest, RootDirectoryExists) {
+TEST_F(BulkIwaInstallerTest, RootDirectoryExists) {
   base::CreateDirectory(dir_.GetPath().Append(
-      IsolatedWebAppPolicyManager::kEphemeralIwaRootDirectory));
+      internal::BulkIwaInstaller::kEphemeralIwaRootDirectory));
 
   auto expected_results =
-      std::vector<IsolatedWebAppPolicyManager::EphemeralAppInstallResult>(
+      std::vector<internal::BulkIwaInstaller::EphemeralAppInstallResult>(
           all_install_options_.size(),
-          IsolatedWebAppPolicyManager::EphemeralAppInstallResult::
+          internal::BulkIwaInstaller::EphemeralAppInstallResult::
               kErrorCantCreateRootDirectory);
 
   base::test::TestFuture<
-      std::vector<IsolatedWebAppPolicyManager::EphemeralAppInstallResult>>
+      std::vector<internal::BulkIwaInstaller::EphemeralAppInstallResult>>
       future;
-  IsolatedWebAppPolicyManager manager(
+  BulkIwaInstaller installer(
       dir_.GetPath(), all_install_options_, shared_url_loader_factory_,
       std::make_unique<TestIwaInstallCommandWrapper>(), future.GetCallback());
-  manager.InstallEphemeralApps();
+  installer.InstallEphemeralApps();
 
   EXPECT_EQ(future.Get(), expected_results);
 }
 
 // Empty install list should not lead to unexpected behavior.
-TEST_F(IsolatedWebAppPolicyManagerTest, EmptyInstallList) {
+TEST_F(BulkIwaInstallerTest, EmptyInstallList) {
   const std::vector<IsolatedWebAppExternalInstallOptions> empty_install_options;
 
   base::test::TestFuture<
-      std::vector<IsolatedWebAppPolicyManager::EphemeralAppInstallResult>>
+      std::vector<internal::BulkIwaInstaller::EphemeralAppInstallResult>>
       future;
-  IsolatedWebAppPolicyManager manager(
+  BulkIwaInstaller installer(
       dir_.GetPath(), empty_install_options, shared_url_loader_factory_,
       std::make_unique<TestIwaInstallCommandWrapper>(), future.GetCallback());
-  manager.InstallEphemeralApps();
+  installer.InstallEphemeralApps();
 
   // No apps to install leads to zero install results.
   EXPECT_TRUE(future.Get().empty());
 }
+}  // namespace internal
 
 }  // namespace web_app
