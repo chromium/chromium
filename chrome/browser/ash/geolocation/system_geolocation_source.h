@@ -38,8 +38,6 @@ class SystemGeolocationSource : public device::SystemGeolocationSource,
   // device::SystemGeolocationSource:
   void RegisterPermissionUpdateCallback(
       PermissionUpdateCallback callback) override;
-  void TrackGeolocationAttempted() override;
-  void TrackGeolocationRelinquished() override;
   void OpenSystemPermissionSetting() override;
 
  private:

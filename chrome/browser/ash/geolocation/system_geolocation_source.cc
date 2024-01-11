@@ -53,18 +53,6 @@ void SystemGeolocationSource::RegisterPermissionUpdateCallback(
   }
 }
 
-void SystemGeolocationSource::TrackGeolocationAttempted() {
-  // Use the default name for the browser.
-  ash::privacy_hub_util::TrackGeolocationAttempted(
-      l10n_util::GetStringUTF8(IDS_SHORT_PRODUCT_NAME));
-}
-
-void SystemGeolocationSource::TrackGeolocationRelinquished() {
-  // Use the default name for the browser.
-  ash::privacy_hub_util::TrackGeolocationRelinquished(
-      l10n_util::GetStringUTF8(IDS_SHORT_PRODUCT_NAME));
-}
-
 void SystemGeolocationSource::OpenSystemPermissionSetting() {
   Shell::Get()->system_tray_model()->client()->ShowPrivacyHubSettings();
 }
