@@ -1110,14 +1110,6 @@ targets.binaries.console_test_launcher(
     label = "//chrome/test:lacros_chrome_unittests",
 )
 
-targets.binaries.generated_script(
-    name = "lacros_cq_tast_tests_eve",
-    label = "//chromeos/lacros:lacros_cq_tast_tests_eve",
-    args = [
-        "--logs-dir=${ISOLATED_OUTDIR}",
-    ],
-)
-
 targets.binaries.console_test_launcher(
     name = "latency_unittests",
     label = "//ui/latency:latency_unittests",

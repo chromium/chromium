@@ -4245,18 +4245,6 @@
       },
     },
 
-    'lacros_cq_tast_tests_eve': {
-      'lacros_cq_tast_tests_eve': {
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-        'swarming': {
-          'idempotent': False,
-        },
-        'experiment_percentage': 5,
-      },
-    },
-
     'lacros_device_or_vm_gtests': {
       'cc_unittests': {},
       'ozone_unittests': {},
@@ -7592,24 +7580,16 @@
       'chromeos_integration_tests': {
         'variants': [
           'LACROS_AMD64_GENERIC',
-          'LACROS_EVE',
         ],
       },
       'lacros_all_tast_tests': {
         'variants': [
           'LACROS_AMD64_GENERIC',
-          'LACROS_EVE',
-        ],
-      },
-      'lacros_cq_tast_tests_eve': {
-        'variants': [
-          'LACROS_EVE',
         ],
       },
       'lacros_device_or_vm_gtests': {
         'variants': [
           'LACROS_AMD64_GENERIC',
-          'LACROS_EVE',
         ],
       },
       'lacros_vm_gtests': {

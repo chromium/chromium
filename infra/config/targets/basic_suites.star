@@ -3880,21 +3880,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "lacros_cq_tast_tests_eve",
-    tests = {
-        "lacros_cq_tast_tests_eve": targets.legacy_test_config(
-            mixins = [
-                "has_native_resultdb_integration",
-            ],
-            swarming = targets.swarming(
-                idempotent = False,  # https://crbug.com/923426#c27
-            ),
-            experiment_percentage = 5,
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "lacros_device_or_vm_gtests",
     tests = {
         "cc_unittests": targets.legacy_test_config(),

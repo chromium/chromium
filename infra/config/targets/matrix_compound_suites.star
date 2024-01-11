@@ -1008,24 +1008,16 @@ targets.legacy_matrix_compound_suite(
         "chromeos_integration_tests": targets.legacy_matrix_config(
             variants = [
                 "LACROS_AMD64_GENERIC",
-                "LACROS_EVE",
             ],
         ),
         "lacros_all_tast_tests": targets.legacy_matrix_config(
             variants = [
                 "LACROS_AMD64_GENERIC",
-                "LACROS_EVE",
-            ],
-        ),
-        "lacros_cq_tast_tests_eve": targets.legacy_matrix_config(
-            variants = [
-                "LACROS_EVE",
             ],
         ),
         "lacros_device_or_vm_gtests": targets.legacy_matrix_config(
             variants = [
                 "LACROS_AMD64_GENERIC",
-                "LACROS_EVE",
             ],
         ),
         "lacros_vm_gtests": targets.legacy_matrix_config(

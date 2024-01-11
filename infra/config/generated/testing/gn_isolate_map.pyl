@@ -1035,13 +1035,6 @@
     "label": "//chrome/test:lacros_chrome_unittests",
     "type": "console_test_launcher",
   },
-  "lacros_cq_tast_tests_eve": {
-    "label": "//chromeos/lacros:lacros_cq_tast_tests_eve",
-    "type": "generated_script",
-    "args": [
-      "--logs-dir=${ISOLATED_OUTDIR}",
-    ],
-  },
   "latency_unittests": {
     "label": "//ui/latency:latency_unittests",
     "type": "console_test_launcher",

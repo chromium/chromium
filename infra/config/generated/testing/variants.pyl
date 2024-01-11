@@ -305,20 +305,6 @@
       '--deploy-lacros',
     ],
   },
-  'LACROS_EVE': {
-    'identifier': 'eve',
-    'args': [
-      '--board=eve',
-      '--flash',
-    ],
-    'ci_only': True,
-    'swarming': {
-      'dimensions': {
-        'os': 'ChromeOS',
-        'device_type': 'eve',
-      },
-    },
-  },
   'LACROS_VERSION_SKEW_BETA': {
     'identifier': 'Lacros version skew testing ash beta',
     'description': 'Run with ash-chrome version 120.0.6099.80',

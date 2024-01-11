@@ -1428,10 +1428,6 @@ targets.tests.gtest_test(
 )
 
 targets.tests.gtest_test(
-    name = "lacros_cq_tast_tests_eve",
-)
-
-targets.tests.gtest_test(
     name = "latency_unittests",
 )
 
