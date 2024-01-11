@@ -86,6 +86,7 @@ per-file crash/core/app/internal=*
 per-file metrics/internal=*
 per-file ntp_tiles/resources/internal=*
 per-file optimization_guide/internal=*
+per-file plus_addresses/resources/internal=*
 per-file resources/default_100_percent/google_chrome=*
 per-file resources/default_200_percent/google_chrome=*
 per-file resources/default_300_percent/google_chrome=*
