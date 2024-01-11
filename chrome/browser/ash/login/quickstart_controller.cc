@@ -19,25 +19,17 @@
 #include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/network_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/online_login_utils.h"
 #include "chrome/browser/ui/webui/ash/login/quick_start_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/welcome_screen_handler.h"
-#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
 #include "chromeos/ash/components/quick_start/logging.h"
 #include "chromeos/ash/components/quick_start/quick_start_metrics.h"
-#include "components/account_id/account_id.h"
-#include "components/user_manager/user_type.h"
-#include "google_apis/gaia/gaia_constants.h"
-#include "google_apis/gaia/gaia_oauth_client.h"
 
 namespace ash::quick_start {
 
 namespace {
-
-constexpr int kMaxRetryAttempts = 3;
 
 using bluetooth_config::mojom::BluetoothDevicePropertiesPtr;
 using bluetooth_config::mojom::BluetoothSystemState;
@@ -93,20 +85,9 @@ ConnectionClosedReasonFromAbortFlowReason(
           kUnknownError;
   }
 }
-
-gaia::OAuthClientInfo GetClientInfo() {
-  gaia::OAuthClientInfo client_info;
-  client_info.client_id = GaiaUrls::GetInstance()->oauth2_chrome_client_id();
-  client_info.client_secret =
-      GaiaUrls::GetInstance()->oauth2_chrome_client_secret();
-  return client_info;
-}
-
 }  // namespace
 
 QuickStartController::QuickStartController() {
-  gaia_client_ = std::make_unique<gaia::GaiaOAuthClient>(
-      g_browser_process->shared_url_loader_factory());
   if (features::IsOobeQuickStartEnabled()) {
     InitTargetDeviceBootstrapController();
     StartObservingBluetoothState();
@@ -175,13 +156,6 @@ void QuickStartController::AbortFlow(AbortFlowReason reason) {
       ConnectionClosedReasonFromAbortFlowReason(reason));
   bootstrap_controller_->StopAdvertising();
   ResetState();
-
-  // Triggers a screen exit if there is a UiDelegate driving the UI.
-  if (!ui_delegates_.empty()) {
-    CHECK(current_screen_ == QuickStartScreenHandler::kScreenId ||
-          current_screen_ == NetworkScreenHandler::kScreenId);
-    ui_delegates_.begin()->OnUiUpdateRequested(UiState::EXIT_SCREEN);
-  }
 }
 
 QuickStartController::EntryPoint QuickStartController::GetExitPoint() {
@@ -290,13 +264,11 @@ void QuickStartController::OnStatusChanged(
       return;
     case Step::TRANSFERRED_GOOGLE_ACCOUNT_DETAILS:
       CHECK(controller_state_ == ControllerState::CONNECTED);
-      if (absl::holds_alternative<
-              TargetDeviceBootstrapController::GaiaCredentials>(
-              status.payload)) {
-        QS_LOG(INFO) << "Successfully received an OAuth authorization code.";
-        OnOAuthTokenReceived(
-            absl::get<TargetDeviceBootstrapController::GaiaCredentials>(
-                status.payload));
+      if (absl::holds_alternative<FidoAssertionInfo>(status.payload)) {
+        QS_LOG(INFO) << "Successfully received FIDO assertion.";
+        // TODO(b/283724988) - Update with authorization code.
+        UpdateUiState(UiState::SIGNING_IN);
+        SavePhoneInstanceID();
       } else {
         CHECK(absl::holds_alternative<ErrorCode>(status.payload));
         QS_LOG(ERROR) << "Error receiving FIDO assertion. Error Code = "
@@ -318,6 +290,12 @@ void QuickStartController::OnStatusChanged(
         QS_LOG(ERROR) << "Missing ErrorCode.";
       }
 
+      // Triggers a screen exit if there is a UiDelegate driving the UI.
+      if (!ui_delegates_.empty()) {
+        CHECK(current_screen_ == QuickStartScreenHandler::kScreenId ||
+              current_screen_ == NetworkScreenHandler::kScreenId);
+        ui_delegates_.begin()->OnUiUpdateRequested(UiState::EXIT_SCREEN);
+      }
       return;
   }
 }
@@ -339,67 +317,6 @@ void QuickStartController::OnCurrentScreenChanged(OobeScreenId previous_screen,
 
 void QuickStartController::OnDestroyingOobeUI() {
   observation_.Reset();
-}
-
-void QuickStartController::OnOAuthTokenReceived(
-    TargetDeviceBootstrapController::GaiaCredentials gaia_creds) {
-  gaia_creds_ = gaia_creds;
-
-  // Show the user's email on the UI.
-  user_info_.email = gaia_creds_.email;
-  UpdateUiState(UiState::SIGNING_IN);
-
-  QS_LOG(INFO) << "About to exchange authorization code for tokens.";
-  gaia_client_->GetTokensFromAuthCode(GetClientInfo(), gaia_creds_.auth_code,
-                                      kMaxRetryAttempts, this);
-}
-
-void QuickStartController::OnGetTokensResponse(const std::string& refresh_token,
-                                               const std::string& access_token,
-                                               int expires_in_seconds) {
-  QS_LOG(INFO) << "Successfully exchanged the authorization code for tokens.";
-
-  gaia_creds_.auth_code = "";
-  gaia_creds_.access_token = access_token;
-  gaia_creds_.refresh_token = refresh_token;
-
-  // Get an access token with userinfo scope for fetching the GaiaID.
-  QS_LOG(INFO) << "Requesting access token with userinfo scope.";
-  gaia_client_->RefreshToken(GetClientInfo(), gaia_creds_.refresh_token,
-                             {GaiaConstants::kGoogleUserInfoProfile},
-                             kMaxRetryAttempts, this);
-}
-
-void QuickStartController::OnRefreshTokenResponse(
-    const std::string& access_token,
-    int expires_in_seconds) {
-  QS_LOG(INFO) << "Received the access token. Requesting user information.";
-  gaia_client_->GetUserInfo(access_token, kMaxRetryAttempts, this);
-}
-
-void QuickStartController::OnGetUserInfoResponse(
-    const base::Value::Dict& user_info) {
-  QS_LOG(INFO) << "Successfully retrieved user information.";
-
-  const std::string* gaia_id_value = user_info.FindString("id");
-  if (!gaia_id_value || gaia_id_value->empty()) {
-    QS_LOG(ERROR) << "Obfuscated Gaia ID not found!";
-    AbortFlow(AbortFlowReason::ERROR);
-    return;
-  }
-  gaia_creds_.gaia_id = *gaia_id_value;
-
-  FinishAccountCreation();
-}
-
-void QuickStartController::OnOAuthError() {
-  QS_LOG(ERROR) << "An authorization error occurred!";
-  AbortFlow(AbortFlowReason::ERROR);
-}
-
-void QuickStartController::OnNetworkError(int response_code) {
-  QS_LOG(ERROR) << "A network error occurred " << response_code;
-  AbortFlow(AbortFlowReason::ERROR);
 }
 
 void QuickStartController::StartObservingScreenTransitions() {
@@ -496,47 +413,11 @@ void QuickStartController::SavePhoneInstanceID() {
       ->quick_start_phone_instance_id = phone_instance_id;
 }
 
-void QuickStartController::FinishAccountCreation() {
-  CHECK(!gaia_creds_.email.empty());
-  CHECK(!gaia_creds_.gaia_id.empty());
-
-  SavePhoneInstanceID();
-  UpdateUiState(UiState::CREATING_ACCOUNT);
-  controller_state_ = ControllerState::SETUP_COMPLETE;
-
-  const AccountId account_id = AccountId::FromNonCanonicalEmail(
-      gaia_creds_.email, gaia_creds_.gaia_id, AccountType::GOOGLE);
-  auto user_context = std::make_unique<UserContext>();
-  // The user type is known to be regular. The unicorn flow transitions to the
-  // Gaia screen and uses its own mechanism for account creation.
-  login::BuildUserContextForGaiaSignIn(
-      /*user_type=*/user_manager::USER_TYPE_REGULAR,
-      /*account_id=*/account_id,
-      /*using_saml=*/false,
-      /*using_saml_api=*/false,
-      /*password=*/"",
-      /*password_attributes=*/SamlPasswordAttributes(),
-      /*sync_trusted_vault_keys=*/absl::nullopt,
-      /*challenge_response_key=*/absl::nullopt,
-      /*user_context=*/user_context.get());
-
-  // TODO(b/318664950) - Remove once the server starts sending the Gaia ID.
-  user_context->SetRefreshToken(gaia_creds_.refresh_token);
-  user_context->SetAccessToken(gaia_creds_.access_token);
-  // Since the tokens are being set, the auth code must be empty.
-  CHECK(user_context->GetAuthCode().empty());
-
-  if (LoginDisplayHost::default_host()) {
-    LoginDisplayHost::default_host()->CompleteLogin(*user_context);
-  }
-}
-
 void QuickStartController::ResetState() {
   entry_point_.reset();
   qr_code_data_.reset();
   pin_.reset();
   user_info_ = UserInfo();
-  gaia_creds_ = TargetDeviceBootstrapController::GaiaCredentials();
   wifi_name_.reset();
   controller_state_ = ControllerState::NOT_ACTIVE;
   ui_state_.reset();

@@ -17,7 +17,6 @@
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-forward.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-shared.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
-#include "google_apis/gaia/gaia_oauth_client.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -32,8 +31,7 @@ namespace ash::quick_start {
 class QuickStartController
     : public OobeUI::Observer,
       public TargetDeviceBootstrapController::Observer,
-      public bluetooth_config::mojom::SystemPropertiesObserver,
-      public gaia::GaiaOAuthClient::Delegate {
+      public bluetooth_config::mojom::SystemPropertiesObserver {
  public:
   // QuickStart flow entry point locations.
   enum class EntryPoint {
@@ -181,20 +179,6 @@ class QuickStartController
                               OobeScreenId current_screen) override;
   void OnDestroyingOobeUI() override;
 
-  // gaia::GaiaOAuthClient::Delegate
-  // The methods below are used while exchanging the authorization code for the
-  // tokens and retrieving the obfuscated Gaia ID.
-  // TODO(b/318664950) - Remove once the server starts sending the Gaia ID.
-  void OnOAuthError() override;
-  void OnNetworkError(int response_code) override;
-  void OnGetUserInfoResponse(const base::Value::Dict& user_info) override;
-  void OnGetTokensResponse(const std::string& refresh_token,
-                           const std::string& access_token,
-                           int expires_in_seconds) override;
-  void OnRefreshTokenResponse(const std::string& access_token,
-                              int expires_in_seconds) override;
-  // TODO(b/318664950) - Remove all methods above.
-
   // Activates the OobeUI::Observer
   void StartObservingScreenTransitions();
 
@@ -204,18 +188,12 @@ class QuickStartController
   // Starts transferring the user account from the phone.
   void StartAccountTransfer();
 
-  // Steps to take when all the account data has been exchanged with the phone.
-  void OnOAuthTokenReceived(TargetDeviceBootstrapController::GaiaCredentials);
-
   // Steps to take when the connection with the phone is fully established.
   // Either transfers WiFi credentials if early in the OOBE flow, or starts
   // to transfer the user's credentials.
   void OnPhoneConnectionEstablished();
 
   void SavePhoneInstanceID();
-
-  // Performs the final steps and triggers ChromeOS account creation flow.
-  void FinishAccountCreation();
 
   // Resets all internal values. Invoked when the flow is interrupted.
   void ResetState();
@@ -256,13 +234,6 @@ class QuickStartController
   // QuickStartScreen implements the UiDelegate and registers itself whenever it
   // is shown. UI updates happen over this observation path.
   base::ObserverList<UiDelegate> ui_delegates_;
-
-  // Used for fetching the GaiaID using the retrieved auth code from the phone.
-  // TODO(b/318664950) - Remove once the server starts sending the Gaia ID.
-  std::unique_ptr<gaia::GaiaOAuthClient> gaia_client_;
-
-  // Gaia credentials used for account creation.
-  TargetDeviceBootstrapController::GaiaCredentials gaia_creds_;
 
   mojo::Remote<bluetooth_config::mojom::CrosBluetoothConfig>
       cros_bluetooth_config_remote_;

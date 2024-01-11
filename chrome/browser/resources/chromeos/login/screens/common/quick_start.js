@@ -116,7 +116,6 @@ class QuickStartScreen extends QuickStartScreenBase {
       'showConfirmGoogleAccount',
       'showSigningInStep',
       'showCreatingAccountStep',
-      'showSetupCompleteStep',
       'setUserEmail',
       'setUserFullName',
       'setUserAvatarUrl',
