@@ -1145,6 +1145,7 @@ if (is_chromeos && is_chromeos_device) {
         "../browser/ash/scanning/multi_page_scan_integration_test.cc",
         "../browser/ash/scanning/scan_integration_test.cc",
         "../browser/ash/screenshot_integration_test.cc",
+        "../browser/ash/security_files_integration_test.cc",
         "../browser/ash/system_web_apps/apps/terminal_integration_test.cc",
         "../browser/ash/web_handwriting_integration_test.cc",
         "../browser/ui/ash/quick_settings_integration_test.cc",
