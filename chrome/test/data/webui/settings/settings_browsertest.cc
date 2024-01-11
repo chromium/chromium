@@ -1038,6 +1038,28 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacySandboxPageTest, AdMeasurementSubpage) {
           "runMochaSuite('AdMeasurementSubpage')");
 }
 
+class ProactiveTopicsBlockingTest : public SettingsPrivacySandboxPageTest {
+ protected:
+  ProactiveTopicsBlockingTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        privacy_sandbox::kPrivacySandboxProactiveTopicsBlocking);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ProactiveTopicsBlockingTest,
+                       TopicsSubpageWithProactiveTopicsBlockingEnabled) {
+  RunTest("settings/privacy_sandbox_page_test.js",
+          "runMochaSuite('TopicsSubpageWithProactiveTopicsBlockingEnabled')");
+}
+
+IN_PROC_BROWSER_TEST_F(ProactiveTopicsBlockingTest, ManageTopics) {
+  RunTest("settings/privacy_sandbox_page_test.js",
+          "runMochaSuite('ManageTopics')");
+}
+
 class SettingsReviewNotificationPermissionsTest : public SettingsBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_{

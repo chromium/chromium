@@ -192,6 +192,8 @@ const char kChromeUIPrivacySandboxFledgeURL[] =
     "chrome://settings/adPrivacy/sites";
 const char kChromeUIPrivacySandboxTopicsURL[] =
     "chrome://settings/adPrivacy/interests";
+const char kChromeUIPrivacySandboxManageTopicsLearnMoreURL[] =
+    "https://support.google.com/chrome?p=ad_privacy";
 const char kChromeUIQuitHost[] = "quit";
 const char kChromeUIQuitURL[] = "chrome://quit/";
 const char kChromeUIQuotaInternalsHost[] = "quota-internals";

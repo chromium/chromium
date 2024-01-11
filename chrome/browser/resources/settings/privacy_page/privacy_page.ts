@@ -212,6 +212,12 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         value: () => loadTimeData.getBoolean('blockMidiByDefault'),
       },
 
+      isProactiveTopicsBlockingEnabled_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('isProactiveTopicsBlockingEnabled'),
+      },
+
       focusConfig_: {
         type: Object,
         value() {
@@ -338,6 +344,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private showNotificationPermissionsReview_: boolean;
   private isPrivacySandboxRestricted_: boolean;
   private isPrivacySandboxRestrictedNoticeEnabled_: boolean;
+  private isProactiveTopicsBlockingEnabled_: boolean;
   private is3pcdRedesignEnabled_: boolean;
   private privateStateTokensEnabled_: boolean;
   private autoPictureInPictureEnabled_: boolean;
@@ -594,6 +601,11 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private shouldShowAdPrivacy_(): boolean {
     return !this.isPrivacySandboxRestricted_ ||
         this.isPrivacySandboxRestrictedNoticeEnabled_;
+  }
+
+  private shouldShowManageTopics_(): boolean {
+    return this.isProactiveTopicsBlockingEnabled_ &&
+        !this.isPrivacySandboxRestricted_;
   }
 
   private onSafetyHubButtonClick_() {

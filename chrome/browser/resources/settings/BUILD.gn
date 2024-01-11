@@ -152,6 +152,7 @@ build_webui("build") {
     "privacy_sandbox/privacy_sandbox_fledge_subpage.ts",
     "privacy_sandbox/privacy_sandbox_interest_item.ts",
     "privacy_sandbox/privacy_sandbox_page.ts",
+    "privacy_sandbox/privacy_sandbox_manage_topics_subpage.ts",
     "privacy_sandbox/privacy_sandbox_topics_subpage.ts",
     "reset_page/reset_page.ts",
     "reset_page/reset_profile_banner.ts",

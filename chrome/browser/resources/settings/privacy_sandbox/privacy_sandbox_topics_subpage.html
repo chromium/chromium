@@ -5,6 +5,10 @@
     padding: 0 var(--cr-section-padding);
   }
 
+  #currentTopicsDescriptionEmpty {
+    align-items: center;
+  }
+
   #currentTopicsSectionWrapper {
     width: 100%;
   }
@@ -19,6 +23,12 @@
 
   #currentTopicsDescription {
     padding-block-end: var(--cr-section-vertical-padding);
+  }
+
+  #disclaimer {
+    padding: 0 var(--cr-section-padding);
+    padding-bottom: var(--cr-section-vertical-padding);
+    color: var(--cr-secondary-text-color);
   }
 
   #learnMoreLink {
@@ -43,6 +53,10 @@
     padding-block-start: 16px;
   }
 
+  #blockedTopicsDescriptionPTB {
+    color: var(--cr-secondary-text-color);
+  }
+
   .no-blocked-topics {
     padding-inline-start: 60px;
   }
@@ -51,7 +65,7 @@
     padding: 0 var(--cr-section-padding);
   }
 
-  #footer {
+  #footer, #footerPTB {
     padding: 16px var(--cr-section-padding);
   }
 
@@ -70,22 +84,31 @@
     id="topicsToggle"
     pref="{{prefs.privacy_sandbox.m1.topics_enabled}}"
     label="$i18n{topicsPageToggleLabel}"
-    sub-label="$i18n{topicsPageToggleSubLabel}"
+    sub-label="[[computeTopicsPageToggleSubLabel_(
+      isProactiveTopicsBlockingEnabled_)]]"
     on-settings-boolean-control-change="onToggleChange_">
 </settings-toggle-button>
+<template is="dom-if" if="[[isProactiveTopicsBlockingEnabled_]]">
+  <div id="disclaimer">
+    $i18n{topicsPageDisclaimer}
+  </div>
+</template>
 <template is="dom-if" if="[[!isTopicsPrefManaged_(
     prefs.privacy_sandbox.m1.topics_enabled.enforcement)]]" restamp>
   <div id="currentTopicsSection">
     <div id="currentTopicsSectionWrapper" class="hr">
       <h2 id="currentTopicsHeading">
-        $i18n{topicsPageCurrentTopicsHeading}
+       [[computeTopicsPageCurrentTopicsHeading_(
+          isProactiveTopicsBlockingEnabled_)]]
       </h2>
       <div id="currentTopicsDescription" class="cr-secondary-text">
-        $i18n{topicsPageCurrentTopicsDescription}
+        [[computeTopicsPageCurrentTopicsDescription_(
+            isProactiveTopicsBlockingEnabled_)]]
         <!-- TODO(b/262502300): Add "Learn more" into current topics description
              string. -->
         <button id="learnMoreLink" on-click="onLearnMoreClick_" aria-label=
-            "$i18n{topicsPageCurrentTopicsDescriptionLearnMoreA11yLabel}">
+            "$i18n{topicsPageCurrentTopicsDescriptionLearnMoreA11yLabel}"
+            hidden="[[isProactiveTopicsBlockingEnabled_]]">
           $i18n{topicsPageCurrentTopicsDescriptionLearnMoreLink}
         </button>
       </div>
@@ -103,7 +126,8 @@
           <div id="currentTopicsDescriptionEmpty"
               class="no-topics cr-secondary-text"
               hidden="[[!isTopicsListEmpty_(topicsList_.length)]]">
-            $i18n{topicsPageCurrentTopicsDescriptionEmpty}
+            [[computeTopicsPageCurrentTopicsDescriptionEmpty_(
+                isProactiveTopicsBlockingEnabled_)]]
           </div>
       </template>
       <div id="currentTopicsDescriptionDisabled"
@@ -116,12 +140,18 @@
 </template>
 <cr-expand-button id="blockedTopicsRow" class="cr-row"
     expanded="{{blockedTopicsExpanded_}}">
-  $i18n{topicsPageBlockedTopicsHeading}
+  [[computeTopicsPageBlockedTopicsHeading_(isProactiveTopicsBlockingEnabled_)]]
+  <template is="dom-if" if="[[isProactiveTopicsBlockingEnabled_]]">
+    <div id="blockedTopicsDescriptionPTB">
+      $i18n{topicsPageBlockedTopicsDescriptionPTB}
+    </div>
+  </template>
 </cr-expand-button>
 <iron-collapse opened="[[blockedTopicsExpanded_]]">
   <div id="blockedTopicsDescription"
-      class$="[[getBlockedTopicsDescriptionClass_(blockedTopicsList_.length)]]">
-    [[computeBlockedTopicsDescription_(blockedTopicsList_.length)]]
+    class$="[[getBlockedTopicsDescriptionClass_(blockedTopicsList_.length)]]"
+    hidden="[[isProactiveTopicsBlockingEnabled_]]">
+      [[computeBlockedTopicsDescription_(blockedTopicsList_.length)]]
   </div>
   <div id="blockedTopicsList" role="region"
       aria-label="$i18n{topicsPageBlockedTopicsRegionA11yDescription}">
@@ -132,10 +162,24 @@
     </template>
   </div>
 </iron-collapse>
-<div id="footer" class="cr-secondary-text hr">
+<div id="manageTopicsSection" class="hr">
+  <template is="dom-if" if="[[shouldShowManageTopics_(
+      isProactiveTopicsBlockingEnabled_)]]">
+    <cr-link-row id="privacySandboxManageTopicsLinkRow"
+      label="$i18n{manageTopicsHeading}"
+      sub-label="$i18n{manageTopicsDescription}"
+      on-click="onPrivacySandboxManageTopicsClick_">
+    </cr-link-row>
+  </template>
+</div>
+<div id="footer" class="cr-secondary-text hr"
+  hidden="[[isProactiveTopicsBlockingEnabled_]]">
   $i18nRaw{topicsPageFooter}
 </div>
-
+<div id="footerPTB" class="cr-secondary-text hr"
+  hidden="[[!isProactiveTopicsBlockingEnabled_]]">
+  $i18nRaw{topicsPageFooterPTB}
+</div>
 <template is="dom-if" if="[[isLearnMoreDialogOpen_]]" restamp>
   <cr-dialog id="dialog" on-close="onCloseDialog_" show-on-attach>
     <div slot="title">$i18n{topicsPageLearnMoreHeading}</div>

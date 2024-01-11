@@ -519,6 +519,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       onboarding_service && onboarding_service->IsOffboarded() &&
           base::FeatureList::IsEnabled(
               privacy_sandbox::kTrackingProtectionSettingsPageRollbackNotice));
+  html_source->AddBoolean(
+      "isProactiveTopicsBlockingEnabled",
+      base::FeatureList::IsEnabled(
+          privacy_sandbox::kPrivacySandboxProactiveTopicsBlocking));
 
   // Performance
   AddSettingsPageUIHandler(std::make_unique<PerformanceHandler>());

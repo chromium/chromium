@@ -1968,10 +1968,17 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
       {"topicsPageTitle", IDS_SETTINGS_TOPICS_PAGE_TITLE},
       {"topicsPageToggleLabel", IDS_SETTINGS_TOPICS_PAGE_TOGGLE_LABEL},
       {"topicsPageToggleSubLabel", IDS_SETTINGS_TOPICS_PAGE_TOGGLE_SUB_LABEL},
+      {"topicsPageToggleSubLabelPTB",
+       IDS_SETTINGS_TOPICS_PAGE_TOGGLE_SUB_LABEL_PTB},
+      {"topicsPageDisclaimer", IDS_SETTINGS_TOPICS_PAGE_DISCLAIMER},
       {"topicsPageCurrentTopicsHeading",
        IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_HEADING},
+      {"topicsPageCurrentTopicsHeadingPTB",
+       IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_HEADING_PTB},
       {"topicsPageCurrentTopicsDescription",
        IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION},
+      {"topicsPageCurrentTopicsDescriptionPTB",
+       IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_PTB},
       {"topicsPageCurrentTopicsDescriptionLearnMoreLink",
        IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_LEARN_MORE_LINK},
       {"topicsPageCurrentTopicsRegionA11yDescription",
@@ -1986,15 +1993,21 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_DISABLED},
       {"topicsPageCurrentTopicsDescriptionEmpty",
        IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_EMPTY},
+      {"topicsPageCurrentTopicsDescriptionEmptyPTB",
+       IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_EMPTY_PTB},
       {"topicsPageBlockTopic", IDS_SETTINGS_TOPICS_PAGE_BLOCK_TOPIC},
       {"topicsPageBlockTopicA11yLabel",
        IDS_SETTINGS_TOPICS_PAGE_BLOCK_TOPIC_A11Y_LABEL},
       {"topicsPageBlockedTopicsHeading",
        IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_HEADING},
+      {"topicsPageBlockedTopicsHeadingPTB",
+       IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_HEADING_PTB},
       {"topicsPageBlockedTopicsDescription",
        IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION},
       {"topicsPageBlockedTopicsDescriptionEmpty",
        IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION_EMPTY},
+      {"topicsPageBlockedTopicsDescriptionPTB",
+       IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION_PTB},
       {"topicsPageBlockedTopicsRegionA11yDescription",
        IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_REGION_A11Y_DESCRIPTION},
       {"topicsPageAllowTopic", IDS_SETTINGS_TOPICS_PAGE_ALLOW_TOPIC},
@@ -2062,6 +2075,11 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_AD_MEASUREMENT_PAGE_CONSIDER_BULLET_2},
       {"adMeasurementPageConsiderBullet3",
        IDS_SETTINGS_AD_MEASUREMENT_PAGE_CONSIDER_BULLET_3},
+      {"manageTopicsPageDescription",
+       IDS_SETTINGS_MANAGE_TOPICS_PAGE_DESCRIPTION},
+      {"manageTopicsHeading", IDS_SETTINGS_TOPICS_PAGE_MANAGE_TOPICS_HEADING},
+      {"manageTopicsDescription",
+       IDS_SETTINGS_TOPICS_PAGE_MANAGE_TOPICS_DESCRIPTION},
 
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
@@ -2089,7 +2107,12 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
                                  GURL(chrome::kAdPrivacyLearnMoreURL),
                                  g_browser_process->GetApplicationLocale())
                                  .spec())));
-
+  html_source->AddString(
+      "manageTopicsPageDescription",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_MANAGE_TOPICS_PAGE_DESCRIPTION,
+          base::ASCIIToUTF16(
+              chrome::kChromeUIPrivacySandboxManageTopicsLearnMoreURL)));
   // Topics and fledge both link to the cookies setting page and cross-link
   // each other in the footers.
   html_source->AddString(
@@ -2098,6 +2121,14 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
           IDS_SETTINGS_TOPICS_PAGE_FOOTER,
           base::ASCIIToUTF16(chrome::kChromeUIPrivacySandboxFledgeURL),
           base::ASCIIToUTF16(chrome::kChromeUICookieSettingsURL)));
+  html_source->AddString(
+      "topicsPageFooterPTB",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_TOPICS_PAGE_FOOTER_PTB,
+          base::ASCIIToUTF16(chrome::kChromeUIPrivacySandboxFledgeURL),
+          base::ASCIIToUTF16(chrome::kChromeUICookieSettingsURL),
+          base::ASCIIToUTF16(
+              chrome::kChromeUIPrivacySandboxManageTopicsLearnMoreURL)));
   html_source->AddString(
       "fledgePageFooter",
       l10n_util::GetStringFUTF16(
