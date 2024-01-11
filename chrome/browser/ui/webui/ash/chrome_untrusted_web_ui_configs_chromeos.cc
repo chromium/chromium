@@ -12,7 +12,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/webui/demo_mode_app_ui/demo_mode_app_untrusted_ui.h"
 #include "ash/webui/eche_app_ui/untrusted_eche_app_ui.h"
-#include "ash/webui/face_ml_app_ui/face_ml_app_untrusted_ui.h"
 #include "ash/webui/file_manager/file_manager_untrusted_ui.h"
 #include "ash/webui/help_app_ui/help_app_kids_magazine_untrusted_ui.h"
 #include "ash/webui/os_feedback_ui/os_feedback_untrusted_ui.h"
@@ -68,7 +67,6 @@ void RegisterAshChromeUntrustedWebUIConfigs() {
       std::make_unique<file_manager::FileManagerUntrustedUIConfig>());
   map.AddUntrustedWebUIConfig(
       std::make_unique<feedback::OsFeedbackUntrustedUIConfig>());
-  map.AddUntrustedWebUIConfig(std::make_unique<FaceMLAppUntrustedUIConfig>());
   map.AddUntrustedWebUIConfig(MakeDemoModeAppUntrustedUIConfig());
   map.AddUntrustedWebUIConfig(std::make_unique<MakoUntrustedUIConfig>());
   map.AddUntrustedWebUIConfig(std::make_unique<ScalableIphDebugUIConfig>());

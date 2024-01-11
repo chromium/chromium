@@ -5184,8 +5184,6 @@ static_library("browser") {
       "//ash/webui/diagnostics_ui/mojom",
       "//ash/webui/eche_app_ui",
       "//ash/webui/eche_app_ui/mojom",
-      "//ash/webui/face_ml_app_ui",
-      "//ash/webui/face_ml_app_ui/mojom:trusted",
       "//ash/webui/file_manager:file_manager_ui",
       "//ash/webui/file_manager/mojom",
       "//ash/webui/files_internals",

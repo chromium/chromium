@@ -116,7 +116,6 @@ def validateJavaScriptAllowed(source_dir, out_dir, is_ios):
       'ash/webui/color_internals/',
       'ash/webui/common/resources/',
       'ash/webui/diagnostics_ui/',
-      'ash/webui/face_ml_app_ui/',
       'ash/webui/file_manager/resources/labs/',
       # TODO(b/314827247): Migrate media_app_ui to TypeScript and remove
       # exception.
@@ -220,7 +219,6 @@ def isUnsupportedJsTarget(gen_dir, root_gen_dir):
   target_path = getTargetPath(gen_dir, root_gen_dir)
   exceptions = [
       'ash/webui/color_internals/resources',
-      'ash/webui/face_ml_app_ui/resources/trusted',
       'ash/webui/sample_system_web_app_ui/resources/trusted',
       'ash/webui/sample_system_web_app_ui/resources/untrusted',
       'chrome/browser/resources/chromeos/accessibility/select_to_speak',
@@ -251,7 +249,6 @@ def validateRootDir(root_dir, gen_dir, root_gen_dir, is_ios):
   exceptions = [
       # ChromeOS cases
       'ash/webui/color_internals/mojom',
-      'ash/webui/face_ml_app_ui/mojom',
       'ash/webui/sample_system_web_app_ui/mojom',
       # TODO(b/315150183): Migrate A11y code to use path mappings.
       'chrome/browser/resources/chromeos/accessibility/accessibility_common',

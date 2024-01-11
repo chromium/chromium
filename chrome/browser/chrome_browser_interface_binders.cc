@@ -261,8 +261,6 @@
 #include "ash/webui/diagnostics_ui/mojom/system_routine_controller.mojom.h"
 #include "ash/webui/eche_app_ui/eche_app_ui.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
-#include "ash/webui/face_ml_app_ui/face_ml_app_ui.h"
-#include "ash/webui/face_ml_app_ui/mojom/face_ml_app_ui.mojom.h"
 #include "ash/webui/file_manager/file_manager_ui.h"
 #include "ash/webui/file_manager/mojom/file_manager.mojom.h"
 #include "ash/webui/files_internals/files_internals_ui.h"
@@ -1756,10 +1754,6 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
   if (base::FeatureList::IsEnabled(ash::features::kSystemExtensions)) {
     registry.ForWebUI<ash::SystemExtensionsInternalsUI>()
         .Add<ash::mojom::system_extensions_internals::PageHandler>();
-  }
-  if (base::FeatureList::IsEnabled(ash::features::kFaceMLApp)) {
-    registry.ForWebUI<ash::FaceMLAppUI>()
-        .Add<ash::mojom::face_ml_app::PageHandlerFactory>();
   }
   registry.ForWebUI<ash::CameraAppUI>()
       .Add<color_change_listener::mojom::PageHandler>()

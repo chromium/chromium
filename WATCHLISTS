@@ -1133,11 +1133,6 @@
     'extension': {
       'filepath': 'extension',
     },
-    'face_ml': {
-      'filepath': 'ash/webui/face_ml_app_ui/|' \
-                  'chrome/browser/ash/system_web_apps/apps/face_ml_system_web_app_info.*|' \
-                  'chrome/browser/ash/system_web_apps/apps/face_ml/'
-    },
     'feed': {
       'filepath': 'chrome/android/feed|' \
                   'chrome/browser/feed/|' \
@@ -2877,7 +2872,6 @@
                       'petewil+watch@chromium.org'],
     'extension': ['chromium-apps-reviews@chromium.org',
                   'extensions-reviews@chromium.org'],
-    'face_ml': ['eora-dc-eng+crrev-watch@google.com'],
     'feed': ['dewittj+watch@chromium.org',
              'dimich+watch@chromium.org',
              'harringtond+watch@chromium.org',

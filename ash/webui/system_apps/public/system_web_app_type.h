@@ -107,13 +107,8 @@ enum class SystemWebAppType {
   // contact: skuhne@google.com
   OS_FLAGS = 23,
 
-  // Face ML app aims to provide UI interactions to help Face ML team train
-  // their models on CrOS. This is an internal app that is only enabled on
-  // pre-released Chromebooks with appropriate hardware and OS support.
-  //
-  // Source: //ash/webui/face_ml_app_ui/
-  // contact: googleo@google.com
-  FACE_ML = 24,
+  // FaceML was deprecated.
+  // FACE_ML = 24,
 
   // VC Background allows users to control webcam settings, including blur and
   // background image.

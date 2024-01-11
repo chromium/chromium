@@ -936,11 +936,6 @@ BASE_FEATURE(kExperimentalRgbKeyboardPatterns,
              "ExperimentalRgbKeyboardPatterns",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the System Web App (SWA) of Face ML.
-// This app needs both CrOS and hardware support (Face Auth Camera and System
-// Face Auth Service), therefore we only enable it on these eligible devices.
-BASE_FEATURE(kFaceMLApp, "FaceMLApp", base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables policy that controls feature to allow Family Link accounts on school
 // owned devices.
 BASE_FEATURE(kFamilyLinkOnSchoolDevice,
@@ -3358,10 +3353,6 @@ bool IsExperimentalRgbKeyboardPatternsEnabled() {
 
 bool IsExternalKeyboardInDiagnosticsAppEnabled() {
   return base::FeatureList::IsEnabled(kEnableExternalKeyboardsInDiagnostics);
-}
-
-bool IsFaceMLSwaEnabled() {
-  return base::FeatureList::IsEnabled(kFaceMLApp);
 }
 
 bool IsFamilyLinkOnSchoolDeviceEnabled() {

@@ -916,26 +916,9 @@
   "ash/webui/projector_app/resources/mock/projector_app_bundle_mock_resources.grd": {
     "includes": [6180],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/face_ml_app_ui/resources/trusted/ash_face_ml_app_resources.grd": {
-    "META": {"join": 2, "sizes": {"includes": [50],}},
-    "includes": [6200],
-  },
-  # Both face_ml_app_bundle_resources.grd and face_ml_app_bundle_mock_resources.grd
-  # start with the same id because only one of them is built depending on if
-  # src_internal is available.
-  "ash/webui/face_ml_app_ui/resources/prod/face_ml_app_bundle_resources.grd": {
-    "META": {"sizes": {"includes": [120],}},  # Relies on src-internal.
-    "includes": [6220],
-  },
-  "ash/webui/face_ml_app_ui/resources/mock/face_ml_app_bundle_mock_resources.grd": {
-    "includes": [6220],
-  },
-  "<(SHARED_INTERMEDIATE_DIR)/ash/webui/face_ml_app_ui/resources/untrusted/ash_face_ml_app_untrusted_resources.grd": {
-    "META": {"join": 2, "sizes": {"includes": [50],}},
-    "includes": [6240],
-  },
+
   "<(SHARED_INTERMEDIATE_DIR)/ash/webui/vc_background_ui/resources/resources.grd": {
-    "META": {"sizes": {"includes": [50],}},
+    "META": {"join": 2, "sizes": {"includes": [50],}},
     "includes": [6260],
   },
   # END chromeos/ section.

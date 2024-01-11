@@ -16,7 +16,6 @@ source_set("browser_tests") {
     "demo_mode_app_integration_browsertest.cc",
     "diagnostics_app_integration_browsertest.cc",
     "eche_app_integration_browsertest.cc",
-    "face_ml_integration_browsertest.cc",
     "firmware_update_app_integration_browsertest.cc",
     "help_app/help_app_integration_browsertest.cc",
     "media_app/media_app_integration_browsertest.cc",

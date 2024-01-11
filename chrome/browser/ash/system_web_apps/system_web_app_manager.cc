@@ -43,7 +43,6 @@
 #include "chrome/browser/ash/system_web_apps/apps/demo_mode_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/apps/diagnostics_system_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/apps/eche_app_info.h"
-#include "chrome/browser/ash/system_web_apps/apps/face_ml_system_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/apps/file_manager_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/apps/firmware_update_system_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/apps/help_app/help_app_web_app_info.h"
@@ -139,7 +138,6 @@ SystemWebAppDelegateMap CreateSystemWebApps(Profile* profile) {
   info_vec.push_back(
       std::make_unique<FirmwareUpdateSystemAppDelegate>(profile));
   info_vec.push_back(std::make_unique<OsFlagsSystemWebAppDelegate>(profile));
-  info_vec.push_back(std::make_unique<FaceMLSystemAppDelegate>(profile));
   info_vec.push_back(
       std::make_unique<vc_background_ui::VcBackgroundUISystemAppDelegate>(
           profile));
