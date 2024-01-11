@@ -636,6 +636,82 @@ suite('WallpaperSearchTest', () => {
       const successEvent = await successEventPromise;
       assertTrue(successEvent.detail.messages.includes('Generated 2 images'));
     });
+
+    test('shows results from latest search request', async () => {
+      windowProxy.setResultFor('now', 321);
+      createWallpaperSearchElementWithDescriptors();
+      await flushTasks();
+      assertFalse(isVisible(wallpaperSearchElement.$.loading));
+
+      const resultsPromise1 = new PromiseResolver();
+      handler.setResultFor(
+          'getWallpaperSearchResults', resultsPromise1.promise);
+      wallpaperSearchElement.$.submitButton.click();
+      const resultsPromise2 = new PromiseResolver();
+      handler.setResultFor(
+          'getWallpaperSearchResults', resultsPromise2.promise);
+      wallpaperSearchElement.$.submitButton.click();
+      assertTrue(isVisible(wallpaperSearchElement.$.loading));
+      resultsPromise1.resolve({
+        status: WallpaperSearchStatus.kOk,
+        results: [{image: '123', id: {high: 9, low: 1}}],
+      });
+      await flushTasks();
+
+      assertTrue(isVisible(wallpaperSearchElement.$.loading));
+      assertFalse(isVisible($$(wallpaperSearchElement, '#error')!));
+
+      resultsPromise2.resolve({
+        status: WallpaperSearchStatus.kOk,
+        results: [{image: '123', id: {high: 7, low: 8}}],
+      });
+      await flushTasks();
+
+      assertFalse(isVisible(wallpaperSearchElement.$.loading));
+      assertGE(handler.getCallCount('getWallpaperSearchResults'), 2);
+      assertTrue(!!$$(wallpaperSearchElement, '#wallpaperSearch .tile.result'));
+      assertGE(handler.getCallCount('setResultRenderTime'), 1);
+      assertDeepEquals(
+          [[{high: 7, low: 8}], 321],
+          handler.getArgs('setResultRenderTime').at(-1));
+    });
+
+    test('error status is ignored if there is another request', async () => {
+      windowProxy.setResultFor('now', 321);
+      createWallpaperSearchElementWithDescriptors();
+      await flushTasks();
+      assertFalse(isVisible(wallpaperSearchElement.$.loading));
+
+      const resultsPromise1 = new PromiseResolver();
+      handler.setResultFor(
+          'getWallpaperSearchResults', resultsPromise1.promise);
+      wallpaperSearchElement.$.submitButton.click();
+      const resultsPromise2 = new PromiseResolver();
+      handler.setResultFor(
+          'getWallpaperSearchResults', resultsPromise2.promise);
+      wallpaperSearchElement.$.submitButton.click();
+      assertTrue(isVisible(wallpaperSearchElement.$.loading));
+      resultsPromise1.resolve(
+          {status: WallpaperSearchStatus.kError, results: []});
+      await flushTasks();
+
+      assertTrue(isVisible(wallpaperSearchElement.$.loading));
+      assertFalse(isVisible($$(wallpaperSearchElement, '#error')!));
+
+      resultsPromise2.resolve({
+        status: WallpaperSearchStatus.kOk,
+        results: [{image: '123', id: {high: 10, low: 1}}],
+      });
+      await flushTasks();
+
+      assertFalse(isVisible(wallpaperSearchElement.$.loading));
+      assertGE(handler.getCallCount('getWallpaperSearchResults'), 2);
+      assertTrue(!!$$(wallpaperSearchElement, '#wallpaperSearch .tile.result'));
+      assertGE(handler.getCallCount('setResultRenderTime'), 1);
+      assertDeepEquals(
+          [[{high: 10, low: 1}], 321],
+          handler.getArgs('setResultRenderTime').at(-1));
+    });
   });
 
   suite('History', () => {

@@ -206,6 +206,8 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   private loading_: boolean;
   private results_: WallpaperSearchResult[] = [];
   private resultsDescriptors_: ResultDescriptors|null = null;
+  private resultsPromises_: Array<Promise<
+      {status: WallpaperSearchStatus, results: WallpaperSearchResult[]}>> = [];
   private selectedDefaultColor_: string|undefined;
   private selectedDescriptorA_: string|null;
   private selectedDescriptorB_: string|null;
@@ -591,20 +593,35 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
       mood: this.selectedDescriptorC_ ?? undefined,
       color: this.selectedDescriptorD_ ?? undefined,
     };
-    const {status, results} =
-        await this.wallpaperSearchHandler_.getWallpaperSearchResults(
-            descriptors);
-    this.loading_ = false;
-    this.results_ = results;
-    this.resultsDescriptors_ = descriptors;
-    this.status_ = status;
-    if (this.status_ === WallpaperSearchStatus.kOk) {
-      announcer.announce(
-          this.i18n('wallpaperSearchSuccessA11yMessage', results.length));
+    this.resultsPromises_.push(
+        this.wallpaperSearchHandler_.getWallpaperSearchResults(descriptors));
+    if (this.resultsPromises_.length <= 1) {
+      // Start processing requests, as well as any requests that are added
+      // while waiting for results.
+      while (this.resultsPromises_.length > 0) {
+        const {status, results} = await this.resultsPromises_[0];
+        this.resultsPromises_.shift();
+        // The results of the last request to be processed will be shown in the
+        // renderer.
+        if (this.resultsPromises_.length === 0) {
+          this.loading_ = false;
+          this.results_ = results;
+          this.resultsDescriptors_ = descriptors;
+          this.status_ = status;
+          if (this.status_ === WallpaperSearchStatus.kOk) {
+            announcer.announce(
+                this.i18n('wallpaperSearchSuccessA11yMessage', results.length));
+          }
+          recordStatusChange(status);
+          this.selectedFeedbackOption_ = CrFeedbackOption.UNSPECIFIED;
+          this.emptyResultContainers_ = this.calculateEmptyTiles(results);
+        }
+      }
+    } else {
+      // There are requests being processed already. This request will be
+      // processed along with those.
+      return;
     }
-    recordStatusChange(status);
-    this.selectedFeedbackOption_ = CrFeedbackOption.UNSPECIFIED;
-    this.emptyResultContainers_ = this.calculateEmptyTiles(results);
   }
 
   private onResultsRender_() {
