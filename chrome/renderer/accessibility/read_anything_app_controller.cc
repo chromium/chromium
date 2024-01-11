@@ -1366,7 +1366,12 @@ void ReadAnythingAppController::InitAXPositionWithNode(
   }
 }
 
-bool ReadAnythingAppController::NodePreviouslySpoken(ui::AXNodeID id) {
+bool ReadAnythingAppController::NodeBeenOrWillBeSpoken(
+    ReadAnythingAppController::ReadAloudCurrentGranularity current_granularity,
+    ui::AXNodeID id) {
+  if (base::Contains(current_granularity.segments, id)) {
+    return true;
+  }
   for (ReadAnythingAppController::ReadAloudCurrentGranularity granularity :
        processed_granularities_on_current_page_) {
     if (base::Contains(granularity.segments, id)) {
@@ -1451,7 +1456,8 @@ ReadAnythingAppController::GetNextNodes(int max_text_length) {
     if ((size_t)current_text_index_ >= text.size() ||
         (current_text_index_ == next_sentence_index)) {
       // Move the AXPosition to the next node.
-      ax_position_ = GetNextValidPositionFromCurrentPosition();
+      ax_position_ =
+          GetNextValidPositionFromCurrentPosition(current_granularity);
       // Reset the current text index within the current node since we just
       // moved to a new node.
       current_text_index_ = 0;
@@ -1610,7 +1616,9 @@ ui::AXNode* ReadAnythingAppController::GetNodeFromCurrentPosition() {
 // nodes.
 // Some of the checks here right now are probably unneeded.
 ui::AXNodePosition::AXPositionInstance
-ReadAnythingAppController::GetNextValidPositionFromCurrentPosition() {
+ReadAnythingAppController::GetNextValidPositionFromCurrentPosition(
+    ReadAnythingAppController::ReadAloudCurrentGranularity
+        current_granularity) {
   ui::AXNodePosition::AXPositionInstance new_position =
       ui::AXNodePosition::CreateNullPosition();
 
@@ -1632,7 +1640,8 @@ ReadAnythingAppController::GetNextValidPositionFromCurrentPosition() {
   ui::AXNode* anchor_node =
       is_leaf ? new_position->GetAnchor()->GetLowestPlatformAncestor()
               : new_position->GetAnchor();
-  bool was_previously_spoken = NodePreviouslySpoken(anchor_node->id());
+  bool was_previously_spoken =
+      NodeBeenOrWillBeSpoken(current_granularity, anchor_node->id());
   // TODO(crbug.com/1474951): Can this be updated to IsText() instead?
   bool is_text_node = (GetHtmlTag((anchor_node->id())).length() == 0);
   const std::set<ui::AXNodeID>* node_ids = model_.selection_node_ids().empty()
@@ -1661,7 +1670,8 @@ ReadAnythingAppController::GetNextValidPositionFromCurrentPosition() {
     if (is_leaf) {
       anchor_node = anchor_node->GetLowestPlatformAncestor();
     }
-    was_previously_spoken = NodePreviouslySpoken(anchor_node->id());
+    was_previously_spoken =
+        NodeBeenOrWillBeSpoken(current_granularity, anchor_node->id());
     is_text_node = (GetHtmlTag((anchor_node->id())).length() == 0);
     contains_node = base::Contains(*node_ids, anchor_node->id());
   }

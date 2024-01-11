@@ -12,6 +12,7 @@
 #include "chrome/renderer/accessibility/ax_tree_distiller.h"
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "content/public/renderer/render_frame.h"
+#include "read_anything_app_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_serializable_tree.h"
@@ -239,11 +240,21 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
   }
 
   ui::AXNodePosition::AXPositionInstance GetNextNodePosition() {
-    return controller_->GetNextValidPositionFromCurrentPosition();
+    return controller_->GetNextValidPositionFromCurrentPosition(
+        ReadAnythingAppController::ReadAloudCurrentGranularity());
+  }
+
+  ui::AXNodePosition::AXPositionInstance GetNextNodePosition(
+      ReadAnythingAppController::ReadAloudCurrentGranularity granularity) {
+    return controller_->GetNextValidPositionFromCurrentPosition(granularity);
   }
 
   std::vector<ui::AXNodeID> GetNextText() {
     return controller_->GetNextText(160);
+  }
+
+  ReadAnythingAppController::ReadAloudCurrentGranularity GetNextNodes() {
+    return controller_->GetNextNodes(160);
   }
 
   std::vector<ui::AXNodeID> GetPreviousText() {
@@ -2669,6 +2680,62 @@ TEST_F(ReadAnythingAppControllerTest, GetNextText_MultipleSentencesInSameNode) {
   // Nodes are empty at the end of the new tree.
   next_node_ids = GetNextText();
   EXPECT_EQ((int)next_node_ids.size(), 0);
+}
+
+TEST_F(
+    ReadAnythingAppControllerTest,
+    GetNextValidPosition_AfterGetNextNodesButBeforeGetNextText_UsesCurrentGranularity) {
+  std::u16string sentence1 = u"But from up here. The ";
+  std::u16string sentence2 = u"world ";
+  std::u16string sentence3 =
+      u"looks so small. And suddenly life seems so clear. And from up here. "
+      u"You coast past it all. The obstacles just disappear.";
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  ui::AXNodeData staticText1;
+  staticText1.id = 2;
+  staticText1.role = ax::mojom::Role::kStaticText;
+  staticText1.SetNameChecked(sentence1);
+
+  ui::AXNodeData staticText2;
+  staticText2.id = 3;
+  staticText2.role = ax::mojom::Role::kStaticText;
+  staticText2.SetNameChecked(sentence2);
+
+  ui::AXNodeData staticText3;
+  staticText3.id = 4;
+  staticText3.role = ax::mojom::Role::kStaticText;
+  staticText3.SetNameChecked(sentence3);
+  update.nodes = {staticText1, staticText2, staticText3};
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({staticText1.id, staticText2.id, staticText3.id});
+  InitAXPosition(update.nodes[0].id);
+
+  ReadAnythingAppController::ReadAloudCurrentGranularity current_granularity =
+      GetNextNodes();
+  // Expect that current_granularity contains staticText1
+  // Expect that the indices aren't returned correctly
+  // Expect that GetNextValidPosition fails without inserted the granularity.
+  // The first segment was returned correctly.
+  EXPECT_EQ((int)current_granularity.node_ids.size(), 1);
+  EXPECT_TRUE(base::Contains(current_granularity.node_ids, staticText1.id));
+  EXPECT_EQ(GetNextTextStartIndex(staticText1.id), -1);
+  EXPECT_EQ(GetNextTextEndIndex(staticText1.id), -1);
+
+  // Get the next position without using the current granularity. This
+  // simulates getting the next node position from within GetNextNode if
+  // the current granularity hasn't yet been added to the list processed
+  // granularities. This should return the ID for staticText1, even though
+  // it's already been used because the current granularity isn't being used.
+  ui::AXNodePosition::AXPositionInstance new_position = GetNextNodePosition();
+  EXPECT_EQ(new_position->anchor_id(), staticText1.id);
+
+  // Now get the next position using the correct current granularity. Thi
+  // simulates calling GetNextNodePosition from within GetNextNodes before
+  // the nodes have been added to the list of processed granularities. This
+  // should correctly return the next node in the tree.
+  new_position = GetNextNodePosition(current_granularity);
+  EXPECT_EQ(new_position->anchor_id(), staticText2.id);
 }
 
 TEST_F(ReadAnythingAppControllerTest, GetNextText_EmptyTree) {

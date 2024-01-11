@@ -149,13 +149,33 @@ class ReadAnythingAppController
 
   // Returns the next valid AXNodePosition.
   ui::AXNodePosition::AXPositionInstance
-  GetNextValidPositionFromCurrentPosition();
+  GetNextValidPositionFromCurrentPosition(
+      ReadAnythingAppController::ReadAloudCurrentGranularity
+          current_granularity);
 
   // Uses the current AXNodePosition to return the next node that should be
   // spoken by Read Aloud.
   ui::AXNode* GetNodeFromCurrentPosition();
 
-  bool NodePreviouslySpoken(ui::AXNodeID id);
+  // Returns true if the node was previously spoken or we expect to speak it
+  // to be spoken once the current run of #GetNextText which called
+  // #NodeBeenOrWillBeSpoken finishes executing. Because AXPosition
+  // sometimes returns leaf nodes, we sometimes need to use the parent of a
+  // node returned by AXPosition instead of the node itself. Because of this,
+  // we need to double-check that the node has not been used or currently
+  // in use.
+  // Example:
+  // parent node: id=5
+  //    child node: id=6
+  //    child node: id =7
+  // node: id = 10
+  // Where AXPosition will return nodes in order of 6, 7, 10, but Reading Mode
+  // process them as 5, 10. Without checking for previously spoken nodes,
+  // id 5 will be spoken twice.
+  bool NodeBeenOrWillBeSpoken(
+      ReadAnythingAppController::ReadAloudCurrentGranularity
+          current_granularity,
+      ui::AXNodeID id);
 
   // gin templates:
   ui::AXNodeID RootId() const;
