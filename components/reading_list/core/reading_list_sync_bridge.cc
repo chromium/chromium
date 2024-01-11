@@ -105,8 +105,14 @@ void ReadingListSyncBridge::DidRemoveEntry(
   change_processor()->Delete(entry.URL().spec(), metadata_change_list);
 }
 
+// IsTrackingMetadata() continues to be true while ApplyDisableSyncChanges() is
+// running, but transitions to false immediately afterwards.
+// ongoing_apply_disable_sync_changes_ is used to cause IsTrackingMetadata()
+// return false slightly earlier, and before related observer notifications are
+// triggered.
 bool ReadingListSyncBridge::IsTrackingMetadata() const {
-  return change_processor()->IsTrackingMetadata();
+  return !ongoing_apply_disable_sync_changes_ &&
+         change_processor()->IsTrackingMetadata();
 }
 
 syncer::StorageType ReadingListSyncBridge::GetStorageTypeForUma() const {
@@ -316,6 +322,8 @@ std::string ReadingListSyncBridge::GetStorageKey(
 
 void ReadingListSyncBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
+  base::AutoReset<bool> auto_reset_is_sync_stopping(
+      &ongoing_apply_disable_sync_changes_, true);
   switch (wipe_model_upon_sync_disabled_behavior_) {
     case syncer::WipeModelUponSyncDisabledBehavior::kNever:
       CHECK_EQ(storage_type_for_uma_, syncer::StorageType::kUnspecified);
