@@ -62,7 +62,7 @@ class TabGroupModelFactory {
 struct DetachedWebContents {
   DetachedWebContents(int index_before_any_removals,
                       int index_at_time_of_removal,
-                      std::unique_ptr<content::WebContents> owned_contents,
+                      std::unique_ptr<TabModel> tab,
                       content::WebContents* contents,
                       TabStripModelChange::RemoveReason remove_reason,
                       std::optional<SessionID> id);
@@ -73,11 +73,11 @@ struct DetachedWebContents {
 
   // When a WebContents is removed the delegate is given a chance to
   // take ownership of it (generally for caching). If the delegate takes
-  // ownership, `owned_contents` will be null, and `contents` will be
+  // ownership, `tab` will be null, and `contents` will be
   // non-null. In other words, all observers should use `contents`, it is
   // guaranteed to be valid for the life time of the notification (and
   // possibly longer).
-  std::unique_ptr<content::WebContents> owned_contents;
+  std::unique_ptr<TabModel> tab;
   raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> contents;
 
   // The index of the WebContents in the original selection model of the tab
@@ -212,6 +212,15 @@ class TabStripModel : public TabGroupController {
       std::unique_ptr<content::WebContents> contents,
       int add_types,
       std::optional<tab_groups::TabGroupId> group = std::nullopt);
+
+  // Adds a TabModel from another tabstrip at the specified location. See
+  // InsertWebContentsAt.
+  int InsertDetachedTabAt(
+      int index,
+      std::unique_ptr<TabModel> tab,
+      int add_types,
+      std::optional<tab_groups::TabGroupId> group = std::nullopt);
+
   // Closes the WebContents at the specified index. This causes the
   // WebContents to be destroyed, but it may not happen immediately.
   // |close_types| is a bitmask of CloseTypes.
@@ -224,8 +233,14 @@ class TabStripModel : public TabGroupController {
       int index,
       std::unique_ptr<content::WebContents> new_contents);
 
+  // Detaches the tab at the specified index for reinsertion into another tab
+  // strip. Returns the detached tab.
+  std::unique_ptr<TabModel> DetachTabAtForInsertion(int index);
+
   // Detaches the WebContents at the specified index for reinsertion into
   // another tab strip. Returns the detached WebContents.
+  // TODO(1476012): Migrate callers to DetachTabAtForInsertion or
+  // DetachAndDeleteWebContentsAt.
   std::unique_ptr<content::WebContents> DetachWebContentsAtForInsertion(
       int index);
 
@@ -653,7 +668,7 @@ class TabStripModel : public TabGroupController {
   // something related to their current activity.
   bool IsNewTabAtEndOfTabStrip(content::WebContents* contents) const;
 
-  // Adds the specified WebContents at the specified location.
+  // Adds the specified TabModel at the specified location.
   // |add_types| is a bitmask of AddTabTypes; see it for details.
   //
   // All append/insert methods end up in this method.
@@ -662,12 +677,11 @@ class TabStripModel : public TabGroupController {
   // as such the ADD_FORCE_INDEX AddTabTypes is meaningless here. The only time
   // the |index| is changed is if using the index would result in breaking the
   // constraint that all pinned tabs occur before non-pinned tabs. It returns
-  // the index the web contents is actually inserted to. See also
-  // AddWebContents.
-  int InsertWebContentsAtImpl(int index,
-                              std::unique_ptr<content::WebContents> contents,
-                              int add_types,
-                              std::optional<tab_groups::TabGroupId> group);
+  // the index the tab is actually inserted to. See also AddWebContents.
+  int InsertTabAtImpl(int index,
+                      std::unique_ptr<TabModel> tab,
+                      int add_types,
+                      std::optional<tab_groups::TabGroupId> group);
 
   // Closes the WebContentses at the specified indices. This causes the
   // WebContentses to be destroyed, but it may not happen immediately. If

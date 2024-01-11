@@ -794,6 +794,53 @@ TEST_F(TabStripModelTest, TestTabHandlesOutOfBounds) {
   EXPECT_DEATH_IF_SUPPORTED(tabstrip.GetTabHandleAt(-1).Get(), "");
 }
 
+TEST_F(TabStripModelTest, TestTabHandlesAcrossModels) {
+  TestTabStripModelDelegate delegate;
+  TabStripModel tabstrip(&delegate, profile());
+  ASSERT_TRUE(tabstrip.empty());
+
+  tabstrip.AppendWebContents(CreateWebContentsWithID(1), true);
+  const TabHandle handle = tabstrip.GetTabHandleAt(0);
+  content::WebContents* raw_contents = handle.Get()->contents();
+  tabstrip.AppendWebContents(CreateWebContentsWithID(2), true);
+  content::WebContents* const opener = tabstrip.GetWebContentsAt(1);
+
+  ASSERT_EQ(0, tabstrip.GetIndexOfTab(handle));
+  ASSERT_EQ(handle, tabstrip.GetTabHandleAt(0));
+  ASSERT_EQ(&tabstrip, handle.Get()->owning_model());
+
+  tabstrip.SetOpenerOfWebContentsAt(0, opener);
+  ASSERT_EQ(opener, handle.Get()->opener());
+  tabstrip.SetTabPinned(0, true);
+  ASSERT_EQ(true, handle.Get()->pinned());
+  tabstrip.SetTabBlocked(0, true);
+  ASSERT_EQ(true, handle.Get()->blocked());
+
+  // Detach the tab, and the TabModel should continue to exist, but its state
+  // should get mostly reset.
+
+  std::unique_ptr<TabModel> owned_tab = tabstrip.DetachTabAtForInsertion(0);
+  EXPECT_EQ(owned_tab.get(), handle.Get());
+  EXPECT_EQ(nullptr, handle.Get()->owning_model());
+
+  EXPECT_EQ(raw_contents, handle.Get()->contents());
+  EXPECT_EQ(nullptr, handle.Get()->opener());
+  EXPECT_EQ(false, handle.Get()->reset_opener_on_active_tab_change());
+  EXPECT_EQ(false, handle.Get()->pinned());
+  EXPECT_EQ(false, handle.Get()->blocked());
+
+  // Add it back into the tabstrip.
+
+  tabstrip.InsertDetachedTabAt(0, std::move(owned_tab), AddTabTypes::ADD_NONE);
+  EXPECT_EQ(&tabstrip, handle.Get()->owning_model());
+
+  EXPECT_EQ(raw_contents, handle.Get()->contents());
+  EXPECT_EQ(nullptr, handle.Get()->opener());
+  EXPECT_EQ(false, handle.Get()->reset_opener_on_active_tab_change());
+  EXPECT_EQ(false, handle.Get()->pinned());
+  EXPECT_EQ(false, handle.Get()->blocked());
+}
+
 TEST_F(TabStripModelTest, TestBasicOpenerAPI) {
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());

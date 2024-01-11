@@ -14,15 +14,22 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
+class TabStripModel;
+
 class TabModel final : public SupportsHandles<const TabModel> {
  public:
-  explicit TabModel(std::unique_ptr<content::WebContents> contents);
+  TabModel(std::unique_ptr<content::WebContents> contents,
+           TabStripModel* owning_model);
   ~TabModel() override;
 
   TabModel(const TabModel&) = delete;
   TabModel& operator=(const TabModel&) = delete;
 
+  void OnAddedToModel(TabStripModel* owning_model);
+  void OnRemovedFromModel();
+
   content::WebContents* contents() const { return contents_.get(); }
+  TabStripModel* owning_model() const { return owning_model_.get(); }
   content::WebContents* opener() const { return opener_; }
   bool reset_opener_on_active_tab_change() const {
     return reset_opener_on_active_tab_change_;
@@ -55,6 +62,8 @@ class TabModel final : public SupportsHandles<const TabModel> {
 
  private:
   std::unique_ptr<content::WebContents> contents_;
+  // A back reference to the TabStripModel that contains this TabModel.
+  raw_ptr<TabStripModel> owning_model_ = nullptr;
   raw_ptr<content::WebContents> opener_ = nullptr;
   bool reset_opener_on_active_tab_change_ = false;
   bool pinned_ = false;
