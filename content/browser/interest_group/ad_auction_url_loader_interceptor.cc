@@ -68,7 +68,7 @@ void AdAuctionURLLoaderInterceptor::OnReceiveRedirect(
     const net::RedirectInfo& redirect_info,
     network::mojom::URLResponseHeadPtr& head) {
   ad_auction_headers_eligible_ = false;
-  RemoveAdAuctionResponseHeaders(*head->headers);
+  RemoveAdAuctionResponseHeaders(head->headers);
 }
 
 void AdAuctionURLLoaderInterceptor::WillFollowRedirect(
@@ -85,9 +85,9 @@ void AdAuctionURLLoaderInterceptor::OnReceiveResponse(
       document_.AsRenderFrameHostIfValid();
   if (ad_auction_headers_eligible_ && request_initiator_frame) {
     ProcessAdAuctionResponseHeaders(
-        request_origin_, request_initiator_frame->GetPage(), *head->headers);
+        request_origin_, request_initiator_frame->GetPage(), head->headers);
   } else {
-    RemoveAdAuctionResponseHeaders(*head->headers);
+    RemoveAdAuctionResponseHeaders(head->headers);
   }
 }
 
