@@ -5,17 +5,18 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/group_grid_cell.h"
 
 #import <MaterialComponents/MaterialActivityIndicator.h>
+
 #import <ostream>
 
 #import "base/check.h"
 #import "base/check_op.h"
 #import "base/debug/dump_without_crashing.h"
 #import "base/notreached.h"
-#import "ios/chrome/browser/shared/ui/elements/top_aligned_image_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/group_bottom_trailing_view.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/group_tab_view.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -58,12 +59,11 @@ const CGFloat kSnapShotViewBottomOffset = 4;
 @property(nonatomic, weak) UIView* topBar;
 @property(nonatomic, weak) UIImageView* iconView;
 @property(nonatomic, weak) UIView* groupSnapshotsView;
-@property(nonatomic, weak) TopAlignedImageView* topLeadingSnapshotView;
-@property(nonatomic, weak) TopAlignedImageView* topTrailingSnapshotView;
-@property(nonatomic, weak) TopAlignedImageView* bottomLeadingSnapshotView;
+@property(nonatomic, weak) GroupTabView* topLeadingSnapshotView;
+@property(nonatomic, weak) GroupTabView* topTrailingSnapshotView;
+@property(nonatomic, weak) GroupTabView* bottomLeadingSnapshotView;
 @property(nonatomic, weak)
     GroupGridBottomTrailingView* bottomTrailingSnapshotView;
-// TODO(crbug.com/1501837): Add the bottom right snapshot view.
 // TODO(crbug.com/1501837): Add the favicon views.
 @property(nonatomic, weak) UILabel* titleLabel;
 @property(nonatomic, weak) UIImageView* closeIconView;
@@ -99,12 +99,9 @@ const CGFloat kSnapShotViewBottomOffset = 4;
     contentView.layer.masksToBounds = YES;
     UIView* topBar = [self setupTopBar];
     UIView* groupSnapshotsView = [[UIView alloc] init];
-    TopAlignedImageView* topLeadingSnapshotView =
-        [[TopAlignedImageView alloc] init];
-    TopAlignedImageView* topTrailingSnapshotView =
-        [[TopAlignedImageView alloc] init];
-    TopAlignedImageView* bottomLeadingSnapshotView =
-        [[TopAlignedImageView alloc] init];
+    GroupTabView* topLeadingSnapshotView = [[GroupTabView alloc] init];
+    GroupTabView* topTrailingSnapshotView = [[GroupTabView alloc] init];
+    GroupTabView* bottomLeadingSnapshotView = [[GroupTabView alloc] init];
     GroupGridBottomTrailingView* bottomTrailingSnapshotView =
         [[GroupGridBottomTrailingView alloc] init];
     groupSnapshotsView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -137,15 +134,15 @@ const CGFloat kSnapShotViewBottomOffset = 4;
     _closeTapTargetButton = closeTapTargetButton;
     _opacity = 1.0;
 
-    self.contentView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+    self.contentView.backgroundColor =
+        [UIColor colorNamed:kSecondaryBackgroundColor];
     self.topLeadingSnapshotView.backgroundColor =
         [UIColor colorNamed:kBackgroundColor];
     self.topTrailingSnapshotView.backgroundColor =
         [UIColor colorNamed:kBackgroundColor];
     self.bottomLeadingSnapshotView.backgroundColor =
         [UIColor colorNamed:kBackgroundColor];
-    self.bottomTrailingSnapshotView.backgroundColor =
-        [UIColor colorNamed:kBackgroundColor];
+    self.bottomTrailingSnapshotView.backgroundColor = [UIColor clearColor];
 
     self.topLeadingSnapshotView.layer.cornerRadius = kGroupGridCellCornerRadius;
     self.topTrailingSnapshotView.layer.cornerRadius =
@@ -154,6 +151,9 @@ const CGFloat kSnapShotViewBottomOffset = 4;
         kGroupGridCellCornerRadius;
     self.bottomTrailingSnapshotView.layer.cornerRadius =
         kGroupGridCellCornerRadius;
+    self.topLeadingSnapshotView.layer.masksToBounds = YES;
+    self.topTrailingSnapshotView.layer.masksToBounds = YES;
+    self.bottomLeadingSnapshotView.layer.masksToBounds = YES;
     self.bottomTrailingSnapshotView.layer.masksToBounds = YES;
 
     self.topLeadingSnapshotView.hidden = YES;
@@ -162,8 +162,9 @@ const CGFloat kSnapShotViewBottomOffset = 4;
     self.bottomTrailingSnapshotView.hidden = YES;
 
     self.groupSnapshotsView.backgroundColor =
-        [UIColor colorNamed:kBackgroundColor];
-    self.topBar.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+        [UIColor colorNamed:kSecondaryBackgroundColor];
+    self.topBar.backgroundColor =
+        [UIColor colorNamed:kSecondaryBackgroundColor];
     self.titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
     self.closeIconView.tintColor = [UIColor colorNamed:kCloseButtonColor];
 
@@ -364,9 +365,9 @@ const CGFloat kSnapShotViewBottomOffset = 4;
                     totalTabsCount:(NSInteger)totalTabsCount {
   CHECK_LE((int)groupTabInfos.count, totalTabsCount);
   // Hide all the views when the cell is reconfigured and clear their images.
-  self.topLeadingSnapshotView.image = nil;
-  self.topTrailingSnapshotView.image = nil;
-  self.bottomLeadingSnapshotView.image = nil;
+  [self.topLeadingSnapshotView hideAllAttributes];
+  [self.topTrailingSnapshotView hideAllAttributes];
+  [self.bottomLeadingSnapshotView hideAllAttributes];
   [self.bottomTrailingSnapshotView configureWithGroupTabInfo:nil];
   [self.bottomTrailingSnapshotView configureWithFavicons:nil
                                       remainingTabsCount:0];
@@ -377,15 +378,21 @@ const CGFloat kSnapShotViewBottomOffset = 4;
 
   int groupTabInfosLength = [groupTabInfos count];
   if (groupTabInfosLength > 0) {
-    self.topLeadingSnapshotView.image = groupTabInfos[0].snapshot;
+    [self.topLeadingSnapshotView
+        configureWithSnapshot:groupTabInfos[0].snapshot
+                      favicon:groupTabInfos[0].snapshot];
     self.topLeadingSnapshotView.hidden = NO;
   }
   if (groupTabInfosLength > 1) {
-    self.topTrailingSnapshotView.image = groupTabInfos[1].snapshot;
+    [self.topTrailingSnapshotView
+        configureWithSnapshot:groupTabInfos[1].snapshot
+                      favicon:groupTabInfos[1].snapshot];
     self.topTrailingSnapshotView.hidden = NO;
   }
   if (groupTabInfosLength > 2) {
-    self.bottomLeadingSnapshotView.image = groupTabInfos[2].snapshot;
+    [self.bottomLeadingSnapshotView
+        configureWithSnapshot:groupTabInfos[2].snapshot
+                      favicon:groupTabInfos[2].snapshot];
     self.bottomLeadingSnapshotView.hidden = NO;
   }
   if (groupTabInfosLength == 4) {
