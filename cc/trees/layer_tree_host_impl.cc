@@ -4886,7 +4886,9 @@ void LayerTreeHostImpl::DeleteUIResourceBacking(
         layer_tree_frame_sink_->context_provider()
             ? layer_tree_frame_sink_->context_provider()->SharedImageInterface()
             : layer_tree_frame_sink_->shared_image_interface();
-    sii->DestroySharedImage(sync_token, std::move(data.shared_image));
+    if (sii) {
+      sii->DestroySharedImage(sync_token, std::move(data.shared_image));
+    }
   }
   // |data| goes out of scope and deletes anything it owned.
 }
