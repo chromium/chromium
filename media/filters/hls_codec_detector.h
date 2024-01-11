@@ -50,11 +50,12 @@ class MEDIA_EXPORT HlsCodecDetectorImpl : public HlsCodecDetector {
                               CodecCallback cb) override;
 
  private:
+  void PostSuccessToCallback(std::string container, std::string codecs);
   void OnStreamFetched(bool container_only,
                        HlsDataSourceProvider::ReadResult stream);
-  void DetermineContainer(bool container_only,
-                          const uint8_t* data,
-                          size_t size);
+  HlsDemuxerStatus DetermineContainer(bool container_only,
+                                      const uint8_t* data,
+                                      size_t size);
   void ParserInit(const StreamParser::InitParameters& params);
   bool OnNewConfigMP2T(std::unique_ptr<MediaTracks> tracks);
   bool OnNewBuffers(const StreamParser::BufferQueueMap& buffers);
