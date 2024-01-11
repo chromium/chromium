@@ -100,7 +100,6 @@ std::unique_ptr<Rule> OriginIdentifierValueMap::GetRule(
     const GURL& primary_url,
     const GURL& secondary_url,
     ContentSettingsType content_type) const {
-  base::AutoLock lock(lock_);
   auto it = entries_.find(content_type);
   if (it == entries_.end()) {
     return nullptr;

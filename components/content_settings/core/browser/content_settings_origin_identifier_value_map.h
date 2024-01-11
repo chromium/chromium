@@ -96,10 +96,12 @@ class OriginIdentifierValueMap {
   std::unique_ptr<RuleIterator> GetRuleIterator(
       ContentSettingsType content_type) const LOCKS_EXCLUDED(lock_);
 
+  // Returns the matching Rule with highest precedence or nullptr if no Rule
+  // matched.
   std::unique_ptr<Rule> GetRule(const GURL& primary_url,
                                 const GURL& secondary_url,
                                 ContentSettingsType content_type) const
-      LOCKS_EXCLUDED(lock_);
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   OriginIdentifierValueMap();
 

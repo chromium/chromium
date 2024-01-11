@@ -27,6 +27,7 @@ std::unique_ptr<Rule> MockProvider::GetRule(
     ContentSettingsType content_type,
     bool off_the_record,
     const PartitionKey& partition_key) const {
+  base::AutoLock auto_lock(value_map_.GetLock());
   return value_map_.GetRule(primary_url, secondary_url, content_type);
 }
 

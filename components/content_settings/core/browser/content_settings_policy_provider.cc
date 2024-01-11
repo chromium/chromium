@@ -355,6 +355,7 @@ std::unique_ptr<content_settings::Rule> PolicyProvider::GetRule(
     ContentSettingsType content_type,
     bool off_the_record,
     const content_settings::PartitionKey& partition_key) const {
+  base::AutoLock auto_lock(value_map_.GetLock());
   return value_map_.GetRule(primary_url, secondary_url, content_type);
 }
 

@@ -68,6 +68,7 @@ std::unique_ptr<content_settings::Rule> OneTimePermissionProvider::GetRule(
     return nullptr;
   }
 
+  base::AutoLock auto_lock(value_map_.GetLock());
   return value_map_.GetRule(primary_url, secondary_url, content_type);
 }
 
