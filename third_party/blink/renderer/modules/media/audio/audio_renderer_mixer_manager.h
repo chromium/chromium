@@ -123,8 +123,6 @@ class BLINK_MODULES_EXPORT AudioRendererMixerManager final
   // mixers where only irrelevant keys mismatch.
   struct MixerKeyCompare {
     bool operator()(const MixerKey& a, const MixerKey& b) const {
-      if (a.source_frame_token != b.source_frame_token)
-        return a.source_frame_token < b.source_frame_token;
       if (a.params.channels() != b.params.channels())
         return a.params.channels() < b.params.channels();
 
@@ -143,11 +141,24 @@ class BLINK_MODULES_EXPORT AudioRendererMixerManager final
       if (a.params.effects() != b.params.effects())
         return a.params.effects() < b.params.effects();
 
+      // Don't check the `source_frame_token` when the default device is used
+      // since that will prevent sharing of the output device across render
+      // frames. A common scenario is a lot of YouTube embeds which would each
+      // end up with their own output device if we check the frame token here.
+      //
+      // Output sink behavior can't be directly observed by the page, so there's
+      // no harm in sharing the sink across origins for the default device.
       if (media::AudioDeviceDescription::IsDefaultDevice(a.device_id) &&
           media::AudioDeviceDescription::IsDefaultDevice(b.device_id)) {
         // Both device IDs represent the same default device => do not compare
         // them.
         return false;
+      }
+
+      // Since a non-default device is being used, we must check the frame
+      // token to ensure authorization has been completed for the frame.
+      if (a.source_frame_token != b.source_frame_token) {
+        return a.source_frame_token < b.source_frame_token;
       }
 
       return a.device_id < b.device_id;
