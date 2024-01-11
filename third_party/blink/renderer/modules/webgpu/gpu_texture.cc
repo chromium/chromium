@@ -88,14 +88,12 @@ WGPUTextureViewDescriptor AsDawnType(
   dawn_desc.baseMipLevel = webgpu_desc->baseMipLevel();
   dawn_desc.mipLevelCount = WGPU_MIP_LEVEL_COUNT_UNDEFINED;
   if (webgpu_desc->hasMipLevelCount()) {
-    dawn_desc.mipLevelCount =
-        std::min(webgpu_desc->mipLevelCount(), dawn_desc.mipLevelCount - 1u);
+    dawn_desc.mipLevelCount = webgpu_desc->mipLevelCount();
   }
   dawn_desc.baseArrayLayer = webgpu_desc->baseArrayLayer();
   dawn_desc.arrayLayerCount = WGPU_ARRAY_LAYER_COUNT_UNDEFINED;
   if (webgpu_desc->hasArrayLayerCount()) {
-    dawn_desc.arrayLayerCount = std::min(webgpu_desc->arrayLayerCount(),
-                                         dawn_desc.arrayLayerCount - 1u);
+    dawn_desc.arrayLayerCount = webgpu_desc->arrayLayerCount();
   }
   dawn_desc.aspect = AsDawnEnum(webgpu_desc->aspect());
   if (webgpu_desc->hasLabel()) {
@@ -104,6 +102,27 @@ WGPUTextureViewDescriptor AsDawnType(
   }
 
   return dawn_desc;
+}
+
+// Dawn represents `undefined` as the special uint32_t value (0xFFFF'FFFF).
+// Blink must make sure that an actual value of 0xFFFF'FFFF coming in from JS
+// is not treated as the special `undefined` value, so it injects an error in
+// that case.
+const char* ValidateTextureMipLevelAndArrayLayerCounts(
+    const GPUTextureViewDescriptor* webgpu_desc) {
+  DCHECK(webgpu_desc);
+
+  if (webgpu_desc->hasMipLevelCount() &&
+      webgpu_desc->mipLevelCount() == WGPU_MIP_LEVEL_COUNT_UNDEFINED) {
+    return "mipLevelCount in GPUTextureViewDescriptor is too large";
+  }
+
+  if (webgpu_desc->hasArrayLayerCount() &&
+      webgpu_desc->arrayLayerCount() == WGPU_ARRAY_LAYER_COUNT_UNDEFINED) {
+    return "arrayLayerCount in GPUTextureViewDescriptor is too large";
+  }
+
+  return nullptr;
 }
 
 }  // anonymous namespace
@@ -189,6 +208,13 @@ GPUTextureView* GPUTexture::createView(
   if (webgpu_desc->hasFormat() && !device()->ValidateTextureFormatUsage(
                                       webgpu_desc->format(), exception_state)) {
     return nullptr;
+  }
+
+  const char* error = ValidateTextureMipLevelAndArrayLayerCounts(webgpu_desc);
+  if (error) {
+    device()->InjectError(WGPUErrorType_Validation, error);
+    return MakeGarbageCollected<GPUTextureView>(
+        device(), GetProcs().textureCreateErrorView(GetHandle(), nullptr));
   }
 
   std::string label;
