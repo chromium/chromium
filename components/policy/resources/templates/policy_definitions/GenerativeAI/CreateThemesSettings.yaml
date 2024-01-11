@@ -9,6 +9,7 @@ desc: |-
 
   Setting the policy to "Disabled" will fully disable feature.
 default: 0
+default_for_enterprise_users: 2
 example_value: 1
 features:
   dynamic_refresh: true
