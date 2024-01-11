@@ -509,8 +509,6 @@ class QuicStreamFactory::Job {
   bool host_resolution_finished_ = false;
   bool session_creation_finished_ = false;
   bool connection_retried_ = false;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
   raw_ptr<QuicChromiumClientSession> session_ = nullptr;
   HostResolverEndpointResult endpoint_result_;
   // If connection migraiton is supported, |network_| denotes the network on
