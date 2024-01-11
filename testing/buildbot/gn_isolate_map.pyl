@@ -330,6 +330,10 @@
     "label": "//cc:cc_unittests",
     "type": "windowed_test_launcher",
   },
+  "check_chrome_static_initializers": {
+    "label": "//chrome/android:check_chrome_static_initializers",
+    "type": "additional_compile_target",
+  },
   "chrome": {
     "label": "//chrome:chrome",
     "type": "additional_compile_target",
@@ -1203,10 +1207,6 @@
   "monochrome_public_test_ar_apk": {
     "label": "//chrome/android:monochrome_public_test_ar_apk",
     "type": "console_test_launcher",
-  },
-  "monochrome_static_initializers": {
-    "label": "//chrome/android:monochrome_static_initializers",
-    "type": "additional_compile_target",
   },
   "nacl_helper": {
     "label": "//components/nacl/loader:nacl_helper",

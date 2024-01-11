@@ -3048,20 +3048,24 @@ if (current_toolchain == default_toolchain) {
   }
 
   if (defined(expected_static_initializer_32bit_count)) {
+    # Old name alias to be removed after migration is done.
+    group("monochrome_static_initializers") {
+      deps = [ ":check_chrome_static_initializers" ]
+    }
     _verify_32bit_static_initializers =
         !android_64bit_target_cpu || !skip_secondary_abi_for_cq
     _verify_64bit_static_initializers = android_64bit_target_cpu
-    group("monochrome_static_initializers") {
+    group("check_chrome_static_initializers") {
       deps = []
       if (_verify_32bit_static_initializers) {
-        deps += [ ":chrome_32_static_initializers" ]
+        deps += [ ":check_chrome_32_static_initializers" ]
       }
       if (_verify_64bit_static_initializers) {
-        deps += [ ":chrome_64_static_initializers" ]
+        deps += [ ":check_chrome_64_static_initializers" ]
       }
     }
     if (_verify_32bit_static_initializers) {
-      action_with_pydeps("chrome_32_static_initializers") {
+      action_with_pydeps("check_chrome_32_static_initializers") {
         script = "//build/android/gyp/assert_static_initializers.py"
         if (android_64bit_target_cpu) {
           _lib_abi_toolchain = "($android_secondary_abi_toolchain)"
@@ -3084,7 +3088,7 @@ if (current_toolchain == default_toolchain) {
       }
     }
     if (_verify_64bit_static_initializers) {
-      action_with_pydeps("chrome_64_static_initializers") {
+      action_with_pydeps("check_chrome_64_static_initializers") {
         script = "//build/android/gyp/assert_static_initializers.py"
         deps = [ ":libmonochrome_64" ]
         inputs = [ "$root_build_dir/lib.unstripped/libmonochrome_64.so" ]
