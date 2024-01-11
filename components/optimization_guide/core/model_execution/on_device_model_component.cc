@@ -193,7 +193,7 @@ void OnDeviceModelComponentStateManager::CompleteUpdateRegistration(
 
   bool was_allowed = is_model_allowed_;
   is_model_allowed_ = criteria.is_model_allowed();
-  if (state_ && was_allowed && !is_model_allowed_) {
+  if (state_ && was_allowed != is_model_allowed_) {
     NotifyStateChanged();
   }
 

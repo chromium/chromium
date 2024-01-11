@@ -355,6 +355,9 @@ TEST_F(OnDeviceModelComponentTest, SetReady) {
 TEST_F(OnDeviceModelComponentTest, InstallAfterPerformanceClassChanges) {
   // This sequence would happen on first run.
   local_state_.ClearPref(prefs::localstate::kOnDevicePerformanceClass);
+
+  StubObserver observer;
+  manager()->AddObserver(&observer);
   manager()->OnStartup();
   WaitForStartup();
 
@@ -371,6 +374,41 @@ TEST_F(OnDeviceModelComponentTest, InstallAfterPerformanceClassChanges) {
                       base::Value::Dict());
 
   EXPECT_TRUE(manager()->GetState());
+  EXPECT_TRUE(observer.GetState());
+}
+
+TEST_F(OnDeviceModelComponentTest, PerformanceClassChangesAfterInstall) {
+  // Start 1: registers the component as device is eligible.
+  StubObserver observer;
+  manager()->AddObserver(&observer);
+  manager()->OnStartup();
+  WaitForStartup();
+  ASSERT_TRUE(on_device_component_state_manager_.IsInstallerRegistered());
+
+  // Start 2: device is no longer eligible, but component is registered because
+  // it's already installed.
+  on_device_component_state_manager_.Reset();
+  manager()->AddObserver(&observer);
+  manager()->DevicePerformanceClassChanged(
+      OnDeviceModelPerformanceClass::kServiceCrash);
+  manager()->OnStartup();
+  WaitForStartup();
+  ASSERT_TRUE(on_device_component_state_manager_.IsInstallerRegistered());
+
+  manager()->SetReady(base::Version("0.1.1"),
+                      base::FilePath(FILE_PATH_LITERAL("/some/path")),
+                      base::Value::Dict());
+
+  // State is not available, because device is not eligible.
+  EXPECT_FALSE(manager()->GetState());
+  EXPECT_FALSE(observer.GetState());
+
+  // Device is now eligible
+  manager()->DevicePerformanceClassChanged(
+      OnDeviceModelPerformanceClass::kHigh);
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(manager()->GetState());
+  EXPECT_TRUE(observer.GetState());
 }
 
 TEST_F(OnDeviceModelComponentTest, DontUninstallAfterPerformanceClassChanges) {
