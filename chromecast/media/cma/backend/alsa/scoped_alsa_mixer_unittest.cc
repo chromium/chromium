@@ -72,7 +72,7 @@ class ScopedAlsaMixerEventTest : public ::testing::Test {
 
   void ReadByte() {
     char buffer;
-    ASSERT_TRUE(base::ReadFromFD(pipe_fds_[0], &buffer, sizeof(buffer)));
+    ASSERT_TRUE(base::ReadFromFD(pipe_fds_[0], base::make_span(&buffer, 1u)));
   }
 
   void WriteByte() {
