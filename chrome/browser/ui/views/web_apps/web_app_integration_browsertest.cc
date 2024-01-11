@@ -103,7 +103,13 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, OpenInChrome) {
   helper_.CheckTabCreated(Number::kOne);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppIntegration, ManifestUpdateDisplayBrowser) {
+// TODO(crbug.com/1517467): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ManifestUpdateDisplayBrowser DISABLED_ManifestUpdateDisplayBrowser
+#else
+#define MAYBE_ManifestUpdateDisplayBrowser ManifestUpdateDisplayBrowser
+#endif
+IN_PROC_BROWSER_TEST_F(WebAppIntegration, MAYBE_ManifestUpdateDisplayBrowser) {
   helper_.CreateShortcut(Site::kStandalone, WindowOptions::kWindowed);
   helper_.CheckWindowCreated();
   helper_.ManifestUpdateDisplay(Site::kStandalone, Display::kBrowser);
