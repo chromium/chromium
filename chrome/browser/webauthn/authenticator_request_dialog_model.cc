@@ -892,12 +892,10 @@ void AuthenticatorRequestDialogModel::StartPlatformAuthenticatorFlow() {
               transport_availability_.recognized_credentials.front()};
         }
 #if BUILDFLAG(IS_MAC)
-        if (base::FeatureList::IsEnabled(
-                device::kWebAuthnSkipSingleAccountMacOS) &&
-            (transport_availability_.user_verification_requirement ==
-                 device::UserVerificationRequirement::kRequired ||
-             local_biometrics_override_for_testing_.value_or(
-                 device::fido::mac::DeviceHasBiometricsAvailable()))) {
+        if (transport_availability_.user_verification_requirement ==
+                device::UserVerificationRequirement::kRequired ||
+            local_biometrics_override_for_testing_.value_or(
+                device::fido::mac::DeviceHasBiometricsAvailable())) {
           // If it's not preferable to complete the request by clicking
           // "Continue" then don't show the account selection sheet.
           HideDialogAndDispatchToPlatformAuthenticator();

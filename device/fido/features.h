@@ -78,10 +78,6 @@ BASE_DECLARE_FEATURE(kWebAuthnICloudKeychainForInactiveWithoutDrive);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnNewHybridUI);
 
-// Don't show the single-account sheet on macOS if Touch ID is available.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnSkipSingleAccountMacOS);
-
 // Allow sites to opt into experimenting with conditional UI presentations.
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthConditionalUIExperimentation);
