@@ -63,7 +63,7 @@ ABSL_CONST_INIT thread_local bool off_sequence_binding_allowed = false;
 
 BASE_FEATURE(kMojoChannelAssociatedSendUsesRunOrPostTask,
              "MojoChannelAssociatedSendUsesRunOrPostTask",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Used to track some internal Channel state in pursuit of message leaks.
 //
