@@ -539,11 +539,6 @@ class RawPtrRewriter {
         filtered_addr_of_expr_writer(output_helper, "addr-of"),
         filtered_in_out_ref_arg_writer(output_helper, "in-out-param-ref"),
         overlapping_field_decl_writer(output_helper, "overlapping"),
-        constexpr_ctor_field_initializer_writer(
-            output_helper,
-            "constexpr-ctor-field-initializer"),
-        constexpr_var_initializer_writer(output_helper,
-                                         "constexpr-var-initializer"),
         macro_field_decl_writer(output_helper, "macro"),
         global_scope_rewriter(output_helper, "global-scope"),
         union_field_decl_writer(output_helper, "union"),
@@ -731,31 +726,6 @@ class RawPtrRewriter {
     match_finder.addMatcher(overlapping_field_decl_matcher,
                             &overlapping_field_decl_writer);
 
-    // Matches fields initialized with a non-nullptr value in a constexpr
-    // constructor.  See also the testcase in tests/gen-constexpr-test.cc.
-    auto non_nullptr_expr_matcher =
-        expr(unless(ignoringImplicit(cxxNullPtrLiteralExpr())));
-    auto constexpr_ctor_field_initializer_matcher = cxxConstructorDecl(
-        allOf(isConstexpr(), unless(isImplicit()),
-              forEachConstructorInitializer(
-                  allOf(forField(field_decl_matcher),
-                        withInitializer(non_nullptr_expr_matcher)))));
-
-    match_finder.addMatcher(constexpr_ctor_field_initializer_matcher,
-                            &constexpr_ctor_field_initializer_writer);
-
-    // Matches constexpr initializer list expressions that initialize a
-    // rewritable field with a non-nullptr value.  For more details and
-    // rationale see the testcases in tests/gen-constexpr-test.cc.
-    auto constexpr_var_initializer_matcher = varDecl(
-        allOf(isConstexpr(),
-              hasInitializer(findAll(initListExpr(forEachInitExprWithFieldDecl(
-                  non_nullptr_expr_matcher,
-                  hasExplicitFieldDecl(field_decl_matcher)))))));
-
-    match_finder.addMatcher(constexpr_var_initializer_matcher,
-                            &constexpr_var_initializer_writer);
-
     // See the doc comment for the isInMacroLocation matcher
     // and the testcases in tests/gen-macros-test.cc.
     auto macro_field_decl_matcher =
@@ -832,8 +802,6 @@ class RawPtrRewriter {
   FilteredExprWriter filtered_addr_of_expr_writer;
   FilteredExprWriter filtered_in_out_ref_arg_writer;
   FilteredExprWriter overlapping_field_decl_writer;
-  FilteredExprWriter constexpr_ctor_field_initializer_writer;
-  FilteredExprWriter constexpr_var_initializer_writer;
   FilteredExprWriter macro_field_decl_writer;
   FilteredExprWriter global_scope_rewriter;
   FilteredExprWriter union_field_decl_writer;
@@ -860,11 +828,6 @@ class RawRefRewriter {
                                            affectedInitializerExprFct_),
         global_scope_rewriter(output_helper, "global-scope"),
         overlapping_field_decl_writer(output_helper, "overlapping"),
-        constexpr_ctor_field_initializer_writer(
-            output_helper,
-            "constexpr-ctor-field-initializer"),
-        constexpr_var_initializer_writer(output_helper,
-                                         "constexpr-var-initializer"),
         macro_field_decl_writer(output_helper, "macro"),
         exclusion_options_(exclusion_options) {}
 
@@ -1012,30 +975,6 @@ class RawRefRewriter {
     match_finder.addMatcher(overlapping_field_decl_matcher,
                             &overlapping_field_decl_writer);
 
-    // Matches fields initialized with a non-nullptr value in a constexpr
-    // constructor.  See also the testcase in tests/gen-constexpr-test.cc.
-    auto non_nullptr_expr_matcher =
-        expr(unless(ignoringImplicit(cxxNullPtrLiteralExpr())));
-    auto constexpr_ctor_field_initializer_matcher = cxxConstructorDecl(
-        allOf(isConstexpr(), forEachConstructorInitializer(allOf(
-                                 forField(field_decl_matcher),
-                                 withInitializer(non_nullptr_expr_matcher)))));
-
-    match_finder.addMatcher(constexpr_ctor_field_initializer_matcher,
-                            &constexpr_ctor_field_initializer_writer);
-
-    // Matches constexpr initializer list expressions that initialize a
-    // rewritable field with a non-nullptr value.  For more details and
-    // rationale see the testcases in tests/gen-constexpr-test.cc.
-    auto constexpr_var_initializer_matcher = varDecl(
-        allOf(isConstexpr(),
-              hasInitializer(findAll(initListExpr(forEachInitExprWithFieldDecl(
-                  non_nullptr_expr_matcher,
-                  hasExplicitFieldDecl(field_decl_matcher)))))));
-
-    match_finder.addMatcher(constexpr_var_initializer_matcher,
-                            &constexpr_var_initializer_writer);
-
     // See the doc comment for the isInMacroLocation matcher
     // and the testcases in tests/gen-macros-test.cc.
     auto macro_field_decl_matcher =
@@ -1178,8 +1117,6 @@ class RawRefRewriter {
   AffectedExprRewriter affected_initializer_expr_rewriter;
   FilteredExprWriter global_scope_rewriter;
   FilteredExprWriter overlapping_field_decl_writer;
-  FilteredExprWriter constexpr_ctor_field_initializer_writer;
-  FilteredExprWriter constexpr_var_initializer_writer;
   FilteredExprWriter macro_field_decl_writer;
   const RawPtrAndRefExclusionsOptions exclusion_options_;
 };
