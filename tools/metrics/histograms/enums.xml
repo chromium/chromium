@@ -538,36 +538,6 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="3" label="LAUNCH_CONTAINER_NONE (v2 packaged apps)"/>
 </enum>
 
-<enum name="AppLaunchSource">
-  <int value="0" label="LAUNCH_SOURCE_NONE"/>
-  <int value="1" label="LAUNCH_SOURCE_UNTRACKED"/>
-  <int value="2" label="LAUNCH_SOURCE_APP_LAUNCHER"/>
-  <int value="3" label="LAUNCH_SOURCE_NEW_TAB_PAGE"/>
-  <int value="4" label="LAUNCH_SOURCE_RELOAD"/>
-  <int value="5" label="LAUNCH_SOURCE_RESTART"/>
-  <int value="6" label="LAUNCH_SOURCE_LOAD_AND_LAUNCH"/>
-  <int value="7" label="LAUNCH_SOURCE_COMMAND_LINE"/>
-  <int value="8" label="LAUNCH_SOURCE_FILE_HANDLER"/>
-  <int value="9" label="LAUNCH_SOURCE_URL_HANDLER"/>
-  <int value="10" label="LAUNCH_SOURCE_SYSTEM_TRAY"/>
-  <int value="11" label="LAUNCH_SOURCE_ABOUT_PAGE"/>
-  <int value="12" label="LAUNCH_SOURCE_KEYBOARD"/>
-  <int value="13" label="LAUNCH_SOURCE_EXTENSIONS_PAGE"/>
-  <int value="14" label="LAUNCH_SOURCE_MANAGEMENT_API"/>
-  <int value="15" label="LAUNCH_SOURCE_EPHEMERAL_APP"/>
-  <int value="16" label="LAUNCH_SOURCE_BACKGROUND"/>
-  <int value="17" label="LAUNCH_SOURCE_KIOSK"/>
-  <int value="18" label="LAUNCH_SOURCE_CHROME_INTERNAL"/>
-  <int value="19" label="LAUNCH_SOURCE_TEST"/>
-  <int value="20" label="LAUNCH_SOURCE_INSTALLED_NOTIFICATION"/>
-  <int value="21" label="LAUNCH_SOURCE_CONTEXT_MENU"/>
-  <int value="22" label="LAUNCH_SOURCE_ARC"/>
-  <int value="23" label="LAUNCH_SOURCE_INTENT_URL"/>
-  <int value="24" label="LAUNCH_SOURCE_RUN_ON_OS_LOGIN"/>
-  <int value="25" label="LAUNCH_SOURCE_PROTOCOL_HANDLER"/>
-  <int value="26" label="LAUNCH_SOURCE_REPARENTING"/>
-</enum>
-
 <enum name="AppListNonAppImpressionCategory">
   <obsolete>
     Deprecated March 2021.
@@ -660,13 +630,6 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="60" label=".gdoc"/>
   <int value="61" label=".gsheet"/>
   <int value="62" label=".gslides"/>
-</enum>
-
-<enum name="AppLoadedInTabSource">
-  <int value="0" label="SOURCE_APP"/>
-  <int value="1" label="SOURCE_BACKGROUND_PAGE"/>
-  <int value="2" label="SOURCE_OTHER_EXTENSION"/>
-  <int value="3" label="SOURCE_OTHER"/>
 </enum>
 
 <enum name="AppReadiness">
@@ -2039,11 +2002,6 @@ Called by update_autofill_enums.py.-->
   <int value="1" label="Cloned"/>
 </enum>
 
-<enum name="BooleanCloseTimeout">
-  <int value="0" label="Closed normally"/>
-  <int value="1" label="Timed out"/>
-</enum>
-
 <enum name="BooleanCompleted">
   <int value="0" label="Not Completed"/>
   <int value="1" label="Completed"/>
@@ -2173,11 +2131,6 @@ Called by update_autofill_enums.py.-->
 <enum name="BooleanHadBlankText">
   <int value="0" label="Did not have blank text"/>
   <int value="1" label="Had blank text"/>
-</enum>
-
-<enum name="BooleanHadSuggestions">
-  <int value="0" label="No Suggestions"/>
-  <int value="1" label="Had Suggestions"/>
 </enum>
 
 <enum name="BooleanHardwareAccelerated">
@@ -2378,11 +2331,6 @@ Called by update_autofill_enums.py.-->
   <int value="1" label="Sent"/>
 </enum>
 
-<enum name="BooleanShared">
-  <int value="0" label="Not shared"/>
-  <int value="1" label="Shared"/>
-</enum>
-
 <enum name="BooleanShareGroup">
   <int value="0" label="No share group"/>
   <int value="1" label="Using share group"/>
@@ -2451,11 +2399,6 @@ Called by update_autofill_enums.py.-->
 <enum name="BooleanValid">
   <int value="0" label="Invalid"/>
   <int value="1" label="Valid"/>
-</enum>
-
-<enum name="BooleanValidHashSum">
-  <int value="0" label="Invalid hash sum"/>
-  <int value="1" label="Valid hash sum"/>
 </enum>
 
 <enum name="BooleanVisible">
@@ -3844,18 +3787,6 @@ In case of new special images, values 3 to 9 can be used. -->
   <int value="15" label="YouTube"/>
 </enum>
 
-<enum name="ClientCertSelectionResult">
-  <summary>
-    This metric enumerates how Chrome choses a client certificate when needed as
-    a result of user action or content settings.
-  </summary>
-  <int value="0" label="User selected certificate"/>
-  <int value="1" label="User cancelled selection"/>
-  <int value="2" label="User closed tab"/>
-  <int value="3" label="Selected by content settings"/>
-  <int value="4" label="User selection not permitted"/>
-</enum>
-
 <enum name="ClusterFilterReason">
   <int value="0" label="Not filtered"/>
   <int value="1" label="Not enough visits with images"/>
@@ -5097,17 +5028,6 @@ Called by update_net_error_codes.py.-->
   <int value="0" label="Cache hit with entity"/>
   <int value="1" label="Cache hit without entity"/>
   <int value="2" label="Cache miss"/>
-</enum>
-
-<enum name="CorbVsOrb">
-  <summary>Coarse MIME type classification for CORB decisions.</summary>
-  <int value="0" label="Invalid comparison"/>
-  <int value="1" label="Final decision: Both agree"/>
-  <int value="2" label="Final decision: CORB blocks (and ORB doesn't)"/>
-  <int value="3" label="Final decision: ORB blocks (and CORB doesn't)"/>
-  <int value="4" label="Both want to sniff more"/>
-  <int value="5" label="CORB wants to sniff more"/>
-  <int value="6" label="ORB wants to sniff more"/>
 </enum>
 
 <enum name="CorruptionStates">
@@ -15476,27 +15396,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="16" label="FIS auth error"/>
 </enum>
 
-<enum name="GCMUnregistrationRequestStatus">
-  <int value="0" label="Success"/>
-  <int value="1" label="URL fetching failed"/>
-  <int value="2" label="No response body"/>
-  <int value="3" label="Response parsing failed"/>
-  <int value="4" label="Incorrect App Id"/>
-  <int value="5" label="Invalid parameters"/>
-  <int value="6" label="Service unavailable"/>
-  <int value="7" label="Internal server error"/>
-  <int value="8" label="HTTP response code not OK"/>
-  <int value="9" label="Unknown error"/>
-  <int value="10" label="Reached maximum number of retries"/>
-  <int value="11" label="Device registration error"/>
-</enum>
-
-<enum name="GDataAuthResult">
-  <int value="0" label="FAILURE"/>
-  <int value="1" label="SUCCESS"/>
-  <int value="2" label="NO_CONNECTION"/>
-</enum>
-
 <enum name="GestureNavigationType">
   <int value="0" label="OS system Gesture navigation"/>
   <int value="1" label="Chrome custom Gesture navigation"/>
@@ -17291,22 +17190,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="2" label="frozen-context"/>
 </enum>
 
-<enum name="InterestGroupAdAuctionRoundUpdateResult">
-  <obsolete>
-    Deprecated as of 12/2023.
-  </obsolete>
-  <int value="0" label="Round update is successful"/>
-  <int value="1" label="Round update is cancelled due to timeout"/>
-</enum>
-
-<enum name="InterestGroupAdAuctionUpdateBatchOperation">
-  <obsolete>
-    Replaced by InterestGroupAdAuctionUpdateResizeOperation.
-  </obsolete>
-  <int value="0" label="Batch remains unsplit"/>
-  <int value="1" label="Batch is split due to different joining origin"/>
-</enum>
-
 <enum name="InterestGroupAdAuctionUpdateResizeOperation">
   <int value="0" label="No batch resizing"/>
   <int value="1" label="Batch is resized with same head and tail origins"/>
@@ -17339,13 +17222,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="3" label="Running buyer reportWin()"/>
   <int value="4" label="All worklets completed running"/>
   <int value="5" label="Initial state"/>
-</enum>
-
-<enum name="IntersectionObservationStateOnScroll">
-  <int value="0" label="Viewport only"/>
-  <int value="1" label="Newly desired"/>
-  <int value="2" label="Already desired"/>
-  <int value="3" label="Already required"/>
 </enum>
 
 <enum name="InterstitialCloseReason">
@@ -18771,11 +18647,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="4" label="Load failed"/>
 </enum>
 
-<enum name="LinkGenerationCopiedLinkType">
-  <int value="0" label="Copied from new right-click menu generation"/>
-  <int value="1" label="Copied from existing highlight right-click menu"/>
-</enum>
-
 <enum name="LinkGenerationError">
   <int value="-1" label="no error"/>
   <int value="0" label="Incorrect selector"/>
@@ -18795,21 +18666,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="14" label="NotGenerated"/>
 </enum>
 
-<enum name="LinkGenerationSharedStatus">
-  <int value="0" label="Generation succeeded, shared text"/>
-  <int value="1" label="Generation succeeded, shared link"/>
-  <int value="2" label="Generation failed (shared text)"/>
-</enum>
-
-<enum name="LinkGenerationState">
-  <int value="0" label="kNotStarted: Link generation is not strated."/>
-  <int value="1"
-      label="kNeedsNewCandidate: New candidate selector is being generated."/>
-  <int value="2" label="kTestCandidate: Candidate selector is being tested."/>
-  <int value="3" label="kFailure: Link generation completed with failure."/>
-  <int value="4" label="kSuccess: Link generation completed with success."/>
-</enum>
-
 <enum name="LinkPreviewZoomUsage">
   <int value="0"
       label="kOnlyDefaultUsed: A preview was started with default zoom level
@@ -18822,22 +18678,6 @@ Called by update_permissions_policy_enum.py.-->
 <enum name="LinkToggleState">
   <int value="0" label="Link"/>
   <int value="1" label="No Link"/>
-</enum>
-
-<enum name="LinkToTextDiagnoseStatus">
-  <int value="0" label="Show sharing hub is requested for highlighted text"/>
-  <int value="1" label="Selector is requested for highlighted text"/>
-  <int value="2" label="Selector is received for highlighted text"/>
-</enum>
-
-<enum name="LinkToTextReshareStatus">
-  <int value="0" label="Successful."/>
-  <int value="1" label="Not possible to request. remote connection issues."/>
-  <int value="2" label="Cancelled due to tab getting hidden."/>
-  <int value="3" label="Cancelled due to omnibox navigation."/>
-  <int value="4" label="Cancelled due to tab crash."/>
-  <int value="5" label="Cancelled due to time out"/>
-  <int value="6" label="Empty selector"/>
 </enum>
 
 <enum name="LinuxDistro3">
@@ -19345,14 +19185,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="1" label="Before navigation finish"/>
   <int value="2" label="After navigation finish"/>
   <int value="3" label="After redirect or next navigation started"/>
-</enum>
-
-<enum name="LoadLibraryResultCategory">
-  <int value="0" label="LoadLibraryExW Succeeded"/>
-  <int value="1" label="LoadLibraryExW Fail, LoadLibraryW Succeeded"/>
-  <int value="2" label="LoadLibraryExW Fail, LoadLibraryW Fail"/>
-  <int value="3" label="LoadLibraryExW Unavailable, LoadLibraryW Succeeded"/>
-  <int value="4" label="LoadLibraryExW Unavailable, LoadLibraryW Fail"/>
 </enum>
 
 <enum name="LocaleCodeISO639">
@@ -30429,14 +30261,6 @@ Called by update_use_counter_css.py.-->
   <int value="2" label="ResponseReceived"/>
 </enum>
 
-<enum name="MobileDownloadStoragePermission">
-  <int value="0" label="Storage permission is requested"/>
-  <int value="1" label="Already has storage permission"/>
-  <int value="2" label="Storage permission is granted"/>
-  <int value="3" label="Storage permission is denied"/>
-  <int value="4" label="Storage permission failed due to missing WebContents"/>
-</enum>
-
 <enum name="MobileSessionCallerApp">
   <int value="0" label="Google Search"/>
   <int value="1" label="Gmail"/>
@@ -30595,11 +30419,6 @@ Called by update_use_counter_css.py.-->
   <int value="0" label="Extended mode"/>
   <int value="1" label="Mirroring mode"/>
   <int value="2" label="Unified mode"/>
-</enum>
-
-<enum name="MultiProfileSwitchActiveUserAction">
-  <int value="0" label="System tray"/>
-  <int value="1" label="Keyboard accelerator"/>
 </enum>
 
 <enum name="NaClEmbedderTypeEnum">
@@ -30980,16 +30799,6 @@ Called by update_use_counter_css.py.-->
   <int value="1" label="Navigation was served from cache"/>
 </enum>
 
-<enum name="NavigatorVibrationType">
-  <int value="0" label="Main frame vibrate, no user gesture"/>
-  <int value="1" label="Main frame vibrate, with user gesture"/>
-  <int value="2" label="Same-origin subframe vibrate, no user gesture"/>
-  <int value="3" label="Same-origin subframe vibrate, with user gesture"/>
-  <int value="4" label="Cross-origin subframe vibrate, no user gesture"/>
-  <int value="5" label="Cross-origin subframe vibrate, with user gesture"/>
-  <int value="6" label="In a fenced frame tree"/>
-</enum>
-
 <enum name="NetErrorCodes">
 <!-- Generated from net/base/net_error_list.h.
 Called by update_net_error_codes.py.-->
@@ -31327,31 +31136,6 @@ Called by update_net_error_codes.py.-->
 <enum name="NewUserPriorityPrefsSyncResult">
   <int value="0" label="Succeeded"/>
   <int value="1" label="Timed out"/>
-</enum>
-
-<enum name="NoteCreationFunnel">
-  <int value="0" label="Create Card Button Clicked"/>
-  <int value="1" label="Template Selected"/>
-  <int value="2" label="NoteShared"/>
-</enum>
-
-<enum name="NoteShareDestination">
-  <int value="0" label="First Party"/>
-  <int value="1" label="Third Party"/>
-</enum>
-
-<enum name="NoteTemplate">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Classic"/>
-  <int value="2" label="Friendly"/>
-  <int value="3" label="Fresh"/>
-  <int value="4" label="Powerful"/>
-  <int value="5" label="Impactful"/>
-  <int value="6" label="Lovely"/>
-  <int value="7" label="Groovy"/>
-  <int value="8" label="Monochrome"/>
-  <int value="9" label="Bold"/>
-  <int value="10" label="Dreamy"/>
 </enum>
 
 <enum name="NotificationActionSource">
@@ -31905,12 +31689,6 @@ Called by update_net_error_codes.py.-->
   <int value="4" label="Screen is on, Chrome is in the foreground"/>
 </enum>
 
-<enum name="OfflinePagesLastNIsSavingSamePageEnum">
-  <int value="0" label="New page"/>
-  <int value="1" label="Same page, better expected quality"/>
-  <int value="2" label="Same page, same expected quality"/>
-</enum>
-
 <enum name="OfflinePagesNamespaceEnumeration">
   <int value="0" label="Default">Namespace used as default.</int>
   <int value="1" label="Bookmark">
@@ -31966,34 +31744,6 @@ Called by update_net_error_codes.py.-->
     Chrome navigations committed to both online pages and locally saved offline
     pages in a day.
   </int>
-</enum>
-
-<enum name="OfflinePagesStoreEvent">
-  <int value="0" label="Store opened first time">
-    Store was opened for this first time during this session.
-  </int>
-  <int value="1" label="Store reopened">
-    Store was opened after closing at least once during this session.
-  </int>
-  <int value="2" label="Store closed">Store was closed.</int>
-  <int value="3" label="Store closing skipped">
-    Store closing was skipped, because it was not opened at the time of closing.
-  </int>
-</enum>
-
-<enum name="OfflinePagesSyncOperationResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="Invalid database connection"/>
-  <int value="2" label="Error when transaction begins"/>
-  <int value="3" label="Error when transaction commits"/>
-  <int value="4" label="Error when executing database statements"/>
-  <int value="5" label="Error when executing file operations"/>
-</enum>
-
-<enum name="OfflinePageTrustedState">
-  <int value="0" label="Trusted: in internal directory"/>
-  <int value="1" label="Trusted: in public directory and unmodified"/>
-  <int value="2" label="Untrusted"/>
 </enum>
 
 <enum name="OldLaunchMode">
@@ -32378,16 +32128,6 @@ Called by update_net_error_codes.py.-->
   <int value="1" label="Salient image not Available"/>
   <int value="2" label="Og image tag available but not parseable"/>
   <int value="3" label="Salient image available from og image"/>
-</enum>
-
-<enum name="OrbBlockingDecisionReason">
-  <int value="0" label="Invalid"/>
-  <int value="1" label="Never-sniffed MIME type"/>
-  <int value="2" label="`nosniff` header"/>
-  <int value="3" label="Unexpected range response"/>
-  <int value="4" label="Sniffed as HTML"/>
-  <int value="5" label="Sniffed as XML"/>
-  <int value="6" label="Sniffed as JSON"/>
 </enum>
 
 <enum name="OriginAgentClusterEndResult">
@@ -32912,18 +32652,6 @@ Called by update_net_error_codes.py.-->
   <int value="4" label="NSInternalInconsistencyException"/>
 </enum>
 
-<enum name="OSXScreensHaveSeparateSpaces">
-  <int value="0" label="CANNOT_HAVE_SEPARATE_SPACES">
-    The &quot;Screens Have Separate Spaces&quot; option is unavailable.
-  </int>
-  <int value="1" label="SEPARATE_SPACES">
-    The &quot;Screens Have Separate Spaces&quot; option is on.
-  </int>
-  <int value="2" label="SHARED_SPACES">
-    The &quot;Screens Have Separate Spaces&quot; option is off.
-  </int>
-</enum>
-
 <enum name="OtherSessionsActions">
   <int value="0" label="Menu initialized"/>
   <int value="1" label="Menu shown (deprecated)"/>
@@ -33300,23 +33028,10 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="Other Aborted"/>
 </enum>
 
-<enum name="PaymentRequestNoShowReason">
-  <int value="0" label="NoMatchingPaymentMethod"/>
-  <int value="1" label="NoSupportedPaymentMethod"/>
-  <int value="2" label="ConcurrentRequests"/>
-  <int value="3" label="ReasonOther"/>
-</enum>
-
 <enum name="PaymentRequestPrePurchaseQuery">
   <int value="0" label="Other type of query"/>
   <int value="1" label="Service Worker event"/>
   <int value="2" label="Android intent"/>
-</enum>
-
-<enum name="PaymentRequestTransactionSize">
-  <int value="0" label="Zero"/>
-  <int value="1" label="Micro"/>
-  <int value="2" label="Regular"/>
 </enum>
 
 <enum name="PDFFormTypes">
@@ -36552,15 +36267,6 @@ Called by update_net_error_codes.py.-->
   <int value="4" label="Open Passcode Settings."/>
 </enum>
 
-<enum name="RecentTabsAction">
-  <int value="0" label="Local Session Tab"/>
-  <int value="1" label="Other Device Tab"/>
-  <int value="2" label="Restore Window"/>
-  <int value="3" label="Show More"/>
-  <int value="4" label="Limit Recent Tab Action"/>
-  <int value="5" label="Restore Group"/>
-</enum>
-
 <enum name="RecommendAppsScreenAction">
   <int value="0" label="Skipped"/>
   <int value="1" label="Retried"/>
@@ -36574,19 +36280,6 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="Error"/>
 </enum>
 
-<enum name="RecoveryComponentEvent">
-  <int value="0" label="RunningNonElevated"/>
-  <int value="1" label="ElevationNeeded"/>
-  <int value="2" label="RunFailed"/>
-  <int value="3" label="RunSucceeded"/>
-  <int value="4" label="RunSkipped"/>
-  <int value="5" label="RunningElevated"/>
-  <int value="6" label="RunElevatedFailed"/>
-  <int value="7" label="RunElevatedSucceeded"/>
-  <int value="8" label="RunElevatedSkipped"/>
-  <int value="9" label="DownloadError"/>
-</enum>
-
 <enum name="RecoveryOptInResult">
   <summary>
     The result of the cryptohome recovery opt-in. For managed users the policy
@@ -36597,19 +36290,6 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="User Opt Out"/>
   <int value="3" label="Policy Opt In"/>
   <int value="4" label="Policy Opt Out"/>
-</enum>
-
-<enum name="RedactionToolCaller">
-  <summary>The caller of the redaction tool.</summary>
-  <int value="1" label="System Logs Uploader"/>
-  <int value="2" label="System Logs Fetcher"/>
-  <int value="3" label="Support Tool"/>
-  <int value="4" label="Error Reporting"/>
-  <int value="5" label="Feedback Tool"/>
-  <int value="6" label="Browser System Logs"/>
-  <int value="7" label="Unit Tests"/>
-  <int value="8" label="Undetermined"/>
-  <int value="9" label="Unknown"/>
 </enum>
 
 <enum name="RelatedActiveContentsSyncAccessInfo">
@@ -36946,13 +36626,6 @@ Called by update_net_error_codes.py.-->
   This must be kept current with RgbKeyboardCapabilities located in
   third_party/cros_system_api/dbus/rgbkbd/dbus-constants.h.
 -->
-
-<enum name="RulesetVerificationStatus">
-  <int value="0" label="Not verified"/>
-  <int value="1" label="Intact"/>
-  <int value="2" label="Corrupt"/>
-  <int value="3" label="Invalid File"/>
-</enum>
 
 <enum name="SafetyTipInteraction">
   <int value="0" label="User dismissed the Safety Tip"/>
@@ -37670,23 +37343,6 @@ Called by update_net_error_codes.py.-->
       label="Connection was intentionally cancelled due to a status change"/>
 </enum>
 
-<enum name="SecurePaymentConfirmationAuthenticationDialogResult">
-  <int value="0" label="Canceled"/>
-  <int value="1" label="Accepted"/>
-  <int value="2" label="Closed"/>
-  <int value="3" label="OptOut"/>
-</enum>
-
-<enum name="SecurePaymentConfirmationEnrollSystemPromptResult">
-  <int value="0" label="Canceled"/>
-  <int value="1" label="Accepted"/>
-</enum>
-
-<enum name="SecurePaymentConfirmationSystemPromptResult">
-  <int value="0" label="Canceled"/>
-  <int value="1" label="Accepted"/>
-</enum>
-
 <enum name="SecurityDomainId">
   <int value="0" label="Invalid"/>
   <int value="1" label="Chrome Sync"/>
@@ -37940,13 +37596,6 @@ Called by update_net_error_codes.py.-->
   <int value="0" label="Failure or response error"/>
   <int value="1" label="Success with empty suggestions"/>
   <int value="2" label="Success with suggestions"/>
-</enum>
-
-<enum name="ServicesCustomizationLoadResult">
-  <int value="0" label="Manifest loaded successfully"/>
-  <int value="1" label="Manifest not found on server"/>
-  <int value="2" label="Manifest parsing error"/>
-  <int value="3" label="Failed to load manifest after N retries"/>
 </enum>
 
 <enum name="ServiceWorkerDatabaseStatus">
@@ -40480,17 +40129,6 @@ would be helpful to identify which type is being sent.
   <int value="8" label="Clear Range of History"/>
 </enum>
 
-<enum name="UsedMimeTypeHandler">
-  <summary>
-    Reports the default MIME type handler that is being used to display a file.
-  </summary>
-  <int value="0" label="PdfExtension"/>
-  <int value="1" label="QuickOfficeComponentExtension"/>
-  <int value="2" label="QuickOfficeInternalExtension"/>
-  <int value="3" label="QuickOfficeExtension"/>
-  <int value="4" label="TestExtension"/>
-</enum>
-
 <enum name="UserAgentRequestType">
   <int value="0" label="RequestDesktop"/>
   <int value="1" label="RequestMobile"/>
@@ -40731,21 +40369,6 @@ would be helpful to identify which type is being sent.
   <int value="505" label="505: HTTP Version Not Supported"/>
 </enum>
 
-<enum name="VertexOpacityUsage">
-  <int value="0" label="None">
-    Vertex opacity is not used. Default value of 1f.
-  </int>
-  <int value="1" label="Constant">
-    Vertex opacity values all the same but non 1f.
-  </int>
-  <int value="2" label="LeftRight">
-    Vertex opacity is a left to right gradient.
-  </int>
-  <int value="3" label="TopBottom">
-    Vertex opacity is a top to bottom gradient.
-  </int>
-</enum>
-
 <enum name="VeryLowPerformanceReason">
   <int value="0" label="Low RAM"/>
   <int value="1" label="Slow output"/>
@@ -40905,136 +40528,6 @@ would be helpful to identify which type is being sent.
   <int value="73" label=".raf"/>
   <int value="74" label=".rw2"/>
   <int value="75" label=".tini"/>
-</enum>
-
-<enum name="VirtualKeyboardControllerStateTransition">
-  <int value="-7007" label="Invalid_HIDDEN_to_HIDDEN"/>
-  <int value="-7006" label="Invalid_HIDDEN_to_HIDING"/>
-  <int value="-7005" label="Invalid_HIDDEN_to_WILL_HIDE"/>
-  <int value="-7004" label="Invalid_HIDDEN_to_SHOWN"/>
-  <int value="-7003" label="Invalid_HIDDEN_to_SHOWING"/>
-  <int value="-7002" label="Invalid_HIDDEN_to_LOADING_EXTENSION"/>
-  <int value="-7001" label="Invalid_HIDDEN_to_INITIAL"/>
-  <int value="-7000" label="Invalid_HIDDEN_to_UNKNOWN"/>
-  <int value="-6007" label="Invalid_HIDING_to_HIDDEN"/>
-  <int value="-6006" label="Invalid_HIDING_to_HIDING"/>
-  <int value="-6005" label="Invalid_HIDING_to_WILL_HIDE"/>
-  <int value="-6004" label="Invalid_HIDING_to_SHOWN"/>
-  <int value="-6003" label="Invalid_HIDING_to_SHOWING"/>
-  <int value="-6002" label="Invalid_HIDING_to_LOADING_EXTENSION"/>
-  <int value="-6001" label="Invalid_HIDING_to_INITIAL"/>
-  <int value="-6000" label="Invalid_HIDING_to_UNKNOWN"/>
-  <int value="-5007" label="Invalid_WILL_HIDE_to_HIDDEN"/>
-  <int value="-5006" label="Invalid_WILL_HIDE_to_HIDING"/>
-  <int value="-5005" label="Invalid_WILL_HIDE_to_WILL_HIDE"/>
-  <int value="-5004" label="Invalid_WILL_HIDE_to_SHOWN"/>
-  <int value="-5003" label="Invalid_WILL_HIDE_to_SHOWING"/>
-  <int value="-5002" label="Invalid_WILL_HIDE_to_LOADING_EXTENSION"/>
-  <int value="-5001" label="Invalid_WILL_HIDE_to_INITIAL"/>
-  <int value="-5000" label="Invalid_WILL_HIDE_to_UNKNOWN"/>
-  <int value="-4007" label="Invalid_SHOWN_to_HIDDEN"/>
-  <int value="-4006" label="Invalid_SHOWN_to_HIDING"/>
-  <int value="-4005" label="Invalid_SHOWN_to_WILL_HIDE"/>
-  <int value="-4004" label="Invalid_SHOWN_to_SHOWN"/>
-  <int value="-4003" label="Invalid_SHOWN_to_SHOWING"/>
-  <int value="-4002" label="Invalid_SHOWN_to_LOADING_EXTENSION"/>
-  <int value="-4001" label="Invalid_SHOWN_to_INITIAL"/>
-  <int value="-4000" label="Invalid_SHOWN_to_UNKNOWN"/>
-  <int value="-3007" label="Invalid_SHOWING_to_HIDDEN"/>
-  <int value="-3006" label="Invalid_SHOWING_to_HIDING"/>
-  <int value="-3005" label="Invalid_SHOWING_to_WILL_HIDE"/>
-  <int value="-3004" label="Invalid_SHOWING_to_SHOWN"/>
-  <int value="-3003" label="Invalid_SHOWING_to_SHOWING"/>
-  <int value="-3002" label="Invalid_SHOWING_to_LOADING_EXTENSION"/>
-  <int value="-3001" label="Invalid_SHOWING_to_INITIAL"/>
-  <int value="-3000" label="Invalid_SHOWING_to_UNKNOWN"/>
-  <int value="-2007" label="Invalid_LOADING_EXTENSION_to_HIDDEN"/>
-  <int value="-2006" label="Invalid_LOADING_EXTENSION_to_HIDING"/>
-  <int value="-2005" label="Invalid_LOADING_EXTENSION_to_WILL_HIDE"/>
-  <int value="-2004" label="Invalid_LOADING_EXTENSION_to_SHOWN"/>
-  <int value="-2003" label="Invalid_LOADING_EXTENSION_to_SHOWING"/>
-  <int value="-2002" label="Invalid_LOADING_EXTENSION_to_LOADING_EXTENSION"/>
-  <int value="-2001" label="Invalid_LOADING_EXTENSION_to_INITIAL"/>
-  <int value="-2000" label="Invalid_LOADING_EXTENSION_to_UNKNOWN"/>
-  <int value="-1007" label="Invalid_INITIAL_to_HIDDEN"/>
-  <int value="-1006" label="Invalid_INITIAL_to_HIDING"/>
-  <int value="-1005" label="Invalid_INITIAL_to_WILL_HIDE"/>
-  <int value="-1004" label="Invalid_INITIAL_to_SHOWN"/>
-  <int value="-1003" label="Invalid_INITIAL_to_SHOWING"/>
-  <int value="-1002" label="Invalid_INITIAL_to_LOADING_EXTENSION"/>
-  <int value="-1001" label="Invalid_INITIAL_to_INITIAL"/>
-  <int value="-1000" label="Invalid_INITIAL_to_UNKNOWN"/>
-  <int value="-7" label="Invalid_UNKNOWN_to_HIDDEN"/>
-  <int value="-6" label="Invalid_UNKNOWN_to_HIDING"/>
-  <int value="-5" label="Invalid_UNKNOWN_to_WILL_HIDE"/>
-  <int value="-4" label="Invalid_UNKNOWN_to_SHOWN"/>
-  <int value="-3" label="Invalid_UNKNOWN_to_SHOWING"/>
-  <int value="-2" label="Invalid_UNKNOWN_to_LOADING_EXTENSION"/>
-  <int value="-1" label="Invalid_UNKNOWN_to_INITIAL"/>
-  <int value="0" label="Invalid_UNKNOWN_to_UNKNOWN"/>
-  <int value="1" label="UNKNOWN_to_INITIAL"/>
-  <int value="2" label="UNKNOWN_to_LOADING_EXTENSION"/>
-  <int value="3" label="UNKNOWN_to_SHOWING"/>
-  <int value="4" label="UNKNOWN_to_SHOWN"/>
-  <int value="5" label="UNKNOWN_to_WILL_HIDE"/>
-  <int value="6" label="UNKNOWN_to_HIDING"/>
-  <int value="7" label="UNKNOWN_to_HIDDEN"/>
-  <int value="1000" label="INITIAL_to_UNKNOWN"/>
-  <int value="1001" label="INITIAL_to_INITIAL"/>
-  <int value="1002" label="INITIAL_to_LOADING_EXTENSION"/>
-  <int value="1003" label="INITIAL_to_SHOWING"/>
-  <int value="1004" label="INITIAL_to_SHOWN"/>
-  <int value="1005" label="INITIAL_to_WILL_HIDE"/>
-  <int value="1006" label="INITIAL_to_HIDING"/>
-  <int value="1007" label="INITIAL_to_HIDDEN"/>
-  <int value="2000" label="LOADING_EXTENSION_to_UNKNOWN"/>
-  <int value="2001" label="LOADING_EXTENSION_to_INITIAL"/>
-  <int value="2002" label="LOADING_EXTENSION_to_LOADING_EXTENSION"/>
-  <int value="2003" label="LOADING_EXTENSION_to_SHOWING"/>
-  <int value="2004" label="LOADING_EXTENSION_to_SHOWN"/>
-  <int value="2005" label="LOADING_EXTENSION_to_WILL_HIDE"/>
-  <int value="2006" label="LOADING_EXTENSION_to_HIDING"/>
-  <int value="2007" label="LOADING_EXTENSION_to_HIDDEN"/>
-  <int value="3000" label="SHOWING_to_UNKNOWN"/>
-  <int value="3001" label="SHOWING_to_INITIAL"/>
-  <int value="3002" label="SHOWING_to_LOADING_EXTENSION"/>
-  <int value="3003" label="SHOWING_to_SHOWING"/>
-  <int value="3004" label="SHOWING_to_SHOWN"/>
-  <int value="3005" label="SHOWING_to_WILL_HIDE"/>
-  <int value="3006" label="SHOWING_to_HIDING"/>
-  <int value="3007" label="SHOWING_to_HIDDEN"/>
-  <int value="4000" label="SHOWN_to_UNKNOWN"/>
-  <int value="4001" label="SHOWN_to_INITIAL"/>
-  <int value="4002" label="SHOWN_to_LOADING_EXTENSION"/>
-  <int value="4003" label="SHOWN_to_SHOWING"/>
-  <int value="4004" label="SHOWN_to_SHOWN"/>
-  <int value="4005" label="SHOWN_to_WILL_HIDE"/>
-  <int value="4006" label="SHOWN_to_HIDING"/>
-  <int value="4007" label="SHOWN_to_HIDDEN"/>
-  <int value="5000" label="WILL_HIDE_to_UNKNOWN"/>
-  <int value="5001" label="WILL_HIDE_to_INITIAL"/>
-  <int value="5002" label="WILL_HIDE_to_LOADING_EXTENSION"/>
-  <int value="5003" label="WILL_HIDE_to_SHOWING"/>
-  <int value="5004" label="WILL_HIDE_to_SHOWN"/>
-  <int value="5005" label="WILL_HIDE_to_WILL_HIDE"/>
-  <int value="5006" label="WILL_HIDE_to_HIDING"/>
-  <int value="5007" label="WILL_HIDE_to_HIDDEN"/>
-  <int value="6000" label="HIDING_to_UNKNOWN"/>
-  <int value="6001" label="HIDING_to_INITIAL"/>
-  <int value="6002" label="HIDING_to_LOADING_EXTENSION"/>
-  <int value="6003" label="HIDING_to_SHOWING"/>
-  <int value="6004" label="HIDING_to_SHOWN"/>
-  <int value="6005" label="HIDING_to_WILL_HIDE"/>
-  <int value="6006" label="HIDING_to_HIDING"/>
-  <int value="6007" label="HIDING_to_HIDDEN"/>
-  <int value="7000" label="HIDDEN_to_UNKNOWN"/>
-  <int value="7001" label="HIDDEN_to_INITIAL"/>
-  <int value="7002" label="HIDDEN_to_LOADING_EXTENSION"/>
-  <int value="7003" label="HIDDEN_to_SHOWING"/>
-  <int value="7004" label="HIDDEN_to_SHOWN"/>
-  <int value="7005" label="HIDDEN_to_WILL_HIDE"/>
-  <int value="7006" label="HIDDEN_to_HIDING"/>
-  <int value="7007" label="HIDDEN_to_HIDDEN"/>
 </enum>
 
 <enum name="VoiceIntentTarget">
@@ -41464,13 +40957,6 @@ Called by update_scheduler_enums.py.-->
   <int value="33" label="Cookies subpage opened"/>
   <int value="34" label="Cookies settings opened"/>
   <int value="35" label="'All sites' settings opened with a filter for FPS"/>
-</enum>
-
-<enum name="WebSocketSendType">
-  <int value="0" label="String"/>
-  <int value="1" label="ArrayBuffer"/>
-  <int value="2" label="ArrayBufferView"/>
-  <int value="3" label="Blob"/>
 </enum>
 
 <enum name="WebUIOSSettingsPathHashes">
@@ -42910,19 +42396,6 @@ Called by update_scheduler_enums.py.-->
   <int value="6000" label="ERROR_ENCRYPTION_FAILED"/>
   <int value="6001" label="ERROR_DECRYPTION_FAILED"/>
   <int value="7041" label="ERROR_CTX_CONSOLE_DISCONNECT"/>
-</enum>
-
-<enum name="WinJumplistCategory">
-  <int value="0" label="Recently Closed"/>
-  <int value="1" label="Most Visited"/>
-  <int value="2" label="People"/>
-</enum>
-
-<enum name="WorkerThreadExitCode">
-  <int value="0" label="NotTerminated"/>
-  <int value="1" label="GracefullyTerminated"/>
-  <int value="2" label="SyncForciblyTerminated"/>
-  <int value="3" label="AsyncForciblyTerminated"/>
 </enum>
 
 <enum name="WorkerType">
