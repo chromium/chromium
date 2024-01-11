@@ -22,9 +22,9 @@ namespace {
 // constants, as want to catch inadvertent changes in the tests. The keys will
 // will be generated server-side, so any changes need to be intentional and
 // coordinated.
-static const char kManifestOriginTrialsKey[] = "origin-trials";
-static const char kTestUpdateVersion[] = "1.0";
-static const char kExistingPublicKey[] = "existing public key";
+constexpr char kManifestOriginTrialsKey[] = "origin-trials";
+constexpr char kTestUpdateVersion[] = "1.0";
+constexpr char kExistingPublicKey[] = "existing public key";
 
 }  // namespace
 

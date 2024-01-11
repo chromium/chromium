@@ -11,22 +11,20 @@
 #include "chrome/updater/constants.h"
 #include "chrome/updater/policy/manager.h"
 
+namespace {
 // Constants for managed preference policy keys.
-static NSString* kGlobalPolicyKey = @"global";
-static NSString* kUpdateDefaultKey = @"UpdateDefault";
-static NSString* kDownloadPreferenceKey = @"DownloadPreference";
-static NSString* kUpdatesSuppressedStartHourKey = @"UpdatesSuppressedStartHour";
-static NSString* kUpdatesSuppressedStartMinuteKey =
-    @"UpdatesSuppressedStartMin";
-static NSString* kUpdatesSuppressedDurationMinuteKey =
-    @"UpdatesSuppressedDurationMin";
-static NSString* kTargetChannelKey = @"TargetChannel";
-static NSString* kTargetVersionPrefixKey = @"TargetVersionPrefix";
-static NSString* kRollbackToTargetVersionKey = @"RollbackToTargetVersion";
+NSString* kGlobalPolicyKey = @"global";
+NSString* kUpdateDefaultKey = @"UpdateDefault";
+NSString* kDownloadPreferenceKey = @"DownloadPreference";
+NSString* kUpdatesSuppressedStartHourKey = @"UpdatesSuppressedStartHour";
+NSString* kUpdatesSuppressedStartMinuteKey = @"UpdatesSuppressedStartMin";
+NSString* kUpdatesSuppressedDurationMinuteKey = @"UpdatesSuppressedDurationMin";
+NSString* kTargetChannelKey = @"TargetChannel";
+NSString* kTargetVersionPrefixKey = @"TargetVersionPrefix";
+NSString* kRollbackToTargetVersionKey = @"RollbackToTargetVersion";
+}  // namespace
 
 namespace updater {
-
-namespace {
 
 // Extracts an integer value from a NSString or NSNumber. Returns kPolicyNotSet
 // for all unexpected cases.
@@ -80,8 +78,6 @@ int TranslateUpdatePolicyValue(int update_policy_from_managed_preferences) {
       return kPolicyNotSet;
   }
 }
-
-}  // namespace
 
 }  // namespace updater
 

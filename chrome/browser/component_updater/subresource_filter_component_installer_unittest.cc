@@ -35,7 +35,7 @@
 
 namespace {
 
-static const char kTestRulesetVersion[] = "1.2.3.4";
+constexpr char kTestRulesetVersion[] = "1.2.3.4";
 
 class TestRulesetService : public subresource_filter::RulesetService {
  public:

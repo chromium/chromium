@@ -11,13 +11,12 @@
 #include "base/path_service.h"
 
 namespace component_updater {
-
 namespace {
 
 // This key gives the root directory of all the component installations.
-static int g_components_preinstalled_root_key = -1;
-static int g_components_preinstalled_root_key_alt = -1;
-static int g_components_user_root_key = -1;
+int g_components_preinstalled_root_key = -1;
+int g_components_preinstalled_root_key_alt = -1;
+int g_components_user_root_key = -1;
 
 }  // namespace
 
@@ -64,8 +63,6 @@ bool PathProvider(int key, base::FilePath* result) {
   return true;
 }
 
-// This cannot be done as a static initializer sadly since Visual Studio will
-// eliminate this object file if there is no direct entry point into it.
 void RegisterPathProvider(int components_preinstalled_root_key,
                           int components_preinstalled_root_key_alt,
                           int components_user_root_key) {

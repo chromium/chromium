@@ -19,10 +19,12 @@
 #include "chrome/updater/policy/mac/managed_preference_policy_manager_impl.h"
 #include "chrome/updater/policy/manager.h"
 
-namespace updater {
+namespace {
+NSString* const kManagedPreferencesUpdatePolicies = @"updatePolicies";
+NSString* const kKeystoneSharedPreferenceSuite = @"com.google.Keystone";
+}  // namespace
 
-static NSString* const kManagedPreferencesUpdatePolicies = @"updatePolicies";
-static NSString* const kKeystoneSharedPreferenceSuite = @"com.google.Keystone";
+namespace updater {
 
 class ManagedPreferencePolicyManager : public PolicyManagerInterface {
  public:
