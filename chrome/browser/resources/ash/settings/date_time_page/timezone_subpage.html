@@ -1,11 +1,13 @@
 <style include="settings-shared">
-  .block {
-    display: block;
+  #timezoneRadioContainer {
+    padding-bottom: var(--cr-section-padding);
   }
+
   settings-dropdown-menu {
     --md-select-width: 425px;
     --settings-dropdown-menu-policy-order: 1;
   }
+
   #timeZoneResolveMethodDropdown,
   #timezoneSelector {
     padding-inline-start: 28px;
@@ -17,7 +19,7 @@
   }
 
 </style>
-<div class="settings-box block first">
+<div id="timezoneRadioContainer" class="settings-box first">
   <settings-radio-group id="timeZoneRadioGroup"
       pref="{{prefs.generated.resolve_timezone_by_geolocation_on_off}}"
       deep-link-focus-id$="[[Setting.kChangeTimeZone]]">
