@@ -866,7 +866,7 @@ function isBlinkInstanceOf(x, target) {
     // Is Blink/native object.
     isBlinkObject(x) &&
     // Is not a function (to exclude classes themselves).
-    !(x instanceof Function) &&
+    !isFunction(x) &&
     // Has a ctor.
     x.constructor &&
     // The target has a name.
@@ -881,8 +881,8 @@ function isBlinkInstanceOf(x, target) {
 
 /**
  * This is kinda like `instanceof`, but window-independent.
- * NOTE: ideal solution is `x instanceof global[name]`, but we cannot do that since it does not work when operating in
- * a context with multiple instance of `global` (i.e. windows).
+ * NOTE: ideal solution is `x instanceof global[name]`, but we cannot do that since it does not work when dealing
+ * with multiple instance of `global` (i.e. windows).
  * @see https://linear.app/replay/issue/RUN-1014/chromium-find-better-way-of-determining-dom-class-membership
  *
  * NOTE: `instanceof` is implemented in `Object::InstanceOf` -> `JSReceiver::HasInPrototypeChain`
@@ -1482,7 +1482,7 @@ ProtocolObjectPreview.prototype = {
       const previewers = CustomPreviewers[this.cdpObj.className];
       if (previewers) {
         for (const entry of previewers) {
-          if (entry instanceof Function) {
+          if (isFunction(entry)) {
             entry.call(this, cdpProperties);
           } else {
             // entry should be string -> Look it up in results
@@ -2484,8 +2484,6 @@ function StackingContextElement(
   style,
   clipBounds
 ) {
-  assert(node.nodeType == Node.ELEMENT_NODE);
-
   // The stacking context this element is contained within.
   this.containingContext = containingContext;
 
@@ -2869,12 +2867,18 @@ StackingContext.prototype = {
 
   addChildren(parentNode) {
     for (const child of parentNode.children) {
+      if (!isBlinkInstanceOf(child, Element)) {
+        continue;
+      }
       this.add(child, undefined, this.offset);
     }
   },
 
   addChildrenWithParent(parentElem) {
     for (const child of parentElem.raw.children) {
+      if (!isBlinkInstanceOf(child, Element)) {
+        continue;
+      }
       this.add(child, parentElem, this.offset);
     }
   },
@@ -2990,7 +2994,7 @@ function parseCssTransformStringToMatrix(transform) {
 function computeTransformMatrix(element, window) {
   let curMatrix = [1,0,0,1,0,0]; // start with identity matrix
   let curElem = element;
-  while(curElem && curElem instanceof Element) {
+  while(curElem && isBlinkInstanceOf(curElem, Element)) {
     const transformStr = window.getComputedStyle(curElem).transform;
     const transformMatrix = parseCssTransformStringToMatrix(transformStr);
     if (transformMatrix) {
