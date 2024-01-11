@@ -2504,7 +2504,7 @@
     // cancellation when the pointer is dragged out of an iframe.
     {
       name: "MouseDragFromIframeOnCancelledMouseDown",
-      status: "experimental",
+      status: "stable",
     },
     // crbug.com/346473: Allow mouse-drag text selection even when mousemove
     // event is cancelled.
