@@ -5071,11 +5071,24 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="PossibleSynchronizedScrollCount">
+    <obsolete>
+      Was succeeded by PossibleSynchronizedScrollCount2 since this missed a case
+      where page mutation was realized by changing scroll offset.
+    </obsolete>
     <summary>
       The total number times a page (whose main frame is both the outermost main
       frame and is local) is estimated to have attempted a sync- scroll update
       (i.e., synchronizing an effect with scroll) between navigation and First
       Contentful Paint.
+    </summary>
+  </metric>
+  <metric name="PossibleSynchronizedScrollCount2">
+    <summary>
+      The total number times a page (whose main frame is both the outermost main
+      frame and is local) is estimated to have attempted a sync- scroll update
+      (i.e., synchronizing an effect with scroll) between navigation and First
+      Contentful Paint. We consider only effects realized by either changing
+      inline style or updating scroll offset.
     </summary>
   </metric>
   <metric name="PrePaint">
@@ -6140,6 +6153,10 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="PossibleSynchronizedScrollCount">
+    <obsolete>
+      Was succeeded by PossibleSynchronizedScrollCount2 since this missed a case
+      where page mutation was realized by changing scroll offset.
+    </obsolete>
     <summary>
       The total number times a page (whose main frame is both the outermost main
       frame and is local) is estimated to have attempted a sync- scroll update
@@ -6153,7 +6170,36 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="PossibleSynchronizedScrollCount2">
+    <summary>
+      The total number times a page (whose main frame is both the outermost main
+      frame and is local) is estimated to have attempted a sync- scroll update
+      (i.e., synchronizing an effect with scroll) between navigation and First
+      Contentful Paint. We consider only effects realized by either changing
+      inline style or updating scroll offset.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="PossibleSynchronizedScrollCount2BeginMainFrame">
+    <summary>
+      The total number times a page (whose main frame is both the outermost main
+      frame and is local) is estimated to have attempted a sync- scroll update
+      (i.e., synchronizing an effect with scroll) between navigation and First
+      Contentful Paint. We consider only effects realized by either changing
+      inline style or updating scroll offset.
+    </summary>
+  </metric>
   <metric name="PossibleSynchronizedScrollCountBeginMainFrame">
+    <obsolete>
+      Was succeeded by PossibleSynchronizedScrollCount2BeginMainFrame since this
+      missed a case where page mutation was realized by changing scroll offset.
+    </obsolete>
     <summary>
       The total number times a page (whose main frame is both the outermost main
       frame and is local) is estimated to have attempted a sync- scroll update

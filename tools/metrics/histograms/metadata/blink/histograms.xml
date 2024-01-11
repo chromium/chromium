@@ -3168,7 +3168,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Blink.PossibleSynchronizedScrollCount.UpdateTime"
+<histogram base="true" name="Blink.PossibleSynchronizedScrollCount2.UpdateTime"
     units="count" expires_after="2024-06-01">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimeSuffixes" -->
 

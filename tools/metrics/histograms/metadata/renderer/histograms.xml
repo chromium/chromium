@@ -511,7 +511,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Renderer.PossibleSynchronizedScroll" enum="BooleanSuccess"
+<histogram name="Renderer.PossibleSynchronizedScroll2" enum="BooleanSuccess"
     expires_after="2024-06-30">
   <owner>vollick@chromium.org</owner>
   <owner>flackr@chromium.org</owner>

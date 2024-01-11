@@ -1732,6 +1732,10 @@ void LocalDOMWindow::scrollBy(const ScrollToOptions* scroll_to_options) const {
   if (!page)
     return;
 
+  // TODO(crbug.com/1499981): This should be removed once synchronized scrolling
+  // impact is understood.
+  SyncScrollAttemptHeuristic::DidSetScrollOffset();
+
   document()->UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
 
   float x = 0.0f;
@@ -1786,6 +1790,10 @@ void LocalDOMWindow::scrollTo(const ScrollToOptions* scroll_to_options) const {
   Page* page = GetFrame()->GetPage();
   if (!page)
     return;
+
+  // TODO(crbug.com/1499981): This should be removed once synchronized scrolling
+  // impact is understood.
+  SyncScrollAttemptHeuristic::DidSetScrollOffset();
 
   // It is only necessary to have an up-to-date layout if the position may be
   // clamped, which is never the case for (0, 0).

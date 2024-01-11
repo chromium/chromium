@@ -33,7 +33,7 @@ SyncScrollAttemptHeuristic::~SyncScrollAttemptHeuristic() {
   }
   g_sync_scroll_attempt_heuristic = last_instance_;
   const bool saw_possible_sync_scrolling_attempt =
-      did_access_scroll_offset_ && did_set_style_;
+      did_access_scroll_offset_ && (did_set_style_ || did_set_scroll_offset_);
   if (saw_possible_sync_scrolling_attempt && frame_ &&
       frame_->IsOutermostMainFrame() && !frame_->IsDetached()) {
     // This will not cover cases where |frame_| is remote.
@@ -42,12 +42,12 @@ SyncScrollAttemptHeuristic::~SyncScrollAttemptHeuristic() {
         if (LocalFrameUkmAggregator* ukm_aggregator =
                 local_frame->View()->GetUkmAggregator()) {
           ukm_aggregator->RecordCountSample(
-              LocalFrameUkmAggregator::kPossibleSynchronizedScrollCount, 1);
+              LocalFrameUkmAggregator::kPossibleSynchronizedScrollCount2, 1);
         }
       }
     }
   }
-  base::UmaHistogramBoolean("Renderer.PossibleSynchronizedScroll",
+  base::UmaHistogramBoolean("Renderer.PossibleSynchronizedScroll2",
                             saw_possible_sync_scrolling_attempt);
 }
 
@@ -82,6 +82,16 @@ void SyncScrollAttemptHeuristic::DidAccessScrollOffset() {
   if (UNLIKELY(g_sync_scroll_attempt_heuristic &&
                g_sync_scroll_attempt_heuristic->is_observing_)) {
     g_sync_scroll_attempt_heuristic->did_access_scroll_offset_ = true;
+  }
+}
+
+void SyncScrollAttemptHeuristic::DidSetScrollOffset() {
+  // We only want to record a mutation if we've already accessed the scroll
+  // offset.
+  if (UNLIKELY(g_sync_scroll_attempt_heuristic &&
+               g_sync_scroll_attempt_heuristic->is_observing_ &&
+               g_sync_scroll_attempt_heuristic->did_access_scroll_offset_)) {
+    g_sync_scroll_attempt_heuristic->did_set_scroll_offset_ = true;
   }
 }
 

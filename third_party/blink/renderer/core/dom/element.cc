@@ -1645,6 +1645,10 @@ void Element::setScrollLeft(double new_left) {
     return;
   }
 
+  // TODO(crbug.com/1499981): This should be removed once synchronized scrolling
+  // impact is understood.
+  SyncScrollAttemptHeuristic::DidSetScrollOffset();
+
   GetDocument().UpdateStyleAndLayoutForNode(this,
                                             DocumentUpdateReason::kJavaScript);
 
@@ -1697,6 +1701,10 @@ void Element::setScrollTop(double new_top) {
   if (!InActiveDocument()) {
     return;
   }
+
+  // TODO(crbug.com/1499981): This should be removed once synchronized scrolling
+  // impact is understood.
+  SyncScrollAttemptHeuristic::DidSetScrollOffset();
 
   GetDocument().UpdateStyleAndLayoutForNode(this,
                                             DocumentUpdateReason::kJavaScript);
@@ -1807,6 +1815,10 @@ void Element::scrollBy(const ScrollToOptions* scroll_to_options) {
     return;
   }
 
+  // TODO(crbug.com/1499981): This should be removed once synchronized scrolling
+  // impact is understood.
+  SyncScrollAttemptHeuristic::DidSetScrollOffset();
+
   // FIXME: This should be removed once scroll updates are processed only after
   // the compositing update. See http://crbug.com/420741.
   GetDocument().UpdateStyleAndLayoutForNode(this,
@@ -1830,6 +1842,10 @@ void Element::scrollTo(const ScrollToOptions* scroll_to_options) {
   if (!InActiveDocument()) {
     return;
   }
+
+  // TODO(crbug.com/1499981): This should be removed once synchronized scrolling
+  // impact is understood.
+  SyncScrollAttemptHeuristic::DidSetScrollOffset();
 
   // FIXME: This should be removed once scroll updates are processed only after
   // the compositing update. See http://crbug.com/420741.
