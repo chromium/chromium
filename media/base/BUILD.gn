@@ -450,14 +450,6 @@ source_set("base") {
     deps += [ "//ui/ozone" ]
   }
 
-  # Note: should also work on is_posix || is_fuchsia
-  if (is_linux || is_chromeos) {
-    sources += [
-      "scopedfd_helper.cc",
-      "scopedfd_helper.h",
-    ]
-  }
-
   if (is_win) {
     public_deps += [
       "//media/base/win:dcomp_texture_wrapper",

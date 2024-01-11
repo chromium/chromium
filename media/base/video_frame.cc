@@ -1313,20 +1313,24 @@ const gpu::MailboxHolder& VideoFrame::mailbox_holder(
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-const std::vector<base::ScopedFD>& VideoFrame::DmabufFds() const {
-  DCHECK_EQ(storage_type_, STORAGE_DMABUFS);
-
-  return dmabuf_fds_->fds();
+size_t VideoFrame::NumDmabufFds() const {
+  return dmabuf_fds_->size();
 }
 
 bool VideoFrame::HasDmaBufs() const {
-  return dmabuf_fds_->size() > 0;
+  return NumDmabufFds() > 0;
+}
+
+const base::ScopedFD& VideoFrame::GetDmabufFd(size_t i) const {
+  DCHECK_EQ(storage_type_, STORAGE_DMABUFS);
+
+  return dmabuf_fds_->fds()[i];
 }
 
 bool VideoFrame::IsSameDmaBufsAs(const VideoFrame& frame) const {
   return storage_type_ == STORAGE_DMABUFS &&
          frame.storage_type_ == STORAGE_DMABUFS &&
-         &DmabufFds() == &frame.DmabufFds();
+         &dmabuf_fds_->fds() == &frame.dmabuf_fds_->fds();
 }
 #endif
 

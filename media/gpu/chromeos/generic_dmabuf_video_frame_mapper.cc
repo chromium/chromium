@@ -211,9 +211,8 @@ scoped_refptr<VideoFrame> GenericDmaBufVideoFrameMapper::Map(
   // format whose number of planes are less than VideoFrame::kMaxPlanes.
   uint8_t* plane_addrs[VideoFrame::kMaxPlanes] = {};
   const size_t num_planes = planes.size();
-  const auto& dmabuf_fds = video_frame->DmabufFds();
   std::vector<std::pair<uint8_t*, size_t>> chunks;
-  DCHECK_EQ(dmabuf_fds.size(), num_planes);
+  DCHECK_EQ(video_frame->NumDmabufFds(), num_planes);
   for (size_t i = 0; i < num_planes;) {
     size_t next_buf = i + 1;
     // Search the index of the plane from which the next buffer starts.
@@ -232,7 +231,8 @@ scoped_refptr<VideoFrame> GenericDmaBufVideoFrameMapper::Map(
       return nullptr;
     }
 
-    uint8_t* mapped_addr = Mmap(mapped_size, dmabuf_fds[i].get(), permissions);
+    uint8_t* mapped_addr =
+        Mmap(mapped_size, video_frame->GetDmabufFd(i).get(), permissions);
     if (!mapped_addr) {
       VLOGF(1) << "nullptr returned by Mmap";
       MunmapBuffers(chunks, /*video_frame=*/nullptr);

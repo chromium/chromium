@@ -35,7 +35,6 @@
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
 #include "media/base/media_util.h"
-#include "media/base/scopedfd_helper.h"
 #include "media/base/video_frame_layout.h"
 #include "media/base/video_types.h"
 #include "media/gpu/chromeos/fourcc.h"

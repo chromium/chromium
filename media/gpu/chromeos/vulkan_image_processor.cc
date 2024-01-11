@@ -9,7 +9,6 @@
 #include "base/task/thread_pool.h"
 #include "gpu/vulkan/init/vulkan_factory.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
-#include "media/base/scopedfd_helper.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/chromeos/shaders/shaders.h"
 #include "media/gpu/macros.h"

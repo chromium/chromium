@@ -515,7 +515,7 @@ scoped_refptr<VASurface> VaapiVideoDecoder::CreateSurface() {
   const gfx::GpuMemoryBufferId frame_id =
       frame->GetGpuMemoryBuffer()
           ? frame->GetGpuMemoryBuffer()->GetId()
-          : gfx::GpuMemoryBufferId(frame->DmabufFds()[0].get());
+          : gfx::GpuMemoryBufferId(frame->GetDmabufFd(0).get());
 
   scoped_refptr<VASurface> va_surface;
   if (!base::Contains(allocated_va_surfaces_, frame_id)) {

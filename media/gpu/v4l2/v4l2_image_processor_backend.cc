@@ -26,7 +26,6 @@
 #include "base/trace_event/trace_event.h"
 #include "media/base/color_plane_layout.h"
 #include "media/base/media_util.h"
-#include "media/base/scopedfd_helper.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/macros.h"
