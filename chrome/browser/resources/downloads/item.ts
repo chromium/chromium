@@ -818,9 +818,11 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     }
   }
 
-  private onDiscardDangerousClick_() {
-    this.mojoHandler_!.discardDangerous(this.data.id);
+  private onDiscardDangerousClick_(e: Event) {
+    assert(!!this.mojoHandler_);
+    this.mojoHandler_.discardDangerous(this.data.id);
     if (this.improvedDownloadWarningsUx_) {
+      this.displayRemovedToast_(/*canUndo=*/ false, e);
       this.getMoreActionsMenu().close();
     }
   }
@@ -889,23 +891,33 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     }
   }
 
-  private onRemoveClick_(e: Event) {
-    this.mojoHandler_!.remove(this.data.id);
-    const pieces = loadTimeData.getSubstitutedStringPieces(
-                       loadTimeData.getString('toastRemovedFromList'),
-                       this.data.fileName) as unknown as
-        Array<{collapsible: boolean, value: string, arg?: string}>;
+  private displayRemovedToast_(canUndo: boolean, e: Event) {
+    const templateStringId = this.improvedDownloadWarningsUx_ ?
+        (this.displayType_ === DisplayType.NORMAL && this.completelyOnDisk_ ?
+             'toastDeletedFromHistoryStillOnDevice' :
+             'toastDeletedFromHistory') :
+        'toastRemovedFromList';
+    const pieces =
+        loadTimeData.getSubstitutedStringPieces(
+            loadTimeData.getString(templateStringId), this.data.fileName) as
+        unknown as Array<{collapsible: boolean, value: string, arg?: string}>;
 
     pieces.forEach(p => {
       // Make the file name collapsible.
       p.collapsible = !!p.arg;
     });
-    const canUndo = !this.data.isDangerous && !this.data.isInsecure;
-    getToastManager().showForStringPieces(pieces, /* hideSlotted= */ !canUndo);
+    getToastManager().showForStringPieces(pieces, /*hideSlotted=*/ !canUndo);
 
     // Stop propagating a click to the document to remove toast.
     e.stopPropagation();
     e.preventDefault();
+  }
+
+  private onRemoveClick_(e: Event) {
+    assert(!!this.mojoHandler_);
+    this.mojoHandler_.remove(this.data.id);
+    const canUndo = !this.data.isDangerous && !this.data.isInsecure;
+    this.displayRemovedToast_(canUndo, e);
 
     if (this.improvedDownloadWarningsUx_) {
       this.getMoreActionsMenu().close();

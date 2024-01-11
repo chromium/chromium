@@ -544,7 +544,8 @@ suite('item tests', function() {
     toastManager.show('', /* hideSlotted= */ false);
     assertFalse(toastManager.slottedHidden);
     item.getMoreActionsButton().click();
-    const removeButton = item.shadowRoot!.querySelector<HTMLElement>('#remove');
+    const removeButton =
+        item.shadowRoot!.querySelector<HTMLElement>('#discard-dangerous');
     assertTrue(!!removeButton);
     removeButton.click();
     assertTrue(toastManager.slottedHidden);
@@ -563,7 +564,8 @@ suite('item tests', function() {
     toastManager.show('', /* hideSlotted= */ false);
     assertFalse(toastManager.slottedHidden);
     item.getMoreActionsButton().click();
-    const removeButton = item.shadowRoot!.querySelector<HTMLElement>('#remove');
+    const removeButton =
+        item.shadowRoot!.querySelector<HTMLElement>('#discard-dangerous');
     assertTrue(!!removeButton);
     removeButton.click();
     assertTrue(toastManager.slottedHidden);

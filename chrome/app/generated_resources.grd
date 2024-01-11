@@ -2245,6 +2245,15 @@ are declared in tools/grit/grit_rule.gni.
         Scan failed. This file might be a virus or malware.
       </message>
 
+      <message name="IDS_DOWNLOADS_TOAST_DELETED_FROM_HISTORY_STILL_ON_DEVICE"
+               desc="On the chrome://downloads page, the text for the toast shown when the user removes a download from the download history. This is for normal files, which remain on the user's device.">
+        Deleted <ph name="FILE_NAME">$1<ex>file.txt</ex></ph> from download history, but it's still on your device
+      </message>
+      <message name="IDS_DOWNLOADS_TOAST_DELETED_FROM_HISTORY"
+               desc="On the chrome://downloads page, the text for the toast shown when the user removes a download from the download history. This is for blocked or deleted files, which do not remain on the user's device.">
+        Deleted <ph name="FILE_NAME">$1<ex>file.txt</ex></ph> from download history
+      </message>
+
       <if expr="is_chromeos">
         <message name="IDS_PROMPT_BLOCKED_INSECURE_DOWNLOAD_TITLE"
                  desc="In the download notification, a title of the message shown on a download blocked for being insecure.">
