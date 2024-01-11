@@ -2351,6 +2351,8 @@ void RasterDecoderImpl::DoWritePixelsYUVINTERNAL(
                           SkAlphaType::kPremul_SkAlphaType, nullptr);
 
     if (row_bytes[plane] < src_info.minRowBytes()) {
+      dest_scoped_access->ApplyBackendSurfaceEndState();
+      SubmitIfNecessary(std::move(end_semaphores));
       LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glWritePixelsYUV",
                          "row_bytes must be >= "
                          "SkImageInfo::minRowBytes() for source image.");
@@ -2359,6 +2361,8 @@ void RasterDecoderImpl::DoWritePixelsYUVINTERNAL(
 
     size_t byte_size = src_info.computeByteSize(row_bytes[plane]);
     if (byte_size > UINT32_MAX) {
+      dest_scoped_access->ApplyBackendSurfaceEndState();
+      SubmitIfNecessary(std::move(end_semaphores));
       LOCAL_SET_GL_ERROR(
           GL_INVALID_VALUE, "glWritePixelsYUV",
           "Cannot request a memory chunk larger than UINT32_MAX bytes");
@@ -2366,6 +2370,8 @@ void RasterDecoderImpl::DoWritePixelsYUVINTERNAL(
     }
     if (plane > 0 &&
         plane_offsets[plane] < plane_offsets[plane - 1] + prev_byte_size) {
+      dest_scoped_access->ApplyBackendSurfaceEndState();
+      SubmitIfNecessary(std::move(end_semaphores));
       LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glWritePixelsYUV",
                          "plane_offsets[plane] must be >= plane_offsets[plane "
                          "- 1] + prev_byte_size");
@@ -2377,6 +2383,8 @@ void RasterDecoderImpl::DoWritePixelsYUVINTERNAL(
     void* pixel_data = GetSharedMemoryAs<void*>(
         shm_id, shm_offset + plane_offsets[plane], byte_size);
     if (!pixel_data) {
+      dest_scoped_access->ApplyBackendSurfaceEndState();
+      SubmitIfNecessary(std::move(end_semaphores));
       LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glWritePixelsYUV",
                          "Couldn't retrieve pixel data.");
       return;
