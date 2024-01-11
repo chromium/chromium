@@ -79,13 +79,16 @@ constexpr AudioCodec kAllAudioCodecs[] = {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
     AudioCodec::kAAC,
 #if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
-    AudioCodec::kEAC3, AudioCodec::kAC3,
+    AudioCodec::kEAC3,       AudioCodec::kAC3,
 #endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+#if BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
+    AudioCodec::kAC4,
+#endif  // BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
 #if BUILDFLAG(ENABLE_PLATFORM_MPEG_H_AUDIO)
     AudioCodec::kMpegHAudio,
 #endif  // BUILDFLAG(ENABLE_PLATFORM_MPEG_H_AUDIO)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
-    AudioCodec::kVorbis, AudioCodec::kFLAC, AudioCodec::kOpus};
+    AudioCodec::kVorbis,     AudioCodec::kFLAC, AudioCodec::kOpus};
 
 constexpr EncryptionScheme kAllEncryptionSchemes[] = {EncryptionScheme::kCenc,
                                                       EncryptionScheme::kCbcs};
@@ -156,6 +159,8 @@ std::string GetFourCCString(AudioCodec codec) {
       return "ec-3";
     case AudioCodec::kAC3:
       return "ac-3";
+    case AudioCodec::kAC4:
+      return "ac-4";
     case AudioCodec::kMpegHAudio:
       return "mhm1";
     default:
