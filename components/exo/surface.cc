@@ -872,16 +872,6 @@ void Surface::SetAspectRatio(const gfx::SizeF& aspect_ratio) {
     delegate_->SetAspectRatio(aspect_ratio);
 }
 
-void Surface::SetEmbeddedSurfaceId(
-    base::RepeatingCallback<viz::SurfaceId()> surface_id_callback) {
-  get_current_surface_id_ = std::move(surface_id_callback);
-  first_embedded_surface_id_ = viz::SurfaceId();
-}
-
-void Surface::SetEmbeddedSurfaceSize(const gfx::Size& size) {
-  embedded_surface_size_ = size;
-}
-
 void Surface::SetAcquireFence(std::unique_ptr<gfx::GpuFence> gpu_fence) {
   TRACE_EVENT1("exo", "Surface::SetAcquireFence", "fence_fd",
                gpu_fence ? gpu_fence->GetGpuFenceHandle().Peek() : -1);
@@ -1590,26 +1580,7 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
 
   gfx::Vector2dF translate(0.0f, 0.0f);
 
-  // Surface quads require the quad rect to be appropriately sized and need to
-  // use the shared quad clip rect.
-  if (get_current_surface_id_) {
-    quad_rect = gfx::Rect(embedded_surface_size_);
-    scale = gfx::Vector2dF(1.0f, 1.0f);
-
-    if (!state_.basic_state.crop.IsEmpty()) {
-      // In order to crop an AxB rect to CxD we need to scale by A/C, B/D.
-      // We achieve clipping by scaling it up and then drawing only in the
-      // output rectangle.
-      scale.Scale(content_size_.width() / state_.basic_state.crop.width(),
-                  content_size_.height() / state_.basic_state.crop.height());
-
-      auto offset = state_.basic_state.crop.origin().OffsetFromOrigin();
-      translate =
-          gfx::Vector2dF(-offset.x() * scale.x(), -offset.y() * scale.y());
-    }
-  } else {
-    scale.Scale(state_.basic_state.buffer_scale);
-  }
+  scale.Scale(state_.basic_state.buffer_scale);
 
   bool are_contents_opaque =
       !current_resource_has_alpha_ ||
@@ -1699,42 +1670,7 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
     else if (current_resource_has_alpha_ && are_contents_opaque)
       background_color = SkColors::kBlack;  // Avoid writing alpha < 1
 
-    // If this surface is being replaced by a SurfaceId emit a SurfaceDrawQuad.
-    if (get_current_surface_id_) {
-      auto current_surface_id = get_current_surface_id_.Run();
-      // If the surface ID is valid update it, otherwise keep showing the old
-      // one for now.
-      if (current_surface_id.is_valid()) {
-        latest_embedded_surface_id_ = current_surface_id;
-        if (!current_surface_id.HasSameEmbedTokenAs(
-                first_embedded_surface_id_)) {
-          first_embedded_surface_id_ = current_surface_id;
-        }
-      }
-      if (latest_embedded_surface_id_.is_valid() &&
-          !embedded_surface_size_.IsEmpty()) {
-        viz::SharedQuadState* quad_state =
-            render_pass->CreateAndAppendSharedQuadState();
-        quad_state->SetAll(quad_to_target_transform, quad_rect, quad_rect, msk,
-                           quad_clip_rect, are_contents_opaque,
-                           state_.basic_state.alpha, SkBlendMode::kSrcOver,
-                           /*sorting_context=*/0, /*layer_id=*/0u,
-                           /*fast_rounded_corner=*/false);
-        if (!state_.basic_state.crop.IsEmpty()) {
-          quad_state->clip_rect = gfx::ToEnclosedRect(output_rect);
-        }
-        viz::SurfaceDrawQuad* surface_quad =
-            render_pass->CreateAndAppendDrawQuad<viz::SurfaceDrawQuad>();
-        surface_quad->SetNew(quad_state, quad_rect, quad_rect,
-                             viz::SurfaceRange(first_embedded_surface_id_,
-                                               latest_embedded_surface_id_),
-                             background_color,
-                             /*stretch_content_to_fill_bounds=*/false);
-      }
-      // A resource was still produced for this so we still need to release it
-      // later.
-      frame->resource_list.push_back(current_resource_);
-    } else if (state_.basic_state.alpha != 0.0f) {
+    if (state_.basic_state.alpha != 0.0f) {
       const viz::SharedQuadState* quad_state = AppendOrCreateSharedQuadState(
           state_.basic_state.alpha, render_pass, quad_to_target_transform,
           quad_rect, msk, quad_clip_rect, are_contents_opaque);
