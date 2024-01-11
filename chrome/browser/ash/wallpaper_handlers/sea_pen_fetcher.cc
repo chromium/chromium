@@ -40,7 +40,6 @@ static_assert(DCHECK_IS_ON(),
 #include "base/rand_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/codec/jpeg_codec.h"
@@ -64,13 +63,19 @@ std::string MakeFakeJpgData() {
   return std::string(encoded_data.begin(), encoded_data.end());
 }
 
-std::vector<ash::SeaPenImage> MakeFakeSeaPenImages(const std::string& query) {
+std::vector<ash::SeaPenImage> MakeFakeSeaPenImages() {
   std::vector<ash::SeaPenImage> result;
   for (int i = 0; i < base::RandInt(0, 6); i++) {
-    result.emplace_back(MakeFakeJpgData(), base::RandInt(0, INT32_MAX), query,
+    result.emplace_back(MakeFakeJpgData(), base::RandInt(0, INT32_MAX),
                         manta::proto::RESOLUTION_1024);
   }
   return result;
+}
+
+void RunOnFetchThumbnailsComplete(
+    SeaPenFetcher::OnFetchThumbnailsComplete callback,
+    std::vector<ash::SeaPenImage> images) {
+  std::move(callback).Run(std::move(images), manta::MantaStatusCode::kOk);
 }
 
 class FakeSeaPenFetcher : public SeaPenFetcher {
@@ -85,19 +90,20 @@ class FakeSeaPenFetcher : public SeaPenFetcher {
 
   ~FakeSeaPenFetcher() override = default;
 
-  void FetchThumbnails(const std::string& query,
-                       OnFetchThumbnailsComplete callback) override {
-    VLOG(1) << "Running query: " << query;
+  void FetchThumbnails(
+      const ash::personalization_app::mojom::SeaPenQueryPtr& query,
+      OnFetchThumbnailsComplete callback) override {
     sequenced_task_runner_->PostTaskAndReplyWithResult(
-        FROM_HERE, base::BindOnce(&MakeFakeSeaPenImages, query),
-        std::move(callback));
+        FROM_HERE, base::BindOnce(&MakeFakeSeaPenImages),
+        base::BindOnce(&RunOnFetchThumbnailsComplete, std::move(callback)));
   }
 
-  void FetchWallpaper(ash::SeaPenImage image,
-                      OnFetchWallpaperComplete callback) override {
-    VLOG(1) << "Fetching wallpaper: " << image.query
-            << " target_resolution=" << base::to_underlying(target_resolution);
-    std::move(callback).Run(std::move(image));
+  void FetchWallpaper(
+      const ash::SeaPenImage& thumbnail,
+      const ash::personalization_app::mojom::SeaPenQueryPtr& query,
+      OnFetchWallpaperComplete callback) override {
+    std::move(callback).Run(ash::SeaPenImage(thumbnail.jpg_bytes, thumbnail.id,
+                                             thumbnail.resolution));
   }
 
  private:
