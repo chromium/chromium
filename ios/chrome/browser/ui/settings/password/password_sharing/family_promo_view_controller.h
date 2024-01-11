@@ -16,10 +16,8 @@
 @interface FamilyPromoViewController
     : ConfirmationAlertViewController <FamilyPromoConsumer>
 
-- (instancetype)initWithActionHandler:
-    (id<FamilyPromoActionHandler>)actionHandler NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)init NS_UNAVAILABLE;
+// The action handler for interactions in this view controller.
+@property(nonatomic, weak) id<FamilyPromoActionHandler> actionHandler;
 
 @end
 

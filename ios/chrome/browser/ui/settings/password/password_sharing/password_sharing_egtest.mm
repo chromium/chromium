@@ -57,6 +57,16 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
   return grey_accessibilityID(kPasswordPickerViewID);
 }
 
+// Matcher for the Password Details View.
+id<GREYMatcher> PasswordDetailsTableViewMatcher() {
+  return grey_accessibilityID(kPasswordDetailsTableViewID);
+}
+
+// Matcher for the Share button in password details view.
+id<GREYMatcher> PasswordDetailsShareButtonMatcher() {
+  return grey_accessibilityID(kPasswordShareButtonID);
+}
+
 }  // namespace
 
 // Test case for the Password Sharing flow.
@@ -178,8 +188,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
   SignInAndEnableSync();
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
       assertWithMatcher:grey_not(grey_sufficientlyVisible())];
 }
 
@@ -187,16 +196,14 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
   SignInAndEnableSync();
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 - (void)testShareButtonVisibilityForSignedOutUser {
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
       assertWithMatcher:grey_not(grey_sufficientlyVisible())];
 }
 
@@ -206,8 +213,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
 
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
@@ -220,11 +226,9 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
   // Share button should be visible and display the policy info popup upon tap.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
       performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
@@ -236,12 +240,10 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
   SignInAndEnableSync();
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
       performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
@@ -249,8 +251,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
       performAction:grey_tap()];
 
   // Check that the current view is the password details view.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kPasswordDetailsTableViewID)]
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsTableViewMatcher()]
       assertWithMatcher:grey_notNil()];
 }
 
@@ -258,11 +259,9 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
   SignInAndEnableSync();
   [self saveExamplePasswordsToProfileStoreAndOpenDetails];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
       performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
@@ -270,8 +269,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
       performAction:grey_tap()];
 
   // Check that the current view is the password details view.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kPasswordDetailsTableViewID)]
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsTableViewMatcher()]
       assertWithMatcher:grey_notNil()];
 }
 
@@ -279,8 +277,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
   SignInAndEnableSync();
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
       performAction:grey_tap()];
 
   [[EarlGrey
@@ -288,8 +285,30 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
       performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
 
   // Check that the current view is the password details view.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kPasswordDetailsTableViewID)]
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsTableViewMatcher()]
+      assertWithMatcher:grey_notNil()];
+}
+
+- (void)testFamilyPromoSwipeToDismissFlow {
+  // Override family status with `FetchFamilyMembersRequestStatus::kNoFamily`.
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.additional_args.push_back(std::string("-") +
+                                   test_switches::kFamilyStatus + "=3");
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+  [ChromeEarlGrey setBoolValue:YES
+                   forUserPref:prefs::kPasswordSharingFlowHasBeenEntered];
+
+  SignInAndEnableSync();
+  [self saveExamplePasswordToProfileStoreAndOpenDetails];
+
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(kFamilyPromoViewID)]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+
+  // Check that the current view is the password details view.
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsTableViewMatcher()]
       assertWithMatcher:grey_notNil()];
 }
 
@@ -297,16 +316,14 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
   SignInAndEnableSync();
   [self saveExamplePasswordsToProfileStoreAndOpenDetails];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
       performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:PasswordPickerViewMatcher()]
       performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
 
   // Check that the current view is the password details view.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kPasswordDetailsTableViewID)]
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsTableViewMatcher()]
       assertWithMatcher:grey_notNil()];
 }
 
@@ -314,8 +331,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
   SignInAndEnableSync();
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
       performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"user1@gmail.com")]
@@ -330,8 +346,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
       performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
 
   // Check that the current view is the password details view.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kPasswordDetailsTableViewID)]
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsTableViewMatcher()]
       assertWithMatcher:grey_notNil()];
 }
 
@@ -347,8 +362,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
   SignInAndEnableSync();
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
       performAction:grey_tap()];
 
   // Check that the family promo view was displayed.
@@ -366,8 +380,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
       performAction:grey_tap()];
 
   // Check that the current view is the password details view.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kPasswordDetailsTableViewID)]
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsTableViewMatcher()]
       assertWithMatcher:grey_notNil()];
 }
 
@@ -384,8 +397,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
   SignInAndEnableSync();
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
       performAction:grey_tap()];
 
   // Check that the family promo view was displayed.
@@ -405,8 +417,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
       performAction:grey_tap()];
 
   // Check that the current view is the password details view.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kPasswordDetailsTableViewID)]
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsTableViewMatcher()]
       assertWithMatcher:grey_notNil()];
 }
 
@@ -422,8 +433,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
   SignInAndEnableSync();
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
       performAction:grey_tap()];
 
   // Check that the error view was displayed and close it.
@@ -435,8 +445,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
       performAction:grey_tap()];
 
   // Check that the current view is the password details view.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kPasswordDetailsTableViewID)]
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsTableViewMatcher()]
       assertWithMatcher:grey_notNil()];
 }
 
@@ -444,11 +453,9 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
   SignInAndEnableSync();
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
       performAction:grey_tap()];
 
   // Make sure that the share button is disabled before the recipient selection
@@ -490,8 +497,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(kSharingStatusDoneButtonID)]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kPasswordDetailsTableViewID)]
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsTableViewMatcher()]
       assertWithMatcher:grey_notNil()];
 }
 
@@ -499,8 +505,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
   SignInAndEnableSync();
   [self saveExamplePasswordsToProfileStoreAndOpenDetails];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
       performAction:grey_tap()];
 
   // Check that the next button is enabled by default.
@@ -533,11 +538,9 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
   SignInAndEnableSync();
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
       performAction:grey_tap()];
 
   // Scroll down to the last recipient (the ineligible ones are on the bottom).
@@ -569,8 +572,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
   SignInAndEnableSync();
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
       performAction:grey_tap()];
 
   // Tap the cancel button.
@@ -580,14 +582,12 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
       performAction:grey_tap()];
 
   // Check that the current view is the password details view.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kPasswordDetailsTableViewID)]
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsTableViewMatcher()]
       assertWithMatcher:grey_notNil()];
 
   // Tap the share button again and verify that the first run view is still
   // displayed since it was not acknowledged.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:PasswordSharingFirstRunMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
@@ -600,8 +600,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
   SignInAndEnableSync();
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
       performAction:grey_tap()];
 
   // Tap the share button in the first run experience view.
@@ -621,8 +620,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
 
   // Tap the share button in password details view and verify that the first run
   // view will not be displayed anymore since it was acknowledged.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:FamilyPickerTableViewMatcher()]
       assertWithMatcher:grey_notNil()];
@@ -640,11 +638,9 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
   SignInAndEnableSync();
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
       performAction:grey_tap()];
 
   // Tap the "Learn more" link in the popup.
@@ -664,8 +660,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
   SignInAndEnableSync();
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
       performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:PasswordSharingFirstRunMatcher()]
@@ -687,8 +682,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
   SignInAndEnableSync();
   [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
       performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:FamilyPickerTableViewMatcher()]
@@ -710,8 +704,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
   SignInAndEnableSync();
   [self saveExamplePasswordsToProfileStoreAndOpenDetails];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsShareButtonMatcher()]
       performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:PasswordPickerViewMatcher()]

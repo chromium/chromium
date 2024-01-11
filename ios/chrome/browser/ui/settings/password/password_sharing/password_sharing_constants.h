@@ -14,6 +14,9 @@ extern NSString* const kFamilyPickerCancelButtonID;
 extern NSString* const kFamilyPickerShareButtonID;
 extern NSString* const kFamilyPickerInfoButtonID;
 
+// The accessibility identifier of the family promo view.
+extern NSString* const kFamilyPromoViewID;
+
 // The accessibility identifiers of the password picker view.
 extern NSString* const kPasswordPickerViewID;
 extern NSString* const kPasswordPickerCancelButtonID;
