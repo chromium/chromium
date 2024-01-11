@@ -1125,7 +1125,7 @@ deps = {
     Var('boringssl_git') + '/boringssl.git' + '@' +  Var('boringssl_revision'),
 
   'src/third_party/breakpad/breakpad':
-    Var('chromium_git') + '/breakpad/breakpad.git' + '@' + '22f54f197fe5be28abda6e00bdfaaed9e87f9851',
+    Var('chromium_git') + '/breakpad/breakpad.git' + '@' + '62ecd463583d09eb7d15b1d410055f30b2c7bcb4',
 
   'src/third_party/cast_core/public/src':
     Var('chromium_git') + '/cast_core/public' + '@' + '71f51fd6fa45fac73848f65421081edd723297cd',
