@@ -25,6 +25,12 @@ namespace ui {
 bool GrabViewSnapshot(gfx::NativeView view,
                       const gfx::Rect& snapshot_bounds,
                       gfx::Image* image) {
+  return GrabWindowSnapshot(view->GetWindowAndroid(), snapshot_bounds, image);
+}
+
+bool GrabWindowSnapshot(gfx::NativeWindow window,
+                        const gfx::Rect& snapshot_bounds,
+                        gfx::Image* image) {
   return false;
 }
 

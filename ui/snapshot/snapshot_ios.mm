@@ -47,6 +47,23 @@ bool GrabViewSnapshot(gfx::NativeView view,
   return false;
 }
 
+bool GrabWindowSnapshot(gfx::NativeWindow window,
+                        const gfx::Rect& snapshot_bounds,
+                        gfx::Image* image) {
+  UIWindow* source_window = window.Get();
+  if (source_window == nil) {
+    return false;
+  }
+
+  UIImage* snapshot = GetViewSnapshot(source_window.rootViewController.view,
+                                      snapshot_bounds.ToCGRect());
+  if (snapshot) {
+    *image = gfx::Image(snapshot);
+    return true;
+  }
+  return false;
+}
+
 void GrabViewSnapshotAsync(gfx::NativeView view,
                            const gfx::Rect& source_rect,
                            GrabSnapshotImageCallback callback) {
@@ -59,16 +76,7 @@ void GrabWindowSnapshotAsync(gfx::NativeWindow window,
                              const gfx::Rect& source_rect,
                              GrabSnapshotImageCallback callback) {
   gfx::Image image;
-
-  UIWindow* source_window = window.Get();
-  if (source_window) {
-    UIImage* snapshot = GetViewSnapshot(source_window.rootViewController.view,
-                                        snapshot_bounds.ToCGRect());
-    if (snapshot) {
-      image = gfx::Image(snapshot);
-    }
-  }
-
+  GrabWindowSnapshot(window, source_rect, &image);
   std::move(callback).Run(image);
 }
 

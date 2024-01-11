@@ -72,6 +72,14 @@ bool GrabHwndSnapshot(HWND window_handle,
   return true;
 }
 
+}  // namespace
+
+bool GrabViewSnapshot(gfx::NativeView view_handle,
+                      const gfx::Rect& snapshot_bounds,
+                      gfx::Image* image) {
+  return GrabWindowSnapshot(view_handle, snapshot_bounds, image);
+}
+
 bool GrabWindowSnapshot(gfx::NativeWindow window_handle,
                         const gfx::Rect& snapshot_bounds,
                         gfx::Image* image) {
@@ -94,14 +102,6 @@ bool GrabWindowSnapshot(gfx::NativeWindow window_handle,
 
   return GrabHwndSnapshot(hwnd, snapshot_bounds_in_pixels,
                           expanded_window_bounds_in_pixels, image);
-}
-
-}  // namespace
-
-bool GrabViewSnapshot(gfx::NativeView view_handle,
-                      const gfx::Rect& snapshot_bounds,
-                      gfx::Image* image) {
-  return GrabWindowSnapshot(view_handle, snapshot_bounds, image);
 }
 
 void GrabWindowSnapshotAsync(gfx::NativeWindow window,
