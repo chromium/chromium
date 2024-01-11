@@ -5,16 +5,18 @@
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view.h"
 
 #include <string>
+#include <utility>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
+#include "base/stl_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/version.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/pixel_test_configuration_mixin.h"
-#include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_model.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view_controller.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
@@ -23,29 +25,67 @@
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/views/test/widget_test.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/shell.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/test/test_browser_dialog_mac.h"
+#endif
 
 namespace web_app {
+namespace {
 
+using DialogContent = IsolatedWebAppInstallerModel::DialogContent;
 using Step = IsolatedWebAppInstallerModel::Step;
 
 struct TestParam {
   std::string test_suffix;
   Step step;
+  absl::optional<DialogContent> dialog = absl::nullopt;
   bool use_dark_theme = false;
   bool use_right_to_left_language = false;
 };
 
-// To be passed as 4th argument to `INSTANTIATE_TEST_SUITE_P()`, allows the test
-// to be named like `<TestClassName>.InvokeUi_default/<TestSuffix>` instead
-// of using the index of the param in `TestParam` as suffix.
-std::string ParamToTestSuffix(const ::testing::TestParamInfo<TestParam>& info) {
-  return info.param.test_suffix;
-}
+const TestParam kTestParam[] = {
+    {.test_suffix = "Disabled", .step = Step::kDisabled},
+    {.test_suffix = "GetMetadata", .step = Step::kGetMetadata},
+    {.test_suffix = "ShowMetadata", .step = Step::kShowMetadata},
+    {.test_suffix = "Install", .step = Step::kInstall},
+    {.test_suffix = "Success", .step = Step::kInstallSuccess},
+    {.test_suffix = "InvalidBundle",
+     .step = Step::kGetMetadata,
+     .dialog = DialogContent(
+         /*is_error=*/true,
+         IDS_IWA_INSTALLER_VERIFICATION_ERROR_TITLE,
+         IDS_IWA_INSTALLER_VERIFICATION_ERROR_SUBTITLE)},
+    {.test_suffix = "ConfirmInstall",
+     .step = Step::kShowMetadata,
+     .dialog = DialogContent(
+         /*is_error=*/false,
+         IDS_IWA_INSTALLER_CONFIRM_TITLE,
+         IDS_IWA_INSTALLER_CONFIRM_SUBTITLE,
+         std::make_pair(IDS_IWA_INSTALLER_CONFIRM_LEARN_MORE,
+                        base::DoNothing()),
+         IDS_IWA_INSTALLER_CONFIRM_CONTINUE)},
+    {.test_suffix = "InstallationError",
+     .step = Step::kInstall,
+     .dialog = DialogContent(
+         /*is_error=*/true,
+         IDS_IWA_INSTALLER_INSTALL_FAILED_TITLE,
+         IDS_IWA_INSTALLER_INSTALL_FAILED_SUBTITLE,
+         /*details_link=*/absl::nullopt,
+         IDS_IWA_INSTALLER_INSTALL_FAILED_RETRY)},
+};
 
 SignedWebBundleMetadata CreateTestMetadata() {
   IconBitmaps icons;
@@ -57,12 +97,113 @@ SignedWebBundleMetadata CreateTestMetadata() {
       base::Version("0.0.1"), icons);
 }
 
-const TestParam kTestParam[] = {
-    {.test_suffix = "Disabled", .step = Step::kDisabled},
-    {.test_suffix = "GetMetadata", .step = Step::kGetMetadata},
-    {.test_suffix = "ShowMetadata", .step = Step::kShowMetadata},
-    {.test_suffix = "Install", .step = Step::kInstall},
-    {.test_suffix = "Success", .step = Step::kInstallSuccess},
+// To be passed as 4th argument to `INSTANTIATE_TEST_SUITE_P()`, allows the test
+// to be named like `<TestClassName>.InvokeUi_default/<TestSuffix>` instead
+// of using the index of the param in `TestParam` as suffix.
+std::string ParamToTestSuffix(const ::testing::TestParamInfo<TestParam>& info) {
+  return info.param.test_suffix;
+}
+
+using MixinBasedUiBrowserTest =
+    SupportsTestUi<MixinBasedInProcessBrowserTest, TestBrowserUi>;
+
+// Takes a screenshot of a Widget with the name returned by `widget_name()`.
+// Both `widget_name()` and `ShowUi()` must be overridden.
+class NamedWidgetUiPixelTest : public MixinBasedUiBrowserTest {
+ public:
+  NamedWidgetUiPixelTest(bool use_dark_theme, bool use_right_to_left_language)
+      : pixel_test_mixin_(&mixin_host_,
+                          use_dark_theme,
+                          use_right_to_left_language) {}
+
+  ~NamedWidgetUiPixelTest() override = default;
+
+ protected:
+  virtual std::string widget_name() = 0;
+
+  void PreShow() override { UpdateWidgets(); }
+
+  bool VerifyUi() override {
+    views::Widget::Widgets widgets_before = widgets_;
+    UpdateWidgets();
+
+    // Force pending layouts of all existing widgets. This ensures any
+    // anchor Views are in the correct position.
+    for (views::Widget* widget : widgets_) {
+      widget->LayoutRootViewIfNecessary();
+    }
+
+    // Find the widget named `widget_name()` that was opened during `ShowUi()`.
+    widgets_ = base::STLSetDifference<views::Widget::Widgets>(widgets_,
+                                                              widgets_before);
+    std::string name = widget_name();
+    std::erase_if(widgets_, [&](views::Widget* widget) {
+      return widget->GetName() != name;
+    });
+    if (widgets_.size() != 1) {
+      LOG(ERROR) << "VerifyUi(): Expected 1 added widget with name '" << name
+                 << "'; got " << widgets_.size();
+      return false;
+    }
+
+    views::Widget* widget = *(widgets_.begin());
+    widget->SetBlockCloseForTesting(true);
+    // Deactivate before taking screenshot. Deactivated dialog pixel outputs
+    // is more predictable than activated dialog.
+    widget->Deactivate();
+    widget->GetFocusManager()->ClearFocus();
+    base::ScopedClosureRunner unblock_close(
+        base::BindOnce(&views::Widget::SetBlockCloseForTesting,
+                       base::Unretained(widget), false));
+
+    auto* test_info = testing::UnitTest::GetInstance()->current_test_info();
+    const std::string screenshot_name =
+        base::StrCat({test_info->test_suite_name(), "_", test_info->name()});
+
+    if (VerifyPixelUi(widget, "BrowserUiDialog", screenshot_name) ==
+        ui::test::ActionResult::kFailed) {
+      LOG(ERROR) << "VerifyUi(): Pixel compare failed.";
+      return false;
+    }
+
+    return true;
+  }
+
+  void WaitForUserDismissal() override {
+#if BUILDFLAG(IS_MAC)
+    ::internal::TestBrowserDialogInteractiveSetUp();
+#endif
+
+    ASSERT_EQ(1UL, widgets_.size());
+    views::test::WidgetDestroyedWaiter waiter(*widgets_.begin());
+    waiter.Wait();
+  }
+
+  void DismissUi() override {
+    ASSERT_EQ(1UL, widgets_.size());
+    views::Widget* widget = *widgets_.begin();
+    views::test::WidgetDestroyedWaiter waiter(widget);
+    widget->CloseNow();
+    waiter.Wait();
+  }
+
+ private:
+  // Stores the current widgets in |widgets_|.
+  void UpdateWidgets() {
+    widgets_.clear();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    for (aura::Window* root_window : ash::Shell::GetAllRootWindows()) {
+      views::Widget::GetAllChildWidgets(root_window, &widgets_);
+    }
+#else
+    widgets_ = views::test::WidgetTest::GetAllWidgets();
+#endif
+  }
+
+  PixelTestConfigurationMixin pixel_test_mixin_;
+
+  // The widgets present before/after showing UI.
+  views::Widget::Widgets widgets_;
 };
 
 class FakeIsolatedWebAppsEnabledPrefObserver
@@ -75,19 +216,26 @@ class FakeIsolatedWebAppsEnabledPrefObserver
   void Reset() override {}
 };
 
+}  // namespace
+
 class IsolatedWebAppInstallerViewUiPixelTest
-    : public TestBrowserDialog,
-      public MixinBasedInProcessBrowserTest,
+    : public NamedWidgetUiPixelTest,
       public testing::WithParamInterface<TestParam> {
  public:
   IsolatedWebAppInstallerViewUiPixelTest()
-      : pixel_test_mixin_(&mixin_host_,
-                          GetParam().use_dark_theme,
-                          GetParam().use_right_to_left_language) {}
+      : NamedWidgetUiPixelTest(GetParam().use_dark_theme,
+                               GetParam().use_right_to_left_language) {}
 
   ~IsolatedWebAppInstallerViewUiPixelTest() override = default;
 
-  // `TestBrowserDialog`:
+ protected:
+  // `NamedWidgetUiPixelTest`:
+  std::string widget_name() override {
+    return GetParam().dialog.has_value()
+               ? IsolatedWebAppInstallerView::kNestedDialogWidgetName
+               : IsolatedWebAppInstallerView::kInstallerWidgetName;
+  }
+
   void ShowUi(const std::string& name) override {
     IsolatedWebAppInstallerModel model{base::FilePath()};
 
@@ -102,12 +250,17 @@ class IsolatedWebAppInstallerViewUiPixelTest
 
     model.SetStep(GetParam().step);
     model.SetSignedWebBundleMetadata(CreateTestMetadata());
+
     controller.Show();
+
+    if (GetParam().dialog.has_value()) {
+      model.SetDialogContent(GetParam().dialog);
+      controller.OnModelChanged();
+    }
   }
 
  private:
   base::test::ScopedFeatureList feature_list_{features::kIsolatedWebApps};
-  PixelTestConfigurationMixin pixel_test_mixin_;
 };
 
 IN_PROC_BROWSER_TEST_P(IsolatedWebAppInstallerViewUiPixelTest,

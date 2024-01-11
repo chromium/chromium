@@ -504,7 +504,8 @@ IsolatedWebAppInstallerViewController::CreateDialogDelegate(
     std::unique_ptr<views::View> contents_view) {
   gfx::Size contents_max_size = contents_view->GetMaximumSize();
   auto delegate = std::make_unique<OnCompleteDialogDelegate>();
-  delegate->set_internal_name("Isolated Web App Installer");
+  delegate->set_internal_name(
+      IsolatedWebAppInstallerView::kInstallerWidgetName);
   delegate->SetOwnedByWidget(true);
   delegate->SetContentsView(std::move(contents_view));
   delegate->SetModalType(ui::MODAL_TYPE_WINDOW);

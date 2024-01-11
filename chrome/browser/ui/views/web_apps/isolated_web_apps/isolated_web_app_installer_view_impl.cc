@@ -472,6 +472,8 @@ void IsolatedWebAppInstallerViewImpl::ShowDialog(
     const IsolatedWebAppInstallerModel::DialogContent& dialog_content) {
   auto bubble_delegate = std::make_unique<views::BubbleDialogDelegate>(
       GetWidget()->GetContentsView(), views::BubbleBorder::FLOAT);
+  bubble_delegate->set_internal_name(
+      IsolatedWebAppInstallerView::kNestedDialogWidgetName);
   bubble_delegate->SetModalType(ui::MODAL_TYPE_CHILD);
   bubble_delegate->set_fixed_width(
       ChromeLayoutProvider::Get()->GetDistanceMetric(

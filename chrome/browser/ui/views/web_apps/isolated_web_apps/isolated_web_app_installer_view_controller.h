@@ -61,6 +61,7 @@ class IsolatedWebAppInstallerViewController
   void SetViewForTesting(IsolatedWebAppInstallerView* view);
 
  private:
+  friend class IsolatedWebAppInstallerViewUiPixelTest;
   FRIEND_TEST_ALL_PREFIXES(IsolatedWebAppInstallerViewControllerTest,
                            InstallButtonLaunchesConfirmationDialog);
   FRIEND_TEST_ALL_PREFIXES(IsolatedWebAppInstallerViewControllerTest,
