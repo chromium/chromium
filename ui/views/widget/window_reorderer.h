@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "ui/aura/window_observer.h"
 
 namespace aura {
@@ -46,10 +47,11 @@ class WindowReorderer : public aura::WindowObserver {
   void OnWillRemoveWindow(aura::Window* window) override;
   void OnWindowDestroying(aura::Window* window) override;
 
-  // The window and the root view of the native widget which owns the
-  // WindowReorderer.
-  raw_ptr<aura::Window> parent_window_;
-  raw_ptr<View, DanglingUntriaged> root_view_;
+  // The observation of the window of native widget that owns `this`.
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      parent_window_observation_{this};
+  // The root view of the native widget that owns `this`.
+  raw_ptr<View> root_view_;
 
   // Reorders windows as a result of the kHostViewKey being set on a child of
   // |parent_window_|.
