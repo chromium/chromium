@@ -12,19 +12,6 @@ Standard: Cpp11
 InsertBraces: true
 InsertNewlineAtEOF: true
 
-# Sort #includes by follwoing
-# https://google.github.io/styleguide/cppguide.html#Names_and_Order_of_Includes
-#
-# ref: https://clang.llvm.org/docs/ClangFormatStyleOptions.html#includeblocks
-IncludeBlocks: Regroup
-# Predefined IncludeCategories works well for Chromium.
-# https://github.com/llvm/llvm-project/blob/c99670ba513529b3ab6a649be7377b863dc110be/clang/lib/Format/Format.cpp#L1645
-# ref: https://clang.llvm.org/docs/ClangFormatStyleOptions.html#includecategories
-# ref: https://clang.llvm.org/docs/ClangFormatStyleOptions.html#includeismainregex
-IncludeIsMainRegex: "\
-(_(android|apple|chromeos|freebsd|fuchsia|fuzzer|ios|linux|mac|nacl|openbsd|posix|stubs?|win))?\
-(_(unit|browser|perf)?tests?)?$"
-
 # Make sure code like:
 # IPC_BEGIN_MESSAGE_MAP()
 #   IPC_MESSAGE_HANDLER(WidgetHostViewHost_Update, OnUpdate)
