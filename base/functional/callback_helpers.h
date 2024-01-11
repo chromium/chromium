@@ -137,7 +137,7 @@ SplitOnceCallback(OnceCallback<void(Args...)> callback) {
 template <typename... Preargs, typename... Args>
 RepeatingCallback<void(Preargs..., Args...)> IgnoreArgs(
     RepeatingCallback<void(Args...)> callback) {
-  return callback ? BindRepeating(
+  return callback ? ::base::BindRepeating(
                         [](RepeatingCallback<void(Args...)> callback,
                            Preargs..., Args... args) {
                           std::move(callback).Run(std::forward<Args>(args)...);
@@ -150,7 +150,7 @@ RepeatingCallback<void(Preargs..., Args...)> IgnoreArgs(
 template <typename... Preargs, typename... Args>
 OnceCallback<void(Preargs..., Args...)> IgnoreArgs(
     OnceCallback<void(Args...)> callback) {
-  return callback ? BindOnce(
+  return callback ? ::base::BindOnce(
                         [](OnceCallback<void(Args...)> callback, Preargs...,
                            Args... args) {
                           std::move(callback).Run(std::forward<Args>(args)...);
