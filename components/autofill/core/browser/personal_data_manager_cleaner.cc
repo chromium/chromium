@@ -68,8 +68,6 @@ void PersonalDataManagerCleaner::CleanupDataAndNotifyPersonalDataObservers() {
   personal_data_manager_->NotifyPersonalDataObserver();
 }
 
-void PersonalDataManagerCleaner::SyncStarted(syncer::ModelType model_type) {}
-
 void PersonalDataManagerCleaner::ApplyAddressAndCardFixesAndCleanups(
     syncer::ModelType model_type) {
   // The profile de-duplication is run once every major chrome version. If the

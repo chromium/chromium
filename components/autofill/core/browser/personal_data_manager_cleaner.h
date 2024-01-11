@@ -40,9 +40,6 @@ class PersonalDataManagerCleaner {
   // |model_type|.
   void ApplyAddressAndCardFixesAndCleanups(syncer::ModelType model_type);
 
-  // TODO(crbug.com/1477292): Remove.
-  void SyncStarted(syncer::ModelType model_type);
-
 #if defined(UNIT_TEST)
   // Getter for |alternative_state_name_map_updater_| used for testing purposes.
   AlternativeStateNameMapUpdater*
