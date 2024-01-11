@@ -73,10 +73,12 @@ void StreamTextureWrapperImpl::CreateVideoFrame(
       gpu::MailboxHolder(mailbox, gpu::SyncToken(), GL_TEXTURE_EXTERNAL_OES)};
 
   gpu::SharedImageInterface* sii = factory_->SharedImageInterface();
+  // The SI backing this VideoFrame will be read by the display compositor and
+  // raster. The latter will be over GL if not using OOP-R. NOTE: GL usage can
+  // be eliminated once OOP-R ships definitively.
   auto shared_image =
       sii->NotifyMailboxAdded(mailbox, gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                                            gpu::SHARED_IMAGE_USAGE_GLES2_READ |
-                                           gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
                                            gpu::SHARED_IMAGE_USAGE_RASTER);
 
   // The pixel format doesn't matter here as long as it's valid for texture
