@@ -929,6 +929,7 @@ class WallpaperControllerTest
         break;
     }
     enabled_features.push_back(features::kSeaPen);
+    enabled_features.push_back(features::kFeatureManagementSeaPen);
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 

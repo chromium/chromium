@@ -16632,6 +16632,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "FeatureManagementSeaPen",
                         "SeaPen"
                     ]
                 }

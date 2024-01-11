@@ -90,7 +90,7 @@ class PersonalizationAppSeaPenProviderImplTest : public testing::Test {
       : scoped_user_manager_(std::make_unique<ash::FakeChromeUserManager>()),
         profile_manager_(TestingBrowserProcess::GetGlobal()) {
     scoped_feature_list_.InitWithFeatures(
-        {manta::features::kMantaService, features::kSeaPen}, {});
+        {features::kSeaPen, features::kFeatureManagementSeaPen}, {});
   }
 
   PersonalizationAppSeaPenProviderImplTest(
