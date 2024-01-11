@@ -264,9 +264,8 @@ void TasksBubbleView::UpdateTasksList(const std::string& task_list_id,
 
     if (num_tasks_shown_ < kMaximumTasks) {
       task_items_container_view_->AddChildView(
-          std::make_unique<GlanceablesTaskView>(
-              task.get(), mark_task_as_completed,
-              /*save_callback=*/base::DoNothing()));
+          std::make_unique<GlanceablesTaskView>(task.get(),
+                                                mark_task_as_completed));
       ++num_tasks_shown_;
     }
     ++num_tasks_;

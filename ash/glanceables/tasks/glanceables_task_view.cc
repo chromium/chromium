@@ -26,10 +26,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
-#include "ui/events/keycodes/keyboard_codes_posix.h"
-#include "ui/events/types/event_type.h"
 #include "ui/gfx/font.h"
-#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
@@ -39,8 +36,6 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/controls/textfield/textfield.h"
-#include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -100,62 +95,6 @@ std::unique_ptr<views::ImageView> CreateSecondRowIcon(
       icon, cros_tokens::kCrosSysOnSurfaceVariant));
   return icon_view;
 }
-
-class TaskViewTextField : public views::Textfield,
-                          public views::TextfieldController {
-  METADATA_HEADER(TaskViewTextField, views::Textfield)
-
- public:
-  using OnFinishedEditingCallback =
-      base::OnceCallback<void(const std::u16string& title)>;
-
-  TaskViewTextField(const std::u16string& title,
-                    OnFinishedEditingCallback on_finished_editing)
-      : on_finished_editing_(std::move(on_finished_editing)) {
-    SetAccessibleName(u"[l10n] Title");
-    SetBackgroundColor(SK_ColorTRANSPARENT);
-    SetBorder(nullptr);
-    SetController(this);
-    SetID(base::to_underlying(GlanceablesViewId::kTaskItemTitleTextField));
-    SetPlaceholderText(u"[l10n] Title");
-    SetText(title);
-  }
-  TaskViewTextField(const TaskViewTextField&) = delete;
-  TaskViewTextField& operator=(const TaskViewTextField&) = delete;
-  ~TaskViewTextField() override = default;
-
-  // views::Textfield:
-  gfx::Size CalculatePreferredSize() const override {
-    return gfx::Size(0, GetFontList().GetHeight());
-  }
-
-  // views::TextfieldController:
-  bool HandleKeyEvent(views::Textfield* sender,
-                      const ui::KeyEvent& key_event) override {
-    if (key_event.type() == ui::ET_KEY_PRESSED &&
-        (key_event.key_code() == ui::VKEY_ESCAPE ||
-         key_event.key_code() == ui::VKEY_RETURN)) {
-      OnFinishedEditing();
-      return true;
-    }
-    return views::TextfieldController::HandleKeyEvent(sender, key_event);
-  }
-
-  // TODO(b/301253574): implement other triggers to run the callback:
-  // - tab navigation away from the text field;
-  // - mouse click outside.
-
- private:
-  void OnFinishedEditing() {
-    // Running `on_finished_editing_` deletes `this`.
-    std::move(on_finished_editing_).Run(GetText());
-  }
-
-  OnFinishedEditingCallback on_finished_editing_;
-};
-
-BEGIN_METADATA(TaskViewTextField)
-END_METADATA
 
 }  // namespace
 
@@ -245,12 +184,10 @@ END_METADATA
 
 GlanceablesTaskView::GlanceablesTaskView(
     const api::Task* task,
-    MarkAsCompletedCallback mark_as_completed_callback,
-    SaveCallback save_callback)
+    MarkAsCompletedCallback mark_as_completed_callback)
     : task_id_(task ? task->id : ""),
       task_title_(task ? base::UTF8ToUTF16(task->title) : u""),
-      mark_as_completed_callback_(std::move(mark_as_completed_callback)),
-      save_callback_(std::move(save_callback)) {
+      mark_as_completed_callback_(std::move(mark_as_completed_callback)) {
   SetAccessibleRole(ax::mojom::Role::kListItem);
 
   SetBackground(views::CreateThemedRoundedRectBackground(
@@ -387,31 +324,6 @@ void GlanceablesTaskView::CheckButtonPressed() {
 void GlanceablesTaskView::TaskTitleButtonPressed() {
   // TODO(b/301253574): notify siblings to switch to `kView`.
   UpdateTaskTitleViewForState(TaskTitleViewState::kEdit);
-}
-
-void GlanceablesTaskView::OnFinishedEditing(const std::u16string& title) {
-  const auto old_title = task_title_;
-  if (!title.empty()) {
-    task_title_ = title;
-  }
-
-  UpdateTaskTitleViewForState(TaskTitleViewState::kView);
-
-  if (task_id_.empty() || task_title_ != old_title) {
-    save_callback_.Run(task_id_, base::UTF16ToUTF8(task_title_),
-                       base::BindOnce(&GlanceablesTaskView::OnSaved,
-                                      weak_ptr_factory_.GetWeakPtr()));
-    // TODO(b/301253574): introduce "disabled" state for this view to prevent
-    // editing / marking as complete while the task is not fully created yet and
-    // race conditions while editing the same task.
-  }
-}
-
-void GlanceablesTaskView::OnSaved(const api::Task* task) {
-  if (!task) {
-    return;
-  }
-  task_id_ = task->id;
 }
 
 BEGIN_METADATA(GlanceablesTaskView, views::View)
