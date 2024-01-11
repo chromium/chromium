@@ -2015,7 +2015,73 @@ TEST_F(BackupRefPtrTest, ReinterpretCast) {
   // been already freed.
   BASE_EXPECT_DEATH(*wrapped_ptr = nullptr, "");
 }
-#endif
+#endif  // PA_CONFIG(REF_COUNT_CHECK_COOKIE)
+
+// Tests that ref-count management is correct, despite `absl::optional` may be
+// using `union` underneath.
+TEST_F(BackupRefPtrTest, WorksWithOptional) {
+  void* ptr = allocator_.root()->Alloc(16);
+  auto* ref_count = allocator_.root()->RefCountPointerFromObjectForTesting(ptr);
+  EXPECT_TRUE(ref_count->IsAliveWithNoKnownRefs());
+
+  absl::optional<raw_ptr<void>> opt = ptr;
+  ASSERT_TRUE(opt.has_value());
+  EXPECT_TRUE(ref_count->IsAlive() && !ref_count->IsAliveWithNoKnownRefs());
+
+  opt.reset();
+  ASSERT_TRUE(!opt.has_value());
+  EXPECT_TRUE(ref_count->IsAliveWithNoKnownRefs());
+
+  opt = ptr;
+  ASSERT_TRUE(opt.has_value());
+  EXPECT_TRUE(ref_count->IsAlive() && !ref_count->IsAliveWithNoKnownRefs());
+
+  opt = nullptr;
+  ASSERT_TRUE(opt.has_value());
+  EXPECT_TRUE(ref_count->IsAliveWithNoKnownRefs());
+
+  {
+    absl::optional<raw_ptr<void>> opt2 = ptr;
+    ASSERT_TRUE(opt2.has_value());
+    EXPECT_TRUE(ref_count->IsAlive() && !ref_count->IsAliveWithNoKnownRefs());
+  }
+  EXPECT_TRUE(ref_count->IsAliveWithNoKnownRefs());
+
+  allocator_.root()->Free(ptr);
+}
+
+// Tests that ref-count management is correct, despite `absl::variant` may be
+// using `union` underneath.
+TEST_F(BackupRefPtrTest, WorksWithVariant) {
+  void* ptr = allocator_.root()->Alloc(16);
+  auto* ref_count = allocator_.root()->RefCountPointerFromObjectForTesting(ptr);
+  EXPECT_TRUE(ref_count->IsAliveWithNoKnownRefs());
+
+  absl::variant<uintptr_t, raw_ptr<void>> vary = ptr;
+  ASSERT_EQ(1u, vary.index());
+  EXPECT_TRUE(ref_count->IsAlive() && !ref_count->IsAliveWithNoKnownRefs());
+
+  vary = 42u;
+  ASSERT_EQ(0u, vary.index());
+  EXPECT_TRUE(ref_count->IsAliveWithNoKnownRefs());
+
+  vary = ptr;
+  ASSERT_EQ(1u, vary.index());
+  EXPECT_TRUE(ref_count->IsAlive() && !ref_count->IsAliveWithNoKnownRefs());
+
+  vary = nullptr;
+  ASSERT_EQ(1u, vary.index());
+  EXPECT_TRUE(ref_count->IsAliveWithNoKnownRefs());
+
+  {
+    absl::variant<uintptr_t, raw_ptr<void>> vary2 = ptr;
+    ASSERT_EQ(1u, vary2.index());
+    EXPECT_TRUE(ref_count->IsAlive() && !ref_count->IsAliveWithNoKnownRefs());
+  }
+  EXPECT_TRUE(ref_count->IsAliveWithNoKnownRefs());
+
+  allocator_.root()->Free(ptr);
+}
 
 namespace {
 
