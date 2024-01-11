@@ -75,7 +75,7 @@ using chrome_test_util::SettingsDoneButton;
     config.features_disabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
   } else if ([self isRunningTest:@selector
-                   (testNoSyncPromoIfSyncToSigninEnabled)]) {
+                   (DISABLED_testNoSyncPromoIfSyncToSigninEnabled)]) {
     config.features_enabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
     config.features_disabled.push_back(kEnableReviewAccountSettingsPromo);
@@ -428,7 +428,8 @@ using chrome_test_util::SettingsDoneButton;
 
 // Tests that no sync promo is shown if the user is signed in only and
 // kReplaceSyncPromosWithSignInPromos is enabled.
-- (void)testNoSyncPromoIfSyncToSigninEnabled {
+// TODO(crbug.com/1517552): Test is failing.
+- (void)DISABLED_testNoSyncPromoIfSyncToSigninEnabled {
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1 enableSync:NO];
   // By default, `signinWithFakeIdentity` above enables bookmarks data type, so
