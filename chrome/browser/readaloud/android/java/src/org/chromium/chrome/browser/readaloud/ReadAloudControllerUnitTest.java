@@ -105,6 +105,7 @@ public class ReadAloudControllerUnitTest {
 
     private FakeTranslateBridgeJni mFakeTranslateBridge;
     private ObservableSupplierImpl<Profile> mProfileSupplier;
+    private ObservableSupplierImpl<LayoutManager> mLayoutManagerSupplier;
     @Mock private Profile mMockProfile;
     @Mock private Profile mMockIncognitoProfile;
     @Mock private ReadAloudReadabilityHooksImpl mHooksImpl;
@@ -142,6 +143,8 @@ public class ReadAloudControllerUnitTest {
         mProfileSupplier = new ObservableSupplierImpl<>();
         mProfileSupplier.set(mMockProfile);
 
+        mLayoutManagerSupplier = new ObservableSupplierImpl<>();
+        mLayoutManagerSupplier.set(mLayoutManager);
         mActivity = Robolectric.buildActivity(AppCompatActivity.class).setup().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
 
@@ -195,7 +198,7 @@ public class ReadAloudControllerUnitTest {
                         mTabModelSelector.getModel(false),
                         mBottomSheetController,
                         mBrowserControlsSizer,
-                        mLayoutManager);
+                        mLayoutManagerSupplier);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         mTab = mTabModelSelector.getCurrentTab();

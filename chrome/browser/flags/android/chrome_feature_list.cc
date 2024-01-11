@@ -235,6 +235,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kQuickDeleteForAndroid,
     &kReachedCodeProfiler,
     &kReadAloud,
+    &kReadAloudInOverflowMenuInCCT,
     &kReadAloudPlayback,
     &kReaderModeInCCT,
     &kRecordSuppressionMetrics,
@@ -702,6 +703,10 @@ BASE_FEATURE(kReachedCodeProfiler,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kReadAloud, "ReadAloud", base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kReadAloudInOverflowMenuInCCT,
+             "ReadAloudInOverflowMenuInCCT",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kReadAloudPlayback,
              "ReadAloudPlayback",

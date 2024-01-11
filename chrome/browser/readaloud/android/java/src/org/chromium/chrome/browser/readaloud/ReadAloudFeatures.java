@@ -118,6 +118,11 @@ public final class ReadAloudFeatures {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.READALOUD_PLAYBACK);
     }
 
+    /** Returns true if Read Aloud entrypoint can be added to overflow menu in CCT. */
+    public static boolean isEnabledForOverflowMenuInCCT() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.READALOUD_IN_OVERFLOW_MENU_IN_CCT);
+    }
+
     /** Returns the API key override feature param if present, or null otherwise. */
     @Nullable
     public static String getApiKeyOverride() {

@@ -395,6 +395,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/privacy_sandbox/android:java",
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/quick_delete:java",
+      "//chrome/browser/readaloud/android:features_java",
       "//chrome/browser/readaloud/android:java",
       "//chrome/browser/readaloud/android:metrics_java",
       "//chrome/browser/recent_tabs:factory_java",

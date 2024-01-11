@@ -895,7 +895,7 @@ public class RootUiCoordinator
                             mTabModelSelectorSupplier.get().getModel(false),
                             getBottomSheetController(),
                             mBrowserControlsManager,
-                            mLayoutManager);
+                            mLayoutManagerSupplier);
             mReadAloudControllerSupplier.set(controller);
             mReadAloudContextualSearchObserver =
                     new ContextualSearchObserver() {

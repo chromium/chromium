@@ -19,6 +19,7 @@ import androidx.core.graphics.drawable.DrawableCompat;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.DefaultBrowserInfo;
@@ -30,6 +31,8 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
+import org.chromium.chrome.browser.readaloud.ReadAloudController;
+import org.chromium.chrome.browser.readaloud.ReadAloudFeatures;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
@@ -82,7 +85,8 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             boolean showDownload,
             boolean isIncognito,
             boolean isStartIconMenu,
-            BooleanSupplier isPageInsightsHubEnabled) {
+            BooleanSupplier isPageInsightsHubEnabled,
+            Supplier<ReadAloudController> readAloudControllerSupplier) {
         super(
                 context,
                 activityTabProvider,
@@ -94,7 +98,7 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
                 null,
                 bookmarkModelSupplier,
                 null,
-                /* readAloudControllerSupplier= */ null);
+                readAloudControllerSupplier);
         mVerifier = verifier;
         mUiType = uiType;
         mMenuEntries = menuEntries;
@@ -148,6 +152,7 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             boolean downloadItemVisible = mShowDownload;
             boolean addToHomeScreenVisible = true;
             boolean requestDesktopSiteVisible = true;
+            boolean tryAddingReadAloud = ReadAloudFeatures.isEnabledForOverflowMenuInCCT();
 
             if (mUiType == CustomTabsUiType.MEDIA_VIEWER) {
                 // Most of the menu items don't make sense when viewing media.
@@ -158,6 +163,7 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
                 openInChromeItemVisible = false;
                 requestDesktopSiteVisible = false;
                 addToHomeScreenVisible = false;
+                tryAddingReadAloud = false;
             } else if (mUiType == CustomTabsUiType.READER_MODE) {
                 // Only 'find in page' and the reader mode preference are shown for Reader Mode UI.
                 menu.findItem(R.id.icon_row_menu_id).setVisible(false);
@@ -166,7 +172,7 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
                 openInChromeItemVisible = false;
                 requestDesktopSiteVisible = false;
                 addToHomeScreenVisible = false;
-
+                tryAddingReadAloud = false;
                 menu.findItem(R.id.reader_mode_prefs_id).setVisible(true);
             } else if (mUiType == CustomTabsUiType.MINIMAL_UI_WEBAPP) {
                 requestDesktopSiteVisible = false;
@@ -181,6 +187,7 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
                 downloadItemVisible = false;
                 addToHomeScreenVisible = false;
                 requestDesktopSiteVisible = true;
+                tryAddingReadAloud = false;
             }
 
             if (!FirstRunStatus.getFirstRunFlowComplete()) {
@@ -194,6 +201,7 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
                 addToHomeScreenVisible = false;
                 downloadItemVisible = false;
                 openInChromeItemVisible = false;
+                tryAddingReadAloud = false;
             }
 
             boolean isChromeScheme =
@@ -224,6 +232,14 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             }
 
             prepareTranslateMenuItem(menu, currentTab);
+
+            if (tryAddingReadAloud) {
+                // Set visibility of Read Aloud menu item. The entrypoint will be
+                // visible iff the tab can be synthesized.
+                prepareReadAloudMenuItem(menu, currentTab);
+            } else {
+                menu.findItem(R.id.readaloud_menu_id).setVisible(false);
+            }
 
             MenuItem openInChromeItem = menu.findItem(R.id.open_in_browser_id);
             if (openInChromeItemVisible) {

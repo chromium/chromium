@@ -75,7 +75,7 @@ public class ReadAloudController
     private final HashSet<String> mPendingRequests = new HashSet<>();
     private final TabModel mTabModel;
     @Nullable private Player mPlayerCoordinator;
-    private final LayoutManager mLayoutManager;
+    private final ObservableSupplier<LayoutManager> mLayoutManagerSupplier;
 
     private TabModelTabObserver mTabObserver;
 
@@ -260,9 +260,8 @@ public class ReadAloudController
             TabModel tabModel,
             BottomSheetController bottomSheetController,
             BrowserControlsSizer browserControlsSizer,
-            LayoutManager layoutManager) {
+            ObservableSupplier<LayoutManager> layoutManagerSupplier) {
         ReadAloudFeatures.init();
-
         mActivity = activity;
         mProfileSupplier = profileSupplier;
         new OneShotCallback<Profile>(mProfileSupplier, this::onProfileAvailable);
@@ -271,7 +270,7 @@ public class ReadAloudController
         mCurrentLanguageVoices = new ObservableSupplierImpl<>();
         mSelectedVoiceId = new ObservableSupplierImpl<>();
         mBrowserControlsSizer = browserControlsSizer;
-        mLayoutManager = layoutManager;
+        mLayoutManagerSupplier = layoutManagerSupplier;
         mHighlightingEnabled = new ObservableSupplierImpl<>(false);
         ApplicationStatus.registerApplicationStateListener(this);
     }
@@ -797,8 +796,9 @@ public class ReadAloudController
     }
 
     @Override
+    @Nullable
     public LayoutManager getLayoutManager() {
-        return mLayoutManager;
+        return mLayoutManagerSupplier.get();
     }
 
     // Player.Observer

@@ -9,6 +9,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.ViewStub;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
@@ -45,7 +46,7 @@ public class MiniPlayerCoordinator {
             Context context,
             PropertyModel sharedModel,
             BrowserControlsSizer browserControlsSizer,
-            LayoutManager layoutManager) {
+            @Nullable LayoutManager layoutManager) {
         this(
                 sharedModel,
                 new MiniPlayerMediator(browserControlsSizer),
@@ -71,13 +72,15 @@ public class MiniPlayerCoordinator {
             MiniPlayerMediator mediator,
             MiniPlayerLayout layout,
             ReadAloudMiniPlayerSceneLayer sceneLayer,
-            LayoutManager layoutManager) {
+            @Nullable LayoutManager layoutManager) {
         mMediator = mediator;
         mLayout = layout;
         assert layout != null;
         mSceneLayer = sceneLayer;
         sceneLayer.setIsVisible(true);
-        layoutManager.addSceneOverlay(sceneLayer);
+        if (layoutManager != null) {
+            layoutManager.addSceneOverlay(sceneLayer);
+        }
 
         mPlayerModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
