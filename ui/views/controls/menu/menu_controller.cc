@@ -2818,7 +2818,6 @@ void MenuController::IncrementSelection(
     Button* button = GetFirstHotTrackedView(item);
     if (button) {
       DCHECK_EQ(hot_button_, button);
-      SetHotTrackedButton(nullptr);
     }
     bool direction_is_down = direction == INCREMENT_SELECTION_DOWN;
     View* to_make_hot =
