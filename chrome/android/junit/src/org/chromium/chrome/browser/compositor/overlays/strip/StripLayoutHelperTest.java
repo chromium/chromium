@@ -2664,7 +2664,6 @@ public class StripLayoutHelperTest {
     public void testDrag_DragActiveClickedTabOntoStrip() {
         // Setup and mark the active clicked tab.
         initializeTest(false, false, false, 1, 5);
-        mStripLayoutHelper.setDraggedTabOffStripForTesting(true);
 
         // Drag tab back onto strip.
         float expectedOffsetX = 123.45f;
@@ -2673,8 +2672,8 @@ public class StripLayoutHelperTest {
 
         // Verify we continue reorder mode with the correct x-offset.
         assertFalse(
-                "Should mark tab is not on strip.",
-                mStripLayoutHelper.isDraggedTabOffStripForTesting());
+                "Should mark the tab is not off the strip.",
+                mStripLayoutHelper.getInteractingTabForTesting().isDraggedOffStrip());
         assertEquals(
                 "Should restore x-offset.",
                 expectedOffsetX,
@@ -2710,9 +2709,7 @@ public class StripLayoutHelperTest {
                 expectedOffsetX,
                 mStripLayoutHelper.getLastOffsetXForTesting(),
                 EPSILON);
-        assertTrue(
-                "Should mark the tab is off the strip.",
-                mStripLayoutHelper.isDraggedTabOffStripForTesting());
+        assertTrue("Should mark the tab is off the strip.", draggedTab.isDraggedOffStrip());
         assertFalse(
                 "Should not be in reorder mode.", mStripLayoutHelper.getInReorderModeForTesting());
         assertEquals(

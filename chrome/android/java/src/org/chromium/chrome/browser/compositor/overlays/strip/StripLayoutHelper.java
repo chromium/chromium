@@ -278,8 +278,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     @Nullable private final TabDragSource mTabDragSource;
     private StripLayoutTab mActiveClickedTab;
 
-    // Tab Drag and Drop state to track if the dragged tab has been "torn" off of the tab strip.
-    private boolean mDraggedTabOffStrip;
+    // Tab Drag and Drop state to set correct reorder state when dragging on/off tab strip.
     private boolean mReorderingForTabDrop;
     private float mLastOffsetX;
     private float mLastTrailingMargin;
@@ -1195,7 +1194,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
              * currTab container is hidden and (a) prevTab has trailing margin (ie: currTab is start
              * of group or an individual tab) OR (b) prevTab container is also hidden.
              */
-            boolean currDraggedOffStrip = currTabSelected && mDraggedTabOffStrip;
+            boolean currDraggedOffStrip = currTab.isDraggedOffStrip();
             boolean currContainerHidden = currTab.getContainerOpacity() == TAB_OPACITY_HIDDEN;
             boolean prevContainerHidden = prevTab.getContainerOpacity() == TAB_OPACITY_HIDDEN;
             boolean prevTabHasMargin = prevTab.getTrailingMargin() > 0;
@@ -1427,7 +1426,6 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         // subsequent ones may be simulated by the DragDrop handler if the pointer goes beyond the
         // strip layout view.
         mActiveClickedTab = null;
-        mDraggedTabOffStrip = false;
         mLastOffsetX = 0.f;
         onDownInternal(time, x, y, fromMouse, buttons);
     }
@@ -1746,7 +1744,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                         } else {
                             mMultiStepTabCloseAnimRunning = false;
                             // Resize the tabs appropriately.
-                            resizeTabStrip(false, false);
+                            resizeTabStrip(true, false, false);
                         }
                     }
                 };
@@ -2055,20 +2053,20 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         List<Animator> animationList = null;
         // If multi-step animation is running, the resize will be handled elsewhere.
         if (mStripTabs.length != oldStripLength && !mMultiStepTabCloseAnimRunning) {
-            animationList = resizeTabStrip(delayResize, deferAnimations);
+            animationList = resizeTabStrip(true, delayResize, deferAnimations);
         }
 
         updateVisualTabOrdering();
         return animationList;
     }
 
-    private List<Animator> resizeTabStrip(boolean delay, boolean deferAnimations) {
+    private List<Animator> resizeTabStrip(boolean animate, boolean delay, boolean deferAnimations) {
         List<Animator> animationList = null;
 
         if (delay) {
             resetResizeTimeout(true);
         } else {
-            animationList = computeAndUpdateTabWidth(true, deferAnimations);
+            animationList = computeAndUpdateTabWidth(animate, deferAnimations);
         }
 
         return animationList;
@@ -2165,7 +2163,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         int numLiveTabs = 0;
 
         for (int i = 0; i < mStripTabs.length; i++) {
-            if (!mStripTabs[i].isDying()) numLiveTabs++;
+            final StripLayoutTab tab = mStripTabs[i];
+            if (!tab.isDying() && !tab.isDraggedOffStrip()) numLiveTabs++;
         }
 
         return numLiveTabs;
@@ -3643,8 +3642,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     }
 
     protected void clearActiveClickedTab() {
+        if (mActiveClickedTab != null) mActiveClickedTab.setIsDraggedOffStrip(false);
         mActiveClickedTab = null;
-        mDraggedTabOffStrip = false;
         mLastOffsetX = 0.f;
     }
 
@@ -3668,19 +3667,10 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                             clickedTab.getDrawX());
             if (dragStarted) {
                 mActiveClickedTab = clickedTab;
-                mDraggedTabOffStrip = false;
                 mLastOffsetX = 0.f;
             }
         }
         return dragStarted;
-    }
-
-    void setDraggedTabOffStripForTesting(boolean draggedTabOffStrip) {
-        mDraggedTabOffStrip = draggedTabOffStrip;
-    }
-
-    boolean isDraggedTabOffStripForTesting() {
-        return mDraggedTabOffStrip;
     }
 
     void setLastOffsetXForTesting(float lastOffsetX) {
@@ -3712,11 +3702,12 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         assert draggedTab != null;
 
         finishAnimationsAndPushTabUpdates();
-        mDraggedTabOffStrip = false;
+        draggedTab.setIsDraggedOffStrip(false);
         draggedTab.setOffsetX(mLastOffsetX);
         draggedTab.setOffsetY(0);
         mLastOffsetX = 0.f;
 
+        resizeTabStrip(false, false, false);
         startReorderMode(time, x, x);
     }
 
@@ -3733,7 +3724,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                 new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        mDraggedTabOffStrip = true;
+                        draggedTab.setIsDraggedOffStrip(true);
                         draggedTab.setDrawX(draggedTab.getIdealX());
                         resizeStripOnTabClose();
                     }

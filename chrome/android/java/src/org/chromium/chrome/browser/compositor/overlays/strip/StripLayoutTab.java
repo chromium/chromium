@@ -194,6 +194,7 @@ public class StripLayoutTab implements VirtualView {
     private boolean mVisible = true;
     private boolean mIsDying;
     private boolean mIsReordering;
+    private boolean mIsDraggedOffStrip;
     private boolean mCanShowCloseButton = true;
     private boolean mFolioAttached = true;
     private boolean mStartDividerVisible;
@@ -378,6 +379,22 @@ public class StripLayoutTab implements VirtualView {
      */
     public void setIsReordering(boolean isReordering) {
         mIsReordering = isReordering;
+    }
+
+    /**
+     * Marks if the tab has been dragged off the strip for drag and drop.
+     *
+     * @param isDraggedOffStrip Whether the tab is dragged off the strip.
+     */
+    public void setIsDraggedOffStrip(boolean isDraggedOffStrip) {
+        mIsDraggedOffStrip = isDraggedOffStrip;
+    }
+
+    /**
+     * @return Whether the tab is dragged off the strip.
+     */
+    public boolean isDraggedOffStrip() {
+        return mIsDraggedOffStrip;
     }
 
     /**

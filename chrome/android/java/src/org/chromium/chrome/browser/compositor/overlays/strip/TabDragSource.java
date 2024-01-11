@@ -79,8 +79,8 @@ public class TabDragSource implements View.OnDragListener {
     // Last drag positions relative to the source view. Set when drag starts or is moved within
     // view.
     private float mLastXDp;
-    private float mLastYDp;
     private int mLastAction;
+    private boolean mHoveringInStrip;
     private TrackerToken mDragTrackerToken;
 
     /**
@@ -209,25 +209,23 @@ public class TabDragSource implements View.OnDragListener {
                 res = false;
                 break;
             case DragEvent.ACTION_DRAG_EXITED:
-                res = onDragExit();
+                if (mHoveringInStrip) res = onDragExit();
                 break;
             case DragEvent.ACTION_DRAG_LOCATION:
-                boolean isLastYInTabStrip = didOccurInTabStrip(mLastYDp / mPxToDp);
                 boolean isCurrYInTabStrip = didOccurInTabStrip(dragEvent.getY());
                 if (isCurrYInTabStrip) {
-                    if (mLastAction == DragEvent.ACTION_DRAG_ENTERED || !isLastYInTabStrip) {
+                    if (!mHoveringInStrip) {
                         // dragged onto strip from outside controls OR from toolbar.
                         res = onDragEnter(dragEvent.getX());
                     } else {
                         // drag moved within strip.
                         res = onDragLocation(dragEvent.getX(), dragEvent.getY());
                     }
-                } else if (isLastYInTabStrip) {
+                    mLastXDp = dragEvent.getX() * mPxToDp;
+                } else if (mHoveringInStrip) {
                     // drag moved from within to outside strip.
                     res = onDragExit();
                 }
-                mLastXDp = dragEvent.getX() * mPxToDp;
-                mLastYDp = dragEvent.getY() * mPxToDp;
                 break;
             case DragEvent.ACTION_DROP:
                 res =
@@ -259,11 +257,11 @@ public class TabDragSource implements View.OnDragListener {
         if (!isDragSource()) return !TabUiFeatureUtilities.DISABLE_STRIP_TO_STRIP_DD.getValue();
         mStartScreenPos = new PointF(xPx, yPx);
         mLastXDp = xPx * mPxToDp;
-        mLastYDp = yPx * mPxToDp;
         return true;
     }
 
     private boolean onDragEnter(float xPx) {
+        mHoveringInStrip = true;
         if (isDragSource() || TabUiFeatureUtilities.isTabDragAsWindowEnabled()) {
             showDragShadow(false);
         }
@@ -320,6 +318,7 @@ public class TabDragSource implements View.OnDragListener {
     private boolean onDragEnd(
             View view, float xPx, float yPx, boolean dropHandled, boolean didExitToolbar) {
         try {
+            mHoveringInStrip = false;
             // No-op for destination strip. Note: If we add updates for target strip, also check for
             // !TabUiFeatureUtilities.DISABLE_STRIP_TO_STRIP_DD.getValue()
             if (!isDragSource()) return false;
@@ -354,6 +353,7 @@ public class TabDragSource implements View.OnDragListener {
     }
 
     private boolean onDragExit() {
+        mHoveringInStrip = false;
         // Show drag shadow when drag exits strip.
         showDragShadow(true);
         mStripLayoutHelperSupplier.get().clearForTabDrop(LayoutManagerImpl.time(), isDragSource());

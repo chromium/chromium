@@ -105,7 +105,7 @@ public abstract class StripStacker {
             boolean animate) {
         float rightEdge = stripLeftMargin;
         for (StripLayoutTab tab : indexOrderedTabs) {
-            if (tab.isDying()) continue;
+            if (tab.isDying() || tab.isDraggedOffStrip()) continue;
 
             float tabWidth;
             float tabDrawX;
@@ -143,7 +143,7 @@ public abstract class StripStacker {
         float leftEdge = stripWidth - stripRightMargin;
 
         for (StripLayoutTab tab : indexOrderedTabs) {
-            if (tab.isDying()) continue;
+            if (tab.isDying() || tab.isDraggedOffStrip()) continue;
 
             float drawX = animate ? tab.getIdealX() : tab.getDrawX();
             leftEdge = Math.min(drawX, leftEdge);
