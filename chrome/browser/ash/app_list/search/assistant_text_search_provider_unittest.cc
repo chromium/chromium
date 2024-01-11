@@ -23,7 +23,6 @@ namespace {
 
 using ::ash::assistant::AssistantAllowedState;
 
-// Parameterized by feature ProductivityLauncher.
 class AssistantTextSearchProviderTest : public AppListTestBase {
  public:
   AssistantTextSearchProviderTest() {

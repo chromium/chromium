@@ -26,7 +26,6 @@
 
 namespace app_list::test {
 
-// Parameterized by feature ProductivityLauncher.
 class ArcPlayStoreSearchProviderTest : public AppListTestBase {
  public:
   ArcPlayStoreSearchProviderTest() = default;
