@@ -469,6 +469,7 @@ try_.builder(
     ],
     gn_args = "ci/chromeos-jacuzzi-rel-skylab-fyi",
     contact_team_email = "chromeos-velocity@google.com",
+    execution_timeout = 8 * time.hour,
     main_list_view = "try",
 )
 
@@ -482,6 +483,7 @@ try_.builder(
     ],
     gn_args = "ci/chromeos-octopus-rel-skylab-fyi",
     contact_team_email = "chromeos-velocity@google.com",
+    execution_timeout = 8 * time.hour,
     main_list_view = "try",
 )
 
