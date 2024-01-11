@@ -5,12 +5,13 @@
 #include "tools/win/chromeexts/commands/gwp_asan_command.h"
 
 #include <dbgeng.h>
-#include <windows.h>
-
 #include <stdio.h>
 #include <stdlib.h>
+#include <windows.h>
+
 #include <fstream>
 #include <istream>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -20,7 +21,6 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/values.h"
 #include "components/gwp_asan/crash_handler/crash_handler.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace tools {
 namespace win {
@@ -293,7 +293,7 @@ HRESULT GwpAsanCommand::SymbolizeStackTrace(
     return E_FAIL;
   }
 
-  absl::optional<base::Value> symbolized_json =
+  std::optional<base::Value> symbolized_json =
       base::JSONReader::Read(base::StringPiece(json_string));
   if (!symbolized_json.has_value() && !symbolized_json->is_list()) {
     return E_FAIL;

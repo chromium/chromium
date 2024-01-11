@@ -1523,12 +1523,12 @@ struct FuzzTraits<url::Origin> {
     if (!FuzzParam(&port, fuzzer))
       return false;
 
-    absl::optional<url::Origin> origin;
+    std::optional<url::Origin> origin;
     if (!opaque) {
       origin = url::Origin::UnsafelyCreateTupleOriginWithoutNormalization(
           scheme, host, port);
     } else {
-      absl::optional<base::UnguessableToken> token;
+      std::optional<base::UnguessableToken> token;
       if (auto* nonce = p->GetNonceForSerialization()) {
         token = *nonce;
       } else {
