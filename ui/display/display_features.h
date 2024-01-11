@@ -47,6 +47,10 @@ COMPONENT_EXPORT(DISPLAY_FEATURES) BASE_DECLARE_FEATURE(kPanelSelfRefresh2);
 
 COMPONENT_EXPORT(DISPLAY_FEATURES) bool IsPanelSelfRefresh2Enabled();
 
+COMPONENT_EXPORT(DISPLAY_FEATURES) BASE_DECLARE_FEATURE(kTiledDisplaySupport);
+
+COMPONENT_EXPORT(DISPLAY_FEATURES) bool IsTiledDisplaySupportEnabled();
+
 }  // namespace features
 }  // namespace display
 

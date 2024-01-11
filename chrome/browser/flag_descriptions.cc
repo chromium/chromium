@@ -6075,6 +6075,11 @@ const char kEnableEdidBasedDisplayIdsDescription[] =
     "physical port they were connected to, and load user display layouts more "
     "accurately.";
 
+const char kTiledDisplaySupportName[] = "Enable tile display support";
+const char kTiledDisplaySupportDescription[] =
+    "When enabled, tiled displays will be represented by a single display in "
+    "ChromeOS, rather than each tile being a separate display.";
+
 const char kEnableExternalKeyboardsInDiagnosticsAppName[] =
     "Enable external keyboards in the Diagnostics App";
 const char kEnableExternalKeyboardsInDiagnosticsAppDescription[] =

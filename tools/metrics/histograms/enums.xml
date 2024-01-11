@@ -29761,6 +29761,7 @@ from previous Chrome versions.
   <int value="115915570"
       label="OmniboxUIExperimentHideSteadyStateUrlPathQueryAndRef:enabled"/>
   <int value="115999065" label="ContextualSearchForceCaption:disabled"/>
+  <int value="116172688" label="TiledDisplaySupport:disabled"/>
   <int value="116287989"
       label="ignore-litepage-redirect-optimization-blacklist"/>
   <int value="116643273"
@@ -31889,6 +31890,7 @@ from previous Chrome versions.
   <int value="1122820469" label="ArcImageCopyPasteCompat:enabled"/>
   <int value="1122825280" label="FontationsFontBackend:enabled"/>
   <int value="1123140537" label="tab-link-drag-drop:disabled"/>
+  <int value="1123390332" label="TiledDisplaySupport:enabled"/>
   <int value="1124100808"
       label="FilterWebsitesForSupervisedUsersOnDesktopAndIOS:enabled"/>
   <int value="1126061778" label="CaptureThumbnailOnLoadFinished:enabled"/>

@@ -7793,6 +7793,11 @@
     "expiry_milestone": 123
   },
   {
+    "name": "tiled-display-support",
+    "owners": [ "sukoo@chromium.org", "//ui/display/OWNERS", "chromeos-gfx-compositor@chromium.org" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "time-of-day-dlc",
     "owners": [ "esum@chromium.org", "assistive-eng@google.com" ],
     "expiry_milestone": 123

@@ -3481,6 +3481,9 @@ extern const char kEnableRFC8925Description[];
 extern const char kEnableEdidBasedDisplayIdsName[];
 extern const char kEnableEdidBasedDisplayIdsDescription[];
 
+extern const char kTiledDisplaySupportName[];
+extern const char kTiledDisplaySupportDescription[];
+
 extern const char kEnableExternalKeyboardsInDiagnosticsAppName[];
 extern const char kEnableExternalKeyboardsInDiagnosticsAppDescription[];
 
