@@ -10,14 +10,15 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/json/json_writer.h"
-#include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
-#include "device/fido/cable/v2_handshake.h"
+#include "crypto/random.h"
 #include "device/fido/discoverable_credential_metadata.h"
+#include "device/fido/enclave/constants.h"
+#include "device/fido/enclave/transact.h"
+#include "device/fido/enclave/types.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/public_key_credential_descriptor.h"
@@ -37,52 +38,45 @@ AuthenticatorSupportedOptions EnclaveAuthenticatorOptions() {
   return options;
 }
 
+std::array<uint8_t, 8> RandomId() {
+  std::array<uint8_t, 8> ret;
+  crypto::RandBytes(ret);
+  return ret;
+}
+
 }  // namespace
 
 EnclaveAuthenticator::PendingGetAssertionRequest::PendingGetAssertionRequest(
-    const CtapGetAssertionRequest& in_request,
-    const CtapGetAssertionOptions& in_options,
+    CtapGetAssertionRequest in_request,
+    CtapGetAssertionOptions in_options,
     GetAssertionCallback in_callback)
-    : request(in_request),
-      options(in_options),
+    : request(std::move(in_request)),
+      options(std::move(in_options)),
       callback(std::move(in_callback)) {}
 
 EnclaveAuthenticator::PendingGetAssertionRequest::
     ~PendingGetAssertionRequest() = default;
 
 EnclaveAuthenticator::PendingMakeCredentialRequest::
-    PendingMakeCredentialRequest(const CtapMakeCredentialRequest& in_request,
-                                 const MakeCredentialOptions& in_options,
+    PendingMakeCredentialRequest(CtapMakeCredentialRequest in_request,
+                                 MakeCredentialOptions in_options,
                                  MakeCredentialCallback in_callback)
-    : request(in_request),
-      options(in_options),
+    : request(std::move(in_request)),
+      options(std::move(in_options)),
       callback(std::move(in_callback)) {}
 
 EnclaveAuthenticator::PendingMakeCredentialRequest::
     ~PendingMakeCredentialRequest() = default;
 
 EnclaveAuthenticator::EnclaveAuthenticator(
-    const GURL& service_url,
-    base::span<const uint8_t, kP256X962Length> peer_identity,
-    std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys,
+    std::unique_ptr<CredentialRequest> ui_request,
     base::RepeatingCallback<void(sync_pb::WebauthnCredentialSpecifics)>
         save_passkey_callback,
-    std::vector<uint8_t> device_id,
-    const std::string& username,
-    raw_ptr<network::mojom::NetworkContext> network_context,
-    EnclaveRequestSigningCallback request_signing_callback)
-    : peer_identity_(fido_parsing_utils::Materialize(peer_identity)),
-      available_passkeys_(std::move(passkeys)),
-      save_passkey_callback_(std::move(save_passkey_callback)),
-      device_id_(std::move(device_id)),
-      request_signing_callback_(request_signing_callback) {
-  // base::Unretained is safe because this class owns websocket_client_, which
-  // holds this callback.
-  websocket_client_ = std::make_unique<EnclaveWebSocketClient>(
-      service_url, username, network_context,
-      base::BindRepeating(&EnclaveAuthenticator::OnResponseReceived,
-                          base::Unretained(this)));
-}
+    raw_ptr<network::mojom::NetworkContext> network_context)
+    : id_(RandomId()),
+      network_context_(network_context),
+      ui_request_(std::move(ui_request)),
+      save_passkey_callback_(std::move(save_passkey_callback)) {}
 
 EnclaveAuthenticator::~EnclaveAuthenticator() = default;
 
@@ -96,10 +90,16 @@ void EnclaveAuthenticator::MakeCredential(CtapMakeCredentialRequest request,
   CHECK(!pending_get_assertion_request_ && !pending_make_credential_request_);
 
   pending_make_credential_request_ =
-      std::make_unique<PendingMakeCredentialRequest>(request, options,
-                                                     std::move(callback));
+      std::make_unique<PendingMakeCredentialRequest>(
+          std::move(request), std::move(options), std::move(callback));
 
-  StartRequest();
+  Transact(network_context_, GetEnclaveIdentity(),
+           std::move(ui_request_->access_token),
+           BuildMakeCredentialCommand(
+               std::move(pending_make_credential_request_->options.json)),
+           std::move(ui_request_->signing_callback),
+           base::BindOnce(&EnclaveAuthenticator::ProcessMakeCredentialResponse,
+                          weak_factory_.GetWeakPtr()));
 }
 
 void EnclaveAuthenticator::GetAssertion(CtapGetAssertionRequest request,
@@ -111,171 +111,60 @@ void EnclaveAuthenticator::GetAssertion(CtapGetAssertionRequest request,
   pending_get_assertion_request_ = std::make_unique<PendingGetAssertionRequest>(
       request, options, std::move(callback));
 
-  StartRequest();
+  Transact(network_context_, GetEnclaveIdentity(),
+           std::move(ui_request_->access_token),
+           BuildGetAssertionCommand(
+               *ui_request_->entity,
+               std::move(pending_get_assertion_request_->options.json),
+               pending_get_assertion_request_->request.client_data_json,
+               std::move(ui_request_->wrapped_keys)),
+           std::move(ui_request_->signing_callback),
+           base::BindOnce(&EnclaveAuthenticator::ProcessGetAssertionResponse,
+                          weak_factory_.GetWeakPtr()));
 }
 
-void EnclaveAuthenticator::SetOauthToken(
-    absl::optional<std::string_view> token) {
-  if (token == absl::nullopt) {
-    state_ = State::kError;
-  } else {
-    websocket_client_->set_oauth_token(*token);
-  }
-
-  if (state_ == State::kWaitingForOauthToken) {
-    StartRequest();
-    return;
-  }
-
-  if (state_ == State::kInitialized) {
-    state_ = State::kOauthTokenReceived;
-  }
-}
-
-void EnclaveAuthenticator::StartRequest() {
-  CHECK(!pending_get_assertion_request_ != !pending_make_credential_request_);
-
-  if (state_ == State::kInitialized) {
-    state_ = State::kWaitingForOauthToken;
-    return;
-  }
-
-  if (state_ == State::kError) {
-    // This can mean we received a null OAuth token.
+void EnclaveAuthenticator::ProcessMakeCredentialResponse(
+    absl::optional<cbor::Value> response) {
+  if (!response) {
     CompleteRequestWithError(CtapDeviceResponseCode::kCtap2ErrOther);
     return;
   }
-
-  if (state_ == State::kOauthTokenReceived ||
-      state_ == State::kWaitingForOauthToken) {
-    CHECK(!handshake_);
-
-    state_ = State::kWaitingForHandshakeResponse;
-
-    handshake_ = std::make_unique<cablev2::HandshakeInitiator>(
-        absl::nullopt, peer_identity_, absl::nullopt);
-    websocket_client_->Write(handshake_->BuildInitialMessage());
-    return;
-  }
-
-  CHECK(state_ == State::kConnected);
-  BuildCommand();
-}
-
-void EnclaveAuthenticator::OnResponseReceived(
-    EnclaveWebSocketClient::SocketStatus status,
-    absl::optional<std::vector<uint8_t>> data) {
-  if (status == EnclaveWebSocketClient::SocketStatus::kSocketClosed &&
-      !pending_get_assertion_request_ && !pending_make_credential_request_) {
-    // A notification that the socket was closed after the request has been
-    // completed is ignored.
-    return;
-  }
-
-  if (status != EnclaveWebSocketClient::SocketStatus::kOk) {
-    FIDO_LOG(ERROR) << "Message to enclave service failed.";
+  absl::optional<AuthenticatorMakeCredentialResponse> opt_response;
+  absl::optional<sync_pb::WebauthnCredentialSpecifics> opt_entity;
+  std::string error_description;
+  std::tie(opt_response, opt_entity, error_description) =
+      ParseMakeCredentialResponse(std::move(*response),
+                                  pending_make_credential_request_->request);
+  if (!opt_response || !opt_entity) {
+    FIDO_LOG(ERROR) << "Error in registration response from server: "
+                    << error_description;
     CompleteRequestWithError(CtapDeviceResponseCode::kCtap2ErrOther);
     return;
   }
-  CHECK(data.has_value());
-
-  if (state_ == State::kWaitingForHandshakeResponse) {
-    cablev2::HandshakeResult result = handshake_->ProcessResponse(*data);
-    handshake_.reset();
-
-    if (!result) {
-      FIDO_LOG(ERROR) << "Enclave connection handshake failed.";
-      CompleteRequestWithError(CtapDeviceResponseCode::kCtap2ErrOther);
-      return;
-    }
-    crypter_ = std::move(result->first);
-    handshake_hash_ = result->second;
-
-    state_ = State::kConnected;
-
-    BuildCommand();
-    return;
-  } else if (state_ == State::kConnected) {
-    std::vector<uint8_t> plaintext;
-    if (!crypter_->Decrypt(*data, &plaintext)) {
-      FIDO_LOG(ERROR) << "Response from enclave failed to decrypt.";
-      CompleteRequestWithError(CtapDeviceResponseCode::kCtap2ErrOther);
-      return;
-    }
-
-    if (pending_get_assertion_request_) {
-      auto decode_result = ParseGetAssertionResponse(
-          plaintext, pending_get_assertion_request_->request.allow_list[0].id);
-      if (!decode_result.first) {
-        FIDO_LOG(ERROR) << "Error in assertion response from server: "
-                        << decode_result.second;
-        CompleteRequestWithError(CtapDeviceResponseCode::kCtap2ErrOther);
-      }
-      std::vector<AuthenticatorGetAssertionResponse> responses;
-      responses.emplace_back(*std::move(decode_result.first));
-      CompleteGetAssertionRequest(CtapDeviceResponseCode::kSuccess,
-                                  std::move(responses));
-    } else {
-      absl::optional<AuthenticatorMakeCredentialResponse> opt_response;
-      absl::optional<sync_pb::WebauthnCredentialSpecifics> opt_entity;
-      std::string error_description;
-      std::tie(opt_response, opt_entity, error_description) =
-          ParseMakeCredentialResponse(
-              plaintext, pending_make_credential_request_->request);
-      if (!opt_response || !opt_entity) {
-        FIDO_LOG(ERROR) << "Error in registration response from server:"
-                        << error_description;
-        CompleteRequestWithError(CtapDeviceResponseCode::kCtap2ErrOther);
-      }
-      save_passkey_callback_.Run(std::move(*opt_entity));
-      CompleteMakeCredentialRequest(CtapDeviceResponseCode::kSuccess,
-                                    std::move(*opt_response));
-    }
-    return;
-  }
-  NOTREACHED() << "State is " << static_cast<int>(state_);
+  save_passkey_callback_.Run(std::move(*opt_entity));
+  CompleteMakeCredentialRequest(CtapDeviceResponseCode::kSuccess,
+                                std::move(*opt_response));
 }
 
-void EnclaveAuthenticator::BuildCommand() {
-  CHECK(!pending_get_assertion_request_ != !pending_make_credential_request_);
-  CHECK(handshake_hash_);
-
-  base::OnceCallback<cbor::Value()> command_callback;
-  if (pending_get_assertion_request_) {
-    const auto& request = pending_get_assertion_request_->request;
-    const std::string selected_credential_id(request.allow_list[0].id.begin(),
-                                             request.allow_list[0].id.end());
-    auto found_passkey_it =
-        std::find_if(available_passkeys_.begin(), available_passkeys_.end(),
-                     [&](const auto& passkey) {
-                       return selected_credential_id == passkey.credential_id();
-                     });
-    CHECK(found_passkey_it != available_passkeys_.end());
-    command_callback =
-        base::BindOnce(&BuildGetAssertionCommand, *found_passkey_it,
-                       std::move(pending_get_assertion_request_->options.json),
-                       request.client_data_json);
-  } else {
-    command_callback = base::BindOnce(
-        &BuildMakeCredentialCommand,
-        std::move(pending_make_credential_request_->options.json));
-  }
-
-  BuildCommandRequestBody(std::move(command_callback),
-                          request_signing_callback_, *handshake_hash_,
-                          device_id_,
-                          base::BindOnce(&EnclaveAuthenticator::SendCommand,
-                                         weak_factory_.GetWeakPtr()));
-}
-
-void EnclaveAuthenticator::SendCommand(std::vector<uint8_t> command_body) {
-  if (!crypter_->Encrypt(&command_body)) {
-    FIDO_LOG(ERROR) << "Failed to encrypt command to enclave service.";
-    CompleteGetAssertionRequest(CtapDeviceResponseCode::kCtap2ErrOther, {});
+void EnclaveAuthenticator::ProcessGetAssertionResponse(
+    absl::optional<cbor::Value> response) {
+  if (!response) {
+    CompleteRequestWithError(CtapDeviceResponseCode::kCtap2ErrOther);
     return;
   }
-
-  websocket_client_->Write(command_body);
+  const std::string& cred_id_str = ui_request_->entity->credential_id();
+  auto decode_result = ParseGetAssertionResponse(
+      std::move(*response), base::as_bytes(base::make_span(cred_id_str)));
+  if (!decode_result.first) {
+    FIDO_LOG(ERROR) << "Error in assertion response from server: "
+                    << decode_result.second;
+    CompleteRequestWithError(CtapDeviceResponseCode::kCtap2ErrOther);
+    return;
+  }
+  std::vector<AuthenticatorGetAssertionResponse> responses;
+  responses.emplace_back(*std::move(decode_result.first));
+  CompleteGetAssertionRequest(CtapDeviceResponseCode::kSuccess,
+                              std::move(responses));
 }
 
 void EnclaveAuthenticator::CompleteRequestWithError(
@@ -325,16 +214,14 @@ void EnclaveAuthenticator::CompleteGetAssertionRequest(
   pending_get_assertion_request_.reset();
 }
 
-void EnclaveAuthenticator::Cancel() {
-  // TODO(kenrb): Implement.
-}
+void EnclaveAuthenticator::Cancel() {}
 
 AuthenticatorType EnclaveAuthenticator::GetType() const {
   return AuthenticatorType::kEnclave;
 }
 
 std::string EnclaveAuthenticator::GetId() const {
-  return "EnclaveAuthenticator";
+  return "enclave-" + base::HexEncode(id_);
 }
 
 const AuthenticatorSupportedOptions& EnclaveAuthenticator::Options() const {

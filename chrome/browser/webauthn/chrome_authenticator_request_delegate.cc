@@ -1230,51 +1230,9 @@ void ChromeAuthenticatorRequestDelegate::GetPhoneContactableGpmPasskeysForRpId(
 void ChromeAuthenticatorRequestDelegate::ConfigureEnclaveDiscovery(
     const std::string& rp_id,
     device::FidoDiscoveryFactory* discovery_factory) {
-  webauthn::PasskeyModel* passkey_model =
-      PasskeyModelFactory::GetInstance()->GetForProfile(
-          Profile::FromBrowserContext(GetBrowserContext()));
-  CHECK(passkey_model);
-
-  base::OnceCallback<void(GoogleServiceAuthError error,
-                          signin::AccessTokenInfo access_token_info)>
-      callback = base::BindOnce(
-          &ChromeAuthenticatorRequestDelegate::EnclaveAccessTokenFetched,
-          weak_ptr_factory_.GetWeakPtr(),
-          discovery_factory->get_enclave_oauth_token_callback());
-
-  auto* identity_manager = IdentityManagerFactory::GetForProfile(
-      Profile::FromBrowserContext(GetBrowserContext()));
-  access_token_fetcher_ =
-      std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-          "enclave", identity_manager,
-          signin::ScopeSet{GaiaConstants::kPasskeysEnclaveOAuth2Scope},
-          std::move(callback),
-          signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
-          signin::ConsentLevel::kSignin);
-
-  std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys =
-      passkey_model->GetPasskeysForRelyingPartyId(rp_id);
-  discovery_factory->set_enclave_passkeys(std::move(passkeys));
   discovery_factory->set_enclave_passkey_creation_callback(
       base::BindRepeating(&ChromeAuthenticatorRequestDelegate::OnPasskeyCreated,
                           weak_ptr_factory_.GetWeakPtr()));
-}
-
-void ChromeAuthenticatorRequestDelegate::EnclaveAccessTokenFetched(
-    base::RepeatingCallback<void(absl::optional<std::string_view>)> callback,
-    GoogleServiceAuthError error,
-    signin::AccessTokenInfo access_token_info) {
-  access_token_fetcher_.release();
-
-  if (error.state() != GoogleServiceAuthError::NONE) {
-    FIDO_LOG(ERROR)
-        << "Cloud enclave authenticator access token retrieval failed "
-        << error.state();
-    callback.Run(absl::nullopt);
-    return;
-  }
-
-  callback.Run(access_token_info.token);
 }
 
 void ChromeAuthenticatorRequestDelegate::OnPasskeyCreated(

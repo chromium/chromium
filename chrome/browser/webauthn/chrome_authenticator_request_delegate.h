@@ -266,12 +266,6 @@ class ChromeAuthenticatorRequestDelegate
   // Invoked when a new GPM passkey is created, to save it to sync data.
   void OnPasskeyCreated(sync_pb::WebauthnCredentialSpecifics passkey);
 
-  // Invoked when an OAuth access token is available for the Enclave.
-  void EnclaveAccessTokenFetched(
-      base::RepeatingCallback<void(absl::optional<std::string_view>)> callback,
-      GoogleServiceAuthError error,
-      signin::AccessTokenInfo access_token_info);
-
 #if BUILDFLAG(IS_MAC)
   // DaysSinceDate returns the number of days between `formatted_date` (in ISO
   // 8601 format) and `now`. It returns `nullopt` if `formatted_date` cannot be

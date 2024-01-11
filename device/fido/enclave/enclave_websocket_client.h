@@ -38,7 +38,7 @@ class EnclaveWebSocketClient : public network::mojom::WebSocketHandshakeClient,
 
   EnclaveWebSocketClient(
       const GURL& service_url,
-      const std::string& username,
+      std::string access_token,
       raw_ptr<network::mojom::NetworkContext> network_context,
       OnResponseCallback on_reponse);
   ~EnclaveWebSocketClient() override;
@@ -49,8 +49,6 @@ class EnclaveWebSocketClient : public network::mojom::WebSocketHandshakeClient,
   // Sends a message to the service. Invokes |on_reponse| when a response is
   // received.
   void Write(base::span<const uint8_t> data);
-
-  void set_oauth_token(std::string_view token);
 
   // WebSocketHandshakeClient:
   void OnOpeningHandshakeStarted(
@@ -90,13 +88,10 @@ class EnclaveWebSocketClient : public network::mojom::WebSocketHandshakeClient,
   void ClosePipe(SocketStatus status);
 
   State state_;
-  GURL service_url_;
-  std::string username_;
-  raw_ptr<network::mojom::NetworkContext> network_context_;
+  const GURL service_url_;
+  const std::string access_token_;
+  const raw_ptr<network::mojom::NetworkContext> network_context_;
   OnResponseCallback on_response_;
-
-  // Token used for the Authorization header in the WebSocket connection.
-  std::string oauth_token_;
 
   // pending_read_data_ contains a partial message that is being reassembled.
   std::vector<uint8_t> pending_read_data_;

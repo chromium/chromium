@@ -71,12 +71,12 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 
 EnclaveWebSocketClient::EnclaveWebSocketClient(
     const GURL& service_url,
-    const std::string& username,
+    std::string access_token,
     raw_ptr<network::mojom::NetworkContext> network_context,
     OnResponseCallback on_response)
     : state_(State::kInitialized),
       service_url_(service_url),
-      username_(username),
+      access_token_(std::move(access_token)),
       network_context_(network_context),
       on_response_(std::move(on_response)),
       readable_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL) {}
@@ -104,10 +104,6 @@ void EnclaveWebSocketClient::Write(base::span<const uint8_t> data) {
   InternalWrite(data);
 }
 
-void EnclaveWebSocketClient::set_oauth_token(std::string_view token) {
-  oauth_token_ = token;
-}
-
 void EnclaveWebSocketClient::Connect() {
   // A disconnect handler is used so that the request can be completed in the
   // event of an unexpected disconnection from the network service.
@@ -119,16 +115,12 @@ void EnclaveWebSocketClient::Connect() {
 
   std::vector<network::mojom::HttpHeaderPtr> additional_headers;
   additional_headers.emplace_back(network::mojom::HttpHeader::New(
-      net::HttpRequestHeaders::kAuthorization, oauth_token_));
+      net::HttpRequestHeaders::kAuthorization, "Bearer " + access_token_));
 
-  GURL socket_url;
-  GURL::Replacements replacement;
-  replacement.SetPathStr(username_);
-  socket_url = service_url_.ReplaceComponents(replacement);
   network_context_->CreateWebSocket(
-      socket_url, {}, net::SiteForCookies(), /*has_storage_access=*/false,
+      service_url_, {}, net::SiteForCookies(), /*has_storage_access=*/false,
       net::IsolationInfo(), std::move(additional_headers),
-      network::mojom::kBrowserProcessId, url::Origin::Create(socket_url),
+      network::mojom::kBrowserProcessId, url::Origin::Create(service_url_),
       network::mojom::kWebSocketOptionBlockAllCookies,
       net::MutableNetworkTrafficAnnotationTag(kTrafficAnnotation),
       std::move(handshake_remote),
@@ -294,6 +286,9 @@ void EnclaveWebSocketClient::ProcessCompletedResponse() {
 }
 
 void EnclaveWebSocketClient::ClosePipe(SocketStatus status) {
+  if (state_ == State::kDisconnected) {
+    return;
+  }
   state_ = State::kDisconnected;
   client_receiver_.reset();
   pending_write_data_ = absl::nullopt;
