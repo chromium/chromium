@@ -210,6 +210,7 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
                             // Only show the sign-out dialog if the user has given sync consent.
                             SignOutDialogCoordinator.show(
                                     requireContext(),
+                                    getProfile(),
                                     ((ModalDialogManagerHolder) getActivity())
                                             .getModalDialogManager(),
                                     this,

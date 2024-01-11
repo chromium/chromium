@@ -204,6 +204,7 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
 
             SignOutDialogCoordinator.show(
                     requireContext(),
+                    getProfile(),
                     ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(),
                     this,
                     SignOutDialogCoordinator.ActionType.CLEAR_PRIMARY_ACCOUNT,
