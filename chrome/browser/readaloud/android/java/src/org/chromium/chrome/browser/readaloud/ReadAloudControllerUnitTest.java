@@ -466,9 +466,9 @@ public class ReadAloudControllerUnitTest {
         mFakeTranslateBridge.setCurrentLanguage("en");
         doReturn(
                         List.of(
-                                new PlaybackVoice("en", "voiceA", ""),
-                                new PlaybackVoice("es", "voiceB", ""),
-                                new PlaybackVoice("fr", "voiceC", "")))
+                                new PlaybackVoice("en", "voiceA"),
+                                new PlaybackVoice("es", "voiceB"),
+                                new PlaybackVoice("fr", "voiceC")))
                 .when(mPlaybackHooks)
                 .getPlaybackVoiceList(any());
         mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
@@ -693,7 +693,7 @@ public class ReadAloudControllerUnitTest {
     @Test
     public void testSetVoiceAndRestartPlayback() {
         // Voices setup
-        var oldVoice = new PlaybackVoice("lang", "OLD VOICE ID", "description");
+        var oldVoice = new PlaybackVoice("lang", "OLD VOICE ID");
         doReturn(List.of(oldVoice)).when(mPlaybackHooks).getPlaybackVoiceList(any());
 
         // First play tab.
@@ -712,7 +712,7 @@ public class ReadAloudControllerUnitTest {
         reset(mPlaybackHooks);
 
         // Set the new voice.
-        var newVoice = new PlaybackVoice("lang", "NEW VOICE ID", "description");
+        var newVoice = new PlaybackVoice("lang", "NEW VOICE ID");
         doReturn(List.of(newVoice)).when(mPlaybackHooks).getPlaybackVoiceList(any());
         doReturn(List.of(newVoice)).when(mPlaybackHooks).getVoicesFor(anyString());
         var data = Mockito.mock(PlaybackData.class);
