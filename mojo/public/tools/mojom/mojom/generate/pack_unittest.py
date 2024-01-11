@@ -251,3 +251,25 @@ class PackTest(unittest.TestCase):
     fields = (1, 2)
     offsets = (0, 4)
     self._CheckPackSequence(kinds, fields, offsets)
+
+  def testNullablePrimitives(self):
+    """Tests that the nullable primitives are packed correctly"""
+    struct = mojom.Struct('test')
+    # The following struct should be created:
+    # struct {
+    #   bool field_$flag = 'true';
+    #   int32 field_$value = 5;
+    # }
+    struct.AddField('field', mojom.NULLABLE_INT32, ordinal=0, default=5)
+
+    fields = pack.PackedStruct(struct).packed_fields_in_ordinal_order
+
+    self.assertEquals(2, len(fields))
+
+    self.assertEquals('field_$flag', fields[0].field.name)
+    self.assertEquals(mojom.BOOL, fields[0].field.kind)
+    self.assertEquals('true', fields[0].field.default)
+
+    self.assertEquals('field_$value', fields[1].field.name)
+    self.assertEquals(mojom.INT32, fields[1].field.kind)
+    self.assertEquals(5, fields[1].field.default)
