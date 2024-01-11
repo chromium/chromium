@@ -5449,6 +5449,7 @@ ChromeContentBrowserClient::MaybeCreateSafeBrowsingURLLoaderThrottle(
     content::BrowserContext* browser_context,
     const base::RepeatingCallback<content::WebContents*()>& wc_getter,
     int frame_tree_node_id,
+    absl::optional<int64_t> navigation_id,
     Profile* profile) {
   bool matches_enterprise_allowlist = safe_browsing::IsURLAllowlistedByPolicy(
       request.url, *profile->GetPrefs());
@@ -5491,6 +5492,8 @@ ChromeContentBrowserClient::MaybeCreateSafeBrowsingURLLoaderThrottle(
                              is_consumer_lookup_enabled,
                              hash_realtime_selection);
 
+    // TODO(crbug.com/1501194): Pass in navigation_id to
+    // BrowserURLLoaderThrottle.
     return safe_browsing::BrowserURLLoaderThrottle::Create(
         base::BindRepeating(
             &ChromeContentBrowserClient::GetSafeBrowsingUrlCheckerDelegate,
@@ -5586,7 +5589,8 @@ ChromeContentBrowserClient::CreateURLLoaderThrottles(
     content::BrowserContext* browser_context,
     const base::RepeatingCallback<content::WebContents*()>& wc_getter,
     content::NavigationUIData* navigation_ui_data,
-    int frame_tree_node_id) {
+    int frame_tree_node_id,
+    absl::optional<int64_t> navigation_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> result;
@@ -5600,7 +5604,8 @@ ChromeContentBrowserClient::CreateURLLoaderThrottles(
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   if (auto safe_browsing_throttle = MaybeCreateSafeBrowsingURLLoaderThrottle(
-          request, browser_context, wc_getter, frame_tree_node_id, profile);
+          request, browser_context, wc_getter, frame_tree_node_id,
+          navigation_id, profile);
       safe_browsing_throttle) {
     result.push_back(std::move(safe_browsing_throttle));
   }
@@ -5680,7 +5685,8 @@ ChromeContentBrowserClient::CreateURLLoaderThrottlesForKeepAlive(
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   if (auto safe_browsing_throttle = MaybeCreateSafeBrowsingURLLoaderThrottle(
-          request, browser_context, wc_getter, frame_tree_node_id, profile);
+          request, browser_context, wc_getter, frame_tree_node_id,
+          /*navigation_id=*/absl::nullopt, profile);
       safe_browsing_throttle) {
     result.push_back(std::move(safe_browsing_throttle));
   }

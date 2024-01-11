@@ -580,7 +580,8 @@ AwContentBrowserClient::CreateURLLoaderThrottles(
     content::BrowserContext* browser_context,
     const base::RepeatingCallback<content::WebContents*()>& wc_getter,
     content::NavigationUIData* navigation_ui_data,
-    int frame_tree_node_id) {
+    int frame_tree_node_id,
+    absl::optional<int64_t> navigation_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Set lookup mechanism based on feature flag
@@ -589,6 +590,7 @@ AwContentBrowserClient::CreateURLLoaderThrottles(
           ? HashRealTimeSelection::kDatabaseManager
           : HashRealTimeSelection::kNone;
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> result;
+  // TODO(crbug.com/1501194): Pass in navigation_id to BrowserURLLoaderThrottle.
   result.push_back(safe_browsing::BrowserURLLoaderThrottle::Create(
       base::BindRepeating(
           [](AwContentBrowserClient* client) {

@@ -42,11 +42,12 @@ CreateContentBrowserURLLoaderThrottles(
     BrowserContext* browser_context,
     const base::RepeatingCallback<WebContents*()>& wc_getter,
     NavigationUIData* navigation_ui_data,
-    int frame_tree_node_id) {
+    int frame_tree_node_id,
+    absl::optional<int64_t> navigation_id) {
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles =
       GetContentClient()->browser()->CreateURLLoaderThrottles(
           request, browser_context, wc_getter, navigation_ui_data,
-          frame_tree_node_id);
+          frame_tree_node_id, navigation_id);
   variations::OmniboxURLLoaderThrottle::AppendThrottleIfNeeded(&throttles);
   // TODO(crbug.com/1094303): Consider whether we want to use the WebContents to
   // determine the value for variations::Owner. Alternatively, this is the

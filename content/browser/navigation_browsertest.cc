@@ -1920,7 +1920,8 @@ class CorsContentBrowserClient : public ContentBrowserTestContentBrowserClient {
       BrowserContext* browser_context,
       const base::RepeatingCallback<WebContents*()>& wc_getter,
       NavigationUIData* navigation_ui_data,
-      int frame_tree_node_id) override {
+      int frame_tree_node_id,
+      absl::optional<int64_t> navigation_id) override {
     std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
     throttles.push_back(
         std::make_unique<CorsInjectingUrlLoader>(last_cors_header_value_));

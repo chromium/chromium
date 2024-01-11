@@ -260,7 +260,8 @@ void PrefetchManager::PrefetchUrl(
       content::CreateContentBrowserURLLoaderThrottles(
           request, profile_, std::move(wc_getter),
           /*navigation_ui_data=*/nullptr,
-          content::RenderFrameHost::kNoFrameTreeNodeId);
+          content::RenderFrameHost::kNoFrameTreeNodeId,
+          /*navigation_id=*/absl::nullopt);
 
   auto client = std::make_unique<network::EmptyURLLoaderClient>();
 

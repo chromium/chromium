@@ -1218,7 +1218,8 @@ std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
 NavigationURLLoaderImpl::CreateURLLoaderThrottles() {
   auto throttles = CreateContentBrowserURLLoaderThrottles(
       *resource_request_, browser_context_, web_contents_getter_,
-      navigation_ui_data_.get(), frame_tree_node_id_);
+      navigation_ui_data_.get(), frame_tree_node_id_,
+      request_info_->navigation_id);
   throttles.push_back(std::make_unique<NavigationTimingThrottle>(
       resource_request_->is_outermost_main_frame, loader_creation_time_));
   return throttles;

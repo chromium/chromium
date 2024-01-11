@@ -371,7 +371,8 @@ ShellContentBrowserClient::CreateURLLoaderThrottles(
     BrowserContext* browser_context,
     const base::RepeatingCallback<WebContents*()>& wc_getter,
     NavigationUIData* navigation_ui_data,
-    int frame_tree_node_id) {
+    int frame_tree_node_id,
+    absl::optional<int64_t> navigation_id) {
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> result;
 
   auto* factory = custom_handlers::SimpleProtocolHandlerRegistryFactory::

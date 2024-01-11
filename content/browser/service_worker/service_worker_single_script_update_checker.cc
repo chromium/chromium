@@ -193,7 +193,8 @@ ServiceWorkerSingleScriptUpdateChecker::ServiceWorkerSingleScriptUpdateChecker(
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles =
       CreateContentBrowserURLLoaderThrottles(
           resource_request, browser_context, std::move(web_contents_getter),
-          /*navigation_ui_data=*/nullptr, RenderFrameHost::kNoFrameTreeNodeId);
+          /*navigation_ui_data=*/nullptr, RenderFrameHost::kNoFrameTreeNodeId,
+          /*navigation_id=*/absl::nullopt);
 
   network_client_remote_.Bind(
       network_client_receiver_.BindNewPipeAndPassRemote());

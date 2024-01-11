@@ -1606,6 +1606,8 @@ class CONTENT_EXPORT ContentBrowserClient {
   // |frame_tree_node_id| is also invalid (kNoFrameTreeNodeId) in some cases
   // (e.g., requests for web workers).
   //
+  // |navigation_id| is only valid if this is a navigation request.
+  //
   // This is called on the UI thread.
   virtual std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
   CreateURLLoaderThrottles(
@@ -1613,7 +1615,8 @@ class CONTENT_EXPORT ContentBrowserClient {
       BrowserContext* browser_context,
       const base::RepeatingCallback<WebContents*()>& wc_getter,
       NavigationUIData* navigation_ui_data,
-      int frame_tree_node_id);
+      int frame_tree_node_id,
+      absl::optional<int64_t> navigation_id);
 
   // Allows the embedder to register one or more URLLoaderThrottles for handling
   // a user-initiated `fetch(url, {keepalive: true})` request from documents or

@@ -132,7 +132,8 @@ class ThrottleAllContentBrowserClient : public ChromeContentBrowserClient {
       content::BrowserContext* browser_context,
       const base::RepeatingCallback<content::WebContents*()>& wc_getter,
       content::NavigationUIData* navigation_ui_data,
-      int frame_tree_node_id) override {
+      int frame_tree_node_id,
+      absl::optional<int64_t> navigation_id) override {
     std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
     throttles.push_back(std::make_unique<DeferringThrottle>());
     return throttles;
@@ -163,7 +164,8 @@ class CancelAllContentBrowserClient : public ChromeContentBrowserClient {
       content::BrowserContext* browser_context,
       const base::RepeatingCallback<content::WebContents*()>& wc_getter,
       content::NavigationUIData* navigation_ui_data,
-      int frame_tree_node_id) override {
+      int frame_tree_node_id,
+      absl::optional<int64_t> navigation_id) override {
     std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
     throttles.push_back(std::make_unique<CancellingThrottle>());
     return throttles;
@@ -194,7 +196,8 @@ class AddHeaderContentBrowserClient : public ChromeContentBrowserClient {
       content::BrowserContext* browser_context,
       const base::RepeatingCallback<content::WebContents*()>& wc_getter,
       content::NavigationUIData* navigation_ui_data,
-      int frame_tree_node_id) override {
+      int frame_tree_node_id,
+      absl::optional<int64_t> navigation_id) override {
     std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
     throttles.push_back(std::make_unique<AddHeaderModifyingThrottle>());
     return throttles;
@@ -226,7 +229,8 @@ class AddQueryParamContentBrowserClient : public ChromeContentBrowserClient {
       content::BrowserContext* browser_context,
       const base::RepeatingCallback<content::WebContents*()>& wc_getter,
       content::NavigationUIData* navigation_ui_data,
-      int frame_tree_node_id) override {
+      int frame_tree_node_id,
+      absl::optional<int64_t> navigation_id) override {
     std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
     throttles.push_back(std::make_unique<AddQueryParamModifyingThrottle>());
     return throttles;
@@ -258,7 +262,8 @@ class ChangeQueryContentBrowserClient : public ChromeContentBrowserClient {
       content::BrowserContext* browser_context,
       const base::RepeatingCallback<content::WebContents*()>& wc_getter,
       content::NavigationUIData* navigation_ui_data,
-      int frame_tree_node_id) override {
+      int frame_tree_node_id,
+      absl::optional<int64_t> navigation_id) override {
     std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
     throttles.push_back(std::make_unique<ChangeQueryModifyingThrottle>());
     return throttles;
@@ -735,7 +740,8 @@ class HeaderObserverContentBrowserClient : public ChromeContentBrowserClient {
       content::BrowserContext* browser_context,
       const base::RepeatingCallback<content::WebContents*()>& wc_getter,
       content::NavigationUIData* navigation_ui_data,
-      int frame_tree_node_id) override;
+      int frame_tree_node_id,
+      absl::optional<int64_t> navigation_id) override;
 
   bool had_raw_request_info() { return had_raw_request_info_; }
 
@@ -753,11 +759,12 @@ HeaderObserverContentBrowserClient::CreateURLLoaderThrottles(
     content::BrowserContext* browser_context,
     const base::RepeatingCallback<content::WebContents*()>& wc_getter,
     content::NavigationUIData* navigation_ui_data,
-    int frame_tree_node_id) {
+    int frame_tree_node_id,
+    absl::optional<int64_t> navigation_id) {
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles =
       ChromeContentBrowserClient::CreateURLLoaderThrottles(
           request, browser_context, wc_getter, navigation_ui_data,
-          frame_tree_node_id);
+          frame_tree_node_id, navigation_id);
   return throttles;
 }
 

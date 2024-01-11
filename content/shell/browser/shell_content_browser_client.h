@@ -58,7 +58,8 @@ class ShellContentBrowserClient : public ContentBrowserClient {
       BrowserContext* browser_context,
       const base::RepeatingCallback<WebContents*()>& wc_getter,
       NavigationUIData* navigation_ui_data,
-      int frame_tree_node_id) override;
+      int frame_tree_node_id,
+      absl::optional<int64_t> navigation_id) override;
   bool AreIsolatedWebAppsEnabled(BrowserContext* browser_context) override;
   void AppendExtraCommandLineSwitches(base::CommandLine* command_line,
                                       int child_process_id) override;
