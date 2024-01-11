@@ -20,6 +20,7 @@
 #include "base/task/thread_pool/tracked_ref.h"
 #include "base/task/thread_pool/worker_thread.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -163,15 +164,25 @@ class BASE_EXPORT ThreadGroup {
         delete;
     virtual ~BaseScopedCommandsExecutor();
 
+    void ScheduleStart(scoped_refptr<WorkerThread> worker);
+    void ScheduleAdjustMaxTasks();
     void ScheduleReleaseTaskSource(RegisteredTaskSource task_source);
-
-    virtual void FlushWorkerCreation(CheckedLock* lock) = 0;
+    // Unlocks held_lock. Flushes this executor.
+    void FlushWorkerCreation(CheckedLock* held_lock);
 
    protected:
-    BaseScopedCommandsExecutor();
+    explicit BaseScopedCommandsExecutor(ThreadGroup* outer);
 
-   private:
+    raw_ptr<ThreadGroup> outer_;
+
+   protected:
+    // Performs BaseScopedCommandsExecutor-related tasks, must be called in this
+    // class' destructor.
+    void Flush();
+
     std::vector<RegisteredTaskSource> task_sources_to_release_;
+    absl::InlinedVector<scoped_refptr<WorkerThread>, 2> workers_to_start_;
+    bool must_schedule_adjust_max_tasks_ = false;
   };
   virtual std::unique_ptr<BaseScopedCommandsExecutor> GetExecutor() = 0;
 
@@ -258,9 +269,9 @@ class BASE_EXPORT ThreadGroup {
   // more than BlockedThreshold(). Reschedules a call if necessary.
   virtual void AdjustMaxTasks() = 0;
 
-  // Schedules AdjustMaxTasks() through |executor| if required.
-  virtual void MaybeScheduleAdjustMaxTasksLockRequired(
-      BaseScopedCommandsExecutor* executor) EXCLUSIVE_LOCKS_REQUIRED(lock_) = 0;
+  // Schedules AdjustMaxTasks() if required.
+  void MaybeScheduleAdjustMaxTasksLockRequired(
+      BaseScopedCommandsExecutor* executor) EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Returns the threshold after which the max tasks is increased to compensate
   // for a worker that is within a MAY_BLOCK ScopedBlockingCall.

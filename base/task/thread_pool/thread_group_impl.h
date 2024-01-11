@@ -134,13 +134,7 @@ class BASE_EXPORT ThreadGroupImpl : public ThreadGroup {
       RegisteredTaskSourceAndTransaction transaction_with_task_source) override;
   void EnsureEnoughWorkersLockRequired(BaseScopedCommandsExecutor* executor)
       override EXCLUSIVE_LOCKS_REQUIRED(lock_);
-
   void AdjustMaxTasks() override;
-
-  void MaybeScheduleAdjustMaxTasksLockRequired(
-      BaseScopedCommandsExecutor* executor)
-      EXCLUSIVE_LOCKS_REQUIRED(lock_) override;
-
   // Creates a worker and schedules its start, if needed, to maintain one idle
   // worker, |max_tasks_| permitting.
   void MaintainAtLeastOneIdleWorkerLockRequired(
@@ -184,11 +178,6 @@ class BASE_EXPORT ThreadGroupImpl : public ThreadGroup {
 
   // Set at the start of JoinForTesting().
   bool join_for_testing_started_ GUARDED_BY(lock_) = false;
-
-  // Null-opt unless |synchronous_thread_start_for_testing| was true at
-  // construction. In that case, it's signaled each time
-  // WaitableEventWorkerDelegate::OnMainEntry() completes.
-  absl::optional<WaitableEvent> worker_started_for_testing_;
 
   // Ensures recently cleaned up workers (ref.
   // WaitableEventWorkerDelegate::CleanupLockRequired()) had time to exit as

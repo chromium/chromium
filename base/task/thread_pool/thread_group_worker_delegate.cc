@@ -217,20 +217,4 @@ void ThreadGroup::ThreadGroupWorkerDelegate::IncrementMaxTasksLockRequired()
   }
 }
 
-// Returns true if |worker| is allowed to cleanup and remove itself from the
-// thread group. Called from GetWork() when no work is available.
-bool ThreadGroup::ThreadGroupWorkerDelegate::CanCleanupLockRequired(
-    const WorkerThread* worker) const EXCLUSIVE_LOCKS_REQUIRED(outer_->lock_) {
-  DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
-  if (!IsExcess()) {
-    return false;
-  }
-
-  const TimeTicks last_used_time = worker->GetLastUsedTime();
-  return !last_used_time.is_null() &&
-         subtle::TimeTicksNowIgnoringOverride() - last_used_time >=
-             outer_->after_start().suggested_reclaim_time &&
-         LIKELY(!outer_->worker_cleanup_disallowed_for_testing_);
-}
-
 }  // namespace base::internal

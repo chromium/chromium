@@ -8,7 +8,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/sequence_token.h"
 #include "base/strings/string_piece.h"
-#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool/thread_group_worker_delegate.h"
 #include "base/task/thread_pool/worker_thread_waitable_event.h"
@@ -17,6 +16,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/time/time_override.h"
 #include "base/trace_event/base_tracing.h"
+#include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -33,109 +33,27 @@ constexpr size_t kMaxNumberOfWorkers = 256;
 class ThreadGroupImpl::ScopedCommandsExecutor
     : public ThreadGroup::BaseScopedCommandsExecutor {
  public:
-  explicit ScopedCommandsExecutor(ThreadGroupImpl* outer) : outer_(outer) {}
+  explicit ScopedCommandsExecutor(ThreadGroupImpl* outer)
+      : BaseScopedCommandsExecutor(outer) {}
 
   ScopedCommandsExecutor(const ScopedCommandsExecutor&) = delete;
   ScopedCommandsExecutor& operator=(const ScopedCommandsExecutor&) = delete;
-  ~ScopedCommandsExecutor() override { FlushImpl(); }
-
-  void ScheduleWakeUp(scoped_refptr<WorkerThreadWaitableEvent> worker) {
-    workers_to_wake_up_.AddWorker(std::move(worker));
-  }
-
-  void ScheduleStart(scoped_refptr<WorkerThreadWaitableEvent> worker) {
-    workers_to_start_.AddWorker(std::move(worker));
-  }
-
-  void FlushWorkerCreation(CheckedLock* held_lock) override {
-    if (workers_to_wake_up_.empty() && workers_to_start_.empty()) {
-      return;
-    }
-    CheckedAutoUnlock auto_unlock(*held_lock);
-    FlushImpl();
-    workers_to_wake_up_.clear();
-    workers_to_start_.clear();
-    must_schedule_adjust_max_tasks_ = false;
-  }
-
-  void ScheduleAdjustMaxTasks() {
-    DCHECK(!must_schedule_adjust_max_tasks_);
-    must_schedule_adjust_max_tasks_ = true;
-  }
-
- private:
-  class WorkerContainer {
-   public:
-    WorkerContainer() = default;
-    WorkerContainer(const WorkerContainer&) = delete;
-    WorkerContainer& operator=(const WorkerContainer&) = delete;
-
-    void AddWorker(scoped_refptr<WorkerThreadWaitableEvent> worker) {
-      if (!worker) {
-        return;
-      }
-      if (!first_worker_) {
-        first_worker_ = std::move(worker);
-      } else {
-        additional_workers_.push_back(std::move(worker));
-      }
-    }
-
-    template <typename Action>
-    void ForEachWorker(Action action) {
-      if (first_worker_) {
-        action(first_worker_.get());
-        for (scoped_refptr<WorkerThreadWaitableEvent> worker :
-             additional_workers_) {
-          action(worker.get());
-        }
-      } else {
-        DCHECK(additional_workers_.empty());
-      }
-    }
-
-    bool empty() const { return first_worker_ == nullptr; }
-
-    void clear() {
-      first_worker_.reset();
-      additional_workers_.clear();
-    }
-
-   private:
-    // The purpose of |first_worker| is to avoid a heap allocation by the vector
-    // in the case where there is only one worker in the container.
-    scoped_refptr<WorkerThreadWaitableEvent> first_worker_;
-    std::vector<scoped_refptr<WorkerThreadWaitableEvent>> additional_workers_;
-  };
-
-  void FlushImpl() {
+  ~ScopedCommandsExecutor() override {
     CheckedLock::AssertNoLockHeldOnCurrentThread();
 
     // Wake up workers.
-    workers_to_wake_up_.ForEachWorker(
-        [](WorkerThreadWaitableEvent* worker) { worker->WakeUp(); });
-
-    // Start workers. Happens after wake ups to prevent the case where a worker
-    // enters its main function, is descheduled because it wasn't woken up yet,
-    // and is woken up immediately after.
-    workers_to_start_.ForEachWorker([&](WorkerThreadWaitableEvent* worker) {
-      worker->Start(outer_->after_start().service_thread_task_runner,
-                    outer_->after_start().worker_thread_observer);
-      if (outer_->worker_started_for_testing_) {
-        outer_->worker_started_for_testing_->Wait();
-      }
-    });
-
-    if (must_schedule_adjust_max_tasks_) {
-      outer_->ScheduleAdjustMaxTasks();
+    for (auto worker : workers_to_wake_up_) {
+      worker->WakeUp();
     }
   }
 
-  const raw_ptr<ThreadGroupImpl> outer_;
+  void ScheduleWakeUp(scoped_refptr<WorkerThreadWaitableEvent> worker) {
+    workers_to_wake_up_.emplace_back(std::move(worker));
+  }
 
-  WorkerContainer workers_to_wake_up_;
-  WorkerContainer workers_to_start_;
-  bool must_schedule_adjust_max_tasks_ = false;
+ private:
+  absl::InlinedVector<scoped_refptr<WorkerThreadWaitableEvent>, 2>
+      workers_to_wake_up_;
 };
 
 class ThreadGroupImpl::WaitableEventWorkerDelegate
@@ -188,8 +106,19 @@ class ThreadGroupImpl::WaitableEventWorkerDelegate
                                            WorkerThreadWaitableEvent* worker)
       EXCLUSIVE_LOCKS_REQUIRED(outer()->lock_);
 
+  // Returns true if |worker| is allowed to cleanup and remove itself from the
+  // thread group. Called from GetWork() when no work is available.
+  bool CanCleanupLockRequired(const WorkerThread* worker)
+      EXCLUSIVE_LOCKS_REQUIRED(outer()->lock_) override;
+
   const bool is_excess_;
 };
+
+std::unique_ptr<ThreadGroup::BaseScopedCommandsExecutor>
+ThreadGroupImpl::GetExecutor() {
+  return static_cast<std::unique_ptr<BaseScopedCommandsExecutor>>(
+      std::make_unique<ScopedCommandsExecutor>(this));
+}
 
 ThreadGroupImpl::ThreadGroupImpl(StringPiece histogram_label,
                                  StringPiece thread_group_label,
@@ -354,7 +283,7 @@ void ThreadGroupImpl::WaitableEventWorkerDelegate::OnMainExit(
     // |worker| should already have been removed from the idle workers set and
     // |workers_| by the time the thread is about to exit. (except in the
     // cases where the thread group is no longer going to be used - in which
-    // case, it's fine for there to be invalid workers in the thread group.
+    // case, it's fine for there to be invalid workers in the thread group).
     if (!shutdown_complete && !outer()->join_for_testing_started_) {
       DCHECK(!outer()->idle_workers_set_.Contains(worker));
       DCHECK(!ContainsWorker(outer()->workers_, worker));
@@ -529,7 +458,8 @@ ThreadGroupImpl::WaitableEventWorkerDelegate::SwapProcessedTask(
   CheckedAutoLock auto_lock(outer()->lock_);
   AnnotateAcquiredLockAlias annotate(outer()->lock_, lock());
 
-  // During shutdown, max_tasks may have been incremented in StartShutdown().
+  // During shutdown, max_tasks may have been incremented in
+  // OnShutdownStartedLockRequired().
   if (incremented_max_tasks_for_shutdown_) {
     DCHECK(outer()->shutdown_started_);
     outer()->DecrementMaxTasksLockRequired();
@@ -563,6 +493,20 @@ ThreadGroupImpl::WaitableEventWorkerDelegate::SwapProcessedTask(
 
 bool ThreadGroupImpl::WaitableEventWorkerDelegate::IsExcess() const {
   return is_excess_;
+}
+
+bool ThreadGroupImpl::WaitableEventWorkerDelegate::CanCleanupLockRequired(
+    const WorkerThread* worker) {
+  DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
+  if (!IsExcess()) {
+    return false;
+  }
+
+  const TimeTicks last_used_time = worker->GetLastUsedTime();
+  return !last_used_time.is_null() &&
+         subtle::TimeTicksNowIgnoringOverride() - last_used_time >=
+             outer()->after_start().suggested_reclaim_time &&
+         LIKELY(!outer()->worker_cleanup_disallowed_for_testing_);
 }
 
 void ThreadGroupImpl::WaitableEventWorkerDelegate::CleanupLockRequired(
@@ -732,23 +676,6 @@ void ThreadGroupImpl::OnShutdownStarted() {
   EnsureEnoughWorkersLockRequired(&executor);
 
   shutdown_started_ = true;
-}
-
-std::unique_ptr<ThreadGroup::BaseScopedCommandsExecutor>
-ThreadGroupImpl::GetExecutor() {
-  return static_cast<std::unique_ptr<BaseScopedCommandsExecutor>>(
-      std::make_unique<ScopedCommandsExecutor>(this));
-}
-
-void ThreadGroupImpl::MaybeScheduleAdjustMaxTasksLockRequired(
-    BaseScopedCommandsExecutor* base_executor) {
-  ScopedCommandsExecutor* executor =
-      static_cast<ScopedCommandsExecutor*>(base_executor);
-  if (!adjust_max_tasks_posted_ &&
-      ShouldPeriodicallyAdjustMaxTasksLockRequired()) {
-    executor->ScheduleAdjustMaxTasks();
-    adjust_max_tasks_posted_ = true;
-  }
 }
 
 void ThreadGroupImpl::EnsureEnoughWorkersLockRequired(

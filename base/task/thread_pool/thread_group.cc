@@ -64,10 +64,58 @@ void ThreadGroup::BaseScopedCommandsExecutor::ScheduleReleaseTaskSource(
   task_sources_to_release_.push_back(std::move(task_source));
 }
 
-ThreadGroup::BaseScopedCommandsExecutor::BaseScopedCommandsExecutor() = default;
+void ThreadGroup::BaseScopedCommandsExecutor::ScheduleAdjustMaxTasks() {
+  DCHECK(!must_schedule_adjust_max_tasks_);
+  must_schedule_adjust_max_tasks_ = true;
+}
+
+void ThreadGroup::BaseScopedCommandsExecutor::ScheduleStart(
+    scoped_refptr<WorkerThread> worker) {
+  workers_to_start_.emplace_back(std::move(worker));
+}
+
+ThreadGroup::BaseScopedCommandsExecutor::BaseScopedCommandsExecutor(
+    ThreadGroup* outer)
+    : outer_(outer) {}
 
 ThreadGroup::BaseScopedCommandsExecutor::~BaseScopedCommandsExecutor() {
   CheckedLock::AssertNoLockHeldOnCurrentThread();
+  Flush();
+}
+
+void ThreadGroup::BaseScopedCommandsExecutor::FlushWorkerCreation(
+    CheckedLock* held_lock) {
+  // This function crucially only wakes up workers, rather than also signaling
+  // them, and therefore, does not call FlushImpl(). FlushImpl() requires not
+  // holding any locks on the calling thread, while a TaskSource Transaction
+  // lock can be held while calling this function.
+  CheckedAutoUnlock auto_unlock(*held_lock);
+  if (workers_to_start_.empty()) {
+    return;
+  }
+
+  Flush();
+  workers_to_start_.clear();
+  must_schedule_adjust_max_tasks_ = false;
+}
+
+void ThreadGroup::BaseScopedCommandsExecutor::Flush() {
+  // Start workers. Happens after wake ups (implemented by children and thus
+  // called on their destructor, i.e. before this) to prevent the case where a
+  // worker enters its main function, is descheduled because it wasn't woken up
+  // yet, and is woken up immediately after.
+  for (auto worker : workers_to_start_) {
+    worker->Start(outer_->after_start().service_thread_task_runner,
+                  outer_->after_start().worker_thread_observer);
+    if (outer_->worker_started_for_testing_) {
+      outer_->worker_started_for_testing_->Wait();
+    }
+  }
+  workers_to_start_.clear();
+
+  if (must_schedule_adjust_max_tasks_) {
+    outer_->ScheduleAdjustMaxTasks();
+  }
 }
 
 ThreadGroup::ScopedReenqueueExecutor::ScopedReenqueueExecutor() = default;
@@ -271,8 +319,9 @@ RegisteredTaskSource ThreadGroup::TakeRegisteredTaskSource(
     return nullptr;
   }
 
-  if (run_status == TaskSource::RunStatus::kAllowedSaturated)
+  if (run_status == TaskSource::RunStatus::kAllowedSaturated) {
     return priority_queue_.PopTaskSource();
+  }
 
   // If the TaskSource isn't saturated, check whether TaskTracker allows it to
   // remain in the PriorityQueue.
@@ -284,8 +333,9 @@ RegisteredTaskSource ThreadGroup::TakeRegisteredTaskSource(
   // otherwise.
   RegisteredTaskSource task_source =
       task_tracker_->RegisterTaskSource(priority_queue_.PeekTaskSource().get());
-  if (!task_source)
+  if (!task_source) {
     return priority_queue_.PopTaskSource();
+  }
   // Replace the top task_source and then update the queue.
   std::swap(priority_queue_.PeekTaskSource(), task_source);
   priority_queue_.UpdateSortKey(*task_source.get(), task_source->GetSortKey());
@@ -342,12 +392,15 @@ void ThreadGroup::HandoffNonUserBlockingTaskSourcesToOtherThreadGroup(
     new_priority_queue.swap(priority_queue_);
   }
   {
+    std::unique_ptr<BaseScopedCommandsExecutor> executor =
+        destination_thread_group->GetExecutor();
     CheckedAutoLock destination_thread_group_lock(
         destination_thread_group->lock_);
     while (!new_priority_queue.IsEmpty()) {
       top_sort_key = new_priority_queue.PeekSortKey();
-      destination_thread_group->priority_queue_.Push(
-          new_priority_queue.PopTaskSource(), top_sort_key);
+      RegisteredTaskSource task_source = new_priority_queue.PopTaskSource();
+      destination_thread_group->priority_queue_.Push(std::move(task_source),
+                                                     top_sort_key);
     }
   }
 }
@@ -453,6 +506,15 @@ size_t ThreadGroup::GetDesiredNumAwakeWorkersLockRequired() const {
   return std::min({workers_for_best_effort_task_sources +
                        workers_for_foreground_task_sources,
                    max_tasks_, kMaxNumberOfWorkers});
+}
+
+void ThreadGroup::MaybeScheduleAdjustMaxTasksLockRequired(
+    BaseScopedCommandsExecutor* executor) {
+  if (!adjust_max_tasks_posted_ &&
+      ShouldPeriodicallyAdjustMaxTasksLockRequired()) {
+    executor->ScheduleAdjustMaxTasks();
+    adjust_max_tasks_posted_ = true;
+  }
 }
 
 void ThreadGroup::ScheduleAdjustMaxTasks() {
