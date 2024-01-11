@@ -44,6 +44,11 @@ class QuickAnswersMenuObserver : public RenderViewContextMenuObserver {
       uint32_t start_offset,
       uint32_t end_offset);
 
+  void OnFetchController(
+      const content::ContextMenuParams& params,
+      const gfx::Rect& bounds_in_screen,
+      base::WeakPtr<chromeos::ReadWriteCardController> controller);
+
   // The interface to add a context-menu item and update it.
   raw_ptr<RenderViewContextMenuProxy, DanglingUntriaged> proxy_;
 

@@ -33,4 +33,8 @@ void MahiMenuController::OnDismiss(bool is_other_command_executed) {
   }
 }
 
+base::WeakPtr<MahiMenuController> MahiMenuController::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 }  // namespace chromeos::mahi

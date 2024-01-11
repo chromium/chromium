@@ -61,6 +61,11 @@ class EditorMenuControllerImpl : public chromeos::ReadWriteCardController,
       const gfx::Rect& anchor_bounds,
       crosapi::mojom::EditorPanelContextPtr context);
 
+  crosapi::mojom::EditorPanelManager* GetEditorPanelManager(
+      content::BrowserContext* browser_context);
+
+  base::WeakPtr<EditorMenuControllerImpl> GetWeakPtr();
+
  private:
   // Holds any important objects that are scoped to the lifetime of a visible
   // editor card instance (ie promo card, or editor menu card). A session begins

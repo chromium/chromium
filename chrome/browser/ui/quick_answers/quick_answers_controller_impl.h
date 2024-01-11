@@ -81,6 +81,8 @@ class QuickAnswersControllerImpl : public chromeos::ReadWriteCardController,
                : nullptr;
   }
 
+  base::WeakPtr<QuickAnswersControllerImpl> GetWeakPtr();
+
  private:
   void HandleQuickAnswerRequest(
       const quick_answers::QuickAnswersRequest& request);
@@ -120,6 +122,8 @@ class QuickAnswersControllerImpl : public chromeos::ReadWriteCardController,
   std::unique_ptr<quick_answers::QuickAnswersSession> quick_answers_session_;
 
   QuickAnswersVisibility visibility_ = QuickAnswersVisibility::kClosed;
+
+  base::WeakPtrFactory<QuickAnswersControllerImpl> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_QUICK_ANSWERS_QUICK_ANSWERS_CONTROLLER_IMPL_H_

@@ -6,6 +6,7 @@
 #define CHROMEOS_COMPONENTS_EDITOR_MENU_PUBLIC_CPP_READ_WRITE_CARDS_MANAGER_H_
 
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 
 namespace content {
 class BrowserContext;
@@ -16,6 +17,11 @@ namespace chromeos {
 
 class ReadWriteCardController;
 
+namespace editor_menu {
+using FetchControllerCallback =
+    base::OnceCallback<void(base::WeakPtr<ReadWriteCardController>)>;
+}
+
 // A manager to manage the controllers of Quick Answers or Editor Menu.
 class COMPONENT_EXPORT(EDITOR_MENU_PUBLIC_CPP) ReadWriteCardsManager {
  public:
@@ -24,11 +30,10 @@ class COMPONENT_EXPORT(EDITOR_MENU_PUBLIC_CPP) ReadWriteCardsManager {
 
   static ReadWriteCardsManager* Get();
 
-  // Returns the supported controller for the input params. Could be nullptr if
-  // it is not supported.
-  virtual ReadWriteCardController* GetController(
+  virtual void FetchController(
       const content::ContextMenuParams& params,
-      content::BrowserContext* context) = 0;
+      content::BrowserContext* context,
+      editor_menu::FetchControllerCallback callback) = 0;
 };
 
 }  // namespace chromeos
