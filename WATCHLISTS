@@ -881,6 +881,10 @@
     'components_deps': {
       'filepath': 'components/([^/]*/)*DEPS',
     },
+    'compose': {
+      'filepath':
+        'components/compose|chrome/browser/compose|chrome/browser/resources/compose',
+    },
     'compositor_animator': {
       'filepath': 'chrome/android/java/src/org/chromium/chrome/browser/compositor/animation/',
     },
@@ -2765,6 +2769,7 @@
                      'miketaylr@chromium.org'],
     'clipboard': ['dcheng@chromium.org'],
     'components_deps': ['droger+watchlist@chromium.org'],
+    'compose': ['dewittj+watch@chromium.org'],
     'compositor_animator': ['mdjones+watch@chromium.org'],
     'compute_pressure': ['raphael.kubo.da.costa@intel.com',
                          'arnaud.mandy@intel.com',
@@ -2866,7 +2871,6 @@
     'exo': ['crostini-ui+exo@chromium.org',
             'yhanada+watchexo@chromium.org'],
     'explore_sites': ['chili+watch@chromium.org',
-                      'dewittj+watch@chromium.org',
                       'dimich+watch@chromium.org',
                       'freedjm+watch@chromium.org',
                       'petewil+watch@chromium.org'],
@@ -3048,7 +3052,6 @@
     'ntp_snippets': ['ntp-dev+reviews@chromium.org'],
     'ntp_tiles': ['ntp-dev+reviews@chromium.org'],
     'offline_pages': ['chili+watch@chromium.org',
-                      'dewittj+watch@chromium.org',
                       'dimich+watch@chromium.org',
                       'fgorski+watch@chromium.org',
                       'petewil+watch@chromium.org'],
