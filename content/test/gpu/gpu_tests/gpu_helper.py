@@ -47,6 +47,15 @@ ENTIRE_TAG_REPLACEMENTS = {
 VENDOR_AMD = 0x1002
 VENDOR_INTEL = 0x8086
 VENDOR_NVIDIA = 0x10DE
+# ACPI ID as opposed to a PCI-E ID like other vendors.
+VENDOR_QUALCOMM = 0x4D4F4351
+
+VENDOR_NAMES_BY_ID = {
+    VENDOR_AMD: 'amd',
+    VENDOR_INTEL: 'intel',
+    VENDOR_NVIDIA: 'nvidia',
+    VENDOR_QUALCOMM: 'qualcomm',
+}
 
 INTEL_DEVICE_ID_MASK = 0xFF00
 INTEL_GEN_9 = {0x1900, 0x3100, 0x3E00, 0x5900, 0x5A00, 0x9B00}
@@ -85,12 +94,8 @@ def GetGpuVendorString(gpu_info: Optional[tgi.GPUInfo], index: int) -> str:
       angle_vendor_string = _ParseANGLEGpuVendorString(
           primary_gpu.device_string)
       vendor_id = primary_gpu.vendor_id
-      if vendor_id == VENDOR_NVIDIA:
-        return 'nvidia'
-      if vendor_id == VENDOR_AMD:
-        return 'amd'
-      if vendor_id == VENDOR_INTEL:
-        return 'intel'
+      if vendor_id in VENDOR_NAMES_BY_ID:
+        return VENDOR_NAMES_BY_ID[vendor_id]
       if angle_vendor_string:
         return angle_vendor_string.lower()
       if vendor_string:

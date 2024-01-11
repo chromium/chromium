@@ -108,7 +108,9 @@ TAG_SPECIALIZATIONS = {
             'nvidia-0x1cb3',
             'nvidia-0x2184',
         ],
-        'qualcomm': [],
+        'qualcomm': [
+            'qualcomm-0x41333430',
+        ],
     },
 }
 
