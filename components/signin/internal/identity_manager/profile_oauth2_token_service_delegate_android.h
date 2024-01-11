@@ -84,7 +84,8 @@ class ProfileOAuth2TokenServiceDelegateAndroid
   std::unique_ptr<OAuth2AccessTokenFetcher> CreateAccessTokenFetcher(
       const CoreAccountId& account_id,
       scoped_refptr<network::SharedURLLoaderFactory> url_factory,
-      OAuth2AccessTokenConsumer* consumer) override;
+      OAuth2AccessTokenConsumer* consumer,
+      const std::string& token_binding_challenge) override;
 
   // Overridden from ProfileOAuth2TokenServiceDelegate to intercept token fetch
   // requests and redirect them to the Account Manager.

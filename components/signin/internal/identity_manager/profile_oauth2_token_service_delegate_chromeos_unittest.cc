@@ -47,6 +47,7 @@ using ::account_manager::AccountManagerFacade;
 constexpr char kGaiaId[] = "gaia-id";
 constexpr char kGaiaToken[] = "gaia-token";
 constexpr char kUserEmail[] = "user@gmail.com";
+constexpr char kNoBindingChallenge[] = "";
 
 class AccessTokenConsumer : public OAuth2AccessTokenConsumer {
  public:
@@ -903,9 +904,9 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
   EXPECT_EQ(0, access_token_consumer.num_access_token_fetch_failure_);
   std::vector<std::string> scopes{"scope"};
   std::unique_ptr<OAuth2AccessTokenFetcher> fetcher =
-      delegate_->CreateAccessTokenFetcher(account_info_.account_id,
-                                          delegate_->GetURLLoaderFactory(),
-                                          &access_token_consumer);
+      delegate_->CreateAccessTokenFetcher(
+          account_info_.account_id, delegate_->GetURLLoaderFactory(),
+          &access_token_consumer, kNoBindingChallenge);
   task_environment_.RunUntilIdle();
   fetcher->Start("client_id", "client_secret", scopes);
   task_environment_.RunUntilIdle();
@@ -919,7 +920,7 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
   delegate_->backoff_entry_->SetCustomReleaseTime(base::TimeTicks());
   fetcher = delegate_->CreateAccessTokenFetcher(
       account_info_.account_id, delegate_->GetURLLoaderFactory(),
-      &access_token_consumer);
+      &access_token_consumer, kNoBindingChallenge);
   fetcher->Start("client_id", "client_secret", scopes);
   task_environment_.RunUntilIdle();
   EXPECT_EQ(1, access_token_consumer.num_access_token_fetch_success_);
@@ -943,9 +944,9 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
   EXPECT_EQ(0, access_token_consumer.num_access_token_fetch_failure_);
   std::vector<std::string> scopes{"scope"};
   std::unique_ptr<OAuth2AccessTokenFetcher> fetcher =
-      delegate_->CreateAccessTokenFetcher(account_info_.account_id,
-                                          delegate_->GetURLLoaderFactory(),
-                                          &access_token_consumer);
+      delegate_->CreateAccessTokenFetcher(
+          account_info_.account_id, delegate_->GetURLLoaderFactory(),
+          &access_token_consumer, kNoBindingChallenge);
   task_environment_.RunUntilIdle();
   fetcher->Start("client_id", "client_secret", scopes);
   task_environment_.RunUntilIdle();
@@ -960,7 +961,7 @@ TEST_F(ProfileOAuth2TokenServiceDelegateChromeOSTest,
       network::mojom::ConnectionType::CONNECTION_WIFI);
   fetcher = delegate_->CreateAccessTokenFetcher(
       account_info_.account_id, delegate_->GetURLLoaderFactory(),
-      &access_token_consumer);
+      &access_token_consumer, kNoBindingChallenge);
   fetcher->Start("client_id", "client_secret", scopes);
   task_environment_.RunUntilIdle();
   EXPECT_EQ(1, access_token_consumer.num_access_token_fetch_success_);

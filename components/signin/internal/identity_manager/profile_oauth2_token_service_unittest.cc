@@ -74,13 +74,14 @@ class FakeProfileOAuth2TokenServiceDelegateDesktop
   std::unique_ptr<OAuth2AccessTokenFetcher> CreateAccessTokenFetcher(
       const CoreAccountId& account_id,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      OAuth2AccessTokenConsumer* consumer) override {
+      OAuth2AccessTokenConsumer* consumer,
+      const std::string& token_binding_challenge) override {
     if (GetAuthError(account_id).IsPersistentError()) {
       return std::make_unique<OAuth2AccessTokenFetcherImmediateError>(
           consumer, GetAuthError(account_id));
     }
     return FakeProfileOAuth2TokenServiceDelegate::CreateAccessTokenFetcher(
-        account_id, url_loader_factory, consumer);
+        account_id, url_loader_factory, consumer, token_binding_challenge);
   }
   void InvalidateTokenForMultilogin(
       const CoreAccountId& failed_account) override {

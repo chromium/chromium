@@ -225,7 +225,8 @@ std::unique_ptr<OAuth2AccessTokenFetcher>
 DeviceOAuth2TokenService::CreateAccessTokenFetcher(
     const CoreAccountId& account_id,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    OAuth2AccessTokenConsumer* consumer) {
+    OAuth2AccessTokenConsumer* consumer,
+    const std::string& token_binding_challenge) {
   std::string refresh_token = GetRefreshToken();
   DCHECK(!refresh_token.empty());
   return GaiaAccessTokenFetcher::

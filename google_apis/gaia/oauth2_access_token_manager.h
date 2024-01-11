@@ -37,11 +37,16 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2AccessTokenManager {
     virtual ~Delegate();
 
     // Creates and returns an OAuth2AccessTokenFetcher.
+    // The server might provide `token_binding_challenge` if the refresh token
+    // is bound to the device. If `token_binding_challenge` not empty, the
+    // access token fetcher should attach the token binding assertion containing
+    // the challenge to the request.
     [[nodiscard]] virtual std::unique_ptr<OAuth2AccessTokenFetcher>
     CreateAccessTokenFetcher(
         const CoreAccountId& account_id,
         scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-        OAuth2AccessTokenConsumer* consumer) = 0;
+        OAuth2AccessTokenConsumer* consumer,
+        const std::string& token_binding_challenge) = 0;
 
     // Returns |true| if a refresh token is available for |account_id|, and
     // |false| otherwise.
@@ -299,7 +304,8 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2AccessTokenManager {
   std::unique_ptr<OAuth2AccessTokenFetcher> CreateAccessTokenFetcher(
       const CoreAccountId& account_id,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      OAuth2AccessTokenConsumer* consumer);
+      OAuth2AccessTokenConsumer* consumer,
+      const std::string& token_binding_challenge);
 
   // This method does the same as |StartRequestWithContext| except it
   // uses |client_id| and |client_secret| to identify OAuth

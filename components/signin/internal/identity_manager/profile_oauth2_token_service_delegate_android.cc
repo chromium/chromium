@@ -219,7 +219,8 @@ std::unique_ptr<OAuth2AccessTokenFetcher>
 ProfileOAuth2TokenServiceDelegateAndroid::CreateAccessTokenFetcher(
     const CoreAccountId& account_id,
     scoped_refptr<network::SharedURLLoaderFactory> url_factory,
-    OAuth2AccessTokenConsumer* consumer) {
+    OAuth2AccessTokenConsumer* consumer,
+    const std::string& token_binding_challenge) {
   DVLOG(1)
       << "ProfileOAuth2TokenServiceDelegateAndroid::CreateAccessTokenFetcher"
       << " account= " << account_id;

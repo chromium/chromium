@@ -131,7 +131,8 @@ class DeviceOAuth2TokenService : public OAuth2AccessTokenManager::Delegate,
   std::unique_ptr<OAuth2AccessTokenFetcher> CreateAccessTokenFetcher(
       const CoreAccountId& account_id,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      OAuth2AccessTokenConsumer* consumer) override;
+      OAuth2AccessTokenConsumer* consumer,
+      const std::string& token_binding_challenge) override;
   bool HasRefreshToken(const CoreAccountId& account_id) const override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()
       const override;
