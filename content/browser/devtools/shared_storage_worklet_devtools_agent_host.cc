@@ -115,6 +115,10 @@ void SharedStorageWorkletDevToolsAgentHost::WorkletDestroyed() {
 
 bool SharedStorageWorkletDevToolsAgentHost::IsRelevantTo(
     RenderFrameHostImpl* frame) {
+  if (!worklet_host_->GetFrame()) {
+    return false;
+  }
+
   return ContainingLocalRoot(frame) ==
          ContainingLocalRoot(worklet_host_->GetFrame());
 }
