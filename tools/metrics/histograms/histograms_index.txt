@@ -1,4 +1,5 @@
 tools/metrics/histograms/histograms.xml
+tools/metrics/histograms/metadata/accessibility/enums.xml
 tools/metrics/histograms/metadata/accessibility/histograms.xml
 tools/metrics/histograms/metadata/account_manager/histograms.xml
 tools/metrics/histograms/metadata/android/enums.xml
@@ -15,6 +16,7 @@ tools/metrics/histograms/metadata/ash_user_education/enums.xml
 tools/metrics/histograms/metadata/ash_user_education/histograms.xml
 tools/metrics/histograms/metadata/assistant/histograms.xml
 tools/metrics/histograms/metadata/auto/histograms.xml
+tools/metrics/histograms/metadata/autofill/enums.xml
 tools/metrics/histograms/metadata/autofill/histograms.xml
 tools/metrics/histograms/metadata/background/histograms.xml
 tools/metrics/histograms/metadata/blink/histograms.xml
@@ -114,6 +116,7 @@ tools/metrics/histograms/metadata/media/enums.xml
 tools/metrics/histograms/metadata/media/histograms.xml
 tools/metrics/histograms/metadata/memory/enums.xml
 tools/metrics/histograms/metadata/memory/histograms.xml
+tools/metrics/histograms/metadata/mobile/enums.xml
 tools/metrics/histograms/metadata/mobile/histograms.xml
 tools/metrics/histograms/metadata/na_cl/histograms.xml
 tools/metrics/histograms/metadata/navigation/enums.xml
@@ -124,6 +127,7 @@ tools/metrics/histograms/metadata/net/enums.xml
 tools/metrics/histograms/metadata/net/histograms.xml
 tools/metrics/histograms/metadata/network/enums.xml
 tools/metrics/histograms/metadata/network/histograms.xml
+tools/metrics/histograms/metadata/new_tab_page/enums.xml
 tools/metrics/histograms/metadata/new_tab_page/histograms.xml
 tools/metrics/histograms/metadata/notifications/histograms.xml
 tools/metrics/histograms/metadata/offline/histograms.xml
@@ -185,6 +189,7 @@ tools/metrics/histograms/metadata/security/histograms.xml
 tools/metrics/histograms/metadata/segmentation_platform/histograms.xml
 tools/metrics/histograms/metadata/service/histograms.xml
 tools/metrics/histograms/metadata/session/histograms.xml
+tools/metrics/histograms/metadata/settings/enums.xml
 tools/metrics/histograms/metadata/settings/histograms.xml
 tools/metrics/histograms/metadata/sharing/histograms.xml
 tools/metrics/histograms/metadata/side_search/histograms.xml
@@ -204,6 +209,7 @@ tools/metrics/histograms/metadata/sync/histograms.xml
 tools/metrics/histograms/metadata/system/histograms.xml
 tools/metrics/histograms/metadata/tab/enums.xml
 tools/metrics/histograms/metadata/tab/histograms.xml
+tools/metrics/histograms/metadata/translate/enums.xml
 tools/metrics/histograms/metadata/translate/histograms.xml
 tools/metrics/histograms/metadata/trusted_vault/histograms.xml
 tools/metrics/histograms/metadata/ukm/enums.xml

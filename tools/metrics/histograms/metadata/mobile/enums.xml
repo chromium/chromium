@@ -1,0 +1,532 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="CanonicalURLResult">
+  <int value="0" label="Canonical URL not retrieved: Visible URL not HTTPS"/>
+  <int value="1"
+      label="(obsolete) Canonical URL not retrieved: Canonical URL not HTTPS
+             (but visible URL is)"/>
+  <int value="2"
+      label="Canonical URL not retrieved: Page had no canonical URL defined"/>
+  <int value="3"
+      label="Canonical URL not retrieved: Page's canonical URL was invalid"/>
+  <int value="4" label="Canonical URL retrieved: Differed from visible URL"/>
+  <int value="5" label="Canonical URL retrieved: Same as visible URL"/>
+  <int value="6"
+      label="Canonical URL retrieved: Canonical URL not HTTPS (but visible
+             URL is)"/>
+</enum>
+
+<enum name="ContextMenuIOSCopyImage">
+  <summary>
+    Events of Copy Image from context menu under iOS. Enum0 is the entrance of
+    an image copy process; Enum1~3 are correlated and they are recorded in the
+    callback of fetching image data; Enum4~5 are correlated and they are
+    recorded in the callback of popping up waiting alert. There is no gurantee
+    that each callback will be invoked in the process, so enum1~3 and enum4~5
+    are not necessarily corelated. But since enum5 blocks enum1 from advancing
+    to enum2, approximately we have enum5 = enum2 - enum1.
+  </summary>
+  <int value="0" label="Copy Image invoked">
+    Recorded when Copy Image is invoked. This is the universal set.
+  </int>
+  <int value="1" label="Image data fetched">
+    Recorded when image data is fetched and ready for pasting to system
+    pasteboard. This is a subset of &quot;Copy Image invoked&quot;.
+  </int>
+  <int value="2" label="Try copying fetched image (copy is not canceled)">
+    Recorded when image data is fetched and the copy process is not canceled, so
+    pasting image data to system pasteboard will be attempted. This is a subset
+    of &quot;Image data fetched&quot;.
+  </int>
+  <int value="3" label="Image copied (image is valid)">
+    Recorded when image data is valid and pasted to system pasteboard
+    successfully. This is a subset of &quot;Try copying fetched image&quot;.
+  </int>
+  <int value="4" label="Waiting alert popped up">
+    Recorded when copy does not finish in a short time, thus an alert is popped
+    up to let the user wait until copy finish. This is a subset of &quot;Copy
+    Image invoked&quot;.
+  </int>
+  <int value="5" label="Copy Image canceled by user">
+    Recorded when the alert is popped up, and user clicks the &quot;Cancel&quot;
+    button on the alert. This is a subset of &quot;Waiting alert popped
+    up&quot;.
+  </int>
+  <int value="6" label="URL copied">
+    Recorded when image data format is not recognized and the URL of the image
+    is copied instead of its data. This is a subset of &quot;Try copying fetched
+    image&quot;.
+  </int>
+</enum>
+
+<enum name="ContextMenuIOSGetImageDataByJsResult">
+  <int value="0" label="Canvas succeed"/>
+  <int value="1" label="XMLHttpRequest succeed"/>
+  <int value="2" label="Fail"/>
+  <int value="3" label="Timeout"/>
+</enum>
+
+<enum name="DownloadLaterPromptStatus">
+  <int value="0" label="Show initial"/>
+  <int value="1" label="Show prompt"/>
+  <int value="2" label="Don't show prompt"/>
+</enum>
+
+<enum name="DownloadLocationDialogResult">
+  <int value="0" label="USER_CONFIRMED"/>
+  <int value="1" label="USER_CANCELED"/>
+  <int value="2" label="DUPLICATE_DIALOG"/>
+</enum>
+
+<enum name="DownloadLocationDialogType">
+  <int value="0" label="NO_DIALOG"/>
+  <int value="1" label="DEFAULT"/>
+  <int value="2" label="LOCATION_FULL"/>
+  <int value="3" label="LOCATION_NOT_FOUND"/>
+  <int value="4" label="NAME_CONFLICT"/>
+  <int value="5" label="NAME_TOO_LONG"/>
+  <int value="6" label="LOCATION_SUGGESTION"/>
+</enum>
+
+<enum name="DownloadLocationDirectoryType">
+  <int value="0" label="DEFAULT_OPTION"/>
+  <int value="1" label="ADDITIONAL_OPTION"/>
+  <int value="2" label="ERROR_OPTION"/>
+</enum>
+
+<enum name="DownloadLocationSuggestionEvent">
+  <int value="0" label="LOCATION_SUGGESTION_SHOWN"/>
+  <int value="1" label="NOT_ENOUGH_SPACE_SHOWN"/>
+</enum>
+
+<enum name="DownloadPromptStatus">
+  <int value="0" label="Show initial"/>
+  <int value="1" label="Show prompt"/>
+  <int value="2" label="Don't show prompt"/>
+</enum>
+
+<enum name="IOSActivityScenario">
+  <int value="0" label="Tab Share Button"/>
+  <int value="1" label="QR Code Image"/>
+  <int value="2" label="History Entry"/>
+  <int value="3" label="Reading List Entry"/>
+  <int value="4" label="Bookmarks Entry"/>
+  <int value="5" label="Most Visited Tile"/>
+  <int value="6" label="Recent Tabs Entry"/>
+  <int value="7" label="Shared Highlight"/>
+  <int value="8" label="Tab Grid Item"/>
+  <int value="9" label="Tab Grid Selection Mode"/>
+  <int value="10" label="Share Chrome"/>
+  <int value="11" label="Omnibox Most Visited Tile"/>
+  <int value="12" label="Tab Strip Item"/>
+</enum>
+
+<enum name="IOSLensSupportStatus">
+  <summary>Whether lens is supported and if not the reason why.</summary>
+  <int value="0" label="Lens Search Supported"/>
+  <int value="1" label="Not Google Search Engine"/>
+  <int value="2" label="Device was a tablet"/>
+  <int value="3" label="Entry Point disabled by flag"/>
+  <int value="4" label="Lens Provider does not support the entry point"/>
+  <int value="5" label="Disabled by enterprise policy"/>
+</enum>
+
+<enum name="IOSLensWebUploadStatus">
+  <summary>The status of the upload of image data to Lens.</summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Malformed response"/>
+</enum>
+
+<enum name="IOSMenuAction">
+  <int value="0" label="Open in New Tab"/>
+  <int value="1" label="Open in New Incognito Tab"/>
+  <int value="2" label="Open in New Window"/>
+  <int value="3" label="Open all in New Tabs"/>
+  <int value="4" label="Copy URL"/>
+  <int value="5" label="Edit"/>
+  <int value="6" label="Move"/>
+  <int value="7" label="Share"/>
+  <int value="8" label="Delete"/>
+  <int value="9" label="Remove"/>
+  <int value="10" label="Hide"/>
+  <int value="11" label="Mark as Read"/>
+  <int value="12" label="Mark as Unread"/>
+  <int value="13" label="View Offline"/>
+  <int value="14" label="Open (JavaScript evaluation)"/>
+  <int value="15" label="Add to Reading List"/>
+  <int value="16" label="Add to Bookmarks"/>
+  <int value="17" label="Close Tab"/>
+  <int value="18" label="Edit Bookmark"/>
+  <int value="19" label="Save Image"/>
+  <int value="20" label="Open Image in Current Tab"/>
+  <int value="21" label="Search Image"/>
+  <int value="22" label="Close all Tabs"/>
+  <int value="23" label="Select Tabs"/>
+  <int value="24" label="Open Image in New Tab"/>
+  <int value="25" label="Copy Image"/>
+  <int value="26" label="Search with Google Lens"/>
+  <int value="27" label="Show Link Preview"/>
+  <int value="28" label="Hide Link Preview"/>
+  <int value="29" label="Open a New Tab"/>
+  <int value="30" label="Open a New Incognito Tab"/>
+  <int value="31" label="Close Current Tab"/>
+  <int value="32" label="Show QR Scanner"/>
+  <int value="33" label="Start Voice Search"/>
+  <int value="34" label="Start New Search"/>
+  <int value="35" label="Start New Incognito Search"/>
+  <int value="36" label="Search Copied Image"/>
+  <int value="37" label="Search Copied URL"/>
+  <int value="38" label="Search Copied Text"/>
+  <int value="39" label="Pin Tab"/>
+  <int value="40" label="Unpin Tab"/>
+  <int value="41" label="Lens Camera Search"/>
+  <int value="42" label="Save Image in Google Photos"/>
+  <int value="43" label="Close Other Tabs"/>
+  <int value="44" label="Add Tab to New Group"/>
+</enum>
+
+<enum name="IOSMenuScenario">
+  <int value="0" label="Bookmark Entry"/>
+  <int value="1" label="Bookmark Folder"/>
+  <int value="2" label="Reading List Entry"/>
+  <int value="3" label="Recent Tabs Header"/>
+  <int value="4" label="Recent Tabs Entry"/>
+  <int value="5" label="History Entry"/>
+  <int value="6" label="Most Visited Entry"/>
+  <int value="7" label="Image on a Web page"/>
+  <int value="8" label="Image-Link on a Web page"/>
+  <int value="9" label="Link on a Web page"/>
+  <int value="10" label="Tab Grid Entry"/>
+  <int value="11" label="Tab Grid Add To"/>
+  <int value="12" label="Tab Grid Edit"/>
+  <int value="13" label="Toolbar Popup Menus"/>
+  <int value="14" label="Tab Grid Search"/>
+  <int value="15" label="Thumb Strip"/>
+  <int value="16" label="Omnibox Most Visited Entry"/>
+  <int value="17" label="Pinned Tabs entry"/>
+  <int value="18" label="Tab Strip entry"/>
+  <int value="19" label="Inactive Tabs entry"/>
+</enum>
+
+<enum name="IOSShareAction">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Cancel"/>
+  <int value="2" label="Add/Edit Bookmark"/>
+  <int value="3" label="Copy to Clipboard"/>
+  <int value="4" label="Save Image"/>
+  <int value="5" label="Find in Page"/>
+  <int value="6" label="Print"/>
+  <int value="7" label="Add to Reading List"/>
+  <int value="8" label="Mail"/>
+  <int value="9" label="Request Desktop/Mobile Site"/>
+  <int value="10" label="Send Tab To Self"/>
+  <int value="11" label="Create QR Code"/>
+  <int value="12" label="Send to iMessage"/>
+  <int value="13" label="Unknown Google App"/>
+  <int value="14" label="Native Social App"/>
+  <int value="15" label="Third-party Messaging App"/>
+  <int value="16" label="Third-party Content App"/>
+  <int value="17" label="Save to Files"/>
+  <int value="18" label="Markup"/>
+  <int value="19" label="Add to Home"/>
+</enum>
+
+<enum name="LaunchCause">
+  <int value="0" label="Other - External"/>
+  <int value="1" label="Chrome Custom Tab"/>
+  <int value="2" label="Trusted Web Activity"/>
+  <int value="3" label="Recents (aka App Overview)"/>
+  <int value="4" label="Recents or Back"/>
+  <int value="5" label="Foreground when Locked (Power Button)"/>
+  <int value="6" label="Main Chrome Launcher Icon"/>
+  <int value="7"
+      label="Main Chrome Launcher Icon Shortcuts (New Tab shortcuts)"/>
+  <int value="8" label="Home screen widget (eg. Search or Bookmarks)"/>
+  <int value="9" label="Open In Browser CCT Menu"/>
+  <int value="10"
+      label="External Search Intent (eg. Third Party Voice Search results)"/>
+  <int value="11"
+      label="Notification (eg. SW Notification, Media Controls, etc.)"/>
+  <int value="12" label="External VIEW intent"/>
+  <int value="13" label="Other - From Chrome"/>
+  <int value="14" label="WebApk installed by Chrome"/>
+  <int value="15" label="WebApk not installed by Chrome"/>
+  <int value="16" label="Homescreen shortcut (Add To Homescreen)"/>
+  <int value="17" label="Share Intent"/>
+  <int value="18" label="NFC"/>
+</enum>
+
+<enum name="LoadPoint">
+  <int value="0" label="Native initializition"/>
+  <int value="1" label="Policy load"/>
+  <int value="2" label="Child account status load"/>
+</enum>
+
+<enum name="MobileDefaultBrowserState">
+  <int value="0" label="No default"/>
+  <int value="1" label="Chrome: System default"/>
+  <int value="2" label="Chrome: Installed default"/>
+  <int value="3" label="Other: System default"/>
+  <int value="4" label="Other: Installed default"/>
+</enum>
+
+<enum name="MobileFreProgress">
+  <int value="0" label="FRE started"/>
+  <int value="1" label="Welcome shown"/>
+  <int value="2" label="Data saver shown (Deprecated 01/2022)"/>
+  <int value="3" label="Sync consent shown"/>
+  <int value="4"
+      label="The user clicked on the continue button to continue with sync
+             consent"/>
+  <int value="5"
+      label="The user clicked on the |No thanks| button to continue without
+             sync consent"/>
+  <int value="6" label="Search engine choice dialog shown"/>
+  <int value="7" label="The user started adding account from welcome screen"/>
+  <int value="8"
+      label="The user signed in with default account from welcome screen"/>
+  <int value="9"
+      label="The user signed in with non-default account from welcome screen"/>
+  <int value="10"
+      label="The user clicked the dismiss button on welcome screen"/>
+  <int value="11"
+      label="The user clicked on the |settings| link on sync consent screen"/>
+</enum>
+
+<enum name="MobileFreSignInChoice">
+  <summary>
+    These values are defined inside the MobileFreSignInChoice enum
+    chrome/browser/android/metrics/uma_bridge.cc and reference possible ways of
+    completing the sign-in part of the First Run Experience.
+  </summary>
+  <int value="0" label="Settings default account"/>
+  <int value="1" label="Settings another account"/>
+  <int value="2" label="Accept default account"/>
+  <int value="3" label="Accept another account"/>
+  <int value="4" label="No thanks"/>
+</enum>
+
+<enum name="MobileMessagesBadgeState">
+  <int value="0" label="Inactive"/>
+  <int value="1" label="Active"/>
+</enum>
+
+<enum name="MobileMessagesBannerDismissType">
+  <int value="0" label="TimedOut"/>
+  <int value="1" label="SwipedUp"/>
+  <int value="2" label="ExpandedToModal"/>
+  <int value="3" label="TappedToModal"/>
+</enum>
+
+<enum name="MobileMessagesBannerEvent">
+  <int value="0" label="Accepted"/>
+  <int value="1" label="Handled"/>
+  <int value="2" label="Dismissed"/>
+  <int value="3" label="Presented"/>
+  <int value="4" label="ReturnedToOrigin"/>
+</enum>
+
+<enum name="MobileMessagesConfirmInfobarEvents">
+  <int value="0" label="Presented"/>
+  <int value="1" label="Accepted"/>
+  <int value="2" label="Dismissed"/>
+</enum>
+
+<enum name="MobileMessagesInfobarType">
+  <int value="0" label="Confirm"/>
+  <int value="1" label="Save Password"/>
+  <int value="2" label="Update Password"/>
+  <int value="3" label="Save Card"/>
+  <int value="4" label="Translate"/>
+  <int value="5" label="Permissions"/>
+  <int value="6" label="Autofill Save Address Profile"/>
+</enum>
+
+<enum name="MobileMessagesModalEvent">
+  <int value="0" label="Accepted"/>
+  <int value="1" label="Canceled"/>
+  <int value="2" label="Dismissed"/>
+  <int value="3" label="Presented"/>
+  <int value="4" label="SettingsOpened"/>
+</enum>
+
+<enum name="MobileMessagesPasswordsModalDismiss">
+  <int value="0" label="TappedNeverForThisSite"/>
+  <int value="1" label="SavedCredentials"/>
+  <int value="2" label="UpdatedCredentials"/>
+</enum>
+
+<enum name="MobileMessagesPasswordsModalEvent">
+  <int value="0" label="EditedUserName"/>
+  <int value="1" label="EditedPassword"/>
+  <int value="2" label="UnmaskedPassword"/>
+  <int value="3" label="MaskedPassword"/>
+</enum>
+
+<enum name="MobileMessagesPasswordsModalPresent">
+  <int value="0" label="PresentedAfterSaveBanner"/>
+  <int value="1" label="PresentedAfterUpdateBanner"/>
+</enum>
+
+<enum name="MobileMessagesSaveCardModalEvent">
+  <int value="0" label="EditedCardHolderName"/>
+  <int value="1" label="EditedExpirationMonth"/>
+  <int value="2" label="EditedExpirationYear"/>
+</enum>
+
+<enum name="MobileMessagesTranslateBannerEvent">
+  <int value="0" label="Translate"/>
+  <int value="1" label="ShowOriginal"/>
+</enum>
+
+<enum name="MobileMessagesTranslateModalEvent">
+  <int value="0" label="ChangeSourceLanguage"/>
+  <int value="1" label="ChangeTargetLanguage"/>
+  <int value="2" label="ShowOriginal"/>
+  <int value="3" label="TappedAlwaysTranslate"/>
+  <int value="4" label="TappedNeverForSourceLanguage"/>
+  <int value="5" label="TappedNeverForThisSite"/>
+</enum>
+
+<enum name="MobileMessagesTranslateModalPresent">
+  <int value="0" label="PresentedAfterTranslatePromptBanner"/>
+  <int value="1" label="PresentedAfterTranslateFinishedBanner"/>
+</enum>
+
+<enum name="NotificationPermissionState">
+  <int value="0" label="Allowed"/>
+  <int value="1" label="Denied by device policy"/>
+  <int value="2" label="Denied, never asked before"/>
+  <int value="3" label="Denied by user once (OS prompt or rationale)"/>
+  <int value="4" label="Denied by user twice (OS prompt or rationale)"/>
+  <int value="5"
+      label="Denied by user more than twice (OS prompt or rationale)"/>
+</enum>
+
+<enum name="NotificationRationaleResult">
+  <int value="0" label="Positive: User confirmed the dialog"/>
+  <int value="1" label="Negative: User rejected the dialog"/>
+  <int value="2"
+      label="Dismissed: User dismissed the dialog, either tapped outside of
+             it or hit the back button [Dialog]"/>
+  <int value="3"
+      label="Activity was destroyed before user could respond [Dialog]"/>
+  <int value="4" label="Dialog view no longer attached to window [Dialog]"/>
+  <int value="5"
+      label="Dismissed: Back was pressed on bottom sheet [Bottom Sheet]"/>
+  <int value="6"
+      label="Dismissed: Bottom sheet was swiped away [Bottom Sheet]"/>
+  <int value="7"
+      label="Dismissed: Bottom sheet scrim was tapped [Bottom Sheet]"/>
+  <int value="8" label="Failed to open bottom sheet [Bottom Sheet]"/>
+  <int value="9"
+      label="Bottom sheet was destroyed before user could respond [Bottom
+             Sheet]"/>
+  <int value="10"
+      label="Dismissed: Bottom sheet closed, reason unknown [Bottom Sheet]"/>
+  <int value="11"
+      label="Dismissed: Bottom sheet destroyed before it could be opened
+             [Bottom Sheet]"/>
+</enum>
+
+<enum name="SystemNotificationActionType">
+  <int value="0" label="Download paused"/>
+  <int value="1" label="Download resumed"/>
+  <int value="2" label="Download canceled"/>
+  <int value="3" label="Download page paused"/>
+  <int value="4" label="Download page resumed"/>
+  <int value="5" label="Download page canceled"/>
+  <int value="6" label="Content suggestion settings"/>
+  <int value="7" label="Web app action share"/>
+  <int value="8" label="Web app action open in Chrome"/>
+  <int value="9" label="Offline content suggestion settings"/>
+  <int value="10"
+      label="[Deprecated in M79] Sharing notification dismiss button"/>
+  <int value="11" label="Sharing error notification try again button"/>
+  <int value="12" label="Settings button for notifications."/>
+  <int value="13" label="Announcement notification ack button."/>
+  <int value="14" label="Announcement notification open button."/>
+  <int value="15" label="TWA notification 'Got it' button."/>
+  <int value="16" label="Auto fetch offline page cancel button."/>
+  <int value="17" label="Media notification play button."/>
+  <int value="18" label="Media notification pause button."/>
+  <int value="19" label="Media notification stop button."/>
+  <int value="20" label="Media notification previous track button."/>
+  <int value="21" label="Media notification next track button."/>
+  <int value="22" label="Media notification seek forward button."/>
+  <int value="23" label="Media notification seek backward button."/>
+  <int value="24" label="Price drop notification visit site button."/>
+  <int value="25" label="Price drop notification turn off alert button."/>
+  <int value="28" label="WebApk install notification 'Back to site' button."/>
+  <int value="29" label="WebApk install notification retry button."/>
+</enum>
+
+<enum name="SystemNotificationType">
+  <int value="0" label="Downloads - Files"/>
+  <int value="1" label="Downloads - Pages"/>
+  <int value="2" label="Close Incognito Tabs"/>
+  <int value="3" label="Content Suggestion"/>
+  <int value="4" label="Media Capture"/>
+  <int value="5" label="Physical Web"/>
+  <int value="6" label="Media"/>
+  <int value="7" label="Sites"/>
+  <int value="8" label="Sync"/>
+  <int value="9" label="WebApk"/>
+  <int value="10" label="Browser Actions"/>
+  <int value="11" label="Webapp Actions"/>
+  <int value="12" label="Offline Content Suggestion"/>
+  <int value="13" label="Sites shown in Trusted Web Activities"/>
+  <int value="14" label="Offline Pages"/>
+  <int value="15" label="Send Tab To Self"/>
+  <int value="16" label="Updates"/>
+  <int value="17" label="Click To Call"/>
+  <int value="18" label="Shared Clipboard"/>
+  <int value="19" label="Permission Requests"/>
+  <int value="20" label="Permission Requests High"/>
+  <int value="21" label="Announcement"/>
+  <int value="22" label="Share Save Image"/>
+  <int value="23" label="TWA Disclosure Initial"/>
+  <int value="24" label="TWA Disclosure Subsequent"/>
+  <int value="25" label="Chrome Reengagement 1"/>
+  <int value="26" label="Chrome Reengagement 2"/>
+  <int value="27" label="Chrome Reengagement 3"/>
+  <int value="28" label="Price Drop Alerts"/>
+  <int value="30" label="WebAPK install in progress"/>
+  <int value="31" label="WebAPK install complete"/>
+  <int value="32" label="Chrome Managed Price Drop Alerts"/>
+  <int value="33" label="User Managed Price Drop Alerts"/>
+  <int value="34" label="Chrome Tips"/>
+  <int value="35" label="Bluetooth"/>
+  <int value="36" label="USB"/>
+  <int value="37" label="Unified password manager error"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>
