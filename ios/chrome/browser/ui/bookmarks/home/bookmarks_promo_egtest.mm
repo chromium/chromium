@@ -78,6 +78,7 @@ using chrome_test_util::SettingsDoneButton;
                    (testNoSyncPromoIfSyncToSigninEnabled)]) {
     config.features_enabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
+    config.features_disabled.push_back(kEnableReviewAccountSettingsPromo);
   } else if ([self isRunningTest:@selector
                    (testSigninWithSyncPassphraseAndTurnOnSync)]) {
     config.features_disabled.push_back(
