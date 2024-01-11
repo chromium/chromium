@@ -22,7 +22,6 @@ namespace blink {
 class BackForwardCacheLoaderHelper;
 class BackgroundCodeCacheHost;
 class URLLoaderClient;
-class ResourceRequestHead;
 struct ResourceLoaderOptions;
 class WebBackgroundResourceFetchAssets;
 
@@ -42,7 +41,7 @@ class BLINK_PLATFORM_EXPORT BackgroundURLLoader : public URLLoader {
   // This is called from core/ to check if the request is supported by the
   // BackgroundURLLoader, and if this says it's supported and the feature is
   // enabled, the request comes to the BackgroundURLLoader.
-  static bool CanHandleRequest(const ResourceRequestHead& request,
+  static bool CanHandleRequest(const network::ResourceRequest& request,
                                const ResourceLoaderOptions& options);
 
   BackgroundURLLoader(

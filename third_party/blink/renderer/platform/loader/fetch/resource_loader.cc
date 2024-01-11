@@ -321,7 +321,13 @@ void ResourceLoader::Start() {
       // reload with original request will be triggered in DidFail().
       network_resource_request_->load_flags |= net::LOAD_ONLY_FROM_CACHE;
     }
-    loader_ = fetcher_->CreateURLLoader(request, resource_->Options());
+    loader_ = fetcher_->CreateURLLoader(
+        *network_resource_request_, resource_->Options(),
+        resource_->GetResourceRequest().GetRequestContext(),
+        resource_->GetResourceRequest().GetRenderBlockingBehavior(),
+        resource_->GetResourceRequest()
+            .GetServiceWorkerRaceNetworkRequestToken(),
+        resource_->GetResourceRequest().IsFromOriginDirtyStyleSheet());
     task_runner_for_body_loader_ = loader_->GetTaskRunnerForBodyLoader();
   } else {
     // ResourceLoader doesn't support DownloadToBlob option for data URL. This
@@ -453,7 +459,12 @@ void ResourceLoader::Restart() {
   CHECK(!network_resource_request_);
   CHECK(!resource_->Url().ProtocolIsData());
   network_resource_request_ = CreateNetworkRequest(request, request_body_);
-  loader_ = fetcher_->CreateURLLoader(request, resource_->Options());
+  loader_ = fetcher_->CreateURLLoader(
+      *network_resource_request_, resource_->Options(),
+      resource_->GetResourceRequest().GetRequestContext(),
+      resource_->GetResourceRequest().GetRenderBlockingBehavior(),
+      resource_->GetResourceRequest().GetServiceWorkerRaceNetworkRequestToken(),
+      resource_->GetResourceRequest().IsFromOriginDirtyStyleSheet());
   task_runner_for_body_loader_ = loader_->GetTaskRunnerForBodyLoader();
   StartFetch();
 }

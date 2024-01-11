@@ -859,8 +859,7 @@ RendererBlinkPlatformImpl::GetProtocolHandlerSecurityLevel(
       url_origin);
 }
 
-bool RendererBlinkPlatformImpl::OriginCanAccessServiceWorkers(
-    const blink::WebURL& url) {
+bool RendererBlinkPlatformImpl::OriginCanAccessServiceWorkers(const GURL& url) {
   return content::OriginCanAccessServiceWorkers(url);
 }
 

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/loader/alternate_signed_exchange_resource_info.h"
 
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 
@@ -307,9 +308,9 @@ TEST_F(AlternateSignedExchangeResourceInfoTest, Variants) {
     EXPECT_EQ("image/webp", resource->variant_key());
 
     EXPECT_EQ(resource.get(),
-              info->FindMatchingEntry(KURL("https://publisher.example/image"),
-                                      mojom::blink::RequestContextType::IMAGE,
-                                      {"en"}));
+              info->FindMatchingEntry(
+                  KURL("https://publisher.example/image"),
+                  network::mojom::RequestDestination::kImage, {"en"}));
   }
 }
 

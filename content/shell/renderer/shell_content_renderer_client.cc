@@ -156,7 +156,7 @@ class ShellContentRendererUrlLoaderThrottleProvider
 
   blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>> CreateThrottles(
       base::optional_ref<const blink::LocalFrameToken> local_frame_token,
-      const blink::WebURLRequest& request) override {
+      const network::ResourceRequest& request) override {
     blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
     // Workers can call us on a background thread. We don't care about such
     // requests because we purposefully only look at resources from frames

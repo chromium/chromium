@@ -8,6 +8,7 @@
 #include "components/media_control/renderer/media_playback_options.h"
 #include "components/on_load_script_injector/renderer/on_load_script_injector.h"
 #include "components/url_rewrite/common/url_loader_throttle.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/platform/url_loader_throttle_provider.h"
 #include "third_party/blink/public/platform/web_vector.h"
@@ -41,7 +42,7 @@ WrappingURLLoaderThrottleProvider::Clone() {
 blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>>
 WrappingURLLoaderThrottleProvider::CreateThrottles(
     base::optional_ref<const blink::LocalFrameToken> local_frame_token,
-    const blink::WebURLRequest& request) {
+    const network::ResourceRequest& request) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;

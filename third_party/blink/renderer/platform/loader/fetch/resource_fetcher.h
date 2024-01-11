@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
 #include "third_party/blink/renderer/platform/loader/fetch/preload_key.h"
+#include "third_party/blink/renderer/platform/loader/fetch/render_blocking_behavior.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_priority.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_scheduler.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader.h"
@@ -59,6 +60,10 @@
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
+
+namespace network {
+struct ResourceRequest;
+}  // namespace network
 
 namespace blink {
 
@@ -109,11 +114,14 @@ class PLATFORM_EXPORT ResourceFetcher
     // TODO(yuzus): Take only unfreezable task runner once both
     // URLLoaderClientImpl and ResponseBodyLoader use unfreezable task runner.
     virtual std::unique_ptr<URLLoader> CreateURLLoader(
-        const ResourceRequest&,
+        const network::ResourceRequest&,
         const ResourceLoaderOptions&,
         scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
         scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
-        BackForwardCacheLoaderHelper*) = 0;
+        BackForwardCacheLoaderHelper*,
+        const absl::optional<base::UnguessableToken>&
+            service_worker_race_network_request_token,
+        bool is_from_origin_dirty_style_sheet) = 0;
 
     // Get a code cache host to fetch data from code caches.
     virtual CodeCacheHost* GetCodeCacheHost() = 0;
@@ -170,8 +178,14 @@ class PLATFORM_EXPORT ResourceFetcher
   }
 
   // Create a loader. This cannot be called after ClearContext is called.
-  std::unique_ptr<URLLoader> CreateURLLoader(const ResourceRequestHead&,
-                                             const ResourceLoaderOptions&);
+  std::unique_ptr<URLLoader> CreateURLLoader(
+      const network::ResourceRequest&,
+      const ResourceLoaderOptions&,
+      const mojom::blink::RequestContextType,
+      const RenderBlockingBehavior,
+      const absl::optional<base::UnguessableToken>&
+          service_worker_race_network_request_token,
+      bool is_from_origin_dirty_style_sheet);
   // Get a code cache host. This cannot be called after ClearContext is called.
   CodeCacheHost* GetCodeCacheHost();
 

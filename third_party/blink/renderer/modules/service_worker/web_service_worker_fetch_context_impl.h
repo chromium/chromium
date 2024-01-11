@@ -71,7 +71,7 @@ class BLINK_EXPORT WebServiceWorkerFetchContextImpl final
   URLLoaderFactory* GetScriptLoaderFactory() override;
   void WillSendRequest(WebURLRequest&) override;
   WebVector<std::unique_ptr<URLLoaderThrottle>> CreateThrottles(
-      const WebURLRequest& request) override;
+      const network::ResourceRequest& request) override;
   mojom::ControllerServiceWorkerMode GetControllerServiceWorkerMode()
       const override;
   net::SiteForCookies SiteForCookies() const override;

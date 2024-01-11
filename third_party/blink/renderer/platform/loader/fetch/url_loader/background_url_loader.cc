@@ -120,13 +120,13 @@ namespace blink {
 namespace {
 
 BackgroundResourceFetchSupportStatus CanHandleRequestInternal(
-    const ResourceRequestHead& request,
+    const network::ResourceRequest& request,
     const ResourceLoaderOptions& options) {
   if (options.synchronous_policy == kRequestSynchronously) {
     return BackgroundResourceFetchSupportStatus::kUnsupportedSyncRequest;
   }
   // Currently, BackgroundURLLoader only supports GET requests.
-  if (request.HttpMethod() != http_names::kGET) {
+  if (request.method != net::HttpRequestHeaders::kGetMethod) {
     return BackgroundResourceFetchSupportStatus::kUnsupportedNonGetRequest;
   }
 
@@ -135,13 +135,13 @@ BackgroundResourceFetchSupportStatus CanHandleRequestInternal(
   //   "chrome-extension://" urls. But ChildURLLoaderFactoryBundle::Clone()
   //   can't clone `subresource_overrides_`. So BackgroundURLLoader can't handle
   //   requests from the PDF plugin.
-  if (!request.Url().ProtocolIsInHTTPFamily()) {
+  if (!request.url.SchemeIsHTTPOrHTTPS()) {
     return BackgroundResourceFetchSupportStatus::kUnsupportedNonHttpUrlRequest;
   }
 
   // Don't support keepalive request which must be handled aligning with the
   // page lifecycle states. It is difficult to handle in the background thread.
-  if (request.GetKeepalive()) {
+  if (request.keepalive) {
     return BackgroundResourceFetchSupportStatus::kUnsupportedKeepAliveRequest;
   }
 
@@ -560,7 +560,7 @@ class BackgroundURLLoader::Context
 
 // static
 bool BackgroundURLLoader::CanHandleRequest(
-    const ResourceRequestHead& request,
+    const network::ResourceRequest& request,
     const ResourceLoaderOptions& options) {
   CHECK(IsMainThread());
   auto result = CanHandleRequestInternal(request, options);

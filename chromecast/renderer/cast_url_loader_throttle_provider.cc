@@ -43,7 +43,7 @@ CastURLLoaderThrottleProvider::Clone() {
 blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>>
 CastURLLoaderThrottleProvider::CreateThrottles(
     base::optional_ref<const blink::LocalFrameToken> local_frame_token,
-    const blink::WebURLRequest& request) {
+    const network::ResourceRequest& request) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;

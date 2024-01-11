@@ -25,6 +25,7 @@
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "extensions/renderer/extension_localization_throttle.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
@@ -144,18 +145,15 @@ URLLoaderThrottleProviderImpl::Clone() {
 blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>>
 URLLoaderThrottleProviderImpl::CreateThrottles(
     base::optional_ref<const blink::LocalFrameToken> local_frame_token,
-    const blink::WebURLRequest& request) {
+    const network::ResourceRequest& request) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
 
-  const network::mojom::RequestDestination request_destination =
-      request.GetRequestDestination();
-
   // Some throttles have already been added in the browser for frame resources.
   // Don't add them for frame requests.
   bool is_frame_resource =
-      blink::IsRequestDestinationFrame(request_destination);
+      blink::IsRequestDestinationFrame(request.destination);
 
   DCHECK(!is_frame_resource ||
          type_ == blink::URLLoaderThrottleProviderType::kFrame);
@@ -206,7 +204,7 @@ URLLoaderThrottleProviderImpl::CreateThrottles(
   }
   std::unique_ptr<blink::URLLoaderThrottle> localization_throttle =
       extensions::ExtensionLocalizationThrottle::MaybeCreate(local_frame_token,
-                                                             request.Url());
+                                                             request.url);
   if (localization_throttle) {
     throttles.emplace_back(std::move(localization_throttle));
   }

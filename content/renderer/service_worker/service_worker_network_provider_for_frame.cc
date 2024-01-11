@@ -15,6 +15,7 @@
 #include "content/renderer/render_frame_impl.h"
 #include "content/renderer/render_thread_impl.h"
 #include "content/renderer/service_worker/service_worker_provider_context.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_bypass_option.mojom-shared.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -106,7 +107,8 @@ void ServiceWorkerNetworkProviderForFrame::WillSendRequest(
 
 scoped_refptr<network::SharedURLLoaderFactory>
 ServiceWorkerNetworkProviderForFrame::GetSubresourceLoaderFactory(
-    const blink::WebURLRequest& request) {
+    const network::ResourceRequest& network_request,
+    bool is_from_origin_dirty_style_sheet) {
   // RenderThreadImpl is nullptr in some tests.
   if (!RenderThreadImpl::current())
     return nullptr;
@@ -117,13 +119,14 @@ ServiceWorkerNetworkProviderForFrame::GetSubresourceLoaderFactory(
   // TODO(falken): Let ServiceWorkerSubresourceLoaderFactory handle the request
   // and move this check there (i.e., for such URLs, it should use its fallback
   // factory).
-  const GURL gurl(request.Url());
-  if (!gurl.SchemeIsHTTPOrHTTPS() && !OriginCanAccessServiceWorkers(gurl))
+  if (!network_request.url.SchemeIsHTTPOrHTTPS() &&
+      !OriginCanAccessServiceWorkers(network_request.url)) {
     return nullptr;
-
-  // If GetSkipServiceWorker() returns true, do not intercept the request.
-  if (request.GetSkipServiceWorker())
+  }
+  // If skip_service_worker is true, do not intercept the request.
+  if (network_request.skip_service_worker) {
     return nullptr;
+  }
 
   // We need SubresourceLoaderFactory populated.
   if (!context() || !context()->GetSubresourceLoaderFactory()) {
@@ -132,7 +135,7 @@ ServiceWorkerNetworkProviderForFrame::GetSubresourceLoaderFactory(
 
   // Record use counter for intercepting requests from opaque stylesheets.
   // TODO(crbug.com/898497): Remove this feature usage once we have enough data.
-  if (observer_ && request.IsFromOriginDirtyStyleSheet()) {
+  if (observer_ && is_from_origin_dirty_style_sheet) {
     observer_->ReportFeatureUsage(
         blink::mojom::WebFeature::
             kServiceWorkerInterceptedRequestFromOriginDirtyStyleSheet);

@@ -31,11 +31,14 @@ class CodeCacheTestLoaderFactory : public ResourceFetcher::LoaderFactory {
   ~CodeCacheTestLoaderFactory() override = default;
 
   std::unique_ptr<URLLoader> CreateURLLoader(
-      const ResourceRequest& request,
+      const network::ResourceRequest& request,
       const ResourceLoaderOptions& options,
       scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
-      BackForwardCacheLoaderHelper* back_forward_cache_loader_helper) override {
+      BackForwardCacheLoaderHelper* back_forward_cache_loader_helper,
+      const absl::optional<base::UnguessableToken>&
+          service_worker_race_network_request_token,
+      bool is_from_origin_dirty_style_sheet) override {
     return std::make_unique<NoopURLLoader>(std::move(freezable_task_runner));
   }
   CodeCacheHost* GetCodeCacheHost() override { return nullptr; }

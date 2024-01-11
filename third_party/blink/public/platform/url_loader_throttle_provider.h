@@ -14,6 +14,10 @@
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/platform/web_vector.h"
 
+namespace network {
+struct ResourceRequest;
+}  // namespace network
+
 namespace blink {
 
 enum class URLLoaderThrottleProviderType {
@@ -40,7 +44,7 @@ class BLINK_PLATFORM_EXPORT URLLoaderThrottleProvider {
   // otherwise it will be not be set.
   virtual WebVector<std::unique_ptr<URLLoaderThrottle>> CreateThrottles(
       base::optional_ref<const LocalFrameToken> local_frame_token,
-      const WebURLRequest& request) = 0;
+      const network::ResourceRequest& request) = 0;
 
   // Set the network status online state as specified in |is_online|.
   virtual void SetOnline(bool is_online) = 0;

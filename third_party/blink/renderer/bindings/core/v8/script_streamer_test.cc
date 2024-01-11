@@ -84,11 +84,14 @@ class TestResourceClient final : public GarbageCollected<TestResourceClient>,
 // the two should probably share the same class.
 class NoopLoaderFactory final : public ResourceFetcher::LoaderFactory {
   std::unique_ptr<URLLoader> CreateURLLoader(
-      const ResourceRequest& request,
+      const network::ResourceRequest& request,
       const ResourceLoaderOptions& options,
       scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
-      BackForwardCacheLoaderHelper*) override {
+      BackForwardCacheLoaderHelper*,
+      const absl::optional<base::UnguessableToken>&
+          service_worker_race_network_request_token,
+      bool is_from_origin_dirty_style_sheet) override {
     return std::make_unique<NoopURLLoader>(std::move(freezable_task_runner));
   }
   CodeCacheHost* GetCodeCacheHost() override { return nullptr; }

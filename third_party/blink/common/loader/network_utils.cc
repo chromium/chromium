@@ -43,21 +43,32 @@ const char* ImageAcceptHeader() {
 void SetAcceptHeader(net::HttpRequestHeaders& headers,
                      network::mojom::RequestDestination request_destination) {
   if (request_destination == network::mojom::RequestDestination::kStyle ||
-      request_destination == network::mojom::RequestDestination::kXslt) {
+      request_destination == network::mojom::RequestDestination::kXslt ||
+      request_destination == network::mojom::RequestDestination::kWebBundle) {
     headers.SetHeader(net::HttpRequestHeaders::kAccept,
-                      kStylesheetAcceptHeader);
+                      GetAcceptHeaderForDestination(request_destination));
+    return;
+  }
+  // Calling SetHeaderIfMissing() instead of SetHeader() because JS can
+  // manually set an accept header on an XHR.
+  headers.SetHeaderIfMissing(
+      net::HttpRequestHeaders::kAccept,
+      GetAcceptHeaderForDestination(request_destination));
+}
+
+const char* GetAcceptHeaderForDestination(
+    network::mojom::RequestDestination request_destination) {
+  if (request_destination == network::mojom::RequestDestination::kStyle ||
+      request_destination == network::mojom::RequestDestination::kXslt) {
+    return kStylesheetAcceptHeader;
   } else if (request_destination ==
              network::mojom::RequestDestination::kImage) {
-    headers.SetHeaderIfMissing(net::HttpRequestHeaders::kAccept,
-                               ImageAcceptHeader());
+    return ImageAcceptHeader();
   } else if (request_destination ==
              network::mojom::RequestDestination::kWebBundle) {
-    headers.SetHeader(net::HttpRequestHeaders::kAccept, kWebBundleAcceptHeader);
+    return kWebBundleAcceptHeader;
   } else {
-    // Calling SetHeaderIfMissing() instead of SetHeader() because JS can
-    // manually set an accept header on an XHR.
-    headers.SetHeaderIfMissing(net::HttpRequestHeaders::kAccept,
-                               network::kDefaultAcceptHeaderValue);
+    return network::kDefaultAcceptHeaderValue;
   }
 }
 

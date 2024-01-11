@@ -644,9 +644,7 @@ class BLINK_PLATFORM_EXPORT Platform {
 
   // Returns true if the origin can register a service worker. Scheme must be
   // http (localhost only), https, or a custom-set secure scheme.
-  virtual bool OriginCanAccessServiceWorkers(const WebURL& url) {
-    return false;
-  }
+  virtual bool OriginCanAccessServiceWorkers(const GURL& url) { return false; }
 
   // Clones the current `service_worker_container_host` and returns the original
   // host and the cloned one together.

@@ -1,7 +1,8 @@
 specific_include_rules = {
     "alternate_signed_exchange_resource_info.cc" : [
         "+media/media_buildflags.h",
-        "+net/http/http_request_headers.h"
+        "+net/http/http_request_headers.h",
+        "+services/network/public/cpp/constants.h"
     ],
     "empty_clients.cc" : [
         "+components/viz/common/surfaces/local_surface_id.h"

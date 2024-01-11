@@ -10,6 +10,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/cookies/site_for_cookies.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "third_party/blink/public/common/loader/loader_constants.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/url_loader_throttle_provider.h"
@@ -160,12 +161,12 @@ void WebServiceWorkerFetchContextImpl::WillSendRequest(WebURLRequest& request) {
 
 WebVector<std::unique_ptr<URLLoaderThrottle>>
 WebServiceWorkerFetchContextImpl::CreateThrottles(
-    const WebURLRequest& request) {
+    const network::ResourceRequest& request) {
   const bool needs_to_skip_throttling =
-      static_cast<KURL>(request.Url()) == script_url_to_skip_throttling_ &&
-      (request.GetRequestContext() ==
-           mojom::blink::RequestContextType::SERVICE_WORKER ||
-       request.GetRequestContext() == mojom::blink::RequestContextType::SCRIPT);
+      KURL(request.url) == script_url_to_skip_throttling_ &&
+      (request.destination ==
+           network::mojom::RequestDestination::kServiceWorker ||
+       request.destination == network::mojom::RequestDestination::kScript);
   if (needs_to_skip_throttling) {
     // Throttling is needed when the skipped script is loaded again because it's
     // served from ServiceWorkerInstalledScriptLoader after the second time,

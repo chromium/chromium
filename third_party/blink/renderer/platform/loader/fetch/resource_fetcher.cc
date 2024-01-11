@@ -1349,8 +1349,10 @@ void ResourceFetcher::InitializeRevalidation(
 
 namespace {
 
-bool UseRenderBlockingTaskPriority(const ResourceRequestHead& request) {
-  switch (request.GetRequestContext()) {
+bool UseRenderBlockingTaskPriority(
+    const mojom::blink::RequestContextType request_context,
+    const RenderBlockingBehavior render_blocking_behavior) {
+  switch (request_context) {
     case mojom::blink::RequestContextType::IMAGE:
       // Always boost the priority of images (see: https://crbug.com/1416030).
       return true;
@@ -1364,8 +1366,7 @@ bool UseRenderBlockingTaskPriority(const ResourceRequestHead& request) {
       return base::FeatureList::IsEnabled(
           features::kBoostVideoLoadingTaskPriority);
     case mojom::blink::RequestContextType::STYLE:
-      if (request.GetRenderBlockingBehavior() ==
-          RenderBlockingBehavior::kBlocking) {
+      if (render_blocking_behavior == RenderBlockingBehavior::kBlocking) {
         return base::FeatureList::IsEnabled(
             features::kBoostRenderBlockingStyleLoadingTaskPriority);
       }
@@ -1379,18 +1380,23 @@ bool UseRenderBlockingTaskPriority(const ResourceRequestHead& request) {
 }  // namespace
 
 std::unique_ptr<URLLoader> ResourceFetcher::CreateURLLoader(
-    const ResourceRequestHead& request,
-    const ResourceLoaderOptions& options) {
+    const network::ResourceRequest& network_request,
+    const ResourceLoaderOptions& options,
+    const mojom::blink::RequestContextType request_context,
+    const RenderBlockingBehavior render_blocking_behavior,
+    const absl::optional<base::UnguessableToken>&
+        service_worker_race_network_request_token,
+    bool is_from_origin_dirty_style_sheet) {
   DCHECK(!GetProperties().IsDetached());
   // TODO(http://crbug.com/1252983): Revert this to DCHECK.
   CHECK(loader_factory_);
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       unfreezable_task_runner_;
-  if (request.GetKeepalive() &&
+  if (network_request.keepalive &&
       (!base::FeatureList::IsEnabled(
            blink::features::kKeepAliveInBrowserMigration) ||
-       (request.GetAttributionReportingEligibility() !=
+       (network_request.attribution_reporting_eligibility !=
             network::mojom::AttributionReportingEligibility::kUnset &&
         !base::FeatureList::IsEnabled(
             features::kAttributionReportingInBrowserMigration)))) {
@@ -1407,7 +1413,8 @@ std::unique_ptr<URLLoader> ResourceFetcher::CreateURLLoader(
             frame_scheduler->GetAgentGroupScheduler()->DefaultTaskRunner();
       }
     }
-  } else if (UseRenderBlockingTaskPriority(request)) {
+  } else if (UseRenderBlockingTaskPriority(request_context,
+                                           render_blocking_behavior)) {
     if (auto* frame_or_worker_scheduler = GetFrameOrWorkerScheduler()) {
       if (auto* frame_scheduler =
               frame_or_worker_scheduler->ToFrameScheduler()) {
@@ -1416,9 +1423,11 @@ std::unique_ptr<URLLoader> ResourceFetcher::CreateURLLoader(
       }
     }
   }
-  return loader_factory_->CreateURLLoader(ResourceRequest(request), options,
-                                          freezable_task_runner_, task_runner,
-                                          back_forward_cache_loader_helper_);
+  return loader_factory_->CreateURLLoader(
+      network_request, options, freezable_task_runner_, task_runner,
+      back_forward_cache_loader_helper_,
+      service_worker_race_network_request_token,
+      is_from_origin_dirty_style_sheet);
 }
 
 CodeCacheHost* ResourceFetcher::GetCodeCacheHost() {

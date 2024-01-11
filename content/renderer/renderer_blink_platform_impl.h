@@ -190,7 +190,7 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
       const blink::WebSecurityOrigin& script_origin) override;
   blink::ProtocolHandlerSecurityLevel GetProtocolHandlerSecurityLevel(
       const blink::WebSecurityOrigin& origin) override;
-  bool OriginCanAccessServiceWorkers(const blink::WebURL& url) override;
+  bool OriginCanAccessServiceWorkers(const GURL& url) override;
   std::tuple<blink::CrossVariantMojoRemote<
                  blink::mojom::ServiceWorkerContainerHostInterfaceBase>,
              blink::CrossVariantMojoRemote<

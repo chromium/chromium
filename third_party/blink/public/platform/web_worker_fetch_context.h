@@ -96,7 +96,7 @@ class WebWorkerFetchContext : public base::RefCounted<WebWorkerFetchContext> {
 
   // Creates URLLoaderThrottles for the `request`.
   virtual WebVector<std::unique_ptr<URLLoaderThrottle>> CreateThrottles(
-      const WebURLRequest& request) = 0;
+      const network::ResourceRequest& request) = 0;
 
   // Returns whether a controller service worker exists and if it has fetch
   // handler.

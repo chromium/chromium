@@ -15,12 +15,15 @@
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
+namespace network {
+struct ResourceRequest;
+}  // namespace network
+
 namespace blink {
 
 class AlternateSignedExchangeResourceInfo;
 class LocalFrame;
 class URLLoader;
-class WebURLRequest;
 class URLLoaderThrottle;
 
 // This class holds the prefetched signed exchange info and will returns
@@ -63,7 +66,7 @@ class PrefetchedSignedExchangeManager final
   // The returned loader doesn't start loading until
   // StartPrefetchedLinkHeaderPreloads() will be called.
   std::unique_ptr<URLLoader> MaybeCreateURLLoader(
-      const WebURLRequest& request,
+      const network::ResourceRequest& request,
       Vector<std::unique_ptr<URLLoaderThrottle>>& throttles);
 
   // If the all loaders which have been created by MaybeCreateURLLoader() have
@@ -86,10 +89,10 @@ class PrefetchedSignedExchangeManager final
 
   void TriggerLoad();
   std::unique_ptr<URLLoader> CreateDefaultURLLoader(
-      const WebURLRequest& request,
+      const network::ResourceRequest& request,
       Vector<std::unique_ptr<URLLoaderThrottle>> throttles);
   std::unique_ptr<URLLoader> CreatePrefetchedSignedExchangeURLLoader(
-      const WebURLRequest& request,
+      const network::ResourceRequest& request,
       Vector<std::unique_ptr<URLLoaderThrottle>> throttles,
       mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>
           loader_factory);

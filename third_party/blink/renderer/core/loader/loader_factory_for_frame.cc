@@ -75,14 +75,16 @@ void LoaderFactoryForFrame::Trace(Visitor* visitor) const {
 }
 
 std::unique_ptr<URLLoader> LoaderFactoryForFrame::CreateURLLoader(
-    const ResourceRequest& request,
+    const network::ResourceRequest& network_request,
     const ResourceLoaderOptions& options,
     scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
-    BackForwardCacheLoaderHelper* back_forward_cache_loader_helper) {
-  WrappedResourceRequest webreq(request);
+    BackForwardCacheLoaderHelper* back_forward_cache_loader_helper,
+    const absl::optional<base::UnguessableToken>&
+        service_worker_race_network_request_token,
+    bool is_from_origin_dirty_style_sheet) {
   Vector<std::unique_ptr<URLLoaderThrottle>> throttles =
-      CreateThrottles(webreq);
+      CreateThrottles(network_request);
 
   mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>
       url_loader_factory;
@@ -109,11 +111,12 @@ std::unique_ptr<URLLoader> LoaderFactoryForFrame::CreateURLLoader(
   // disabled).
   // TODO(mek): Move the RequestContext check to the worker side's relevant
   // callsite when we make Shared Worker loading off-main-thread.
-  if (request.Url().ProtocolIs("blob") && !url_loader_factory &&
-      request.GetRequestContext() !=
-          mojom::blink::RequestContextType::SHARED_WORKER) {
+  if (network_request.url.SchemeIs("blob") && !url_loader_factory &&
+      network_request.destination !=
+          network::mojom::RequestDestination::kSharedWorker) {
     window_->GetPublicURLManager().Resolve(
-        request.Url(), url_loader_factory.InitWithNewPipeAndPassReceiver());
+        KURL(network_request.url),
+        url_loader_factory.InitWithNewPipeAndPassReceiver());
   }
   LocalFrame* frame = window_->GetFrame();
   DCHECK(frame);
@@ -129,7 +132,7 @@ std::unique_ptr<URLLoader> LoaderFactoryForFrame::CreateURLLoader(
                GetCorsExemptHeaderList(),
                /*terminate_sync_load_event=*/nullptr)
         ->CreateURLLoader(
-            webreq, freezable_task_runner, unfreezable_task_runner,
+            network_request, freezable_task_runner, unfreezable_task_runner,
             /*keep_alive_handle=*/mojo::NullRemote(),
             back_forward_cache_loader_helper, std::move(throttles));
   }
@@ -138,15 +141,18 @@ std::unique_ptr<URLLoader> LoaderFactoryForFrame::CreateURLLoader(
     mojo::PendingRemote<mojom::blink::KeepAliveHandle> pending_remote;
     mojo::PendingReceiver<mojom::blink::KeepAliveHandle> pending_receiver =
         pending_remote.InitWithNewPipeAndPassReceiver();
-    auto loader_factory = document_loader_->GetServiceWorkerNetworkProvider()
-                              ->GetSubresourceLoaderFactory(webreq);
+    auto loader_factory =
+        document_loader_->GetServiceWorkerNetworkProvider()
+            ->GetSubresourceLoaderFactory(network_request,
+                                          is_from_origin_dirty_style_sheet);
     if (loader_factory) {
-      IssueKeepAliveHandleIfRequested(request, frame->GetLocalFrameHostRemote(),
+      IssueKeepAliveHandleIfRequested(network_request,
+                                      frame->GetLocalFrameHostRemote(),
                                       std::move(pending_receiver));
       return std::make_unique<URLLoaderFactory>(
                  std::move(loader_factory), GetCorsExemptHeaderList(),
                  /*terminate_sync_load_event=*/nullptr)
-          ->CreateURLLoader(webreq, freezable_task_runner,
+          ->CreateURLLoader(network_request, freezable_task_runner,
                             unfreezable_task_runner, std::move(pending_remote),
                             back_forward_cache_loader_helper,
                             std::move(throttles));
@@ -155,14 +161,14 @@ std::unique_ptr<URLLoader> LoaderFactoryForFrame::CreateURLLoader(
 
   if (prefetched_signed_exchange_manager_) {
     auto loader = prefetched_signed_exchange_manager_->MaybeCreateURLLoader(
-        webreq, throttles);
+        network_request, throttles);
     if (loader)
       return loader;
   }
 
   mojo::PendingRemote<mojom::blink::KeepAliveHandle> pending_remote;
   IssueKeepAliveHandleIfRequested(
-      request, frame->GetLocalFrameHostRemote(),
+      network_request, frame->GetLocalFrameHostRemote(),
       pending_remote.InitWithNewPipeAndPassReceiver());
 
   auto loader = frame->CreateURLLoaderForTesting();
@@ -170,7 +176,7 @@ std::unique_ptr<URLLoader> LoaderFactoryForFrame::CreateURLLoader(
     return loader;
   }
 
-  if (BackgroundURLLoader::CanHandleRequest(request, options)) {
+  if (BackgroundURLLoader::CanHandleRequest(network_request, options)) {
     scoped_refptr<WebBackgroundResourceFetchAssets>
         web_background_resource_fetch_assets =
             frame->MaybeGetBackgroundResourceFetchAssets();
@@ -188,8 +194,8 @@ std::unique_ptr<URLLoader> LoaderFactoryForFrame::CreateURLLoader(
   return std::make_unique<URLLoaderFactory>(
              frame->GetURLLoaderFactory(), GetCorsExemptHeaderList(),
              /*terminate_sync_load_event=*/nullptr)
-      ->CreateURLLoader(webreq, freezable_task_runner, unfreezable_task_runner,
-                        std::move(pending_remote),
+      ->CreateURLLoader(network_request, freezable_task_runner,
+                        unfreezable_task_runner, std::move(pending_remote),
                         back_forward_cache_loader_helper, std::move(throttles));
 }
 
@@ -198,17 +204,18 @@ CodeCacheHost* LoaderFactoryForFrame::GetCodeCacheHost() {
 }
 
 void LoaderFactoryForFrame::IssueKeepAliveHandleIfRequested(
-    const ResourceRequest& request,
+    const network::ResourceRequest& network_request,
     mojom::blink::LocalFrameHost& local_frame_host,
     mojo::PendingReceiver<mojom::blink::KeepAliveHandle> pending_receiver) {
   DCHECK(pending_receiver);
-  if (request.GetKeepalive() &&
+  if (network_request.keepalive &&
       (!base::FeatureList::IsEnabled(features::kKeepAliveInBrowserMigration) ||
-       (request.GetAttributionReportingEligibility() !=
+       (network_request.attribution_reporting_eligibility !=
             network::mojom::AttributionReportingEligibility::kUnset &&
         !base::FeatureList::IsEnabled(
             features::kAttributionReportingInBrowserMigration))) &&
-      keep_alive_handle_factory_.is_bound() && !request.IsFetchLaterAPI()) {
+      keep_alive_handle_factory_.is_bound() &&
+      !network_request.is_fetch_later_api) {
     keep_alive_handle_factory_->IssueKeepAliveHandle(
         std::move(pending_receiver));
   }
@@ -230,7 +237,8 @@ LoaderFactoryForFrame::GetBackgroundCodeCacheHost() {
 }
 
 Vector<std::unique_ptr<URLLoaderThrottle>>
-LoaderFactoryForFrame::CreateThrottles(const WebURLRequest& web_url_request) {
+LoaderFactoryForFrame::CreateThrottles(
+    const network::ResourceRequest& network_request) {
   // LocalFrameClient member may not be valid in some tests.
   if (!window_->GetFrame()->Client() ||
       !window_->GetFrame()->Client()->GetWebFrame() ||
@@ -248,7 +256,7 @@ LoaderFactoryForFrame::CreateThrottles(const WebURLRequest& web_url_request) {
   }
   WebVector<std::unique_ptr<URLLoaderThrottle>> web_throttles =
       throttle_provider->CreateThrottles(
-          window_->GetFrame()->GetLocalFrameToken(), web_url_request);
+          window_->GetFrame()->GetLocalFrameToken(), network_request);
   Vector<std::unique_ptr<URLLoaderThrottle>> throttles;
 
   throttles.reserve(base::checked_cast<wtf_size_t>(web_throttles.size()));
