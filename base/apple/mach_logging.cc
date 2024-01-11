@@ -7,6 +7,7 @@
 #include <iomanip>
 #include <string>
 
+#include "base/immediate_crash.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 
@@ -41,8 +42,18 @@ MachLogMessage::MachLogMessage(const char* file_path,
     : LogMessage(file_path, line, severity), mach_err_(mach_err) {}
 
 MachLogMessage::~MachLogMessage() {
+  AppendError();
+}
+
+void MachLogMessage::AppendError() {
   stream() << ": " << mach_error_string(mach_err_)
            << FormatMachErrorNumber(mach_err_);
+}
+
+MachLogMessageFatal::~MachLogMessageFatal() {
+  AppendError();
+  Flush();
+  base::ImmediateCrash();
 }
 
 #if BUILDFLAG(USE_BLINK)
@@ -54,6 +65,10 @@ BootstrapLogMessage::BootstrapLogMessage(const char* file_path,
     : LogMessage(file_path, line, severity), bootstrap_err_(bootstrap_err) {}
 
 BootstrapLogMessage::~BootstrapLogMessage() {
+  AppendError();
+}
+
+void BootstrapLogMessage::AppendError() {
   stream() << ": " << bootstrap_strerror(bootstrap_err_);
 
   switch (bootstrap_err_) {
@@ -79,6 +94,12 @@ BootstrapLogMessage::~BootstrapLogMessage() {
       break;
     }
   }
+}
+
+BootstrapLogMessageFatal::~BootstrapLogMessageFatal() {
+  AppendError();
+  Flush();
+  base::ImmediateCrash();
 }
 
 #endif  // BUILDFLAG(USE_BLINK)
