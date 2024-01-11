@@ -55,6 +55,7 @@ UrlCheckerOnSB::StartParams::~StartParams() = default;
 UrlCheckerOnSB::UrlCheckerOnSB(
     GetDelegateCallback delegate_getter,
     int frame_tree_node_id,
+    absl::optional<int64_t> navigation_id,
     base::RepeatingCallback<content::WebContents*()> web_contents_getter,
     OnCompleteCheckCallback complete_callback,
     bool url_real_time_lookup_enabled,
@@ -67,6 +68,7 @@ UrlCheckerOnSB::UrlCheckerOnSB(
     hash_realtime_utils::HashRealTimeSelection hash_realtime_selection)
     : delegate_getter_(std::move(delegate_getter)),
       frame_tree_node_id_(frame_tree_node_id),
+      navigation_id_(navigation_id),
       web_contents_getter_(web_contents_getter),
       complete_callback_(std::move(complete_callback)),
       url_real_time_lookup_enabled_(url_real_time_lookup_enabled),
@@ -105,7 +107,7 @@ void UrlCheckerOnSB::Start(const StartParams& params) {
         params.headers, params.load_flags, params.request_destination,
         params.has_user_gesture, url_checker_delegate, web_contents_getter_,
         nullptr, content::ChildProcessHost::kInvalidUniqueID, std::nullopt,
-        frame_tree_node_id_, url_real_time_lookup_enabled_,
+        frame_tree_node_id_, navigation_id_, url_real_time_lookup_enabled_,
         can_urt_check_subresource_url_, can_check_db_,
         can_check_high_confidence_allowlist_, url_lookup_service_metric_suffix_,
         last_committed_url_, content::GetUIThreadTaskRunner({}),

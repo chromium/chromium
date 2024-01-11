@@ -5492,8 +5492,6 @@ ChromeContentBrowserClient::MaybeCreateSafeBrowsingURLLoaderThrottle(
                              is_consumer_lookup_enabled,
                              hash_realtime_selection);
 
-    // TODO(crbug.com/1501194): Pass in navigation_id to
-    // BrowserURLLoaderThrottle.
     return safe_browsing::BrowserURLLoaderThrottle::Create(
         base::BindRepeating(
             &ChromeContentBrowserClient::GetSafeBrowsingUrlCheckerDelegate,
@@ -5502,7 +5500,7 @@ ChromeContentBrowserClient::MaybeCreateSafeBrowsingURLLoaderThrottle(
             // Should check for enterprise when safe browsing is disabled.
             /*should_check_on_sb_disabled=*/is_enterprise_lookup_enabled,
             safe_browsing::GetURLAllowlistByPolicy(profile->GetPrefs())),
-        wc_getter, frame_tree_node_id,
+        wc_getter, frame_tree_node_id, navigation_id,
         url_lookup_service ? url_lookup_service->GetWeakPtr() : nullptr,
         hash_realtime_service ? hash_realtime_service->GetWeakPtr() : nullptr,
         hash_realtime_selection,

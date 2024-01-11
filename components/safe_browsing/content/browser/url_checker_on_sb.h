@@ -81,6 +81,7 @@ class UrlCheckerOnSB : public base::SupportsWeakPtr<UrlCheckerOnSB> {
   UrlCheckerOnSB(
       GetDelegateCallback delegate_getter,
       int frame_tree_node_id,
+      absl::optional<int64_t> navigation_id,
       base::RepeatingCallback<content::WebContents*()> web_contents_getter,
       OnCompleteCheckCallback complete_callback,
       bool url_real_time_lookup_enabled,
@@ -133,6 +134,7 @@ class UrlCheckerOnSB : public base::SupportsWeakPtr<UrlCheckerOnSB> {
   std::unique_ptr<SafeBrowsingUrlCheckerImpl> url_checker_;
   std::unique_ptr<SafeBrowsingUrlCheckerImpl> url_checker_for_testing_;
   int frame_tree_node_id_;
+  absl::optional<int64_t> navigation_id_;
   base::RepeatingCallback<content::WebContents*()> web_contents_getter_;
   OnCompleteCheckCallback complete_callback_;
   bool url_real_time_lookup_enabled_ = false;

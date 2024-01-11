@@ -97,12 +97,13 @@ struct UnsafeResource {
   // on all other platforms. This struct should be refactored to use only the
   // common functionality can be shared across platforms.
   // These content/ specific ids indicate what triggered safe browsing. In the
-  // case of a frame navigating, we should have its FrameTreeNode id. In the
-  // case of something triggered by a document (e.g. subresource loading), we
-  // should have the RenderFrameHost's id.
+  // case of a frame navigating, we should have its FrameTreeNode id and
+  // navigation id. In the case of something triggered by a document (e.g.
+  // subresource loading), we should have the RenderFrameHost's id.
   RenderProcessId render_process_id = kNoRenderProcessId;
   RenderFrameToken render_frame_token;
   FrameTreeNodeId frame_tree_node_id = kNoFrameTreeNodeId;
+  absl::optional<int64_t> navigation_id;
 
   base::WeakPtr<web::WebState> weak_web_state;
 

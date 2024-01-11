@@ -35,6 +35,7 @@ class FakeSafeBrowsingUrlCheckerImpl
             /*render_frame_token=*/std::nullopt,
             /*frame_tree_node_id=*/
             security_interstitials::UnsafeResource::kNoFrameTreeNodeId,
+            /*navigation_id=*/std::nullopt,
             /*url_real_time_lookup_enabled=*/false,
             /*can_urt_check_subresource_url=*/false,
             /*can_check_db=*/true,

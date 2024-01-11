@@ -590,14 +590,13 @@ AwContentBrowserClient::CreateURLLoaderThrottles(
           ? HashRealTimeSelection::kDatabaseManager
           : HashRealTimeSelection::kNone;
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> result;
-  // TODO(crbug.com/1501194): Pass in navigation_id to BrowserURLLoaderThrottle.
   result.push_back(safe_browsing::BrowserURLLoaderThrottle::Create(
       base::BindRepeating(
           [](AwContentBrowserClient* client) {
             return client->GetSafeBrowsingUrlCheckerDelegate();
           },
           base::Unretained(this)),
-      wc_getter, frame_tree_node_id,
+      wc_getter, frame_tree_node_id, navigation_id,
       // TODO(crbug.com/1033760): rt_lookup_service is
       // used to perform real time URL check, which is gated by UKM opted-in.
       // Since AW currently doesn't support UKM, this feature is not enabled.
@@ -659,7 +658,7 @@ AwContentBrowserClient::CreateURLLoaderThrottlesForKeepAlive(
             return client->GetSafeBrowsingUrlCheckerDelegate();
           },
           base::Unretained(this)),
-      wc_getter, frame_tree_node_id,
+      wc_getter, frame_tree_node_id, /*navigation_id=*/absl::nullopt,
       // TODO(crbug.com/1033760): rt_lookup_service is
       // used to perform real time URL check, which is gated by UKM opted-in.
       // Since AW currently doesn't support UKM, this feature is not enabled.

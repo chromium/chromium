@@ -121,6 +121,7 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
           render_frame_token,
       security_interstitials::UnsafeResource::FrameTreeNodeId
           frame_tree_node_id,
+      absl::optional<int64_t> navigation_id,
       bool url_real_time_lookup_enabled,
       bool can_urt_check_subresource_url,
       bool can_check_db,
@@ -296,6 +297,7 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
   const security_interstitials::UnsafeResource::FrameTreeNodeId
       frame_tree_node_id_ =
           security_interstitials::UnsafeResource::kNoFrameTreeNodeId;
+  const absl::optional<int64_t> navigation_id_;
   base::WeakPtr<web::WebState> weak_web_state_;
   scoped_refptr<UrlCheckerDelegate> url_checker_delegate_;
   scoped_refptr<SafeBrowsingDatabaseManager> database_manager_;

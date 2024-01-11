@@ -115,6 +115,7 @@ std::unique_ptr<BrowserURLLoaderThrottle> BrowserURLLoaderThrottle::Create(
     UrlCheckerOnSB::GetDelegateCallback delegate_getter,
     const base::RepeatingCallback<content::WebContents*()>& web_contents_getter,
     int frame_tree_node_id,
+    absl::optional<int64_t> navigation_id,
     base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service,
     base::WeakPtr<HashRealTimeService> hash_realtime_service,
     hash_realtime_utils::HashRealTimeSelection hash_realtime_selection,
@@ -122,14 +123,15 @@ std::unique_ptr<BrowserURLLoaderThrottle> BrowserURLLoaderThrottle::Create(
   return base::WrapUnique<BrowserURLLoaderThrottle>(
       new BrowserURLLoaderThrottle(
           std::move(delegate_getter), web_contents_getter, frame_tree_node_id,
-          url_lookup_service, hash_realtime_service, hash_realtime_selection,
-          async_check_tracker));
+          navigation_id, url_lookup_service, hash_realtime_service,
+          hash_realtime_selection, async_check_tracker));
 }
 
 BrowserURLLoaderThrottle::BrowserURLLoaderThrottle(
     UrlCheckerOnSB::GetDelegateCallback delegate_getter,
     const base::RepeatingCallback<content::WebContents*()>& web_contents_getter,
     int frame_tree_node_id,
+    absl::optional<int64_t> navigation_id,
     base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service,
     base::WeakPtr<HashRealTimeService> hash_realtime_service,
     hash_realtime_utils::HashRealTimeSelection hash_realtime_selection,
@@ -169,7 +171,7 @@ BrowserURLLoaderThrottle::BrowserURLLoaderThrottle(
     // If async check is enabled, sync_sb_checker only performs local database
     // check.
     sync_sb_checker_ = std::make_unique<UrlCheckerOnSB>(
-        delegate_getter, frame_tree_node_id, web_contents_getter,
+        delegate_getter, frame_tree_node_id, navigation_id, web_contents_getter,
         /*complete_callback=*/
         base::BindRepeating(&BrowserURLLoaderThrottle::OnCompleteSyncCheck,
                             weak_factory_.GetWeakPtr()),
@@ -182,7 +184,7 @@ BrowserURLLoaderThrottle::BrowserURLLoaderThrottle(
         /*hash_realtime_selection=*/
         hash_realtime_utils::HashRealTimeSelection::kNone);
     async_sb_checker_ = std::make_unique<UrlCheckerOnSB>(
-        delegate_getter, frame_tree_node_id, web_contents_getter,
+        delegate_getter, frame_tree_node_id, navigation_id, web_contents_getter,
         /*complete_callback=*/
         base::BindRepeating(&BrowserURLLoaderThrottle::OnCompleteAsyncCheck,
                             weak_factory_.GetWeakPtr()),
@@ -192,7 +194,7 @@ BrowserURLLoaderThrottle::BrowserURLLoaderThrottle(
         hash_realtime_service, hash_realtime_selection);
   } else {
     sync_sb_checker_ = std::make_unique<UrlCheckerOnSB>(
-        delegate_getter, frame_tree_node_id, web_contents_getter,
+        delegate_getter, frame_tree_node_id, navigation_id, web_contents_getter,
         /*complete_callback=*/
         base::BindRepeating(&BrowserURLLoaderThrottle::OnCompleteSyncCheck,
                             weak_factory_.GetWeakPtr()),

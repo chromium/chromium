@@ -114,6 +114,7 @@ SafeBrowsingUrlCheckerImpl::SafeBrowsingUrlCheckerImpl(
     UnsafeResource::RenderProcessId render_process_id,
     const UnsafeResource::RenderFrameToken& render_frame_token,
     UnsafeResource::FrameTreeNodeId frame_tree_node_id,
+    absl::optional<int64_t> navigation_id,
     bool url_real_time_lookup_enabled,
     bool can_urt_check_subresource_url,
     bool can_check_db,
@@ -132,6 +133,7 @@ SafeBrowsingUrlCheckerImpl::SafeBrowsingUrlCheckerImpl(
       render_process_id_(render_process_id),
       render_frame_token_(render_frame_token),
       frame_tree_node_id_(frame_tree_node_id),
+      navigation_id_(navigation_id),
       weak_web_state_(weak_web_state),
       url_checker_delegate_(std::move(url_checker_delegate)),
       database_manager_(url_checker_delegate_->GetDatabaseManager()),
@@ -210,6 +212,7 @@ UnsafeResource SafeBrowsingUrlCheckerImpl::MakeUnsafeResource(
   resource.render_process_id = render_process_id_;
   resource.render_frame_token = render_frame_token_;
   resource.frame_tree_node_id = frame_tree_node_id_;
+  resource.navigation_id = navigation_id_;
   resource.weak_web_state = weak_web_state_;
   resource.threat_source = threat_source;
   if (rt_lookup_response) {
