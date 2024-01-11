@@ -21,6 +21,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 
+import java.util.concurrent.TimeoutException;
+
 /** Unit tests for {@link BackPressManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -447,6 +449,34 @@ public class BackPressManagerUnitTest {
                                         "handleBackPress should never be called if back is"
                                                 + " cancelled"))
                 .handleBackPress();
+    }
+
+    @Test
+    public void testOnBackPressedCallback() throws TimeoutException {
+        BackPressManager manager = new BackPressManager();
+        EmptyBackPressHandler h1 = new EmptyBackPressHandler();
+        manager.addHandler(h1, 0);
+
+        CallbackHelper callbackHelper = new CallbackHelper();
+        manager.setOnBackPressedListener(callbackHelper::notifyCalled);
+
+        h1.getHandleBackPressChangedSupplier().set(true);
+        Assert.assertEquals(
+                "Should return the active handler", h1, manager.getEnabledBackPressHandler());
+        Assert.assertTrue(
+                "Callback should be enabled if any of handlers are enabled",
+                manager.getCallback().isEnabled());
+        manager.getCallback().handleOnBackPressed();
+        Assert.assertEquals(
+                "Handler's callback should be executed if it is enabled",
+                1,
+                h1.getCallbackHelper().getCallCount());
+
+        callbackHelper.waitForCallback(
+                "Callback should be triggered when back button is pressed", 0);
+
+        manager.getCallback().handleOnBackPressed();
+        callbackHelper.waitForCallback("Callback should be called again", 1);
     }
 
     private int getHandlerCount(BackPressManager manager) {

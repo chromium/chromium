@@ -2456,7 +2456,19 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     }
 
     private void initializeBackPressHandling() {
+        mBackPressManager.setIsFirstVisibleContentDrawnSupplier(
+                () -> {
+                    if (mActivityTabStartupMetricsTracker == null) return false;
+                    return mActivityTabStartupMetricsTracker.isFirstVisibleContentRecorded();
+                });
+        final Runnable callbackForActivityTabStartupMetricsTracker =
+                () -> {
+                    if (mActivityTabStartupMetricsTracker != null) {
+                        mActivityTabStartupMetricsTracker.onBackPressed();
+                    }
+                };
         if (BackPressManager.isEnabled()) {
+            mBackPressManager.setOnBackPressedListener(callbackForActivityTabStartupMetricsTracker);
             getOnBackPressedDispatcher().addCallback(this, mBackPressManager.getCallback());
             // TODO(crbug.com/1279941): consider move to RootUiCoordinator.
             mTextBubbleBackPressHandler = new TextBubbleBackPressHandler();
@@ -2504,6 +2516,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                     new OnBackPressedCallback(true) {
                         @Override
                         public void handleOnBackPressed() {
+                            mBackPressManager.recordSystemBackCountIfBeforeFirstVisibleContent();
+                            callbackForActivityTabStartupMetricsTracker.run();
                             if (!ChromeActivity.this.handleOnBackPressed()) {
                                 if (BackPressManager.shouldMoveToBackDuringStartup()) {
                                     moveTaskToBack(true);

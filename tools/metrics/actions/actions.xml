@@ -10413,6 +10413,15 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="FirstVisibleContentAfterBackPress">
+  <owner>lazzzis@google.com</owner>
+  <description>
+    Record that the first visible content is drawn (i.e. at the moment when
+    Startup.Android.Cold.TimeToFirstVisibleContent2) after a back press. Android
+    only.
+  </description>
+</action>
+
 <action name="Flash.JavaScriptUsed" not_user_triggered="true">
   <obsolete>Deprecated 02/2017.</obsolete>
   <owner>tommycli@chromium.org</owner>
@@ -37749,6 +37758,15 @@ should be able to be added at any place in this file.
   <description>
     The user triggered system back **after** Native is initialized. This action
     is mutually exclusive with SystemBackBeforeNativeInitialized. Android only.
+  </description>
+</action>
+
+<action name="SystemBackBeforeFirstVisibleContent">
+  <owner>lazzzis@google.com</owner>
+  <description>
+    Records that a back press occurs before the first visible content is drawn
+    (i.e. at the moment Startup.Android.Cold.TimeToFirstVisibleContent2 is
+    recorded). Android only.
   </description>
 </action>
 
