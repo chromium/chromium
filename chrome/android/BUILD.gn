@@ -2662,7 +2662,7 @@ if (current_toolchain == default_toolchain) {
   } else {
     if (android_64bit_target_cpu) {
       alias_with_wrapper_script("trichrome_library_apk") {
-        alias_target = ":trichrome_library_32_64_apk"
+        alias_target = ":trichrome_library_64_32_apk"
       }
       alias_with_wrapper_script("monochrome_public_apk") {
         alias_target = ":monochrome_64_32_public_apk"
@@ -3196,10 +3196,10 @@ if (current_toolchain == default_toolchain) {
   } else {
     if (android_64bit_target_cpu) {
       alias_with_wrapper_script("monochrome_public_bundle") {
-        alias_target = ":monochrome_32_64_public_bundle"
+        alias_target = ":monochrome_64_32_public_bundle"
       }
       alias_with_wrapper_script("trichrome_chrome_bundle") {
-        alias_target = ":trichrome_chrome_32_64_bundle"
+        alias_target = ":trichrome_chrome_64_32_bundle"
       }
     }
 

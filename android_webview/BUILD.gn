@@ -125,9 +125,6 @@ if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
     alias_with_wrapper_script("system_webview_bundle") {
       alias_target = ":system_webview_32_64_bundle"
     }
-    group("system_webview_base_bundle_module") {
-      deps = [ ":system_webview_32_64_base_bundle_module" ]
-    }
   }
   standalone_system_webview_apk_tmpl(
       _main_system_webview_base_bundle_module_target) {
@@ -224,7 +221,7 @@ if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
 } else {
   if (android_64bit_target_cpu) {
     alias_with_wrapper_script("trichrome_webview_apk") {
-      alias_target = ":trichrome_webview_32_64_apk"
+      alias_target = ":trichrome_webview_64_32_apk"
     }
   }
   trichrome_webview_tmpl(_main_trichrome_webview_apk_target) {
@@ -253,10 +250,7 @@ if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
 } else {
   if (android_64bit_target_cpu) {
     alias_with_wrapper_script("trichrome_webview_bundle") {
-      alias_target = ":trichrome_webview_32_64_bundle"
-    }
-    group("trichrome_webview_base_bundle_module") {
-      deps = [ ":trichrome_webview_32_64_base_bundle_module" ]
+      alias_target = ":trichrome_webview_64_32_bundle"
     }
   }
   trichrome_webview_tmpl(_main_trichrome_webview_base_bundle_module_target) {
