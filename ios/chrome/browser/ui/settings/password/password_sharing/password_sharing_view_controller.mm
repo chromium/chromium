@@ -3,7 +3,10 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_view_controller.h"
+
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_constants.h"
+#import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_view_controller_presentation_delegate.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -19,10 +22,39 @@
 - (void)viewDidLoad {
   [super viewDidLoad];
 
+  UINavigationItem* navigationItem = self.navigationItem;
+  navigationItem.leftBarButtonItem = [self createCancelButton];
+  navigationItem.title = l10n_util::GetNSString(IDS_IOS_PASSWORD_SHARING_TITLE);
+  navigationItem.rightBarButtonItem = [self createShareButton];
+
+  UIView* view = self.view;
+  UIStackView* stackView = [self createStackView];
+  [view addSubview:stackView];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [stackView.centerXAnchor constraintEqualToAnchor:view.centerXAnchor],
+    [stackView.centerYAnchor constraintEqualToAnchor:view.centerYAnchor],
+  ]];
+}
+
+#pragma mark - Private
+
+// Notifies the delegate that the view should be dismissed.
+- (void)cancelButtonTapped {
+  [self.delegate sharingSpinnerViewWasDismissed:self];
+}
+
+// Creates left cancel button that closes the view.
+- (UIBarButtonItem*)createCancelButton {
   UIBarButtonItem* cancelButton = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
                            target:self
                            action:@selector(cancelButtonTapped)];
+  return cancelButton;
+}
+
+// Creates right share button disabled by default.
+- (UIBarButtonItem*)createShareButton {
   UIBarButtonItem* shareButton = [[UIBarButtonItem alloc]
       initWithTitle:l10n_util::GetNSString(
                         IDS_IOS_PASSWORD_SHARING_SHARE_BUTTON)
@@ -30,16 +62,11 @@
              target:self
              action:nil];
   shareButton.enabled = NO;
+  return shareButton;
+}
 
-  self.navigationItem.leftBarButtonItem = cancelButton;
-  self.navigationItem.title =
-      l10n_util::GetNSString(IDS_IOS_PASSWORD_SHARING_TITLE);
-  self.navigationItem.rightBarButtonItem = shareButton;
-
-  UIActivityIndicatorView* spinner = GetLargeUIActivityIndicatorView();
-  spinner.translatesAutoresizingMaskIntoConstraints = NO;
-  [spinner startAnimating];
-
+// Creates label explaining that the sharing recipients are being fetched.
+- (UILabel*)createLabel {
   UILabel* label = [[UILabel alloc] init];
   label.text = l10n_util::GetNSString(
       IDS_IOS_PASSWORD_SHARING_FETCHING_RECIPIENTS_LABEL);
@@ -47,25 +74,22 @@
   label.numberOfLines = 0;
   label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   label.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  return label;
+}
 
-  UIStackView* stackView =
-      [[UIStackView alloc] initWithArrangedSubviews:@[ spinner, label ]];
+// Creates a stack view with a spinner and a label below it.
+- (UIStackView*)createStackView {
+  UIActivityIndicatorView* spinner = GetLargeUIActivityIndicatorView();
+  spinner.translatesAutoresizingMaskIntoConstraints = NO;
+  [spinner startAnimating];
+
+  UIStackView* stackView = [[UIStackView alloc]
+      initWithArrangedSubviews:@[ spinner, [self createLabel] ]];
   stackView.axis = UILayoutConstraintAxisVertical;
   stackView.spacing = kTableViewSubViewHorizontalSpacing;
   stackView.translatesAutoresizingMaskIntoConstraints = NO;
   stackView.alignment = UIStackViewAlignmentCenter;
-  [self.view addSubview:stackView];
-
-  [NSLayoutConstraint activateConstraints:@[
-    [stackView.centerXAnchor constraintEqualToAnchor:self.view.centerXAnchor],
-    [stackView.centerYAnchor constraintEqualToAnchor:self.view.centerYAnchor],
-  ]];
-}
-
-#pragma mark - private
-
-- (void)cancelButtonTapped {
-  // TODO(crbug.com/1463882): Add handling cancel taps.
+  return stackView;
 }
 
 @end

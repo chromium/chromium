@@ -5,11 +5,18 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SHARING_PASSWORD_SHARING_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SHARING_PASSWORD_SHARING_VIEW_CONTROLLER_H_
 
-#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
+#import <UIKit/UIKit.h>
+
+@protocol PasswordSharingViewControllerPresentationDelegate;
 
 // Displays empty password sharing bottom sheet with a spinner, visible until
 // password sharing recipients are fetched.
-@interface PasswordSharingViewController : LegacyChromeTableViewController
+@interface PasswordSharingViewController : UIViewController
+
+// Delegate for handling dismissal of the view.
+@property(nonatomic, weak) id<PasswordSharingViewControllerPresentationDelegate>
+    delegate;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SHARING_PASSWORD_SHARING_VIEW_CONTROLLER_H_

@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_mediator.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_mediator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_view_controller.h"
+#import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/recipient_info.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/sharing_status_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/sharing_status_coordinator_delegate.h"
@@ -38,11 +39,13 @@
 
 using password_manager::FetchFamilyMembersRequestStatus;
 
-@interface PasswordSharingCoordinator () <FamilyPickerCoordinatorDelegate,
-                                          FamilyPromoCoordinatorDelegate,
-                                          PasswordPickerCoordinatorDelegate,
-                                          PasswordSharingMediatorDelegate,
-                                          SharingStatusCoordinatorDelegate> {
+@interface PasswordSharingCoordinator () <
+    FamilyPickerCoordinatorDelegate,
+    FamilyPromoCoordinatorDelegate,
+    PasswordPickerCoordinatorDelegate,
+    PasswordSharingMediatorDelegate,
+    PasswordSharingViewControllerPresentationDelegate,
+    SharingStatusCoordinatorDelegate> {
   // The credentials for the password group from which the sharing originated.
   std::vector<password_manager::CredentialUIEntry> _credentials;
 
@@ -102,8 +105,8 @@ using password_manager::FetchFamilyMembersRequestStatus;
 - (void)start {
   [super start];
 
-  self.viewController = [[PasswordSharingViewController alloc]
-      initWithStyle:ChromeTableViewStyle()];
+  self.viewController = [[PasswordSharingViewController alloc] init];
+  self.viewController.delegate = self;
   self.navigationController =
       [[TableViewNavigationController alloc] initWithTable:self.viewController];
   [self.navigationController
@@ -247,6 +250,13 @@ using password_manager::FetchFamilyMembersRequestStatus;
       break;
     }
   }
+}
+
+#pragma mark - PasswordSharingViewControllerPresentationDelegate
+
+- (void)sharingSpinnerViewWasDismissed:
+    (PasswordSharingViewController*)controller {
+  [self.delegate passwordSharingCoordinatorDidRemove:self];
 }
 
 #pragma mark - SharingStatusCoordinatorDelegate
