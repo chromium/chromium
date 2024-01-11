@@ -21,6 +21,9 @@ BASE_DECLARE_FEATURE(kWallpaperSearchSettingsVisibility);
 // experimental AI.
 BASE_DECLARE_FEATURE(kExperimentalAIIPHPromoRampUp);
 
+// Feature for disabling the model execution user account capability check.
+BASE_DECLARE_FEATURE(kModelExecutionCapabilityDisable);
+
 const base::Feature* GetFeatureToUseToCheckSettingsVisibility(
     proto::ModelExecutionFeature feature);
 

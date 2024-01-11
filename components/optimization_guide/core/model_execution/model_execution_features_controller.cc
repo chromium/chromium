@@ -120,6 +120,11 @@ class ScopedFeatureCurrentlyEnabledHistogramRecorder {
 };
 
 bool CanUseModelExecutionFeatures(signin::IdentityManager* identity_manager) {
+  if (base::FeatureList::IsEnabled(
+          features::internal::kModelExecutionCapabilityDisable)) {
+    // Disable the capability check and allow all model execution features.
+    return true;
+  }
   if (!identity_manager) {
     return false;
   }
