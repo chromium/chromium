@@ -578,28 +578,33 @@ bool ComputedStyle::operator==(const ComputedStyle& o) const {
          InheritedVariablesEqual(o);
 }
 
-bool ComputedStyle::HighlightPseudoElementStylesDependOnFontMetrics() const {
+bool ComputedStyle::HighlightPseudoElementStylesDependOnRelativeUnits() const {
   const StyleHighlightData& highlight_data = HighlightData();
   if (highlight_data.Selection() &&
-      highlight_data.Selection()->HasFontRelativeUnits()) {
+      (highlight_data.Selection()->HasFontRelativeUnits() ||
+       highlight_data.Selection()->HasContainerRelativeUnits())) {
     return true;
   }
   if (highlight_data.TargetText() &&
-      highlight_data.TargetText()->HasFontRelativeUnits()) {
+      (highlight_data.TargetText()->HasFontRelativeUnits() ||
+       highlight_data.TargetText()->HasContainerRelativeUnits())) {
     return true;
   }
   if (highlight_data.SpellingError() &&
-      highlight_data.SpellingError()->HasFontRelativeUnits()) {
+      (highlight_data.SpellingError()->HasFontRelativeUnits() ||
+       highlight_data.SpellingError()->HasContainerRelativeUnits())) {
     return true;
   }
   if (highlight_data.GrammarError() &&
-      highlight_data.GrammarError()->HasFontRelativeUnits()) {
+      (highlight_data.GrammarError()->HasFontRelativeUnits() ||
+       highlight_data.GrammarError()->HasContainerRelativeUnits())) {
     return true;
   }
   const CustomHighlightsStyleMap& custom_highlights =
       highlight_data.CustomHighlights();
   for (auto custom_highlight : custom_highlights) {
-    if (custom_highlight.value->HasFontRelativeUnits()) {
+    if (custom_highlight.value->HasFontRelativeUnits() ||
+        custom_highlight.value->HasContainerRelativeUnits()) {
       return true;
     }
   }

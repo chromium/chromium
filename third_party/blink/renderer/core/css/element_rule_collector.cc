@@ -1155,6 +1155,10 @@ void ElementRuleCollector::DidMatchRule(
         result_.SetHasNonUaHighlightPseudoStyles();
       }
 
+      if (container_query) {
+        result_.SetHighlightsDependOnSizeContainerQueries();
+      }
+
       if (dynamic_pseudo == kPseudoIdHighlight) {
         DCHECK(result.custom_highlight_name);
         result_.AddCustomHighlightName(

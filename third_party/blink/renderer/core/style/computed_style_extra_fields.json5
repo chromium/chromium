@@ -261,6 +261,17 @@
       reset_on_new_style: true,
       custom_compare: true,
     },
+    // Whether any highlight pseudo selectors were found within container
+    // query blocks.
+    {
+      name: "HighlightsDependOnSizeContainerQueries",
+      field_template: "primitive",
+      field_group: "*",
+      default_value: "false",
+      type_name: "bool",
+      reset_on_new_style: true,
+      custom_compare: true,
+    },
     // Used by ::highlight
     {
       name: "PseudoArgument",

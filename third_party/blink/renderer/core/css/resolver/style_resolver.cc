@@ -1535,6 +1535,8 @@ void StyleResolver::ApplyBaseStyleNoCache(
       match_result.HasNonUniversalHighlightPseudoStyles());
   state.StyleBuilder().SetHasNonUaHighlightPseudoStyles(
       match_result.HasNonUaHighlightPseudoStyles());
+  state.StyleBuilder().SetHighlightsDependOnSizeContainerQueries(
+      match_result.HighlightsDependOnSizeContainerQueries());
 
   if (match_result.HasFlag(MatchFlag::kAffectedByDrag)) {
     state.StyleBuilder().SetAffectedByDrag();

@@ -176,6 +176,12 @@ class CORE_EXPORT MatchResult {
   bool HasNonUaHighlightPseudoStyles() const {
     return has_non_ua_highlight_pseudo_styles_;
   }
+  void SetHighlightsDependOnSizeContainerQueries() {
+    highlights_depend_on_size_container_queries_ = true;
+  }
+  bool HighlightsDependOnSizeContainerQueries() const {
+    return highlights_depend_on_size_container_queries_;
+  }
 
   bool HasFlag(MatchFlag flag) const {
     return flags_ & static_cast<MatchFlags>(flag);
@@ -224,6 +230,7 @@ class CORE_EXPORT MatchResult {
   bool conditionally_affects_animations_{false};
   bool has_non_universal_highlight_pseudo_styles_{false};
   bool has_non_ua_highlight_pseudo_styles_{false};
+  bool highlights_depend_on_size_container_queries_{false};
   MatchFlags flags_{0};
 #if DCHECK_IS_ON()
   CascadeOrigin last_origin_{CascadeOrigin::kNone};

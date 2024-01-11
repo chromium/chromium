@@ -3164,7 +3164,8 @@ void StyleEngine::RecalcHighlightStylesForContainer(Element& container) {
   const ComputedStyle& style = container.ComputedStyleRef();
   if (!style.HasAnyHighlightPseudoElementStyles() ||
       !style.HasNonUaHighlightPseudoStyles() ||
-      !style.HighlightData().DependsOnSizeContainerQueries()) {
+      !(style.HighlightData().DependsOnSizeContainerQueries() ||
+        style.HighlightsDependOnSizeContainerQueries())) {
     return;
   }
 

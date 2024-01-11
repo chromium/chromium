@@ -210,7 +210,7 @@ const ComputedStyle* HighlightPseudoStyleWithOriginatingInheritance(
   Element* element = nullptr;
 
   // In Blink, highlight pseudo style only applies to direct children of the
-  // element on which the highligh pseudo is matched. In order to be able to
+  // element on which the highlight pseudo is matched. In order to be able to
   // style highlight inside elements implemented with a UA shadow tree, like
   // input::selection, we calculate highlight style on the shadow host for
   // elements inside the UA shadow.
