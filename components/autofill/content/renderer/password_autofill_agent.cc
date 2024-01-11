@@ -1872,13 +1872,13 @@ void PasswordAutofillAgent::LogPrefilledUsernameFillOutcome(
 void PasswordAutofillAgent::OnProvisionallySaveForm(
     const WebFormElement& form,
     const WebFormControlElement& element,
-    ElementChangeSource source) {
-  // ElementChangeSource::TEXTFIELD_CHANGED is handled in
+    SaveFormReason source) {
+  // SaveFormReason::kTextFieldChanged is handled in
   // AutofillAgent::OnTextFieldDidChange(). For the sake of code clarity, please
-  // don't add handling for ElementChangeSource::TEXTFIELD_CHANGED here if
+  // don't add handling for SaveFormReason::kTextFieldChanged here if
   // possible.
 
-  if (source == ElementChangeSource::WILL_SEND_SUBMIT_EVENT) {
+  if (source == SaveFormReason::kWillSendSubmitEvent) {
     WebInputElement input_element = element.DynamicTo<WebInputElement>();
     InformBrowserAboutUserInput(form, input_element);
   }

@@ -663,7 +663,7 @@ void AutofillAgent::BatchDataListOptionChange(
   }
 
   OnProvisionallySaveForm(element.Form(), element,
-                          ElementChangeSource::TEXTFIELD_CHANGED);
+                          SaveFormReason::kTextFieldChanged);
 }
 
 void AutofillAgent::UserGestureObserved() {
@@ -1546,7 +1546,7 @@ void AutofillAgent::JavaScriptChangedAutofilledValue(
 void AutofillAgent::OnProvisionallySaveForm(
     const WebFormElement& form_element,
     const WebFormControlElement& element,
-    ElementChangeSource source) {
+    SaveFormReason source) {
   // Updates cached data needed for submission so that we only cache the latest
   // version of the to-be-submitted form.
   auto update_submission_data_on_user_edit = [&]() {
@@ -1582,7 +1582,7 @@ void AutofillAgent::OnProvisionallySaveForm(
   };
 
   switch (source) {
-    case FormTracker::Observer::ElementChangeSource::WILL_SEND_SUBMIT_EVENT:
+    case FormTracker::Observer::SaveFormReason::kWillSendSubmitEvent:
       // Fire the form submission event to avoid missing submissions where
       // websites handle the onsubmit event. This also gets the form before
       // Javascript's submit event handler could change it. We don't clear
@@ -1592,11 +1592,11 @@ void AutofillAgent::OnProvisionallySaveForm(
                            SubmissionSource::FORM_SUBMISSION);
       ResetLastInteractedElements();
       break;
-    case FormTracker::Observer::ElementChangeSource::TEXTFIELD_CHANGED:
+    case FormTracker::Observer::SaveFormReason::kTextFieldChanged:
       update_submission_data_on_user_edit();
       OnTextFieldDidChange(element);
       break;
-    case FormTracker::Observer::ElementChangeSource::SELECT_CHANGED:
+    case FormTracker::Observer::SaveFormReason::kSelectChanged:
       update_submission_data_on_user_edit();
       // Signal the browser of change in select fields.
       // TODO(crbug.com/1483242): Investigate if this is necessary: if it is,

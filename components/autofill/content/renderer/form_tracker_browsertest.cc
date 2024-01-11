@@ -18,7 +18,7 @@ class MockFormTrackerObserver : public FormTracker::Observer {
   // Not a mock method so that gmock ignores calls to this method.
   void OnProvisionallySaveForm(const blink::WebFormElement&,
                                const blink::WebFormControlElement&,
-                               ElementChangeSource) override {}
+                               SaveFormReason) override {}
 
   MOCK_METHOD0(OnProbablyFormSubmitted, void());
   MOCK_METHOD1(OnFormSubmitted, void(const blink::WebFormElement&));
