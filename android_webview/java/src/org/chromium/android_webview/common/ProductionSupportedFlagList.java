@@ -828,6 +828,23 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.FORM_CONTROLS_VERTICAL_WRITING_MODE_DIRECTION_SUPPORT,
                 "Enables support for CSS direction ltr and rtl on vertical slider elements"
                         + " progress, meter and range."),
+        Flag.baseFeature(
+                BlinkFeatures.BOOST_IMAGE_SET_LOADING_TASK_PRIORITY,
+                "If enabled, image set loading tasks have higher priority on visible pages"),
+        Flag.baseFeature(
+                BlinkFeatures.BOOST_FONT_LOADING_TASK_PRIORITY,
+                "If enabled, font loading tasks have higher priority on visible pages"),
+        Flag.baseFeature(
+                BlinkFeatures.BOOST_VIDEO_LOADING_TASK_PRIORITY,
+                "If enabled, video loading tasks have higher priority on visible pages"),
+        Flag.baseFeature(
+                BlinkFeatures.BOOST_RENDER_BLOCKING_STYLE_LOADING_TASK_PRIORITY,
+                "If enabled, render-blocking style loading tasks have higher priority on visible"
+                        + " pages"),
+        Flag.baseFeature(
+                BlinkFeatures.BOOST_NON_RENDER_BLOCKING_STYLE_LOADING_TASK_PRIORITY,
+                "If enabled, non-render-blocking style loading tasks have higher priority on"
+                        + " visible pages"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
