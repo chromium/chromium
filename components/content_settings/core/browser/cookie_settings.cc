@@ -115,13 +115,15 @@ bool CookieSettings::IsAllowedByTpcdMetadataGrant(
   if (base::FeatureList::IsEnabled(features::kHostIndexedMetadataGrants) &&
       std::cmp_greater_equal(settings_for_3pcd_metadata_grants_.size(),
                              features::kMetadataGrantsThreshold.Get())) {
-    DCHECK(SettingsLookupsAreConsistent(
-        url, first_party_url, settings_for_3pcd_metadata_grants_,
-        indexed_settings_for_3pcd_metadata_grants_))
+#if DCHECK_IS_ON()
+    DCHECK(
+        indexed_settings_for_3pcd_metadata_grants_.IsSameResultAsLinearLookup(
+            url, first_party_url, settings_for_3pcd_metadata_grants_))
         << "Different result in index lookup: " << url.spec() << " "
         << first_party_url.spec();
-    result = FindInHostIndexedContentSettings(
-        url, first_party_url, indexed_settings_for_3pcd_metadata_grants_);
+#endif
+    result =
+        indexed_settings_for_3pcd_metadata_grants_.Find(url, first_party_url);
   } else {
     result = FindContentSetting(url, first_party_url,
                                 settings_for_3pcd_metadata_grants_);

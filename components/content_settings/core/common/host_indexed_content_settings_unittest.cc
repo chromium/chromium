@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <string>
-
 #include "components/content_settings/core/common/host_indexed_content_settings.h"
+
+#include <functional>
+#include <string>
 
 #include "components/content_settings/core/common/content_settings.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,13 +37,18 @@ class HostIndexedContentSettingsTest : public testing::Test {
 };
 
 TEST_F(HostIndexedContentSettingsTest, EmptyHostIndexedContentSettings) {
-  HostIndexedContentSettings test_settings_map = {};
-  EXPECT_EQ(FindInHostIndexedContentSettings(GURL("https://www.example.com/"),
-                                             GURL("http://toplevel.com"),
-                                             test_settings_map),
-            nullptr);
+  GURL test_primary_url("https://www.example.com/");
+  GURL test_secondary_url("http://toplevel.com");
+  HostIndexedContentSettings test_multi_indexed_settings =
+      HostIndexedContentSettings();
+
+  EXPECT_EQ(
+      test_multi_indexed_settings.Find(test_primary_url, test_secondary_url),
+      nullptr);
 }
 TEST_F(HostIndexedContentSettingsTest, DomainWildcardMatchFound) {
+  GURL test_primary_url("https://www.example.com/");
+  GURL test_secondary_url("http://toplevel.com");
   ContentSettingsForOneType test_settings = {
       CreateSetting("*", "[*.]example.com", CONTENT_SETTING_BLOCK),
       CreateSetting("[*.]example.com", "[*.]toplevel.com",
@@ -51,17 +57,18 @@ TEST_F(HostIndexedContentSettingsTest, DomainWildcardMatchFound) {
                     CONTENT_SETTING_DEFAULT),
       CreateSetting("[*.]toplevel.com", "*", CONTENT_SETTING_DEFAULT),
   };
-  HostIndexedContentSettings test_settings_map =
-      ToHostIndexedMap(test_settings);
+  HostIndexedContentSettings test_multi_indexed_settings =
+      HostIndexedContentSettings(test_settings);
 
-  EXPECT_EQ(FindInHostIndexedContentSettings(GURL("https://www.example.com/"),
-                                             GURL("http://toplevel.com"),
-                                             test_settings_map)
-                ->GetContentSetting(),
-            CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(
+      test_multi_indexed_settings.Find(test_primary_url, test_secondary_url)
+          ->GetContentSetting(),
+      CONTENT_SETTING_ALLOW);
 }
 
 TEST_F(HostIndexedContentSettingsTest, MostSpecificMatchBlocks) {
+  GURL test_primary_url("https://www.example.com/");
+  GURL test_secondary_url("http://toplevel.com");
   ContentSettingsForOneType test_settings = {
       CreateSetting("*", "[*.]example.com", CONTENT_SETTING_ALLOW),
       CreateSetting("[*.]example.com", "[*.]toplevel.com",
@@ -71,17 +78,18 @@ TEST_F(HostIndexedContentSettingsTest, MostSpecificMatchBlocks) {
       CreateSetting("[*.]toplevel.com", "*", CONTENT_SETTING_ALLOW),
       CreateSetting("www.example.com/123", "*", CONTENT_SETTING_BLOCK),
   };
-  HostIndexedContentSettings test_settings_map =
-      ToHostIndexedMap(test_settings);
+  HostIndexedContentSettings test_multi_indexed_settings =
+      HostIndexedContentSettings(test_settings);
 
-  EXPECT_EQ(FindInHostIndexedContentSettings(GURL("https://www.example.com/"),
-                                             GURL("http://toplevel.com"),
-                                             test_settings_map)
-                ->GetContentSetting(),
-            CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(
+      test_multi_indexed_settings.Find(test_primary_url, test_secondary_url)
+          ->GetContentSetting(),
+      CONTENT_SETTING_BLOCK);
 }
 
 TEST_F(HostIndexedContentSettingsTest, ExactDomainMatchFound) {
+  GURL test_primary_url("https://www.example.com/");
+  GURL test_secondary_url("http://toplevel.com");
   ContentSettingsForOneType test_settings = {
       CreateSetting("*", "[*.]example.com", CONTENT_SETTING_ALLOW),
       CreateSetting("https://www.example.com/*", "[*.]toplevel.com",
@@ -91,17 +99,18 @@ TEST_F(HostIndexedContentSettingsTest, ExactDomainMatchFound) {
       CreateSetting("[*.]toplevel.com", "*", CONTENT_SETTING_DEFAULT),
       CreateSetting("[*.]example.com", "*", CONTENT_SETTING_BLOCK),
   };
-  HostIndexedContentSettings test_settings_map =
-      ToHostIndexedMap(test_settings);
+  HostIndexedContentSettings test_multi_indexed_settings =
+      HostIndexedContentSettings(test_settings);
 
-  EXPECT_EQ(FindInHostIndexedContentSettings(GURL("https://www.example.com/"),
-                                             GURL("http://toplevel.com"),
-                                             test_settings_map)
-                ->GetContentSetting(),
-            CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(
+      test_multi_indexed_settings.Find(test_primary_url, test_secondary_url)
+          ->GetContentSetting(),
+      CONTENT_SETTING_ALLOW);
 }
 
 TEST_F(HostIndexedContentSettingsTest, NotFirstDomainMatchFound) {
+  GURL test_primary_url("https://www.example.com/");
+  GURL test_secondary_url("http://toplevel.com");
   ContentSettingsForOneType test_settings = {
       CreateSetting("*", "[*.]example.com", CONTENT_SETTING_DEFAULT),
       CreateSetting("[*.]example.com", "[*.]toplevel.com",
@@ -112,17 +121,18 @@ TEST_F(HostIndexedContentSettingsTest, NotFirstDomainMatchFound) {
       CreateSetting("https://www.example.com/*", "[*.]example.com",
                     CONTENT_SETTING_BLOCK),
   };
-  HostIndexedContentSettings test_settings_map =
-      ToHostIndexedMap(test_settings);
+  HostIndexedContentSettings test_multi_indexed_settings =
+      HostIndexedContentSettings(test_settings);
 
-  EXPECT_EQ(FindInHostIndexedContentSettings(GURL("https://www.example.com/"),
-                                             GURL("http://toplevel.com"),
-                                             test_settings_map)
-                ->GetContentSetting(),
-            CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(
+      test_multi_indexed_settings.Find(test_primary_url, test_secondary_url)
+          ->GetContentSetting(),
+      CONTENT_SETTING_ALLOW);
 }
 
 TEST_F(HostIndexedContentSettingsTest, WildcardMatchFound) {
+  GURL test_primary_url("https://www.example.com/");
+  GURL test_secondary_url("http://toplevel.com");
   ContentSettingsForOneType test_settings = {
       CreateSetting("*", "[*.]toplevel.com", CONTENT_SETTING_ALLOW),
       CreateSetting("[*.]toplevel.com", "[*.]example.com",
@@ -131,17 +141,18 @@ TEST_F(HostIndexedContentSettingsTest, WildcardMatchFound) {
       CreateSetting("https://www.example.com:123/", "[*.]toplevel.com",
                     CONTENT_SETTING_BLOCK),
   };
-  HostIndexedContentSettings test_settings_map =
-      ToHostIndexedMap(test_settings);
+  HostIndexedContentSettings test_multi_indexed_settings =
+      HostIndexedContentSettings(test_settings);
 
-  EXPECT_EQ(FindInHostIndexedContentSettings(GURL("https://www.example.com/"),
-                                             GURL("http://toplevel.com"),
-                                             test_settings_map)
-                ->GetContentSetting(),
-            CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(
+      test_multi_indexed_settings.Find(test_primary_url, test_secondary_url)
+          ->GetContentSetting(),
+      CONTENT_SETTING_ALLOW);
 }
 
 TEST_F(HostIndexedContentSettingsTest, NoMatchFound) {
+  GURL test_primary_url("https://www.example.com:456/");
+  GURL test_secondary_url("http://toplevel.com");
   ContentSettingsForOneType test_settings = {
       CreateSetting("*", "[*.]example.com", CONTENT_SETTING_BLOCK),
       CreateSetting("[*.]toplevel.com", "[*.]example.com",
@@ -150,16 +161,17 @@ TEST_F(HostIndexedContentSettingsTest, NoMatchFound) {
       CreateSetting("https://www.example.com:123/", "[*.]toplevel.com",
                     CONTENT_SETTING_ALLOW),
   };
-  HostIndexedContentSettings test_settings_map =
-      ToHostIndexedMap(test_settings);
+  HostIndexedContentSettings test_multi_indexed_settings =
+      HostIndexedContentSettings(test_settings);
 
-  EXPECT_EQ(FindInHostIndexedContentSettings(
-                GURL("https://www.example.com:456/"),
-                GURL("http://toplevel.com"), test_settings_map),
-            nullptr);
+  EXPECT_EQ(
+      test_multi_indexed_settings.Find(test_primary_url, test_secondary_url),
+      nullptr);
 }
 
 TEST_F(HostIndexedContentSettingsTest, CheckIPAddressesMatch) {
+  GURL test_primary_url("http://192.168.1.2/");
+  GURL test_secondary_url("http://toplevel.com");
   ContentSettingsForOneType test_settings = {
       CreateSetting("192.168.1.2", "[*.]toplevel.com", CONTENT_SETTING_ALLOW),
       CreateSetting("[*.]example.com", "[*.]toplevel.com",
@@ -169,17 +181,18 @@ TEST_F(HostIndexedContentSettingsTest, CheckIPAddressesMatch) {
       CreateSetting("[*.]toplevel.com", "*", CONTENT_SETTING_DEFAULT),
       CreateSetting("[*.]example.com", "*", CONTENT_SETTING_DEFAULT),
   };
-  HostIndexedContentSettings test_settings_map =
-      ToHostIndexedMap(test_settings);
+  HostIndexedContentSettings test_multi_indexed_settings =
+      HostIndexedContentSettings(test_settings);
 
-  EXPECT_EQ(FindInHostIndexedContentSettings(GURL("http://192.168.1.2/"),
-                                             GURL("http://toplevel.com"),
-                                             test_settings_map)
-                ->GetContentSetting(),
-            CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(
+      test_multi_indexed_settings.Find(test_primary_url, test_secondary_url)
+          ->GetContentSetting(),
+      CONTENT_SETTING_ALLOW);
 }
 
 TEST_F(HostIndexedContentSettingsTest, CheckIPAddressesMatchIsBlock) {
+  GURL test_primary_url("http://192.168.1.2/");
+  GURL test_secondary_url("http://toplevel.com");
   ContentSettingsForOneType test_settings = {
       CreateSetting("192.168.1.2", "[*.]toplevel.com", CONTENT_SETTING_BLOCK),
       CreateSetting("[*.]example.com", "[*.]toplevel.com",
@@ -189,17 +202,18 @@ TEST_F(HostIndexedContentSettingsTest, CheckIPAddressesMatchIsBlock) {
       CreateSetting("[*.]toplevel.com", "*", CONTENT_SETTING_DEFAULT),
       CreateSetting("[*.]example.com", "*", CONTENT_SETTING_DEFAULT),
   };
-  HostIndexedContentSettings test_settings_map =
-      ToHostIndexedMap(test_settings);
+  HostIndexedContentSettings test_multi_indexed_settings =
+      HostIndexedContentSettings(test_settings);
 
-  EXPECT_EQ(FindInHostIndexedContentSettings(GURL("http://192.168.1.2/"),
-                                             GURL("http://toplevel.com"),
-                                             test_settings_map)
-                ->GetContentSetting(),
-            CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(
+      test_multi_indexed_settings.Find(test_primary_url, test_secondary_url)
+          ->GetContentSetting(),
+      CONTENT_SETTING_BLOCK);
 }
 
 TEST_F(HostIndexedContentSettingsTest, CheckIPAddressesNoMatch) {
+  GURL test_primary_url("http://192.168.1.2/");
+  GURL test_secondary_url("http://toplevel.com");
   ContentSettingsForOneType test_settings = {
       CreateSetting("192.168.1.2", "[*.]example.com", CONTENT_SETTING_ALLOW),
       CreateSetting("[*.]example.com", "[*.]toplevel.com",
@@ -209,13 +223,12 @@ TEST_F(HostIndexedContentSettingsTest, CheckIPAddressesNoMatch) {
       CreateSetting("[*.]toplevel.com", "*", CONTENT_SETTING_BLOCK),
       CreateSetting("[*.]example.com", "*", CONTENT_SETTING_DEFAULT),
   };
-  HostIndexedContentSettings test_settings_map =
-      ToHostIndexedMap(test_settings);
+  HostIndexedContentSettings test_multi_indexed_settings =
+      HostIndexedContentSettings(test_settings);
 
-  EXPECT_EQ(FindInHostIndexedContentSettings(GURL("http://192.168.1.2/"),
-                                             GURL("http://toplevel.com"),
-                                             test_settings_map),
-            nullptr);
+  EXPECT_EQ(
+      test_multi_indexed_settings.Find(test_primary_url, test_secondary_url),
+      nullptr);
 }
 
 class FindContentSettingTest : public testing::Test {

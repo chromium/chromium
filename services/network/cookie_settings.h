@@ -16,6 +16,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/cookie_settings_base.h"
+#include "components/content_settings/core/common/host_indexed_content_settings.h"
 #include "net/base/network_delegate.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_setting_override.h"
@@ -178,8 +179,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
 
   // Returns a host-indexed map of ContentSettingPatternSources associated with
   // the input `type`.
-  const HostIndexedContentSettings& GetHostIndexedContentSettings(
-      ContentSettingsType type) const;
+  const content_settings::HostIndexedContentSettings&
+  GetHostIndexedContentSettings(ContentSettingsType type) const;
 
   // An enum that represents the scope of cookies to which the user's
   // third-party-cookie-blocking setting applies, in a given context.
@@ -221,7 +222,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   base::flat_map<ContentSettingsType, ContentSettingsForOneType>
       content_settings_;
 
-  base::flat_map<ContentSettingsType, HostIndexedContentSettings>
+  base::flat_map<ContentSettingsType,
+                 std::unique_ptr<content_settings::HostIndexedContentSettings>>
       host_indexed_content_settings_;
 };
 

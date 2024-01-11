@@ -14,20 +14,18 @@
 
 namespace content_settings {
 
-const ContentSettingPatternSource* FindInHostIndexedContentSettings(
+const ContentSettingPatternSource* FindInHostToContentSettings(
     const GURL& primary_url,
     const GURL& secondary_url,
-    std::reference_wrapper<const HostIndexedContentSettings>
-      indexed_content_setting) {
-  HostIndexedContentSettings::const_iterator it;
+    std::reference_wrapper<const HostToContentSettings> indexed_content_setting,
+    const std::string& host) {
   // The value for a pattern without a host in the indexed settings is an
   // empty string.
-  if (primary_url.has_host()) {
-    const std::string& primary_host = primary_url.host();
+  if (!host.empty()) {
     const ContentSettingPatternSource* content_setting = nullptr;
 
     if (primary_url.HostIsIPAddress()) {
-      it = indexed_content_setting.get().find(primary_host);
+      auto it = indexed_content_setting.get().find(host);
       if (it != indexed_content_setting.get().end()) {
         content_setting =
             FindContentSetting(primary_url, secondary_url, it->second);
@@ -38,8 +36,8 @@ const ContentSettingPatternSource* FindInHostIndexedContentSettings(
     } else {
       size_t cur_pos = 0;
       while (cur_pos != std::string::npos) {
-        it = indexed_content_setting.get().find(
-            primary_host.substr(cur_pos, std::string::npos));
+        auto it = indexed_content_setting.get().find(
+            host.substr(cur_pos, std::string::npos));
         if (it != indexed_content_setting.get().end()) {
           content_setting =
               FindContentSetting(primary_url, secondary_url, it->second);
@@ -47,12 +45,12 @@ const ContentSettingPatternSource* FindInHostIndexedContentSettings(
             return content_setting;
           }
         }
-        size_t found = primary_host.find(".", cur_pos);
+        size_t found = host.find(".", cur_pos);
         cur_pos = found != std::string::npos ? found + 1 : std::string::npos;
       }
     }
   }
-  it = indexed_content_setting.get().find(kAnyHost);
+  auto it = indexed_content_setting.get().find(kAnyHost);
   if (it != indexed_content_setting.get().end()) {
     return FindContentSetting(primary_url, secondary_url, it->second);
   }
@@ -72,34 +70,75 @@ const ContentSettingPatternSource* FindContentSetting(
   return entry == settings.get().end() ? nullptr : &*entry;
 }
 
-HostIndexedContentSettings ToHostIndexedMap(
-    const ContentSettingsForOneType& settings) {
-  HostIndexedContentSettings indexed_settings;
-  for (ContentSettingPatternSource setting : settings) {
-    // TODO(b/314939684): Index on secondary_pattern as well.
-    std::string primary_host = setting.primary_pattern.GetHost();
-    indexed_settings[primary_host].push_back(setting);
-  }
-  return indexed_settings;
+HostIndexedContentSettings::HostIndexedContentSettings() {
+  HostIndexedContentSettings(ContentSettingsForOneType{});
 }
 
-bool SettingsLookupsAreConsistent(
-  const GURL& primary_url,
-  const GURL& secondary_url,
-  const ContentSettingsForOneType& linear_settings,
-  const HostIndexedContentSettings& indexed_settings) {
+HostIndexedContentSettings::HostIndexedContentSettings(
+    const ContentSettingsForOneType& settings) {
+  for (const ContentSettingPatternSource& setting : settings) {
+    Add(setting);
+  }
+}
+
+HostIndexedContentSettings::~HostIndexedContentSettings() = default;
+
+const ContentSettingPatternSource* HostIndexedContentSettings::Find(
+    const GURL& primary_url,
+    const GURL& secondary_url) const {
+  const ContentSettingPatternSource* found = FindInHostToContentSettings(
+      primary_url, secondary_url, primary_host_indexed_, primary_url.host());
+  if (found) {
+    return found;
+  }
+  found = FindInHostToContentSettings(primary_url, secondary_url,
+                                      secondary_host_indexed_,
+                                      secondary_url.host());
+  if (found) {
+    return found;
+  }
+  return FindContentSetting(primary_url, secondary_url, wildcard_settings_);
+}
+
+void HostIndexedContentSettings::Add(
+    const ContentSettingPatternSource& pattern_source) {
+  const std::string& primary_host = pattern_source.primary_pattern.GetHost();
+  if (!primary_host.empty()) {
+    primary_host_indexed_[primary_host].push_back(std::move(pattern_source));
+    return;
+  }
+  const std::string& secondary_host =
+      pattern_source.secondary_pattern.GetHost();
+  if (!secondary_host.empty()) {
+    secondary_host_indexed_[secondary_host].push_back(
+        std::move(pattern_source));
+    return;
+  }
+  wildcard_settings_.push_back(std::move(pattern_source));
+}
+
+void HostIndexedContentSettings::Clear() {
+  primary_host_indexed_.clear();
+  secondary_host_indexed_.clear();
+  wildcard_settings_.clear();
+}
+
+#if DCHECK_IS_ON()
+bool HostIndexedContentSettings::IsSameResultAsLinearLookup(
+    const GURL& primary_url,
+    const GURL& secondary_url,
+    const ContentSettingsForOneType& linear_settings) const {
   const ContentSettingPatternSource* found_content_setting =
-        FindContentSetting(primary_url, secondary_url,
-                           linear_settings);
+      FindContentSetting(primary_url, secondary_url, linear_settings);
   const ContentSettingPatternSource* found_indexed_content_setting =
-        FindInHostIndexedContentSettings(
-            primary_url, secondary_url, indexed_settings);
+      Find(primary_url, secondary_url);
+
   if (!found_content_setting || !found_indexed_content_setting) {
     return !found_content_setting && !found_indexed_content_setting;
   }
-  return found_content_setting->GetContentSetting()
-                == found_indexed_content_setting->GetContentSetting();
-
+  return found_content_setting->GetContentSetting() ==
+         found_indexed_content_setting->GetContentSetting();
 }
+#endif  // DCHECK_IS_ON()
 
 }  // namespace content_settings
