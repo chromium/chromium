@@ -1,39 +1,39 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_PERSONALIZATION_APP_PERSONALIZATION_APP_SEA_PEN_PROVIDER_IMPL_H_
-#define CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_PERSONALIZATION_APP_PERSONALIZATION_APP_SEA_PEN_PROVIDER_IMPL_H_
+#ifndef CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_VC_BACKGROUND_UI_VC_BACKGROUND_UI_SEA_PEN_PROVIDER_IMPL_H_
+#define CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_VC_BACKGROUND_UI_VC_BACKGROUND_UI_SEA_PEN_PROVIDER_IMPL_H_
 
 #include <map>
 #include <memory>
+#include <string>
 
 #include "ash/public/cpp/wallpaper/sea_pen_image.h"
-#include "ash/webui/common/mojom/sea_pen.mojom-forward.h"
+#include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "base/files/file.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_sea_pen_provider_base.h"
-#include "components/manta/manta_status.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/gfx/image/image_skia.h"
 
-namespace ash::personalization_app {
+namespace ash::vc_background_ui {
 
-class PersonalizationAppSeaPenProviderImpl
-    : public PersonalizationAppSeaPenProviderBase {
+class VcBackgroundUISeaPenProviderImpl
+    : public personalization_app::PersonalizationAppSeaPenProviderBase {
  public:
-  explicit PersonalizationAppSeaPenProviderImpl(
+  explicit VcBackgroundUISeaPenProviderImpl(
       content::WebUI* web_ui,
       std::unique_ptr<wallpaper_handlers::WallpaperFetcherDelegate>
           wallpaper_fetcher_delegate);
 
-  PersonalizationAppSeaPenProviderImpl(
-      const PersonalizationAppSeaPenProviderImpl&) = delete;
-  PersonalizationAppSeaPenProviderImpl& operator=(
-      const PersonalizationAppSeaPenProviderImpl&) = delete;
+  VcBackgroundUISeaPenProviderImpl(const VcBackgroundUISeaPenProviderImpl&) =
+      delete;
+  VcBackgroundUISeaPenProviderImpl& operator=(
+      const VcBackgroundUISeaPenProviderImpl&) = delete;
 
-  ~PersonalizationAppSeaPenProviderImpl() override;
+  ~VcBackgroundUISeaPenProviderImpl() override;
 
   void DeleteRecentSeaPenImage(
       const base::FilePath& path,
@@ -49,7 +49,7 @@ class PersonalizationAppSeaPenProviderImpl
 
   void GetRecentSeaPenImageThumbnailInternal(
       const base::FilePath& path,
-      DecodeImageCallback callback) override;
+      personalization_app::DecodeImageCallback callback) override;
 
   void OnFetchWallpaperDoneInternal(
       const SeaPenImage& sea_pen_image,
@@ -57,6 +57,6 @@ class PersonalizationAppSeaPenProviderImpl
       base::OnceCallback<void(bool success)> callback) override;
 };
 
-}  // namespace ash::personalization_app
+}  // namespace ash::vc_background_ui
 
-#endif  // CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_PERSONALIZATION_APP_PERSONALIZATION_APP_SEA_PEN_PROVIDER_IMPL_H_
+#endif  // CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_VC_BACKGROUND_UI_VC_BACKGROUND_UI_SEA_PEN_PROVIDER_IMPL_H_
