@@ -345,3 +345,80 @@ TEST_F(TabOrganizationServiceTest, TabStripAddRemoveDestroysSession) {
       TabCloseTypes::CLOSE_NONE);
   EXPECT_EQ(service()->GetSessionForBrowser(browser1), nullptr);
 }
+
+TEST_F(TabOrganizationServiceTest,
+       RemoveAllTabsWhileMultiplePendingOrganizationsDoesntCrash) {
+  // b/319272034
+
+  // This is a regression test for a crash when:
+  // - there are at least two pending organizations in the current session
+  // - the UI is open (and so TabSearchPageHandler is observing the session)
+  // - the browser is closed using TabStripModel::CloseAllTabs
+  // - probably some other requirements on observer registration order
+
+  // Then the page handler calls IsValidForOrganizing() on one of the
+  // organizations, which crashed because the tabs in the organization no longer
+  // existed BUT it had not yet been notified of this.
+
+  // This observer simulates the role of the TabSearchPageHandler
+  class TestOrganizationObserver : public TabOrganization::Observer {
+   public:
+    explicit TestOrganizationObserver(TabOrganization* org_1,
+                                      TabOrganization* org_2)
+        : org_1_(org_1), org_2_(org_2) {}
+    void OnTabOrganizationUpdated(const TabOrganization* org) override {
+      // Without the fix, one of these two lines will crash, because only one of
+      // the orgs has been notified of the removed tabs, and the other assumes
+      // its tabs are still alive.
+      org_1_->IsValidForOrganizing();
+      org_2_->IsValidForOrganizing();
+    }
+
+   private:
+    raw_ptr<TabOrganization> org_1_;
+    raw_ptr<TabOrganization> org_2_;
+  };
+
+  Browser* browser1 = AddBrowser();
+  for (int i = 0; i < 4; i++) {
+    AddValidTabToBrowser(browser1, 0);
+  }
+
+  TabStripModel* model = browser1->tab_strip_model();
+  std::vector<std::u16string> names;
+
+  // Create two organizations. This must be done manually instead of through the
+  // service and session because the test scaffold using the service doesn't let
+  // us match the observer registration order that actually triggers the crash.
+  // The contents of the organizations doesn't matter.
+  std::vector<std::unique_ptr<TabData>> tab_datas_1;
+  tab_datas_1.emplace_back(
+      std::make_unique<TabData>(model, model->GetWebContentsAt(0)));
+  tab_datas_1.emplace_back(
+      std::make_unique<TabData>(model, model->GetWebContentsAt(1)));
+  TabOrganization org_1 =
+      TabOrganization(std::move(tab_datas_1), names, 0u,
+                      TabOrganization::UserChoice::kNoChoice);
+
+  std::vector<std::unique_ptr<TabData>> tab_datas_2;
+  tab_datas_2.emplace_back(
+      std::make_unique<TabData>(model, model->GetWebContentsAt(0)));
+  tab_datas_2.emplace_back(
+      std::make_unique<TabData>(model, model->GetWebContentsAt(1)));
+  TabOrganization org_2 =
+      TabOrganization(std::move(tab_datas_2), names, 0u,
+                      TabOrganization::UserChoice::kNoChoice);
+
+  TestOrganizationObserver observer(&org_1, &org_2);
+  org_1.AddObserver(&observer);
+  org_2.AddObserver(&observer);
+
+  // This triggers the test observer, and without the fix crashes when only one
+  // of the organizations has been updated with the closed tabs but
+  // IsValidForOrganizing is called on the other one.
+  browser1->tab_strip_model()->CloseAllTabs();
+
+  // Remove the observer so it is memory-safe to destroy it first.
+  org_1.RemoveObserver(&observer);
+  org_2.RemoveObserver(&observer);
+}
