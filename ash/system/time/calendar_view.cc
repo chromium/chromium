@@ -853,6 +853,7 @@ void CalendarView::SetHeaderAndContentViewOpacity(float opacity) {
 void CalendarView::SetShouldMonthsAnimateAndScrollEnabled(bool enabled) {
   set_should_months_animate(enabled);
   is_resetting_scroll_ = !enabled;
+  calendar_view_controller_->set_is_date_cell_clickable(enabled);
   scroll_view_->SetVerticalScrollBarMode(
       enabled ? views::ScrollView::ScrollBarMode::kHiddenButEnabled
               : views::ScrollView::ScrollBarMode::kDisabled);
@@ -1197,7 +1198,7 @@ void CalendarView::OnViewFocused(View* observed_view) {
 
   // If the event list is showing, focus on the first cell in the current row or
   // today's cell if today is in this row.
-  if (event_list_view_) {
+  if (calendar_view_controller_->is_event_list_showing()) {
     focus_manager->SetFocusedView(
         current_month_->focused_cells()[calendar_view_controller_
                                             ->GetExpandedRowIndex()]);
@@ -1351,6 +1352,8 @@ void CalendarView::OpenEventList() {
   SetCalendarSlidingSurfaceBounds(BoundsType::EVENT_LIST_VIEW_BOUNDS);
 
   set_should_months_animate(false);
+  calendar_view_controller_->set_is_date_cell_clickable(false);
+
   gfx::Vector2dF moving_up_location = gfx::Vector2dF(
       0, -GetPositionOfSelectedDate() + scroll_view_->GetVisibleRect().y());
 
@@ -1443,6 +1446,8 @@ void CalendarView::CloseEventList() {
                                              : ScrollViewState::FULL_HEIGHT);
   scroll_view_->SetVerticalScrollBarMode(
       views::ScrollView::ScrollBarMode::kHiddenButEnabled);
+
+  calendar_view_controller_->set_is_date_cell_clickable(false);
 
   // Move EventListView to the top of the up next view if showing, or off the
   // bottom of the CalendarView.
@@ -1762,6 +1767,14 @@ void CalendarView::ScrollOneRowWithAnimation(bool scroll_up) {
 }
 
 void CalendarView::OnEvent(ui::Event* event) {
+  // If it's animating, do not respond to any keyboard navigation for focus. All
+  // other keyboard event (e.g. keyboard shortcut to close the calendar view,
+  // shortcut to open the quick settings view, etc.) won't be affected.
+  if (IsAnimating()) {
+    event->StopPropagation();
+    return;
+  }
+
   if (!event->IsKeyEvent()) {
     GlanceableTrayChildBubble::OnEvent(event);
     return;
@@ -2018,6 +2031,8 @@ void CalendarView::OnOpenEventListAnimationComplete() {
   if (!should_months_animate_) {
     months_animation_restart_timer_.Reset();
   }
+
+  calendar_view_controller_->set_is_date_cell_clickable(true);
   scroll_view_->SetVerticalScrollBarMode(
       views::ScrollView::ScrollBarMode::kDisabled);
   calendar_view_controller_->OnEventListOpened();
@@ -2055,6 +2070,7 @@ void CalendarView::OnCloseEventListAnimationComplete() {
   calendar_sliding_surface_->RemoveChildViewT(event_list_view_.get());
   event_list_view_ = nullptr;
   calendar_view_controller_->OnEventListClosed();
+  calendar_view_controller_->set_is_date_cell_clickable(true);
 
   MaybeShowUpNextView();
 
@@ -2086,9 +2102,8 @@ void CalendarView::OnResetToTodayAnimationComplete() {
 }
 
 void CalendarView::OnResetToTodayFadeInAnimationComplete() {
-  set_should_months_animate(true);
   set_should_header_animate(true);
-  is_resetting_scroll_ = false;
+  SetShouldMonthsAnimateAndScrollEnabled(/*enabled=*/true);
   scroll_view_->SetVerticalScrollBarMode(
       event_list_view_ ? views::ScrollView::ScrollBarMode::kDisabled
                        : views::ScrollView::ScrollBarMode::kHiddenButEnabled);
@@ -2368,6 +2383,7 @@ void CalendarView::FadeInUpNextView() {
 
   // Disables scrolling when `up_next_view_` is animating.
   SetShouldMonthsAnimateAndScrollEnabled(/*enabled=*/false);
+  calendar_view_controller_->set_is_date_cell_clickable(false);
 
   ClipScrollViewHeight(ScrollViewState::UP_NEXT_SHOWING);
   // Sets the `calendar_sliding_surface_` bounds to be at the animation end
