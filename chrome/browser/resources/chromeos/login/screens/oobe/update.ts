@@ -10,6 +10,7 @@ import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/polymer/v3_0/paper-progress/paper-progress.js';
 import '//resources/polymer/v3_0/paper-styles/color.js';
 import '../../components/oobe_cr_lottie.js';
+import {OobeCrLottie} from '../../components/oobe_cr_lottie.js';
 import '../../components/oobe_icons.html.js';
 import '../../components/buttons/oobe_back_button.js';
 import '../../components/buttons/oobe_next_button.js';
@@ -19,8 +20,9 @@ import '../../components/dialogs/oobe_loading_dialog.js';
 import '../../components/oobe_carousel.js';
 import '../../components/oobe_slide.js';
 
+import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
@@ -59,55 +61,39 @@ const PERCENT_THRESHOLDS = [
  * Enum for the UI states corresponding to sub steps inside update screen.
  * These values must be kept in sync with string constants in
  * update_screen_handler.cc.
- * @enum {string}
  */
-const UpdateUIState = {
-  CHECKING: 'checking',
-  CHECKING_SOFTWARE: 'checking-software',
-  UPDATE: 'update',
-  RESTART: 'restart',
-  REBOOT: 'reboot',
-  CELLULAR: 'cellular',
-  OPT_OUT_INFO: 'opt-out-info',
-};
+enum UpdateUiState {
+  CHECKING = 'checking',
+  CHECKING_SOFTWARE = 'checking-software',
+  UPDATE = 'update',
+  RESTART = 'restart',
+  REBOOT = 'reboot',
+  CELLULAR = 'cellular',
+  OPT_OUT_INFO = 'opt-out-info',
+}
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {LoginScreenBehaviorInterface}
- * @implements {OobeI18nBehaviorInterface}
- * @implements {MultiStepBehaviorInterface}
- */
 const UpdateBase = mixinBehaviors(
-    [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior], PolymerElement);
+    [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior],
+        PolymerElement) as { new (): PolymerElement
+      & OobeI18nBehaviorInterface
+      & LoginScreenBehaviorInterface
+      & MultiStepBehaviorInterface,
+    };
 
-/**
- * @typedef {{
- *   betterUpdatePercent:  HTMLDivElement,
- *   betterUpdateTimeleft:  HTMLDivElement,
- * }}
- */
-UpdateBase.$;
+interface UpdateScreenData {
+  isOptOutEnabled: boolean;
+}
 
-/**
- * Data that is passed to the screen during onBeforeShow.
- * @typedef {{
- *   isOptOutEnabled: (boolean|undefined),
- * }}
- */
-let UpdateScreenData;
-
-/** @polymer */
-class Update extends UpdateBase {
+export class Update extends UpdateBase {
   static get is() {
-    return 'update-element';
+    return 'update-element' as const;
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
       /**
        * True if update is fully completed and manual action is required.
@@ -194,7 +180,7 @@ class Update extends UpdateBase {
        * Whether to show the loading UI different for
        * checking update stage
        */
-      isOobeSoftwareUpdateEnabled_: {
+      isOobeSoftwareUpdateEnabled: {
         type: Boolean,
         value() {
           return loadTimeData.getBoolean('isOobeSoftwareUpdateEnabled');
@@ -203,25 +189,36 @@ class Update extends UpdateBase {
     };
   }
 
-  static get observers() {
-    return ['playAnimation_(uiStep)'];
+  private manualRebootNeeded: boolean;
+  private cancelAllowed: boolean;
+  private cancelHint: string;
+  private showLowBatteryWarning: boolean;
+  private updateStatusMessagePercent: string;
+  private updateStatusMessageTimeLeft: string;
+  private betterUpdateProgressValue: number;
+  private autoTransition: boolean;
+  private thresholdIndex: number;
+  private isOptOutEnabled: boolean;
+  private isOobeSoftwareUpdateEnabled: boolean;
+
+  static get observers(): string[] {
+    return ['playAnimation(uiStep)'];
   }
 
-  defaultUIStep() {
-    if (this.isOobeSoftwareUpdateEnabled_) {
-      return UpdateUIState.CHECKING_SOFTWARE;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  override defaultUIStep(): string {
+    if (this.isOobeSoftwareUpdateEnabled) {
+      return UpdateUiState.CHECKING_SOFTWARE;
     } else {
-      return UpdateUIState.CHECKING;
+      return UpdateUiState.CHECKING;
     }
   }
 
-  get UI_STEPS() {
-    return UpdateUIState;
+  override get UI_STEPS() {
+    return UpdateUiState;
   }
 
-  /** Overridden from LoginScreenBehavior. */
-  // clang-format off
-  get EXTERNAL_API() {
+  override get EXTERNAL_API(): string[] {
     return ['setCancelUpdateShortcutEnabled',
             'showLowBatteryWarningMessage',
             'setUpdateState',
@@ -229,19 +226,18 @@ class Update extends UpdateBase {
             'setAutoTransition',
           ];
   }
-  // clang-format on
 
 
-  ready() {
+  override ready(): void {
     super.ready();
     this.initializeLoginScreen('UpdateScreen');
   }
 
   /**
    * Event handler that is invoked just before the screen is shown.
-   * @param {UpdateScreenData} data Screen init payload.
+   * @param data Screen init payload.
    */
-  onBeforeShow(data) {
+  onBeforeShow(data: UpdateScreenData): void {
     if (data && 'isOptOutEnabled' in data) {
       this.isOptOutEnabled = data['isOptOutEnabled'];
     }
@@ -250,42 +246,41 @@ class Update extends UpdateBase {
   /**
    * Cancels the screen.
    */
-  cancel() {
+  private cancel(): void {
     this.userActed(USER_ACTION_CANCEL_UPDATE_SHORTCUT);
   }
 
-  onBackClicked_() {
+  private onBackClicked(): void {
     this.userActed(USER_ACTION_REJECT_UPDATE_OVER_CELLUAR);
   }
 
-  onNextClicked_() {
+  private onNextClicked(): void {
     this.userActed(USER_ACTION_ACCEPT_UPDATE_OVER_CELLUAR);
   }
 
-  onOptOutInfoNext_() {
+  private onOptOutInfoNext(): void {
     this.userActed(USER_ACTION_OPT_OUT_INFO_NEXT);
   }
 
-  /** @param {boolean} enabled */
-  setCancelUpdateShortcutEnabled(enabled) {
+  setCancelUpdateShortcutEnabled(enabled: boolean): void {
     this.cancelAllowed = enabled;
   }
 
   /**
    * Shows or hides battery warning message.
-   * @param {boolean} visible Is message visible?
+   * @param visible Is message visible?
    */
-  showLowBatteryWarningMessage(visible) {
+  showLowBatteryWarningMessage(visible: boolean): void {
     this.showLowBatteryWarning = visible;
   }
 
   /**
    * Sets which dialog should be shown.
-   * @param {UpdateUIState} value Current update state.
+   * @param value Current update state.
    */
-  setUpdateState(value) {
-    if (value === 'checking' && this.isOobeSoftwareUpdateEnabled_) {
-      this.setUIStep(UpdateUIState.CHECKING_SOFTWARE);
+  setUpdateState(value: UpdateUiState): void {
+    if (value === 'checking' && this.isOobeSoftwareUpdateEnabled) {
+      this.setUIStep(UpdateUiState.CHECKING_SOFTWARE);
     } else {
       this.setUIStep(value);
     }
@@ -293,11 +288,12 @@ class Update extends UpdateBase {
 
   /**
    * Sets percent to be shown in progress bar.
-   * @param {number} percent Current progress
-   * @param {string} messagePercent Message describing current progress.
-   * @param {string} messageTimeLeft Message describing time left.
+   * @param percent Current progress
+   * @param messagePercent Message describing current progress.
+   * @param messageTimeLeft Message describing time left.
    */
-  setUpdateStatus(percent, messagePercent, messageTimeLeft) {
+  setUpdateStatus(percent: number, messagePercent: string,
+      messageTimeLeft: string): void {
     // Sets aria-live polite on percent and timeleft container every time new
     // threshold has been achieved otherwise do not initiate spoken feedback
     // update by setting aria-live off.
@@ -305,11 +301,25 @@ class Update extends UpdateBase {
       while (percent >= PERCENT_THRESHOLDS[this.thresholdIndex]) {
         this.thresholdIndex = this.thresholdIndex + 1;
       }
-      this.$.betterUpdatePercent.setAttribute('aria-live', 'polite');
-      this.$.betterUpdateTimeleft.setAttribute('aria-live', 'polite');
+      const betterUpdatePercent = this.shadowRoot?.
+          querySelector('#betterUpdatePercent');
+      const betterUpdateTimeleft = this.shadowRoot?.
+          querySelector('#betterUpdateTimeleft');
+      if (betterUpdatePercent instanceof HTMLElement
+          && betterUpdateTimeleft instanceof HTMLElement){
+        betterUpdatePercent.setAttribute('aria-live', 'polite');
+        betterUpdateTimeleft.setAttribute('aria-live', 'polite');
+      }
     } else {
-      this.$.betterUpdateTimeleft.setAttribute('aria-live', 'off');
-      this.$.betterUpdatePercent.setAttribute('aria-live', 'off');
+      const betterUpdatePercent = this.shadowRoot?.
+          querySelector('#betterUpdatePercent');
+      const betterUpdateTimeleft = this.shadowRoot?.
+          querySelector('#betterUpdateTimeleft');
+      if (betterUpdatePercent instanceof HTMLElement
+          && betterUpdateTimeleft instanceof HTMLElement){
+        betterUpdatePercent.setAttribute('aria-live', 'off');
+        betterUpdateTimeleft.setAttribute('aria-live', 'off');
+      }
     }
     this.betterUpdateProgressValue = percent;
     this.updateStatusMessagePercent = messagePercent;
@@ -319,48 +329,53 @@ class Update extends UpdateBase {
   /**
    * Sets whether carousel should auto transit slides.
    */
-  setAutoTransition(value) {
+  setAutoTransition(value: boolean): void {
     this.autoTransition = value;
   }
 
   /**
    * Gets whether carousel should auto transit slides.
-   * @private
-   * @param {UpdateUIState} step Which UIState is shown now.
-   * @param {boolean} autoTransition Is auto transition allowed.
+   * @param step Which UIState is shown now.
+   * @param autoTransition Is auto transition allowed.
    */
-  getAutoTransition_(step, autoTransition) {
-    return step == UpdateUIState.UPDATE && autoTransition;
+  private getAutoTransition(step: UpdateUiState,
+      autoTransition: boolean): boolean {
+    return step == UpdateUiState.UPDATE && autoTransition;
   }
 
   /**
    * Computes the title of the first slide in carousel during update.
-   * @param {string} locale
-   * @param {boolean} isOptOutEnabled
    */
-  getUpdateSlideTitle_(locale, isOptOutEnabled) {
-    return this.i18n(
+  private getUpdateSlideTitle(locale: string,
+      isOptOutEnabled: boolean): string {
+    return this.i18nDynamic(locale,
         isOptOutEnabled ? 'slideUpdateAdditionalSettingsTitle' :
                           'slideUpdateTitle');
   }
 
   /**
    * Computes the text of the first slide in carousel during update.
-   * @param {string} locale
-   * @param {boolean} isOptOutEnabled
    */
-  getUpdateSlideText_(locale, isOptOutEnabled) {
-    return this.i18n(
+  private getUpdateSlideText(locale: string, isOptOutEnabled: boolean): string {
+    return this.i18nDynamic(locale,
         isOptOutEnabled ? 'slideUpdateAdditionalSettingsText' :
                           'slideUpdateText');
   }
 
   /**
-   * @private
-   * @param {UpdateUIState} uiStep which UIState is shown now.
+   * @param uiStep which UiState is shown now.
    */
-  playAnimation_(uiStep) {
-    this.$.checkingAnimation.playing = (uiStep === UpdateUIState.CHECKING);
+  private playAnimation(uiStep: UpdateUiState): void {
+    const animation = this.shadowRoot?.querySelector('#checkingAnimation');
+    if (animation instanceof OobeCrLottie) {
+      animation.playing = (uiStep === UpdateUiState.CHECKING);
+    }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [Update.is]: Update;
   }
 }
 
