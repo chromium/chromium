@@ -921,7 +921,7 @@
     ],
 
     'official_android_arm64_pgo': [
-      'official', 'reclient', 'android', 'arm64', 'minimal_symbols', 'no_default_afdo', 'pgo_phase_1', 'stable_version_code',
+      'official', 'reclient', 'android', 'arm64', 'minimal_symbols', 'no_default_afdo', 'pgo_phase_1', 'stable_version_code', 'android_low_end',
     ],
 
     'official_celab_release_bot': [
@@ -977,7 +977,7 @@
     ],
 
     'official_goma_minimal_symbols_android_arm64_pgo': [
-      'official', 'goma', 'minimal_symbols', 'android', 'arm64'
+      'official', 'goma', 'minimal_symbols', 'android', 'arm64', 'android_low_end'
     ],
 
     'official_goma_minimal_symbols_android_pgo': [
@@ -1021,7 +1021,7 @@
     ],
 
     'official_minimal_symbols_android_arm64': [
-      'official', 'reclient', 'minimal_symbols', 'android', 'arm64', 'pgo_phase_0', 'no_default_afdo'
+      'official', 'reclient', 'minimal_symbols', 'android', 'arm64', 'pgo_phase_0', 'no_default_afdo', 'android_low_end',
     ],
 
     'official_reclient': [
@@ -1068,14 +1068,14 @@
     ],
 
     'official_reclient_minimal_symbols_android_arm64_high_end': [
-      'official', 'reclient', 'minimal_symbols', 'android', 'arm64', 'pgo_phase_0', 'no_default_afdo', 'android_high_end'
+      'official', 'reclient', 'minimal_symbols', 'android', 'arm64', 'pgo_phase_0', 'no_default_afdo', 'android_high_end',
     ],
     'official_reclient_minimal_symbols_android_arm64_high_end_pgo': [
-      'official', 'reclient', 'minimal_symbols', 'android', 'arm64', 'no_default_afdo', 'android_high_end'
+      'official', 'reclient', 'minimal_symbols', 'android', 'arm64', 'no_default_afdo', 'android_high_end',
     ],
 
     'official_reclient_minimal_symbols_android_arm64_pgo': [
-      'official', 'reclient', 'minimal_symbols', 'android', 'arm64'
+      'official', 'reclient', 'minimal_symbols', 'android', 'arm64', 'android_low_end',
     ],
 
     'official_reclient_minimal_symbols_android_pgo': [
@@ -1252,6 +1252,10 @@
 
     'android_high_end': {
       'gn_args': 'is_high_end_android=true',
+    },
+
+    'android_low_end': {
+      'gn_args': 'is_high_end_android=false',
     },
 
     'android_without_codecs': {

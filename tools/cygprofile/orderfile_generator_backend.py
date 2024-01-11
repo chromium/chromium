@@ -53,9 +53,12 @@ constants.SetBuildType('Release')
 # Architecture specific GN args. Trying to build an orderfile for an
 # architecture not listed here will eventually throw.
 _ARCH_GN_ARGS = {
-    'arm': ['target_cpu = "arm"'],
-    'arm64': ['target_cpu = "arm64"', 'android_64bit_browser = true'],
-    'x86': ['target_cpu = "x86"'],
+    'arm': ['target_cpu="arm"'],
+    'arm64': [
+        'target_cpu="arm64"', 'android_64bit_browser=true',
+        'is_high_end_android=false'
+    ],
+    'x86': ['target_cpu="x86"'],
 }
 
 class CommandError(Exception):

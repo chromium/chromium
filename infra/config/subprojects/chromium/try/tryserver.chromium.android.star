@@ -240,6 +240,7 @@ try_.builder(
             "official_optimize",
             "stable_channel",
             "v8_release_branch",
+            "android_low_end",
         ],
     ),
     builderless = not settings.is_main,
