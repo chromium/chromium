@@ -333,6 +333,7 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
 
   SidePanelCoordinator* const coordinator =
       SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
+  coordinator->SetNoDelaysForTesting(true);
 
   chrome::ExecuteCommand(browser(), IDC_SHOW_READING_MODE_SIDE_PANEL);
 

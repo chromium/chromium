@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/location_bar/read_anything_icon_view.h"
-
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/side_panel/read_anything/read_anything_side_panel_controller_utils.h"
+#include "chrome/browser/ui/views/location_bar/read_anything_icon_view.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -34,6 +35,11 @@ class ReadAnythingIconViewTest : public InProcessBrowserTest {
         ->GetPageActionIconView(PageActionIconType::kReadAnything);
   }
 
+  void SetNoDelaysForTesting() {
+    SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser())
+        ->SetNoDelaysForTesting(true);
+  }
+
   void ClickReadAnythingOmniboxIcon() {
     GetReadAnythingOmniboxIcon()->button_controller()->NotifyClick();
   }
@@ -56,6 +62,7 @@ class ReadAnythingIconViewTest : public InProcessBrowserTest {
 
 // Clicking the icon opens reading mode in the side panel.
 IN_PROC_BROWSER_TEST_F(ReadAnythingIconViewTest, OpensReadingModeOnClick) {
+  SetNoDelaysForTesting();
   SetActivePageDistillable();
   EXPECT_FALSE(IsReadAnythingEntryShowing(browser()));
   ClickReadAnythingOmniboxIcon();
@@ -64,6 +71,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingIconViewTest, OpensReadingModeOnClick) {
 
 // When reading mode is opened, hides the icon.
 IN_PROC_BROWSER_TEST_F(ReadAnythingIconViewTest, OpenReadingModeHidesIcon) {
+  SetNoDelaysForTesting();
   SetActivePageDistillable();
   PageActionIconView* icon = GetReadAnythingOmniboxIcon();
   EXPECT_TRUE(icon->GetVisible());
@@ -74,6 +82,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingIconViewTest, OpenReadingModeHidesIcon) {
 // When reading mode is already opened, the icon does not show.
 IN_PROC_BROWSER_TEST_F(ReadAnythingIconViewTest,
                        IconNotVisibleIfReadingModeOpen) {
+  SetNoDelaysForTesting();
   ShowReadAnythingSidePanel(browser(),
                             SidePanelOpenTrigger::kReadAnythingOmniboxIcon);
   SetActivePageDistillable();
