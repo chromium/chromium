@@ -11847,6 +11847,7 @@ if (!is_android && !is_fuchsia) {
       "//chrome/common",
       "//chrome/renderer",
       "//components/bookmarks/browser",
+      "//components/bookmarks/test",
       "//components/browser_sync",
       "//components/consent_auditor",
       "//components/favicon/core",

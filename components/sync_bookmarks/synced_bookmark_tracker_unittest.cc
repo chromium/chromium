@@ -587,8 +587,8 @@ TEST(SyncedBookmarkTrackerTest,
       CreateNodeMetadata(node0, /*server_id=*/kId0);
 
   std::unique_ptr<SyncedBookmarkTracker> tracker =
-      SyncedBookmarkTracker::CreateFromBookmarkModelAndMetadata(
-          &bookmark_model, std::move(model_metadata));
+      SyncedBookmarkTracker::CreateFromBookmarkModelAndMetadata(&bookmark_model,
+                                                                model_metadata);
   ASSERT_THAT(tracker, NotNull());
 
   // Mark the entities that they have local changes. (in shuffled order just to
@@ -633,7 +633,7 @@ TEST(SyncedBookmarkTrackerTest, ShouldNotInvalidateMetadata) {
   base::HistogramTester histogram_tester;
 
   EXPECT_THAT(SyncedBookmarkTracker::CreateFromBookmarkModelAndMetadata(
-                  &model, std::move(model_metadata)),
+                  &model, model_metadata),
               NotNull());
 
   histogram_tester.ExpectUniqueSample(
@@ -656,8 +656,8 @@ TEST(SyncedBookmarkTrackerTest, ShouldNotRequireClientTagsForPermanentNodes) {
   }
 
   std::unique_ptr<SyncedBookmarkTracker> tracker =
-      SyncedBookmarkTracker::CreateFromBookmarkModelAndMetadata(
-          &model, std::move(model_metadata));
+      SyncedBookmarkTracker::CreateFromBookmarkModelAndMetadata(&model,
+                                                                model_metadata);
   ASSERT_THAT(tracker, NotNull());
   EXPECT_THAT(tracker->GetEntityForSyncId(kBookmarkBarId), NotNull());
   EXPECT_THAT(tracker->GetEntityForSyncId(kMobileBookmarksId), NotNull());
@@ -683,7 +683,7 @@ TEST(SyncedBookmarkTrackerTest, ShouldInvalidateMetadataIfMissingMobileFolder) {
   base::HistogramTester histogram_tester;
 
   EXPECT_THAT(SyncedBookmarkTracker::CreateFromBookmarkModelAndMetadata(
-                  &model, std::move(model_metadata)),
+                  &model, model_metadata),
               IsNull());
 
   histogram_tester.ExpectUniqueSample(
@@ -706,7 +706,7 @@ TEST(SyncedBookmarkTrackerTest, ShouldInvalidateMetadataIfMissingServerId) {
   base::HistogramTester histogram_tester;
 
   EXPECT_THAT(SyncedBookmarkTracker::CreateFromBookmarkModelAndMetadata(
-                  &model, std::move(model_metadata)),
+                  &model, model_metadata),
               IsNull());
 
   histogram_tester.ExpectUniqueSample(
@@ -733,7 +733,7 @@ TEST(SyncedBookmarkTrackerTest,
   base::HistogramTester histogram_tester;
 
   EXPECT_THAT(SyncedBookmarkTracker::CreateFromBookmarkModelAndMetadata(
-                  &model, std::move(model_metadata)),
+                  &model, model_metadata),
               IsNull());
 
   histogram_tester.ExpectUniqueSample(
@@ -759,7 +759,7 @@ TEST(SyncedBookmarkTrackerTest,
   base::HistogramTester histogram_tester;
 
   EXPECT_THAT(SyncedBookmarkTracker::CreateFromBookmarkModelAndMetadata(
-                  &model, std::move(model_metadata)),
+                  &model, model_metadata),
               IsNull());
 
   histogram_tester.ExpectUniqueSample(
@@ -786,7 +786,7 @@ TEST(SyncedBookmarkTrackerTest,
   base::HistogramTester histogram_tester;
 
   EXPECT_THAT(SyncedBookmarkTracker::CreateFromBookmarkModelAndMetadata(
-                  &model, std::move(model_metadata)),
+                  &model, model_metadata),
               IsNull());
 
   histogram_tester.ExpectUniqueSample(
@@ -814,7 +814,7 @@ TEST(SyncedBookmarkTrackerTest, ShouldInvalidateMetadataIfGuidMismatch) {
   base::HistogramTester histogram_tester;
 
   EXPECT_THAT(SyncedBookmarkTracker::CreateFromBookmarkModelAndMetadata(
-                  &model, std::move(model_metadata)),
+                  &model, model_metadata),
               IsNull());
 
   histogram_tester.ExpectUniqueSample(
@@ -855,7 +855,7 @@ TEST(SyncedBookmarkTrackerTest,
   base::HistogramTester histogram_tester;
 
   EXPECT_THAT(SyncedBookmarkTracker::CreateFromBookmarkModelAndMetadata(
-                  &model, std::move(model_metadata)),
+                  &model, model_metadata),
               IsNull());
 
   histogram_tester.ExpectUniqueSample(
@@ -882,7 +882,7 @@ TEST(SyncedBookmarkTrackerTest,
 
   base::HistogramTester histogram_tester;
   EXPECT_THAT(SyncedBookmarkTracker::CreateFromBookmarkModelAndMetadata(
-                  &model, std::move(model_metadata)),
+                  &model, model_metadata),
               IsNull());
 
   histogram_tester.ExpectUniqueSample(
@@ -913,7 +913,7 @@ TEST(SyncedBookmarkTrackerTest,
 
   base::HistogramTester histogram_tester;
   EXPECT_THAT(SyncedBookmarkTracker::CreateFromBookmarkModelAndMetadata(
-                  &model, std::move(model_metadata)),
+                  &model, model_metadata),
               IsNull());
   histogram_tester.ExpectUniqueSample(
       "Sync.BookmarksModelMetadataCorruptionReason",
@@ -939,12 +939,42 @@ TEST(SyncedBookmarkTrackerTest, ShouldInvalidateMetadataIfMissingFaviconHash) {
 
   base::HistogramTester histogram_tester;
   EXPECT_THAT(SyncedBookmarkTracker::CreateFromBookmarkModelAndMetadata(
-                  &model, std::move(model_metadata)),
+                  &model, model_metadata),
               IsNull());
 
   histogram_tester.ExpectUniqueSample(
       "Sync.BookmarksModelMetadataCorruptionReason",
       /*sample=*/ExpectedCorruptionReason::MISSING_FAVICON_HASH,
+      /*expected_bucket_count=*/1);
+}
+
+TEST(SyncedBookmarkTrackerTest,
+     ShouldInvalidateMetadataIfPermanentFolderMissingLocally) {
+  auto client = std::make_unique<bookmarks::TestBookmarkClient>();
+  client->AllowFoldersForAccountStorage();
+  std::unique_ptr<bookmarks::BookmarkModel> model =
+      bookmarks::TestBookmarkClient::CreateModelWithClient(std::move(client));
+
+  BookmarkModelViewUsingAccountNodes view(model.get());
+  view.EnsurePermanentNodesExist();
+
+  sync_pb::BookmarkModelMetadata model_metadata =
+      CreateMetadataForPermanentNodes(&view);
+
+  ASSERT_THAT(SyncedBookmarkTracker::CreateFromBookmarkModelAndMetadata(
+                  &view, model_metadata),
+              NotNull());
+
+  view.RemoveAllSyncableNodes();
+
+  base::HistogramTester histogram_tester;
+  EXPECT_THAT(SyncedBookmarkTracker::CreateFromBookmarkModelAndMetadata(
+                  &view, model_metadata),
+              IsNull());
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.BookmarksModelMetadataCorruptionReason",
+      /*sample=*/ExpectedCorruptionReason::UNKNOWN_BOOKMARK_ID,
       /*expected_bucket_count=*/1);
 }
 
@@ -965,7 +995,7 @@ TEST(SyncedBookmarkTrackerTest,
 
   base::HistogramTester histogram_tester;
   EXPECT_THAT(SyncedBookmarkTracker::CreateFromBookmarkModelAndMetadata(
-                  &model, std::move(model_metadata)),
+                  &model, model_metadata),
               NotNull());
   histogram_tester.ExpectUniqueSample(
       "Sync.BookmarksModelMetadataCorruptionReason",
@@ -1020,8 +1050,8 @@ TEST(SyncedBookmarkTrackerTest, ShouldPopulateFaviconHashUponUpdate) {
   *model_metadata.add_bookmarks_metadata() = CreateNodeMetadata(node, kSyncId);
 
   std::unique_ptr<SyncedBookmarkTracker> tracker =
-      SyncedBookmarkTracker::CreateFromBookmarkModelAndMetadata(
-          &model, std::move(model_metadata));
+      SyncedBookmarkTracker::CreateFromBookmarkModelAndMetadata(&model,
+                                                                model_metadata);
   ASSERT_THAT(tracker, NotNull());
 
   const SyncedBookmarkTrackerEntity* entity =

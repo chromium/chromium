@@ -594,9 +594,14 @@ void BookmarkModelMerger::Merge() {
       continue;
     }
 
-    DCHECK_EQ(permanent_folder->uuid(),
-              GetPermanentFolderUuidForServerDefinedUniqueTag(
-                  server_defined_unique_tag));
+    // TODO(crbug.com/1494120): Reintroduce this DCHECK unconditionally once
+    // proper UUIDs are adopted for account bookmarks.
+    if (bookmark_model_->HasWellKnownPermanentNodeUuids()) {
+      DCHECK_EQ(permanent_folder->uuid(),
+                GetPermanentFolderUuidForServerDefinedUniqueTag(
+                    server_defined_unique_tag));
+    }
+
     MergeSubtree(/*local_node=*/permanent_folder,
                  /*remote_node=*/root);
   }

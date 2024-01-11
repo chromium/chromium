@@ -361,7 +361,12 @@ const bookmarks::BookmarkNode* CreateBookmarkNodeFromSpecifics(
   const base::Uuid parent_guid =
       base::Uuid::ParseLowercase(specifics.parent_guid());
   DCHECK(parent_guid.is_valid());
-  DCHECK_EQ(parent_guid, parent->uuid());
+
+  // TODO(crbug.com/1494120): Reintroduce this DCHECK unconditionally once
+  // proper UUIDs are adopted for account bookmarks.
+  if (model->HasWellKnownPermanentNodeUuids()) {
+    DCHECK_EQ(parent_guid, parent->uuid());
+  }
 
   bookmarks::BookmarkNode::MetaInfoMap metainfo =
       GetBookmarkMetaInfo(specifics);
