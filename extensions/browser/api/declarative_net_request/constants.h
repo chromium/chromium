@@ -159,7 +159,18 @@ enum class HostPermissionsAlwaysRequired {
   kTrue,
   // In this case, only redirecting (excluding upgrading) requests and modifying
   // headers require host permissions to the request url and initiator.
-  kFalse
+  kFalse,
+};
+
+// Specifies the request stage for which rulesets are to be matched.
+enum class RulesetMatchingStage {
+  // At this stage, the request has been prepared but not sent. Rules with
+  // conditions based only on the request's parameters will be matched.
+  kOnBeforeRequest,
+  // At this stage, the request's headers have been sent and response headers
+  // have been received. Rules with conditions that depend on the request's
+  // response will be matched.
+  kOnHeadersReceived,
 };
 
 // Schemes which can be used as part of url transforms.

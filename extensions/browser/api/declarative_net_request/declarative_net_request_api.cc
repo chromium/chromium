@@ -734,8 +734,11 @@ DeclarativeNetRequestTestMatchOutcomeFunction::Run() {
   auto method = params->request.method == dnr_api::RequestMethod::kNone
                     ? dnr_api::RequestMethod::kGet
                     : params->request.method;
+  // TODO(crbug.com/1141166): Add response header support for ruleset test
+  // matching.
   declarative_net_request::RequestParams request_params(
-      url, initiator, params->request.type, method, tab_id);
+      url, initiator, params->request.type, method, tab_id,
+      /*response_headers=*/nullptr);
 
   // Set up the rule matcher.
 

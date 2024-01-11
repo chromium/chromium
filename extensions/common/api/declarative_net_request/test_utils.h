@@ -25,6 +25,21 @@ struct DictionarySource {
 // serialize to JSON. The generated implementation for the JSON rules schema is
 // not used since it's not flexible enough to generate the base::Value/JSON we
 // want for tests.
+struct TestHeaderCondition : public DictionarySource {
+  TestHeaderCondition(std::string header,
+                      std::vector<std::string> values,
+                      std::vector<std::string> excluded_values);
+  ~TestHeaderCondition() override;
+  TestHeaderCondition(const TestHeaderCondition&);
+  TestHeaderCondition& operator=(const TestHeaderCondition&);
+
+  std::optional<std::string> header;
+  std::optional<std::vector<std::string>> values;
+  std::optional<std::vector<std::string>> excluded_values;
+
+  base::Value::Dict ToValue() const override;
+};
+
 struct TestRuleCondition : public DictionarySource {
   TestRuleCondition();
   ~TestRuleCondition() override;
@@ -47,6 +62,8 @@ struct TestRuleCondition : public DictionarySource {
   std::optional<std::vector<int>> tab_ids;
   std::optional<std::vector<int>> excluded_tab_ids;
   std::optional<std::string> domain_type;
+  std::optional<std::vector<TestHeaderCondition>> response_headers;
+  std::optional<std::vector<std::string>> excluded_response_headers;
 
   base::Value::Dict ToValue() const override;
 };

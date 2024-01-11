@@ -4,6 +4,8 @@
 
 #include "extensions/browser/api/declarative_net_request/regex_rules_matcher.h"
 
+#include <optional>
+
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
@@ -14,8 +16,7 @@
 #include "extensions/browser/api/declarative_net_request/request_params.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
 
-namespace extensions {
-namespace declarative_net_request {
+namespace extensions::declarative_net_request {
 namespace flat_rule = url_pattern_index::flat;
 
 namespace {
@@ -34,7 +35,7 @@ bool IsExtraHeadersMatcherInternal(
                         &flat::RegexRule::action_type);
 }
 
-// Helper to check if the |rule| metadata matches the given request |params|.
+// Helper to check if the `rule` metadata matches the given request `params`.
 bool DoesRuleMetadataMatchRequest(const flat_rule::UrlRule& rule,
                                   const RequestParams& params) {
   // Evaluates `element_type`, `method`, `is_third_party` and
@@ -103,6 +104,14 @@ size_t RegexRulesMatcher::GetRulesCount() const {
   return regex_list_->size();
 }
 
+size_t RegexRulesMatcher::GetBeforeRequestRulesCount() const {
+  return regex_list_->size();
+}
+
+size_t RegexRulesMatcher::GetHeadersReceivedRulesCount() const {
+  return 0u;
+}
+
 std::vector<RequestAction> RegexRulesMatcher::GetModifyHeadersActions(
     const RequestParams& params,
     std::optional<uint64_t> min_priority) const {
@@ -111,7 +120,7 @@ std::vector<RequestAction> RegexRulesMatcher::GetModifyHeadersActions(
 
   std::vector<const flat_rule::UrlRule*> rules;
   for (const RegexRuleInfo& info : potential_matches) {
-    // Check for the rule's priority iff |min_priority| is specified.
+    // Check for the rule's priority iff `min_priority` is specified.
     bool has_sufficient_priority =
         !min_priority ||
         info.regex_rule->url_rule()->priority() > *min_priority;
@@ -163,7 +172,7 @@ RegexRulesMatcher::GetBeforeRequestActionIgnoringAncestors(
       return CreateAllowAction(params, rule);
     case flat::ActionType_redirect:
       // If this is a regex substitution rule, handle the substitution. Else
-      // create the redirect action from the information in |metadata_list_|
+      // create the redirect action from the information in `metadata_list_`
       // below.
       return info->regex_rule->regex_substitution()
                  ? CreateRegexSubstitutionRedirectAction(params, *info)
@@ -179,6 +188,14 @@ RegexRulesMatcher::GetBeforeRequestActionIgnoringAncestors(
       break;
   }
 
+  return std::nullopt;
+}
+
+std::optional<RequestAction>
+RegexRulesMatcher::GetHeadersReceivedActionIgnoringAncestors(
+    const RequestParams& params) const {
+  // TODO(kelvinjiang): Add support for regex rules matching on response
+  // headers.
   return std::nullopt;
 }
 
@@ -228,7 +245,7 @@ void RegexRulesMatcher::InitializeMatcher() {
         s, [](const char c) { return !base::IsAsciiUpper(c); });
   }));
 
-  // Convert |strings_to_match| to MatcherStringPatterns. This is necessary to
+  // Convert `strings_to_match` to MatcherStringPatterns. This is necessary to
   // use url_matcher::SubstringSetMatcher.
   std::vector<base::MatcherStringPattern> patterns;
   patterns.reserve(strings_to_match.size());
@@ -266,9 +283,9 @@ const std::vector<RegexRuleInfo>& RegexRulesMatcher::GetPotentialMatches(
   if (!params.lower_cased_url_spec)
     params.lower_cased_url_spec = base::ToLowerASCII(params.url->spec());
 
-  // To pre-filter the set of regexes to match against |params|, we first need
-  // to compute the set of candidate strings tracked by |substring_matcher_|
-  // within |params.lower_cased_url_spec|.
+  // To pre-filter the set of regexes to match against `params`, we first need
+  // to compute the set of candidate strings tracked by `substring_matcher_`
+  // within `params.lower_cased_url_spec`.
   std::set<base::MatcherStringPattern::ID> candidate_ids_set;
   DCHECK(substring_matcher_);
   substring_matcher_->Match(*params.lower_cased_url_spec, &candidate_ids_set);
@@ -301,7 +318,7 @@ const std::vector<RegexRuleInfo>& RegexRulesMatcher::GetPotentialMatches(
                      rhs.regex_rule->url_rule()->priority();
             });
 
-  // Cache |potential_matches|.
+  // Cache `potential_matches`.
   auto result = params.potential_regex_matches.insert(
       std::make_pair(this, std::move(potential_matches)));
   return result.first->second;
@@ -344,5 +361,4 @@ RegexRulesMatcher::CreateRegexSubstitutionRedirectAction(
                               std::move(redirect_url));
 }
 
-}  // namespace declarative_net_request
-}  // namespace extensions
+}  // namespace extensions::declarative_net_request

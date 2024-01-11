@@ -88,6 +88,8 @@ base::Value::Dict TestRuleCondition::ToValue() const {
   SetValue(dict, kTabIdsKey, tab_ids);
   SetValue(dict, kExcludedTabIdsKey, excluded_tab_ids);
   SetValue(dict, kDomainTypeKey, domain_type);
+  SetValue(dict, kResponseHeadersKey, response_headers);
+  SetValue(dict, kExcludedResponseHeadersKey, excluded_response_headers);
 
   return dict;
 }
@@ -171,6 +173,26 @@ base::Value::Dict TestHeaderInfo::ToValue() const {
   SetValue(dict, kHeaderNameKey, header);
   SetValue(dict, kHeaderOperationKey, operation);
   SetValue(dict, kHeaderValueKey, value);
+  return dict;
+}
+
+TestHeaderCondition::TestHeaderCondition(
+    std::string header,
+    std::vector<std::string> values,
+    std::vector<std::string> excluded_values)
+    : header(std::move(header)),
+      values(std::move(values)),
+      excluded_values(std::move(excluded_values)) {}
+TestHeaderCondition::~TestHeaderCondition() = default;
+TestHeaderCondition::TestHeaderCondition(const TestHeaderCondition&) = default;
+TestHeaderCondition& TestHeaderCondition::operator=(
+    const TestHeaderCondition&) = default;
+
+base::Value::Dict TestHeaderCondition::ToValue() const {
+  base::Value::Dict dict;
+  SetValue(dict, kHeaderNameKey, header);
+  SetValue(dict, kHeaderValuesKey, values);
+  SetValue(dict, kHeaderExcludedValuesKey, excluded_values);
   return dict;
 }
 
