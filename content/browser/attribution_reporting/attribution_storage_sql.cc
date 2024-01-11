@@ -2259,7 +2259,7 @@ void AttributionStorageSql::VerifyReports(DeletionCounts* deletion_counts) {
       ReportCorruptionStatusSetAndIds corruption_case = report.error();
       for (ReportCorruptionStatus corruption_cause :
            corruption_case.status_set) {
-        base::UmaHistogramEnumeration("Conversions.CorruptReportsInDatabase3",
+        base::UmaHistogramEnumeration("Conversions.CorruptReportsInDatabase4",
                                       corruption_cause);
       }
       if (deletion_counts) {

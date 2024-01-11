@@ -112,9 +112,9 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
     kSourceInvalidEventReportWindows = 23,
     kSourceInvalidMaxEventLevelReports = 24,
     kSourceInvalidEventLevelEpsilon = 25,
-    kSourceDestinationSitesQueryFailed = 25,
-    kSourceInvalidDestinationSites = 26,
-    kStoredSourceConstructionFailed = 27,
+    kSourceDestinationSitesQueryFailed = 26,
+    kSourceInvalidDestinationSites = 27,
+    kStoredSourceConstructionFailed = 28,
     kMaxValue = kStoredSourceConstructionFailed,
   };
 
