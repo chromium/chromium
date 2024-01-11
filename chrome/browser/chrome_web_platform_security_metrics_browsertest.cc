@@ -21,10 +21,16 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "pdf/buildflags.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/cross_origin_opener_policy.mojom.h"
 #include "third_party/blink/public/common/features.h"
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "base/test/with_feature_override.h"
+#include "pdf/pdf_features.h"
+#endif
 
 namespace {
 const int kWasmPageSize = 1 << 16;
@@ -46,22 +52,7 @@ class ChromeWebPlatformSecurityMetricsBrowserTest : public policy::PolicyTest {
   ChromeWebPlatformSecurityMetricsBrowserTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS),
         http_server_(net::EmbeddedTestServer::TYPE_HTTP) {
-    features_.InitWithFeatures(
-        {
-            // Enabled:
-            network::features::kCrossOriginOpenerPolicy,
-            // SharedArrayBuffer is needed for these tests.
-            features::kSharedArrayBuffer,
-            // Some PNA worker feature relies on this.
-            // TODO(https://crbug.com/1430451): Remove this once PNA for workers
-            // metric logging doesn't rely on kPlzDedicatedWorker
-            blink::features::kPlzDedicatedWorker,
-        },
-        {
-            // Disabled because some subtests set document.domain and this
-            // feature flag prevents that:
-            blink::features::kOriginAgentClusterDefaultEnabled,
-        });
+    features_.InitWithFeatures(GetEnabledFeatures(), GetDisabledFeatures());
   }
 
   content::WebContents* web_contents() const {
@@ -137,6 +128,26 @@ class ChromeWebPlatformSecurityMetricsBrowserTest : public policy::PolicyTest {
 
       base::PlatformThread::Sleep(base::Milliseconds(5));
     }
+  }
+
+  virtual std::vector<base::test::FeatureRef> GetEnabledFeatures() const {
+    return {
+        network::features::kCrossOriginOpenerPolicy,
+        // SharedArrayBuffer is needed for these tests.
+        features::kSharedArrayBuffer,
+        // Some PNA worker feature relies on this.
+        // TODO(https://crbug.com/1430451): Remove this once PNA for workers
+        // metric logging doesn't rely on kPlzDedicatedWorker
+        blink::features::kPlzDedicatedWorker,
+    };
+  }
+
+  virtual std::vector<base::test::FeatureRef> GetDisabledFeatures() const {
+    return {
+        // Disabled because some subtests set document.domain and this
+        // feature flag prevents that:
+        blink::features::kOriginAgentClusterDefaultEnabled,
+    };
   }
 
  private:
@@ -2583,8 +2594,43 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   CheckCounter(WebFeature::kCrossWindowAccessToBrowserGeneratedDocument, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+#if BUILDFLAG(ENABLE_PDF)
+class ChromeWebPlatformSecurityMetricsBrowserPdfTest
+    : public base::test::WithFeatureOverride,
+      public ChromeWebPlatformSecurityMetricsBrowserTest {
+ public:
+  ChromeWebPlatformSecurityMetricsBrowserPdfTest()
+      : base::test::WithFeatureOverride(chrome_pdf::features::kPdfOopif),
+        ChromeWebPlatformSecurityMetricsBrowserTest() {}
+
+  bool UseOopif() const { return GetParam(); }
+
+  std::vector<base::test::FeatureRef> GetEnabledFeatures() const override {
+    std::vector<base::test::FeatureRef> enabled =
+        ChromeWebPlatformSecurityMetricsBrowserTest::GetEnabledFeatures();
+    if (UseOopif()) {
+      enabled.push_back(chrome_pdf::features::kPdfOopif);
+    }
+    return enabled;
+  }
+
+  std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
+    std::vector<base::test::FeatureRef> disabled =
+        ChromeWebPlatformSecurityMetricsBrowserTest::GetDisabledFeatures();
+    if (!UseOopif()) {
+      disabled.push_back(chrome_pdf::features::kPdfOopif);
+    }
+    return disabled;
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(ChromeWebPlatformSecurityMetricsBrowserPdfTest,
                        CrossWindowAccessToPluginDocument) {
+  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  if (UseOopif()) {
+    GTEST_SKIP();
+  }
+
   EXPECT_TRUE(content::NavigateToURL(web_contents(),
                                      https_server().GetURL("/empty.html")));
 
@@ -2616,6 +2662,12 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
     })()
   )"));
 }
+
+// TODO(crbug.com/1445746): Stop testing both modes after OOPIF PDF viewer
+// launches.
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    ChromeWebPlatformSecurityMetricsBrowserPdfTest);
+#endif
 
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
                        CSPEESameOriginWithSameCSPHeader) {
