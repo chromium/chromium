@@ -3,6 +3,7 @@ desc: |-
   If <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME">DefaultSearchProviderEnabled</ph> is on, then setting <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME">DefaultSearchProviderIconURL</ph> specifies the default search provider's favorite icon URL.
 
         Leaving <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME">DefaultSearchProviderIconURL</ph> unset means there's no icon for the search provider.
+deprecated: true
 example_value: https://search.my.company/favicon.ico
 features:
   can_be_recommended: true
@@ -16,9 +17,9 @@ owners:
 schema:
   type: string
 supported_on:
-- chrome.*:8-
-- chrome_os:11-
-- android:30-
-- ios:88-
+- chrome.*:8-121
+- chrome_os:11-121
+- android:30-121
+- ios:88-121
 tags: []
 type: string
