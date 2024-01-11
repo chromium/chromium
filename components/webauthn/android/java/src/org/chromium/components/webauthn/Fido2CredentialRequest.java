@@ -1143,8 +1143,7 @@ public class Fido2CredentialRequest
 
     private boolean isHybridClientApiAvailable() {
         return PackageUtils.getPackageVersion("com.google.android.gms")
-                        >= GMSCORE_MIN_VERSION_HYBRID_API
-                && DeviceFeatureMap.isEnabled(DeviceFeatureList.WEBAUTHN_ANDROID_HYBRID_CLIENT_UI);
+                        >= GMSCORE_MIN_VERSION_HYBRID_API;
     }
 
     private boolean isChrome() {
