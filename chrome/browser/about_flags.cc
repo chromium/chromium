@@ -7097,6 +7097,12 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+    {"app-specific-history", flag_descriptions::kAppSpecificHistoryName,
+     flag_descriptions::kAppSpecificHistoryDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAppSpecificHistory)},
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
     {"cct-incognito-available-to-third-party",
      flag_descriptions::kCCTIncognitoAvailableToThirdPartyName,
      flag_descriptions::kCCTIncognitoAvailableToThirdPartyDescription,

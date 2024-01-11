@@ -3881,6 +3881,10 @@ const char kAnimatedImageDragShadowDescription[] =
     "Image drag on Android is available when flag touch-drag-and-context-menu "
     "is enabled.";
 
+const char kAppSpecificHistoryName[] = "Allow app specific history";
+const char kAppSpecificHistoryDescription[] =
+    "If enabled, history results will also be categorized by application.";
+
 const char kArchiveTabServiceName[] = "Enable archive tab service";
 const char kArchiveTabServiceDescription[] =
     "Archives suggested tabs for the user that haven't been used beyond a "

@@ -2251,6 +2251,9 @@ extern const char kAndroidHatsRefactorDescription[];
 extern const char kAndroidHubName[];
 extern const char kAndroidHubDescription[];
 
+extern const char kAppSpecificHistoryName[];
+extern const char kAppSpecificHistoryDescription[];
+
 extern const char kArchiveTabServiceName[];
 extern const char kArchiveTabServiceDescription[];
 

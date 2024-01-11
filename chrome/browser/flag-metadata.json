@@ -225,6 +225,11 @@
     "expiry_milestone": 122
   },
   {
+    "name": "app-specific-history",
+    "owners": [ "katzz@google.com", "jinsukkim@google.com" ],
+    "expiry_milestone": 142
+  },
+  {
     "name": "app-store-rating",
     "owners": [ "hiramahmood@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 118

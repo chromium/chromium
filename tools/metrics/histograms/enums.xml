@@ -20285,6 +20285,7 @@ from previous Chrome versions.
       label="DownloadNotificationServiceUnifiedAPI:enabled"/>
   <int value="-1788763369" label="PrintingPpdChannel:disabled"/>
   <int value="-1787333474" label="FedCmError:disabled"/>
+  <int value="-1786020274" label="AppSpecificHistory:enabled"/>
   <int value="-1784831690" label="Bento:disabled"/>
   <int value="-1784788154" label="NewRemotePlaybackPipeline:disabled"/>
   <int value="-1783790234"
@@ -21008,6 +21009,7 @@ from previous Chrome versions.
   <int value="-1448511207" label="UseMessagesStagingUrl:disabled"/>
   <int value="-1448094672" label="CCTBrandTransparency:disabled"/>
   <int value="-1448056519" label="MlUrlScoring:enabled"/>
+  <int value="-1447849019" label="AppSpecificHistory:disabled"/>
   <int value="-1447314734" label="QuerySearchBurnInPeriod:enabled"/>
   <int value="-1447147245" label="VideoPlayerNativeControls:enabled"/>
   <int value="-1446625028" label="CrostiniUsbAllowUnsupported:enabled"/>
