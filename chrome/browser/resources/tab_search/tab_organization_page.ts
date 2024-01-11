@@ -15,25 +15,11 @@ import './tab_organization_shared_style.css.js';
 import {CrFeedbackOption} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
-import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './tab_organization_page.html.js';
 import {Tab, TabOrganization, TabOrganizationError, TabOrganizationSession, TabOrganizationState, UserFeedback} from './tab_search.mojom-webui.js';
 import {TabSearchApiProxy, TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
-
-const BODY_VERTICAL_MARGIN: number = 40;
-const HEIGHT_ANIMATION_LENGTH: number = 250;
-
-export interface TabOrganizationPageElement {
-  $: {
-    contents: HTMLElement,
-    notStarted: HTMLElement,
-    inProgress: HTMLElement,
-    results: HTMLElement,
-    failure: HTMLElement,
-    footer: HTMLElement,
-  };
-}
 
 export class TabOrganizationPageElement extends PolymerElement {
   static get is() {
@@ -115,42 +101,8 @@ export class TabOrganizationPageElement extends PolymerElement {
     }
   }
 
-  updateContentsHeightAfterNextRender() {
-    afterNextRender(this, () => this.updateContentsHeight_());
-  }
-
-  private updateContentsHeight_() {
-    let contentsHeight = 0;
-    switch (this.state_) {
-      case TabOrganizationState.kNotStarted:
-        contentsHeight = this.$.notStarted.scrollHeight + BODY_VERTICAL_MARGIN;
-        break;
-      case TabOrganizationState.kInProgress:
-        contentsHeight = this.$.inProgress.scrollHeight + BODY_VERTICAL_MARGIN;
-        break;
-      case TabOrganizationState.kSuccess:
-        contentsHeight = this.$.results.scrollHeight + BODY_VERTICAL_MARGIN;
-        break;
-      case TabOrganizationState.kFailure:
-        contentsHeight = this.$.failure.scrollHeight + BODY_VERTICAL_MARGIN;
-        if (this.showFRE_) {
-          // If the failure footer is shown, exclude bottom margin as the
-          // footer should extend to the bottom of the bubble.
-          contentsHeight -= BODY_VERTICAL_MARGIN / 2;
-        }
-        break;
-    }
-    this.$.contents.style.height = contentsHeight + 'px';
-  }
-
   private onVisible_() {
-    // When the UI goes from not shown to shown, bypass height transition.
-    this.$.contents.classList.toggle('no-transition', true);
     this.updateAvailableHeight_();
-    // TODO(emshack): We should find a way to avoid using a timeout here.
-    setTimeout(
-        () => this.$.contents.classList.toggle('no-transition', false),
-        HEIGHT_ANIMATION_LENGTH);
   }
 
   // TODO(emshack): Consider moving the available height calculation into
@@ -162,17 +114,10 @@ export class TabOrganizationPageElement extends PolymerElement {
       const activeWindow = profileData.windows.find((t) => t.active);
       this.availableHeight_ =
           activeWindow ? activeWindow!.height : profileData.windows[0]!.height;
-      this.updateContentsHeight_();
     });
   }
 
   private setSession_(session: TabOrganizationSession) {
-    const prevError = this.error_;
-    const prevName = this.name_;
-    const prevTabs = this.tabs_;
-    const prevIsLastOrganization = this.isLastOrganization_;
-    const prevState = this.state_;
-
     this.sessionId_ = session.sessionId;
     this.error_ = session.error;
     if (session.state === TabOrganizationState.kSuccess) {
@@ -185,16 +130,6 @@ export class TabOrganizationPageElement extends PolymerElement {
       this.organizationId_ = -1;
     }
     this.setState_(session.state);
-
-    const visualChange = prevError !== this.error_ || prevName !== this.name_ ||
-        prevTabs !== this.tabs_ ||
-        prevIsLastOrganization !== this.isLastOrganization_ ||
-        prevState !== this.state_;
-    if (visualChange) {
-      // Wait for a rendering pass so the new scroll height is up to date
-      // with any new data.
-      this.updateContentsHeightAfterNextRender();
-    }
   }
 
   private setState_(state: TabOrganizationState) {

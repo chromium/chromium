@@ -47,29 +47,23 @@
 
   #contents {
     overflow: hidden;
-    transition: height 250ms var(--standard-curve);
-  }
-
-  #contents.no-transition {
-    transition: none;
   }
 </style>
 
 <div id="contents">
   <div id="body">
-    <tab-organization-not-started id="notStarted"
+    <tab-organization-not-started
         shown$="[[isState_(tabOrganizationStateEnum_.kNotStarted, state_)]]"
-        on-sync-change="updateContentsHeightAfterNextRender"
         on-sync-click="onSyncClick_"
         on-sign-in-click="onSignInClick_"
         on-settings-click="onSettingsClick_"
         on-organize-tabs-click="onOrganizeTabsClick_"
         show-fre="[[showFRE_]]">
     </tab-organization-not-started>
-    <tab-organization-in-progress id="inProgress"
+    <tab-organization-in-progress
         shown$="[[isState_(tabOrganizationStateEnum_.kInProgress, state_)]]">
     </tab-organization-in-progress>
-    <tab-organization-results id="results"
+    <tab-organization-results
         shown$="[[isState_(tabOrganizationStateEnum_.kSuccess, state_)]]"
         name="[[name_]]"
         tabs="[[tabs_]]"
@@ -81,7 +75,7 @@
         on-learn-more-click="onLearnMoreClick_"
         on-feedback="onFeedback_">
     </tab-organization-results>
-    <tab-organization-failure id="failure"
+    <tab-organization-failure
         shown$="[[isState_(tabOrganizationStateEnum_.kFailure, state_)]]"
         show-fre="[[showFRE_]]"
         error="[[error_]]"
