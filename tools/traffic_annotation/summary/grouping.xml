@@ -301,6 +301,7 @@ after discussions on the right group.
       <annotation id="launcher_manatee"/>
       <annotation id="chromeos_picker_gif_fetcher"/>
       <annotation id="prewarm_http_disk_cache"/>
+      <annotation id="admin_specified_ppd_fetch"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">
