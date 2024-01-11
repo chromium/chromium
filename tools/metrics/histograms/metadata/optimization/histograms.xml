@@ -61,6 +61,8 @@ chromium-metrics-reviews@google.com.
   <variant name="PreloadingHeuristics" summary="Speculation-rule preloading"/>
   <variant name="SegmentationAdaptiveToolbar"
       summary="Segmentation: Adaptive toolbar button"/>
+  <variant name="SegmentationAndroidHomeModuleRanker"
+      summary="Segmentation: Android home module ranker"/>
   <variant name="SegmentationBottomToolbar"
       summary="Segmentation: Bottom toolbar user"/>
   <variant name="SegmentationChromeLowUserEngagement"

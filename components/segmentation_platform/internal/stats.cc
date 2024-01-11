@@ -52,6 +52,7 @@ GetOptimizationTargetOutputDescription(SegmentId segment_id) {
     case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SEARCH_USER:
     case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_TABLET_PRODUCTIVITY_USER:
     case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_IOS_MODULE_RANKER:
+    case SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_ANDROID_HOME_MODULE_RANKER:
       return proto::SegmentationModelMetadata::RETURN_TYPE_MULTISEGMENT;
     default:
       return proto::SegmentationModelMetadata::UNKNOWN_RETURN_TYPE;

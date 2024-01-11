@@ -116,6 +116,10 @@ BASE_FEATURE(kSegmentationPlatformIosModuleRanker,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+BASE_FEATURE(kSegmentationPlatformAndroidHomeModuleRanker,
+             "SegmentationPlatformAndroidHomeModuleRanker",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSegmentationPlatformTimeDelaySampling,
              "SegmentationPlatformTimeDelaySampling",
              base::FEATURE_DISABLED_BY_DEFAULT);
