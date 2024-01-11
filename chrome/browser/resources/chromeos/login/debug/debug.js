@@ -1834,6 +1834,10 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
       ],
     },
     {
+      id: 'remote-activity-notification',
+      kind: ScreenKind.NORMAL,
+    },
+    {
       id: 'cryptohome-recovery',
       kind: ScreenKind.NORMAL,
     },
