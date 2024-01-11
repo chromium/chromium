@@ -346,13 +346,7 @@ void WaitForOmniboxSuggestion(NSString* suggestion, int section, int row) {
 }
 
 // Tests typing in the omnibox.
-// TODO(crbug.com/1283854): Fix test.
 - (void)testToolbarOmniboxTyping {
-  // TODO(crbug.com/642559): Enable this test for iPad when typing bug is fixed.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Disabled for iPad due to a simulator bug.");
-  }
-
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
       performAction:grey_tap()];
 
@@ -380,14 +374,19 @@ void WaitForOmniboxSuggestion(NSString* suggestion, int section, int row) {
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"#" flags:UIKeyModifierShift];
   WaitForOmniboxSuggestion(@"abC12@{#", 0, 0);
 
-  id<GREYMatcher> cancelButton =
-      grey_accessibilityID(kToolbarCancelOmniboxEditButtonIdentifier);
-  DCHECK(cancelButton);
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"escape" flags:0];
+  } else {
+    id<GREYMatcher> cancelButton =
+        grey_accessibilityID(kToolbarCancelOmniboxEditButtonIdentifier);
+    DCHECK(cancelButton);
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(cancelButton,
-                                          grey_sufficientlyVisible(), nil)]
-      performAction:grey_tap()];
+    [[EarlGrey
+        selectElementWithMatcher:grey_allOf(cancelButton,
+                                            grey_sufficientlyVisible(), nil)]
+        performAction:grey_tap()];
+  }
+
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       assertWithMatcher:chrome_test_util::OmniboxText("")];
 }
