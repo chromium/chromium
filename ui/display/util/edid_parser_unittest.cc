@@ -254,6 +254,34 @@ constexpr unsigned char kHDRMetadata[] =
     "\x00\x00\x1e\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xbd";
 constexpr size_t kHDRMetadataLength = std::size(kHDRMetadata);
 
+// EDID for Dell UP3218K, a 2x1 8K tiled display.
+constexpr unsigned char kTiledDisplay[] =
+    "\x00\xff\xff\xff\xff\xff\xff\x00\x10\xac\x47\x41\x4c\x34\x37\x41"
+    "\x0b\x21\x01\x04\xb5\x46\x27\x78\x3a\x76\x45\xae\x51\x33\xba\x26"
+    "\x0d\x50\x54\xa5\x4b\x00\x81\x00\xb3\x00\xd1\x00\xa9\x40\x81\x80"
+    "\xd1\xc0\x01\x01\x01\x01\x4d\xd0\x00\xa0\xf0\x70\x3e\x80\x30\x20"
+    "\x35\x00\xba\x89\x21\x00\x00\x1a\x00\x00\x00\xff\x00\x4a\x48\x4e"
+    "\x34\x4a\x33\x33\x47\x41\x37\x34\x4c\x0a\x00\x00\x00\xfc\x00\x44"
+    "\x45\x4c\x4c\x20\x55\x50\x33\x32\x31\x38\x4b\x0a\x00\x00\x00\xfd"
+    "\x00\x18\x4b\x1e\xb4\x6c\x01\x0a\x20\x20\x20\x20\x20\x20\x02\x79"
+    "\x02\x03\x1d\xf1\x50\x10\x1f\x20\x05\x14\x04\x13\x12\x11\x03\x02"
+    "\x16\x15\x07\x06\x01\x23\x09\x1f\x07\x83\x01\x00\x00\xa3\x66\x00"
+    "\xa0\xf0\x70\x1f\x80\x30\x20\x35\x00\xba\x89\x21\x00\x00\x1a\x56"
+    "\x5e\x00\xa0\xa0\xa0\x29\x50\x30\x20\x35\x00\xba\x89\x21\x00\x00"
+    "\x1a\x7c\x39\x00\xa0\x80\x38\x1f\x40\x30\x20\x3a\x00\xba\x89\x21"
+    "\x00\x00\x1a\xa8\x16\x00\xa0\x80\x38\x13\x40\x30\x20\x3a\x00\xba"
+    "\x89\x21\x00\x00\x1a\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+    "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x47"
+    "\x70\x12\x79\x00\x00\x12\x00\x16\x82\x10\x10\x00\xff\x0e\xdf\x10"
+    "\x00\x00\x00\x00\x00\x44\x45\x4c\x47\x41\x4c\x34\x37\x41\x03\x01"
+    "\x50\x70\x92\x01\x84\xff\x1d\xc7\x00\x1d\x80\x09\x00\xdf\x10\x2f"
+    "\x00\x02\x00\x04\x00\xc1\x42\x01\x84\xff\x1d\xc7\x00\x2f\x80\x1f"
+    "\x00\xdf\x10\x30\x00\x02\x00\x04\x00\xa8\x4e\x01\x04\xff\x0e\xc7"
+    "\x00\x2f\x80\x1f\x00\xdf\x10\x61\x00\x02\x00\x09\x00\x97\x9d\x01"
+    "\x04\xff\x0e\xc7\x00\x2f\x80\x1f\x00\xdf\x10\x2f\x00\x02\x00\x09"
+    "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x78\x90";
+constexpr size_t kTiledDisplayLength = std::size(kTiledDisplay);
+
 const std::string kNoSerialNumber = "";
 const gfx::Size kNoMaxImageSize = gfx::Size(0, 0);
 constexpr uint8_t kNoWeekOfManufactureTag = 0x00;
@@ -286,6 +314,8 @@ constexpr SkColorSpacePrimaries kEvePrimaries = {
     0.6396f, 0.3291f, 0.2998f, 0.5996f, 0.1494f, 0.0596f, 0.3125f, 0.3281f};
 constexpr SkColorSpacePrimaries kHDRPrimaries = {
     0.6406f, 0.3300f, 0.3007f, 0.6005f, 0.1503f, 0.0605f, 0.2802f, 0.2900f};
+constexpr SkColorSpacePrimaries kDellTiledPrimaries = {
+    0.6807f, 0.3193f, 0.2002f, 0.7285f, 0.1494f, 0.0508f, 0.3134f, 0.3291f};
 
 // Chromaticity primaries in EDID are specified with 10 bits precision.
 constexpr static float kPrimariesPrecision = 1 / 2048.f;
@@ -344,6 +374,7 @@ struct TestParams {
   base::flat_set<gfx::ColorSpace::TransferID> supported_color_transfer_ids;
   absl::optional<gfx::HDRStaticMetadata> hdr_static_metadata;
   absl::optional<uint16_t> vsync_rate_min;
+  bool tile_scale_to_fit;
 
   const unsigned char* edid_blob;
   size_t edid_blob_length;
@@ -372,6 +403,7 @@ struct TestParams {
      .supported_color_transfer_ids = {},
      .hdr_static_metadata = absl::nullopt,
      .vsync_rate_min = absl::nullopt,
+     .tile_scale_to_fit = false,
      .edid_blob = kBadDisplayName,
      .edid_blob_length = kBadDisplayNameLength},
     {.test_name = "NormalDisplay",
@@ -398,6 +430,7 @@ struct TestParams {
      .supported_color_transfer_ids = {},
      .hdr_static_metadata = absl::nullopt,
      .vsync_rate_min = absl::nullopt,
+     .tile_scale_to_fit = false,
      .edid_blob = kNormalDisplay,
      .edid_blob_length = kNormalDisplayLength},
     {.test_name = "NoMaxImageSizeDisplay",
@@ -424,6 +457,7 @@ struct TestParams {
      .supported_color_transfer_ids = {},
      .hdr_static_metadata = absl::nullopt,
      .vsync_rate_min = absl::nullopt,
+     .tile_scale_to_fit = false,
      .edid_blob = kNoMaxImageSizeDisplay,
      .edid_blob_length = kNoMaxImageSizeDisplayLength},
     {.test_name = "BlockZeroSerialNumberOnlyDisplay",
@@ -449,6 +483,7 @@ struct TestParams {
      .supported_color_transfer_ids = {},
      .hdr_static_metadata = absl::nullopt,
      .vsync_rate_min = absl::nullopt,
+     .tile_scale_to_fit = false,
      .edid_blob = kBlockZeroSerialNumberOnlyDisplay,
      .edid_blob_length = kBlockZeroSerialNumberOnlyDisplayLength},
     {.test_name = "NoSerialNumberDisplay",
@@ -474,6 +509,7 @@ struct TestParams {
      .supported_color_transfer_ids = {},
      .hdr_static_metadata = absl::nullopt,
      .vsync_rate_min = absl::nullopt,
+     .tile_scale_to_fit = false,
      .edid_blob = kNoSerialNumberDisplay,
      .edid_blob_length = kNoSerialNumberDisplayLength},
     {.test_name = "NoWeekOfManufactureDisplay",
@@ -500,6 +536,7 @@ struct TestParams {
      .supported_color_transfer_ids = {},
      .hdr_static_metadata = absl::nullopt,
      .vsync_rate_min = absl::nullopt,
+     .tile_scale_to_fit = false,
      .edid_blob = kNoWeekOfManufactureDisplay,
      .edid_blob_length = kNoWeekOfManufactureDisplayLength},
     {.test_name = "ModelYearDisplay",
@@ -526,6 +563,7 @@ struct TestParams {
      .supported_color_transfer_ids = {},
      .hdr_static_metadata = absl::nullopt,
      .vsync_rate_min = absl::nullopt,
+     .tile_scale_to_fit = false,
      .edid_blob = kModelYearDisplay,
      .edid_blob_length = kModelYearDisplayLength},
     {.test_name = "InternalDisplay",
@@ -551,6 +589,7 @@ struct TestParams {
      .supported_color_transfer_ids = {},
      .hdr_static_metadata = absl::nullopt,
      .vsync_rate_min = absl::nullopt,
+     .tile_scale_to_fit = false,
      .edid_blob = kInternalDisplay,
      .edid_blob_length = kInternalDisplayLength},
     {.test_name = "OverscanDisplay",
@@ -576,6 +615,7 @@ struct TestParams {
      .supported_color_transfer_ids = {},
      .hdr_static_metadata = absl::nullopt,
      .vsync_rate_min = 24,
+     .tile_scale_to_fit = false,
      .edid_blob = kOverscanDisplay,
      .edid_blob_length = kOverscanDisplayLength},
     {.test_name = "MisdetectedDisplay",
@@ -605,6 +645,7 @@ struct TestParams {
      .supported_color_transfer_ids = {},
      .hdr_static_metadata = absl::nullopt,
      .vsync_rate_min = 49,
+     .tile_scale_to_fit = false,
      .edid_blob = kMisdetectedDisplay,
      .edid_blob_length = kMisdetectedDisplayLength},
     {.test_name = "LP2565A",
@@ -630,6 +671,7 @@ struct TestParams {
      .supported_color_transfer_ids = {},
      .hdr_static_metadata = absl::nullopt,
      .vsync_rate_min = 48,
+     .tile_scale_to_fit = false,
      .edid_blob = kLP2565A,
      .edid_blob_length = kLP2565ALength},
     {.test_name = "LP2565B",
@@ -655,6 +697,7 @@ struct TestParams {
      .supported_color_transfer_ids = {},
      .hdr_static_metadata = absl::nullopt,
      .vsync_rate_min = 48,
+     .tile_scale_to_fit = false,
      .edid_blob = kLP2565B,
      .edid_blob_length = kLP2565BLength},
     {.test_name = "HPz32x",
@@ -680,6 +723,7 @@ struct TestParams {
      .supported_color_transfer_ids = {},
      .hdr_static_metadata = absl::nullopt,
      .vsync_rate_min = 24,
+     .tile_scale_to_fit = false,
      .edid_blob = kHPz32x,
      .edid_blob_length = kHPz32xLength},
     {.test_name = "Samus",
@@ -705,6 +749,7 @@ struct TestParams {
      .supported_color_transfer_ids = {},
      .hdr_static_metadata = absl::nullopt,
      .vsync_rate_min = absl::nullopt,
+     .tile_scale_to_fit = false,
      .edid_blob = kSamus,
      .edid_blob_length = kSamusLength},
     {.test_name = "Eve",
@@ -730,6 +775,7 @@ struct TestParams {
      .supported_color_transfer_ids = {},
      .hdr_static_metadata = absl::nullopt,
      .vsync_rate_min = absl::nullopt,
+     .tile_scale_to_fit = false,
      .edid_blob = kEve,
      .edid_blob_length = kEveLength},
     {.test_name = "HDRMetadata",
@@ -769,9 +815,35 @@ struct TestParams {
              gfx::HDRStaticMetadata::Eotf::kPq,
          })),
      .vsync_rate_min = 24,
+     .tile_scale_to_fit = false,
      .edid_blob = kHDRMetadata,
      .edid_blob_length = kHDRMetadataLength},
-
+    {.test_name = "TiledDisplay",
+     .manufacturer_id = 0x10ac,
+     .product_id = 0x4741,
+     .block_zero_serial_number_hash = "d79ced90548d0c97fee4406b172c6fb9",
+     .descriptor_block_serial_number_hash = "684333ab7cf4f22ae964878f967d7a13",
+     .max_image_size = gfx::Size(70, 39),
+     .display_name = "DELL UP3218K",
+     .active_pixel_size = gfx::Size(3840, 2160),
+     .week_of_manufacture = 11,
+     .year_of_manufacture = 2023,
+     .overscan_flag = false,
+     .gamma = 2.2,
+     .bits_per_channel = 10,
+     .primaries = kDellTiledPrimaries,
+     .product_code = 279725889,
+     .index_based_display_id_zero = 4693236086999552,
+     .edid_based_display_id = 4170208605,
+     .manufacturer_id_string = "DEL",
+     .product_id_string = "4147",
+     .supported_color_primary_matrix_ids = {},
+     .supported_color_transfer_ids = {},
+     .hdr_static_metadata = absl::nullopt,
+     .vsync_rate_min = 24,
+     .tile_scale_to_fit = true,
+     .edid_blob = kTiledDisplay,
+     .edid_blob_length = kTiledDisplayLength},
     // Empty Edid, which is tantamount to error.
     {.test_name = "EmptyEdid",
      .manufacturer_id = 0,
@@ -797,6 +869,7 @@ struct TestParams {
      .supported_color_transfer_ids = {},
      .hdr_static_metadata = absl::nullopt,
      .vsync_rate_min = absl::nullopt,
+     .tile_scale_to_fit = false,
      .edid_blob = nullptr,
      .edid_blob_length = 0u},
 };
@@ -869,6 +942,8 @@ TEST_P(EDIDParserTest, ParseEdids) {
   if (GetParam().vsync_rate_min.has_value() && vsync_rate_min.has_value()) {
     EXPECT_EQ(vsync_rate_min.value(), GetParam().vsync_rate_min.value());
   }
+
+  EXPECT_EQ(parser_.TileCanScaleToFit(), GetParam().tile_scale_to_fit);
 }
 
 INSTANTIATE_TEST_SUITE_P(

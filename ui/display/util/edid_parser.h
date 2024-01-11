@@ -114,12 +114,29 @@ class DISPLAY_UTIL_EXPORT EdidParser {
 
   bool is_external_display() const { return is_external_display_; }
 
+  // Returns true if the display is a tiled display and the tile (which all have
+  // their own EDID) specified that its content will stretch to fit the entire
+  // display across all tiles if the tile is the only tile being transmitted.
+  // Returns false if the display is not tiled, if EDID does not have a
+  // DisplayID tiled display block, or specifies a different behavior (e.g.
+  // clone).
+  bool TileCanScaleToFit() const;
+
  private:
   // Parses |edid_blob|, filling up as many as possible fields below.
   void ParseEdid(const std::vector<uint8_t>& edid);
 
   // We collect optional fields UMAs for external external displays only.
   void ReportEdidOptionalsForExternalDisplay() const;
+
+  // DisplayID in this context refers to the VESA standard for display metadata,
+  // not the identifier used throughout ash/ozone.
+  void ParseDisplayIdExtension(const std::vector<uint8_t>& edid,
+                               size_t extension_offset);
+
+  // Parses Tiled Display Topology data blocks for DisplayID v1.3 and v2.0.
+  void ParseTiledDisplayBlock(const std::vector<uint8_t>& edid,
+                              size_t block_offset);
 
   // Whether or not this EDID belongs to an external display.
   bool is_external_display_;
@@ -146,6 +163,8 @@ class DISPLAY_UTIL_EXPORT EdidParser {
   absl::optional<uint16_t> vsync_rate_min_;
 
   uint32_t audio_formats_;
+
+  bool tile_can_scale_to_fit_ = false;
 };
 
 }  // namespace display
