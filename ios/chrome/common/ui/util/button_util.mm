@@ -61,11 +61,14 @@ void SetConfigurationFont(UIButton* button, UIFont* font) {
   if (@available(iOS 15.0, *)) {
     UIButtonConfiguration* buttonConfiguration = button.configuration;
     NSString* configurationString = buttonConfiguration.attributedTitle.string;
-    NSDictionary* attributes = @{NSFontAttributeName : font};
-    NSMutableAttributedString* string =
-        [[NSMutableAttributedString alloc] initWithString:configurationString];
-    [string addAttributes:attributes range:NSMakeRange(0, string.length)];
-    buttonConfiguration.attributedTitle = string;
-    button.configuration = buttonConfiguration;
+
+    if (configurationString) {
+      NSDictionary* attributes = @{NSFontAttributeName : font};
+      NSMutableAttributedString* string = [[NSMutableAttributedString alloc]
+          initWithString:configurationString];
+      [string addAttributes:attributes range:NSMakeRange(0, string.length)];
+      buttonConfiguration.attributedTitle = string;
+      button.configuration = buttonConfiguration;
+    }
   }
 }
