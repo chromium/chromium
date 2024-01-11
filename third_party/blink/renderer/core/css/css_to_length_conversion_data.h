@@ -235,7 +235,7 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
     mutable absl::optional<double> cached_height_;
   };
 
-  using Flags = uint8_t;
+  using Flags = uint16_t;
 
   // Flags represent the units seen in a conversion. They are used for targeted
   // invalidation, e.g. when root font-size changes, only elements dependent on
@@ -258,6 +258,8 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
     kContainerRelative = 1u << 6,
     // calc() includes tree scoped reference to an anchor
     kAnchorRelative = 1u << 7,
+    // vi, vb, cqi, cqb, etc
+    kLogicalDirectionRelative = 1u << 8,
     // Adjust the Flags type above if adding more bits below.
   };
 

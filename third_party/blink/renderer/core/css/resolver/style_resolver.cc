@@ -405,6 +405,9 @@ void ApplyLengthConversionFlags(StyleResolverState& state) {
   if (flags & static_cast<Flags>(Flag::kAnchorRelative)) {
     state.SetHasTreeScopedReference();
   }
+  if (flags & static_cast<Flags>(Flag::kLogicalDirectionRelative)) {
+    builder.SetHasLogicalDirectionRelativeUnits();
+  }
 }
 
 }  // namespace
@@ -1249,6 +1252,8 @@ void StyleResolver::InitStyle(Element& element,
         style_request.originating_element_style->GetFont());
     state.StyleBuilder().SetLineHeight(
         style_request.originating_element_style->LineHeight());
+    state.StyleBuilder().SetWritingMode(
+        style_request.originating_element_style->GetWritingMode());
   }
 
   if (!style_request.IsPseudoStyleRequest() && element.IsLink()) {

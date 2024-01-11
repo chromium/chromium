@@ -4832,6 +4832,14 @@ bool Element::ShouldRecalcHighlightPseudoStyle(
       originating_style.CanMatchSizeContainerQueries(*this)) {
     return true;
   }
+  // If there are logical direction relative units and the writing mode is
+  // different from that of the parent, we need to re-evaluate the units.
+  if (highlight_parent &&
+      highlight_parent->HasLogicalDirectionRelativeUnits() &&
+      blink::IsHorizontalWritingMode(originating_style.GetWritingMode()) !=
+          blink::IsHorizontalWritingMode(highlight_parent->GetWritingMode())) {
+    return true;
+  }
 
   return false;
 }
