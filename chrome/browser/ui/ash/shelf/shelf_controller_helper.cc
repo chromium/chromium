@@ -431,7 +431,7 @@ void ShelfControllerHelper::LaunchApp(const ash::ShelfID& id,
 
   // Launch the shortcut if the shelf item is a shortcut to an app.
   if (IsAppServiceShortcut(profile_, app_id)) {
-    apps::RecordShortcutLaunchSource(apps::ShortcutLaunchSource::kShelf);
+    apps::RecordShortcutLaunchSource(apps::ShortcutActionSource::kShelf);
     proxy->LaunchShortcut(apps::ShortcutId(app_id), display_id);
     return;
   }

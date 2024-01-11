@@ -130,7 +130,7 @@ void AppServiceShortcutItem::LoadIcon() {
 }
 
 void AppServiceShortcutItem::Activate(int event_flags) {
-  apps::RecordShortcutLaunchSource(apps::ShortcutLaunchSource::kLauncher);
+  apps::RecordShortcutLaunchSource(apps::ShortcutActionSource::kLauncher);
   int64_t display_id = GetController()->GetAppListDisplayId();
   apps::AppServiceProxyFactory::GetForProfile(profile())->LaunchShortcut(
       apps::ShortcutId(id()), display_id);

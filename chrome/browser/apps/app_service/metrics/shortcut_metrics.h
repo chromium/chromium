@@ -11,13 +11,19 @@ extern const char kShortcutLaunchSourceHistogram[];
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-enum class ShortcutLaunchSource {
+enum class ShortcutActionSource {
   kLauncher = 0,
   kShelf = 1,
   kMaxValue = kShelf
 };
 
-void RecordShortcutLaunchSource(const ShortcutLaunchSource launch_source);
+// Records that the user has launched a shortcut, and indicates whether it
+// happened via the launcher or shelf.
+void RecordShortcutLaunchSource(const ShortcutActionSource action_source);
+
+// Records that the user removed a shortcut, and indicates whether it happened
+// via the launcher context menu or shelf context menu.
+void RecordShortcutRemovalSource(const ShortcutActionSource action_source);
 
 }  // namespace apps
 

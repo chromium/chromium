@@ -9,9 +9,14 @@
 namespace apps {
 
 const char kShortcutLaunchSourceHistogram[] = "Apps.Shortcut.LaunchSource";
+const char kShortcutRemovalSourceHistogram[] = "Apps.Shortcut.RemovalSource";
 
-void RecordShortcutLaunchSource(const ShortcutLaunchSource launch_source) {
-  base::UmaHistogramEnumeration(kShortcutLaunchSourceHistogram, launch_source);
+void RecordShortcutLaunchSource(const ShortcutActionSource action_source) {
+  base::UmaHistogramEnumeration(kShortcutLaunchSourceHistogram, action_source);
+}
+
+void RecordShortcutRemovalSource(const ShortcutActionSource action_source) {
+  base::UmaHistogramEnumeration(kShortcutRemovalSourceHistogram, action_source);
 }
 
 }  // namespace apps

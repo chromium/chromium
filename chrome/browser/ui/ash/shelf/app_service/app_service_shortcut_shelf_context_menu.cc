@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/metrics/shortcut_metrics.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut.h"
@@ -81,6 +82,7 @@ void AppServiceShortcutShelfContextMenu::ExecuteCommand(int command_id,
     if (!proxy->ShortcutRegistryCache()->HasShortcut(shortcut_id_)) {
       return;
     }
+    RecordShortcutRemovalSource(apps::ShortcutActionSource::kShelf);
     proxy->RemoveShortcut(shortcut_id_, apps::UninstallSource::kShelf,
                           nullptr /* parent_window */);
     return;

@@ -38176,7 +38176,7 @@ Called by update_net_error_codes.py.-->
              on the server."/>
 </enum>
 
-<enum name="ShortcutLaunchSource">
+<enum name="ShortcutActionSource">
   <int value="0" label="Launcher"/>
   <int value="1" label="Shelf"/>
 </enum>
