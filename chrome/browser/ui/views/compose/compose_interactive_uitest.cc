@@ -324,7 +324,9 @@ class MAYBE_ComposeInteractiveUiTest : public InteractiveBrowserTest {
   testing::NiceMock<MockSession> session_;
 };
 
-IN_PROC_BROWSER_TEST_F(MAYBE_ComposeInteractiveUiTest, OpenAndCloseCompose) {
+// Flaky on all platforms: https://crbug.com/1517430
+IN_PROC_BROWSER_TEST_F(MAYBE_ComposeInteractiveUiTest,
+                       DISABLED_OpenAndCloseCompose) {
   RunTestSequence(
       MakePrimaryAccountAvailable(), InstrumentTab(kContentPageTabId),
       NavigateWebContents(
