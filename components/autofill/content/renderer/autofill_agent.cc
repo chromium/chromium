@@ -1641,27 +1641,16 @@ void AutofillAgent::OnInferredFormSubmission(SubmissionSource source) {
     return;
   }
   switch (source) {
-    // This source is only used as a default values to variables.
+    // This source is only used as a default value to variables.
     case mojom::SubmissionSource::NONE:
     // This source is handled by `AutofillAgent::OnFormSubmitted`.
     case mojom::SubmissionSource::FORM_SUBMISSION:
     // This source is handled by `AutofillAgent::OnProbablyFormSubmitted`.
     case mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED:
       NOTREACHED_NORETURN();
-    // This source is only interesting for PasswordManager.
+    // This source is not interesting for Autofill.
     case mojom::SubmissionSource::DOM_MUTATION_AFTER_AUTOFILL:
       return;
-    case mojom::SubmissionSource::SAME_DOCUMENT_NAVIGATION:
-      // TODO(crbug.com/1483242): Investigate if discarding subframe same
-      // document navigation is necessary: if it is, document the reason, if
-      // not, remove.
-      if (!unsafe_render_frame()->GetWebFrame()->IsOutermostMainFrame()) {
-        break;
-      }
-      if (std::optional<FormData> form_data = GetSubmittedForm()) {
-        FireHostSubmitEvents(*form_data, /*known_success=*/true, source);
-      }
-      break;
     // This event occurs only when either this frame or a same process parent
     // frame of it gets detached.
     case mojom::SubmissionSource::FRAME_DETACHED:
@@ -1678,6 +1667,7 @@ void AutofillAgent::OnInferredFormSubmission(SubmissionSource source) {
                              /*known_success=*/true, source);
       }
       break;
+    case mojom::SubmissionSource::SAME_DOCUMENT_NAVIGATION:
     case mojom::SubmissionSource::XHR_SUCCEEDED:
       if (std::optional<FormData> form_data = GetSubmittedForm()) {
         FireHostSubmitEvents(*form_data, /*known_success=*/true, source);
