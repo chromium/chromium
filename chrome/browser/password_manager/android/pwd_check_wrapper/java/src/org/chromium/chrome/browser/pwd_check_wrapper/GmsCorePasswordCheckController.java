@@ -87,6 +87,7 @@ class GmsCorePasswordCheckController
     @Override
     public void destroy() {
         mPasswordStoreBridge.removeObserver(this);
+        mPasswordStoreBridge.destroy();
     }
 
     /**

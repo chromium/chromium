@@ -55,6 +55,7 @@ class ChromeNativePasswordCheckController
                     int breachedCount = mPasswordCheck.getCompromisedCredentialsCount();
                     mPasswordCheckResult.complete(
                             new PasswordCheckResult(totalCount, breachedCount));
+                    mPasswordCheck.removeObserver(this);
                 });
     }
 
@@ -76,9 +77,13 @@ class ChromeNativePasswordCheckController
                     new PasswordCheckNativeException(
                             "Password check finished with the error " + status + ".", status);
             mPasswordCheckResult.complete(new PasswordCheckResult(error));
-
-            mPasswordCheck.removeObserver(this);
+        } else {
+            int totalCount = mPasswordCheck.getSavedPasswordsCount();
+            int breachedCount = mPasswordCheck.getCompromisedCredentialsCount();
+            mPasswordCheckResult.complete(new PasswordCheckResult(totalCount, breachedCount));
         }
+
+        mPasswordCheck.removeObserver(this);
     }
 
     /** Not relevant for this controller. */

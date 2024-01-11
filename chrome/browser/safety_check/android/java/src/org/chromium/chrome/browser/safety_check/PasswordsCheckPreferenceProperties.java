@@ -124,9 +124,8 @@ class PasswordsCheckPreferenceProperties {
                 assert false : "PasswordsState.UNCHECKED has no native equivalent.";
                 return PasswordsStatus.ERROR;
             case PasswordsState.BACKEND_VERSION_NOT_SUPPORTED:
-                // This is not used.
-                assert false
-                        : "PasswordsState.BACKEND_VERSION_NOT_SUPPORTED has no native equivalent.";
+                // PasswordsState.BACKEND_VERSION_NOT_SUPPORTED has no native equivalent, so
+                // converting it to just error.
                 return PasswordsStatus.ERROR;
             case PasswordsState.CHECKING:
                 return PasswordsStatus.CHECKING;

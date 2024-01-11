@@ -10,6 +10,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/pwd_check_wrapper/ChromeNativePasswordCheckController.java",
     "java/src/org/chromium/chrome/browser/pwd_check_wrapper/GmsCorePasswordCheckController.java",
     "java/src/org/chromium/chrome/browser/pwd_check_wrapper/PasswordCheckController.java",
+    "java/src/org/chromium/chrome/browser/pwd_check_wrapper/PasswordCheckControllerFactory.java",
     "java/src/org/chromium/chrome/browser/pwd_check_wrapper/PasswordCheckNativeException.java",
   ]
 
@@ -27,6 +28,21 @@ android_library("java") {
   ]
 
   resources_package = "org.chromium.chrome.browser.add_username_dialog"
+}
+
+android_library("test_support_java") {
+  testonly = true
+  sources = [
+    "java/src/org/chromium/chrome/browser/pwd_check_wrapper/FakePasswordCheckController.java",
+    "java/src/org/chromium/chrome/browser/pwd_check_wrapper/FakePasswordCheckControllerFactory.java",
+  ]
+
+  deps = [
+    ":java",
+    "//chrome/browser/password_manager/android:java",
+    "//components/browser_ui/settings/android:java",
+    "//components/sync/android:sync_java",
+  ]
 }
 
 robolectric_library("junit") {
