@@ -684,6 +684,11 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   // compiler is free to implicitly convert to the underlying T* representation
   // and perform ordinary pointer arithmetic, thus invalidating the purpose
   // behind disabling them.
+  //
+  // For example, disabling these when `!is_offset_type<Z>` would remove the
+  // operators for Z=uint64_t on 32-bit systems. The compiler instead would
+  // generate code that converts `raw_ptr<T>` to `T*` and adds uint64_t to that,
+  // bypassing the OOB protection entirely.
   template <typename Z>
   PA_ALWAYS_INLINE friend constexpr raw_ptr operator+(const raw_ptr& p,
                                                       Z delta_elems) {
@@ -706,6 +711,8 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
     return result -= delta_elems;
   }
 
+  // The "Do not disable operator+() and operator-()" comment above doesn't
+  // apply to the delta operator-() below.
   PA_ALWAYS_INLINE friend constexpr ptrdiff_t operator-(const raw_ptr& p1,
                                                         const raw_ptr& p2) {
     static_assert(
