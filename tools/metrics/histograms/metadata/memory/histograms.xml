@@ -1444,18 +1444,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Memory.ParkableImage.DiskIsUsable.5min" enum="BooleanYesNo"
-    expires_after="2023-12-25">
-  <owner>thiabaud@google.com</owner>
-  <owner>lizeb@chromium.org</owner>
-  <summary>
-    Whether the disk allocator is usable. Recorded at the same time as
-    &quot;Memory.ParkableImage.*.5min&quot;. The disk may not be usable for
-    several reasons, including the profile being an Incognito one, permssions
-    error, or disk write error.
-  </summary>
-</histogram>
-
 <histogram name="Memory.ParkableImage.OnDiskSize.5min" units="KiB"
     expires_after="2023-12-25">
   <owner>thiabaud@google.com</owner>
