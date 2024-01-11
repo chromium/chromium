@@ -30,7 +30,7 @@
   </message>
   <message name="IDS_COMPOSE_FRE_MAIN_BOTTOM" desc="The bottom main text of the Help me write disclaimer dialog." translateable="false">
     This is an experimental AI writing aid and won't always get it right.
-    <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
+    <ph name="BEGIN_LINK">&lt;a href="#" role="button"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_COMPOSE_FRE_LETS_GO_BUTTON" desc="The button to acknowledge the Help me write disclaimer message.">
     Let's go
@@ -57,7 +57,7 @@
     <!-- In product help bubble dialog for MSBB Settings -->
     <message name="IDS_COMPOSE_MSBB_IPH_BUBBLE_TEXT" desc="The text on an In-Product-Help bubble that is shown when a user navigates to the security settings page from an MSBB dialog" translateable="false">
       Turn on this setting to use Help me write
-    </message>   
+    </message>
      <message name="IDS_COMPOSE_MSBB_IPH_BUBBLE_TEXT_SCREENREADER" desc="The a11y text for the In-Product-Help bubble that is shown when a user navigates to the security settings page from an MSBB dialog" translateable="false">
       Turn on the Make searches and browsing better setting to use Help me write
     </message>

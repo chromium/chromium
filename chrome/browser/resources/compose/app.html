@@ -384,7 +384,9 @@
   <div id="firstRunContainer">
     <div id="firstRunTopText">$i18n{firstRunMainTop}</div>
     <div id="firstRunMidText">$i18n{firstRunMainMid}</div>
-    <div id="firstRunBottomText">$i18nRaw{firstRunMainBottom}</div>
+    <div id="firstRunBottomText" on-click="onFirstRunBottomTextClick_">
+      $i18nRaw{firstRunMainBottom}
+    </div>
   </div>
 
   <div id="firstRunFooter" class="footer">
