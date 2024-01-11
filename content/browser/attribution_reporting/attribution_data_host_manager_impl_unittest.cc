@@ -3395,6 +3395,46 @@ TEST_F(AttributionDataHostManagerImplTest, BackgroundTrigger) {
   task_environment_.FastForwardBy(base::TimeDelta());
 }
 
+TEST_F(AttributionDataHostManagerImplTest, Background_NonSuitableReportingUrl) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {blink::features::kKeepAliveInBrowserMigration,
+       blink::features::kAttributionReportingInBrowserMigration},
+      {});
+
+  const blink::AttributionSrcToken attribution_src_token;
+
+  const auto non_suitable_reporting_url = GURL("http://a.test");
+  const auto suitable_reporting_url = GURL("https://b.test");
+
+  const auto context_origin =
+      *SuitableOrigin::Deserialize("https://destination.test");
+
+  for (bool suitable : {true, false}) {
+    EXPECT_CALL(mock_manager_, HandleTrigger).Times(suitable ? 1 : 0);
+
+    data_host_manager_.NotifyBackgroundRegistrationStarted(
+        kBackgroundId, context_origin,
+        /*is_within_fenced_frame=*/false, RegistrationEligibility::kTrigger,
+        kFrameId, kLastNavigationId, /*attribution_src_token=*/absl::nullopt,
+        kDevtoolsRequestId);
+
+    auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+    headers->SetHeader(kAttributionReportingRegisterTriggerHeader,
+                       kRegisterTriggerJson);
+    EXPECT_EQ(
+        data_host_manager_.NotifyBackgroundRegistrationData(
+            kBackgroundId, headers.get(),
+            suitable ? suitable_reporting_url : non_suitable_reporting_url,
+            network::AttributionReportingRuntimeFeatures(),
+            /*trigger_verifications=*/{}),
+        suitable);
+    data_host_manager_.NotifyBackgroundRegistrationCompleted(kBackgroundId);
+
+    task_environment_.FastForwardBy(base::TimeDelta());
+  }
+}
+
 TEST_F(AttributionDataHostManagerImplTest, BackgroundOsTrigger) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(

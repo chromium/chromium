@@ -1252,6 +1252,12 @@ bool AttributionDataHostManagerImpl::NotifyBackgroundRegistrationData(
     std::vector<network::TriggerVerification> trigger_verifications) {
   CHECK(BackgroundRegistrationsEnabled());
 
+  auto reporting_origin =
+      SuitableOrigin::Create(url::Origin::Create(reporting_url));
+  if (!reporting_origin.has_value()) {
+    return false;
+  }
+
   auto it = registrations_.find(id);
   // If the registrations cannot be found, it means that it was dropped early
   // due to being tied to an ineligle navigation.
@@ -1272,10 +1278,6 @@ bool AttributionDataHostManagerImpl::NotifyBackgroundRegistrationData(
   if (!header.has_value()) {
     return false;
   }
-
-  auto reporting_origin =
-      SuitableOrigin::Create(url::Origin::Create(reporting_url));
-  CHECK(reporting_origin);
 
   std::optional<std::vector<network::TriggerVerification>> verifications;
   if (header->type == RegistrationType::kTrigger) {
