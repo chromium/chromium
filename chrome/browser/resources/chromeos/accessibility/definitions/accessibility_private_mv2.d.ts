@@ -426,6 +426,9 @@ declare global {
       type IsLacrosPrimaryCallback = (result: boolean) => void;
       export function isLacrosPrimary(callback: IsLacrosPrimaryCallback): void;
 
+      export function getDisplayBounds(
+          callback: (screens: ScreenRect[]) => void): void;
+
       export function showToast(type: ToastType): void;
 
       export const onIntroduceChromeVox: ChromeEvent<() => void>;

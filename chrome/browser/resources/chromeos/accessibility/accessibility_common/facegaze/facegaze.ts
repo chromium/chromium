@@ -22,6 +22,8 @@ export class FaceGaze {
   private mouseController_: MouseController;
   private gestureToAction_: Map<FacialGesture, Action> = new Map();
   private gestureToConfidence_: Map<FacialGesture, number> = new Map();
+  private onInitCallbackForTest_: (() => void)|undefined;
+  private initialized_ = false;
 
   constructor() {
     this.mouseController_ = new MouseController();
@@ -49,8 +51,16 @@ export class FaceGaze {
 
     this.connectToWebCam_();
 
+    await this.mouseController_.init();
+
     // TODO(b/309121742): Listen to magnifier bounds changed so as to update
     // cursor relative position logic when magnifier is running.
+
+    if (this.onInitCallbackForTest_) {
+      this.onInitCallbackForTest_();
+      this.onInitCallbackForTest_ = undefined;
+    }
+    this.initialized_ = true;
   }
 
   private connectToWebCam_(): void {
@@ -134,6 +144,15 @@ export class FaceGaze {
   /** Destructor to remove any listeners. */
   onFaceGazeDisabled(): void {
     this.mouseController_.stopEventListeners();
+  }
+
+  /** Allows tests to wait for FaceGaze to be fully initialized. */
+  setOnInitCallbackForTest(callback: () => void): void {
+    if (!this.initialized_) {
+      this.onInitCallbackForTest_ = callback;
+      return;
+    }
+    callback();
   }
 }
 

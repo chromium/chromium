@@ -16,7 +16,7 @@ FaceGazeTest = class extends FaceGazeTestBase {
 
 AX_TEST_F('FaceGazeTest', 'UpdateMouseLocation', async function() {
   const config = new Config().withMouseLocation({x: 600, y: 400});
-  this.configureFaceGaze(config);
+  await this.configureFaceGaze(config);
 
   const result =
       new MockFaceLandmarkerResult().setNormalizedForeheadLocation(0.1, 0.2);
@@ -37,7 +37,7 @@ AX_TEST_F('FaceGazeTest', 'DetectGesturesAndPerformActions', async function() {
                      .withMouseLocation({x: 600, y: 400})
                      .withGestureToAction(gestureToAction)
                      .withGestureToConfidence(gestureToConfidence);
-  this.configureFaceGaze(config);
+  await this.configureFaceGaze(config);
 
   const result =
       new MockFaceLandmarkerResult()
@@ -81,7 +81,8 @@ AX_TEST_F('FaceGazeTest', 'BrowDownGesture', async function() {
                      .withMouseLocation({x: 0, y: 0})
                      .withGestureToAction(gestureToAction)
                      .withGestureToConfidence(gestureToConfidence);
-  this.configureFaceGaze(config);
+  await this.configureFaceGaze(config);
+  this.mockAccessibilityPrivate.clearCursorPosition();
 
   let result =
       new MockFaceLandmarkerResult()

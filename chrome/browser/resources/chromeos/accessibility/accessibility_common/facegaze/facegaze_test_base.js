@@ -140,20 +140,24 @@ FaceGazeTestBase = class extends E2ETestBase {
 
   /** @param {!Config} config */
   configureFaceGaze(config) {
+    const faceGaze = this.getFaceGaze();
     if (config.mouseLocation) {
       // TODO(b/309121742): Set the mouse location using a fake automation
       // event.
-      this.getFaceGaze().mouseController_.mouseLocation_ = config.mouseLocation;
+      faceGaze.mouseController_.mouseLocation_ = config.mouseLocation;
     }
 
     if (config.gestureToAction) {
-      this.getFaceGaze().gestureToAction_ = new Map(config.gestureToAction);
+      faceGaze.gestureToAction_ = new Map(config.gestureToAction);
     }
 
     if (config.gestureToConfidence) {
-      this.getFaceGaze().gestureToConfidence_ =
-          new Map(config.gestureToConfidence);
+      faceGaze.gestureToConfidence_ = new Map(config.gestureToConfidence);
     }
+
+    return new Promise(resolve => {
+      faceGaze.setOnInitCallbackForTest(resolve);
+    });
   }
 
   /** @param {!MockFaceLandmarkerResult} result */

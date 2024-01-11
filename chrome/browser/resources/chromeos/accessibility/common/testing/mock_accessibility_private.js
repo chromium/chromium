@@ -508,6 +508,11 @@ class MockAccessibilityPrivate {
     return this.spokenFeedbackSilenceCount_;
   }
 
+  /** @return {!Array<!chrome.accessibilityPrivate.ScreenRect>} */
+  getDisplayBounds(callback) {
+    callback([{left: 0, top: 0, width: 1200, height: 800}]);
+  }
+
   /**
    * @param {!chrome.accessibilityPrivate.ToastType} type
    * @return {number}
@@ -523,6 +528,10 @@ class MockAccessibilityPrivate {
   /** @return {?chrome.accessibilityPrivate.ScreenPoint} */
   getLatestCursorPosition() {
     return this.latestCursorPosition_;
+  }
+
+  clearCursorPosition() {
+    this.latestCursorPosition_ = null;
   }
 
   /**
