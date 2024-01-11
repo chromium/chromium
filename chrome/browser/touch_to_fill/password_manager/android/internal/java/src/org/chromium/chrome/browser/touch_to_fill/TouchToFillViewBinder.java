@@ -355,7 +355,7 @@ class TouchToFillViewBinder {
         } else if (key == AVATAR) {
             ImageView sheetHeaderAvatar = view.findViewById(R.id.touch_to_fill_sheet_header_avatar);
             if (model.get(AVATAR) == null) {
-                sheetHeaderAvatar.setVisibility(View.GONE);
+                sheetHeaderAvatar.setVisibility(View.INVISIBLE);
             } else {
                 sheetHeaderAvatar.setVisibility(View.VISIBLE);
                 sheetHeaderAvatar.setImageDrawable(model.get(AVATAR));

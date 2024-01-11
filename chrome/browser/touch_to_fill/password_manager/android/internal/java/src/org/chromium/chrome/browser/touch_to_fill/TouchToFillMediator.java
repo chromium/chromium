@@ -32,6 +32,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.Px;
+import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
@@ -147,6 +148,10 @@ class TouchToFillMediator {
                         .map(Credential::getSenderProfileImageUrl)
                         .collect(Collectors.toSet());
         if (!avatarUrls.isEmpty()) {
+            // Set a placeholder until the avatar images are loaded.
+            headerModel.set(
+                    AVATAR,
+                    AppCompatResources.getDrawable(mContext, R.drawable.logo_avatar_anonymous));
             new GenerateAvatarTask(avatarUrls)
                     .fetchInBackground(
                             (roundedAvatarImage) -> {
