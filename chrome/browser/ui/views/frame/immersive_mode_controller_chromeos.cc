@@ -223,6 +223,7 @@ void ImmersiveModeControllerChromeos::SetVisibleFraction(
     }
   }
   visible_fraction_ = visible_fraction;
+  browser_view_->top_container()->OnImmersiveRevealUpdated();
   browser_view_->Layout();
 }
 

@@ -23,6 +23,8 @@ class TopContainerView : public views::View {
   TopContainerView& operator=(const TopContainerView&) = delete;
   ~TopContainerView() override;
 
+  void OnImmersiveRevealUpdated();
+
   // views::View overrides:
   void PaintChildren(const views::PaintInfo& paint_info) override;
   void ChildPreferredSizeChanged(views::View* child) override;
