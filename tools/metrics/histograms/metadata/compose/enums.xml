@@ -98,6 +98,7 @@ chromium-metrics-reviews@google.com.
       label="Blocked for user was not allowed by optimization guide"/>
   <int value="9" label="Feature not eligible, remotely disabled"/>
   <int value="10" label="Incorrect scheme, should be HTTP/HTTPS"/>
+  <int value="11" label="Blocked for element appearing inside a fenced frame"/>
 </enum>
 
 </enums>

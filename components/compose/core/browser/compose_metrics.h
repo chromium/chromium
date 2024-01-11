@@ -101,7 +101,8 @@ enum class ComposeShowStatus {
   kUserNotAllowedByOptimizationGuide = 8,
   kNotComposeEligible = 9,
   kIncorrectScheme = 10,
-  kMaxValue = kIncorrectScheme,
+  kFormFieldNestedInFencedFrame = 11,
+  kMaxValue = kFormFieldNestedInFencedFrame,
 };
 
 void LogComposeContextMenuCtr(ComposeContextMenuCtrEvent event);
