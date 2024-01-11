@@ -785,6 +785,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="V8.GC.Cycle.MainThread.Full.Incremental.Mark.StartStop"
+    units="ms" expires_after="M124">
+  <owner>etiennep@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Wall time duration of incremental marking during a full garbage collection
+    of the unified heap. Reported at the end of the garbage collection cycle.
+  </summary>
+</histogram>
+
 <histogram name="V8.GC.Cycle.MainThread.Full.Incremental.Sweep" units="ms"
     expires_after="M124">
   <owner>nikolaos@chromium.org</owner>
