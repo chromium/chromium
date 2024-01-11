@@ -1599,6 +1599,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kUndoMigrationOfSyncingUserToSignedInDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(switches::kUndoMigrationOfSyncingUserToSignedIn)},
+    {"https-upgrades-ios", flag_descriptions::kHttpsUpgradesName,
+     flag_descriptions::kHttpsUpgradesDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(security_interstitials::features::kHttpsUpgrades)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

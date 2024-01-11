@@ -449,6 +449,11 @@ const char kFullscreenSmoothScrollingDescription[] =
     "When enabled, the web view's insets are updated for scoll events. If "
     "disabled, the the web view's frame are updated.";
 
+const char kHttpsUpgradesName[] = "HTTPS Upgrades";
+const char kHttpsUpgradesDescription[] =
+    "When enabled, eligible navigations will automatically be upgraded to "
+    "HTTPS.";
+
 const char kIncognitoNtpRevampName[] = "Revamped Incognito New Tab Page";
 const char kIncognitoNtpRevampDescription[] =
     "When enabled, Incognito new tab page will have an updated UI.";

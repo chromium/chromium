@@ -386,6 +386,11 @@ extern const char kFullscreenPromosManagerSkipInternalLimitsDescription[];
 extern const char kFullscreenSmoothScrollingName[];
 extern const char kFullscreenSmoothScrollingDescription[];
 
+// Title and description for the flag to enable HTTPS upgrades for
+// eligible.
+extern const char kHttpsUpgradesName[];
+extern const char kHttpsUpgradesDescription[];
+
 // Title and description for the flag to enable revamped Incognito NTP page.
 extern const char kIncognitoNtpRevampName[];
 extern const char kIncognitoNtpRevampDescription[];
