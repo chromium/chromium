@@ -5275,6 +5275,7 @@ crbug.com/1507761 external/wpt/fetch/private-network-access/anchor.tentative.htt
 crbug.com/1507761 external/wpt/fetch/private-network-access/anchor.tentative.https.window.html?include=from-public [ Failure Pass Timeout ]
 crbug.com/1507761 external/wpt/fetch/private-network-access/anchor.tentative.https.window.html?include=from-treat-as-public [ Failure Pass Timeout ]
 crbug.com/1507761 external/wpt/fetch/private-network-access/anchor.tentative.window.html [ Failure Pass Timeout ]
+crbug.com/1507761 external/wpt/fetch/private-network-access/top-location.tentative.https.window.html?include=from-treat-as-public [ Failure Pass Timeout ]
 crbug.com/1507761 external/wpt/fetch/private-network-access/window-open.tentative.https.window.html?include=from-private [ Failure Pass Timeout ]
 crbug.com/1507761 external/wpt/fetch/private-network-access/window-open.tentative.https.window.html?include=from-public [ Failure Pass Timeout ]
 crbug.com/1507761 external/wpt/fetch/private-network-access/window-open.tentative.https.window.html?include=from-treat-as-public [ Failure Pass Timeout ]
