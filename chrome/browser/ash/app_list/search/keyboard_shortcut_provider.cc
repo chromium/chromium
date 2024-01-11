@@ -71,13 +71,12 @@ void RemoveDisabledShortcuts(
 
 }  // namespace
 
-KeyboardShortcutProvider::KeyboardShortcutProvider(Profile* profile)
+KeyboardShortcutProvider::KeyboardShortcutProvider(
+    Profile* profile,
+    std::unique_ptr<ManateeCache> manatee_cache)
     : SearchProvider(ControlCategory::kHelp),
       profile_(profile),
-      manatee_cache_(std::make_unique<ManateeCache>(
-          profile,
-          profile->GetDefaultStoragePartition()
-              ->GetURLLoaderFactoryForBrowserProcess())) {
+      manatee_cache_(std::move(manatee_cache)) {
   DCHECK(profile_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

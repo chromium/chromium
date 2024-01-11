@@ -30,6 +30,8 @@ KeyboardShortcutData::KeyboardShortcutData(
   }
 }
 
+KeyboardShortcutData::KeyboardShortcutData(const std::u16string description) {}
+
 KeyboardShortcutData::KeyboardShortcutData(const KeyboardShortcutData&) =
     default;
 

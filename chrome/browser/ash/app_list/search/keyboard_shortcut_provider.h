@@ -19,7 +19,9 @@ namespace app_list {
 
 class KeyboardShortcutProvider : public SearchProvider {
  public:
-  explicit KeyboardShortcutProvider(Profile* profile);
+  explicit KeyboardShortcutProvider(
+      Profile* profile,
+      std::unique_ptr<ManateeCache> manatee_cache);
   ~KeyboardShortcutProvider() override;
 
   KeyboardShortcutProvider(const KeyboardShortcutProvider&) = delete;
@@ -37,6 +39,13 @@ class KeyboardShortcutProvider : public SearchProvider {
   // processing.
   void OnManateeShortcutsResponseCallback(
       std::vector<std::vector<double>>& reply);
+
+  // Set |shortcut_data_| to a smaller list for testing purposes.
+  void set_shortcut_data_for_test(
+      std::vector<KeyboardShortcutData> test_shortcut_data) {
+    shortcut_data_ = test_shortcut_data;
+  }
+  std::vector<KeyboardShortcutData> shortcut_data() { return shortcut_data_; }
 
  private:
   using ShortcutDataAndScores =
