@@ -74,6 +74,7 @@ extern v8::Local<v8::Object> RecordReplayGetBytecode(
 } // namespace v8
 
 #define CDPERROR_MISSINGCONTEXT 1001
+#define CDPERROR_NOTALIVE 1002
 
 namespace blink {
 // using RemoteObjectIdTypeRaw = v8_inspector::String16;
@@ -84,6 +85,7 @@ using RemoteObjectIdTypeRaw = std::u16string;
 using RemoteObjectIdType = WTF::String;
 
 extern "C" void V8RecordReplaySetDefaultContext(v8::Isolate* isolate, v8::Local<v8::Context> cx);
+extern "C" int V8RecordReplayGetContextId(v8::Local<v8::Context> cx);
 extern "C" void V8RecordReplayFinishRecording();
 extern "C" void V8RecordReplaySetCrashReason(const char* reason);
 
@@ -151,7 +153,7 @@ public:
   LocalFrame* GetLocalFrameRoot() const { return blink::GetLocalFrameRoot(isolate); }
 };
 
-static LocalFrame* gLocalRootFrame = nullptr;
+static LocalFrame* gRootLocalFrame = nullptr;
 
 typedef std::unordered_map<int, InspectorData*> ContextGroupIdInspectorMap;
 
@@ -173,6 +175,7 @@ const {
   log: log_,
   logTrace: logTrace_,
   warning: warning_,
+  fromJsIsReplayScriptAlive: isReplayScriptAlive,
   setCDPMessageCallback,
   sendCDPMessage,
   setCommandCallback,
@@ -197,23 +200,9 @@ const {
 
   // constants
   CDPERROR_MISSINGCONTEXT,
+  CDPERROR_NOTALIVE,
   REPLAY_CDT_PAUSE_OBJECT_GROUP
 } = __RECORD_REPLAY_ARGUMENTS__;
-
-const gSourceMapData = new Map();
-
-try {
-
-/** ###########################################################################
- * Use JS injection prevention:
- * Save some functions before User JS has a chance to overwrite them.
- * ##########################################################################*/
-
-const JSON_stringify = JSON.stringify;
-const JSON_parse = JSON.parse;
-
-// RUN-3067
-const Array_push = Array.prototype.push;
 
 ///////////////////////////////////////////////////////////////////////////////
 // utils.js
@@ -221,6 +210,26 @@ const Array_push = Array.prototype.push;
 
 // Some of these are duplicated in gSourceMapScript, so watch out when making
 // modifications to update both versions...
+
+function isFunction(val) {
+  return typeof val === "function";
+}
+
+function isObject(val) {
+  return !!val && (typeof val === "object" || isFunction(val))
+}
+
+// eslint-disable-next-line no-unused-vars
+function isNonNullObject(obj) {
+  return obj && (typeof obj == "object" || typeof obj == "function");
+}
+
+function typeofMaybeNull(value) {
+  if (value === null) {
+    return "null";
+  }
+  return typeof value;
+}
 
 function log(...args) {
   log_(args.join(' '));
@@ -243,25 +252,20 @@ function assert(v, msg = "") {
   }
 }
 
-function isFunction(val) {
-  return typeof val === "function";
-}
+const gSourceMapData = new Map();
 
-function isObject(val) {
-  return !!val && (typeof val === "object" || isFunction(val))
-}
+try {
 
-// eslint-disable-next-line no-unused-vars
-function isNonNullObject(obj) {
-  return obj && (typeof obj == "object" || typeof obj == "function");
-}
+/** ###########################################################################
+ * Use JS injection prevention:
+ * Save some functions before User JS has a chance to overwrite them.
+ * ##########################################################################*/
 
-function typeofMaybeNull(value) {
-  if (value === null) {
-    return "null";
-  }
-  return typeof value;
-}
+const JSON_stringify = JSON.stringify;
+const JSON_parse = JSON.parse;
+
+// RUN-3067
+const Array_push = Array.prototype.push;
 
 function getSourceMapURLs(sourceURL, relativeSourceMapURL) {
   let sourceBaseURL;
@@ -330,6 +334,7 @@ class CdpRequest {
 }
 
 const gCdpRequestStack = [];
+const gEventListeners = new Map();
 
 
 class CDPMessageError extends Error {
@@ -362,7 +367,7 @@ function sendMessage(method, params) {
     }
   } finally {
     const req = gCdpRequestStack.pop();
-    assert(req === cdpRequest, "CDP request stack corrupted");
+    assert(req === cdpRequest, "[RuntimeError] CDP request stack corrupted");
   }
 
   if (cdpRequest.result?.result) {
@@ -374,7 +379,6 @@ function sendMessage(method, params) {
   return undefined;
 }
 
-const gEventListeners = new Map();
 
 function addEventListener(method, callback) {
   gEventListeners.set(method, callback);
@@ -401,6 +405,7 @@ function messageCallback(message) {
       is_error: true,
       message: e?.message || (e + ''),
       stack: e?.stack?.split?.("\n") || e?.stack || [],
+      code: e?.code,
     });
   }
 }
@@ -443,7 +448,21 @@ const CommandCallbacks = {
   "CSS.getAppliedRules": CSS_getAppliedRules
 };
 
+function CHECK_ALIVE(message) {
+  if (!isReplayScriptAlive()) {
+    const err = new Error(`ReplayScript UNALIVE - ${message}`);
+    err.code = CDPERROR_NOTALIVE;
+    throw err;
+  }
+}
+
+function getAliveLabel() {
+  return isReplayScriptAlive() ? "" : " [UNALIVE]"
+}
+
 function executeCommand(method, params) {
+  CHECK_ALIVE(`executeCommand ${method}`);
+
   VerboseCommands && log(`[Command ${method}] Handling command, params=${JSON_stringify(params)}...`);
   const result = CommandCallbacks[method](params);
   VerboseCommands && log(`[Command ${method}] Handled command, result=${JSON_stringify(result)}`);
@@ -452,14 +471,14 @@ function executeCommand(method, params) {
 
 function commandCallback(method, params) {
   if (!CommandCallbacks[method]) {
-    log(`[Command ${method}] Missing command callback: ${method}`);
+    log(`[RuntimeError][Command ${method}] Missing command callback: ${method}`);
     return {};
   }
 
   try {
     return executeCommand(method, params);
   } catch (e) {
-    log(`[RuntimeError][Command ${method}] ${e?.stack || e}`);
+    log(`[RuntimeError][Command ${method}]${getAliveLabel()} ${e?.stack || e}`);
     // Pass the error up to V8; it can (for now) decide how to handle itself, whether
     // it should crash or not, etc.  Eventually, the caller of the command should make
     // that decision.
@@ -467,6 +486,7 @@ function commandCallback(method, params) {
       is_error: true,
       message: e?.message || (e + ''),
       stack: e?.stack?.split?.("\n") || e?.stack || [],
+      code: e?.code,
     };
   }
 }
@@ -660,6 +680,7 @@ function buildRrpObjectResult(cdpReturnValue) {
     // Sometimes things go wrong.
     // E.g. sometimes we get "Cannot find default execution context (-32000) when executing" sendMessage
     // from Pause_evaluateIn*.
+    log(`[RuntimeError] buildRrpObjectResult called without cdpReturnValue ()`);
     rrpResult.failed = true;
   }
   return { result: rrpResult };
@@ -3152,7 +3173,7 @@ addEventListener("Runtime.executionContextsCleared", () => {
 sendMessage("Runtime.enable");
 
 } catch (e) {
-  log(`Error: Initialization exception ${e}`);
+  warning(`JS_ERROR Initialization: ${e?.stack || e}`);
 }
 
 })();
@@ -3377,17 +3398,11 @@ function collectUnresolvedSourceMapResources(mapText, mapURL) {
   return unresolvedSources;
 }
 
-///////////////////////////////////////////////////////////////////////////////
-// utils.js
-///////////////////////////////////////////////////////////////////////////////
-
-// Some of these are duplicated in gReplayScript, so watch out when making
-// modifications to update both versions...
-
-function assert(v) {
+function assert(v, msg = "") {
   if (!v) {
-    log(`Error: Assertion failed ${Error().stack}`);
-    throw new Error("Assertion failed");
+    const m = `Assertion failed when handling command (${msg})`;
+    log(`[RuntimeError] ${m} - ${Error().stack}`);
+    throw new Error(m);
   }
 }
 
@@ -3782,6 +3797,12 @@ const char* gOnNewWindowScript = R""""(
     window.__REACT_DEVTOOLS_GLOBAL_HOOK__ = window.top.__REACT_DEVTOOLS_GLOBAL_HOOK__;
     window.__REDUX_DEVTOOLS_EXTENSION__ = window.top.__REDUX_DEVTOOLS_EXTENSION__;
     window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ = window.top.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__;
+
+    // TODO: Feels like this cross-context function usage can cause trouble, especially when
+    //      the user pauses inside the iframe's JS and tries to access something inside the iframe via 
+    //      __RECORD_REPLAY__?
+    window.__RECORD_REPLAY__ = window.top.__RECORD_REPLAY__;
+    window.__RECORD_REPLAY_ARGUMENTS__ = window.top.__RECORD_REPLAY_ARGUMENTS__;
   }
   catch (err) {
     // TODO: RUN-1990
@@ -3839,6 +3860,40 @@ static void LogWarningCallback(const v8::FunctionCallbackInfo<v8::Value>& args) 
         "must be called with a single string");
   v8::String::Utf8Value text(args.GetIsolate(), args[0]);
   recordreplay::Warning("%s", *text);
+}
+
+void
+RecordReplayRegisterV8Inspector(v8_inspector::V8Inspector* inspector,
+                                v8::Isolate* isolate) {
+  if (v8::IsMainThread() && IsGReplayScriptEnabled()) {
+    if (!gV8Inspectors) {
+      gV8Inspectors = new std::unordered_map<v8::Isolate*,v8_inspector::V8Inspector*>();
+      gInspectorData = new std::unordered_map<v8::Isolate*, ContextGroupIdInspectorMap*>();
+    }
+
+    gV8Inspectors->insert(std::make_pair(isolate, inspector));
+  }
+}
+
+// Whether the frame that our globally registered script(s)
+// were run in is alive.
+static bool gReplayScriptsAlive = false;
+
+/**
+ * This is called when our local root frame is about to shut down.
+ */
+void RecordReplayClearContexts(const char* reason, LocalFrame* frame) {
+  CHECK(v8::IsMainThread());
+  if (!gReplayScriptsAlive || frame != gRootLocalFrame) {
+    return;
+  }
+  recordreplay::Print("ReplayScript STATUS_CHANGE_UNALIVE - %s", reason);
+  gReplayScriptsAlive = false;
+}
+
+static void fromJsIsReplayScriptAlive(const v8::FunctionCallbackInfo<v8::Value>& args) {
+  v8::Isolate* isolate = args.GetIsolate();
+  args.GetReturnValue().Set(v8::Number::New(isolate, gReplayScriptsAlive));
 }
 
 // Function to invoke on CDP responses and events.
@@ -3958,19 +4013,6 @@ v8_inspector::V8InspectorSession* getInspectorSession(v8::Isolate* isolate, int 
                                             v8_inspector::V8Inspector::kFullyTrusted).release();
   }
   return data->inspectorSession;
-}
-
-void
-RecordReplayRegisterV8Inspector(v8_inspector::V8Inspector* inspector,
-                                v8::Isolate* isolate) {
-  if (v8::IsMainThread() && IsGReplayScriptEnabled()) {
-    if (!gV8Inspectors) {
-      gV8Inspectors = new std::unordered_map<v8::Isolate*,v8_inspector::V8Inspector*>();
-      gInspectorData = new std::unordered_map<v8::Isolate*, ContextGroupIdInspectorMap*>();
-    }
-
-    gV8Inspectors->insert(std::make_pair(isolate, inspector));
-  }
 }
 
 static int GetBlinkPersistentId(v8::Local<v8::Object> object) {
@@ -5387,20 +5429,22 @@ static std::string GetStackTrace(v8::Isolate* isolate, v8::TryCatch& try_catch) 
 
   std::stringstream ss;
   v8::Local<v8::Message> message = try_catch.Message();
-  ss << V8ToString(isolate, message->Get()) << std::endl
-     << V8ToString(isolate, GetSourceLine(isolate, message)) << std::endl;
-
-  v8::Local<v8::StackTrace> trace = message->GetStackTrace();
-  if (trace.IsEmpty())
-    return ss.str();
-
-  int len = trace->GetFrameCount();
-  for (int i = 0; i < len; ++i) {
-    v8::Local<v8::StackFrame> frame = trace->GetFrame(isolate, i);
-    ss << V8ToString(isolate, frame->GetScriptName()) << ":"
-       << frame->GetLineNumber() << ":" << frame->GetColumn() << ": "
-       << V8ToString(isolate, frame->GetFunctionName()) << std::endl;
+  if (!message.IsEmpty()) {
+    ss << V8ToString(isolate, message->Get()) << std::endl;
   }
+  ss << V8ToString(isolate, GetSourceLine(isolate, message)) << std::endl;
+
+  // v8::Local<v8::StackTrace> trace = message->GetStackTrace();
+  // if (trace.IsEmpty())
+  //   return ss.str();
+
+  // int len = trace->GetFrameCount();
+  // for (int i = 0; i < len; ++i) {
+  //   v8::Local<v8::StackFrame> frame = trace->GetFrame(isolate, i);
+  //   ss << V8ToString(isolate, frame->GetScriptName()) << ":"
+  //      << frame->GetLineNumber() << ":" << frame->GetColumn() << ": "
+  //      << V8ToString(isolate, frame->GetFunctionName()) << std::endl;
+  // }
   return ss.str();
 }
 
@@ -5451,15 +5495,19 @@ static void InitializeRecordReplayApiObjects(v8::Isolate* isolate, LocalFrame* l
       v8::Boolean::New(isolate,
                        TestEnv("RECORD_REPLAY_DISABLE_SOURCEMAP_CACHE")));
 
-
   DefineProperty(isolate, args, "CDPERROR_MISSINGCONTEXT",
                  v8::Number::New(isolate, (double)CDPERROR_MISSINGCONTEXT));
+
+  DefineProperty(isolate, args, "CDPERROR_NOTALIVE",
+                 v8::Number::New(isolate, (double)CDPERROR_NOTALIVE));
 
   SetFunctionProperty(isolate, args, "log", LogCallback);
   SetFunctionProperty(isolate, args, "logTrace", LogTraceCallback);
   SetFunctionProperty(isolate, args, "warning", LogWarningCallback);
 
   // CDP debugger functionality
+  SetFunctionProperty(isolate, args, "fromJsIsReplayScriptAlive",
+                      fromJsIsReplayScriptAlive);
   SetFunctionProperty(isolate, args, "setCDPMessageCallback",
                       SetCDPMessageCallback);
   SetFunctionProperty(isolate, args, "sendCDPMessage", SendCDPMessage);
@@ -5533,13 +5581,8 @@ static void InitializeRecordReplayApiObjects(v8::Isolate* isolate, LocalFrame* l
   SetFunctionProperty(isolate, args, "checkPersistentId", fromJsCheckPersistentId);
 }
 
-static void RecordReplaySetDefaultContext(v8::Isolate* isolate, LocalFrame* localFrame, v8::Local<v8::Context> context) {
-  V8RecordReplaySetDefaultContext(isolate, context);
-}
-
 void InitializeRecordReplay(v8::Isolate* isolate, LocalFrame* localFrame, v8::Local<v8::Context> context) {
   V8RecordReplaySetAPIObjectIdCallback(GetBlinkPersistentId);
-  RecordReplaySetDefaultContext(isolate, localFrame, context);
   gActiveNetworkRequests =
       new std::unordered_map<std::string, NetworkRequestStatus>();
   gCurrentNetworkStreamData = new std::vector<uint8_t>();
@@ -5556,7 +5599,7 @@ static void InitializeReplayScripts(v8::Isolate* isolate, LocalFrame* localFrame
   // JS stack, we can always use the current root frame's context.
   // Note: We are assuming that each tab has its own process, for now.
   //   (That might not hold true for tabs of the same domain - not sure)
-  RecordReplaySetDefaultContext(isolate, localFrame, context);
+  V8RecordReplaySetDefaultContext(isolate, context);
   
   // Initialize __RECORD_REPLAY__ things.
   InitializeRecordReplayApiObjects(isolate, localFrame);
@@ -5579,6 +5622,7 @@ static void InitializeReplayScripts(v8::Isolate* isolate, LocalFrame* localFrame
   if (IsGReplayScriptEnabled()) {
     recordreplay::AutoMarkReplayCode amrc;
     recordreplay::AutoDisallowEvents disallow("InitializeReplayScripts");
+
     // Run `gReplayScript`.
     RunScript(isolate, context, gReplayScript, InternalScriptURL);
   }
@@ -5593,16 +5637,26 @@ void OnRootFrameInit(v8::Isolate* isolate, LocalFrame* localFrame, v8::Local<v8:
       localFrame->IsCrossOriginToParentOrOuterDocument(),
       localFrame->GetDocument()->Url().GetString().Utf8().c_str()
       );
+
+  if (gReplayScriptsAlive) {
+    // Our "V8RecordReplaySetDefaultContext" logic implies a single local
+    // root frame per render process.
+    recordreplay::Warning("ReplayScript Multiple_OnRootFrameInit");
+    return;
+  }
   
-  // NOTE: The root `LocalFrame` will actually not change over time.
-  gLocalRootFrame = localFrame;
+  // NOTE: The root `LocalFrame` can change over time.
+  gRootLocalFrame = localFrame;
 
   // 1. Reset paint surface so that paints to the new root's surface are not ignored.
   // See: https://linear.app/replay/issue/RUN-2400
   recordreplay::DoResetPaintSurface();
 
-  // 2. Initialize our scripts, command handlers etc.
+  // 2. Initialize sourcemap worker, command handlers etc.
   InitializeReplayScripts(isolate, localFrame, context);
+  
+  gReplayScriptsAlive = true;
+  recordreplay::Print("ReplayScript STATUS_CHANGE_ALIVE");
 }
 
 void OnRootFrameInitAfterCheckpoint(v8::Isolate* isolate, LocalFrame* localFrame, v8::Local<v8::Context> context) {
@@ -5626,7 +5680,7 @@ void OnRootFrameInitAfterCheckpoint(v8::Isolate* isolate, LocalFrame* localFrame
 void OnNewWindowAfterCheckpoint(v8::Isolate* isolate, LocalFrame* localFrame, v8::Local<v8::Context> newContext) {
   recordreplay::AutoMarkReplayCode amrc;
   RunScript(isolate, newContext, gOnNewWindowScript,
-            "record-replay-devtools-OnNewWindow");
+            "record-replay-OnNewWindow");
 
   LocalFrame* parentFrame = DynamicTo<LocalFrame>(localFrame->Parent());
   recordreplay::Print(

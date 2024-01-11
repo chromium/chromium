@@ -162,7 +162,6 @@ void LocalWindowProxy::DisposeContext(Lifecycle next_status,
 
 // Record/replay state is initialized along with the first LocalWindowProxy.
 static bool gRecordReplayStateInitialized;
-static LocalFrame* gRecordReplayFrame = nullptr;
 
 void LocalWindowProxy::Initialize() {
   // https://linear.app/replay/issue/RUN-749
@@ -224,8 +223,8 @@ void LocalWindowProxy::Initialize() {
       !origin->Host().empty()) {
     // Initialize and re-initialize Replay state, command handlers and more.
 
-    bool doInit = !gRecordReplayStateInitialized;
-    if (doInit) {
+    bool initGlobally = !gRecordReplayStateInitialized;
+    if (initGlobally) {
       gRecordReplayStateInitialized = true;
 
       // After creating the first context that is associated with a non-empty
@@ -234,24 +233,21 @@ void LocalWindowProxy::Initialize() {
       InitializeRecordReplay(GetIsolate(), GetFrame(), context);
     }
 
-    if (doInit || GetFrame() == gRecordReplayFrame) {
+    bool initFrame = GetFrame()->IsLocalRoot();
+    if (initFrame) {
       // Root-level navigation event, initially happens before
       // first checkpoint.
-      // NOTE: We cannot check for GetFrame()->IsOutermostMainFrame() because
-      // we also need to (re-)init CSP'ed iframes, which run in their own
-      // process when recording.
-      gRecordReplayFrame = GetFrame();
       OnRootFrameInit(GetIsolate(), GetFrame(), context);
     }
 
-    if (doInit) {
+    if (initGlobally) {
       // Create the first checkpoint at which execution can pause.
       recordreplay::NewCheckpoint();
       // Initialize some more.
       InitializeRecordReplayAfterCheckpoint();
     }
     
-    if (GetFrame() == gRecordReplayFrame) {
+    if (initFrame) {
       // Root-level navigation event, after first checkpoint.
       OnRootFrameInitAfterCheckpoint(GetIsolate(), GetFrame(), context);
     }

@@ -68,6 +68,8 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/record_replay_interface.h"
+
 namespace blink {
 
 namespace {
@@ -127,8 +129,12 @@ void MainThreadDebugger::SetClientMessageLoop(
 
 void MainThreadDebugger::DidClearContextsForFrame(LocalFrame* frame) {
   DCHECK(IsMainThread());
-  if (frame->LocalFrameRoot() == frame)
+  if (frame->LocalFrameRoot() == frame) {
+    if (recordreplay::IsRecordingOrReplaying("DidClearContextsForFrame")) {
+      RecordReplayClearContexts("MainThreadDebugger::DidClearContextsForFrame", frame);
+    }
     GetV8Inspector()->resetContextGroup(ContextGroupId(frame));
+  }
 }
 
 void MainThreadDebugger::ContextCreated(ScriptState* script_state,
