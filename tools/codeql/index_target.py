@@ -33,8 +33,8 @@ def get_compilation_db(src_path, out_path):
   return json.loads(output)
 
 
-def trace(processing_num, entry, *, codeql_db_path, successful_commands,
-          failed_commands, logger):
+def trace(processing_num, entry, *, codeql_binary_path, codeql_db_path,
+          successful_commands, failed_commands, logger):
   directory = entry['directory']
   command = entry['command']
 
@@ -45,7 +45,7 @@ def trace(processing_num, entry, *, codeql_db_path, successful_commands,
 
   try:
     subprocess.check_output([
-        'codeql', 'database', 'trace-command', codeql_db_path,
+        codeql_binary_path, 'database', 'trace-command', codeql_db_path,
         f'--working-dir={directory}', '--', *command
     ],
                             stderr=subprocess.STDOUT)
@@ -62,7 +62,8 @@ def trace(processing_num, entry, *, codeql_db_path, successful_commands,
 
 
 class CodeQLDatabase:
-  def __init__(self, src_path, db_path):
+
+  def __init__(self, src_path, db_path, codeql_binary_path):
     """ Construct a new `CodeQLDatabase` object.
     :param src_path: The path to the chromium/src tree.
     :param db_path: The path where the CodeQL database will be created.
@@ -71,7 +72,7 @@ class CodeQLDatabase:
     self.db_path = db_path
     try:
       process_stdout = subprocess.check_output([
-          'codeql', 'database', 'init', f'--source-root={src_path}',
+          codeql_binary_path, 'database', 'init', f'--source-root={src_path}',
           '--language=cpp', db_path, '--overwrite'
       ])
       log_subprocess_output(process_stdout)
@@ -124,6 +125,13 @@ def main():
           'name for the specific GN target you want a CodeQL database for '
           '(e.g. `//components:components_unittests`); if left blank, indexes '
           'everything'))
+  parser.add_argument(
+      '--codeql_binary_path',
+      '-c',
+      type=str,
+      default='codeql',
+      help=('Path to the codeql binary. If this is not set, the script assumes '
+            'it is located at `codeql` somewhere in the user\'s PATH.'))
   args = parser.parse_args()
 
   if (args.logfile):
@@ -154,7 +162,7 @@ def main():
   print("Initializing codeql.")
   codeql_db = ""
   try:
-    codeql_db = CodeQLDatabase(src_path, args.db_path)
+    codeql_db = CodeQLDatabase(src_path, args.db_path, args.codeql_binary_path)
   except ValueError:
     print("Could not initialize CodeQL database at %s" % args.db_path)
     exit()
@@ -168,6 +176,7 @@ def main():
   with multiprocessing.Pool(my_cpu_count) as p:
     results = p.starmap(
         functools.partial(trace,
+                          codeql_binary_path=args.codeql_binary_path,
                           codeql_db_path=codeql_db.db_path,
                           successful_commands=successful_commands,
                           failed_commands=failed_commands,
@@ -179,8 +188,9 @@ def main():
 
   print("Finalizing codeql db.")
   try:
-    process_stdout = subprocess.check_output(
-        ['codeql', 'database', 'finalize', '-j=-1', args.db_path])
+    process_stdout = subprocess.check_output([
+        args.codeql_binary_path, 'database', 'finalize', '-j=-1', args.db_path
+    ])
     log_subprocess_output(process_stdout)
   except subprocess.CalledProcessError as e:
     print("CodeQL DB finalization failed with return code %s" % e.returncode)
