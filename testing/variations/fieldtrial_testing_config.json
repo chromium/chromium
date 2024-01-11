@@ -4921,6 +4921,25 @@
             ]
         }
     ],
+    "CrOSLocalImageSearch": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LauncherImageSearch",
+                        "LauncherImageSearchIca",
+                        "LauncherImageSearchOcr",
+                        "LauncherSearchControl",
+                        "ProductivityLauncherImageSearch"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrOSMglruNoKVMOpt": [
         {
             "platforms": [

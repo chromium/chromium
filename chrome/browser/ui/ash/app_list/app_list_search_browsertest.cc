@@ -115,15 +115,24 @@ IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest, SearchBuiltInApps) {
       result_containers = search_view->result_container_views_for_test();
   // The result is of type "App", in container index 2.
   ASSERT_GE(result_containers.size(), 2u);
-  SearchResultContainerView* container = result_containers[2];
-  SearchResultListView* list_view =
-      static_cast<SearchResultListView*>(container);
-  ASSERT_EQ(list_view->list_type_for_test(),
-            SearchResultListView::SearchResultListType::kApps);
 
-  // The result is the first entry in the container.
-  SearchResultView* result_view = list_view->GetResultViewAt(0);
-  EXPECT_TRUE(result_view);
+  bool found_apps = false;
+  // Check that one of the `result_containers` is kApps.
+  for (SearchResultContainerView* container : result_containers) {
+    SearchResultListView* list_view =
+        static_cast<SearchResultListView*>(container);
+    if (list_view && list_view->list_type_for_test() ==
+                         SearchResultListView::SearchResultListType::kApps) {
+      found_apps = true;
+
+      // The result is the first entry in the container.
+      SearchResultView* result_view = list_view->GetResultViewAt(0);
+      EXPECT_TRUE(result_view);
+
+      break;
+    }
+  }
+  EXPECT_TRUE(found_apps);
 
   // Open the search result. In tests, the result view doesn't have a "result"
   // associated with it so the test cannot directly activate the view. Activate
