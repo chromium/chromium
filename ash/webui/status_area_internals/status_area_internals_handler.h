@@ -40,6 +40,7 @@ class StatusAreaInternalsHandler
   void ToggleVideoConferenceTray(bool visible) override;
   void ToggleProjectorTray(bool visible) override;
   void SetActiveDirectoryManaged(bool managed) override;
+  void SetIsInUserChildSession(bool in_child_session) override;
 
   void TriggerPrivacyIndicators(const std::string& app_id,
                                 const std::string& app_name,

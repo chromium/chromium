@@ -14,8 +14,8 @@
 #include "ash/public/cpp/stylus_utils.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
+#include "ash/system/model/fake_system_tray_model.h"
 #include "ash/system/model/scoped_fake_system_tray_model.h"
-#include "ash/system/model/system_tray_model.h"
 #include "ash/system/palette/palette_tray.h"
 #include "ash/system/privacy/privacy_indicators_controller.h"
 #include "ash/system/status_area_widget.h"
@@ -126,6 +126,12 @@ void StatusAreaInternalsHandler::SetActiveDirectoryManaged(bool managed) {
   DeviceEnterpriseInfo info;
   info.active_directory_managed = managed;
   scoped_fake_model_->fake_model()->SetDeviceEnterpriseInfo(info);
+}
+
+void StatusAreaInternalsHandler::SetIsInUserChildSession(
+    bool in_child_session) {
+  scoped_fake_model_->fake_model()->set_is_in_user_child_session(
+      in_child_session);
 }
 
 }  // namespace ash

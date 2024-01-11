@@ -1705,6 +1705,8 @@ component("ash") {
     "system/model/clock_observer.h",
     "system/model/enterprise_domain_model.cc",
     "system/model/enterprise_domain_model.h",
+    "system/model/fake_system_tray_model.cc",
+    "system/model/fake_system_tray_model.h",
     "system/model/locale_model.cc",
     "system/model/locale_model.h",
     "system/model/scoped_fake_system_tray_model.cc",

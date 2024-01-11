@@ -294,7 +294,8 @@ QuickSettingsHeader::QuickSettingsHeader(
       base::BindRepeating(&ShowAccountSettings),
       IDS_ASH_STATUS_TRAY_SUPERVISED_LABEL, GetSupervisedUserIcon()));
   supervised_view_->SetID(VIEW_ID_QS_SUPERVISED_BUTTON);
-  const bool visible = Shell::Get()->session_controller()->IsUserChild();
+  const bool visible =
+      Shell::Get()->system_tray_model()->IsInUserChildSession();
   supervised_view_->SetVisible(visible);
   if (visible) {
     supervised_view_->SetTooltipText(GetSupervisedUserMessage());
@@ -332,6 +333,10 @@ void QuickSettingsHeader::ChildVisibilityChanged(views::View* child) {
 
 views::View* QuickSettingsHeader::GetManagedButtonForTest() {
   return enterprise_managed_view_;
+}
+
+views::View* QuickSettingsHeader::GetSupervisedButtonForTest() {
+  return supervised_view_;
 }
 
 views::Label* QuickSettingsHeader::GetManagedButtonLabelForTest() {
