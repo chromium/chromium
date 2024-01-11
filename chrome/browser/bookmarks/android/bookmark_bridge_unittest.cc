@@ -312,3 +312,25 @@ TEST_F(BookmarkBridgeTest, TestAccountReadingListNodes) {
   EXPECT_EQ(account_rl_node->parent(),
             bookmark_bridge()->GetParentNode(account_rl_node));
 }
+
+TEST_F(BookmarkBridgeTest, TestSearchBookmarks) {
+  CreateBookmarkBridge(/*account_reading_list_enabled=*/true);
+
+  GURL url = GURL("http://foo.com");
+
+  account_reading_list_manager()->Add(url, "foo");
+  local_or_syncable_reading_list_manager()->Add(url, "foo");
+  local_or_syncable_reading_list_manager()->Add(url, "baz");
+
+  power_bookmarks::PowerBookmarkQueryFields query1;
+  query1.word_phrase_query = std::make_unique<std::u16string>(u"foo");
+  std::vector<const BookmarkNode*> results1 =
+      bookmark_bridge()->SearchBookmarksImpl(query1, 999);
+  EXPECT_EQ(2u, results1.size());
+
+  power_bookmarks::PowerBookmarkQueryFields query2;
+  query2.word_phrase_query = std::make_unique<std::u16string>(u"baz");
+  std::vector<const BookmarkNode*> results2 =
+      bookmark_bridge()->SearchBookmarksImpl(query2, 999);
+  EXPECT_EQ(1u, results2.size());
+}
