@@ -28,9 +28,8 @@ void PictureDebugUtil::SerializeAsBase64(const SkPicture* picture,
     return SkPngEncoder::Encode(nullptr, img, SkPngEncoder::Options{});
   }};
   sk_sp<SkData> data = picture->serialize(&procs);
-  base::Base64Encode(
-      std::string_view(static_cast<const char*>(data->data()), data->size()),
-      output);
+  *output = base::Base64Encode(
+      std::string_view(static_cast<const char*>(data->data()), data->size()));
 }
 
 }  // namespace cc
