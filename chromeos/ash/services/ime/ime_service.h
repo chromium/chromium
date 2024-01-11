@@ -115,11 +115,8 @@ class ImeService : public mojom::ImeService,
   // For the duration of this ImeService's lifetime, there should be one and
   // only one of these backend connections (represented as "engine" instances)
   // at any point in time.
-  // TODO(b/214153032): Rename to better reflect what these represent:
-  //     decoder_engine_     --> proto_mode_shared_lib_engine_
-  //     system_engine_      --> mojo_mode_shared_lib_engine_
-  std::unique_ptr<DecoderEngine> decoder_engine_;
-  std::unique_ptr<SystemEngine> system_engine_;
+  std::unique_ptr<DecoderEngine> proto_mode_shared_lib_engine_;
+  std::unique_ptr<SystemEngine> mojo_mode_shared_lib_engine_;
 
   // Platform delegate for access to privilege resources.
   mojo::Remote<mojom::PlatformAccessProvider> platform_access_;
