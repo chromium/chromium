@@ -964,6 +964,16 @@ void AdAuctionServiceImpl::OnGotBiddingAndAuctionServerKey(
 
   std::string data = maybe_request->EncapsulateAndSerialize();
 
+  // Preconnect to seller since we know JS will send a request there.
+  render_frame_host()
+      .GetStoragePartition()
+      ->GetNetworkContext()
+      ->PreconnectSockets(
+          /*num_streams=*/1, state.seller.GetURL(), /*allow_credentials=*/true,
+          render_frame_host()
+              .GetIsolationInfoForSubresources()
+              .network_anonymization_key());
+
   AdAuctionPageData* ad_auction_page_data =
       PageUserData<AdAuctionPageData>::GetOrCreateForPage(
           render_frame_host().GetPage());

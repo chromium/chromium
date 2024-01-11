@@ -25,6 +25,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/json/json_reader.h"
+#include "base/json/json_string_value_serializer.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -96,6 +97,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/ip_address_space.mojom.h"
+#include "services/network/test/test_network_context.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -17290,10 +17292,16 @@ class InterestGroupBiddingAndAuctionServerBrowserTest
     : public InterestGroupBrowserTest {
  public:
   InterestGroupBiddingAndAuctionServerBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {blink::features::kFledgeBiddingAndAuctionServer,
-         blink::features::kFledgeBiddingAndAuctionServerAPI},
+    feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kFledgeBiddingAndAuctionServer,
+          {{"FledgeBiddingAndAuctionKeyURL", kKeyUrl.spec()}}},
+         {blink::features::kFledgeBiddingAndAuctionServerAPI, {}}},
         {});
+  }
+
+  void TearDownOnMainThread() override {
+    InterestGroupBrowserTest::TearDownOnMainThread();
+    url_loader_interceptor_.reset();
   }
 
   // Attempts to get the auction blob for seller.  Returns kSuccess if the
@@ -17324,7 +17332,47 @@ class InterestGroupBiddingAndAuctionServerBrowserTest
         .ExtractString();
   }
 
+  void ProvideKeys() {
+    // We use a URLLoaderInterceptor instead of the EmbeddedTestServer, since we
+    // need to set the URL for it in the constructor, before the
+    // EmbeddedTestServer starts. At that point we don't know the origin the
+    // EmbeddedTestServer will be using.
+    url_loader_interceptor_ =
+        std::make_unique<URLLoaderInterceptor>(base::BindLambdaForTesting(
+            [&](URLLoaderInterceptor::RequestParams* params) -> bool {
+              if (params->url_request.url != kKeyUrl) {
+                return false;
+              }
+              std::string headers =
+                  "HTTP/1.1 200 OK\nContent-Type: application/json\n\n";
+              const uint8_t kTestPublicKey[] = {
+                  0xa1, 0x5f, 0x40, 0x65, 0x86, 0xfa, 0xc4, 0x7b,
+                  0x99, 0x59, 0x70, 0xf1, 0x85, 0xd9, 0xd8, 0x91,
+                  0xc7, 0x4d, 0xcf, 0x1e, 0xb9, 0x1a, 0x7d, 0x50,
+                  0xa5, 0x8b, 0x01, 0x68, 0x3e, 0x60, 0x05, 0x2d,
+              };
+
+              base::Value::Dict key;
+              key.Set("key", base::Base64Encode(kTestPublicKey));
+              key.Set("id", "12345678-9abc-def0-1234-56789abcdef0");
+              base::Value::List keys;
+              keys.Append(std::move(key));
+              base::Value::Dict outer;
+              outer.Set("keys", std::move(keys));
+
+              std::string json_output;
+              JSONStringValueSerializer serializer(&json_output);
+              serializer.Serialize(outer);
+              URLLoaderInterceptor::WriteResponse(headers, json_output,
+                                                  params->client.get());
+              return true;
+            }));
+  }
+
  protected:
+  const GURL kKeyUrl =
+      GURL("https://example.test/interest_group/b_and_a_keys.json");
+  std::unique_ptr<URLLoaderInterceptor> url_loader_interceptor_;
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -17358,6 +17406,69 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
   content::FetchHistogramsFromChildProcesses();
   histogram_tester.ExpectTotalCount(
       "Ads.InterestGroup.GetInterestGroupAdAuctionData.TimeToResolve", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
+                       Preconnects) {
+  GURL test_url = https_server_->GetURL("a.test", "/interest_group/empty.html");
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad_url = https_server_->GetURL("c.test", "/echo?render_cars");
+  ProvideKeys();
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  EXPECT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(
+                blink::TestInterestGroupBuilder(/*owner=*/test_origin,
+                                                /*name=*/"cars")
+                    .SetBiddingUrl(https_server_->GetURL(
+                        "a.test", "/interest_group/bidding_logic.js"))
+                    .SetAds({{{ad_url, /*metadata=*/absl::nullopt,
+                               /*size_group=*/absl::nullopt,
+                               /*buyer_reporting_id=*/absl::nullopt,
+                               /*buyer_and_seller_reporting_id=*/absl::nullopt,
+                               /*ad_render_id=*/"buyCars"}}})
+                    .Build()));
+
+  class PreconnectCheckingNetworkContext : public network::TestNetworkContext {
+   public:
+    explicit PreconnectCheckingNetworkContext(GURL expected_url)
+        : expected_url_(std::move(expected_url)) {}
+    ~PreconnectCheckingNetworkContext() override = default;
+
+    void PreconnectSockets(uint32_t num_streams,
+                           const GURL& url,
+                           bool allow_credentials,
+                           const net::NetworkAnonymizationKey&
+                               network_anonymization_key) override {
+      EXPECT_EQ(1u, num_streams);
+      EXPECT_EQ(expected_url_, url);
+      EXPECT_TRUE(allow_credentials);
+      run_loop_.Quit();
+    }
+
+    base::RunLoop& run_loop() { return run_loop_; }
+
+   private:
+    base::RunLoop run_loop_;
+    const GURL expected_url_;
+  };
+
+  mojo::PendingRemote<network::mojom::NetworkContext> pending_remote;
+  auto preconnect_check = mojo::MakeSelfOwnedReceiver(
+      std::make_unique<PreconnectCheckingNetworkContext>(test_origin.GetURL()),
+      pending_remote.InitWithNewPipeAndPassReceiver());
+
+  shell()
+      ->web_contents()
+      ->GetBrowserContext()
+      ->GetDefaultStoragePartition()
+      ->SetNetworkContextForTesting(std::move(pending_remote));
+
+  std::string result =
+      GetInterestGroupAdAuctionData(test_origin, absl::nullopt);
+
+  static_cast<PreconnectCheckingNetworkContext*>(preconnect_check->impl())
+      ->run_loop()
+      .Run();
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
