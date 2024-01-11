@@ -5004,9 +5004,9 @@ crbug.com/1293591 images/color-profile-svg.html [ Failure Pass ]
 crbug.com/1293591 images/jpeg-with-color-profile.html [ Failure Pass ]
 
 # crbug.com/1339051: some ref tests generate output with minor differences.
-crbug.com/1339051 [ Linux ] external/wpt/css/css-transforms/perspective-split-by-zero-w.html [ Failure ]
+crbug.com/1339051 [ Debug Linux ] external/wpt/css/css-transforms/perspective-split-by-zero-w.html [ Failure ]
 crbug.com/1339051 [ Linux ] fast/forms/color/color-picker-appearance-zoom125.html [ Failure ]
-crbug.com/1339051 [ Linux ] virtual/backface-visibility-interop/external/wpt/css/css-transforms/perspective-split-by-zero-w.html [ Failure ]
+crbug.com/1339051 [ Debug Linux ] virtual/backface-visibility-interop/external/wpt/css/css-transforms/perspective-split-by-zero-w.html [ Failure ]
 crbug.com/1339051 [ Linux ] virtual/prefer_compositing_to_lcd_text/compositing/overflow/nested-render-surfaces.html [ Failure ]
 
 
@@ -6553,7 +6553,7 @@ crbug.com/1464206 http/tests/devtools/a11y-axe-core/performance/timeline-overvie
 
 # Gardener 2023-07-17
 # Very flaky on most Mac builders
-crbug.com/1465321 [ Mac ] virtual/prefetch-no-vary-search/wpt_internal/speculation-rules/prefetch/no-vary-search/prefetch-single-non-eager-with-hint.https.html?26-26 [ Failure Pass Timeout ]
+crbug.com/1465321 [ Debug Mac ] virtual/prefetch-no-vary-search/wpt_internal/speculation-rules/prefetch/no-vary-search/prefetch-single-non-eager-with-hint.https.html?26-26 [ Failure Pass Timeout ]
 crbug.com/1465321 [ Mac ] external/wpt/pointerevents/compat/pointerevent_mouse-pointer-preventdefault.html [ Failure Pass Timeout ]
 
 # Gardener 2023-07-20

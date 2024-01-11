@@ -434,7 +434,6 @@ crbug.com/866850 [ Linux ] virtual/gpu/fast/canvas/OffscreenCanvas-filter-in-wor
 crbug.com/866850 [ Mac11 Release ] virtual/gpu/fast/canvas/OffscreenCanvas-filter-in-worker.html [ Slow ]
 crbug.com/866850 [ Mac11-arm64 Release ] virtual/gpu/fast/canvas/OffscreenCanvas-filter-in-worker.html [ Slow ]
 crbug.com/866850 [ Mac12 Release ] virtual/gpu/fast/canvas/OffscreenCanvas-filter-in-worker.html [ Slow ]
-crbug.com/866850 [ Mac12-arm64 Release ] virtual/gpu/fast/canvas/OffscreenCanvas-filter-in-worker.html [ Slow ]
 crbug.com/866850 [ Mac13 ] virtual/gpu/fast/canvas/OffscreenCanvas-filter-in-worker.html [ Slow ]
 crbug.com/866850 [ Mac13-arm64 Release ] virtual/gpu/fast/canvas/OffscreenCanvas-filter-in-worker.html [ Slow ]
 
@@ -790,7 +789,12 @@ crbug.com/994331 compositing/lots-of-img-layers.html [ Slow ]
 crbug.com/1071114 external/wpt/css/css-fonts/test_font_family_parsing.html [ Slow ]
 crbug.com/1071418 external/wpt/css/css-transitions/idlharness.html [ Slow ]
 crbug.com/1048204 external/wpt/selection/idlharness.window.html [ Slow ]
-crbug.com/1047818 external/wpt/css/css-masking/idlharness.html [ Slow ]
+crbug.com/1047818 [ Debug Mac13-arm64 ] external/wpt/css/css-masking/idlharness.html [ Slow ]
+crbug.com/1047818 [ Linux ] external/wpt/css/css-masking/idlharness.html [ Slow ]
+crbug.com/1047818 [ Mac11 Release ] external/wpt/css/css-masking/idlharness.html [ Slow ]
+crbug.com/1047818 [ Mac12 Release ] external/wpt/css/css-masking/idlharness.html [ Slow ]
+crbug.com/1047818 [ Mac13 ] external/wpt/css/css-masking/idlharness.html [ Slow ]
+crbug.com/1047818 [ Release Win ] external/wpt/css/css-masking/idlharness.html [ Slow ]
 
 # This test contains a slow loading image that results in timeouts.
 crbug.com/853360 [ Mac Release ] http/tests/misc/slow-loading-image-in-pattern.html [ Slow ]
