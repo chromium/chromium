@@ -62,7 +62,7 @@ HttpAuthCoordinator::CreateLoginDelegateFromLoginHandler(
     content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback) {
   std::unique_ptr<LoginHandler> login_handler = LoginHandler::Create(
       auth_info, web_contents, std::move(auth_required_callback));
-  login_handler->ShowLoginPrompt(url);
+  login_handler->Start(url);
   return login_handler;
 }
 

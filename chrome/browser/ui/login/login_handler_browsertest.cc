@@ -145,11 +145,9 @@ class LoginHandlerFake : public LoginHandler {
   void NotifyAuthSupplied(const std::u16string& username,
                           const std::u16string& password) override;
   void NotifyAuthCancelled() override;
-  bool BuildViewImpl(const std::u16string& authority,
+  void BuildViewImpl(const std::u16string& authority,
                      const std::u16string& explanation,
-                     LoginModelData* login_model_data) override {
-    return true;
-  }
+                     LoginModelData* login_model_data) override {}
   void CloseDialog() override {}
   const raw_ptr<BrowserClientFake> browser_client_;
   bool prompt_shown_ = false;
@@ -200,7 +198,7 @@ class HttpAuthCoordinatorFake : public HttpAuthCoordinator {
     auto login_handler = std::make_unique<LoginHandlerFake>(
         auth_info, web_contents, std::move(auth_required_callback),
         browser_client_);
-    login_handler->ShowLoginPrompt(url);
+    login_handler->Start(url);
     return login_handler;
   }
 

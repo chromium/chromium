@@ -96,7 +96,7 @@ void LoginTabHelper::DidFinishNavigation(
           // callback, it's safe to use base::Unretained here; the
           // |login_handler_| cannot outlive its owning LoginTabHelper.
           base::Unretained(this)));
-  login_handler_->ShowLoginPrompt(navigation_handle->GetURL());
+  login_handler_->ShowLoginPromptAfterCommit(navigation_handle->GetURL());
 
   // If the challenge comes from a proxy, the URL should be hidden in the
   // omnibox to avoid origin confusion. Call DidChangeVisibleSecurityState() to

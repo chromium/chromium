@@ -46,7 +46,7 @@ class LoginHandlerViews : public LoginHandler {
 
  protected:
   // LoginHandler:
-  bool BuildViewImpl(const std::u16string& authority,
+  void BuildViewImpl(const std::u16string& authority,
                      const std::u16string& explanation,
                      LoginModelData* login_model_data) override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -54,7 +54,6 @@ class LoginHandlerViews : public LoginHandler {
 
     dialog_ = new Dialog(this, web_contents(), authority, explanation,
                          login_model_data);
-    return true;
   }
 
   void CloseDialog() override {
