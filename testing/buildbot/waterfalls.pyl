@@ -2232,6 +2232,7 @@
         'mixins': [
           'isolate_profile_data',
           'linux-jammy',
+          'x86-64',
         ],
         'test_suites': {
           'gtest_tests': 'chromeos_js_code_coverage_browser_tests'
