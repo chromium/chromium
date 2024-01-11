@@ -826,8 +826,7 @@ void MakeCredentialRequestHandler::HandleResponse(
       std::move(completion_callback_)
           .Run(MakeCredentialStatus::kAuthenticatorResponseInvalid,
                absl::nullopt, authenticator);
-    } else if (authenticator->GetType() == AuthenticatorType::kPhone &&
-               base::FeatureList::IsEnabled(kWebAuthnNewHybridUI)) {
+    } else if (authenticator->GetType() == AuthenticatorType::kPhone) {
       FIDO_LOG(ERROR) << "Status " << static_cast<int>(status) << " from "
                       << authenticator->GetDisplayName()
                       << " is fatal to the request";

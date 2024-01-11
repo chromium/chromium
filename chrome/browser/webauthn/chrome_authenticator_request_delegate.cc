@@ -1193,10 +1193,6 @@ void ChromeAuthenticatorRequestDelegate::OnInvalidatedCablePairing(
 
 void ChromeAuthenticatorRequestDelegate::OnCableEvent(
     device::cablev2::Event event) {
-  if (!base::FeatureList::IsEnabled(device::kWebAuthnNewHybridUI)) {
-    return;
-  }
-
   if (event == device::cablev2::Event::kReady) {
     cable_device_ready_ = true;
   }

@@ -9136,8 +9136,6 @@ TEST_F(AuthenticatorCableV2Test, QRBasedWithNoPairing) {
 }
 
 TEST_F(AuthenticatorCableV2Test, HandshakeError) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      device::kWebAuthnNewHybridUI};
   // A handshake error should be fatal to the request with
   // `kHybridTransportError`.
   auto discovery = std::make_unique<device::cablev2::Discovery>(

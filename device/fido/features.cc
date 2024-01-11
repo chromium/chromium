@@ -97,11 +97,6 @@ BASE_FEATURE(kWebAuthnICloudKeychainForInactiveWithoutDrive,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enabled in M117. Remove in or after M120.
-BASE_FEATURE(kWebAuthnNewHybridUI,
-             "WebAuthenticationNewHybridUI",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enabled in M117. Remove in or after M120.
 BASE_FEATURE(kWebAuthConditionalUIExperimentation,
              "WebAuthenticationConditionalUIExperimentation",
              base::FEATURE_ENABLED_BY_DEFAULT);
