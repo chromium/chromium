@@ -54,13 +54,13 @@ int main(int argc, char** argv) {
     return 0;
   }
 
-  std::optional<ui::AXInspectScenario> scenario =
+  absl::optional<ui::AXInspectScenario> scenario =
       tools::ScenarioFromCommandLine(*command_line);
   if (!scenario) {
     return 1;
   }
 
-  std::optional<AXTreeSelector> selector =
+  absl::optional<AXTreeSelector> selector =
       tools::TreeSelectorFromCommandLine(*command_line);
 
   if (!selector || selector->empty()) {

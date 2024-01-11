@@ -7,16 +7,15 @@
 #include <sys/sysctl.h>
 #include <sys/types.h>
 
-#include <optional>
-
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace power_sampler {
 
 namespace {
 
-std::optional<int> GetIntSysCtl(const std::vector<int>& mib_name) {
+absl::optional<int> GetIntSysCtl(const std::vector<int>& mib_name) {
   int value = 0;
   size_t size = sizeof(value);
   int ret = sysctl(const_cast<int*>(mib_name.data()), mib_name.size(), &value,
@@ -30,7 +29,7 @@ std::optional<int> GetIntSysCtl(const std::vector<int>& mib_name) {
     return value;
   }
 
-  return std::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace

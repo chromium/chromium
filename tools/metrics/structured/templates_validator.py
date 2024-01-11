@@ -11,13 +11,13 @@ HEADER_FILE_TEMPLATE = """\
 #define {file.guard_path}
 
 #include <memory>
-#include <optional>
 #include <string>
 #include <unordered_map>
 
 #include "base/no_destructor.h"
 #include "base/strings/string_piece.h"
 #include "components/metrics/structured/project_validator.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace metrics {{
 namespace structured {{
@@ -33,10 +33,10 @@ public:
 
   void Initialize();
 
-  std::optional<const ProjectValidator*>
+  absl::optional<const ProjectValidator*>
     GetProjectValidator(base::StringPiece project_name) const;
 
-  std::optional<base::StringPiece>
+  absl::optional<base::StringPiece>
     GetProjectName(uint64_t project_name_hash) const;
 
   static Validators* Get();
@@ -69,7 +69,7 @@ IMPL_FILE_TEMPLATE = """\
 #include "components/metrics/structured/event.h"
 #include "components/metrics/structured/event_validator.h"
 #include "components/metrics/structured/project_validator.h"
-#include <optional>
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/structured_data.pb.h"
 
 namespace metrics {{
@@ -96,19 +96,19 @@ void Validators::Initialize() {{
   {name_map};
 }}
 
-std::optional<const ProjectValidator*>
+absl::optional<const ProjectValidator*>
   Validators::GetProjectValidator(base::StringPiece project_name) const {{
     const auto it = validators_.find(project_name);
     if (it == validators_.end())
-      return std::nullopt;
+      return absl::nullopt;
     return it->second.get();
 }}
 
-std::optional<base::StringPiece>
+absl::optional<base::StringPiece>
   Validators::GetProjectName(uint64_t project_name_hash) const {{
     const auto it = project_name_map_.find(project_name_hash);
     if (it == project_name_map_.end())
-      return std::nullopt;
+      return absl::nullopt;
     // This lookup will never fail.
     return it->second;
 }}

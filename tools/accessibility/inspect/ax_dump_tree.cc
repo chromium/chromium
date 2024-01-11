@@ -81,7 +81,7 @@ int main(int argc, char** argv) {
     return 0;
   }
 
-  std::optional<ui::AXTreeSelector> selector =
+  absl::optional<ui::AXTreeSelector> selector =
       tools::TreeSelectorFromCommandLine(*command_line);
 
   if (!selector || selector->empty()) {
@@ -109,7 +109,7 @@ int main(int argc, char** argv) {
   if (api == ui::AXApiType::kNone && !apis.empty())
     api = apis[0];
 
-  std::optional<ui::AXInspectScenario> scenario =
+  absl::optional<ui::AXInspectScenario> scenario =
       tools::ScenarioFromCommandLine(*command_line, api);
   if (!scenario) {
     return 1;

@@ -31,15 +31,15 @@ namespace aggregation_service {
 
 namespace {
 
-std::optional<content::TestAggregationService::Operation> ConvertToOperation(
+absl::optional<content::TestAggregationService::Operation> ConvertToOperation(
     const std::string& operation_string) {
   if (operation_string == "histogram")
     return content::TestAggregationService::Operation::kHistogram;
 
-  return std::nullopt;
+  return absl::nullopt;
 }
 
-std::optional<content::TestAggregationService::AggregationMode>
+absl::optional<content::TestAggregationService::AggregationMode>
 ConvertToAggregationMode(const std::string& aggregation_mode_string) {
   if (aggregation_mode_string == "tee-based")
     return content::TestAggregationService::AggregationMode::kTeeBased;
@@ -49,7 +49,7 @@ ConvertToAggregationMode(const std::string& aggregation_mode_string) {
   if (aggregation_mode_string == "default")
     return content::TestAggregationService::AggregationMode::kDefault;
 
-  return std::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace
@@ -128,7 +128,7 @@ base::Value::Dict AggregationServiceTool::AssembleReport(
     std::string api_identifier) {
   base::Value::Dict result;
 
-  std::optional<content::TestAggregationService::Operation> operation =
+  absl::optional<content::TestAggregationService::Operation> operation =
       ConvertToOperation(operation_str);
   if (!operation.has_value()) {
     LOG(ERROR) << "Invalid operation: " << operation_str;
@@ -147,7 +147,7 @@ base::Value::Dict AggregationServiceTool::AssembleReport(
     return result;
   }
 
-  std::optional<content::TestAggregationService::AggregationMode>
+  absl::optional<content::TestAggregationService::AggregationMode>
       aggregation_mode = ConvertToAggregationMode(aggregation_mode_str);
   if (!aggregation_mode.has_value()) {
     LOG(ERROR) << "Invalid aggregation mode: " << aggregation_mode_str;

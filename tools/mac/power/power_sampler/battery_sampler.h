@@ -6,12 +6,11 @@
 #define TOOLS_MAC_POWER_POWER_SAMPLER_BATTERY_SAMPLER_H_
 
 #include <stdint.h>
-
 #include <cstdint>
 #include <memory>
-#include <optional>
 
 #include "base/mac/scoped_ioobject.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "tools/mac/power/power_sampler/sampler.h"
 
 namespace power_sampler {
@@ -72,13 +71,13 @@ class BatterySampler : public Sampler {
     int64_t update_time_seconds_since_epoch;
   };
   using MaybeGetBatteryDataFn =
-      std::optional<BatteryData> (*)(io_service_t power_source);
+      absl::optional<BatteryData> (*)(io_service_t power_source);
   using GetSecondsSinceEpochFn = int64_t (*)();
 
   // TODO(siggi): It'd be possible to test the data extraction part of this
   //     function by splitting it in two and passing it a dictionary to
   //     dissect.
-  static std::optional<BatteryData> MaybeGetBatteryData(
+  static absl::optional<BatteryData> MaybeGetBatteryData(
       io_service_t power_source);
 
   struct AvgConsumption {
@@ -88,7 +87,7 @@ class BatterySampler : public Sampler {
 
   // Yields average for |prev_data|, |new_data| and |duration| if the current
   // capacity has changed between |prev_data| and |new_data|.
-  static std::optional<AvgConsumption> MaybeComputeAvgConsumption(
+  static absl::optional<AvgConsumption> MaybeComputeAvgConsumption(
       base::TimeDelta duration,
       const BatteryData& prev_data,
       const BatteryData& new_data);
@@ -130,7 +129,7 @@ class BatterySampler : public Sampler {
   // capacity change, it's possible to keep track of the actual current
   // consumption.
   base::TimeTicks prev_battery_sample_time_ = base::TimeTicks::Min();
-  std::optional<BatteryData> prev_battery_data_;
+  absl::optional<BatteryData> prev_battery_data_;
 };
 
 }  // namespace power_sampler

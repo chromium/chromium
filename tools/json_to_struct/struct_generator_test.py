@@ -35,11 +35,11 @@ class StructGeneratorTest(unittest.TestCase):
 
   def testGenerateClassField(self):
     self.assertEquals(
-        'const std::optional<bool> bar',
+        'const absl::optional<bool> bar',
         GenerateField({
             'type': 'class',
             'field': 'bar',
-            'ctype': 'std::optional<bool>'
+            'ctype': 'absl::optional<bool>'
         }))
 
   def testGenerateStruct(self):

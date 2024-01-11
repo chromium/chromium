@@ -14,7 +14,7 @@ namespace {
 
 void MaybeAddToSample(Sampler::Sample* sample,
                       base::StringPiece name,
-                      std::optional<double> val) {
+                      absl::optional<double> val) {
   if (val.has_value())
     sample->emplace(name, val.value());
 }
