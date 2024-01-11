@@ -132,6 +132,11 @@ void V4L2StatelessVideoDecoder::Initialize(const VideoDecoderConfig& config,
     return;
   }
 
+  // The decoder should always start out with empty queues. Because the decoder
+  // can be reinitialized they are explicitly cleared.
+  output_queue_.reset();
+  input_queue_.reset();
+
   device_->Close();
   if (!device_->Open()) {
     DVLOGF(1) << "Failed to open device.";
@@ -193,7 +198,43 @@ void V4L2StatelessVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
 
 void V4L2StatelessVideoDecoder::Reset(base::OnceClosure reset_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
-  NOTIMPLEMENTED();
+  DVLOGF(3);
+
+  // In order to preserve the order of the callbacks between Decode() and
+  // Reset(), we also trampoline |reset_cb|.
+  base::ScopedClosureRunner scoped_trampoline_reset_cb(
+      base::BindOnce(base::IgnoreResult(&base::SequencedTaskRunner::PostTask),
+                     base::SequencedTaskRunner::GetCurrentDefault(), FROM_HERE,
+                     std::move(reset_cb)));
+
+  decoder_->Reset();
+
+  // Drop all of the queued, but unprocessed frames on the floor. In a reset
+  // the expectation is all frames that are currently queued are disposed of
+  // without completing the decode process.
+
+  // First clear the request that is being processed.
+  if (current_decode_request_) {
+    std::move(current_decode_request_->decode_cb)
+        .Run(DecoderStatus::Codes::kAborted);
+    current_decode_request_ = absl::nullopt;
+  }
+
+  // Then clear out all of the ones that are queued up.
+  while (!decode_request_queue_.empty()) {
+    auto& request = decode_request_queue_.front();
+    std::move(request.decode_cb).Run(DecoderStatus::Codes::kAborted);
+    decode_request_queue_.pop();
+  }
+
+  // Remove all outstanding buffers waiting to be sent to the display.
+  display_queue_ = {};
+
+  // If the reset happened in the middle of a flush the flush will not be
+  // completed.
+  if (flush_cb_) {
+    std::move(flush_cb_).Run(DecoderStatus::Codes::kAborted);
+  }
 }
 
 bool V4L2StatelessVideoDecoder::NeedsBitstreamConversion() const {
