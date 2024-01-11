@@ -1059,6 +1059,12 @@
       <message name="IDS_PAGE_ZOOM_LEVEL" desc="Text description of the current page zoom level set by the user">
         <ph name="ZOOM_LEVEL">%1$d<ex>100</ex></ph> %%
       </message>
+      <message name="IDS_PAGE_ZOOM_INCLUDE_OS_ADJUSTMENT_TITLE" translateable="false" desc="Title of the preference that allows the user to control if page zoom adjusts for OS level setting">
+        Match Android font size
+      </message>
+      <message name="IDS_PAGE_ZOOM_INCLUDE_OS_ADJUSTMENT_SUMMARY" translateable="false" desc="Summary of the preference that allows the user to control if page zoom adjusts for OS level setting">
+        When enabled, Chrome will adjust web content size to match your Android setting
+      </message>
       <message name="IDS_PAGE_ZOOM_ALWAYS_SHOW_PREFERENCE_TITLE" desc="Title of the preference that allows the user to always show the menu item for zoom">
         Show zoom option in main menu
       </message>

@@ -21,6 +21,11 @@ found in the LICENSE file.
         android:title="@string/zoom_info_preference_title"/>
 
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+        android:key="page_zoom_include_os_adjustment"
+        android:summary="@string/page_zoom_include_os_adjustment_summary"
+        android:title="@string/page_zoom_include_os_adjustment_title" />
+
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="page_zoom_always_show"
         android:summary="@string/page_zoom_always_show_preference_summary"
         android:title="@string/page_zoom_always_show_preference_title" />
