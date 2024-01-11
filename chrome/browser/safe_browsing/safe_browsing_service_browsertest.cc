@@ -353,6 +353,7 @@ class TestSBClient : public base::RefCountedThreadSafe<TestSBClient>,
   std::string GetThreatHash() const { return threat_hash_; }
 
   void CheckDownloadUrl(const std::vector<GURL>& url_chain) {
+    base::RunLoop loop;
     if (base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)) {
       CheckDownloadUrlOnSBThread(url_chain);
     } else {
@@ -360,10 +361,12 @@ class TestSBClient : public base::RefCountedThreadSafe<TestSBClient>,
           FROM_HERE, base::BindOnce(&TestSBClient::CheckDownloadUrlOnSBThread,
                                     this, url_chain));
     }
-    content::RunMessageLoop();  // Will stop in OnCheckDownloadUrlResult.
+    set_quit_closure(loop.QuitWhenIdleClosure());
+    loop.Run();
   }
 
   void CheckBrowseUrl(const GURL& url) {
+    base::RunLoop loop;
     if (base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)) {
       CheckBrowseUrlOnSBThread(url);
     } else {
@@ -371,10 +374,12 @@ class TestSBClient : public base::RefCountedThreadSafe<TestSBClient>,
           FROM_HERE,
           base::BindOnce(&TestSBClient::CheckBrowseUrlOnSBThread, this, url));
     }
-    content::RunMessageLoop();  // Will stop in OnCheckBrowseUrlResult.
+    set_quit_closure(loop.QuitWhenIdleClosure());
+    loop.Run();
   }
 
   void CheckResourceUrl(const GURL& url) {
+    base::RunLoop loop;
     if (base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)) {
       CheckResourceUrlOnSBThread(url);
     } else {
@@ -382,7 +387,8 @@ class TestSBClient : public base::RefCountedThreadSafe<TestSBClient>,
           FROM_HERE,
           base::BindOnce(&TestSBClient::CheckResourceUrlOnSBThread, this, url));
     }
-    content::RunMessageLoop();  // Will stop in OnCheckResourceUrlResult.
+    set_quit_closure(loop.QuitWhenIdleClosure());
+    loop.Run();
   }
 
  private:
@@ -399,7 +405,9 @@ class TestSBClient : public base::RefCountedThreadSafe<TestSBClient>,
           FROM_HERE, base::BindOnce(&TestSBClient::CheckDone, this));
     }
   }
-
+  void set_quit_closure(base::OnceClosure quit_closure) {
+    quit_closure_ = std::move(quit_closure);
+  }
   void CheckBrowseUrlOnSBThread(const GURL& url) {
     SBThreatTypeSet threat_types = CreateSBThreatTypeSet(
         {SB_THREAT_TYPE_URL_PHISHING, SB_THREAT_TYPE_URL_MALWARE,
@@ -455,11 +463,12 @@ class TestSBClient : public base::RefCountedThreadSafe<TestSBClient>,
         FROM_HERE, base::BindOnce(&TestSBClient::CheckDone, this));
   }
 
-  void CheckDone() { base::RunLoop::QuitCurrentWhenIdleDeprecated(); }
+  void CheckDone() { std::move(quit_closure_).Run(); }
 
   SBThreatType threat_type_;
   std::string threat_hash_;
   raw_ptr<SafeBrowsingService> safe_browsing_service_;
+  base::OnceClosure quit_closure_;
 };
 
 }  // namespace

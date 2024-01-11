@@ -483,34 +483,15 @@ class TestSafeBrowsingBlockingPage : public SafeBrowsingBlockingPage {
             is_proceed_anyway_disabled,
             is_safe_browsing_surveys_enabled,
             std::move(trust_safety_sentiment_service_trigger),
-            /*url_loader_for_testing=*/nullptr),
-        wait_for_delete_(false) {
+            /*url_loader_for_testing=*/nullptr) {
     // Don't wait the whole 3 seconds for the browser test.
     SetThreatDetailsProceedDelayForTesting(100);
-  }
-
-  ~TestSafeBrowsingBlockingPage() override {
-    if (!wait_for_delete_) {
-      return;
-    }
-
-    // Notify that we are gone
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
-    wait_for_delete_ = false;
-  }
-
-  void WaitForDelete() {
-    wait_for_delete_ = true;
-    content::RunMessageLoop();
   }
 
   // SecurityInterstitialPage methods:
   void CommandReceived(const std::string& command) override {
     SafeBrowsingBlockingPage::CommandReceived(command);
   }
-
- private:
-  bool wait_for_delete_;
 };
 
 void AssertNoInterstitial(Browser* browser, bool wait_for_delete) {
