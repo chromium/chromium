@@ -283,8 +283,7 @@ void PasskeyAuthenticatorServiceAsh::DoAssert(
                           ctx.request->client_data_hash.begin(),
                           ctx.request->client_data_hash.end());
   std::optional<std::vector<uint8_t>> assertion_signature = GenerateEcSignature(
-      base::as_bytes(base::make_span(credential_secrets.private_key())),
-      signed_over_data);
+      base::as_byte_span(credential_secrets.private_key()), signed_over_data);
   if (!assertion_signature) {
     FinishAssert(std::move(ctx),
                  crosapi::mojom::PasskeyAssertionResult::NewError(

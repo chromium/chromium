@@ -116,7 +116,7 @@ bool VerifyOrCreateDownloadDirectory(const base::FilePath& download_directory) {
 }
 
 std::string GetHashedFileNameForUrl(const std::string& url) {
-  auto hash = base::SHA1HashSpan(base::as_bytes(base::make_span(url)));
+  auto hash = base::SHA1HashSpan(base::as_byte_span(url));
   return base::HexEncode(hash) + kCacheFileExt;
 }
 

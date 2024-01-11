@@ -161,7 +161,7 @@ TEST_F(FileSystemProviderOperationsReadFileTest, OnSuccess) {
   base::Value::List list;
   list.Append(kFileSystemId);
   list.Append(kRequestId);
-  list.Append(base::Value(base::as_bytes(base::make_span(data))));
+  list.Append(base::Value(base::as_byte_span(data)));
   list.Append(has_more);
   list.Append(execution_time);
 

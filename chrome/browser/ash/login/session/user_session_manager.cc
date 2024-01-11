@@ -577,9 +577,7 @@ void MaybeSaveSessionStartedTimeBeforeRestart(Profile* profile) {
 
 // Returns a Base16 encoded SHA1 digest of `data`.
 std::string Sha1Digest(const std::string& data) {
-  const base::SHA1Digest hash =
-      base::SHA1HashSpan(base::as_bytes(base::make_span(data)));
-  return base::HexEncode(hash);
+  return base::HexEncode(base::SHA1HashSpan(base::as_byte_span(data)));
 }
 
 }  // namespace
