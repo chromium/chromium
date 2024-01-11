@@ -114,12 +114,23 @@ class ChromeFileSystemAccessPermissionContextTest : public testing::Test {
     ASSERT_TRUE(
         temp_dir_.CreateUniqueTempDirUnderPath(base::GetTempDirForTesting()));
 
+    // We create a custom user data directory and place the the testing profile
+    // directory inside of it. This simulates a non-default --user-data-dir.
+    // Without this step, the testing profile directory is placed directly in
+    // the test's temp dir, but we need it to be nested one more level from
+    // there to simulate a real environment.
+    base::FilePath user_data_dir =
+        base::CreateUniqueTempDirectoryScopedToTest();
+    base::FilePath profile_dir;
+    base::CreateTemporaryDirInDir(user_data_dir, {}, &profile_dir);
+    profile_ = TestingProfile::Builder().SetPath(profile_dir).Build();
+
     DownloadCoreServiceFactory::GetForBrowserContext(profile())
         ->SetDownloadManagerDelegateForTesting(
             std::make_unique<ChromeDownloadManagerDelegate>(profile()));
 
-    web_contents_ =
-        content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+    web_contents_ = content::WebContentsTester::CreateTestWebContents(
+        profile_.get(), nullptr);
     FileSystemAccessPermissionRequestManager::CreateForWebContents(
         web_contents());
     content::WebContentsTester::For(web_contents())
@@ -156,10 +167,22 @@ class ChromeFileSystemAccessPermissionContextTest : public testing::Test {
     return future.Get();
   }
 
+  // Shorthand for `ConfirmSensitiveEntryAccessSync()` with some common
+  // arguments.
+  bool IsOpenAllowed(const base::FilePath& path, HandleType handle_type) {
+    base::test::TestFuture<
+        ChromeFileSystemAccessPermissionContext::SensitiveEntryResult>
+        future;
+    permission_context_->ConfirmSensitiveEntryAccess(
+        kTestOrigin, PathType::kLocal, path, handle_type, UserAction::kOpen,
+        content::GlobalRenderFrameHostId(), future.GetCallback());
+    return future.Get() == SensitiveDirectoryResult::kAllowed;
+  }
+
   void SetDefaultContentSettingValue(ContentSettingsType type,
                                      ContentSetting value) {
     HostContentSettingsMap* content_settings =
-        HostContentSettingsMapFactory::GetForProfile(&profile_);
+        HostContentSettingsMapFactory::GetForProfile(profile_.get());
     content_settings->SetDefaultContentSetting(type, value);
   }
 
@@ -167,7 +190,7 @@ class ChromeFileSystemAccessPermissionContextTest : public testing::Test {
                                        ContentSettingsType type,
                                        ContentSetting value) {
     HostContentSettingsMap* content_settings =
-        HostContentSettingsMapFactory::GetForProfile(&profile_);
+        HostContentSettingsMapFactory::GetForProfile(profile_.get());
     content_settings->SetContentSettingDefaultScope(
         origin.GetURL(), origin.GetURL(), type, value);
   }
@@ -226,8 +249,8 @@ class ChromeFileSystemAccessPermissionContextTest : public testing::Test {
     return permission_context_.get();
   }
 
-  BrowserContext* browser_context() { return &profile_; }
-  TestingProfile* profile() { return &profile_; }
+  BrowserContext* browser_context() { return profile_.get(); }
+  TestingProfile* profile() { return profile_.get(); }
   WebContents* web_contents() { return web_contents_.get(); }
 
   int process_id() {
@@ -262,9 +285,10 @@ class ChromeFileSystemAccessPermissionContextTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::ScopedTempDir temp_dir_;
+  base::ScopedTempDir profile_dir_;
   std::unique_ptr<ChromeFileSystemAccessPermissionContext> permission_context_;
   content::RenderViewHostTestEnabler render_view_host_test_enabler_;
-  TestingProfile profile_;
+  std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<WebContents> web_contents_;
   base::test::ScopedFeatureList scoped_feature_list_;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -383,36 +407,43 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   base::FilePath user_data_dir = temp_dir_.GetPath().AppendASCII("user");
   base::ScopedPathOverride user_data_override(chrome::DIR_USER_DATA,
                                               user_data_dir, true, true);
-  base::FilePath download_dir = user_data_dir.AppendASCII("downloads");
-  base::ScopedPathOverride download_override(chrome::DIR_DEFAULT_DOWNLOADS,
-                                             download_dir, true, true);
+  {
+    base::FilePath download_dir = user_data_dir.AppendASCII("downloads");
+    base::ScopedPathOverride download_override(chrome::DIR_DEFAULT_DOWNLOADS,
+                                               download_dir, true, true);
 
-  // The User Data directory itself should not be allowed.
-  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
-                permission_context(), PathType::kLocal, user_data_dir,
-                HandleType::kDirectory, UserAction::kOpen),
-            SensitiveDirectoryResult::kAbort);
-  // The parent of the User Data directory should also not be allowed.
-  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
-                permission_context(), PathType::kLocal, temp_dir_.GetPath(),
-                HandleType::kDirectory, UserAction::kOpen),
-            SensitiveDirectoryResult::kAbort);
-  // The nested Download directory itself should not be allowed.
-  EXPECT_EQ(SensitiveDirectoryResult::kAbort,
-            ConfirmSensitiveEntryAccessSync(
-                permission_context(), PathType::kLocal, download_dir,
-                HandleType::kDirectory, UserAction::kOpen));
-  // The paths inside of the nested Download directory should be allowed.
-  EXPECT_EQ(
-      ConfirmSensitiveEntryAccessSync(permission_context(), PathType::kLocal,
-                                      download_dir.AppendASCII("foo"),
-                                      HandleType::kFile, UserAction::kOpen),
-      SensitiveDirectoryResult::kAllowed);
-  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
-                permission_context(), PathType::kLocal,
-                download_dir.AppendASCII("foo"), HandleType::kDirectory,
-                UserAction::kOpen),
-            SensitiveDirectoryResult::kAllowed);
+    // The User Data directory itself should not be allowed.
+    EXPECT_FALSE(IsOpenAllowed(user_data_dir, HandleType::kDirectory));
+    // The parent of the User Data directory should also not be allowed.
+    EXPECT_FALSE(IsOpenAllowed(temp_dir_.GetPath(), HandleType::kDirectory));
+    // The nested Download directory itself should not be allowed.
+    EXPECT_FALSE(IsOpenAllowed(download_dir, HandleType::kDirectory));
+    // The paths inside of the nested Download directory should be allowed.
+    EXPECT_TRUE(
+        IsOpenAllowed(download_dir.AppendASCII("foo"), HandleType::kFile));
+    EXPECT_TRUE(
+        IsOpenAllowed(download_dir.AppendASCII("foo"), HandleType::kDirectory));
+  }
+
+  // The profile directory, its children, and its direct parent should all be
+  // blocked. Note that this may not match USER_DATA_DIR if the --user-data-dir
+  // override is used.
+  {
+    const base::FilePath profile_path = profile()->GetPath();
+    base::FilePath download_dir = profile_path.AppendASCII("downloads");
+    base::ScopedPathOverride download_override(chrome::DIR_DEFAULT_DOWNLOADS,
+                                               download_dir, true, true);
+
+    EXPECT_FALSE(IsOpenAllowed(profile_path, HandleType::kDirectory));
+    EXPECT_FALSE(
+        IsOpenAllowed(profile_path.AppendASCII("foo"), HandleType::kFile));
+    EXPECT_FALSE(IsOpenAllowed(profile_path.DirName(), HandleType::kDirectory));
+    // The paths inside of the nested Download directory should be allowed.
+    EXPECT_TRUE(
+        IsOpenAllowed(download_dir.AppendASCII("foo"), HandleType::kFile));
+    EXPECT_TRUE(
+        IsOpenAllowed(download_dir.AppendASCII("foo"), HandleType::kDirectory));
+  }
 
 #if BUILDFLAG(IS_WIN)
   // `DIR_IE_INTERNET_CACHE` is an example of a directory where nested
@@ -422,22 +453,13 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
                                                    internet_cache, true, true);
 
   // The nested INetCache directory itself should not be allowed.
-  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
-                permission_context(), PathType::kLocal, internet_cache,
-                HandleType::kDirectory, UserAction::kOpen),
-            SensitiveDirectoryResult::kAbort);
+  EXPECT_FALSE(IsOpenAllowed(internet_cache, HandleType::kDirectory));
   // Files inside of the nested INetCache directory should be allowed.
-  EXPECT_EQ(
-      ConfirmSensitiveEntryAccessSync(permission_context(), PathType::kLocal,
-                                      internet_cache.AppendASCII("foo"),
-                                      HandleType::kFile, UserAction::kOpen),
-      SensitiveDirectoryResult::kAllowed);
+  EXPECT_TRUE(
+      IsOpenAllowed(internet_cache.AppendASCII("foo"), HandleType::kFile));
   // The directories should be blocked.
-  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
-                permission_context(), PathType::kLocal,
-                internet_cache.AppendASCII("foo"), HandleType::kDirectory,
-                UserAction::kOpen),
-            SensitiveDirectoryResult::kAbort);
+  EXPECT_FALSE(
+      IsOpenAllowed(internet_cache.AppendASCII("foo"), HandleType::kDirectory));
 #endif
 }
 
