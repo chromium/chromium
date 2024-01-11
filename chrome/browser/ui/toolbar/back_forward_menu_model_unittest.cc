@@ -42,20 +42,22 @@ namespace {
 
 class FaviconDelegate : public ui::MenuModelDelegate {
  public:
-  FaviconDelegate() : was_called_(false) {}
+  explicit FaviconDelegate(base::OnceClosure quit_closure)
+      : was_called_(false), quit_closure_(std::move(quit_closure)) {}
 
   FaviconDelegate(const FaviconDelegate&) = delete;
   FaviconDelegate& operator=(const FaviconDelegate&) = delete;
 
   void OnIconChanged(int command_id) override {
     was_called_ = true;
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
+    std::move(quit_closure_).Run();
   }
 
   bool was_called() const { return was_called_; }
 
  private:
   bool was_called_;
+  base::OnceClosure quit_closure_;
 };
 
 }  // namespace
@@ -528,7 +530,8 @@ TEST_F(BackFwdMenuModelTest, FaviconLoadTest) {
   Browser::CreateParams native_params(profile(), true);
   std::unique_ptr<Browser> browser(
       CreateBrowserWithTestWindowForParams(native_params));
-  FaviconDelegate favicon_delegate;
+  base::RunLoop loop;
+  FaviconDelegate favicon_delegate(loop.QuitWhenIdleClosure());
 
   BackForwardMenuModel back_model(browser.get(),
                                   BackForwardMenuModel::ModelType::kBackward);
@@ -560,7 +563,7 @@ TEST_F(BackFwdMenuModelTest, FaviconLoadTest) {
 
   // Make the favicon service run GetFavIconForURL,
   // FaviconDelegate.OnIconChanged will be called.
-  base::RunLoop().Run();
+  loop.Run();
 
   // Verify that the callback executed.
   EXPECT_TRUE(favicon_delegate.was_called());
