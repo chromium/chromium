@@ -362,7 +362,7 @@ NSAttributedString* TextForTabGroupCount(int count, CGFloat font_size) {
     string = @"99+";
   }
 
-  UIFont* font = [UIFont systemFontOfSize:font_size weight:UIFontWeightLight];
+  UIFont* font = [UIFont systemFontOfSize:font_size weight:UIFontWeightMedium];
   UIFontDescriptor* descriptor = [font.fontDescriptor
       fontDescriptorWithDesign:UIFontDescriptorSystemDesignRounded];
   font = [UIFont fontWithDescriptor:descriptor size:font_size];
