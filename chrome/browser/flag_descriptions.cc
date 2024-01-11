@@ -2756,6 +2756,11 @@ const char kPasswordGenerationStrongLabelExperimentDescription[] =
     "Enables adding a 'Strong password' label inside the sign-up password "
     "field in the password generation flow.";
 
+const char kPasswordManagerShadowDomSupportName[] =
+    "Shadow DOM support for Password Manager";
+const char kPasswordManagerShadowDomSupportDescription[] =
+    "Enables form filling and saving for password forms in shadow DOM.";
+
 const char kPasswordParsingOnSaveUsesPredictionsName[] =
     "Use server predictions for password form parsing on saving";
 const char kPasswordParsingOnSaveUsesPredictionsDescription[] =

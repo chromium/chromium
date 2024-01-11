@@ -30535,6 +30535,7 @@ from previous Chrome versions.
       label="OverlayScrollbarFlashAfterAnyScrollUpdate:disabled"/>
   <int value="476685184" label="ResetShortcutCustomizations:enabled"/>
   <int value="476814335" label="AutoDisableAccessibilityV2:enabled"/>
+  <int value="476954509" label="ShadowDomSupport:disabled"/>
   <int value="477796416" label="ReleaseNotes:enabled"/>
   <int value="477967119" label="enable-unified-media-pipeline"/>
   <int value="478380451" label="BlockMigratedDefaultChromeAppSync:disabled"/>
@@ -31513,6 +31514,7 @@ from previous Chrome versions.
   <int value="943447234" label="NtpDriveModule:disabled"/>
   <int value="944342622" label="QuickDeleteForAndroid:enabled"/>
   <int value="944484780" label="EnableEmbeddedAssistantUI:enabled"/>
+  <int value="945747753" label="ShadowDomSupport:enabled"/>
   <int value="946185008" label="EnableAppDataSearch:disabled"/>
   <int value="946688335" label="OmniboxSpareRenderer:disabled"/>
   <int value="946998724" label="SiteIsolationForGuests:enabled"/>

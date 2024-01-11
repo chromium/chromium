@@ -64,6 +64,11 @@ BASE_FEATURE(kSendPasswords,
              "SendPasswords",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables filling and saving for forms in shadow DOM.
+BASE_FEATURE(kShadowDomSupport,
+             "ShadowDomSupport",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables .well-known based password change flow from leaked password dialog.
 BASE_FEATURE(kPasswordChangeWellKnown,
              "PasswordChangeWellKnown",

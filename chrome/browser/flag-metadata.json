@@ -6709,6 +6709,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "pwm-shadow-dom-support",
+    "owners": [ "kazinova@google.com", "vasilii@chromium.org" ],
+    "expiry_milestone": 127
+  },
+  {
     "name": "query-tiles",
     "owners": [ "shaktisahu@chromium.org", "qinmin@chromium.org" ],
     "expiry_milestone": 130

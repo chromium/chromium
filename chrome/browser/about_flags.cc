@@ -10960,6 +10960,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(feature_engagement::kIPHLauncherSearchHelpUiFeature)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+    {"pwm-shadow-dom-support",
+     flag_descriptions::kPasswordManagerShadowDomSupportName,
+     flag_descriptions::kPasswordManagerShadowDomSupportDescription, kOsAll,
+     FEATURE_VALUE_TYPE(password_manager::features::kShadowDomSupport)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
