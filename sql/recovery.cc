@@ -130,7 +130,6 @@ BuiltInRecovery::BuiltInRecovery(Database* database, Strategy strategy)
     : strategy_(strategy),
       db_(database),
       recover_db_(sql::DatabaseOptions{
-          .exclusive_locking = false,
           .page_size = database ? database->page_size() : 0,
           .cache_size = 0,
       }) {
