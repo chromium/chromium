@@ -2623,10 +2623,6 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   handlers->AddHandler(std::make_unique<SimplePolicyHandler>(
       key::kUserPrintersAllowed, prefs::kUserPrintersAllowed,
       base::Value::Type::BOOLEAN));
-  handlers->AddHandler(std::make_unique<SimplePolicyHandler>(
-      key::kSecondaryGoogleAccountUsage,
-      ::account_manager::prefs::kSecondaryGoogleAccountUsage,
-      base::Value::Type::STRING));
   handlers->AddHandler(std::make_unique<IntRangePolicyHandler>(
       key::kGaiaOfflineSigninTimeLimitDays,
       ash::prefs::kGaiaOfflineSigninTimeLimitDays, -1, 365, true));

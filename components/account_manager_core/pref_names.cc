@@ -4,8 +4,7 @@
 
 #include "components/account_manager_core/pref_names.h"
 
-namespace account_manager {
-namespace prefs {
+namespace account_manager::prefs {
 
 // A boolean pref to store if Secondary Google Account additions are allowed on
 // Chrome OS Account Manager. The default value is |true|, i.e. Secondary Google
@@ -21,10 +20,4 @@ const char kAccountAppsAvailability[] =
 // Keys for `kAccountAppsAvailability`.
 const char kIsAvailableInArcKey[] = "is_available_in_arc";
 
-// Decides whether a Enterprise account can be added to a session as a Secondary
-// Account at OS level.
-const char kSecondaryGoogleAccountUsage[] =
-    "account_manager.secondary_google_account_usage";
-
-}  // namespace prefs
-}  // namespace account_manager
+}  // namespace account_manager::prefs
