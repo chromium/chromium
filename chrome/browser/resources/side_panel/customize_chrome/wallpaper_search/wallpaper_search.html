@@ -282,71 +282,73 @@
   </div>
   <div class="content" id="wallpaperSearch" hidden$="[[errorState_]]"
       tabindex="-1">
-    <customize-chrome-combobox id="descriptorComboboxA"
-        label="$i18n{wallpaperSearchSubjectLabel}"
-        default-option-label="$i18n{wallpaperSearchSubjectDefaultOptionLabel}"
-        items="[[comboboxItems_.a]]"
-        value="{{selectedDescriptorA_}}">
-    </customize-chrome-combobox>
-    <div id="optionalDetails">
-      <div id="optionalDetailsLabel">$i18n{optionalDetailsLabel}</div>
-      <customize-chrome-combobox id="descriptorComboboxB"
-          label="$i18n{wallpaperSearchStyleLabel}"
-          default-option-label="$i18n{wallpaperSearchStyleDefaultOptionLabel}"
-          items="[[comboboxItems_.b]]"
-          value="{{selectedDescriptorB_}}">
+    <div role="application">
+      <customize-chrome-combobox id="descriptorComboboxA"
+          label="$i18n{wallpaperSearchSubjectLabel}"
+          default-option-label="$i18n{wallpaperSearchSubjectDefaultOptionLabel}"
+          items="[[comboboxItems_.a]]"
+          value="{{selectedDescriptorA_}}">
       </customize-chrome-combobox>
-      <customize-chrome-combobox id="descriptorComboboxC"
-          label="$i18n{wallpaperSearchMoodLabel}"
-          default-option-label="$i18n{wallpaperSearchMoodDefaultOptionLabel}"
-          items="[[comboboxItems_.c]]"
-          value="{{selectedDescriptorC_}}" right-align-dropbox>
-      </customize-chrome-combobox>
-      <cr-grid columns="6" id="descriptorMenuD">
-        <template is="dom-repeat" items="[[descriptorD_]]">
-          <button class="default-color" on-click="onDefaultColorClick_"
-              aria-current$="[[getColorCheckedStatus_(item, selectedDefaultColor_)]]"
-              title$="[[getColorLabel_(item)]]">
+      <div id="optionalDetails">
+        <div id="optionalDetailsLabel">$i18n{optionalDetailsLabel}</div>
+        <customize-chrome-combobox id="descriptorComboboxB"
+            label="$i18n{wallpaperSearchStyleLabel}"
+            default-option-label="$i18n{wallpaperSearchStyleDefaultOptionLabel}"
+            items="[[comboboxItems_.b]]"
+            value="{{selectedDescriptorB_}}">
+        </customize-chrome-combobox>
+        <customize-chrome-combobox id="descriptorComboboxC"
+            label="$i18n{wallpaperSearchMoodLabel}"
+            default-option-label="$i18n{wallpaperSearchMoodDefaultOptionLabel}"
+            items="[[comboboxItems_.c]]"
+            value="{{selectedDescriptorC_}}" right-align-dropbox>
+        </customize-chrome-combobox>
+        <cr-grid columns="6" id="descriptorMenuD">
+          <template is="dom-repeat" items="[[descriptorD_]]">
+            <button class="default-color" on-click="onDefaultColorClick_"
+                aria-current$="[[getColorCheckedStatus_(item, selectedDefaultColor_)]]"
+                title$="[[getColorLabel_(item)]]">
+              <paper-ripple></paper-ripple>
+              <customize-chrome-check-mark-wrapper class="color-check-mark"
+                  checked="[[isColorSelected_(item, selectedDefaultColor_)]]"
+                  checkmark-border-hidden>
+                <span class="descriptor-d" style$="background-color: [[item]];">
+                </span>
+              </customize-chrome-check-mark-wrapper>
+            </button>
+          </template>
+          <button id="customColorContainer" on-click="onCustomColorClick_"
+              aria-current$="[[getCustomColorCheckedStatus_(selectedHue_)]]"
+              title="$i18n{colorPickerLabel}">
             <paper-ripple></paper-ripple>
             <customize-chrome-check-mark-wrapper class="color-check-mark"
-                checked="[[isColorSelected_(item, selectedDefaultColor_)]]"
-                checkmark-border-hidden>
-              <span class="descriptor-d" style$="background-color: [[item]];">
-              </span>
+                checked="[[selectedHue_]]" checkmark-border-hidden>
+              <div class="descriptor-d"
+                  style$="background: hsl([[selectedHue_]], 100%, 50%);">
+                <div id="colorPickerIcon"></div>
+              </div>
             </customize-chrome-check-mark-wrapper>
           </button>
-        </template>
-        <button id="customColorContainer" on-click="onCustomColorClick_"
-            aria-current$="[[getCustomColorCheckedStatus_(selectedHue_)]]"
-            title="$i18n{colorPickerLabel}">
-          <paper-ripple></paper-ripple>
-          <customize-chrome-check-mark-wrapper class="color-check-mark"
-              checked="[[selectedHue_]]" checkmark-border-hidden>
-            <div class="descriptor-d"
-                style$="background: hsl([[selectedHue_]], 100%, 50%);">
-              <div id="colorPickerIcon"></div>
-            </div>
-          </customize-chrome-check-mark-wrapper>
-        </button>
+        </div>
+      </cr-grid>
+      <cr-theme-hue-slider-dialog id="hueSlider"
+          on-selected-hue-changed="onSelectedHueChanged_">
+        <cr-icon-button slot="headerSuffix" id="deleteSelectedHueButton"
+            hidden$="[[!shouldShowDeleteSelectedHueButton_(selectedHue_)]]"
+            title="$i18n{hueSliderDeleteTitle}"
+            aria-label="$i18n{hueSliderDeleteA11yLabel}"
+            on-click="onSelectedHueDelete_">
+        </cr-icon-button>
+      </cr-theme-hue-slider-dialog>
+      <div id="btnContainer">
+        <cr-button
+            id="submitButton"
+            on-click="onSearchClick_"
+            class="action-button">
+          <div id="imageIcon" class="cr-icon" slot="prefix-icon"></div>
+          $i18n{wallpaperSearchSubmitBtn}
+        </cr-button>
       </div>
-    </cr-grid>
-    <cr-theme-hue-slider-dialog id="hueSlider"
-        on-selected-hue-changed="onSelectedHueChanged_">
-      <cr-icon-button slot="headerSuffix" id="deleteSelectedHueButton"
-          hidden$="[[!shouldShowDeleteSelectedHueButton_(selectedHue_)]]"
-          title="$i18n{hueSliderDeleteTitle}"
-          aria-label="$i18n{hueSliderDeleteA11yLabel}"
-          on-click="onSelectedHueDelete_">
-      </cr-icon-button>
-    </cr-theme-hue-slider-dialog>
-    <div id="btnContainer">
-      <cr-button
-          id="submitButton"
-          on-click="onSearchClick_"
-          class="action-button">
-        <div id="imageIcon" class="cr-icon" slot="prefix-icon"></div>
-        $i18n{wallpaperSearchSubmitBtn}
-      </cr-button>
     </div>
     <hr class="sp-hr">
     <div id="loading" hidden$="[[!loading_]]">
