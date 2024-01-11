@@ -62,8 +62,8 @@ const int kMaxRequestStateKeysTries = 10;
 // If `kSafeguardTimeout` after `Start()` has been called,
 // `AutoEnrollmentController::state()` is still AutoEnrollmentState::kPending,
 // the AutoEnrollmentController will switch to
-// AutoEnrollmentResult::kNoEnrollment or
-// kAutoEnrollmentLegacyConnectionError (see
+// `AutoEnrollmentResult::kNoEnrollment` or
+// `AutoEnrollmentSafeguardTimeoutError` (see
 // `AutoEnrollmentController::Timeout`). Note that this timeout should not be
 // too short, because one of the steps `AutoEnrollmentController` performs -
 // downloading identifier hash buckets - can be non-negligible, especially on 2G
