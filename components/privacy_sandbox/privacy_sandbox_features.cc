@@ -141,6 +141,10 @@ BASE_FEATURE(kAttributionDebugReportingCookieDeprecationTesting,
              "AttributionDebugReportingCookieDeprecationTesting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPrivateAggregationDebugReportingCookieDeprecationTesting,
+             "PrivateAggregationDebugReportingCookieDeprecationTesting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPrivacySandboxInternalsDevUI,
              "PrivacySandboxInternalsDevUI",
              base::FEATURE_DISABLED_BY_DEFAULT);
