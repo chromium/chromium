@@ -78,7 +78,7 @@ class FontDataCache final {
 
   static std::unique_ptr<FontDataCache> Create();
 
-  FontDataCache() = default;
+  FontDataCache() : lock_("FontDataCache") { }
   FontDataCache(const FontDataCache&) = delete;
   FontDataCache& operator=(const FontDataCache&) = delete;
 

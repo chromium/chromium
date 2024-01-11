@@ -18,7 +18,7 @@ namespace blink {
 //
 class LOCKABLE LockForParallelTextShaping final {
  public:
-  LockForParallelTextShaping() = default;
+  LockForParallelTextShaping(const char* ordered_name = nullptr) {}
   ~LockForParallelTextShaping() = default;
 
   LockForParallelTextShaping(const LockForParallelTextShaping&) = delete;

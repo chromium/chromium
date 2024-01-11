@@ -24,6 +24,7 @@ class PLATFORM_EXPORT FontFallbackMap : public FontCacheClient,
  public:
   explicit FontFallbackMap(FontSelector* font_selector)
       : font_selector_(font_selector),
+        lock_("FontFallbackMap"),
         record_replay_id_(recordreplay::NewIdAnyThread("FontFallbackMap")) {}
 
   ~FontFallbackMap() override;

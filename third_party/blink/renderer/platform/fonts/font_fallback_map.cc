@@ -23,9 +23,15 @@ scoped_refptr<FontFallbackList> FontFallbackMap::Get(
     const FontDescription& font_description) {
   AutoLockForParallelTextShaping guard(lock_);
   auto iter = fallback_list_for_description_.find(font_description);
-  recordreplay::Assert("[RUN-2953] FontFallbackMap::Get %d %s",
+  recordreplay::Assert("[RUN-3109] FontFallbackMap::Get %d %u %d",
                        iter != fallback_list_for_description_.end(),
-                       font_description.ToString().Utf8().c_str());
+                       font_description.GetHash(),
+#if defined(USE_PARALLEL_TEXT_SHAPING)
+  1
+#else
+  0
+#endif
+                       );
   if (iter != fallback_list_for_description_.end()) {
     DCHECK(iter->value->IsValid());
     return iter->value;
@@ -98,13 +104,6 @@ void FontFallbackMap::FontsNeedUpdate(FontSelector*,
 }
 
 void FontFallbackMap::FontCacheInvalidated() {
-  if (recordreplay::AreEventsDisallowed(
-          "FontFallbackMap::FontCacheInvalidated")) {
-    // Leak fallback_list_for_description_ contents to avoid divergence down the
-    // road.
-    return;
-  }
-
   AutoLockForParallelTextShaping guard(lock_);
   InvalidateAll();
 }
