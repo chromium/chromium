@@ -187,7 +187,7 @@ public class ExpandedPlayerCoordinatorUnitTest {
     public void testBindVoiceList() {
         doReturn(mVoiceMenu).when(mSheetContent).getVoiceMenu();
 
-        var voices = List.of(new PlaybackVoice("en", "a", ""));
+        var voices = List.of(new PlaybackVoice("en", "a"));
         mModel.set(PlayerProperties.VOICES_LIST, voices);
 
         verify(mVoiceMenu).setVoices(eq(voices));

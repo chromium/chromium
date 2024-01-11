@@ -4,11 +4,15 @@
 
 package org.chromium.chrome.modules.readaloud;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
-/** Encapsulates information about the playback tha's requested. */
+/** Encapsulates information about the playback being requested. */
 public class PlaybackArgs {
     /** TODO(basiaz): Delete after source lands e2e */
     private final String mUrl;
@@ -23,19 +27,74 @@ public class PlaybackArgs {
     private final long mDateModifiedMsSinceEpoch;
 
     /**
-     * Encapsulates info about a TTS voice that can be used for playback.
-     * Description is only relevant for the UI, language and voiceId are required
-     * for the server request.
+     * Encapsulates info about a TTS voice that can be used for playback. Tone is only relevant for
+     * the UI, language and voiceId are required for the server request.
      */
     public static class PlaybackVoice {
-        private final String mLanguage;
-        private final String mVoiceId;
-        @Nullable private final String mDescription;
+        /** Enum for voice pitch. */
+        @IntDef({Pitch.NONE, Pitch.LOW, Pitch.MID})
+        @Retention(RetentionPolicy.SOURCE)
+        public @interface Pitch {
+            int NONE = 0;
+            int LOW = 1;
+            int MID = 2;
+        }
 
-        public PlaybackVoice(String language, String voiceId, String description) {
-            this.mLanguage = language;
-            this.mVoiceId = voiceId;
-            this.mDescription = description;
+        /** Enum for descriptive words about voices. */
+        @IntDef({Tone.NONE, Tone.BOLD, Tone.CALM, Tone.STEADY, Tone.SMOOTH, Tone.RELAXED})
+        @Retention(RetentionPolicy.SOURCE)
+        public @interface Tone {
+            int NONE = 0;
+            int BOLD = 1;
+            int CALM = 2;
+            int STEADY = 3;
+            int SMOOTH = 4;
+            int RELAXED = 5;
+        }
+
+        private final String mLanguage;
+        @Nullable private final String mAccentRegionCode;
+        private final String mVoiceId;
+        private final String mDisplayName;
+
+        private final @Pitch int mPitch;
+        private final @Tone int mTone;
+
+        // Deprecated. Remove once internal code no longer uses it.
+        public PlaybackVoice(String language, String voiceId, String displayName) {
+            this(
+                    language,
+                    /* accentRegionCode= */ null,
+                    voiceId,
+                    displayName,
+                    Pitch.NONE,
+                    Tone.NONE);
+        }
+
+        public PlaybackVoice(
+                String language,
+                @Nullable String accentRegionCode,
+                String voiceId,
+                String displayName,
+                @Pitch int pitch,
+                @Tone int tone) {
+            mLanguage = language;
+            mAccentRegionCode = accentRegionCode;
+            mVoiceId = voiceId;
+            mDisplayName = displayName;
+            mPitch = pitch;
+            mTone = tone;
+        }
+
+        @VisibleForTesting
+        public PlaybackVoice(String language, String voiceId) {
+            this(
+                    language,
+                    /* accentRegionCode= */ null,
+                    voiceId,
+                    /* displayName= */ null,
+                    Pitch.NONE,
+                    Tone.NONE);
         }
 
         public String getLanguage() {
@@ -47,8 +106,27 @@ public class PlaybackArgs {
         }
 
         @Nullable
+        public String getAccentRegionCode() {
+            return mAccentRegionCode;
+        }
+
+        // TODO(iwells): Remove this method when it is no longer called internally.
+        @Nullable
         public String getDescription() {
-            return mDescription;
+            return mDisplayName;
+        }
+
+        @Nullable
+        public String getDisplayName() {
+            return mDisplayName;
+        }
+
+        public @Pitch int getPitch() {
+            return mPitch;
+        }
+
+        public @Tone int getTone() {
+            return mTone;
         }
 
         @Override
@@ -56,10 +134,16 @@ public class PlaybackArgs {
             return "PlaybackVoice{"
                     + "language="
                     + mLanguage
+                    + " accent="
+                    + mAccentRegionCode
                     + " id="
                     + mVoiceId
-                    + " description="
-                    + mDescription
+                    + " displayName="
+                    + mDisplayName
+                    + " pitch="
+                    + mPitch
+                    + " tone="
+                    + mTone
                     + "}";
         }
     }

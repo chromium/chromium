@@ -134,7 +134,7 @@ public class PlayerMediatorUnitTest {
         doReturn(TITLE).when(mPlaybackMetadata).title();
         doReturn(PUBLISHER).when(mPlaybackMetadata).publisher();
         mVoicesSupplier = new ObservableSupplierImpl<>();
-        mVoicesSupplier.set(List.of(new PlaybackVoice("en", "a", "description")));
+        mVoicesSupplier.set(List.of(new PlaybackVoice("en", "a")));
         mSelectedVoiceIdSupplier = new ObservableSupplierImpl<>();
         mSelectedVoiceIdSupplier.set("a");
         mHighlightingEnabledSupplier = new ObservableSupplierImpl<>();
@@ -328,7 +328,7 @@ public class PlayerMediatorUnitTest {
 
     @Test
     public void testOnVoiceSelected() {
-        PlaybackVoice voice = new PlaybackVoice("language", "voice", "description");
+        PlaybackVoice voice = new PlaybackVoice("language", "voice");
         mMediator.onVoiceSelected(voice);
         verify(mDelegate).setVoiceOverrideAndApplyToPlayback(eq(voice));
     }
@@ -363,8 +363,7 @@ public class PlayerMediatorUnitTest {
         MockPrefServiceHelper.setVoices(mPrefsNative, Map.of("es", "c"));
 
         // Setting the voice list here should trigger UI updates.
-        mVoicesSupplier.set(
-                List.of(new PlaybackVoice("es", "b", ""), new PlaybackVoice("es", "c", "")));
+        mVoicesSupplier.set(List.of(new PlaybackVoice("es", "b"), new PlaybackVoice("es", "c")));
 
         // Voice list is set in model.
         List<PlaybackVoice> voicesInModel = mModel.get(PlayerProperties.VOICES_LIST);
@@ -383,8 +382,7 @@ public class PlayerMediatorUnitTest {
     public void testObserveVoiceList_defaultVoiceSelection() {
         // Setting the voice list here should trigger UI updates. There's no voice ID
         // set for "es" so the first one should be displayed.
-        mVoicesSupplier.set(
-                List.of(new PlaybackVoice("es", "b", ""), new PlaybackVoice("es", "c", "")));
+        mVoicesSupplier.set(List.of(new PlaybackVoice("es", "b"), new PlaybackVoice("es", "c")));
         assertEquals("b", mModel.get(PlayerProperties.SELECTED_VOICE_ID));
     }
 
