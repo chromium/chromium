@@ -86,6 +86,7 @@ mojom("mojom") {
     "nonclosable_app_toast_service.mojom",
     "notification.mojom",
     "nullable_primitives.mojom",
+    "one_drive_notification_service.mojom",
     "parent_access.mojom",
     "passkeys.mojom",
     "policy_namespace.mojom",

@@ -216,6 +216,8 @@ source_set("crosapi") {
     "networking_private_ash.h",
     "nonclosable_app_toast_service_ash.cc",
     "nonclosable_app_toast_service_ash.h",
+    "one_drive_notification_service_ash.cc",
+    "one_drive_notification_service_ash.h",
     "parent_access_ash.cc",
     "parent_access_ash.h",
     "payment_app_instance_ash.cc",

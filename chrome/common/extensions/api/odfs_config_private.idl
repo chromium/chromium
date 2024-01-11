@@ -25,17 +25,22 @@ namespace odfsConfigPrivate {
   callback GetMountCallback = void(MountInfo mount);
   callback GetAccountRestrictionsCallback = void(
       AccountRestrictionsInfo restrictions);
+  callback ShowAutomatedMountErrorCallback = void();
 
   interface Functions {
     // Returns the OneDrive mount mode from the admin policy.
     // |callback|: Invoked when the policy value was retrieved.
-    [supportsPromises] static void getMount(
+    static void getMount(
         GetMountCallback callback);
 
     // Returns the OneDrive account restrictions from the admin policy.
     // |callback|: Invoked when the policy value was retrieved.
-    [supportsPromises] static void getAccountRestrictions(
+    static void getAccountRestrictions(
         GetAccountRestrictionsCallback callback);
+
+    // Shows a notification that the automated mount failed.
+    static void showAutomatedMountError(
+        ShowAutomatedMountErrorCallback callback);
   };
 
   interface Events {

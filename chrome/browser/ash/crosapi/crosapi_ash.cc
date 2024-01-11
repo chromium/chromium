@@ -87,6 +87,7 @@
 #include "chrome/browser/ash/crosapi/networking_attributes_ash.h"
 #include "chrome/browser/ash/crosapi/networking_private_ash.h"
 #include "chrome/browser/ash/crosapi/nonclosable_app_toast_service_ash.h"
+#include "chrome/browser/ash/crosapi/one_drive_notification_service_ash.h"
 #include "chrome/browser/ash/crosapi/parent_access_ash.h"
 #include "chrome/browser/ash/crosapi/payment_app_instance_ash.h"
 #include "chrome/browser/ash/crosapi/policy_service_ash.h"
@@ -288,6 +289,8 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
       networking_private_ash_(std::make_unique<NetworkingPrivateAsh>()),
       network_settings_service_ash_(std::make_unique<NetworkSettingsServiceAsh>(
           g_browser_process->platform_part()->ash_proxy_monitor())),
+      one_drive_notification_service_ash_(
+          std::make_unique<OneDriveNotificationServiceAsh>()),
       parent_access_ash_(std::make_unique<ParentAccessAsh>()),
       payment_app_instance_ash_(std::make_unique<PaymentAppInstanceAsh>()),
       policy_service_ash_(std::make_unique<PolicyServiceAsh>()),
@@ -822,6 +825,11 @@ void CrosapiAsh::BindNetworkingAttributes(
 void CrosapiAsh::BindNetworkingPrivate(
     mojo::PendingReceiver<mojom::NetworkingPrivate> receiver) {
   networking_private_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindOneDriveNotificationService(
+    mojo::PendingReceiver<mojom::OneDriveNotificationService> receiver) {
+  one_drive_notification_service_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindParentAccess(

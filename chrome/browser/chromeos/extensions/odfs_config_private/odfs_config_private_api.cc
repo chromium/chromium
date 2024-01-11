@@ -11,7 +11,22 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/odfs_config_private.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ui/webui/ash/cloud_upload/automated_mount_error_notification.h"
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_service.h"
+#else
+#error Unsupported platform.
+#endif
+
 namespace extensions {
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+namespace {
+constexpr char kUnsupportedAshVersion[] =
+    "Cannot show notification because ash version is not supported";
+}  // namespace
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 OdfsConfigPrivateGetMountFunction::OdfsConfigPrivateGetMountFunction() =
     default;
@@ -51,6 +66,32 @@ OdfsConfigPrivateGetAccountRestrictionsFunction::Run() {
   return RespondNow(
       ArgumentList(extensions::api::odfs_config_private::
                        GetAccountRestrictions::Results::Create(metadata)));
+}
+
+OdfsConfigPrivateShowAutomatedMountErrorFunction::
+    OdfsConfigPrivateShowAutomatedMountErrorFunction() = default;
+
+OdfsConfigPrivateShowAutomatedMountErrorFunction::
+    ~OdfsConfigPrivateShowAutomatedMountErrorFunction() = default;
+
+ExtensionFunction::ResponseAction
+OdfsConfigPrivateShowAutomatedMountErrorFunction::Run() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::cloud_upload::ShowAutomatedMountErrorNotification(
+      *Profile::FromBrowserContext(browser_context()));
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  auto* const service = chromeos::LacrosService::Get();
+  if (!service->IsRegistered<crosapi::mojom::OneDriveNotificationService>() ||
+      !service->IsAvailable<crosapi::mojom::OneDriveNotificationService>()) {
+    return RespondNow(Error(kUnsupportedAshVersion));
+  }
+
+  service->GetRemote<crosapi::mojom::OneDriveNotificationService>()
+      ->ShowAutomatedMountError();
+#else
+#error Unsupported platform.
+#endif
+  return RespondNow(NoArguments());
 }
 
 }  // namespace extensions

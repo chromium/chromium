@@ -3046,6 +3046,7 @@ if (!is_android && !is_fuchsia) {
       sources += [
         "../browser/accessibility/media_app/ax_media_app_untrusted_handler_browsertest.cc",
         "../browser/chromeos/enterprise/cloud_storage/one_drive_pref_observer_browsertest.cc",
+        "../browser/chromeos/extensions/odfs_config_private/odfs_config_private_api_browsertest.cc",
         "../browser/media/webrtc/get_all_screen_media_browsertest.cc",
         "../browser/sessions/tab_restore_service_browsertest.cc",
         "../browser/support_tool/signin_data_collector_browsertest.cc",
@@ -5585,6 +5586,7 @@ if (is_chromeos_lacros) {
       "../browser/chromeos/enterprise/cloud_storage/one_drive_pref_observer_browsertest.cc",
       "../browser/chromeos/extensions/contact_center_insights/contact_center_insights_extension_manager_lacros_browsertest.cc",
       "../browser/chromeos/extensions/login_screen/login_screen_storage/login_screen_storage_apitest.cc",
+      "../browser/chromeos/extensions/odfs_config_private/odfs_config_private_api_browsertest.cc",
       "../browser/chromeos/extensions/wallpaper_apitest.cc",
       "../browser/chromeos/extensions/wm/wm_desks_private_apitest_lacros.cc",
       "../browser/chromeos/policy/dlp/dlp_files_controller_lacros_browsertest.cc",

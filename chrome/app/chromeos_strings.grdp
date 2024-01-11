@@ -7268,6 +7268,15 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
   <message name="IDS_OFFICE_NOTIFICATION_SIGN_IN_BUTTON" desc="Text for a button in the office notification which allows the user to sign in when reauthentication is needed.">
     Sign in
   </message>
+  <message name="IDS_ONEDRIVE_AUTOMATED_MOUNT_ERROR_TITLE" desc="Text for the OneDrive automated mount notification">
+    OneDrive setup failed
+  </message>
+  <message name="IDS_ONEDRIVE_AUTOMATED_MOUNT_ERROR_MESSAGE" desc="Text for the OneDrive automated mount notification">
+    Your administrator configured your account to be connected to Microsoft OneDrive automatically, but something went wrong.
+  </message>
+  <message name="IDS_ONEDRIVE_AUTOMATED_MOUNT_BUTTON_TITLE" desc="Text for the OneDrive automated mount notification resolve button">
+    Manually connect to OneDrive
+  </message>
 
   <!-- Office upload errors -->
   <message name="IDS_OFFICE_UPLOAD_ERROR_CANT_MOVE_FILES" desc="Error message for uploading office files indicating that the files cannot be moved to OneDrive/Google Drive.">

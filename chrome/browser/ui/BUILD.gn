@@ -3027,6 +3027,8 @@ static_library("ui") {
       "webui/ash/cellular_setup/mobile_setup_ui.h",
       "webui/ash/certificate_manager_dialog_ui.cc",
       "webui/ash/certificate_manager_dialog_ui.h",
+      "webui/ash/cloud_upload/automated_mount_error_notification.cc",
+      "webui/ash/cloud_upload/automated_mount_error_notification.h",
       "webui/ash/cloud_upload/cloud_open_metrics.cc",
       "webui/ash/cloud_upload/cloud_open_metrics.h",
       "webui/ash/cloud_upload/cloud_upload_dialog.cc",

@@ -109,6 +109,7 @@ class NetworkChangeAsh;
 class NetworkSettingsServiceAsh;
 class NetworkingAttributesAsh;
 class NetworkingPrivateAsh;
+class OneDriveNotificationServiceAsh;
 class PasskeyAuthenticator;
 class ParentAccessAsh;
 class PaymentAppInstanceAsh;
@@ -327,6 +328,9 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::NetworkingAttributes> receiver) override;
   void BindNetworkingPrivate(
       mojo::PendingReceiver<mojom::NetworkingPrivate> receiver) override;
+  void BindOneDriveNotificationService(
+      mojo::PendingReceiver<mojom::OneDriveNotificationService> receiver)
+      override;
   void BindPasskeyAuthenticator(
       mojo::PendingReceiver<mojom::PasskeyAuthenticator> receiver) override;
   void BindParentAccess(
@@ -683,6 +687,8 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<NetworkingAttributesAsh> networking_attributes_ash_;
   std::unique_ptr<NetworkingPrivateAsh> networking_private_ash_;
   std::unique_ptr<NetworkSettingsServiceAsh> network_settings_service_ash_;
+  std::unique_ptr<OneDriveNotificationServiceAsh>
+      one_drive_notification_service_ash_;
   std::unique_ptr<ParentAccessAsh> parent_access_ash_;
   std::unique_ptr<PaymentAppInstanceAsh> payment_app_instance_ash_;
   std::unique_ptr<PolicyServiceAsh> policy_service_ash_;

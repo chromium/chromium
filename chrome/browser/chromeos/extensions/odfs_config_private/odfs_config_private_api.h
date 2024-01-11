@@ -49,6 +49,26 @@ class OdfsConfigPrivateGetAccountRestrictionsFunction
   ResponseAction Run() override;
 };
 
+class OdfsConfigPrivateShowAutomatedMountErrorFunction
+    : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("odfsConfigPrivate.showAutomatedMountError",
+                             ODFSCONFIGPRIVATE_SHOWAUTOMATEDMOUNTERROR)
+
+  OdfsConfigPrivateShowAutomatedMountErrorFunction();
+
+  OdfsConfigPrivateShowAutomatedMountErrorFunction(
+      const OdfsConfigPrivateShowAutomatedMountErrorFunction&) = delete;
+  OdfsConfigPrivateShowAutomatedMountErrorFunction& operator=(
+      const OdfsConfigPrivateShowAutomatedMountErrorFunction&) = delete;
+
+ private:
+  ~OdfsConfigPrivateShowAutomatedMountErrorFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_ODFS_CONFIG_PRIVATE_ODFS_CONFIG_PRIVATE_API_H_

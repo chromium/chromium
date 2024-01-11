@@ -78,6 +78,7 @@ import "chromeos/crosapi/mojom/native_theme.mojom";
 import "chromeos/crosapi/mojom/network_change.mojom";
 import "chromeos/crosapi/mojom/networking_attributes.mojom";
 import "chromeos/crosapi/mojom/networking_private.mojom";
+import "chromeos/crosapi/mojom/one_drive_notification_service.mojom";
 import "chromeos/crosapi/mojom/power.mojom";
 import "chromeos/crosapi/mojom/network_settings_service.mojom";
 import "chromeos/crosapi/mojom/parent_access.mojom";
@@ -156,8 +157,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 130
-// Next method id: 132
+// Next version: 131
+// Next method id: 133
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -545,6 +546,12 @@ interface Crosapi {
   // extension APIs to query details about the network.
   [MinVersion=39]
   BindNetworkingAttributes@44(pending_receiver<NetworkingAttributes> receiver);
+
+  // Binds the OneDrive notification service which is used by the
+  // odfsConfigPrivate extension API to show notifications.
+  [MinVersion=130]
+  BindOneDriveNotificationService@132(
+      pending_receiver<OneDriveNotificationService> receiver);
 
   // Binds the Parent Access UI to allow Lacros to request parent access
   // from Ash when needed.
