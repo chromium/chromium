@@ -112,13 +112,5 @@
       "symbol_level": 1,
       "use_remoteexec": true
     }
-  },
-  "linux_upload_clang": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "is_component_build": false,
-      "is_debug": false,
-      "use_goma": true
-    }
   }
 }

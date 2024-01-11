@@ -11,21 +11,5 @@
       "target_cpu": "x64",
       "use_remoteexec": true
     }
-  },
-  "mac_upload_clang": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "is_component_build": false,
-      "is_debug": false,
-      "use_goma": true
-    }
-  },
-  "mac_upload_clang_arm": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "is_component_build": false,
-      "is_debug": false,
-      "use_goma": true
-    }
   }
 }

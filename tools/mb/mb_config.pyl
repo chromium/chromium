@@ -178,27 +178,9 @@
       'win64-builder-perf-pgo': 'official_reclient_perf_pgo',
     },
 
-    # TODO(crbug.com/818301): This group is going away.
-    'chromium.webkit': {
-      'WebKit Linux Trusty ASAN': 'asan_lsan_release_bot',
-      'WebKit Linux Trusty Leak': 'release_bot',
-      'WebKit Mac Builder': 'release_bot',
-      'WebKit Win Builder': 'release_bot_x86_minimal_symbols',
-    },
-
     'client.devtools-frontend.integration': {
       'DevTools Linux': 'release_trybot_blink_do_typecheck',
       'DevTools Linux Fastbuild': 'release_trybot_blink',
-    },
-
-    'client.nacl.sdk': {
-      'linux-sdk-asan-multi': 'release_bot',
-      'linux-sdk-multi': 'release_bot',
-      'linux-sdk-multirel': 'release_bot',
-      'mac-sdk-multi': 'release_bot',
-      'mac-sdk-multirel': 'release_bot',
-      'windows-sdk-multi': 'release_bot_x86_minimal_symbols',
-      'windows-sdk-multirel': 'release_bot_x86_minimal_symbols',
     },
 
     'client.openscreen.chromium': {
@@ -384,13 +366,10 @@
       'linux_chromium_compile_rel_ng': 'release_trybot_reclient',
 
       'linux_optional_gpu_tests_rel': 'gpu_fyi_tests_release_trybot_reclient',
-      'linux_upload_clang': 'release_bot',
     },
 
     'tryserver.chromium.mac': {
       'mac_optional_gpu_tests_rel': 'gpu_fyi_tests_release_trybot_x64_reclient',
-      'mac_upload_clang': 'release_bot',
-      'mac_upload_clang_arm': 'release_bot',
     },
 
     'tryserver.chromium.perf': {
@@ -427,7 +406,6 @@
       'win-celab-try-rel': 'release_bot_minimal_symbols_reclient',
       'win-libfuzzer-asan-rel': 'libfuzzer_windows_asan_release_trybot_reclient',
       'win_optional_gpu_tests_rel': 'gpu_fyi_tests_release_trybot_reclient',
-      'win_upload_clang': 'release_bot',
     },
 
     'tryserver.devtools-frontend': {
@@ -539,10 +517,6 @@
 
     'android_without_codecs_release_trybot_reclient': [
       'android_without_codecs', 'release_trybot_reclient', 'strip_debug_info',
-    ],
-
-    'asan_lsan_release_bot': [
-      'asan', 'lsan', 'release_bot',
     ],
 
     'asan_lsan_release_trybot_reclient': [
@@ -1137,10 +1111,6 @@
       'minimal_symbols', 'optimization_guide', 'reclient', 'release', 'x86',
     ],
 
-    'release_bot': [
-      'release_bot',
-    ],
-
     'release_bot_blink': [
       'release_bot_blink',
     ],
@@ -1177,10 +1147,6 @@
 
     'release_bot_reclient': [
       'release_bot_reclient',
-    ],
-
-    'release_bot_x86_minimal_symbols': [
-      'release_bot', 'x86', 'minimal_symbols',
     ],
 
     'release_trybot_blink': [
