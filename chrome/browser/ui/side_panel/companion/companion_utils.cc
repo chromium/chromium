@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/side_panel/companion/companion_utils.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/companion/core/constants.h"
 #include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/companion/core/utils.h"
@@ -21,7 +22,7 @@
 namespace companion {
 
 bool IsCompanionFeatureEnabled() {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
   if (!base::FeatureList::IsEnabled(lens::features::kLensStandalone)) {
     return false;
   }
@@ -33,7 +34,7 @@ bool IsCompanionFeatureEnabled() {
              features::internal::kCompanionEnabledByObservingExpsNavigations);
 #else
   return false;
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
 }
 
 bool IsCompanionAvailableForCurrentActiveTab(const Browser* browser) {
