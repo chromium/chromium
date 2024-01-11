@@ -50,6 +50,7 @@ try_.builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
         ),
     ),
     try_settings = builder_config.try_settings(
@@ -94,6 +95,7 @@ try_.builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 32,
+            target_platform = builder_config.target_platform.WIN,
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
@@ -118,6 +120,7 @@ try_.builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
         ),
     ),
     try_settings = builder_config.try_settings(
@@ -141,6 +144,7 @@ try_.builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
         ),
     ),
     try_settings = builder_config.try_settings(
@@ -163,6 +167,7 @@ blink_mac_builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
         ),
     ),
     try_settings = builder_config.try_settings(
@@ -183,6 +188,7 @@ blink_mac_builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
         ),
     ),
     try_settings = builder_config.try_settings(
@@ -204,6 +210,7 @@ blink_mac_builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 32,
+            target_platform = builder_config.target_platform.MAC,
         ),
         build_gs_bucket = "chromium-fyi-archive",
     ),
@@ -225,6 +232,7 @@ blink_mac_builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
         ),
     ),
     try_settings = builder_config.try_settings(
@@ -245,6 +253,7 @@ blink_mac_builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
         ),
     ),
     try_settings = builder_config.try_settings(
@@ -265,6 +274,7 @@ blink_mac_builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
         ),
     ),
     try_settings = builder_config.try_settings(
@@ -285,6 +295,7 @@ blink_mac_builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
         ),
     ),
     try_settings = builder_config.try_settings(
@@ -305,6 +316,7 @@ blink_mac_builder(
             ],
             build_config = builder_config.build_config.RELEASE,
             target_bits = 64,
+            target_platform = builder_config.target_platform.MAC,
         ),
     ),
     try_settings = builder_config.try_settings(
