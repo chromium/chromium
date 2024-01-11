@@ -140,9 +140,6 @@
 # crbug.com/1513296
 -org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.testRedirectedExternalNavigationWithUserGesture
 
-# crbug.com/1513299
--org.chromium.chrome.browser.omnibox.suggestions.OmniboxActionsTest.testHistoryClustersAction
-
 # crbug.com/1513300
 -org.chromium.chrome.browser.segmentation_platform.ContextualPageActionControllerTest.testContextualPageModelExecution_OnReaderModePage
 
