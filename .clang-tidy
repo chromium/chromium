@@ -4,6 +4,7 @@
   Checks:          '-*,
                     bugprone-argument-comment,
                     bugprone-assert-side-effect,
+                    bugprone-bool-pointer-implicit-conversion,
                     bugprone-dangling-handle,
                     bugprone-inaccurate-erase,
                     bugprone-string-constructor,
