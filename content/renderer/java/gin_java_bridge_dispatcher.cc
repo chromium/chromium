@@ -44,6 +44,10 @@ void GinJavaBridgeDispatcher::DidClearWindowObject() {
   if (inside_did_clear_window_object_)
     return;
   base::AutoReset<bool> flag_entry(&inside_did_clear_window_object_, true);
+  if (enable_mojo_ && !named_objects_.empty()) {
+    // Ensure we have a `remote_` if we have named objects.
+    CHECK(remote_);
+  }
   for (NamedObjectMap::const_iterator iter = named_objects_.begin();
        iter != named_objects_.end(); ++iter) {
     // Always create a new GinJavaBridgeObject, so we don't pull any of the V8
@@ -71,6 +75,10 @@ void GinJavaBridgeDispatcher::DidClearWindowObject() {
 
 void GinJavaBridgeDispatcher::AddNamedObject(const std::string& name,
                                              ObjectID object_id) {
+  if (enable_mojo_) {
+    // We should already have received the `remote_` via the SetHost method.
+    CHECK(remote_);
+  }
   // Added objects only become available after page reload, so here they
   // are only added into the internal map.
   named_objects_.insert(std::make_pair(name, object_id));
@@ -86,6 +94,7 @@ void GinJavaBridgeDispatcher::RemoveNamedObject(const std::string& name) {
 void GinJavaBridgeDispatcher::SetHost(
     mojo::PendingRemote<mojom::GinJavaBridgeHost> host) {
   CHECK(!remote_);
+  CHECK(named_objects_.empty());
   remote_.Bind(std::move(host));
 }
 
