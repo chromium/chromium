@@ -36,6 +36,7 @@
 #include "chrome/browser/signin/chrome_device_id_helper.h"
 #include "chrome/browser/signin/chrome_signin_helper.h"
 #include "chrome/browser/signin/dice_response_handler.h"
+#include "chrome/browser/signin/dice_web_signin_interceptor.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/user_event_service_factory.h"
@@ -707,6 +708,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, Signin) {
                                GetDeviceId().c_str()),
             dice_request_header_);
 
+  base::HistogramTester histogram_tester;
   // Check that the token was requested and added to the token service.
   SendRefreshTokenResponse();
   EXPECT_TRUE(
@@ -715,6 +717,13 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, Signin) {
   EXPECT_TRUE(GetIdentityManager()
                   ->GetPrimaryAccountId(signin::ConsentLevel::kSync)
                   .empty());
+
+  // Make sure we are recording this value for the Control group of the
+  // `switches::kUnoDesktop` experiment.
+  ASSERT_FALSE(base::FeatureList::IsEnabled(switches::kUnoDesktop));
+  histogram_tester.ExpectUniqueSample(
+      "Signin.Intercept.Heuristic.ShouldShowChromeSigninBubbleWithReason",
+      ShouldShowChromeSigninBubbleWithReason::kShouldShow, 1);
 
   EXPECT_EQ(1, reconcilor_blocked_count_);
   WaitForReconcilorUnblockedCount(1);

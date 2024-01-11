@@ -746,7 +746,8 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorWithUnoEnabledBrowserTest,
   base::HistogramTester histogram_tester;
 
   // Setup a first account for interception.
-  AccountInfo info1 = MakeAccountInfoAvailableAndUpdate("alice1@example.com");
+  AccountInfo info1 =
+      MakeAccountInfoAvailableAndUpdate("alice1@consumer.example.com");
 
   // Makes sure Chrome is not signed in to trigger the Chrome Sigin intercept
   // bubble.
@@ -776,7 +777,8 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorWithUnoEnabledBrowserTest,
   identity_test_env()->RemoveRefreshTokenForAccount(info1.account_id);
 
   // Setup the second account for interception.
-  AccountInfo info2 = MakeAccountInfoAvailableAndUpdate("alice2@example.com");
+  AccountInfo info2 =
+      MakeAccountInfoAvailableAndUpdate("alice2@consumer.exmaple.com");
   ASSERT_FALSE(info2.IsEmpty());
   ASSERT_FALSE(GetChromeSigninInterceptShownCountPref(info2).has_value());
 
@@ -821,6 +823,11 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorWithUnoEnabledBrowserTest,
   FakeDiceWebSigninInterceptorDelegate* delegate =
       ShowSigninBubble(info1, /*expected_result=*/absl::nullopt);
   EXPECT_FALSE(delegate->intercept_bubble_shown());
+  histogram_tester.ExpectBucketCount(
+      "Signin.Intercept.Heuristic.ShouldShowChromeSigninBubbleWithReason",
+      ShouldShowChromeSigninBubbleWithReason::
+          kShouldNotShowMaxShownCountReached,
+      1);
   // Pref bubble shown count should remain the same.
   EXPECT_EQ(GetChromeSigninInterceptShownCountPref(info1),
             expected_bubble_shown_count_info1);

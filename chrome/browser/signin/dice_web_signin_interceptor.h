@@ -48,6 +48,26 @@ class Profile;
 class ProfileAttributesEntry;
 class ProfileAttributesStorage;
 
+// This enum gets the result of `MaybeShouldShowChromeSigninBubble()`, which
+// could be `ShouldShow` or `ShouldNotShow`. When the result is `ShouldNotShow`
+// the reason is also added to differentiate the cases of not showing the
+// bubble. These values are persisted to logs. Entries should not be renumbered
+// and numeric values should never be reused.
+enum class ShouldShowChromeSigninBubbleWithReason {
+  // The bubble should be shown.
+  kShouldShow = 0,
+
+  // The bubble should not be shown: multiple reasons listed below with order of
+  // priority.
+  kShouldNotShowMaxShownCountReached = 1,
+  kShouldNotShowAlreadySignedIn = 2,
+  kShouldNotShowSecondaryAccount = 3,
+  kShouldNotShowUnknownAccessPoint = 4,
+  kShouldNotShowNotFromWebSignin = 5,
+
+  kMaxValue = kShouldNotShowNotFromWebSignin,
+};
+
 // Called after web signed in, after a successful token exchange through Dice.
 // The DiceWebSigninInterceptor may offer the user to create a new profile or
 // switch to another existing profile.

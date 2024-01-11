@@ -133,41 +133,54 @@ bool IsFirstAccount(signin::IdentityManager* manager,
 }
 
 // If the access_point is not set, this function may return
-// `signin::Tribool::kUnknown`.
-signin::Tribool MaybeShouldShowChromeSigninBubble(
+// `ShouldShowChromeSigninBubbleWithReason::kShouldNotShowUnknownAccessPoint`.
+ShouldShowChromeSigninBubbleWithReason MaybeShouldShowChromeSigninBubble(
     signin::IdentityManager* manager,
-    const std::string& email,
+    const std::string& intercepted_email,
     signin_metrics::AccessPoint access_point,
     size_t bubble_shown_count) {
   // Do not show the bubble more than `kMaxChromeSigninInterceptionShownCount`
   // times.
   if (bubble_shown_count >= kMaxChromeSigninInterceptionShownCount) {
-    return signin::Tribool::kFalse;
+    return ShouldShowChromeSigninBubbleWithReason::
+        kShouldNotShowMaxShownCountReached;
   }
 
   // Check if an account is already signed in to Chrome.
-  if (manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    return signin::Tribool::kFalse;
+  //
+  // If Uno is disabled, we ignore this condition since the primary account will
+  // be set prior to this call (keeping the check on the right email address).
+  // This is done for metric purposes, this is safe since the bubble will not be
+  // shown in that case any way.
+  if (manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
+      (base::FeatureList::IsEnabled(switches::kUnoDesktop) ||
+       manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin).email !=
+           intercepted_email)) {
+    return ShouldShowChromeSigninBubbleWithReason::
+        kShouldNotShowAlreadySignedIn;
   }
 
   // Only show the Chrome Sign in bubble for the first account being signed in.
-  if (!IsFirstAccount(manager, email)) {
-    return signin::Tribool::kFalse;
+  if (!IsFirstAccount(manager, intercepted_email)) {
+    return ShouldShowChromeSigninBubbleWithReason::
+        kShouldNotShowSecondaryAccount;
   }
 
   // If the access point is not set, we cannot accurately know if we have to
   // show the bubble or not.
   if (access_point == signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN) {
-    return signin::Tribool::kUnknown;
+    return ShouldShowChromeSigninBubbleWithReason::
+        kShouldNotShowUnknownAccessPoint;
   }
 
   // Only show the Chrome Signin Bubble when the signin event occurred through
   // a regular web signin in (not triggered through a chrome feature).
   if (access_point != signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN) {
-    return signin::Tribool::kFalse;
+    return ShouldShowChromeSigninBubbleWithReason::
+        kShouldNotShowNotFromWebSignin;
   }
 
-  return signin::Tribool::kTrue;
+  return ShouldShowChromeSigninBubbleWithReason::kShouldShow;
 }
 
 // Assumes that if it is unsure to show the bubble or not, then we shouldn't
@@ -176,10 +189,10 @@ bool ShouldShowChromeSigninBubble(signin::IdentityManager* manager,
                                   const std::string& email,
                                   signin_metrics::AccessPoint access_point,
                                   size_t bubble_shown_count) {
-  signin::Tribool should_show = MaybeShouldShowChromeSigninBubble(
-      manager, email, access_point, bubble_shown_count);
-  return should_show != signin::Tribool::kUnknown &&
-         signin::TriboolToBoolOrDie(should_show);
+  ShouldShowChromeSigninBubbleWithReason should_show =
+      MaybeShouldShowChromeSigninBubble(manager, email, access_point,
+                                        bubble_shown_count);
+  return should_show == ShouldShowChromeSigninBubbleWithReason::kShouldShow;
 }
 
 // Returns true if we have the minimum extended account information needed to
@@ -380,7 +393,7 @@ DiceWebSigninInterceptor::GetHeuristicOutcome(
 
   DCHECK(signin_interception_enabled && !enforce_enterprise_separation.value());
 
-  signin::Tribool should_show_chrome_signin_bubble =
+  ShouldShowChromeSigninBubbleWithReason should_show_chrome_signin_bubble =
       MaybeShouldShowChromeSigninBubble(identity_manager_, email,
                                         state_->access_point_,
                                         GetChromeSigninBubbleShownCount(email));
@@ -388,17 +401,20 @@ DiceWebSigninInterceptor::GetHeuristicOutcome(
     // This metric will be recorded both when `switches::kUnoDesktop` is
     // enabled and disabled when the Chrome Signin bubble is expected to be
     // shown or not.
-    base::UmaHistogramBoolean(
-        "Signin.Intercept.Heuristic.ShouldShowChromeSigninBubble",
-        should_show_chrome_signin_bubble == signin::Tribool::kTrue);
+    base::UmaHistogramEnumeration(
+        "Signin.Intercept.Heuristic.ShouldShowChromeSigninBubbleWithReason",
+        should_show_chrome_signin_bubble);
   }
   // Showing the Chrome Signin Bubble is part of the Uno Desktop project.
   if (base::FeatureList::IsEnabled(switches::kUnoDesktop)) {
     // If the access point is not set, it is unclear if we have to show the
     // bubble or not, so we must return nullopt.
-    if (should_show_chrome_signin_bubble == signin::Tribool::kUnknown) {
+    if (should_show_chrome_signin_bubble ==
+        ShouldShowChromeSigninBubbleWithReason::
+            kShouldNotShowUnknownAccessPoint) {
       return absl::nullopt;
-    } else if (should_show_chrome_signin_bubble == signin::Tribool::kTrue) {
+    } else if (should_show_chrome_signin_bubble ==
+               ShouldShowChromeSigninBubbleWithReason::kShouldShow) {
       return SigninInterceptionHeuristicOutcome::kInterceptChromeSignin;
     }
   }

@@ -973,8 +973,9 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
-<histogram name="Signin.Intercept.Heuristic.ShouldShowChromeSigninBubble"
-    enum="BooleanShouldShow" expires_after="2024-06-30">
+<histogram
+    name="Signin.Intercept.Heuristic.ShouldShowChromeSigninBubbleWithReason"
+    enum="ShouldShowChromeSigninBubbleWithReason" expires_after="2024-06-30">
   <owner>rsult@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -984,6 +985,9 @@ prefs when the profile is loaded.  -->
     feature is disabled, this metric does not guarantee that the bubble will be
     shown, but rather that the context is right for the bubble to be shown
     (disregarding the Uno feature flag).
+
+    When the result is &quot;Should not Show&quot;, an additional reason is
+    attached as well to understand why the bubble should not be shown.
   </summary>
 </histogram>
 
