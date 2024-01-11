@@ -36,13 +36,13 @@ using ClearSiteDataTypeSet = base::EnumSet<ClearSiteDataType,
 // thread when done.
 CONTENT_EXPORT void ClearSiteData(
     const base::RepeatingCallback<BrowserContext*()>& browser_context_getter,
-    const absl::optional<StoragePartitionConfig> storage_partition_config,
+    const std::optional<StoragePartitionConfig> storage_partition_config,
     const url::Origin& origin,
     const ClearSiteDataTypeSet clear_site_data_types,
     const std::set<std::string>& storage_buckets_to_remove,
     bool avoid_closing_connections,
-    const absl::optional<net::CookiePartitionKey> cookie_partition_key,
-    const absl::optional<blink::StorageKey> storage_key,
+    const std::optional<net::CookiePartitionKey> cookie_partition_key,
+    const std::optional<blink::StorageKey> storage_key,
     bool partitioned_state_allowed_only,
     base::OnceClosure callback);
 

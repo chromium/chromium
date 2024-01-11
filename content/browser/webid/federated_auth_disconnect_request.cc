@@ -74,7 +74,7 @@ void FederatedAuthDisconnectRequest::SetCallbackAndStart(
   FederatedApiPermissionStatus permission_status =
       api_permission_delegate->GetApiPermissionStatus(embedding_origin_);
 
-  absl::optional<DisconnectStatusForMetrics> error_disconnect_status;
+  std::optional<DisconnectStatusForMetrics> error_disconnect_status;
   switch (permission_status) {
     case FederatedApiPermissionStatus::BLOCKED_VARIATIONS:
       error_disconnect_status = DisconnectStatusForMetrics::kDisabledInFlags;
@@ -99,7 +99,7 @@ void FederatedAuthDisconnectRequest::SetCallbackAndStart(
   // and the IdP doesn't have third party cookies access on the RP site.
   if (!webid::HasSharingPermissionOrIdpHasThirdPartyCookiesAccess(
           *render_frame_host_, options_->config->config_url, embedding_origin_,
-          origin_, /*account_id=*/absl::nullopt, permission_delegate_,
+          origin_, /*account_id=*/std::nullopt, permission_delegate_,
           api_permission_delegate)) {
     Complete(DisconnectStatus::kError,
              DisconnectStatusForMetrics::kNoAccountToDisconnect);

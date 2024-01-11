@@ -130,7 +130,7 @@ class BlobURLTest : public testing::Test {
     base::RunLoop run_loop;
     file_system_context_->OpenFileSystem(
         blink::StorageKey::CreateFromStringForTesting(kFileSystemURLOrigin),
-        /*bucket=*/absl::nullopt, kFileSystemType,
+        /*bucket=*/std::nullopt, kFileSystemType,
         storage::OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT,
         base::BindOnce(&BlobURLTest::OnValidateFileSystem,
                        base::Unretained(this), run_loop.QuitClosure()));
@@ -229,10 +229,9 @@ class BlobURLTest : public testing::Test {
         base::BindOnce(
             [](base::OnceClosure done,
                const base::UnguessableToken& agent_registered,
-               const absl::optional<base::UnguessableToken>&
+               const std::optional<base::UnguessableToken>&
                    unsafe_agent_cluster_id,
-               const absl::optional<net::SchemefulSite>&
-                   unsafe_top_level_site) {
+               const std::optional<net::SchemefulSite>& unsafe_top_level_site) {
               EXPECT_EQ(agent_registered, unsafe_agent_cluster_id);
               std::move(done).Run();
             },
@@ -351,7 +350,7 @@ class BlobURLTest : public testing::Test {
   std::string response_;
   int response_error_code_;
   scoped_refptr<net::HttpResponseHeaders> response_headers_;
-  absl::optional<std::string> response_metadata_;
+  std::optional<std::string> response_metadata_;
 
   int expected_error_code_;
   int expected_status_code_;

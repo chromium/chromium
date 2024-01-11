@@ -5,6 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_FIRST_PARTY_SETS_HANDLER_H_
 #define CONTENT_PUBLIC_BROWSER_FIRST_PARTY_SETS_HANDLER_H_
 
+#include <optional>
 #include <set>
 #include <string>
 
@@ -14,7 +15,6 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace net {
@@ -151,7 +151,7 @@ class CONTENT_EXPORT FirstPartySetsHandler {
   // - First-Party Sets is disabled or
   // - the list of First-Party Sets isn't initialized yet or
   // - `site` isn't in the global First-Party Sets or `config`
-  virtual absl::optional<net::FirstPartySetEntry> FindEntry(
+  virtual std::optional<net::FirstPartySetEntry> FindEntry(
       const net::SchemefulSite& site,
       const net::FirstPartySetsContextConfig& config) const = 0;
 

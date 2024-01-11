@@ -4,6 +4,7 @@
 
 #include "content/browser/cookie_deprecation_label/cookie_deprecation_label_manager_impl.h"
 
+#include <optional>
 #include <string>
 
 #include "base/metrics/field_trial_params.h"
@@ -11,7 +12,6 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -22,27 +22,27 @@ CookieDeprecationLabelManagerImpl::CookieDeprecationLabelManagerImpl(
 CookieDeprecationLabelManagerImpl::~CookieDeprecationLabelManagerImpl() =
     default;
 
-absl::optional<std::string> CookieDeprecationLabelManagerImpl::GetValue() {
+std::optional<std::string> CookieDeprecationLabelManagerImpl::GetValue() {
   if (!GetContentClient()->browser()->IsCookieDeprecationLabelAllowed(
           &*browser_context_)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return GetValueInternal();
 }
 
-absl::optional<std::string> CookieDeprecationLabelManagerImpl::GetValue(
+std::optional<std::string> CookieDeprecationLabelManagerImpl::GetValue(
     const url::Origin& top_frame_origin,
     const url::Origin& context_origin) {
   if (!GetContentClient()->browser()->IsCookieDeprecationLabelAllowedForContext(
           &*browser_context_, top_frame_origin, context_origin)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return GetValueInternal();
 }
 
-absl::optional<std::string>
+std::optional<std::string>
 CookieDeprecationLabelManagerImpl::GetValueInternal() {
   if (!label_value_.has_value()) {
     label_value_ = features::kCookieDeprecationLabel.Get();

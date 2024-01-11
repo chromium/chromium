@@ -111,7 +111,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveEarlyHints(
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr head,
     mojo::ScopedDataPipeConsumerHandle body,
-    absl::optional<mojo_base::BigBuffer> cached_metadata) {
+    std::optional<mojo_base::BigBuffer> cached_metadata) {
   if (!owner_) {
     return;
   }
@@ -263,7 +263,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::MaybeCommitResponse() {
     TransitionState(State::kDataTransferStarted);
     forwarding_client_->OnReceiveResponse(
         head_->Clone(), std::move(data_pipe_for_fetch_handler_.consumer),
-        absl::nullopt);
+        std::nullopt);
   }
 
   if (state_ != State::kDataTransferStarted) {

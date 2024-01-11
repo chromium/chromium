@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -20,7 +21,6 @@
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "third_party/blink/public/common/performance/performance_timeline_constants.h"
 #include "third_party/blink/public/common/responsiveness_metrics/user_interaction_latency.h"
@@ -116,7 +116,7 @@ class CONTENT_EXPORT RenderFrameObserver
   // the browser process (e.g. by typing a url) won't have a navigation type.
   virtual void DidStartNavigation(
       const GURL& url,
-      absl::optional<blink::WebNavigationType> navigation_type) {}
+      std::optional<blink::WebNavigationType> navigation_type) {}
 
   // Called when a navigation has just committed and |document_loader|
   // will start loading a new document in the RenderFrame.

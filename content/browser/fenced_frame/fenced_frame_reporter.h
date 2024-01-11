@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_FENCED_FRAME_FENCED_FRAME_REPORTER_H_
 
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 #include <tuple>
@@ -25,7 +26,6 @@
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -124,7 +124,7 @@ class CONTENT_EXPORT FencedFrameReporter
   static scoped_refptr<FencedFrameReporter> CreateForSharedStorage(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       BrowserContext* browser_context,
-      const absl::optional<url::Origin>& reporting_url_declarer_origin,
+      const std::optional<url::Origin>& reporting_url_declarer_origin,
       ReportingUrlMap reporting_url_map,
       const url::Origin& main_frame_origin = url::Origin());
 
@@ -150,7 +150,7 @@ class CONTENT_EXPORT FencedFrameReporter
   // test iff the test does not have for event private aggregation requests.
   //
   // `winner_aggregation_coordinator_origin` is the origin of the aggregation
-  // coordinator for the winning buyer. Set to absl::nullopt if the default
+  // coordinator for the winning buyer. Set to std::nullopt if the default
   // coordinator should be used.
   //
   // `allowed_reporting_origins` is the winning ad's allowedReportingOrigins. If
@@ -163,9 +163,9 @@ class CONTENT_EXPORT FencedFrameReporter
       PrivateAggregationManager* private_aggregation_manager,
       const url::Origin& main_frame_origin,
       const url::Origin& winner_origin,
-      const absl::optional<url::Origin>& winner_aggregation_coordinator_origin,
-      const absl::optional<std::vector<url::Origin>>&
-          allowed_reporting_origins = absl::nullopt);
+      const std::optional<url::Origin>& winner_aggregation_coordinator_origin,
+      const std::optional<std::vector<url::Origin>>& allowed_reporting_origins =
+          std::nullopt);
 
   // Don't use this constructor directly, but use factory methods instead.
   // See factory methods for details.
@@ -176,11 +176,11 @@ class CONTENT_EXPORT FencedFrameReporter
       BrowserContext* browser_context,
       const url::Origin& main_frame_origin,
       PrivateAggregationManager* private_aggregation_manager = nullptr,
-      const absl::optional<url::Origin>& winner_origin = absl::nullopt,
-      const absl::optional<url::Origin>& winner_aggregation_coordinator_origin =
-          absl::nullopt,
-      const absl::optional<std::vector<url::Origin>>&
-          allowed_reporting_origins = absl::nullopt);
+      const std::optional<url::Origin>& winner_origin = std::nullopt,
+      const std::optional<url::Origin>& winner_aggregation_coordinator_origin =
+          std::nullopt,
+      const std::optional<std::vector<url::Origin>>& allowed_reporting_origins =
+          std::nullopt);
 
   // Called when a mapping for reports of type `reporting_destination` is ready.
   // The reporter must currently be considering maps of type
@@ -206,7 +206,7 @@ class CONTENT_EXPORT FencedFrameReporter
   // Reports that use the urls declared in `reporting_url_map` will be sent
   // with the request initiator set to `reporting_url_declarer_origin`
   //
-  // `reporting_ad_macros` is absl::nullopt unless when `reporting_destination`
+  // `reporting_ad_macros` is std::nullopt unless when `reporting_destination`
   // is kBuyer. If it is learned that there are no ad macros for kBuyer, should
   // be called with an empty ReportingMacros, so it can discard macro reports,
   // and provide errors messages for subsequent SendReporter().
@@ -218,9 +218,9 @@ class CONTENT_EXPORT FencedFrameReporter
   // options.
   void OnUrlMappingReady(
       blink::FencedFrame::ReportingDestination reporting_destination,
-      const absl::optional<url::Origin>& reporting_url_declarer_origin,
+      const std::optional<url::Origin>& reporting_url_declarer_origin,
       ReportingUrlMap reporting_url_map,
-      absl::optional<ReportingMacros> reporting_ad_macros = absl::nullopt);
+      std::optional<ReportingMacros> reporting_ad_macros = std::nullopt);
 
   // Sends a report for the specified event, using the ReportingUrlMap
   // associated with `reporting_destination`. If the map for
@@ -262,7 +262,7 @@ class CONTENT_EXPORT FencedFrameReporter
       std::string& error_message,
       blink::mojom::ConsoleMessageLevel& console_message_level,
       int initiator_frame_tree_node_id = RenderFrameHost::kNoFrameTreeNodeId,
-      absl::optional<int64_t> navigation_id = absl::nullopt);
+      std::optional<int64_t> navigation_id = std::nullopt);
 
   // Called when a mapping for private aggregation requests of non-reserved
   // event types is received. Currently it is only called inside
@@ -338,7 +338,7 @@ class CONTENT_EXPORT FencedFrameReporter
     PendingEvent(
         const DestinationVariant& event,
         const url::Origin& request_initiator,
-        absl::optional<AttributionReportingData> attribution_reporting_data,
+        std::optional<AttributionReportingData> attribution_reporting_data,
         int initiator_frame_tree_node_id);
 
     PendingEvent(const PendingEvent&);
@@ -351,18 +351,17 @@ class CONTENT_EXPORT FencedFrameReporter
 
     DestinationVariant event;
     url::Origin request_initiator;
-    // The data necessary for attribution reporting. Will be `absl::nullopt` if
+    // The data necessary for attribution reporting. Will be `std::nullopt` if
     // attribution reporting is disallowed in the initiator frame.
-    absl::optional<AttributionReportingData> attribution_reporting_data;
+    std::optional<AttributionReportingData> attribution_reporting_data;
     int initiator_frame_tree_node_id;
   };
 
   // The per-blink::FencedFrame::ReportingDestination reporting information.
   struct ReportingDestinationInfo {
     explicit ReportingDestinationInfo(
-        absl::optional<url::Origin> reporting_url_declarer_origin =
-            absl::nullopt,
-        absl::optional<ReportingUrlMap> reporting_url_map = absl::nullopt);
+        std::optional<url::Origin> reporting_url_declarer_origin = std::nullopt,
+        std::optional<ReportingUrlMap> reporting_url_map = std::nullopt);
     ReportingDestinationInfo(ReportingDestinationInfo&&);
     ~ReportingDestinationInfo();
 
@@ -373,12 +372,12 @@ class CONTENT_EXPORT FencedFrameReporter
     // If they are null, any reports that are attempted to be sent of the
     // corresponding type will be added to `pending_events` and only sent once
     // these are populated.
-    absl::optional<url::Origin> reporting_url_declarer_origin;
-    absl::optional<ReportingUrlMap> reporting_url_map;
-    absl::optional<ReportingMacros> reporting_ad_macros;
+    std::optional<url::Origin> reporting_url_declarer_origin;
+    std::optional<ReportingUrlMap> reporting_url_map;
+    std::optional<ReportingMacros> reporting_ad_macros;
 
     // Pending report strings received while `reporting_url_map` was
-    // absl::nullopt. Once the map is received, this is cleared, and reports are
+    // std::nullopt. Once the map is received, this is cleared, and reports are
     // sent. The events are used for post-impression reporting. They are
     // from either `reportEvent()` calls or automatic beacons.
     std::vector<PendingEvent> pending_events;
@@ -392,8 +391,7 @@ class CONTENT_EXPORT FencedFrameReporter
       const DestinationVariant& event,
       blink::FencedFrame::ReportingDestination reporting_destination,
       const url::Origin& request_initiator,
-      const absl::optional<AttributionReportingData>&
-          attribution_reporting_data,
+      const std::optional<AttributionReportingData>& attribution_reporting_data,
       int initiator_frame_tree_node_id,
       std::string& error_message,
       blink::mojom::ConsoleMessageLevel& console_message_level,
@@ -414,7 +412,7 @@ class CONTENT_EXPORT FencedFrameReporter
   // Helper to notify `AttributionDataHostManager` if the report failed to be
   // sent.
   void NotifyFencedFrameReportingBeaconFailed(
-      const absl::optional<AttributionReportingData>&
+      const std::optional<AttributionReportingData>&
           attribution_reporting_data);
 
   // Notify the installed observers whether the beacon is queued to be sent or
@@ -449,16 +447,16 @@ class CONTENT_EXPORT FencedFrameReporter
   // * When feature `kPrivateAggregationApi` is not enabled.
   const raw_ptr<PrivateAggregationManager> private_aggregation_manager_;
 
-  // The winning buyer's origin. Set to absl::nullopt for non-FLEDGE reporter.
-  const absl::optional<url::Origin> winner_origin_;
+  // The winning buyer's origin. Set to std::nullopt for non-FLEDGE reporter.
+  const std::optional<url::Origin> winner_origin_;
 
   // The aggregation coordinator origin for the winning buyer. Set to
-  // absl::nullopt for non-FLEDGE reporter or if the default coordinator should
+  // std::nullopt for non-FLEDGE reporter or if the default coordinator should
   // be used.
-  const absl::optional<url::Origin> winner_aggregation_coordinator_origin_;
+  const std::optional<url::Origin> winner_aggregation_coordinator_origin_;
 
   // Origins allowed to receive macro expanded reports.
-  const absl::optional<std::vector<url::Origin>> allowed_reporting_origins_;
+  const std::optional<std::vector<url::Origin>> allowed_reporting_origins_;
 
   // Whether there has been an attempt to send a custom destination url with
   // macro substitution report to a disallowed origin (according to

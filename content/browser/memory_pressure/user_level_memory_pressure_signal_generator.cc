@@ -325,7 +325,7 @@ namespace {
 // TODO(crbug.com/1393283): if this feature is approved, refactor the duplicate
 // code under //third_party/blink/renderer/controller. If not approved,
 // remove the code as soon as possible.
-absl::optional<uint64_t> CalculateProcessMemoryFootprint(
+std::optional<uint64_t> CalculateProcessMemoryFootprint(
     base::File& statm_file,
     base::File& status_file) {
   // Get total resident and shared sizes from statm file.
@@ -339,26 +339,26 @@ absl::optional<uint64_t> CalculateProcessMemoryFootprint(
 
   int n = statm_file.ReadAtCurrentPos(line, sizeof(line) - 1);
   if (n <= 0)
-    return absl::optional<size_t>();
+    return std::optional<size_t>();
   line[n] = '\0';
 
   int num_scanned = sscanf(line, "%" SCNu64 " %" SCNu64 " %" SCNu64,
                            &vm_size_pages, &resident_pages, &shared_pages);
   if (num_scanned != 3)
-    return absl::optional<size_t>();
+    return std::optional<size_t>();
 
   // Get swap size from status file. The format is: VmSwap :  10 kB.
   n = status_file.ReadAtCurrentPos(line, sizeof(line) - 1);
   if (n <= 0)
-    return absl::optional<size_t>();
+    return std::optional<size_t>();
   line[n] = '\0';
 
   char* swap_line = strstr(line, "VmSwap");
   if (!swap_line)
-    return absl::optional<size_t>();
+    return std::optional<size_t>();
   num_scanned = sscanf(swap_line, "VmSwap: %" SCNu64 " kB", &swap_footprint);
   if (num_scanned != 1)
-    return absl::optional<size_t>();
+    return std::optional<size_t>();
 
   swap_footprint *= 1024;
   return (resident_pages - shared_pages) * page_size + swap_footprint;
@@ -367,7 +367,7 @@ absl::optional<uint64_t> CalculateProcessMemoryFootprint(
 }  // namespace
 
 // static
-absl::optional<uint64_t>
+std::optional<uint64_t>
 UserLevelMemoryPressureSignalGenerator::GetPrivateFootprint(
     const base::Process& process) {
   // ScopedAllowBlocking is required to use base::File, but /proc/{pid}/status
@@ -387,7 +387,7 @@ UserLevelMemoryPressureSignalGenerator::GetPrivateFootprint(
       proc_pid_dir.Append("statm"),
       base::File::Flags::FLAG_OPEN | base::File::Flags::FLAG_READ);
   if (!status_file.IsValid() || !statm_file.IsValid())
-    return absl::optional<size_t>();
+    return std::optional<size_t>();
 
   return CalculateProcessMemoryFootprint(statm_file, status_file);
 }

@@ -373,7 +373,7 @@ class BlockedSchemeNavigationBrowserTest
             ? std::string()
             : base::StringPrintf(kNavigationBlockedMessage, scheme.c_str());
 
-    absl::optional<WebContentsConsoleObserver> console_observer;
+    std::optional<WebContentsConsoleObserver> console_observer;
     if (!expected_message.empty()) {
       console_observer.emplace(shell()->web_contents());
       console_observer->SetPattern(expected_message);

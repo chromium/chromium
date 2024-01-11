@@ -5,6 +5,7 @@
 #include <cmath>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -64,7 +65,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
@@ -181,25 +181,25 @@ void WaitForHistograms(const std::vector<std::string>& histogram_names) {
     WaitForHistogram(name);
 }
 
-std::string SerializeOptionalString(absl::optional<std::string> str) {
+std::string SerializeOptionalString(std::optional<std::string> str) {
   if (str)
     return *str;
 
-  return "absl::nullopt";
+  return "std::nullopt";
 }
 
-std::string SerializeOptionalBool(absl::optional<bool> b) {
+std::string SerializeOptionalBool(std::optional<bool> b) {
   if (b)
     return (*b) ? "true" : "false";
 
-  return "absl::nullopt";
+  return "std::nullopt";
 }
 
 std::string SerializeOptionalUrlsWithMetadata(
-    absl::optional<std::vector<SharedStorageUrlSpecWithMetadata>>
+    std::optional<std::vector<SharedStorageUrlSpecWithMetadata>>
         urls_with_metadata) {
   if (!urls_with_metadata)
-    return "absl::nullopt";
+    return "std::nullopt";
 
   std::vector<std::string> urls_str_vector = {"{ "};
   for (const auto& url_with_metadata : *urls_with_metadata) {
@@ -603,7 +603,7 @@ class TestSharedStorageObserver
   void OnUrnUuidGenerated(const GURL& urn_uuid) override {}
 
   void OnConfigPopulated(
-      const absl::optional<FencedFrameConfig>& config) override {}
+      const std::optional<FencedFrameConfig>& config) override {}
 
   bool EventParamsMatch(const SharedStorageEventParams& expected_params,
                         const SharedStorageEventParams& actual_params) {
@@ -949,7 +949,7 @@ class SharedStorageBrowserTestBase : public ContentBrowserTest {
       GURL* out_module_script_url,
       size_t expected_total_host_count = 1u,
       bool keep_alive_after_operation = true,
-      absl::optional<std::string> context_id = absl::nullopt,
+      std::optional<std::string> context_id = std::nullopt,
       std::string* out_error = nullptr,
       bool wait_for_operation_finish = true) {
     DCHECK(out_module_script_url);
@@ -1030,7 +1030,7 @@ class SharedStorageBrowserTestBase : public ContentBrowserTest {
   // sharedStorage.selectURL() on 8 urls. If `parent_node` is not specified,
   // the primary frame tree's root node will be chosen. This generates an URN
   // associated with `origin` and 3 bits of shared storage budget.
-  absl::optional<GURL> SelectFrom8URLsInContext(
+  std::optional<GURL> SelectFrom8URLsInContext(
       const url::Origin& origin,
       FrameTreeNode* parent_node = nullptr,
       bool keep_alive_after_operation = true) {
@@ -1085,8 +1085,7 @@ class SharedStorageBrowserTestBase : public ContentBrowserTest {
       )");
 
     EXPECT_TRUE(result.error.empty());
-    const absl::optional<GURL>& observed_urn_uuid =
-        config_observer.GetUrnUuid();
+    const std::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
     if (observed_urn_uuid.has_value()) {
       EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));
 
@@ -2442,7 +2441,7 @@ IN_PROC_BROWSER_TEST_P(
     )");
 
   EXPECT_TRUE(result.error.empty());
-  const absl::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
+  const std::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
   EXPECT_TRUE(observed_urn_uuid.has_value());
   EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));
 
@@ -2455,7 +2454,7 @@ IN_PROC_BROWSER_TEST_P(
       ->WaitForWorkletResponses();
 
   ASSERT_TRUE(config_observer.ConfigObserved());
-  const absl::optional<FencedFrameConfig>& fenced_frame_config =
+  const std::optional<FencedFrameConfig>& fenced_frame_config =
       config_observer.GetConfig();
   EXPECT_TRUE(fenced_frame_config.has_value());
   EXPECT_EQ(fenced_frame_config->urn_uuid(), observed_urn_uuid.value());
@@ -2552,7 +2551,7 @@ IN_PROC_BROWSER_TEST_P(
     )");
 
   EXPECT_TRUE(result.error.empty());
-  const absl::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
+  const std::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
   EXPECT_TRUE(observed_urn_uuid.has_value());
   EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));
 
@@ -2565,7 +2564,7 @@ IN_PROC_BROWSER_TEST_P(
       ->WaitForWorkletResponses();
 
   ASSERT_TRUE(config_observer.ConfigObserved());
-  const absl::optional<FencedFrameConfig>& fenced_frame_config =
+  const std::optional<FencedFrameConfig>& fenced_frame_config =
       config_observer.GetConfig();
   EXPECT_TRUE(fenced_frame_config.has_value());
   EXPECT_EQ(fenced_frame_config->urn_uuid(), observed_urn_uuid.value());
@@ -2666,7 +2665,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
     )");
 
   EXPECT_TRUE(result.error.empty());
-  const absl::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
+  const std::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
   EXPECT_TRUE(observed_urn_uuid.has_value());
   EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));
 
@@ -2679,7 +2678,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
       ->WaitForWorkletResponses();
 
   ASSERT_TRUE(config_observer.ConfigObserved());
-  const absl::optional<FencedFrameConfig>& fenced_frame_config =
+  const std::optional<FencedFrameConfig>& fenced_frame_config =
       config_observer.GetConfig();
   EXPECT_TRUE(fenced_frame_config.has_value());
   EXPECT_EQ(fenced_frame_config->urn_uuid(), observed_urn_uuid.value());
@@ -2772,8 +2771,7 @@ IN_PROC_BROWSER_TEST_P(
     )");
 
   EXPECT_TRUE(result1.error.empty());
-  const absl::optional<GURL>& observed_urn_uuid1 =
-      config_observer1.GetUrnUuid();
+  const std::optional<GURL>& observed_urn_uuid1 = config_observer1.GetUrnUuid();
   EXPECT_TRUE(observed_urn_uuid1.has_value());
   EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid1.value()));
 
@@ -2786,7 +2784,7 @@ IN_PROC_BROWSER_TEST_P(
       ->WaitForWorkletResponses();
 
   ASSERT_TRUE(config_observer1.ConfigObserved());
-  const absl::optional<FencedFrameConfig>& fenced_frame_config1 =
+  const std::optional<FencedFrameConfig>& fenced_frame_config1 =
       config_observer1.GetConfig();
   EXPECT_TRUE(fenced_frame_config1.has_value());
   EXPECT_EQ(fenced_frame_config1->urn_uuid(), observed_urn_uuid1.value());
@@ -2825,8 +2823,7 @@ IN_PROC_BROWSER_TEST_P(
     )");
 
   EXPECT_TRUE(result2.error.empty());
-  const absl::optional<GURL>& observed_urn_uuid2 =
-      config_observer2.GetUrnUuid();
+  const std::optional<GURL>& observed_urn_uuid2 = config_observer2.GetUrnUuid();
   EXPECT_TRUE(observed_urn_uuid2.has_value());
   EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid2.value()));
 
@@ -2839,7 +2836,7 @@ IN_PROC_BROWSER_TEST_P(
       ->WaitForWorkletResponses();
 
   ASSERT_TRUE(config_observer2.ConfigObserved());
-  const absl::optional<FencedFrameConfig>& fenced_frame_config2 =
+  const std::optional<FencedFrameConfig>& fenced_frame_config2 =
       config_observer2.GetConfig();
   EXPECT_TRUE(fenced_frame_config2.has_value());
   EXPECT_EQ(fenced_frame_config2->urn_uuid(), observed_urn_uuid2.value());
@@ -2919,8 +2916,7 @@ IN_PROC_BROWSER_TEST_P(
     )");
 
   EXPECT_TRUE(result1.error.empty());
-  const absl::optional<GURL>& observed_urn_uuid1 =
-      config_observer1.GetUrnUuid();
+  const std::optional<GURL>& observed_urn_uuid1 = config_observer1.GetUrnUuid();
   EXPECT_TRUE(observed_urn_uuid1.has_value());
   EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid1.value()));
 
@@ -2933,7 +2929,7 @@ IN_PROC_BROWSER_TEST_P(
       ->WaitForWorkletResponses();
 
   ASSERT_TRUE(config_observer1.ConfigObserved());
-  const absl::optional<FencedFrameConfig>& fenced_frame_config1 =
+  const std::optional<FencedFrameConfig>& fenced_frame_config1 =
       config_observer1.GetConfig();
   EXPECT_TRUE(fenced_frame_config1.has_value());
   EXPECT_EQ(fenced_frame_config1->urn_uuid(), observed_urn_uuid1.value());
@@ -3037,8 +3033,7 @@ IN_PROC_BROWSER_TEST_P(
   EvalJsResult result1 = EvalJs(shell(), select_url_script);
 
   EXPECT_TRUE(result1.error.empty());
-  const absl::optional<GURL>& observed_urn_uuid1 =
-      config_observer1.GetUrnUuid();
+  const std::optional<GURL>& observed_urn_uuid1 = config_observer1.GetUrnUuid();
   EXPECT_TRUE(observed_urn_uuid1.has_value());
   EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid1.value()));
 
@@ -3051,7 +3046,7 @@ IN_PROC_BROWSER_TEST_P(
       ->WaitForWorkletResponses();
 
   ASSERT_TRUE(config_observer1.ConfigObserved());
-  const absl::optional<FencedFrameConfig>& fenced_frame_config1 =
+  const std::optional<FencedFrameConfig>& fenced_frame_config1 =
       config_observer1.GetConfig();
   EXPECT_TRUE(fenced_frame_config1.has_value());
   EXPECT_EQ(fenced_frame_config1->urn_uuid(), observed_urn_uuid1.value());
@@ -3246,7 +3241,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
     )");
 
   EXPECT_TRUE(result.error.empty());
-  const absl::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
+  const std::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
   EXPECT_TRUE(observed_urn_uuid.has_value());
   EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));
 
@@ -3259,7 +3254,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
       ->WaitForWorkletResponses();
 
   ASSERT_TRUE(config_observer.ConfigObserved());
-  const absl::optional<FencedFrameConfig>& fenced_frame_config =
+  const std::optional<FencedFrameConfig>& fenced_frame_config =
       config_observer.GetConfig();
   EXPECT_TRUE(fenced_frame_config.has_value());
   EXPECT_EQ(fenced_frame_config->urn_uuid(), observed_urn_uuid.value());
@@ -3431,7 +3426,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
     )");
 
   EXPECT_TRUE(result.error.empty());
-  const absl::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
+  const std::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
   EXPECT_TRUE(observed_urn_uuid.has_value());
   EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));
 
@@ -3444,7 +3439,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
       ->WaitForWorkletResponses();
 
   ASSERT_TRUE(config_observer.ConfigObserved());
-  const absl::optional<FencedFrameConfig>& fenced_frame_config =
+  const std::optional<FencedFrameConfig>& fenced_frame_config =
       config_observer.GetConfig();
   EXPECT_TRUE(fenced_frame_config.has_value());
   EXPECT_EQ(fenced_frame_config->urn_uuid(), observed_urn_uuid.value());
@@ -3552,7 +3547,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
     )");
 
   EXPECT_TRUE(result1.error.empty());
-  const absl::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
+  const std::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
   EXPECT_TRUE(observed_urn_uuid.has_value());
   EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));
 
@@ -3565,7 +3560,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
       ->WaitForWorkletResponses();
 
   ASSERT_TRUE(config_observer.ConfigObserved());
-  const absl::optional<FencedFrameConfig>& fenced_frame_config =
+  const std::optional<FencedFrameConfig>& fenced_frame_config =
       config_observer.GetConfig();
   EXPECT_TRUE(fenced_frame_config.has_value());
   EXPECT_EQ(fenced_frame_config->urn_uuid(), observed_urn_uuid.value());
@@ -3657,7 +3652,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
     )");
 
   EXPECT_TRUE(result1.error.empty());
-  const absl::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
+  const std::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
   EXPECT_TRUE(observed_urn_uuid.has_value());
   EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));
 
@@ -3670,7 +3665,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
       ->WaitForWorkletResponses();
 
   ASSERT_TRUE(config_observer.ConfigObserved());
-  const absl::optional<FencedFrameConfig>& fenced_frame_config =
+  const std::optional<FencedFrameConfig>& fenced_frame_config =
       config_observer.GetConfig();
   EXPECT_TRUE(fenced_frame_config.has_value());
   EXPECT_EQ(fenced_frame_config->urn_uuid(), observed_urn_uuid.value());
@@ -3755,7 +3750,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
     )");
 
   EXPECT_TRUE(result.error.empty());
-  const absl::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
+  const std::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
   EXPECT_TRUE(observed_urn_uuid.has_value());
   EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));
 
@@ -3768,7 +3763,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
       ->WaitForWorkletResponses();
 
   ASSERT_TRUE(config_observer.ConfigObserved());
-  const absl::optional<FencedFrameConfig>& fenced_frame_config =
+  const std::optional<FencedFrameConfig>& fenced_frame_config =
       config_observer.GetConfig();
   EXPECT_TRUE(fenced_frame_config.has_value());
   EXPECT_EQ(fenced_frame_config->urn_uuid(), observed_urn_uuid.value());
@@ -4532,7 +4527,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageAllowURNsInIframesBrowserTest,
   url::Origin shared_storage_origin =
       url::Origin::Create(https_server()->GetURL("b.test", kSimplePagePath));
 
-  absl::optional<GURL> urn_uuid =
+  std::optional<GURL> urn_uuid =
       SelectFrom8URLsInContext(shared_storage_origin);
   ASSERT_TRUE(urn_uuid.has_value());
 
@@ -4690,7 +4685,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
     )");
 
   EXPECT_TRUE(result.error.empty());
-  const absl::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
+  const std::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
   EXPECT_TRUE(observed_urn_uuid.has_value());
   EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));
 
@@ -4699,7 +4694,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
       ->WaitForWorkletResponses();
 
   ASSERT_TRUE(config_observer.ConfigObserved());
-  const absl::optional<FencedFrameConfig>& fenced_frame_config =
+  const std::optional<FencedFrameConfig>& fenced_frame_config =
       config_observer.GetConfig();
   EXPECT_TRUE(fenced_frame_config.has_value());
   EXPECT_EQ(fenced_frame_config->urn_uuid(), observed_urn_uuid.value());
@@ -4818,7 +4813,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
     )");
 
   EXPECT_TRUE(result.error.empty());
-  const absl::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
+  const std::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
   EXPECT_TRUE(observed_urn_uuid.has_value());
   EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));
 
@@ -4872,7 +4867,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
   observer.Wait();
 
   ASSERT_TRUE(config_observer.ConfigObserved());
-  const absl::optional<FencedFrameConfig>& fenced_frame_config =
+  const std::optional<FencedFrameConfig>& fenced_frame_config =
       config_observer.GetConfig();
   EXPECT_TRUE(fenced_frame_config.has_value());
   EXPECT_EQ(fenced_frame_config->urn_uuid(), observed_urn_uuid.value());
@@ -4908,7 +4903,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
   GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
-  absl::optional<GURL> urn_uuid =
+  std::optional<GURL> urn_uuid =
       SelectFrom8URLsInContext(url::Origin::Create(main_url));
   ASSERT_TRUE(urn_uuid.has_value());
   EXPECT_TRUE(blink::IsValidUrnUuidURL(*urn_uuid));
@@ -5001,7 +4996,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
     )");
 
   EXPECT_TRUE(result.error.empty());
-  const absl::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
+  const std::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
   EXPECT_TRUE(observed_urn_uuid.has_value());
   EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));
 
@@ -5056,7 +5051,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
   }
 
   ASSERT_FALSE(config_observer.ConfigObserved());
-  const absl::optional<FencedFrameConfig>& fenced_frame_config =
+  const std::optional<FencedFrameConfig>& fenced_frame_config =
       config_observer.GetConfig();
   EXPECT_FALSE(fenced_frame_config.has_value());
 
@@ -5160,7 +5155,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
     )");
 
   EXPECT_TRUE(result.error.empty());
-  const absl::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
+  const std::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
   EXPECT_TRUE(observed_urn_uuid.has_value());
   EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));
 
@@ -5169,7 +5164,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
       ->WaitForWorkletResponses();
 
   ASSERT_TRUE(config_observer.ConfigObserved());
-  const absl::optional<FencedFrameConfig>& fenced_frame_config =
+  const std::optional<FencedFrameConfig>& fenced_frame_config =
       config_observer.GetConfig();
   EXPECT_TRUE(fenced_frame_config.has_value());
   EXPECT_EQ(fenced_frame_config->urn_uuid(), observed_urn_uuid->spec());
@@ -5271,7 +5266,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
     )");
 
   EXPECT_TRUE(result.error.empty());
-  const absl::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
+  const std::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
   EXPECT_TRUE(observed_urn_uuid.has_value());
   EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));
 
@@ -5280,7 +5275,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
       ->WaitForWorkletResponses();
 
   ASSERT_TRUE(config_observer.ConfigObserved());
-  const absl::optional<FencedFrameConfig>& fenced_frame_config =
+  const std::optional<FencedFrameConfig>& fenced_frame_config =
       config_observer.GetConfig();
   EXPECT_TRUE(fenced_frame_config.has_value());
   EXPECT_EQ(fenced_frame_config->urn_uuid(), observed_urn_uuid.value());
@@ -5336,7 +5331,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
   url::Origin shared_storage_origin =
       url::Origin::Create(https_server()->GetURL("b.test", kSimplePagePath));
 
-  absl::optional<GURL> urn_uuid =
+  std::optional<GURL> urn_uuid =
       SelectFrom8URLsInContext(shared_storage_origin);
   ASSERT_TRUE(urn_uuid.has_value());
 
@@ -5370,7 +5365,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
   url::Origin shared_storage_origin =
       url::Origin::Create(https_server()->GetURL("b.test", kSimplePagePath));
 
-  absl::optional<GURL> urn_uuid =
+  std::optional<GURL> urn_uuid =
       SelectFrom8URLsInContext(shared_storage_origin);
   ASSERT_TRUE(urn_uuid.has_value());
 
@@ -5410,7 +5405,7 @@ IN_PROC_BROWSER_TEST_F(
   url::Origin shared_storage_origin =
       url::Origin::Create(https_server()->GetURL("b.test", kSimplePagePath));
 
-  absl::optional<GURL> urn_uuid =
+  std::optional<GURL> urn_uuid =
       SelectFrom8URLsInContext(shared_storage_origin);
   ASSERT_TRUE(urn_uuid.has_value());
 
@@ -5460,7 +5455,7 @@ IN_PROC_BROWSER_TEST_F(
   url::Origin shared_storage_origin =
       url::Origin::Create(https_server()->GetURL("b.test", kSimplePagePath));
 
-  absl::optional<GURL> urn_uuid =
+  std::optional<GURL> urn_uuid =
       SelectFrom8URLsInContext(shared_storage_origin);
   ASSERT_TRUE(urn_uuid.has_value());
 
@@ -5512,7 +5507,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
   url::Origin shared_storage_origin =
       url::Origin::Create(https_server()->GetURL("b.test", kSimplePagePath));
 
-  absl::optional<GURL> urn_uuid =
+  std::optional<GURL> urn_uuid =
       SelectFrom8URLsInContext(shared_storage_origin);
   ASSERT_TRUE(urn_uuid.has_value());
 
@@ -5556,7 +5551,7 @@ IN_PROC_BROWSER_TEST_F(
   url::Origin shared_storage_origin_1 =
       url::Origin::Create(https_server()->GetURL("b.test", kSimplePagePath));
 
-  absl::optional<GURL> urn_uuid_1 =
+  std::optional<GURL> urn_uuid_1 =
       SelectFrom8URLsInContext(shared_storage_origin_1);
   ASSERT_TRUE(urn_uuid_1.has_value());
   FrameTreeNode* fenced_frame_root_node_1 = CreateFencedFrame(*urn_uuid_1);
@@ -5564,7 +5559,7 @@ IN_PROC_BROWSER_TEST_F(
   url::Origin shared_storage_origin_2 =
       url::Origin::Create(https_server()->GetURL("c.test", kSimplePagePath));
 
-  absl::optional<GURL> urn_uuid_2 = SelectFrom8URLsInContext(
+  std::optional<GURL> urn_uuid_2 = SelectFrom8URLsInContext(
       shared_storage_origin_2, fenced_frame_root_node_1);
   ASSERT_TRUE(urn_uuid_2.has_value());
 
@@ -5639,7 +5634,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
   url::Origin shared_storage_origin_1 =
       url::Origin::Create(https_server()->GetURL("b.test", kSimplePagePath));
 
-  absl::optional<GURL> urn_uuid_1 =
+  std::optional<GURL> urn_uuid_1 =
       SelectFrom8URLsInContext(shared_storage_origin_1);
   ASSERT_TRUE(urn_uuid_1.has_value());
   FrameTreeNode* fenced_frame_root_node_1 = CreateFencedFrame(*urn_uuid_1);
@@ -5647,7 +5642,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
   url::Origin shared_storage_origin_2 =
       url::Origin::Create(https_server()->GetURL("c.test", kSimplePagePath));
 
-  absl::optional<GURL> urn_uuid_2 = SelectFrom8URLsInContext(
+  std::optional<GURL> urn_uuid_2 = SelectFrom8URLsInContext(
       shared_storage_origin_2, fenced_frame_root_node_1);
   ASSERT_TRUE(urn_uuid_2.has_value());
 
@@ -5690,7 +5685,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
   url::Origin shared_storage_origin =
       url::Origin::Create(https_server()->GetURL("b.test", kSimplePagePath));
 
-  absl::optional<GURL> urn_uuid =
+  std::optional<GURL> urn_uuid =
       SelectFrom8URLsInContext(shared_storage_origin);
   ASSERT_TRUE(urn_uuid.has_value());
 
@@ -5733,7 +5728,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
   url::Origin shared_storage_origin =
       url::Origin::Create(https_server()->GetURL("b.test", kSimplePagePath));
 
-  absl::optional<GURL> urn_uuid =
+  std::optional<GURL> urn_uuid =
       SelectFrom8URLsInContext(shared_storage_origin);
   ASSERT_TRUE(urn_uuid.has_value());
 
@@ -5810,7 +5805,7 @@ IN_PROC_BROWSER_TEST_F(
     )");
 
   EXPECT_TRUE(result_1.error.empty());
-  const absl::optional<GURL>& observed_urn_uuid_1 =
+  const std::optional<GURL>& observed_urn_uuid_1 =
       config_observer_1.GetUrnUuid();
   EXPECT_TRUE(observed_urn_uuid_1.has_value());
   EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid_1.value()));
@@ -5837,7 +5832,7 @@ IN_PROC_BROWSER_TEST_F(
     )");
 
   EXPECT_TRUE(result_2.error.empty());
-  const absl::optional<GURL>& observed_urn_uuid_2 =
+  const std::optional<GURL>& observed_urn_uuid_2 =
       config_observer_2.GetUrnUuid();
   EXPECT_TRUE(observed_urn_uuid_2.has_value());
   EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid_2.value()));
@@ -5847,13 +5842,13 @@ IN_PROC_BROWSER_TEST_F(
       ->WaitForWorkletResponses();
 
   ASSERT_TRUE(config_observer_1.ConfigObserved());
-  const absl::optional<FencedFrameConfig>& fenced_frame_config_1 =
+  const std::optional<FencedFrameConfig>& fenced_frame_config_1 =
       config_observer_1.GetConfig();
   EXPECT_TRUE(fenced_frame_config_1.has_value());
   EXPECT_EQ(fenced_frame_config_1->urn_uuid(), observed_urn_uuid_1.value());
 
   ASSERT_TRUE(config_observer_2.ConfigObserved());
-  const absl::optional<FencedFrameConfig>& fenced_frame_config_2 =
+  const std::optional<FencedFrameConfig>& fenced_frame_config_2 =
       config_observer_2.GetConfig();
   EXPECT_TRUE(fenced_frame_config_2.has_value());
   EXPECT_EQ(fenced_frame_config_2->urn_uuid(), observed_urn_uuid_2.value());
@@ -5904,7 +5899,7 @@ IN_PROC_BROWSER_TEST_F(
 
   url::Origin shared_storage_origin = url::Origin::Create(main_url);
 
-  absl::optional<GURL> urn_uuid =
+  std::optional<GURL> urn_uuid =
       SelectFrom8URLsInContext(shared_storage_origin);
   ASSERT_TRUE(urn_uuid.has_value());
 
@@ -5985,7 +5980,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
     )");
 
   EXPECT_TRUE(result_1.error.empty());
-  const absl::optional<GURL>& observed_urn_uuid_1 =
+  const std::optional<GURL>& observed_urn_uuid_1 =
       config_observer_1.GetUrnUuid();
   EXPECT_TRUE(observed_urn_uuid_1.has_value());
   EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid_1.value()));
@@ -6021,7 +6016,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
     )");
 
   EXPECT_TRUE(result_2.error.empty());
-  const absl::optional<GURL>& observed_urn_uuid_2 =
+  const std::optional<GURL>& observed_urn_uuid_2 =
       config_observer_2.GetUrnUuid();
   EXPECT_TRUE(observed_urn_uuid_2.has_value());
   EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid_2.value()));
@@ -6031,13 +6026,13 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,
       ->WaitForWorkletResponses();
 
   ASSERT_TRUE(config_observer_1.ConfigObserved());
-  const absl::optional<FencedFrameConfig>& fenced_frame_config_1 =
+  const std::optional<FencedFrameConfig>& fenced_frame_config_1 =
       config_observer_1.GetConfig();
   EXPECT_TRUE(fenced_frame_config_1.has_value());
   EXPECT_EQ(fenced_frame_config_1->urn_uuid(), observed_urn_uuid_1.value());
 
   ASSERT_TRUE(config_observer_2.ConfigObserved());
-  const absl::optional<FencedFrameConfig>& fenced_frame_config_2 =
+  const std::optional<FencedFrameConfig>& fenced_frame_config_2 =
       config_observer_2.GetConfig();
   EXPECT_TRUE(fenced_frame_config_2.has_value());
   EXPECT_EQ(fenced_frame_config_2->urn_uuid(), observed_urn_uuid_2.value());
@@ -6157,7 +6152,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageSelectURLNotAllowedInFencedFrameBrowserTest,
 
   url::Origin shared_storage_origin =
       url::Origin::Create(https_server()->GetURL("b.test", kSimplePagePath));
-  absl::optional<GURL> urn_uuid =
+  std::optional<GURL> urn_uuid =
       SelectFrom8URLsInContext(shared_storage_origin);
   ASSERT_TRUE(urn_uuid.has_value());
 
@@ -6258,7 +6253,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageReportEventBrowserTest,
     )");
 
   EXPECT_TRUE(result.error.empty());
-  const absl::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
+  const std::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
   EXPECT_TRUE(observed_urn_uuid.has_value());
   EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));
 
@@ -7024,7 +7019,7 @@ class SharedStorageSelectURLLimitBrowserTest
       std::string host_str,
       int num_urls,
       WebContentsConsoleObserver* console_observer) {
-    absl::optional<std::pair<GURL, double>> result_pair =
+    std::optional<std::pair<GURL, double>> result_pair =
         RunSelectURLExtractingMappedURLAndBudgetToCharge(shell(), host_str,
                                                          num_urls);
     ASSERT_TRUE(result_pair.has_value());
@@ -7051,7 +7046,7 @@ class SharedStorageSelectURLLimitBrowserTest
       sharedStorage.worklet.addModule('shared_storage/simple_module.js');
     )"));
 
-    absl::optional<std::pair<GURL, double>> result_pair =
+    std::optional<std::pair<GURL, double>> result_pair =
         RunSelectURLExtractingMappedURLAndBudgetToCharge(iframe_node, host_str,
                                                          num_urls);
     ASSERT_TRUE(result_pair.has_value());
@@ -7068,7 +7063,7 @@ class SharedStorageSelectURLLimitBrowserTest
 
   // Precondition: `addModule('shared_storage/simple_module.js')` has been
   // called in the `execution_target`.
-  absl::optional<std::pair<GURL, double>>
+  std::optional<std::pair<GURL, double>>
   RunSelectURLExtractingMappedURLAndBudgetToCharge(
       const ToRenderFrameHost& execution_target,
       std::string host_str,
@@ -7084,10 +7079,9 @@ class SharedStorageSelectURLLimitBrowserTest
     EvalJsResult result = RunSelectURLScript(execution_target, num_urls);
 
     EXPECT_TRUE(result.error.empty()) << result.error;
-    const absl::optional<GURL>& observed_urn_uuid =
-        config_observer.GetUrnUuid();
+    const std::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
     if (!observed_urn_uuid.has_value()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));
 
@@ -7099,17 +7093,17 @@ class SharedStorageSelectURLLimitBrowserTest
         .GetAttachedWorkletHostForFrame(execution_target.render_frame_host())
         ->WaitForWorkletResponses();
 
-    const absl::optional<FencedFrameConfig>& config =
+    const std::optional<FencedFrameConfig>& config =
         config_observer.GetConfig();
     if (!config.has_value()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     EXPECT_TRUE(config->mapped_url().has_value());
 
     SharedStorageBudgetMetadata* metadata =
         GetSharedStorageBudgetMetadata(observed_urn_uuid.value());
     if (!metadata) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     EXPECT_EQ(metadata->site,
               net::SchemefulSite(https_server()->GetOrigin(host_str)));
@@ -7198,7 +7192,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageSelectURLLimitBrowserTest,
     // The limit for `selectURL()` has now been reached for "a.test". Make one
     // more call, which will return the default URL due to insufficient site
     // pageload budget.
-    absl::optional<std::pair<GURL, double>> result_pair =
+    std::optional<std::pair<GURL, double>> result_pair =
         RunSelectURLExtractingMappedURLAndBudgetToCharge(shell(), "a.test",
                                                          /*num_urls=*/8);
     ASSERT_TRUE(result_pair.has_value());
@@ -7256,7 +7250,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageSelectURLLimitBrowserTest,
     // The limit for `selectURL()` has now been reached for "a.test". Make one
     // more call, which will return the default URL due to insufficient site
     // pageload budget.
-    absl::optional<std::pair<GURL, double>> result_pair =
+    std::optional<std::pair<GURL, double>> result_pair =
         RunSelectURLExtractingMappedURLAndBudgetToCharge(shell(), "a.test",
                                                          /*num_urls=*/4);
     ASSERT_TRUE(result_pair.has_value());
@@ -7319,7 +7313,7 @@ IN_PROC_BROWSER_TEST_P(
     // The limit for `selectURL()` has now been reached for "b.test". Make one
     // more call, which will return the default URL due to insufficient site
     // pageload budget.
-    absl::optional<std::pair<GURL, double>> result_pair =
+    std::optional<std::pair<GURL, double>> result_pair =
         RunSelectURLExtractingMappedURLAndBudgetToCharge(iframe_node, "b.test",
                                                          /*num_urls=*/8);
     ASSERT_TRUE(result_pair.has_value());
@@ -7391,7 +7385,7 @@ IN_PROC_BROWSER_TEST_P(
     // The limit for `selectURL()` has now been reached for "b.test". Make one
     // more call, which will return the default URL due to insufficient site
     // pageload budget.
-    absl::optional<std::pair<GURL, double>> result_pair =
+    std::optional<std::pair<GURL, double>> result_pair =
         RunSelectURLExtractingMappedURLAndBudgetToCharge(last_iframe_node,
                                                          "b.test",
                                                          /*num_urls=*/4);
@@ -7455,7 +7449,7 @@ IN_PROC_BROWSER_TEST_P(
     // The limit for `selectURL()` has now been reached for "b.test". Make one
     // more call, which will return the default URL due to insufficient site
     // pageload budget.
-    absl::optional<std::pair<GURL, double>> result_pair =
+    std::optional<std::pair<GURL, double>> result_pair =
         RunSelectURLExtractingMappedURLAndBudgetToCharge(
             penultimate_iframe_node, "b.test",
             /*num_urls=*/4);
@@ -7546,7 +7540,7 @@ IN_PROC_BROWSER_TEST_P(
       // The limit for `selectURL()` has now been reached for `iframe_host`.
       // Make one more call, which will return the default URL due to
       // insufficient site pageload budget.
-      absl::optional<std::pair<GURL, double>> result_pair =
+      std::optional<std::pair<GURL, double>> result_pair =
           RunSelectURLExtractingMappedURLAndBudgetToCharge(
               last_loop_iframe_node, iframe_host,
               /*num_urls=*/2);
@@ -7595,7 +7589,7 @@ IN_PROC_BROWSER_TEST_P(
     // The overall pageload limit for `selectURL()` has now been reached. Make
     // one more call, which will return the default URL due to insufficient
     // overall pageload budget.
-    absl::optional<std::pair<GURL, double>> result_pair =
+    std::optional<std::pair<GURL, double>> result_pair =
         RunSelectURLExtractingMappedURLAndBudgetToCharge(final_iframe_node,
                                                          iframe_host,
                                                          /*num_urls=*/2);
@@ -7673,8 +7667,7 @@ class SharedStorageContextBrowserTest
                                                     fenced_frame_url.spec()));
 
     EXPECT_TRUE(result.error.empty());
-    const absl::optional<GURL>& observed_urn_uuid =
-        config_observer.GetUrnUuid();
+    const std::optional<GURL>& observed_urn_uuid = config_observer.GetUrnUuid();
     ASSERT_TRUE(observed_urn_uuid.has_value());
     EXPECT_TRUE(blink::IsValidUrnUuidURL(observed_urn_uuid.value()));
 
@@ -7683,7 +7676,7 @@ class SharedStorageContextBrowserTest
         ->WaitForWorkletResponses();
 
     ASSERT_TRUE(config_observer.ConfigObserved());
-    const absl::optional<FencedFrameConfig>& fenced_frame_config =
+    const std::optional<FencedFrameConfig>& fenced_frame_config =
         config_observer.GetConfig();
     EXPECT_TRUE(fenced_frame_config.has_value());
     EXPECT_EQ(fenced_frame_config->urn_uuid(), observed_urn_uuid.value());
@@ -8300,7 +8293,7 @@ class SharedStorageHeaderObserverBrowserTest
   void SetUpResponsesAndNavigateMainPage(
       std::string main_hostname,
       std::string subresource_or_subframe_hostname,
-      absl::optional<std::string> shared_storage_permissions = absl::nullopt,
+      std::optional<std::string> shared_storage_permissions = std::nullopt,
       bool is_image = false,
       std::vector<std::string> redirect_hostnames = {}) {
     subresource_or_subframe_content_type_ =
@@ -8900,7 +8893,7 @@ IN_PROC_BROWSER_TEST_F(
       testing::ElementsAre(DeleteOperation(redirect_origins_.back(), "a",
                                            OperationResult::kSuccess),
                            SetOperation(redirect_origins_.back(), "set", "will",
-                                        absl::nullopt, OperationResult::kSet)));
+                                        std::nullopt, OperationResult::kSet)));
 
   // Create an iframe that's same-origin to the original fetch URL.
   FrameTreeNode* iframe_node1 =
@@ -9004,7 +8997,7 @@ IN_PROC_BROWSER_TEST_F(
                   DeleteOperation(redirect_origins_.back(), "a",
                                   OperationResult::kSuccess),
                   SetOperation(redirect_origins_.back(), "set", "will",
-                               absl::nullopt, OperationResult::kSet)));
+                               std::nullopt, OperationResult::kSet)));
 
   // Create an iframe that's same-origin to the original fetch URL.
   FrameTreeNode* iframe_node1 =
@@ -9213,7 +9206,7 @@ IN_PROC_BROWSER_TEST_F(
                   DeleteOperation(redirect_origins_.back(), "a",
                                   OperationResult::kSuccess),
                   SetOperation(redirect_origins_.back(), "set", "will",
-                               absl::nullopt, OperationResult::kSet)));
+                               std::nullopt, OperationResult::kSet)));
 
   // Create an iframe that's same-origin to the original fetch URL.
   FrameTreeNode* iframe_node1 =
@@ -9315,7 +9308,7 @@ IN_PROC_BROWSER_TEST_F(
       testing::ElementsAre(DeleteOperation(redirect_origins_.back(), "a",
                                            OperationResult::kSuccess),
                            SetOperation(redirect_origins_.back(), "set", "will",
-                                        absl::nullopt, OperationResult::kSet)));
+                                        std::nullopt, OperationResult::kSet)));
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
@@ -9526,7 +9519,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   EXPECT_THAT(observer_->operations(),
               testing::ElementsAre(
                   SetOperation(subresource_or_subframe_origin_, "hello",
-                               "world", absl::nullopt, OperationResult::kSet),
+                               "world", std::nullopt, OperationResult::kSet),
                   SetOperation(subresource_or_subframe_origin_, "hello",
                                "friend", false, OperationResult::kSet),
                   SetOperation(subresource_or_subframe_origin_, "hello",
@@ -9751,7 +9744,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
                   ClearOperation(subresource_or_subframe_origin_,
                                  OperationResult::kSuccess),
                   SetOperation(subresource_or_subframe_origin_, "hello",
-                               "world", absl::nullopt, OperationResult::kSet),
+                               "world", std::nullopt, OperationResult::kSet),
                   AppendOperation(subresource_or_subframe_origin_, "hello",
                                   "there", OperationResult::kSet),
                   DeleteOperation(subresource_or_subframe_origin_, "toDelete",
@@ -9811,7 +9804,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   SetUpResponsesAndNavigateMainPage(
       /*main_hostname=*/"a.test",
       /*subresource_or_subframe_hostname=*/"a.test",
-      /*shared_storage_permissions=*/absl::nullopt,
+      /*shared_storage_permissions=*/std::nullopt,
       /*is_image=*/true);
 
   CreateSharedStorageWritableImage(shell(), subresource_or_subframe_url_);
@@ -9845,7 +9838,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
               testing::ElementsAre(true));
   EXPECT_THAT(observer_->operations(),
               testing::ElementsAre(SetOperation(subresource_or_subframe_origin_,
-                                                "a", "b", absl::nullopt,
+                                                "a", "b", std::nullopt,
                                                 OperationResult::kSet)));
 }
 
@@ -9912,7 +9905,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
               testing::ElementsAre(true));
   EXPECT_THAT(observer_->operations(),
               testing::ElementsAre(SetOperation(subresource_or_subframe_origin_,
-                                                "a", "b", absl::nullopt,
+                                                "a", "b", std::nullopt,
                                                 OperationResult::kSet)));
 }
 
@@ -9956,7 +9949,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
               testing::ElementsAre(true));
   EXPECT_THAT(observer_->operations(),
               testing::ElementsAre(SetOperation(subresource_or_subframe_origin_,
-                                                "a", "b", absl::nullopt,
+                                                "a", "b", std::nullopt,
                                                 OperationResult::kSet)));
 }
 
@@ -9965,7 +9958,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   SetUpResponsesAndNavigateMainPage(
       /*main_hostname=*/"a.test",
       /*subresource_or_subframe_hostname=*/"b.test",
-      /*shared_storage_permissions=*/absl::nullopt,
+      /*shared_storage_permissions=*/std::nullopt,
       /*is_image=*/true);
 
   CreateSharedStorageWritableImage(shell(), subresource_or_subframe_url_);
@@ -10004,7 +9997,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
               testing::ElementsAre(true));
   EXPECT_THAT(observer_->operations(),
               testing::ElementsAre(SetOperation(subresource_or_subframe_origin_,
-                                                "a", "b", absl::nullopt,
+                                                "a", "b", std::nullopt,
                                                 OperationResult::kSet)));
 }
 
@@ -10076,7 +10069,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
               testing::ElementsAre(true));
   EXPECT_THAT(observer_->operations(),
               testing::ElementsAre(SetOperation(subresource_or_subframe_origin_,
-                                                "a", "b", absl::nullopt,
+                                                "a", "b", std::nullopt,
                                                 OperationResult::kSet)));
 }
 
@@ -10209,7 +10202,7 @@ IN_PROC_BROWSER_TEST_F(
       testing::ElementsAre(DeleteOperation(redirect_origins_.back(), "a",
                                            OperationResult::kSuccess),
                            SetOperation(redirect_origins_.back(), "set", "will",
-                                        absl::nullopt, OperationResult::kSet)));
+                                        std::nullopt, OperationResult::kSet)));
 
   // Create an iframe that's same-origin to the original image URL.
   FrameTreeNode* iframe_node1 =
@@ -10296,7 +10289,7 @@ IN_PROC_BROWSER_TEST_F(
                   DeleteOperation(redirect_origins_.back(), "a",
                                   OperationResult::kSuccess),
                   SetOperation(redirect_origins_.back(), "set", "will",
-                               absl::nullopt, OperationResult::kSet)));
+                               std::nullopt, OperationResult::kSet)));
 
   // Create an iframe that's same-origin to the original image URL.
   FrameTreeNode* iframe_node1 =
@@ -10492,7 +10485,7 @@ IN_PROC_BROWSER_TEST_F(
                   DeleteOperation(redirect_origins_.back(), "a",
                                   OperationResult::kSuccess),
                   SetOperation(redirect_origins_.back(), "set", "will",
-                               absl::nullopt, OperationResult::kSet)));
+                               std::nullopt, OperationResult::kSet)));
 
   // Create an iframe that's same-origin to the original image URL.
   FrameTreeNode* iframe_node1 =
@@ -10594,7 +10587,7 @@ IN_PROC_BROWSER_TEST_F(
       testing::ElementsAre(DeleteOperation(redirect_origins_.back(), "a",
                                            OperationResult::kSuccess),
                            SetOperation(redirect_origins_.back(), "set", "will",
-                                        absl::nullopt, OperationResult::kSet)));
+                                        std::nullopt, OperationResult::kSet)));
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
@@ -10751,7 +10744,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   SetUpResponsesAndNavigateMainPage(
       /*main_hostname=*/"a.test",
       /*subresource_or_subframe_hostname=*/"a.test",
-      /*shared_storage_permissions=*/absl::nullopt,
+      /*shared_storage_permissions=*/std::nullopt,
       /*is_image=*/false);
 
   CreateSharedStorageWritableIframe(shell(), subresource_or_subframe_url_);
@@ -10785,7 +10778,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
               testing::ElementsAre(true));
   EXPECT_THAT(observer_->operations(),
               testing::ElementsAre(SetOperation(subresource_or_subframe_origin_,
-                                                "a", "b", absl::nullopt,
+                                                "a", "b", std::nullopt,
                                                 OperationResult::kSet)));
 }
 
@@ -10852,7 +10845,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
               testing::ElementsAre(true));
   EXPECT_THAT(observer_->operations(),
               testing::ElementsAre(SetOperation(subresource_or_subframe_origin_,
-                                                "a", "b", absl::nullopt,
+                                                "a", "b", std::nullopt,
                                                 OperationResult::kSet)));
 }
 
@@ -10896,7 +10889,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
               testing::ElementsAre(true));
   EXPECT_THAT(observer_->operations(),
               testing::ElementsAre(SetOperation(subresource_or_subframe_origin_,
-                                                "a", "b", absl::nullopt,
+                                                "a", "b", std::nullopt,
                                                 OperationResult::kSet)));
 }
 
@@ -10905,7 +10898,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   SetUpResponsesAndNavigateMainPage(
       /*main_hostname=*/"a.test",
       /*subresource_or_subframe_hostname=*/"b.test",
-      /*shared_storage_permissions=*/absl::nullopt,
+      /*shared_storage_permissions=*/std::nullopt,
       /*is_image=*/false);
 
   CreateSharedStorageWritableIframe(shell(), subresource_or_subframe_url_);
@@ -10944,7 +10937,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
               testing::ElementsAre(true));
   EXPECT_THAT(observer_->operations(),
               testing::ElementsAre(SetOperation(subresource_or_subframe_origin_,
-                                                "a", "b", absl::nullopt,
+                                                "a", "b", std::nullopt,
                                                 OperationResult::kSet)));
 }
 
@@ -11016,7 +11009,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
               testing::ElementsAre(true));
   EXPECT_THAT(observer_->operations(),
               testing::ElementsAre(SetOperation(subresource_or_subframe_origin_,
-                                                "a", "b", absl::nullopt,
+                                                "a", "b", std::nullopt,
                                                 OperationResult::kSet)));
 }
 
@@ -11149,7 +11142,7 @@ IN_PROC_BROWSER_TEST_F(
       testing::ElementsAre(DeleteOperation(redirect_origins_.back(), "a",
                                            OperationResult::kSuccess),
                            SetOperation(redirect_origins_.back(), "set", "will",
-                                        absl::nullopt, OperationResult::kSet)));
+                                        std::nullopt, OperationResult::kSet)));
 
   // Create another iframe that's same-origin to the original iframe URL.
   FrameTreeNode* iframe_node2 =
@@ -11236,7 +11229,7 @@ IN_PROC_BROWSER_TEST_F(
                   DeleteOperation(redirect_origins_.back(), "a",
                                   OperationResult::kSuccess),
                   SetOperation(redirect_origins_.back(), "set", "will",
-                               absl::nullopt, OperationResult::kSet)));
+                               std::nullopt, OperationResult::kSet)));
 
   // Create another iframe that's same-origin to the original iframe URL.
   FrameTreeNode* iframe_node2 =
@@ -11433,7 +11426,7 @@ IN_PROC_BROWSER_TEST_F(
                   DeleteOperation(redirect_origins_.back(), "a",
                                   OperationResult::kSuccess),
                   SetOperation(redirect_origins_.back(), "set", "will",
-                               absl::nullopt, OperationResult::kSet)));
+                               std::nullopt, OperationResult::kSet)));
 
   // Create an iframe that's same-origin to the original iframe URL.
   FrameTreeNode* iframe_node2 =
@@ -11535,7 +11528,7 @@ IN_PROC_BROWSER_TEST_F(
       testing::ElementsAre(DeleteOperation(redirect_origins_.back(), "a",
                                            OperationResult::kSuccess),
                            SetOperation(redirect_origins_.back(), "set", "will",
-                                        absl::nullopt, OperationResult::kSet)));
+                                        std::nullopt, OperationResult::kSet)));
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
@@ -11603,7 +11596,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
               testing::ElementsAre(true));
   EXPECT_THAT(observer_->operations(),
               testing::ElementsAre(SetOperation(subresource_or_subframe_origin_,
-                                                "a", "b", absl::nullopt,
+                                                "a", "b", std::nullopt,
                                                 OperationResult::kSet)));
 }
 

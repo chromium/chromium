@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_OS_LEVEL_MANAGER_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_OS_LEVEL_MANAGER_H_
 
+#include <optional>
 #include <set>
 #include <string>
 
@@ -12,7 +13,6 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/content_browser_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Time;
@@ -35,7 +35,7 @@ class CONTENT_EXPORT AttributionOsLevelManager {
 
   class CONTENT_EXPORT ScopedApiStateForTesting {
    public:
-    explicit ScopedApiStateForTesting(absl::optional<ApiState>);
+    explicit ScopedApiStateForTesting(std::optional<ApiState>);
     ~ScopedApiStateForTesting();
 
     ScopedApiStateForTesting(const ScopedApiStateForTesting&) = delete;
@@ -46,11 +46,11 @@ class CONTENT_EXPORT AttributionOsLevelManager {
     ScopedApiStateForTesting& operator=(ScopedApiStateForTesting&&) = delete;
 
    private:
-    const absl::optional<ApiState> previous_;
+    const std::optional<ApiState> previous_;
   };
 
   static ApiState GetApiState();
-  static void SetApiState(absl::optional<ApiState>);
+  static void SetApiState(std::optional<ApiState>);
 
   virtual ~AttributionOsLevelManager() = default;
 

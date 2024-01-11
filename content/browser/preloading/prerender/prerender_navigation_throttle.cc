@@ -329,7 +329,7 @@ PrerenderNavigationThrottle::WillProcessResponse() {
     return CANCEL;
   }
 
-  absl::optional<PrerenderFinalStatus> cancel_reason;
+  std::optional<PrerenderFinalStatus> cancel_reason;
 
   // TODO(crbug.com/1318739): Delay until activation instead of cancellation.
   if (navigation_handle()->IsDownload()) {

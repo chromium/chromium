@@ -5,9 +5,9 @@
 #include "content/public/browser/identity_request_dialog_controller.h"
 
 #include <memory>
+#include <optional>
 
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -57,7 +57,7 @@ void IdentityRequestDialogController::SetIsInterceptionEnabled(bool enabled) {
 
 void IdentityRequestDialogController::ShowAccountsDialog(
     const std::string& top_frame_for_display,
-    const absl::optional<std::string>& iframe_for_display,
+    const std::optional<std::string>& iframe_for_display,
     const std::vector<IdentityProviderData>& identity_provider_data,
     IdentityRequestAccount::SignInMode sign_in_mode,
     bool show_auto_reauthn_checkbox,
@@ -71,7 +71,7 @@ void IdentityRequestDialogController::ShowAccountsDialog(
 
 void IdentityRequestDialogController::ShowFailureDialog(
     const std::string& top_frame_for_display,
-    const absl::optional<std::string>& iframe_for_display,
+    const std::optional<std::string>& iframe_for_display,
     const std::string& idp_for_display,
     const blink::mojom::RpContext& rp_context,
     const IdentityProviderMetadata& idp_metadata,
@@ -84,11 +84,11 @@ void IdentityRequestDialogController::ShowFailureDialog(
 
 void IdentityRequestDialogController::ShowErrorDialog(
     const std::string& top_frame_for_display,
-    const absl::optional<std::string>& iframe_for_display,
+    const std::optional<std::string>& iframe_for_display,
     const std::string& idp_for_display,
     const blink::mojom::RpContext& rp_context,
     const IdentityProviderMetadata& idp_metadata,
-    const absl::optional<IdentityCredentialTokenError>& error,
+    const std::optional<IdentityCredentialTokenError>& error,
     DismissCallback dismiss_callback,
     MoreDetailsCallback more_details_callback) {
   if (!is_interception_enabled_) {
@@ -100,9 +100,9 @@ std::string IdentityRequestDialogController::GetTitle() const {
   return std::string();
 }
 
-absl::optional<std::string> IdentityRequestDialogController::GetSubtitle()
+std::optional<std::string> IdentityRequestDialogController::GetSubtitle()
     const {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void IdentityRequestDialogController::ShowIdpSigninFailureDialog(

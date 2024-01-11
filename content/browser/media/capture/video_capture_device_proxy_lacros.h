@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_MEDIA_CAPTURE_VIDEO_CAPTURE_DEVICE_PROXY_LACROS_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
@@ -25,7 +26,6 @@
 #include "services/device/public/mojom/wake_lock.mojom.h"
 #include "services/video_capture/lacros/video_frame_handler_proxy_lacros.h"
 #include "services/viz/public/cpp/compositing/video_capture_target_mojom_traits.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -97,7 +97,7 @@ class CONTENT_EXPORT VideoCaptureDeviceProxyLacros
 
   // Set when OnFatalError() is called. This prevents any future
   // AllocateAndStartWithReceiver() calls from succeeding.
-  absl::optional<std::string> fatal_error_message_;
+  std::optional<std::string> fatal_error_message_;
 
   // Note that because we do not run on the main thread and because we want to
   // set a disconnect handler on the screen manager we must bind our own remote

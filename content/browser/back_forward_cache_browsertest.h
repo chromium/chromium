@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_BACK_FORWARD_CACHE_BROWSERTEST_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
@@ -23,7 +24,6 @@
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom-blink.h"
 
 namespace content {
@@ -141,18 +141,18 @@ class BackForwardCacheBrowserTest
 
   ReasonsMatcher MatchesNotRestoredReasons(
       const testing::Matcher<blink::mojom::BFCacheBlocked>& blocked,
-      const absl::optional<testing::Matcher<std::string>>& id,
-      const absl::optional<testing::Matcher<std::string>>& name,
-      const absl::optional<testing::Matcher<std::string>>& src,
-      const absl::optional<SameOriginMatcher>& same_origin_details);
+      const std::optional<testing::Matcher<std::string>>& id,
+      const std::optional<testing::Matcher<std::string>>& name,
+      const std::optional<testing::Matcher<std::string>>& src,
+      const std::optional<SameOriginMatcher>& same_origin_details);
   SameOriginMatcher MatchesSameOriginDetails(
       const testing::Matcher<std::string>& url,
       const std::vector<testing::Matcher<std::string>>& reasons,
       const std::vector<ReasonsMatcher>& children);
 
   BlockingDetailsMatcher MatchesBlockingDetails(
-      const absl::optional<testing::Matcher<std::string>>& url,
-      const absl::optional<testing::Matcher<std::string>>& function_name,
+      const std::optional<testing::Matcher<std::string>>& url,
+      const std::optional<testing::Matcher<std::string>>& function_name,
       const testing::Matcher<uint64_t>& line,
       const testing::Matcher<uint64_t>& column);
 

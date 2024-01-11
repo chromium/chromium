@@ -50,7 +50,7 @@ TestFencedFrameURLMappingResultObserver::
     ~TestFencedFrameURLMappingResultObserver() = default;
 
 void TestFencedFrameURLMappingResultObserver::OnFencedFrameURLMappingComplete(
-    const absl::optional<FencedFrameProperties>& properties) {
+    const std::optional<FencedFrameProperties>& properties) {
   mapping_complete_observed_ = true;
   observed_fenced_frame_properties_ = properties;
 }

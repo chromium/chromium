@@ -492,9 +492,9 @@ class CookiesBrowsingDataRemoverImplBrowserTest
   bool SetCookie(
       const GURL& url,
       const std::string& cookie_line,
-      const absl::optional<net::CookiePartitionKey>& cookie_partition_key) {
+      const std::optional<net::CookiePartitionKey>& cookie_partition_key) {
     auto cookie_obj = net::CanonicalCookie::Create(
-        url, cookie_line, base::Time::Now(), /*server_time=*/absl::nullopt,
+        url, cookie_line, base::Time::Now(), /*server_time=*/std::nullopt,
         cookie_partition_key);
 
     base::test::TestFuture<net::CookieAccessResult> future;
@@ -518,12 +518,12 @@ class CookiesBrowsingDataRemoverImplBrowserTest
 IN_PROC_BROWSER_TEST_F(CookiesBrowsingDataRemoverImplBrowserTest,
                        ClearsAllCookiesByDefault) {
   // Set unpartitioned cookies.
-  ASSERT_TRUE(SetCookie(GURL("http://a.com"), "A=0", absl::nullopt));
+  ASSERT_TRUE(SetCookie(GURL("http://a.com"), "A=0", std::nullopt));
   ASSERT_TRUE(SetCookie(GURL("https://a.com"), "B=1; secure; samesite=none",
-                        absl::nullopt));
+                        std::nullopt));
   ASSERT_TRUE(SetCookie(GURL("https://b.com"),
                         "C=2; secure; samesite=none; max-age=10000",
-                        absl::nullopt));
+                        std::nullopt));
   ASSERT_EQ(3u, GetAllCookies().size());
 
   // Set partitioned cookies.
@@ -552,7 +552,7 @@ IN_PROC_BROWSER_TEST_F(CookiesBrowsingDataRemoverImplBrowserTest,
   // Cookies set by a.com, should be removed.
   // partition_key: null, host_key: a.com
   ASSERT_TRUE(SetCookie(GURL("https://a.com"), "A=0; secure; partitioned",
-                        /*cookie_partition_key=*/absl::nullopt));
+                        /*cookie_partition_key=*/std::nullopt));
   // partition_key: a.com, host_key: a.com
   ASSERT_TRUE(SetCookie(
       GURL("https://a.com"), "B=1; secure; partitioned",
@@ -565,7 +565,7 @@ IN_PROC_BROWSER_TEST_F(CookiesBrowsingDataRemoverImplBrowserTest,
   // Cookies set by b.com, should not be removed.
   // partition_key: null, host_key: b.com
   ASSERT_TRUE(SetCookie(GURL("https://b.com"), "D=3; secure; partitioned",
-                        /*cookie_partition_key=*/absl::nullopt));
+                        /*cookie_partition_key=*/std::nullopt));
   // partition_key: a.com, host_key: b.com
   ASSERT_TRUE(SetCookie(
       GURL("https://b.com"), "E=4; secure; partitioned",
@@ -594,7 +594,7 @@ IN_PROC_BROWSER_TEST_F(CookiesBrowsingDataRemoverImplBrowserTest,
 IN_PROC_BROWSER_TEST_F(CookiesBrowsingDataRemoverImplBrowserTest,
                        ClearCookiesWithEmptyFilter) {
   ASSERT_TRUE(SetCookie(GURL("https://a.com"), "A=0; secure",
-                        /*cookie_partition_key=*/absl::nullopt));
+                        /*cookie_partition_key=*/std::nullopt));
   ASSERT_EQ(1u, GetAllCookies().size());
 
   std::unique_ptr<BrowsingDataFilterBuilder> builder(
@@ -616,7 +616,7 @@ IN_PROC_BROWSER_TEST_F(CookiesBrowsingDataRemoverImplBrowserTest,
   // Unpartitioned cookie should not be removed when third-party cookie blocking
   // applies to the request that sent Clear-Site-Data.
   ASSERT_TRUE(SetCookie(GURL("https://a.com"), "A=0; secure;",
-                        /*cookie_partition_key=*/absl::nullopt));
+                        /*cookie_partition_key=*/std::nullopt));
   // Partitioned cookies should still be removed.
   ASSERT_TRUE(SetCookie(
       GURL("https://a.com"), "B=1; secure; partitioned",

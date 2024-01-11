@@ -85,7 +85,7 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
       DeprecatedReplaceInURNCallback callback) override;
   void GetInterestGroupAdAuctionData(
       const url::Origin& seller,
-      const absl::optional<url::Origin>& coordinator,
+      const std::optional<url::Origin>& coordinator,
       GetInterestGroupAdAuctionDataCallback callback) override;
   void CreateAdRequest(blink::mojom::AdRequestConfigPtr config,
                        CreateAdRequestCallback callback) override;
@@ -105,7 +105,7 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   RenderFrameHostImpl* GetFrame() override;
   scoped_refptr<SiteInstance> GetFrameSiteInstance() override;
   network::mojom::ClientSecurityStatePtr GetClientSecurityState() override;
-  absl::optional<std::string> GetCookieDeprecationLabel() override;
+  std::optional<std::string> GetCookieDeprecationLabel() override;
 
   using DocumentService::origin;
   using DocumentService::render_frame_host;
@@ -124,7 +124,7 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
     BiddingAndAuctionData data;
     base::Uuid request_id;
     url::Origin seller;
-    absl::optional<url::Origin> coordinator;
+    std::optional<url::Origin> coordinator;
     GetInterestGroupAdAuctionDataCallback callback;
   };
 
@@ -158,9 +158,9 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
       const base::WeakPtr<PageImpl> page_impl,
       AuctionRunner* auction,
       bool aborted_by_script,
-      absl::optional<blink::InterestGroupKey> winning_group_key,
-      absl::optional<blink::AdSize> requested_ad_size,
-      absl::optional<blink::AdDescriptor> ad_descriptor,
+      std::optional<blink::InterestGroupKey> winning_group_key,
+      std::optional<blink::AdSize> requested_ad_size,
+      std::optional<blink::AdDescriptor> ad_descriptor,
       std::vector<blink::AdDescriptor> ad_component_descriptors,
       std::vector<std::string> errors,
       std::unique_ptr<InterestGroupAuctionReporter> reporter);

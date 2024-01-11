@@ -36,7 +36,7 @@ class AudioFocusDelegateAndroid : public AudioFocusDelegate {
   AudioFocusResult RequestAudioFocus(
       media_session::mojom::AudioFocusType audio_focus_type) override;
   void AbandonAudioFocus() override;
-  absl::optional<media_session::mojom::AudioFocusType> GetCurrentFocusType()
+  std::optional<media_session::mojom::AudioFocusType> GetCurrentFocusType()
       const override;
   const base::UnguessableToken& request_id() const override;
   void ReleaseRequestId() override {}

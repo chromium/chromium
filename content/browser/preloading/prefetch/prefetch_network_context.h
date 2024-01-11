@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_NETWORK_CONTEXT_H_
 #define CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_NETWORK_CONTEXT_H_
 
+#include <optional>
+
 #include "base/memory/scoped_refptr.h"
 #include "content/browser/preloading/prefetch/prefetch_type.h"
 #include "content/common/content_export.h"
@@ -16,7 +18,6 @@
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 
 namespace content {
@@ -60,7 +61,7 @@ class CONTENT_EXPORT PrefetchNetworkContext {
       BrowserContext* browser_context,
       network::mojom::NetworkContext* network_context,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> pending_receiver,
-      absl::optional<net::IsolationInfo> isolation_info);
+      std::optional<net::IsolationInfo> isolation_info);
 
   // Bind |network_context_| to a new network context and configure it to use
   // the prefetch proxy. Also set up |url_loader_factory_| as a new URL loader

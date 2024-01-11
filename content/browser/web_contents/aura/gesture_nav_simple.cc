@@ -603,11 +603,11 @@ void GestureNavSimple::OnOverscrollModeChange(OverscrollMode old_mode,
   parent->StackAtTop(affordance_->root_layer());
 }
 
-absl::optional<float> GestureNavSimple::GetMaxOverscrollDelta() const {
+std::optional<float> GestureNavSimple::GetMaxOverscrollDelta() const {
   if (affordance_) {
     return max_delta_;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace content

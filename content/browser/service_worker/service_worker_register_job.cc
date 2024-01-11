@@ -643,7 +643,7 @@ void ServiceWorkerRegisterJob::UpdateAndContinue() {
   int64_t script_resource_id =
       version_to_update->script_cache_map()->LookupResourceId(script_url_);
   DCHECK_NE(script_resource_id, blink::mojom::kInvalidServiceWorkerResourceId);
-  const absl::optional<std::string> script_sha256_chekcsum =
+  const std::optional<std::string> script_sha256_chekcsum =
       version_to_update->script_cache_map()->LookupSha256Checksum(script_url_);
 
   update_checker_ = std::make_unique<ServiceWorkerUpdateChecker>(

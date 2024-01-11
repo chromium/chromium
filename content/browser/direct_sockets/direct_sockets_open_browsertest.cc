@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <algorithm>
+#include <optional>
 #include <vector>
 
 #include "base/command_line.h"
@@ -39,7 +40,6 @@
 #include "services/network/test/test_network_context.h"
 #include "services/network/test/test_udp_socket.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/direct_sockets/direct_sockets.mojom.h"
 #include "url/gurl.h"
 
@@ -93,7 +93,7 @@ class MockOpenNetworkContext : public content::test::MockNetworkContext {
 
   // network::TestNetworkContext:
   void CreateTCPConnectedSocket(
-      const absl::optional<net::IPEndPoint>& local_addr,
+      const std::optional<net::IPEndPoint>& local_addr,
       const net::AddressList& remote_addr_list,
       network::mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
@@ -522,12 +522,12 @@ class MockOpenNetworkContextWithDnsQueryType : public MockOpenNetworkContext {
   }
 
   void set_expected_dns_query_type(
-      absl::optional<net::DnsQueryType> dns_query_type) {
+      std::optional<net::DnsQueryType> dns_query_type) {
     expected_dns_query_type_ = std::move(dns_query_type);
   }
 
  private:
-  absl::optional<net::DnsQueryType> expected_dns_query_type_;
+  std::optional<net::DnsQueryType> expected_dns_query_type_;
 };
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, Open_DnsQueryType) {

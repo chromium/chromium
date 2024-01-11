@@ -37,7 +37,7 @@ class FakeAudioFocusDelegate : public content::AudioFocusDelegate {
     return audio_focus_result_;
   }
   void AbandonAudioFocus() override { audio_focus_type_.reset(); }
-  absl::optional<media_session::mojom::AudioFocusType> GetCurrentFocusType()
+  std::optional<media_session::mojom::AudioFocusType> GetCurrentFocusType()
       const override {
     return audio_focus_type_;
   }
@@ -49,7 +49,7 @@ class FakeAudioFocusDelegate : public content::AudioFocusDelegate {
   void ReleaseRequestId() override {}
 
  private:
-  absl::optional<media_session::mojom::AudioFocusType> audio_focus_type_;
+  std::optional<media_session::mojom::AudioFocusType> audio_focus_type_;
   AudioFocusResult audio_focus_result_ = AudioFocusResult::kSuccess;
 };
 

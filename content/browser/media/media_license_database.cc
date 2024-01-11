@@ -49,13 +49,13 @@ MediaLicenseStorageHostOpenError MediaLicenseDatabase::OpenFile(
   return OpenDatabase();
 }
 
-absl::optional<std::vector<uint8_t>> MediaLicenseDatabase::ReadFile(
+std::optional<std::vector<uint8_t>> MediaLicenseDatabase::ReadFile(
     const media::CdmType& cdm_type,
     const std::string& file_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (OpenDatabase() != MediaLicenseStorageHostOpenError::kOk) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   static constexpr char kSelectSql[] =
@@ -79,7 +79,7 @@ absl::optional<std::vector<uint8_t>> MediaLicenseDatabase::ReadFile(
   std::vector<uint8_t> data;
   if (!statement.ColumnBlobAsVector(0, &data)) {
     DVLOG(1) << "Error reading media license data.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   last_operation_.reset();

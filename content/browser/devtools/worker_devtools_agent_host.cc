@@ -155,11 +155,11 @@ DedicatedWorkerHost* WorkerDevToolsAgentHost::GetDedicatedWorkerHost() {
       blink::DedicatedWorkerToken(devtools_worker_token_));
 }
 
-absl::optional<network::CrossOriginEmbedderPolicy>
+std::optional<network::CrossOriginEmbedderPolicy>
 WorkerDevToolsAgentHost::cross_origin_embedder_policy(const std::string&) {
   DedicatedWorkerHost* host = GetDedicatedWorkerHost();
   if (!host) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return host->cross_origin_embedder_policy();
 }

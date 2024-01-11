@@ -24,7 +24,7 @@ using PermissionManager = ::content::CapturedSurfaceControlPermissionManager;
 using PermissionResult =
     ::content::CapturedSurfaceControlPermissionManager::PermissionResult;
 using GetZoomLevelReplyCallback =
-    base::OnceCallback<void(absl::optional<int> zoom_level,
+    base::OnceCallback<void(std::optional<int> zoom_level,
                             blink::mojom::CapturedSurfaceControlResult result)>;
 
 // Deliver a synthetic MouseWheel action on the tab whose ID is
@@ -87,7 +87,7 @@ CapturedSurfaceControlResult DoSetZoomLevel(WebContentsMediaCaptureId wc_id,
 // `WebContentsMediaCaptureId`. Note however that the WebContents in question
 // might have been asynchronously destroyed in the intervening time, which is
 // one possible reason for failure.
-std::pair<absl::optional<int>, CapturedSurfaceControlResult> DoGetZoomLevel(
+std::pair<std::optional<int>, CapturedSurfaceControlResult> DoGetZoomLevel(
     WebContentsMediaCaptureId wc_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(!wc_id.is_null());
@@ -97,7 +97,7 @@ std::pair<absl::optional<int>, CapturedSurfaceControlResult> DoGetZoomLevel(
           wc_id.render_process_id, wc_id.main_render_frame_id));
   if (!captured_wc) {
     return std::make_pair(
-        absl::nullopt,
+        std::nullopt,
         CapturedSurfaceControlResult::kCapturedSurfaceNotFoundError);
   }
 
@@ -203,7 +203,7 @@ void CapturedSurfaceController::GetZoomLevel(
 
   if (captured_wc_id_.is_null()) {
     std::move(reply_callback)
-        .Run(absl::nullopt,
+        .Run(std::nullopt,
              CapturedSurfaceControlResult::kCapturedSurfaceNotFoundError);
     return;
   }
@@ -212,7 +212,7 @@ void CapturedSurfaceController::GetZoomLevel(
       FROM_HERE, base::BindOnce(&DoGetZoomLevel, captured_wc_id_),
       base::BindOnce(
           [](GetZoomLevelReplyCallback reply_callback,
-             std::pair<absl::optional<int>, CapturedSurfaceControlResult>
+             std::pair<std::optional<int>, CapturedSurfaceControlResult>
                  result) {
             std::move(reply_callback).Run(result.first, result.second);
           },

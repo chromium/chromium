@@ -38,11 +38,11 @@ bool MockInputRouter::HasPendingEvents() const {
   return false;
 }
 
-absl::optional<cc::TouchAction> MockInputRouter::AllowedTouchAction() {
+std::optional<cc::TouchAction> MockInputRouter::AllowedTouchAction() {
   return cc::TouchAction::kAuto;
 }
 
-absl::optional<cc::TouchAction> MockInputRouter::ActiveTouchAction() {
+std::optional<cc::TouchAction> MockInputRouter::ActiveTouchAction() {
   return cc::TouchAction::kAuto;
 }
 

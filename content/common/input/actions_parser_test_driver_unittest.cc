@@ -13,7 +13,7 @@
 namespace content {
 
 TEST(ActionsParserTestDriverTest, ParseMousePointerActionSequence) {
-  absl::optional<base::Value> value = base::JSONReader::Read(
+  std::optional<base::Value> value = base::JSONReader::Read(
       R"JSON( [{"type": "pointer",
                 "actions": [{"type": "pointerDown", "x": 2, "y": 3,
                              "button": 0},
@@ -40,7 +40,7 @@ TEST(ActionsParserTestDriverTest, ParseMousePointerActionSequence) {
 }
 
 TEST(ActionsParserTestDriverTest, ParseTouchPointerActionSequence) {
-  absl::optional<base::Value> value = base::JSONReader::Read(
+  std::optional<base::Value> value = base::JSONReader::Read(
       R"JSON( [{"type": "pointer",
                 "actions": [{"type": "pointerDown", "x": 3, "y": 5},
                             {"type": "pointerMove", "x": 30, "y": 30},
@@ -73,7 +73,7 @@ TEST(ActionsParserTestDriverTest, ParseTouchPointerActionSequence) {
 }
 
 TEST(ActionsParserTestDriverTest, ParseTouchPointerActionSequenceWithPause) {
-  absl::optional<base::Value> value = base::JSONReader::Read(
+  std::optional<base::Value> value = base::JSONReader::Read(
       R"JSON( [{"type": "pointer",
                 "actions": [{"type": "pointerDown", "x": 3, "y": 5},
                             {"type": "pointerMove", "x": 30, "y": 30},
@@ -122,7 +122,7 @@ TEST(ActionsParserTestDriverTest, ParseTouchPointerActionSequenceWithPause) {
 }
 
 TEST(ActionsParserTestDriverTest, ParseTouchPointerActionSequenceIdNotString) {
-  absl::optional<base::Value> value = base::JSONReader::Read(
+  std::optional<base::Value> value = base::JSONReader::Read(
       R"JSON( [{"type": "pointer",
                 "actions": [{"type": "pointerDown", "x": 0, "y": 0},
                             {"type": "pointerMove", "x": 30, "y": 30},
@@ -143,7 +143,7 @@ TEST(ActionsParserTestDriverTest, ParseTouchPointerActionSequenceIdNotString) {
 }
 
 TEST(ActionsParserTestDriverTest, ParseTouchPointerActionSequenceDuplicateId) {
-  absl::optional<base::Value> value = base::JSONReader::Read(
+  std::optional<base::Value> value = base::JSONReader::Read(
       R"JSON( [{"type": "pointer",
                 "actions": [{"type": "pointerDown", "x": 0, "y": 0},
                             {"type": "pointerMove", "x": 30, "y": 30},
@@ -163,7 +163,7 @@ TEST(ActionsParserTestDriverTest, ParseTouchPointerActionSequenceDuplicateId) {
 }
 
 TEST(ActionsParserTestDriverTest, ParseMousePointerActionSequenceNoParameters) {
-  absl::optional<base::Value> value = base::JSONReader::Read(
+  std::optional<base::Value> value = base::JSONReader::Read(
       R"JSON( [{"type": "pointer",
                 "actions": [{"type": "pointerDown", "x": 2, "y": 3,
                              "button": 0},
@@ -190,7 +190,7 @@ TEST(ActionsParserTestDriverTest, ParseMousePointerActionSequenceNoParameters) {
 
 TEST(ActionsParserTestDriverTest,
      ParseMousePointerActionSequenceNoPointerType) {
-  absl::optional<base::Value> value = base::JSONReader::Read(
+  std::optional<base::Value> value = base::JSONReader::Read(
       R"JSON( [{"type": "pointer",
                 "actions": [{"type": "pointerDown", "x": 2, "y": 3,
                              "button": 0},
@@ -206,7 +206,7 @@ TEST(ActionsParserTestDriverTest,
 }
 
 TEST(ActionsParserTestDriverTest, ParseMousePointerActionSequenceNoAction) {
-  absl::optional<base::Value> value = base::JSONReader::Read(
+  std::optional<base::Value> value = base::JSONReader::Read(
       R"JSON( [{"type": "pointer", "parameters": {"pointerType": "mouse"},
                 "id": "pointer1"}] )JSON");
 
@@ -218,7 +218,7 @@ TEST(ActionsParserTestDriverTest, ParseMousePointerActionSequenceNoAction) {
 
 TEST(ActionsParserTestDriverTest,
      ParseMousePointerActionSequenceUnsupportedButton) {
-  absl::optional<base::Value> value = base::JSONReader::Read(
+  std::optional<base::Value> value = base::JSONReader::Read(
       R"JSON( [{"type": "pointer",
                 "actions": [{"type": "pointerDown", "x": 2, "y": 3,
                              "button": -1},
@@ -235,7 +235,7 @@ TEST(ActionsParserTestDriverTest,
 
 TEST(ActionsParserTestDriverTest,
      ParseTouchPointerActionSequenceMultiActionsType) {
-  absl::optional<base::Value> value = base::JSONReader::Read(
+  std::optional<base::Value> value = base::JSONReader::Read(
       R"JSON( [{"type": "key",
                 "actions": [{"type":"keyDown","value":"p"},
                             {"type":"keyUp","value":"p"},
@@ -251,7 +251,7 @@ TEST(ActionsParserTestDriverTest,
 
 TEST(ActionsParserTestDriverTest,
      ParseTouchPointerActionSequenceMultiPointerType) {
-  absl::optional<base::Value> value = base::JSONReader::Read(
+  std::optional<base::Value> value = base::JSONReader::Read(
       R"JSON( [{"type": "pointer",
                 "actions": [{"type": "pointerDown", "x": 3, "y": 5},
                             {"type": "pointerMove", "x": 30, "y": 30},
@@ -272,7 +272,7 @@ TEST(ActionsParserTestDriverTest,
 }
 
 TEST(ActionsParserTestDriverTest, ParseTouchPointerActionSequenceMultiMouse) {
-  absl::optional<base::Value> value = base::JSONReader::Read(
+  std::optional<base::Value> value = base::JSONReader::Read(
       R"JSON( [{"type": "pointer",
                 "actions": [{"type": "pointerDown", "x": 3, "y": 5},
                             {"type": "pointerMove", "x": 30, "y": 30},
@@ -293,7 +293,7 @@ TEST(ActionsParserTestDriverTest, ParseTouchPointerActionSequenceMultiMouse) {
 }
 
 TEST(ActionsParserTestDriverTest, ParseWheelScrollAction) {
-  absl::optional<base::Value> value = base::JSONReader::Read(
+  std::optional<base::Value> value = base::JSONReader::Read(
       R"JSON( [{"type": "wheel",
                 "actions": [{"type": "scroll", "x": 10, "y": 10,
                              "deltaX": 30, "deltaY": 50}]}] )JSON");
@@ -316,7 +316,7 @@ TEST(ActionsParserTestDriverTest, ParseWheelScrollAction) {
 }
 
 TEST(ActionsParserTestDriverTest, ParseWheelScrollActionNoSourceType) {
-  absl::optional<base::Value> value = base::JSONReader::Read(
+  std::optional<base::Value> value = base::JSONReader::Read(
       R"JSON( [{
             "actions": [{"type": "scroll", "x": 10, "y": 10,
                          "deltaX": 30, "deltaY": 50}]}] )JSON");
@@ -328,7 +328,7 @@ TEST(ActionsParserTestDriverTest, ParseWheelScrollActionNoSourceType) {
 }
 
 TEST(ActionsParserTestDriverTest, ParseWheelScrollActionInvalidDelta) {
-  absl::optional<base::Value> value = base::JSONReader::Read(
+  std::optional<base::Value> value = base::JSONReader::Read(
       R"JSON( [{"type": "wheel",
                 "actions": [{"type": "scroll", "x": 10, "y": 10,
                              "deltaX": 30.2, "deltaY": 50}]}] )JSON");
@@ -340,7 +340,7 @@ TEST(ActionsParserTestDriverTest, ParseWheelScrollActionInvalidDelta) {
 }
 
 TEST(ActionsParserTestDriverTest, ParseWheelScrollNoActionType) {
-  absl::optional<base::Value> value = base::JSONReader::Read(
+  std::optional<base::Value> value = base::JSONReader::Read(
       R"JSON( [{"type": "wheel",
                 "actions": [{"x": 10, "y": 10,
                              "deltaX": 30, "deltaY": 50}]}] )JSON");
@@ -352,7 +352,7 @@ TEST(ActionsParserTestDriverTest, ParseWheelScrollNoActionType) {
 }
 
 TEST(ActionsParserTestDriverTest, ParseWheelScrollInvalidActionType) {
-  absl::optional<base::Value> value = base::JSONReader::Read(
+  std::optional<base::Value> value = base::JSONReader::Read(
       R"JSON( [{"type": "wheel",
                 "actions": [{"type": "zoom", "x": 10, "y": 10,
                              "deltaX": 30, "deltaY": 30}]}] )JSON");
@@ -366,7 +366,7 @@ TEST(ActionsParserTestDriverTest, ParseWheelScrollInvalidActionType) {
 }
 
 TEST(ActionsParserTestDriverTest, ParseWheelScrollInvalidActionList) {
-  absl::optional<base::Value> value = base::JSONReader::Read(
+  std::optional<base::Value> value = base::JSONReader::Read(
       R"JSON( [{"type": "wheel",
                 "actions": [{"type": "scroll", "x": 10, "y": 10,
                              "deltaX": 30, "deltaY": 50},
@@ -382,7 +382,7 @@ TEST(ActionsParserTestDriverTest, ParseWheelScrollInvalidActionList) {
 }
 
 TEST(ActionsParserTestDriverTest, ParseMultiInputSource) {
-  absl::optional<base::Value> value = base::JSONReader::Read(
+  std::optional<base::Value> value = base::JSONReader::Read(
       R"JSON( [{"type": "pointer",
                 "actions": [{"type": "pointerDown", "x": 3, "y": 5},
                             {"type": "pointerMove", "x": 30, "y": 30},
@@ -406,7 +406,7 @@ TEST(ActionsParserTestDriverTest, ParseMultiInputSource) {
 }
 
 TEST(ActionsParserTestDriverTest, ParseActionSequenceInvalidInputSourceType) {
-  absl::optional<base::Value> value = base::JSONReader::Read(
+  std::optional<base::Value> value = base::JSONReader::Read(
       R"JSON( [{"type": "touchpad",
                 "actions": [{"type": "scroll", "x": 10, "y": 10,
                              "deltaX": 30, "deltaY": 30}]}] )JSON");
@@ -418,7 +418,7 @@ TEST(ActionsParserTestDriverTest, ParseActionSequenceInvalidInputSourceType) {
 }
 
 TEST(ActionsParserTestDriverTest, ParseActionSequenceWithoutY) {
-  absl::optional<base::Value> value = base::JSONReader::Read(
+  std::optional<base::Value> value = base::JSONReader::Read(
       R"JSON( [{"type": "pointer",
                 "actions": [{"type": "pointerDown", "x": 3},
                             {"type": "pointerMove", "x": 30, "y": 30},
@@ -433,7 +433,7 @@ TEST(ActionsParserTestDriverTest, ParseActionSequenceWithoutY) {
 }
 
 TEST(ActionsParserTestDriverTest, ParseActionSequencePenProperties) {
-  absl::optional<base::Value> value = base::JSONReader::Read(
+  std::optional<base::Value> value = base::JSONReader::Read(
       R"JSON( [{"type": "pointer",
                 "actions": [{"type": "pointerMove", "x": 10, "y": 5},
                             {"type": "pointerDown", "x": 10, "y": 5,
@@ -463,7 +463,7 @@ TEST(ActionsParserTestDriverTest, ParseActionSequencePenProperties) {
 }
 
 TEST(ActionsParserTestDriverTest, ParseActionSequenceInvalidForce) {
-  absl::optional<base::Value> value = base::JSONReader::Read(
+  std::optional<base::Value> value = base::JSONReader::Read(
       R"JSON( [{"type": "pointer",
                 "actions": [{"type": "pointerMove", "x": 10, "y": 10},
                             {"type": "pointerDown", "x": 10, "y": 10,
@@ -482,7 +482,7 @@ TEST(ActionsParserTestDriverTest, ParseActionSequenceInvalidForce) {
 }
 
 TEST(ActionsParserTestDriverTest, ParseActionSequenceInvalidTiltX) {
-  absl::optional<base::Value> value = base::JSONReader::Read(
+  std::optional<base::Value> value = base::JSONReader::Read(
       R"JSON( [{"type": "pointer",
                 "actions": [{"type": "pointerMove", "x": 10, "y": 10},
                             {"type": "pointerDown", "x": 10, "y": 10,

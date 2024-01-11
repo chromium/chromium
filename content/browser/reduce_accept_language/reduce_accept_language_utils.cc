@@ -49,18 +49,18 @@ ReduceAcceptLanguageUtils::ReduceAcceptLanguageUtils(
 ReduceAcceptLanguageUtils::~ReduceAcceptLanguageUtils() = default;
 
 // static
-absl::optional<ReduceAcceptLanguageUtils> ReduceAcceptLanguageUtils::Create(
+std::optional<ReduceAcceptLanguageUtils> ReduceAcceptLanguageUtils::Create(
     BrowserContext* browser_context) {
   DCHECK(browser_context);
   if (!base::FeatureList::IsEnabled(network::features::kReduceAcceptLanguage) &&
       !base::FeatureList::IsEnabled(
           network::features::kReduceAcceptLanguageOriginTrial))
-    return absl::nullopt;
+    return std::nullopt;
   ReduceAcceptLanguageControllerDelegate* reduce_accept_lang_delegate =
       browser_context->GetReduceAcceptLanguageControllerDelegate();
   if (!reduce_accept_lang_delegate)
-    return absl::nullopt;
-  return absl::make_optional<ReduceAcceptLanguageUtils>(
+    return std::nullopt;
+  return std::make_optional<ReduceAcceptLanguageUtils>(
       *reduce_accept_lang_delegate);
 }
 
@@ -101,7 +101,7 @@ bool ReduceAcceptLanguageUtils::IsReduceAcceptLanguageEnabledForOrigin(
       kReduceAcceptLanguageOriginTrial, base::Time::Now());
 }
 
-absl::optional<std::string>
+std::optional<std::string>
 ReduceAcceptLanguageUtils::GetFirstMatchPreferredLanguage(
     const std::vector<std::string>& preferred_languages,
     const std::vector<std::string>& available_languages) {
@@ -117,17 +117,17 @@ ReduceAcceptLanguageUtils::GetFirstMatchPreferredLanguage(
   }
   // If the site's available languages don't match any of the user's preferred
   // languages, then browser won't do anything further.
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<std::string>
+std::optional<std::string>
 ReduceAcceptLanguageUtils::AddNavigationRequestAcceptLanguageHeaders(
     const url::Origin& request_origin,
     FrameTreeNode* frame_tree_node,
     net::HttpRequestHeaders* headers) {
   DCHECK(headers);
 
-  absl::optional<std::string> reduced_accept_language =
+  std::optional<std::string> reduced_accept_language =
       LookupReducedAcceptLanguage(request_origin, frame_tree_node);
   if (reduced_accept_language) {
     headers->SetHeader(net::HttpRequestHeaders::kAcceptLanguage,
@@ -189,7 +189,7 @@ bool ReduceAcceptLanguageUtils::ReadAndPersistAcceptLanguageForNavigation(
   return persist_params.should_resend_request;
 }
 
-absl::optional<std::string>
+std::optional<std::string>
 ReduceAcceptLanguageUtils::LookupReducedAcceptLanguage(
     const url::Origin& request_origin,
     FrameTreeNode* frame_tree_node) {
@@ -200,16 +200,16 @@ ReduceAcceptLanguageUtils::LookupReducedAcceptLanguage(
        !base::FeatureList::IsEnabled(
            network::features::kReduceAcceptLanguageOriginTrial)) ||
       !OriginCanReduceAcceptLanguage(request_origin)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  const absl::optional<url::Origin>& origin_for_lookup =
+  const std::optional<url::Origin>& origin_for_lookup =
       GetOriginForLanguageLookup(request_origin, frame_tree_node);
 
-  const absl::optional<std::string>& persisted_language =
+  const std::optional<std::string>& persisted_language =
       origin_for_lookup
           ? delegate_->GetReducedLanguage(origin_for_lookup.value())
-          : absl::nullopt;
+          : std::nullopt;
 
   const std::vector<std::string>& user_accept_languages =
       delegate_->GetUserAcceptLanguages();
@@ -223,9 +223,9 @@ ReduceAcceptLanguageUtils::LookupReducedAcceptLanguage(
   if (!persisted_language) {
     return base::FeatureList::IsEnabled(
                network::features::kReduceAcceptLanguage)
-               ? absl::make_optional(
+               ? std::make_optional(
                      GetFirstUserAcceptLanguage(user_accept_languages))
-               : absl::nullopt;
+               : std::nullopt;
   }
 
   // Use the preferred language stored by the delegate if it matches any of the
@@ -247,7 +247,7 @@ ReduceAcceptLanguageUtils::LookupReducedAcceptLanguage(
   return GetFirstUserAcceptLanguage(user_accept_languages);
 }
 
-absl::optional<url::Origin>
+std::optional<url::Origin>
 ReduceAcceptLanguageUtils::GetOriginForLanguageLookup(
     const url::Origin& request_origin,
     FrameTreeNode* frame_tree_node) {
@@ -259,7 +259,7 @@ ReduceAcceptLanguageUtils::GetOriginForLanguageLookup(
         frame_tree_node->frame_tree().GetMainFrame()->GetOutermostMainFrame();
     return outermost_main_rfh->GetLastCommittedOrigin();
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void ReduceAcceptLanguageUtils::RemoveOriginTrialReducedAcceptLanguage(
@@ -322,7 +322,7 @@ ReduceAcceptLanguageUtils::GetLanguageToPersist(
     // If content-language doesn't match initial accept-language and the site
     // has available languages matching one of the the user's preferences, then
     // the browser should resend the request with the top matching language.
-    const absl::optional<std::string>& matched_language =
+    const std::optional<std::string>& matched_language =
         ReduceAcceptLanguageUtils::GetFirstMatchPreferredLanguage(
             preferred_languages, available_languages);
     if (matched_language) {

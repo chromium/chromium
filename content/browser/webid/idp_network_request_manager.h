@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_WEBID_IDP_NETWORK_REQUEST_MANAGER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -17,7 +18,6 @@
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -133,7 +133,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
     TokenResult(const TokenResult&);
 
     std::string token;
-    absl::optional<IdentityCredentialTokenError> error;
+    std::optional<IdentityCredentialTokenError> error;
   };
 
   // Error codes sent to the metrics endpoint.
@@ -230,8 +230,8 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   using ContinueOnCallback = base::OnceCallback<void(FetchStatus, const GURL&)>;
   using RecordErrorMetricsCallback =
       base::OnceCallback<void(FedCmTokenResponseType,
-                              absl::optional<FedCmErrorDialogType>,
-                              absl::optional<FedCmErrorUrlType>)>;
+                              std::optional<FedCmErrorDialogType>,
+                              std::optional<FedCmErrorUrlType>)>;
 
   static std::unique_ptr<IdpNetworkRequestManager> Create(
       RenderFrameHostImpl* host);
@@ -247,7 +247,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   IdpNetworkRequestManager& operator=(const IdpNetworkRequestManager&) = delete;
 
   // Computes the well-known URL from the identity provider URL.
-  static absl::optional<GURL> ComputeWellKnownUrl(const GURL& url);
+  static std::optional<GURL> ComputeWellKnownUrl(const GURL& url);
 
   // Fetch the well-known file. This is the /.well-known/web-identity file on
   // the eTLD+1 calculated from the provider URL, used to check that the
@@ -306,7 +306,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   // when the download result has been parsed.
   void DownloadJsonAndParse(
       std::unique_ptr<network::ResourceRequest> resource_request,
-      absl::optional<std::string> url_encoded_post_data,
+      std::optional<std::string> url_encoded_post_data,
       ParseJsonCallback parse_json_callback,
       size_t max_download_size,
       bool allow_http_error_results = false);
@@ -314,7 +314,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   // Starts download result using `url_loader`. Calls `download_callback` when
   // the download completes.
   void DownloadUrl(std::unique_ptr<network::ResourceRequest> resource_request,
-                   absl::optional<std::string> url_encoded_post_data,
+                   std::optional<std::string> url_encoded_post_data,
                    DownloadCallback download_callback,
                    size_t max_download_size,
                    bool allow_http_error_results = false);

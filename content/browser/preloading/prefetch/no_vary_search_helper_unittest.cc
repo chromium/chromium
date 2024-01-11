@@ -103,7 +103,7 @@ class NoVarySearchHelperTester final {
                          /*use_prefetch_proxy=*/true,
                          blink::mojom::SpeculationEagerness::kEager),
             blink::mojom::Referrer(),
-            /*no_vary_search_expected=*/absl::nullopt,
+            /*no_vary_search_expected=*/std::nullopt,
 
             /*prefetch_document_manager=*/nullptr);
 

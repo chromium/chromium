@@ -5,6 +5,8 @@
 #ifndef CONTENT_COMMON_INPUT_INPUT_ROUTER_H_
 #define CONTENT_COMMON_INPUT_INPUT_ROUTER_H_
 
+#include <optional>
+
 #include "base/functional/callback_forward.h"
 #include "base/task/sequenced_task_runner.h"
 #include "cc/input/touch_action.h"
@@ -14,7 +16,6 @@
 #include "content/common/input/passthrough_touch_event_queue.h"
 #include "content/public/common/input/native_web_keyboard_event.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom.h"
@@ -75,10 +76,10 @@ class InputRouter {
   virtual void SetDeviceScaleFactor(float device_scale_factor) = 0;
 
   // Return the currently allowed touch-action.
-  virtual absl::optional<cc::TouchAction> AllowedTouchAction() = 0;
+  virtual std::optional<cc::TouchAction> AllowedTouchAction() = 0;
 
   // Return the currently active touch-action.
-  virtual absl::optional<cc::TouchAction> ActiveTouchAction() = 0;
+  virtual std::optional<cc::TouchAction> ActiveTouchAction() = 0;
 
   virtual void SetForceEnableZoom(bool enabled) = 0;
 

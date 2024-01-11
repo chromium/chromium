@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -26,7 +27,6 @@
 #include "media/base/audio_parameters.h"
 #include "media/base/key_system_info.h"
 #include "media/base/supported_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/url_loader_throttle_provider.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/public/platform/websocket_handshake_throttle_provider.h"
@@ -412,7 +412,7 @@ class CONTENT_EXPORT ContentRendererClient {
   virtual void DidSetUserAgent(const std::string& user_agent);
 
   // Optionally returns audio renderer algorithm parameters.
-  virtual absl::optional<::media::AudioRendererAlgorithmParameters>
+  virtual std::optional<::media::AudioRendererAlgorithmParameters>
   GetAudioRendererAlgorithmParameters(
       ::media::AudioParameters audio_parameters);
 

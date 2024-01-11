@@ -5,13 +5,14 @@
 #ifndef CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_ORIGIN_PROBER_H_
 #define CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_ORIGIN_PROBER_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/preloading/prefetch/prefetch_probe_result.h"
 #include "content/common/content_export.h"
 #include "net/base/address_list.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -58,12 +59,11 @@ class CONTENT_EXPORT PrefetchOriginProber {
   // DNS probe, or start the TLS socket for a TLS probe. This is determined by
   // |also_do_tls_connect|. If the DNS resolution failed, |callback| is run with
   // failure.
-  void OnDNSResolved(
-      const GURL& url,
-      OnProbeResultCallback callback,
-      bool also_do_tls_connect,
-      int net_error,
-      const absl::optional<net::AddressList>& resolved_addresses);
+  void OnDNSResolved(const GURL& url,
+                     OnProbeResultCallback callback,
+                     bool also_do_tls_connect,
+                     int net_error,
+                     const std::optional<net::AddressList>& resolved_addresses);
 
   // Both DNS and TLS probes need to resolve DNS. This starts the TLS probe with
   // the |addresses| from the DNS resolution.

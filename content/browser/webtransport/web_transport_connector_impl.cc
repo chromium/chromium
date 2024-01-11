@@ -90,14 +90,14 @@ class InterceptingHandshakeClient final : public WebTransportHandshakeClient {
             /*raw_headers=*/""));
   }
   void OnHandshakeFailed(
-      const absl::optional<net::WebTransportError>& error) override {
+      const std::optional<net::WebTransportError>& error) override {
     if (tracker_) {
       tracker_->OnHandshakeFailed();
     }
 
     // Here we pass null because it is dangerous to pass the error details
     // to the initiator renderer.
-    remote_->OnHandshakeFailed(absl::nullopt);
+    remote_->OnHandshakeFailed(std::nullopt);
 
     if (RenderFrameHostImpl* frame = frame_.get()) {
       devtools_instrumentation::OnWebTransportHandshakeFailed(frame, url_,
@@ -204,7 +204,7 @@ void WebTransportConnectorImpl::OnWillCreateWebTransportCompleted(
         fingerprints,
     mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
         handshake_client,
-    absl::optional<network::mojom::WebTransportErrorPtr> error) {
+    std::optional<network::mojom::WebTransportErrorPtr> error) {
   DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
 
   RenderProcessHost* process = RenderProcessHost::FromID(process_id_);

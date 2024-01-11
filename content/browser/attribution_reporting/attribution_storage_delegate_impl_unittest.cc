@@ -8,6 +8,7 @@
 
 #include <cmath>
 #include <limits>
+#include <optional>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -24,7 +25,6 @@
 #include "content/browser/attribution_reporting/privacy_math.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 namespace {
@@ -84,7 +84,7 @@ TEST(AttributionStorageDelegateImplTest,
                                              source.source_time());
     ASSERT_TRUE(result.has_value());
     ASSERT_GT(result->rate(), 0);
-    ASSERT_EQ(result->response(), absl::nullopt);
+    ASSERT_EQ(result->response(), std::nullopt);
   }
 }
 
@@ -195,7 +195,7 @@ TEST(AttributionStorageDelegateImplTest,
   EXPECT_THAT(AttributionStorageDelegateImpl()
                   .GetNullAggregatableReports(
                       trigger, /*trigger_time=*/base::Time::Now(),
-                      /*attributed_source_time=*/absl::nullopt)
+                      /*attributed_source_time=*/std::nullopt)
                   .size(),
               Le(31u));
 
@@ -225,7 +225,7 @@ TEST(AttributionStorageDelegateImplTest,
   EXPECT_THAT(AttributionStorageDelegateImpl()
                   .GetNullAggregatableReports(
                       trigger, /*trigger_time=*/base::Time::Now(),
-                      /*attributed_source_time=*/absl::nullopt)
+                      /*attributed_source_time=*/std::nullopt)
                   .size(),
               Le(1u));
 
@@ -246,7 +246,7 @@ TEST(AttributionStorageDelegateImplTest,
 
   EXPECT_THAT(AttributionStorageDelegateImpl().GetNullAggregatableReports(
                   trigger, /*trigger_time=*/base::Time::Now(),
-                  /*attributed_source_time=*/absl::nullopt),
+                  /*attributed_source_time=*/std::nullopt),
               SizeIs(1u));
 
   EXPECT_THAT(AttributionStorageDelegateImpl().GetNullAggregatableReports(

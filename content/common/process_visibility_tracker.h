@@ -5,6 +5,8 @@
 #ifndef CONTENT_COMMON_PROCESS_VISIBILITY_TRACKER_H_
 #define CONTENT_COMMON_PROCESS_VISIBILITY_TRACKER_H_
 
+#include <optional>
+
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/observer_list_threadsafe.h"
@@ -12,7 +14,6 @@
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -48,7 +49,7 @@ class CONTENT_EXPORT ProcessVisibilityTracker {
   ~ProcessVisibilityTracker();
 
   base::Lock lock_;
-  absl::optional<bool> is_visible_ GUARDED_BY(lock_);
+  std::optional<bool> is_visible_ GUARDED_BY(lock_);
   scoped_refptr<base::ObserverListThreadSafe<ProcessVisibilityObserver>>
       observers_ GUARDED_BY(lock_);
 

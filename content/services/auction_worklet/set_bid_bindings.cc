@@ -7,6 +7,7 @@
 #include <cmath>
 #include <functional>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -21,7 +22,6 @@
 #include "content/services/auction_worklet/webidl_compat.h"
 #include "gin/converter.h"
 #include "gin/dictionary.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_currencies.h"
 #include "third_party/blink/public/common/interest_group/ad_display_size_utils.h"
@@ -69,8 +69,8 @@ bool IsAllowedAdUrl(
 
 struct AdRender {
   std::string url;
-  absl::optional<std::string> width;
-  absl::optional<std::string> height;
+  std::optional<std::string> width;
+  std::optional<std::string> height;
 };
 
 // Handles conversion of (DOMString or AdRender) IDL type.
@@ -129,7 +129,7 @@ bool TryToParseUrlWithSize(AuctionV8Helper* v8_helper,
                            const std::string& error_prefix,
                            AdRender& value,
                            std::string& ad_url_out,
-                           absl::optional<blink::AdSize>& size_out,
+                           std::optional<blink::AdSize>& size_out,
                            std::string& error_out) {
   // Either no dimensions must be specified, or both.
   if (value.width.has_value() != value.height.has_value()) {
@@ -145,7 +145,7 @@ bool TryToParseUrlWithSize(AuctionV8Helper* v8_helper,
 
     size_out = blink::AdSize(width_val, width_units, height_val, height_units);
   } else {
-    size_out = absl::nullopt;
+    size_out = std::nullopt;
   }
 
   return true;
@@ -170,7 +170,7 @@ void SetBidBindings::ReInitialize(
     base::TimeTicks start,
     bool has_top_level_seller_origin,
     const mojom::BidderWorkletNonSharedParams* bidder_worklet_non_shared_params,
-    const absl::optional<blink::AdCurrency>& per_buyer_currency,
+    const std::optional<blink::AdCurrency>& per_buyer_currency,
     base::RepeatingCallback<bool(const std::string&)> is_ad_excluded,
     base::RepeatingCallback<bool(const std::string&)>
         is_component_ad_excluded) {
@@ -199,7 +199,7 @@ void SetBidBindings::Reset() {
   // Make sure we don't keep any dangling references to auction input.
   bidder_worklet_non_shared_params_ = nullptr;
   reject_reason_ = mojom::RejectReason::kNotAvailable;
-  per_buyer_currency_ = absl::nullopt;
+  per_buyer_currency_ = std::nullopt;
   is_ad_excluded_.Reset();
   is_component_ad_excluded_.Reset();
 }
@@ -215,14 +215,14 @@ IdlConvert::Status SetBidBindings::SetBidImpl(
       << "ReInitialize() must be called before each use";
 
   struct GenerateBidOutput {
-    absl::optional<double> bid;
-    absl::optional<std::string> bid_currency;
-    absl::optional<AdRender> render;
-    absl::optional<v8::Local<v8::Value>> ad;
-    absl::optional<std::vector<AdRender>> ad_components;
-    absl::optional<double> ad_cost;
-    absl::optional<UnrestrictedDouble> modeling_signals;
-    absl::optional<bool> allow_component_auction;
+    std::optional<double> bid;
+    std::optional<std::string> bid_currency;
+    std::optional<AdRender> render;
+    std::optional<v8::Local<v8::Value>> ad;
+    std::optional<std::vector<AdRender>> ad_components;
+    std::optional<double> ad_cost;
+    std::optional<UnrestrictedDouble> modeling_signals;
+    std::optional<bool> allow_component_auction;
   } idl;
 
   auto components_exist = base::BindOnce(
@@ -266,7 +266,7 @@ IdlConvert::Status SetBidBindings::SetBidImpl(
   convert_set_bid.GetOptional("bidCurrency", idl.bid_currency);
   convert_set_bid.GetOptional("modelingSignals", idl.modeling_signals);
 
-  absl::optional<v8::Local<v8::Value>> render_value;
+  std::optional<v8::Local<v8::Value>> render_value;
   if (convert_set_bid.GetOptional("render", render_value) &&
       render_value.has_value()) {
     idl.render.emplace();
@@ -293,7 +293,7 @@ IdlConvert::Status SetBidBindings::SetBidImpl(
         {error_prefix, "'render' is required when making a bid."}));
   }
 
-  absl::optional<blink::AdCurrency> bid_currency;
+  std::optional<blink::AdCurrency> bid_currency;
   if (idl.bid_currency.has_value()) {
     if (!blink::IsValidAdCurrencyCode(*idl.bid_currency)) {
       reject_reason_ = mojom::RejectReason::kWrongGenerateBidCurrency;
@@ -338,14 +338,14 @@ IdlConvert::Status SetBidBindings::SetBidImpl(
     }
   }
 
-  absl::optional<double> modeling_signals;
+  std::optional<double> modeling_signals;
   if (idl.modeling_signals.has_value() && idl.modeling_signals->number >= 0 &&
       idl.modeling_signals->number < (1 << 12)) {
     modeling_signals = idl.modeling_signals->number;
   }
 
   std::string render_url_string;
-  absl::optional<blink::AdSize> render_size = absl::nullopt;
+  std::optional<blink::AdSize> render_size = std::nullopt;
   std::string error_msg;
   if (!TryToParseUrlWithSize(v8_helper_.get(), time_limit_scope, render_prefix,
                              *idl.render, render_url_string, render_size,
@@ -365,7 +365,7 @@ IdlConvert::Status SetBidBindings::SetBidImpl(
     return IdlConvert::Status::MakeErrorMessage(std::move(error_msg));
   }
 
-  absl::optional<std::vector<blink::AdDescriptor>> ad_component_descriptors;
+  std::optional<std::vector<blink::AdDescriptor>> ad_component_descriptors;
   if (idl.ad_components.has_value()) {
     if (!bidder_worklet_non_shared_params_->ad_components.has_value()) {
       return IdlConvert::Status::MakeErrorMessage(
@@ -388,7 +388,7 @@ IdlConvert::Status SetBidBindings::SetBidImpl(
     ad_component_descriptors.emplace();
     for (AdRender& component : *idl.ad_components) {
       std::string ad_component_url_string;
-      absl::optional<blink::AdSize> ad_component_size = absl::nullopt;
+      std::optional<blink::AdSize> ad_component_size = std::nullopt;
       if (!TryToParseUrlWithSize(
               v8_helper_.get(), time_limit_scope, components_prefix, component,
               ad_component_url_string, ad_component_size, error_msg)) {
@@ -423,7 +423,7 @@ IdlConvert::Status SetBidBindings::SetBidImpl(
       std::move(ad_json), *idl.bid, std::move(bid_currency),
       std::move(idl.ad_cost), blink::AdDescriptor(render_url, render_size),
       std::move(ad_component_descriptors),
-      static_cast<absl::optional<uint16_t>>(modeling_signals),
+      static_cast<std::optional<uint16_t>>(modeling_signals),
       /*bid_duration=*/base::TimeDelta());
   return IdlConvert::Status::MakeSuccess();
 }

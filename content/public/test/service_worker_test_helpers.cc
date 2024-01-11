@@ -140,7 +140,7 @@ void DispatchNotificationClickForRegistration(
                         base::DoNothing());
   version->endpoint()->DispatchNotificationClickEvent(
       "notification_id", notification_data, -1 /* action_index */,
-      absl::nullopt /* reply */,
+      std::nullopt /* reply */,
       base::BindOnce([](blink::mojom::ServiceWorkerEventStatus event_status) {
         DCHECK_EQ(blink::mojom::ServiceWorkerEventStatus::COMPLETED,
                   event_status);

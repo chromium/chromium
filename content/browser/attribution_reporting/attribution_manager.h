@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_MANAGER_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_MANAGER_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -13,7 +14,6 @@
 #include "content/public/browser/attribution_data_model.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/mojom/attribution.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Time;
@@ -102,9 +102,9 @@ class CONTENT_EXPORT AttributionManager : public AttributionDataModel {
                          base::OnceClosure done) = 0;
 
   // If debug mode is enabled, noise and delays are disabled to facilitate
-  // testing, whether automated or manual. If `enabled` is `absl::nullopt`,
+  // testing, whether automated or manual. If `enabled` is `std::nullopt`,
   // falls back to `switches::kAttributionReportingDebugMode`.
-  virtual void SetDebugMode(absl::optional<bool> enabled,
+  virtual void SetDebugMode(std::optional<bool> enabled,
                             base::OnceClosure done) = 0;
 };
 

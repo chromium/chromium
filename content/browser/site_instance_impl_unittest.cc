@@ -485,8 +485,8 @@ TEST_F(SiteInstanceTest, SiteInstanceDestructor) {
 
   std::unique_ptr<NavigationEntryImpl> e1 =
       std::make_unique<NavigationEntryImpl>(
-          instance, url, Referrer(), /* initiator_origin= */ absl::nullopt,
-          /* initiator_base_url= */ absl::nullopt, std::u16string(),
+          instance, url, Referrer(), /* initiator_origin= */ std::nullopt,
+          /* initiator_base_url= */ std::nullopt, std::u16string(),
           ui::PAGE_TRANSITION_LINK, false,
           nullptr /* blob_url_loader_factory */, false /* is_initial_entry */);
 
@@ -496,8 +496,8 @@ TEST_F(SiteInstanceTest, SiteInstanceDestructor) {
   // Add a second reference
   std::unique_ptr<NavigationEntryImpl> e2 =
       std::make_unique<NavigationEntryImpl>(
-          instance, url, Referrer(), /* initiator_origin= */ absl::nullopt,
-          /* initiator_base_url= */ absl::nullopt, std::u16string(),
+          instance, url, Referrer(), /* initiator_origin= */ std::nullopt,
+          /* initiator_base_url= */ std::nullopt, std::u16string(),
           ui::PAGE_TRANSITION_LINK, false,
           nullptr /* blob_url_loader_factory */, false /* is_initial_entry */);
 
@@ -928,7 +928,7 @@ TEST_F(SiteInstanceTest, OneSiteInstancePerSite) {
       /*is_guest=*/false, /*is_fenced=*/false,
       /*is_fixed_storage_partition=*/false,
       /*coop_related_group=*/nullptr,
-      /*common_coop_origin=*/absl::nullopt);
+      /*common_coop_origin=*/std::nullopt);
 
   const GURL url_a1("http://www.google.com/1.html");
   scoped_refptr<SiteInstanceImpl> site_instance_a1(
@@ -965,7 +965,7 @@ TEST_F(SiteInstanceTest, OneSiteInstancePerSite) {
       /*is_guest=*/false, /*is_fenced=*/false,
       /*is_fixed_storage_partition=*/false,
       /*coop_related_group=*/nullptr,
-      /*common_coop_origin=*/absl::nullopt);
+      /*common_coop_origin=*/std::nullopt);
   // Ensure the new SiteInstance is ref counted so that it gets deleted.
   scoped_refptr<SiteInstanceImpl> site_instance_a2_2(
       browsing_instance2->GetSiteInstanceForURL(
@@ -1011,7 +1011,7 @@ TEST_F(SiteInstanceTest, OneSiteInstancePerSiteInBrowserContext) {
       /*is_guest=*/false, /*is_fenced=*/false,
       /*is_fixed_storage_partition=*/false,
       /*coop_related_group=*/nullptr,
-      /*common_coop_origin=*/absl::nullopt);
+      /*common_coop_origin=*/std::nullopt);
 
   const GURL url_a1("http://www.google.com/1.html");
   scoped_refptr<SiteInstanceImpl> site_instance_a1(
@@ -1048,7 +1048,7 @@ TEST_F(SiteInstanceTest, OneSiteInstancePerSiteInBrowserContext) {
       /*is_guest=*/false, /*is_fenced=*/false,
       /*is_fixed_storage_partition=*/false,
       /*coop_related_group=*/nullptr,
-      /*common_coop_origin=*/absl::nullopt);
+      /*common_coop_origin=*/std::nullopt);
   scoped_refptr<SiteInstanceImpl> site_instance_a1_2(
       browsing_instance2->GetSiteInstanceForURL(
           UrlInfo::CreateForTesting(url_a1), false));
@@ -1065,7 +1065,7 @@ TEST_F(SiteInstanceTest, OneSiteInstancePerSiteInBrowserContext) {
       /*is_guest=*/false, /*is_fenced=*/false,
       /*is_fixed_storage_partition=*/false,
       /*coop_related_group=*/nullptr,
-      /*common_coop_origin=*/absl::nullopt);
+      /*common_coop_origin=*/std::nullopt);
   scoped_refptr<SiteInstanceImpl> site_instance_a2_3(
       browsing_instance3->GetSiteInstanceForURL(
           UrlInfo::CreateForTesting(url_a2), false));

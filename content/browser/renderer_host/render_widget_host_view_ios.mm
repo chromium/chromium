@@ -78,7 +78,7 @@ gfx::Rect GetDefaultSizeForTesting() {
 
 @interface RenderWidgetUIView : CALayerFrameSinkProvider {
   base::WeakPtr<content::RenderWidgetHostViewIOS> _view;
-  absl::optional<gfx::Vector2dF> _viewOffsetDuringTouchSequence;
+  std::optional<gfx::Vector2dF> _viewOffsetDuringTouchSequence;
 }
 
 // TextInput state.
@@ -584,8 +584,8 @@ gfx::Size RenderWidgetHostViewIOS::GetRequestedRendererSize() {
   return GetViewBounds().size();
 }
 
-absl::optional<DisplayFeature> RenderWidgetHostViewIOS::GetDisplayFeature() {
-  return absl::nullopt;
+std::optional<DisplayFeature> RenderWidgetHostViewIOS::GetDisplayFeature() {
+  return std::nullopt;
 }
 void RenderWidgetHostViewIOS::SetDisplayFeatureForTesting(
     const DisplayFeature* display_feature) {}

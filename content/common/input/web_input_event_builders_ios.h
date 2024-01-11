@@ -35,7 +35,7 @@ class CONTENT_EXPORT WebTouchEventBuilder {
       UITouch* touch,
       UIEvent* event,
       UIView* view,
-      const absl::optional<gfx::Vector2dF>& view_offset);
+      const std::optional<gfx::Vector2dF>& view_offset);
 };
 
 }  // namespace content

@@ -5,9 +5,8 @@
 #ifndef CONTENT_BROWSER_ANDROID_SELECTION_MAGNIFIER_SURFACE_CONTROL_H_
 #define CONTENT_BROWSER_ANDROID_SELECTION_MAGNIFIER_SURFACE_CONTROL_H_
 
-#include "ui/gl/android/scoped_java_surface_control.h"
-
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -24,7 +23,7 @@
 #include "gpu/ipc/common/surface_handle.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "services/viz/privileged/mojom/compositing/display_private.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gl/android/scoped_java_surface_control.h"
 
 namespace content {
 

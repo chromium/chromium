@@ -110,30 +110,28 @@ class WebUITsMojoTestCacheImpl : public mojom::WebUITsMojoTestCache {
     std::move(callback).Run(std::move(items));
   }
 
-  void Echo(absl::optional<bool> optional_bool,
-            absl::optional<uint8_t> optional_uint8,
-            absl::optional<mojom::TestEnum> optional_enum,
+  void Echo(std::optional<bool> optional_bool,
+            std::optional<uint8_t> optional_uint8,
+            std::optional<mojom::TestEnum> optional_enum,
             mojom::OptionalNumericsStructPtr optional_numerics,
             EchoCallback callback) override {
     std::move(callback).Run(
-        optional_bool.has_value() ? absl::make_optional(!optional_bool.value())
-                                  : absl::nullopt,
-        optional_uint8.has_value()
-            ? absl::make_optional(~optional_uint8.value())
-            : absl::nullopt,
-        optional_enum.has_value() ? absl::make_optional(mojom::TestEnum::kTwo)
-                                  : absl::nullopt,
+        optional_bool.has_value() ? std::make_optional(!optional_bool.value())
+                                  : std::nullopt,
+        optional_uint8.has_value() ? std::make_optional(~optional_uint8.value())
+                                   : std::nullopt,
+        optional_enum.has_value() ? std::make_optional(mojom::TestEnum::kTwo)
+                                  : std::nullopt,
         mojom::OptionalNumericsStruct::New(
             optional_numerics->optional_bool.has_value()
-                ? absl::make_optional(!optional_numerics->optional_bool.value())
-                : absl::nullopt,
+                ? std::make_optional(!optional_numerics->optional_bool.value())
+                : std::nullopt,
             optional_numerics->optional_uint8.has_value()
-                ? absl::make_optional(
-                      ~optional_numerics->optional_uint8.value())
-                : absl::nullopt,
+                ? std::make_optional(~optional_numerics->optional_uint8.value())
+                : std::nullopt,
             optional_numerics->optional_enum.has_value()
-                ? absl::make_optional(mojom::TestEnum::kTwo)
-                : absl::nullopt));
+                ? std::make_optional(mojom::TestEnum::kTwo)
+                : std::nullopt));
   }
 
  private:

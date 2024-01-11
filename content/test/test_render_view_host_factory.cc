@@ -49,7 +49,7 @@ RenderViewHostImpl* TestRenderViewHostFactory::CreateRenderViewHost(
     int32_t widget_routing_id,
     scoped_refptr<BrowsingContextState> main_browsing_context_state,
     CreateRenderViewHostCase create_case,
-    absl::optional<viz::FrameSinkId> frame_sink_id) {
+    std::optional<viz::FrameSinkId> frame_sink_id) {
   return new TestRenderViewHost(
       frame_tree, group, storage_partition_config,
       TestRenderWidgetHost::Create(

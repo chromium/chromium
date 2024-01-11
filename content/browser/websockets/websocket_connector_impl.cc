@@ -73,11 +73,11 @@ void WebSocketConnectorImpl::Connect(
     const GURL& url,
     const std::vector<std::string>& requested_protocols,
     const net::SiteForCookies& site_for_cookies,
-    const absl::optional<std::string>& user_agent,
+    const std::optional<std::string>& user_agent,
     bool has_storage_access,
     mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
         handshake_client,
-    const absl::optional<base::UnguessableToken>& throttling_profile_id) {
+    const std::optional<base::UnguessableToken>& throttling_profile_id) {
   DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
   RenderProcessHost* process = RenderProcessHost::FromID(process_id_);
   if (!process) {
@@ -122,7 +122,7 @@ void WebSocketConnectorImpl::ConnectCalledByContentBrowserClient(
     int frame_id,
     const url::Origin& origin,
     uint32_t options,
-    absl::optional<base::UnguessableToken> throttling_profile_id,
+    std::optional<base::UnguessableToken> throttling_profile_id,
     const GURL& url,
     std::vector<network::mojom::HttpHeaderPtr> additional_headers,
     mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>

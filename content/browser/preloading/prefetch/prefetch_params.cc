@@ -62,16 +62,16 @@ size_t PrefetchServiceMaximumNumberOfConcurrentPrefetches() {
       features::kPrefetchUseContentRefactor, "max_concurrent_prefetches", 1);
 }
 
-absl::optional<int> PrefetchServiceMaximumNumberOfPrefetchesPerPage() {
+std::optional<int> PrefetchServiceMaximumNumberOfPrefetchesPerPage() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           "isolated-prerender-unlimited-prefetches")) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   int max = base::GetFieldTrialParamByFeatureAsInt(
       features::kPrefetchUseContentRefactor, "max_srp_prefetches", 5);
   if (max < 0) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return max;
 }

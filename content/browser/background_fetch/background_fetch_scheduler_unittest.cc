@@ -133,7 +133,7 @@ class BackgroundFetchSchedulerTest : public BackgroundFetchTestBase {
                                         requests.size(),
                                         /* active_fetch_requests= */ {},
                                         /* start_paused= */ false,
-                                        /* isolation_info= */ absl::nullopt);
+                                        /* isolation_info= */ std::nullopt);
     scheduler_->job_controllers_[registration_id.unique_id()] =
         std::move(controller);
     scheduler_->controller_ids_.push_back(registration_id);

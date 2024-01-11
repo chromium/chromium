@@ -65,7 +65,7 @@ class MockServiceWorkerResourceLoader : public ServiceWorkerResourceLoader {
   void CommitResponseBody(
       const network::mojom::URLResponseHeadPtr& response_head,
       mojo::ScopedDataPipeConsumerHandle response_body,
-      absl::optional<mojo_base::BigBuffer> cached_metadata) override {
+      std::optional<mojo_base::BigBuffer> cached_metadata) override {
     std::move(on_commit_response_).Run(response_head, std::move(response_body));
   }
   void CommitEmptyResponseAndComplete() override {}
@@ -196,7 +196,7 @@ class URLLoaderClientForFetchHandler : public network::mojom::URLLoaderClient,
   void OnReceiveResponse(
       network::mojom::URLResponseHeadPtr head,
       mojo::ScopedDataPipeConsumerHandle body,
-      absl::optional<mojo_base::BigBuffer> cached_metadata) override {
+      std::optional<mojo_base::BigBuffer> cached_metadata) override {
     WatchResponseBody(head, std::move(body));
   }
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
@@ -231,7 +231,7 @@ class ServiceWorkerRaceNetworkRequestURLLoaderClientTest
     network::mojom::URLResponseHeadPtr head(
         network::CreateURLResponseHead(net::HTTP_OK));
     client_->OnReceiveResponse(std::move(head), std::move(consumer_),
-                               absl::nullopt);
+                               std::nullopt);
     producer_.reset();
   }
 

@@ -320,18 +320,18 @@ base::TimeTicks WebContentsDevToolsAgentHost::GetLastActivityTime() {
   return base::TimeTicks();
 }
 
-absl::optional<network::CrossOriginEmbedderPolicy>
+std::optional<network::CrossOriginEmbedderPolicy>
 WebContentsDevToolsAgentHost::cross_origin_embedder_policy(
     const std::string& id) {
   NOTREACHED();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
-absl::optional<network::CrossOriginOpenerPolicy>
+std::optional<network::CrossOriginOpenerPolicy>
 WebContentsDevToolsAgentHost::cross_origin_opener_policy(
     const std::string& id) {
   NOTREACHED();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 DevToolsAgentHostImpl* WebContentsDevToolsAgentHost::GetPrimaryFrameAgent() {

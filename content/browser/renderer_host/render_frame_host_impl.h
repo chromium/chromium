@@ -13,6 +13,7 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -121,7 +122,6 @@
 #include "services/network/public/mojom/shared_dictionary_access_observer.mojom.h"
 #include "services/network/public/mojom/trust_token_access_observer.mojom.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/frame/delegated_capability_request_token.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
@@ -418,10 +418,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // subframes. As such, update this method.
   int GetFrameTreeNodeId() const override;
   const base::UnguessableToken& GetDevToolsFrameToken() override;
-  absl::optional<base::UnguessableToken> GetEmbeddingToken() override;
+  std::optional<base::UnguessableToken> GetEmbeddingToken() override;
   const std::string& GetFrameName() override;
   bool IsFrameDisplayNone() override;
-  const absl::optional<gfx::Size>& GetFrameSize() override;
+  const std::optional<gfx::Size>& GetFrameSize() override;
   size_t GetFrameDepth() override;
   bool IsCrossProcessSubframe() override;
   WebExposedIsolationLevel GetWebExposedIsolationLevel() override;
@@ -523,7 +523,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void ReportInspectorIssue(blink::mojom::InspectorIssueInfoPtr info) override;
   void WriteIntoTrace(perfetto::TracedProto<TraceProto> context) const override;
   void GetCanonicalUrl(
-      base::OnceCallback<void(const absl::optional<GURL>&)> callback) override;
+      base::OnceCallback<void(const std::optional<GURL>&)> callback) override;
   void GetOpenGraphMetadata(
       base::OnceCallback<void(blink::mojom::OpenGraphMetadataPtr)> callback)
       override;
@@ -688,10 +688,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Creates a RenderFrame in the renderer process.
   bool CreateRenderFrame(
-      const absl::optional<blink::FrameToken>& previous_frame_token,
-      const absl::optional<blink::FrameToken>& opener_frame_token,
-      const absl::optional<blink::FrameToken>& parent_frame_token,
-      const absl::optional<blink::FrameToken>& previous_sibling_frame_token);
+      const std::optional<blink::FrameToken>& previous_frame_token,
+      const std::optional<blink::FrameToken>& opener_frame_token,
+      const std::optional<blink::FrameToken>& parent_frame_token,
+      const std::optional<blink::FrameToken>& previous_sibling_frame_token);
 
   // Deletes the RenderFrame in the renderer process.
   // Postcondition: |IsPendingDeletion()| is true.
@@ -929,7 +929,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   net::IsolationInfo ComputeIsolationInfoForNavigation(
       const GURL& destination,
       bool is_credentialless,
-      absl::optional<base::UnguessableToken> fenced_frame_nonce_for_navigation);
+      std::optional<base::UnguessableToken> fenced_frame_nonce_for_navigation);
 
   // Computes the IsolationInfo for this frame to |destination|.
   net::IsolationInfo ComputeIsolationInfoForNavigation(const GURL& destination);
@@ -943,7 +943,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   net::IsolationInfo ComputeIsolationInfoForSubresourcesForPendingCommit(
       const url::Origin& main_world_origin_for_url_loader_factory,
       bool is_credentialless,
-      absl::optional<base::UnguessableToken> fenced_frame_nonce_for_navigation);
+      std::optional<base::UnguessableToken> fenced_frame_nonce_for_navigation);
 
   // Computes site_for_cookies for this frame. A non-empty result denotes which
   // domains are considered first-party to the top-level site when resources are
@@ -1498,11 +1498,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
       network::mojom::URLResponseHeadPtr response_head,
       mojo::ScopedDataPipeConsumerHandle response_body,
       network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
-      absl::optional<SubresourceLoaderParams> subresource_loader_params,
-      absl::optional<std::vector<blink::mojom::TransferrableURLLoaderPtr>>
+      std::optional<SubresourceLoaderParams> subresource_loader_params,
+      std::optional<std::vector<blink::mojom::TransferrableURLLoaderPtr>>
           subresource_overrides,
       blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info,
-      const absl::optional<blink::DocumentToken>& document_token,
+      const std::optional<blink::DocumentToken>& document_token,
       const base::UnguessableToken& devtools_navigation_token);
 
   // Indicates that a navigation failed and that this RenderFrame should display
@@ -1514,7 +1514,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       bool has_stale_copy_in_cache,
       int error_code,
       int extended_error_code,
-      const absl::optional<std::string>& error_page_content,
+      const std::optional<std::string>& error_page_content,
       const blink::DocumentToken& document_token);
 
   void AddResourceTimingEntryForFailedSubframeNavigation(
@@ -1720,7 +1720,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void MaybeIsolateForUserActivation();
 
   // Returns the current size for this frame.
-  const absl::optional<gfx::Size>& frame_size() const { return frame_size_; }
+  const std::optional<gfx::Size>& frame_size() const { return frame_size_; }
 
   // Allow tests to override the timeout used to keep subframe processes alive
   // for unload handler processing.
@@ -1752,7 +1752,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // `back_forward_cache_can_store_document_result.h`.
   void DisableBackForwardCache(
       BackForwardCache::DisabledReason reason,
-      absl::optional<ukm::SourceId> source_id = absl::nullopt);
+      std::optional<ukm::SourceId> source_id = std::nullopt);
 
   bool is_evicted_from_back_forward_cache() {
     return is_evicted_from_back_forward_cache_;
@@ -1842,7 +1842,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Posts a message from a frame in another process to the current renderer.
   void PostMessageEvent(
-      const absl::optional<blink::RemoteFrameToken>& source_token,
+      const std::optional<blink::RemoteFrameToken>& source_token,
       const std::u16string& source_origin,
       const std::u16string& target_origin,
       blink::TransferableMessage message);
@@ -2300,7 +2300,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void SetNeedsOcclusionTracking(bool needs_tracking) override;
   void SetVirtualKeyboardMode(ui::mojom::VirtualKeyboardMode mode) override;
   void VisibilityChanged(blink::mojom::FrameVisibility) override;
-  void DidChangeThemeColor(absl::optional<SkColor> theme_color) override;
+  void DidChangeThemeColor(std::optional<SkColor> theme_color) override;
   void DidChangeBackgroundColor(const SkColor4f& background_color,
                                 bool color_adjust) override;
   void DidFailLoadWithError(const GURL& url, int32_t error_code) override;
@@ -2328,14 +2328,14 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void DispatchLoad() override;
   void GoToEntryAtOffset(int32_t offset,
                          bool has_user_gesture,
-                         absl::optional<blink::scheduler::TaskAttributionId>
+                         std::optional<blink::scheduler::TaskAttributionId>
                              soft_navigation_heuristics_task_id) override;
   void NavigateToNavigationApiKey(
       const std::string& key,
       bool has_user_gesture,
-      absl::optional<blink::scheduler::TaskAttributionId> task_id) override;
+      std::optional<blink::scheduler::TaskAttributionId> task_id) override;
   void NavigateEventHandlerPresenceChanged(bool present) override;
-  void UpdateTitle(const absl::optional<::std::u16string>& title,
+  void UpdateTitle(const std::optional<::std::u16string>& title,
                    base::i18n::TextDirection title_direction) override;
   void UpdateAppTitle(const ::std::u16string& app_title) override;
   void UpdateUserActivationState(
@@ -2403,7 +2403,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const blink::FrameToken& child_frame_token,
       blink::mojom::FrameOwnerPropertiesPtr frame_owner_properties) override;
   void DidChangeOpener(
-      const absl::optional<blink::LocalFrameToken>& opener_frame) override;
+      const std::optional<blink::LocalFrameToken>& opener_frame) override;
   void DidChangeIframeAttributes(
       const blink::FrameToken& child_frame_token,
       blink::mojom::IframeAttributesPtr attributes) override;
@@ -2419,8 +2419,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
       blink::mojom::ConsoleMessageLevel log_level,
       const std::u16string& message,
       uint32_t line_no,
-      const absl::optional<std::u16string>& source_id,
-      const absl::optional<std::u16string>& untrusted_stack_trace) override;
+      const std::optional<std::u16string>& source_id,
+      const std::optional<std::u16string>& untrusted_stack_trace) override;
   void FrameSizeChanged(const gfx::Size& frame_size) override;
   void DidChangeSrcDoc(const blink::FrameToken& child_frame_token,
                        const std::string& srcdoc_value) override;
@@ -2742,9 +2742,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Computes the nonce to be used for isolation info and storage key.
   // For navigations, populate `fenced_frame_nonce_for_navigation` with
   // `NavigationRequest::ComputeFencedFrameNonce()`.
-  absl::optional<base::UnguessableToken> ComputeNonce(
+  std::optional<base::UnguessableToken> ComputeNonce(
       bool is_credentialless,
-      absl::optional<base::UnguessableToken> fenced_frame_nonce_for_navigation);
+      std::optional<base::UnguessableToken> fenced_frame_nonce_for_navigation);
 
   // Return the frame immediately preceding this RenderFrameHost in its parent's
   // children, or nullptr if there is no such node.
@@ -2766,7 +2766,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // top_level_site` and `ancestor_bit` parameters. If
   // `is_third_party_storage_partitioning_allowed` is provided then that value
   // is used for allowing third-party storage partitioning, if it is
-  // absl::nullopt then the value is calculated using the top frame's
+  // std::nullopt then the value is calculated using the top frame's
   // RuntimeFeatureStateReadContext, the enterprise policy, and the
   // base::feature. This also takes into account special embedding cases, such
   // as extensions embedding web iframes, where the top-level frame is not the
@@ -2948,13 +2948,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // NavigationRequest::devtools_navigation_token()) associated with the last
   // cross-document navigation in this RenderFrameHost. This is the same value
   // that is stored in the DocumentLoader for the RFH's document in the renderer
-  // (and therefore it has per-document semantics). Returns absl::nullopt for a
+  // (and therefore it has per-document semantics). Returns std::nullopt for a
   // RenderFrameHost that is the initial empty document (see
   // |is_initial_empty_document_| for definition).
   // Note: This is different from the value returned by GetDevToolsFrameToken(),
   // which is a stable identifier used by DevTools to identify frames and is
   // kept constant across navigations in a frame.
-  const absl::optional<base::UnguessableToken>& GetDevToolsNavigationToken();
+  const std::optional<base::UnguessableToken>& GetDevToolsNavigationToken();
 
   // Returns if the RenderFrameHostImpl is loaded with the "Cache-Control:
   // no-store" header.
@@ -3059,7 +3059,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
           subresource_loader_factories,
-      absl::optional<std::vector<blink::mojom::TransferrableURLLoaderPtr>>
+      std::optional<std::vector<blink::mojom::TransferrableURLLoaderPtr>>
           subresource_overrides,
       blink::mojom::ControllerServiceWorkerInfoPtr
           controller_service_worker_info,
@@ -3070,7 +3070,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
           keep_alive_loader_factory,
       mojo::PendingAssociatedRemote<blink::mojom::FetchLaterLoaderFactory>
           fetch_later_loader_factory,
-      const absl::optional<blink::ParsedPermissionsPolicy>& permissions_policy,
+      const std::optional<blink::ParsedPermissionsPolicy>& permissions_policy,
       blink::mojom::PolicyContainerPtr policy_container,
       const blink::DocumentToken& document_token,
       const base::UnguessableToken& devtools_navigation_token);
@@ -3082,7 +3082,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       bool has_stale_copy_in_cache,
       int32_t error_code,
       int32_t extended_error_code,
-      const absl::optional<std::string>& error_page_content,
+      const std::optional<std::string>& error_page_content,
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
           subresource_loader_factories,
       const blink::DocumentToken& document_token,
@@ -3276,7 +3276,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const url::Origin& frame_origin,
       net::IsolationInfo::RequestType request_type,
       bool is_credentialless,
-      absl::optional<base::UnguessableToken> fenced_frame_nonce_for_navigation);
+      std::optional<base::UnguessableToken> fenced_frame_nonce_for_navigation);
 
   // Returns whether or not this RenderFrameHost is a descendant of |ancestor|.
   // This is equivalent to check that |ancestor| is reached by iterating on
@@ -3539,7 +3539,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   CreateNavigationRequestForSynchronousRendererCommit(
       const GURL& url,
       const url::Origin& origin,
-      const absl::optional<GURL>& initiator_base_url,
+      const std::optional<GURL>& initiator_base_url,
       blink::mojom::ReferrerPtr referrer,
       const ui::PageTransition& transition,
       bool should_replace_current_entry,
@@ -4042,7 +4042,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void SendFencedFrameReportingBeaconInternal(
       const FencedFrameReporter::DestinationVariant& event_variant,
       blink::FencedFrame::ReportingDestination destination,
-      absl::optional<int64_t> navigation_id = absl::nullopt);
+      std::optional<int64_t> navigation_id = std::nullopt);
 
   // Indicates whether this frame has third-party storage
   // partitioning enabled. This depends on the deprecation trial (which can
@@ -4070,7 +4070,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Returns an `UrgentMessageScope` if the feature to prioritize navigation
   // IPCs is enabled and this is a main frame on a visible page.
-  absl::optional<mojo::UrgentMessageScope> MakeUrgentMessageScopeIfNeeded();
+  std::optional<mojo::UrgentMessageScope> MakeUrgentMessageScopeIfNeeded();
 
 #if BUILDFLAG(IS_ANDROID)
   // These functions are called after a WebAuthn relying party check has
@@ -4443,9 +4443,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // This is the value of the reset token expected for accessibility messages.
   // Any message with a different reset token will be dropped.
-  // absl::nullopt means that accessibility has never been turned on for
+  // std::nullopt means that accessibility has never been turned on for
   // this renderer (delegate_->GetAccessibilityMode().is_mode_off()).
-  absl::optional<uint32_t> accessibility_reset_token_;
+  std::optional<uint32_t> accessibility_reset_token_;
 
   // A count of the number of times we received an unexpected fatal
   // accessibility error and needed to reset accessibility, so we don't keep
@@ -4525,7 +4525,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   bool has_pending_lifecycle_state_update_ = false;
 
   // Used for tracking the latest size of the RenderFrame.
-  absl::optional<gfx::Size> frame_size_;
+  std::optional<gfx::Size> frame_size_;
 
   // This boolean indicates whether the RenderFrame has committed *any*
   // navigation or not. Starts off false and is set to true for the lifetime of
@@ -4591,9 +4591,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // the document might be allowed to cancel certain history navigations.
   bool has_navigate_event_handler_ = false;
 
-  absl::optional<RenderFrameAudioOutputStreamFactory>
+  std::optional<RenderFrameAudioOutputStreamFactory>
       audio_service_audio_output_stream_factory_;
-  absl::optional<RenderFrameAudioInputStreamFactory>
+  std::optional<RenderFrameAudioInputStreamFactory>
       audio_service_audio_input_stream_factory_;
 
   // Hosts blink::mojom::PresentationService for the RenderFrame.
@@ -4821,7 +4821,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Reset immediately before a RenderFrameHost is reused for hosting a new
   // document.
   //
-  // Note: this is an absl::optional instead of a std::unique_ptr because:
+  // Note: this is an std::optional instead of a std::unique_ptr because:
   // 1. it is always allocated
   // 2. `~RenderFrameHostImpl` destroys `document_associated_data_` which
   //    destroys any `DocumentService` objects tracking `this`. Destroying a
@@ -4829,7 +4829,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   //    stored pointer value is (intentionally) undefined during destruction
   //    (e.g. it could be nullptr), which would cause unregistration to
   //    dereference a null pointer.
-  absl::optional<DocumentAssociatedData> document_associated_data_;
+  std::optional<DocumentAssociatedData> document_associated_data_;
 
   // Keeps track of the scenario when RenderFrameHostManager::CommitPending is
   // called before the navigation commits. This becomes true if the previous
@@ -4879,7 +4879,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // corresponding RenderFrameHostImpl, and is intended to be used for IPCs for
   // identifying frames just like routing IDs. |embedding_token_| has a document
   // scoped lifetime and changes on cross-document navigations.
-  absl::optional<base::UnguessableToken> embedding_token_;
+  std::optional<base::UnguessableToken> embedding_token_;
 
   // Observers listening to cookie access notifications for the current document
   // in this RenderFrameHost.
@@ -5103,8 +5103,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // window) and triggers a fullscreen on the document element once it is ready
   // (`MainDocumentElementAvailable` dispatched).
   // See: https://chromestatus.com/feature/6002307972464640
-  absl::optional<blink::DocumentToken>
-      fullscreen_document_on_document_element_ready_ = absl::nullopt;
+  std::optional<blink::DocumentToken>
+      fullscreen_document_on_document_element_ready_ = std::nullopt;
 
   // If true, the renderer side widget is created after the navigation is
   // committed.

@@ -345,13 +345,13 @@ void FocusFrame(FrameTreeNode* frame) {
 }
 
 bool ConvertJSONToPoint(const std::string& str, gfx::PointF* point) {
-  absl::optional<base::Value> value = base::JSONReader::Read(str);
+  std::optional<base::Value> value = base::JSONReader::Read(str);
   if (!value.has_value())
     return false;
   if (!value->is_dict())
     return false;
-  absl::optional<double> x = value->GetDict().FindDouble("x");
-  absl::optional<double> y = value->GetDict().FindDouble("y");
+  std::optional<double> x = value->GetDict().FindDouble("x");
+  std::optional<double> y = value->GetDict().FindDouble("y");
   if (!x.has_value())
     return false;
   if (!y.has_value())
@@ -370,7 +370,7 @@ CreateParsedPermissionsPolicyDeclaration(
     blink::mojom::PermissionsPolicyFeature feature,
     const std::vector<GURL>& origins,
     bool match_all_origins = false,
-    const absl::optional<GURL> self_if_matches = absl::nullopt) {
+    const std::optional<GURL> self_if_matches = std::nullopt) {
   blink::ParsedPermissionsPolicyDeclaration declaration;
 
   declaration.feature = feature;
@@ -395,7 +395,7 @@ blink::ParsedPermissionsPolicy CreateParsedPermissionsPolicy(
     const std::vector<blink::mojom::PermissionsPolicyFeature>& features,
     const std::vector<GURL>& origins,
     bool match_all_origins = false,
-    const absl::optional<GURL> self_if_matches = absl::nullopt) {
+    const std::optional<GURL> self_if_matches = std::nullopt) {
   blink::ParsedPermissionsPolicy result;
   result.reserve(features.size());
   for (const auto& feature : features)
@@ -4469,7 +4469,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
     std::ignore = params->associated_interface_provider_remote
                       .InitWithNewEndpointAndPassReceiver();
     params->previous_frame_token = previous_frame_token;
-    params->opener_frame_token = absl::nullopt;
+    params->opener_frame_token = std::nullopt;
     params->parent_frame_token =
         shell()->web_contents()->GetPrimaryMainFrame()->GetFrameToken();
     params->frame_owner_properties = blink::mojom::FrameOwnerProperties::New();
@@ -4528,7 +4528,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ParentDetachRemoteChild) {
       node->current_frame_host()->GetFrameToken();
   int widget_routing_id =
       node->current_frame_host()->GetRenderWidgetHost()->GetRoutingID();
-  absl::optional<blink::FrameToken> parent_frame_token =
+  std::optional<blink::FrameToken> parent_frame_token =
       node->parent()
           ->frame_tree_node()
           ->render_manager()
@@ -4553,10 +4553,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ParentDetachRemoteChild) {
     std::ignore = params->interface_broker.InitWithNewPipeAndPassReceiver();
     std::ignore = params->associated_interface_provider_remote
                       .InitWithNewEndpointAndPassReceiver();
-    params->previous_frame_token = absl::nullopt;
-    params->opener_frame_token = absl::nullopt;
+    params->previous_frame_token = std::nullopt;
+    params->opener_frame_token = std::nullopt;
     params->parent_frame_token = parent_frame_token;
-    params->previous_sibling_frame_token = absl::nullopt;
+    params->previous_sibling_frame_token = std::nullopt;
     params->frame_owner_properties = blink::mojom::FrameOwnerProperties::New();
     params->widget_params = mojom::CreateFrameWidgetParams::New();
     params->widget_params->routing_id = widget_routing_id;
@@ -5658,8 +5658,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   std::unique_ptr<NavigationEntryImpl> restored_entry =
       NavigationEntryImpl::FromNavigationEntry(
           NavigationController::CreateNavigationEntry(
-              main_url, Referrer(), /* initiator_origin= */ absl::nullopt,
-              /* initiator_base_url= */ absl::nullopt,
+              main_url, Referrer(), /* initiator_origin= */ std::nullopt,
+              /* initiator_base_url= */ std::nullopt,
               ui::PAGE_TRANSITION_RELOAD, false, std::string(),
               controller.GetBrowserContext(),
               nullptr /* blob_url_loader_factory */));
@@ -5766,8 +5766,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   std::unique_ptr<NavigationEntryImpl> restored_entry =
       NavigationEntryImpl::FromNavigationEntry(
           NavigationController::CreateNavigationEntry(
-              main_url, Referrer(), /* initiator_origin= */ absl::nullopt,
-              /* initiator_base_url= */ absl::nullopt,
+              main_url, Referrer(), /* initiator_origin= */ std::nullopt,
+              /* initiator_base_url= */ std::nullopt,
               ui::PAGE_TRANSITION_RELOAD, false, std::string(),
               controller.GetBrowserContext(),
               nullptr /* blob_url_loader_factory */));
@@ -5867,8 +5867,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   std::unique_ptr<NavigationEntryImpl> restored_entry =
       NavigationEntryImpl::FromNavigationEntry(
           NavigationController::CreateNavigationEntry(
-              main_url, Referrer(), /* initiator_origin= */ absl::nullopt,
-              /* initiator_base_url= */ absl::nullopt,
+              main_url, Referrer(), /* initiator_origin= */ std::nullopt,
+              /* initiator_base_url= */ std::nullopt,
               ui::PAGE_TRANSITION_RELOAD, false, std::string(),
               controller.GetBrowserContext(),
               nullptr /* blob_url_loader_factory */));
@@ -11255,8 +11255,8 @@ class SitePerProcessBrowserTouchActionTest : public SitePerProcessBrowserTest {
       RenderWidgetHostViewBase* rwhv_root,
       RenderWidgetHostViewBase* rwhv_child,
       const gfx::Point& event_position,
-      absl::optional<cc::TouchAction>& effective_touch_action,
-      absl::optional<cc::TouchAction>& allowed_touch_action) {
+      std::optional<cc::TouchAction>& effective_touch_action,
+      std::optional<cc::TouchAction>& allowed_touch_action) {
     InputEventAckWaiter ack_observer(
         rwhv_child->GetRenderWidgetHost(),
         base::BindRepeating([](blink::mojom::InputEventResultSource source,
@@ -11456,8 +11456,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTouchActionTest,
 
   WaitForTouchActionUpdated(root_thread_observer.get(),
                             child_thread_observer.get());
-  absl::optional<cc::TouchAction> effective_touch_action;
-  absl::optional<cc::TouchAction> allowed_touch_action;
+  std::optional<cc::TouchAction> effective_touch_action;
+  std::optional<cc::TouchAction> allowed_touch_action;
   cc::TouchAction expected_touch_action = cc::TouchAction::kPan;
   // Gestures are filtered by the intersection of touch-action values of the
   // touched element and all its ancestors up to the one that implements the
@@ -11535,8 +11535,8 @@ IN_PROC_BROWSER_TEST_F(
   // Child should inherit effective touch action none from root.
   WaitForTouchActionUpdated(root_thread_observer.get(),
                             child_thread_observer.get());
-  absl::optional<cc::TouchAction> effective_touch_action;
-  absl::optional<cc::TouchAction> allowed_touch_action;
+  std::optional<cc::TouchAction> effective_touch_action;
+  std::optional<cc::TouchAction> allowed_touch_action;
   cc::TouchAction expected_touch_action = cc::TouchAction::kPan;
   GetTouchActionsForChild(router, rwhv_root, rwhv_child, point_inside_child,
                           effective_touch_action, allowed_touch_action);
@@ -11613,8 +11613,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTouchActionTest,
   // Child should inherit effective touch action none from root.
   WaitForTouchActionUpdated(root_thread_observer.get(),
                             child_thread_observer.get());
-  absl::optional<cc::TouchAction> effective_touch_action;
-  absl::optional<cc::TouchAction> allowed_touch_action;
+  std::optional<cc::TouchAction> effective_touch_action;
+  std::optional<cc::TouchAction> allowed_touch_action;
   cc::TouchAction expected_touch_action =
       cc::TouchAction::kPan | cc::TouchAction::kInternalPanXScrolls |
       cc::TouchAction::kInternalNotWritable;

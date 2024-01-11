@@ -354,7 +354,7 @@ class BackgroundFetchServiceTest
                     int num_requests,
                     std::vector<scoped_refptr<BackgroundFetchRequestInfo>>
                         active_fetch_requests,
-                    absl::optional<net::IsolationInfo> isolation_info));
+                    std::optional<net::IsolationInfo> isolation_info));
   MOCK_METHOD2(
       OnRegistrationQueried,
       void(const BackgroundFetchRegistrationId& registration_id,

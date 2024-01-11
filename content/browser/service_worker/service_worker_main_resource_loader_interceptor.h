@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_MAIN_RESOURCE_LOADER_INTERCEPTOR_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
@@ -21,7 +22,6 @@
 #include "net/base/isolation_info.h"
 #include "services/network/public/cpp/single_request_url_loader_factory.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_provider.mojom.h"
 
@@ -77,8 +77,8 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
                          FallbackCallback fallback_callback) override;
   // Returns params with the ControllerServiceWorkerInfoPtr if we have found
   // a matching controller service worker for the |request| that is given
-  // to MaybeCreateLoader(). Otherwise this returns absl::nullopt.
-  absl::optional<SubresourceLoaderParams> MaybeCreateSubresourceLoaderParams()
+  // to MaybeCreateLoader(). Otherwise this returns std::nullopt.
+  std::optional<SubresourceLoaderParams> MaybeCreateSubresourceLoaderParams()
       override;
 
   // MaybeCreateLoaderForResponse() should NOT overridden here, because
@@ -114,7 +114,7 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
   // Attempts to get the |StorageKey|, using a |RenderFrameHostImpl|, which is
   // obtained from the associated |FrameTreeNode|, if it exists. This allows to
   // correctly account for extension URLs.
-  absl::optional<blink::StorageKey> GetStorageKeyFromRenderFrameHost(
+  std::optional<blink::StorageKey> GetStorageKeyFromRenderFrameHost(
       const url::Origin& origin,
       const base::UnguessableToken* nonce);
 
@@ -124,15 +124,15 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
   // would mean that the origin of the WorkerHost and the origin as used by the
   // service worker code don't match, however in cases where these wouldn't
   // match the load will be aborted later anyway.
-  absl::optional<blink::StorageKey> GetStorageKeyFromWorkerHost(
+  std::optional<blink::StorageKey> GetStorageKeyFromWorkerHost(
       const url::Origin& origin);
 
-  absl::optional<blink::StorageKey> GetStorageKeyFromWorkerHost(
+  std::optional<blink::StorageKey> GetStorageKeyFromWorkerHost(
       content::StoragePartition* storage_partition,
       blink::DedicatedWorkerToken dedicated_worker_token,
       const url::Origin& origin);
 
-  absl::optional<blink::StorageKey> GetStorageKeyFromWorkerHost(
+  std::optional<blink::StorageKey> GetStorageKeyFromWorkerHost(
       content::StoragePartition* storage_partition,
       blink::SharedWorkerToken shared_worker_token,
       const url::Origin& origin);
@@ -158,7 +158,7 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
   const bool are_ancestors_secure_;
   // If the intercepted resource load is on behalf
   // of a window, the |frame_tree_node_id_| will be set, |worker_token_| will be
-  // absl::nullopt, and |process_id_| will be invalid.
+  // std::nullopt, and |process_id_| will be invalid.
   const int frame_tree_node_id_;
 
   // For web worker clients:
@@ -166,7 +166,7 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
   // |frame_tree_node_id_| will be invalid, and both |process_id_| and
   // |worker_token_| will be set.
   const int process_id_;
-  const absl::optional<DedicatedOrSharedWorkerToken> worker_token_;
+  const std::optional<DedicatedOrSharedWorkerToken> worker_token_;
 
   // Handles a single request. Set to a new instance on redirects.
   std::unique_ptr<ServiceWorkerControlleeRequestHandler> request_handler_;

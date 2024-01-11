@@ -78,12 +78,12 @@ void ChildProcessLauncherHelper::BeforeLaunchOnClientThread() {
   DCHECK(client_task_runner_->RunsTasksInCurrentSequence());
 }
 
-absl::optional<mojo::NamedPlatformChannel>
+std::optional<mojo::NamedPlatformChannel>
 ChildProcessLauncherHelper::CreateNamedPlatformChannelOnLauncherThread() {
   DCHECK(CurrentlyOnProcessLauncherTaskRunner());
 
   if (!delegate_->ShouldLaunchElevated())
-    return absl::nullopt;
+    return std::nullopt;
 
   mojo::NamedPlatformChannel::Options options;
   mojo::NamedPlatformChannel named_channel(options);

@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -85,7 +86,6 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/switches.h"
@@ -142,7 +142,7 @@ void ExpectRequestIsolationInfo(
   std::move(function).Run();
   monitor.WaitForUrls();
 
-  absl::optional<network::ResourceRequest> request =
+  std::optional<network::ResourceRequest> request =
       monitor.GetRequestInfo(request_url);
   ASSERT_TRUE(request->trusted_params.has_value());
   EXPECT_TRUE(expected_isolation_info.IsEqualForTesting(

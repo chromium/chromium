@@ -512,7 +512,7 @@ bool RendererBlinkPlatformImpl::RTCSmoothnessAlgorithmEnabled() {
 
 //------------------------------------------------------------------------------
 
-absl::optional<double>
+std::optional<double>
 RendererBlinkPlatformImpl::GetWebRtcMaxCaptureFrameRate() {
   const std::string max_fps_str =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
@@ -522,7 +522,7 @@ RendererBlinkPlatformImpl::GetWebRtcMaxCaptureFrameRate() {
     if (base::StringToDouble(max_fps_str, &value) && value >= 0.0)
       return value;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 scoped_refptr<media::AudioRendererSink>
@@ -903,7 +903,7 @@ void RendererBlinkPlatformImpl::CreateServiceWorkerSubresourceLoaderFactory(
           /*remote_controller=*/mojo::NullRemote(),
           /*remote_cache_storage=*/mojo::NullRemote(), client_id.Utf8(),
           blink::mojom::ServiceWorkerFetchHandlerBypassOption::kDefault,
-          /*router_rules=*/absl::nullopt, blink::EmbeddedWorkerStatus::kStopped,
+          /*router_rules=*/std::nullopt, blink::EmbeddedWorkerStatus::kStopped,
           /*running_status_receiver=*/mojo::NullReceiver()),
       network::SharedURLLoaderFactory::Create(std::move(fallback_factory)),
       std::move(receiver), std::move(task_runner));

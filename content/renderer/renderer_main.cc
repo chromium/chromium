@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include <stddef.h>
+
+#include <optional>
 #include <utility>
 
 #include "base/allocator/partition_alloc_support.h"
@@ -45,7 +47,6 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "sandbox/policy/switches.h"
 #include "services/tracing/public/cpp/trace_startup.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
@@ -187,7 +188,7 @@ int RendererMain(MainFunctionParams parameters) {
 #if defined(ARCH_CPU_X86_64)
   using UserspaceSwapInit =
       ash::memory::userspace_swap::UserspaceSwapRendererInitializationImpl;
-  absl::optional<UserspaceSwapInit> swap_init;
+  std::optional<UserspaceSwapInit> swap_init;
   if (UserspaceSwapInit::UserspaceSwapSupportedAndEnabled()) {
     swap_init.emplace();
 

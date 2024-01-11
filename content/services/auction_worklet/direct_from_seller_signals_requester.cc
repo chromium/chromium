@@ -6,6 +6,7 @@
 
 #include <list>
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -23,7 +24,6 @@
 #include "content/services/auction_worklet/public/cpp/auction_downloader.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 #include "v8/include/v8-context.h"
@@ -36,7 +36,7 @@ namespace auction_worklet {
 namespace {
 
 // Validates that the Ad-Auction-Only (or deprecated X-FLEDGE-Auction-Only)
-// header is present. Returns absl::nullopt upon success. Upon failure, returns
+// header is present. Returns std::nullopt upon success. Upon failure, returns
 // an error string.
 //
 // NOTE: This check is *NOT* directly part of the DirectFromSellerSignals
@@ -47,7 +47,7 @@ namespace {
 // Ad-Auction-Only on subresource responses to ensure that these responses
 // are protected (by the browser and network stack) from being using outside
 // FLEDGE.
-absl::optional<std::string> CheckHeader(
+std::optional<std::string> CheckHeader(
     scoped_refptr<net::HttpResponseHeaders> headers) {
   // TODO(crbug.com/1448564): Remove support for old header names once API users
   // have switched.
@@ -83,7 +83,7 @@ absl::optional<std::string> CheckHeader(
         new_header_value.c_str());
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -155,7 +155,7 @@ DirectFromSellerSignalsRequester::Result::Result(
     GURL signals_url,
     std::unique_ptr<std::string> response_body,
     scoped_refptr<net::HttpResponseHeaders> headers,
-    absl::optional<std::string> error)
+    std::optional<std::string> error)
     : signals_url_(std::move(signals_url)) {
   DCHECK(!signals_url_.is_empty());
   if (response_body) {
@@ -286,7 +286,7 @@ void DirectFromSellerSignalsRequester::OnSignalsDownloaded(
     base::TimeTicks start_time,
     std::unique_ptr<std::string> response_body,
     scoped_refptr<net::HttpResponseHeaders> headers,
-    absl::optional<std::string> error) {
+    std::optional<std::string> error) {
   if (response_body) {
     // The request size isn't very meaningful, since the request is served from
     // a subresource bundle, so don't record the request size.

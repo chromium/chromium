@@ -4,12 +4,12 @@
 
 #include "content/browser/interest_group/interest_group_priority_util.h"
 
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "content/browser/interest_group/storage_interest_group.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "url/origin.h"
@@ -21,7 +21,7 @@ double CalculateInterestGroupPriority(
     const StorageInterestGroup& storage_interest_group,
     const base::Time auction_start_time,
     const base::flat_map<std::string, double>& priority_vector,
-    absl::optional<double> first_dot_product_priority) {
+    std::optional<double> first_dot_product_priority) {
   // Empty priority vectors should be ignored, so updating an interest group can
   // set an empty priority vector to disable it.
   DCHECK(!priority_vector.empty());

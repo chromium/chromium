@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -139,7 +140,6 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/service_manager/public/mojom/interface_provider.mojom.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
@@ -592,7 +592,7 @@ blink::mojom::CommonNavigationParamsPtr MakeCommonNavigationParams(
       info->url_request.RequestorOrigin().CanAccess(current_origin),
       has_download_sandbox_flag, from_ad);
 
-  absl::optional<GURL> initiator_base_url;
+  std::optional<GURL> initiator_base_url;
   if (info->requestor_base_url.IsValid()) {
     initiator_base_url = info->requestor_base_url;
   }
@@ -1360,7 +1360,7 @@ class RenderFrameImpl::MHTMLBodyLoaderClient
                            int64_t total_encoded_data_length,
                            int64_t total_encoded_body_length,
                            int64_t total_decoded_body_length,
-                           const absl::optional<WebURLError>& error) override {
+                           const std::optional<WebURLError>& error) override {
     committing_ = true;
     AssertNavigationCommits assert_navigation_commits(frame_);
     if (!error.has_value()) {
@@ -1599,7 +1599,7 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
     render_frame->SetLoaderFactoryBundle(
         render_frame->CreateLoaderFactoryBundle(
             std::move(params->subresource_loader_factories),
-            /*subresource_overrides=*/absl::nullopt,
+            /*subresource_overrides=*/std::nullopt,
             /*subresource_proxying_loader_factory=*/mojo::NullRemote(),
             /*keep_alive_loader_factory=*/mojo::NullRemote(),
             /*fetch_later_loader_factory=*/mojo::NullAssociatedRemote()));
@@ -1619,10 +1619,10 @@ void RenderFrameImpl::CreateFrame(
     mojo::PendingAssociatedRemote<blink::mojom::AssociatedInterfaceProvider>
         associated_interface_provider,
     blink::WebView* web_view,
-    const absl::optional<blink::FrameToken>& previous_frame_token,
-    const absl::optional<blink::FrameToken>& opener_frame_token,
-    const absl::optional<blink::FrameToken>& parent_frame_token,
-    const absl::optional<blink::FrameToken>& previous_sibling_frame_token,
+    const std::optional<blink::FrameToken>& previous_frame_token,
+    const std::optional<blink::FrameToken>& opener_frame_token,
+    const std::optional<blink::FrameToken>& parent_frame_token,
+    const std::optional<blink::FrameToken>& previous_sibling_frame_token,
     const base::UnguessableToken& devtools_frame_token,
     blink::mojom::TreeScopeType tree_scope_type,
     blink::mojom::FrameReplicationStatePtr replicated_state,
@@ -2356,7 +2356,7 @@ blink::WebPlugin* RenderFrameImpl::CreatePlugin(
     const WebPluginInfo& info,
     const blink::WebPluginParams& params) {
 #if BUILDFLAG(ENABLE_PPAPI)
-  absl::optional<url::Origin> origin_lock;
+  std::optional<url::Origin> origin_lock;
   if (GetContentClient()->renderer()->IsOriginIsolatedPepperPlugin(info.path)) {
     origin_lock = url::Origin::Create(GURL(params.url));
   }
@@ -2585,7 +2585,7 @@ void RenderFrameImpl::CommitNavigation(
     network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
     std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
         subresource_loader_factories,
-    absl::optional<std::vector<blink::mojom::TransferrableURLLoaderPtr>>
+    std::optional<std::vector<blink::mojom::TransferrableURLLoaderPtr>>
         subresource_overrides,
     blink::mojom::ControllerServiceWorkerInfoPtr controller_service_worker_info,
     blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info,
@@ -2597,7 +2597,7 @@ void RenderFrameImpl::CommitNavigation(
         fetch_later_loader_factory,
     const blink::DocumentToken& document_token,
     const base::UnguessableToken& devtools_navigation_token,
-    const absl::optional<blink::ParsedPermissionsPolicy>& permissions_policy,
+    const std::optional<blink::ParsedPermissionsPolicy>& permissions_policy,
     blink::mojom::PolicyContainerPtr policy_container,
     mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,
     mojo::PendingRemote<blink::mojom::CodeCacheHost>
@@ -2774,7 +2774,7 @@ void RenderFrameImpl::CommitNavigationWithParams(
     blink::mojom::CommitNavigationParamsPtr commit_params,
     std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
         subresource_loader_factories,
-    absl::optional<std::vector<blink::mojom::TransferrableURLLoaderPtr>>
+    std::optional<std::vector<blink::mojom::TransferrableURLLoaderPtr>>
         subresource_overrides,
     blink::mojom::ControllerServiceWorkerInfoPtr controller_service_worker_info,
     blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info,
@@ -2917,7 +2917,7 @@ void RenderFrameImpl::CommitFailedNavigation(
     int error_code,
     int extended_error_code,
     net::ResolveErrorInfo resolve_error_info,
-    const absl::optional<std::string>& error_page_content,
+    const std::optional<std::string>& error_page_content,
     std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
         subresource_loader_factories,
     const blink::DocumentToken& document_token,
@@ -2958,7 +2958,7 @@ void RenderFrameImpl::CommitFailedNavigation(
   scoped_refptr<blink::ChildURLLoaderFactoryBundle> new_loader_factories =
       CreateLoaderFactoryBundle(
           std::move(subresource_loader_factories),
-          absl::nullopt /* subresource_overrides */,
+          std::nullopt /* subresource_overrides */,
           mojo::NullRemote() /* subresource_proxying_loader_factory */,
           mojo::NullRemote() /* keep_alive_loader_factory */,
           mojo::NullAssociatedRemote() /* fetch_later_loader_factory */);
@@ -3173,7 +3173,7 @@ void RenderFrameImpl::CommitSameDocumentNavigation(
         navigation_state->common_params().has_user_gesture;
     bool is_browser_initiated =
         navigation_state->commit_params().is_browser_initiated;
-    absl::optional<blink::scheduler::TaskAttributionId>
+    std::optional<blink::scheduler::TaskAttributionId>
         soft_navigation_heuristics_task_id =
             navigation_state->commit_params()
                 .soft_navigation_heuristics_task_id;
@@ -3674,7 +3674,7 @@ void RenderFrameImpl::EnsureWidgetInitialized() {
 
 blink::WebFrameWidget*
 RenderFrameImpl::PreviousWidgetForLazyCompositorInitialization(
-    const absl::optional<blink::FrameToken>& previous_frame_token) const {
+    const std::optional<blink::FrameToken>& previous_frame_token) const {
   if (!previous_frame_token) {
     return nullptr;
   }
@@ -3848,7 +3848,7 @@ void RenderFrameImpl::DidCommitNavigation(
     // Navigation initiated in this frame has been already reported in
     // BeginNavigation.
     for (auto& observer : observers_)
-      observer.DidStartNavigation(document_loader->GetUrl(), absl::nullopt);
+      observer.DidStartNavigation(document_loader->GetUrl(), std::nullopt);
   }
 
   for (auto& observer : observers_)
@@ -3984,7 +3984,7 @@ void RenderFrameImpl::DidCommitDocumentReplacementNavigation(
   // TODO(https://crbug.com/855189): figure out which of the following observer
   // calls are necessary, if any.
   for (auto& observer : observers_)
-    observer.DidStartNavigation(document_loader->GetUrl(), absl::nullopt);
+    observer.DidStartNavigation(document_loader->GetUrl(), std::nullopt);
   for (auto& observer : observers_)
     observer.ReadyToCommitNavigation(document_loader);
   for (auto& observer : observers_)
@@ -4140,7 +4140,7 @@ void RenderFrameImpl::DidFinishSameDocumentNavigation(
       blink::DocumentPolicyFeatureState(),  // document_policy_header
       nullptr,                              // interface_params
       std::move(same_document_params),
-      absl::nullopt  // embedding_token
+      std::nullopt  // embedding_token
   );
 
   // If we end up reusing this WebRequest (for example, due to a #ref click),
@@ -4376,10 +4376,10 @@ void RenderFrameImpl::WillSendRequestInternal(
 
   ApplyFilePathAlias(&request);
   GURL new_url;
-  absl::optional<url::Origin> initiator_origin =
+  std::optional<url::Origin> initiator_origin =
       request.RequestorOrigin().IsNull()
-          ? absl::optional<url::Origin>()
-          : absl::optional<url::Origin>(request.RequestorOrigin());
+          ? std::optional<url::Origin>()
+          : std::optional<url::Origin>(request.RequestorOrigin());
   GetContentClient()->renderer()->WillSendRequest(
       frame_, transition_type, request.Url(), request.SiteForCookies(),
       base::OptionalToPtr(initiator_origin), &new_url);
@@ -4603,14 +4603,14 @@ blink::WebString RenderFrameImpl::UserAgentOverride() {
   return blink::WebString();
 }
 
-absl::optional<blink::UserAgentMetadata>
+std::optional<blink::UserAgentMetadata>
 RenderFrameImpl::UserAgentMetadataOverride() {
   if (ShouldUseUserAgentOverride()) {
     return GetWebView()
         ->GetRendererPreferences()
         .user_agent_override.ua_metadata_override;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool RenderFrameImpl::ShouldUseUserAgentOverride() const {
@@ -4734,7 +4734,7 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
     ui::PageTransition transition,
     const blink::ParsedPermissionsPolicy& permissions_policy_header,
     const blink::DocumentPolicyFeatureState& document_policy_header,
-    const absl::optional<base::UnguessableToken>& embedding_token) {
+    const std::optional<base::UnguessableToken>& embedding_token) {
   WebDocumentLoader* document_loader = frame_->GetDocumentLoader();
   const WebURLResponse& response = document_loader->GetWebResponse();
 
@@ -5022,7 +5022,7 @@ void RenderFrameImpl::DidCommitNavigationInternal(
     const blink::DocumentPolicyFeatureState& document_policy_header,
     mojom::DidCommitProvisionalLoadInterfaceParamsPtr interface_params,
     mojom::DidCommitSameDocumentNavigationParamsPtr same_document_params,
-    const absl::optional<base::UnguessableToken>& embedding_token) {
+    const std::optional<base::UnguessableToken>& embedding_token) {
   DCHECK(!(same_document_params && interface_params));
   UpdateStateForCommit(commit_type, transition);
 
@@ -5727,7 +5727,7 @@ blink::ChildURLLoaderFactoryBundle* RenderFrameImpl::GetLoaderFactoryBundle() {
 scoped_refptr<blink::ChildURLLoaderFactoryBundle>
 RenderFrameImpl::CreateLoaderFactoryBundle(
     std::unique_ptr<blink::PendingURLLoaderFactoryBundle> info,
-    absl::optional<std::vector<blink::mojom::TransferrableURLLoaderPtr>>
+    std::optional<std::vector<blink::mojom::TransferrableURLLoaderPtr>>
         subresource_overrides,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         subresource_proxying_loader_factory,
@@ -5967,9 +5967,9 @@ void RenderFrameImpl::BeginNavigationInternal(
       CloneBlobURLToken(info->blob_url_token));
 
   int load_flags = info->url_request.GetLoadFlagsForWebUrlRequest();
-  absl::optional<base::Value::Dict> devtools_initiator;
+  std::optional<base::Value::Dict> devtools_initiator;
   if (!info->devtools_initiator_info.IsNull()) {
-    absl::optional<base::Value> devtools_initiator_value =
+    std::optional<base::Value> devtools_initiator_value =
         base::JSONReader::Read(info->devtools_initiator_info.Utf8());
     if (devtools_initiator_value && devtools_initiator_value->is_dict()) {
       devtools_initiator = std::move(*devtools_initiator_value).TakeDict();
@@ -6277,7 +6277,7 @@ void RenderFrameImpl::LoadHTMLStringForTesting(std::string_view html,
   pending_loader_factories_ = CreateLoaderFactoryBundle(
       blink::ChildPendingURLLoaderFactoryBundle::CreateFromDefaultFactoryImpl(
           std::move(url_loader_factory_remote)),
-      /*subresource_overrides=*/absl::nullopt,
+      /*subresource_overrides=*/std::nullopt,
       /*subresource_proxying_loader_factory=*/{},
       /*keep_alive_loader_factory=*/{},
       /*fetch_later_loader_factory=*/{});
@@ -6470,8 +6470,8 @@ WebView* RenderFrameImpl::CreateNewWindow(
     network::mojom::WebSandboxFlags sandbox_flags,
     const blink::SessionStorageNamespaceId& session_storage_namespace_id,
     bool& consumed_user_gesture,
-    const absl::optional<blink::Impression>& impression,
-    const absl::optional<blink::WebPictureInPictureWindowOptions>& pip_options,
+    const std::optional<blink::Impression>& impression,
+    const std::optional<blink::WebPictureInPictureWindowOptions>& pip_options,
     const blink::WebURL& base_url) {
   consumed_user_gesture = false;
   mojom::CreateNewWindowParamsPtr params = mojom::CreateNewWindowParams::New();

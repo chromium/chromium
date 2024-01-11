@@ -319,8 +319,8 @@ RenderViewHostImpl::RenderViewHostImpl(
       frame_tree_(frame_tree),
       main_browsing_context_state_(
           main_browsing_context_state
-              ? absl::make_optional(main_browsing_context_state->GetSafeRef())
-              : absl::nullopt),
+              ? std::make_optional(main_browsing_context_state->GetSafeRef())
+              : std::nullopt),
       is_speculative_(create_case == CreateRenderViewHostCase::kSpeculative) {
   TRACE_EVENT("navigation", "RenderViewHostImpl::RenderViewHostImpl",
               ChromeTrackEvent::kRenderViewHost, *this);
@@ -409,7 +409,7 @@ void RenderViewHostImpl::DisallowReuse() {
 }
 
 bool RenderViewHostImpl::CreateRenderView(
-    const absl::optional<blink::FrameToken>& opener_frame_token,
+    const std::optional<blink::FrameToken>& opener_frame_token,
     int proxy_route_id,
     bool window_was_opened_by_another_window) {
   TRACE_EVENT0("renderer_host,navigation",

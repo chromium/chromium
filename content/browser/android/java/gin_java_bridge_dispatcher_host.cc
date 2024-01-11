@@ -219,7 +219,7 @@ void GinJavaBridgeDispatcherHost::PrimaryPageChanged(Page& page) {
 GinJavaBoundObject::ObjectID GinJavaBridgeDispatcherHost::AddObject(
     const base::android::JavaRef<jobject>& object,
     const base::android::JavaRef<jclass>& safe_annotation_clazz,
-    absl::optional<GlobalRenderFrameHostId> holder) {
+    std::optional<GlobalRenderFrameHostId> holder) {
   // Can be called on any thread. Calls come from the UI thread via
   // AddNamedObject, and from the background thread, when injected Java
   // object's method returns a Java object.
@@ -324,7 +324,7 @@ void GinJavaBridgeDispatcherHost::AddNamedObject(
     base::AutoLock locker(objects_lock_);
     objects_[object_id]->AddName();
   } else {
-    object_id = AddObject(object, safe_annotation_clazz, absl::nullopt);
+    object_id = AddObject(object, safe_annotation_clazz, std::nullopt);
   }
   named_objects_[name] = object_id;
 

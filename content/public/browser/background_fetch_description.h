@@ -6,11 +6,12 @@
 #define CONTENT_PUBLIC_BROWSER_BACKGROUND_FETCH_DESCRIPTION_H_
 
 #include <stdint.h>
+
+#include <optional>
 #include <vector>
 
 #include "content/common/content_export.h"
 #include "net/base/isolation_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/origin.h"
 
@@ -30,7 +31,7 @@ struct CONTENT_EXPORT BackgroundFetchDescription {
                              uint64_t upload_total_bytes,
                              std::vector<std::string> outstanding_guids,
                              bool start_paused,
-                             absl::optional<net::IsolationInfo> isolation_info);
+                             std::optional<net::IsolationInfo> isolation_info);
   BackgroundFetchDescription(const BackgroundFetchDescription&) = delete;
   BackgroundFetchDescription& operator=(const BackgroundFetchDescription&) =
       delete;
@@ -60,7 +61,7 @@ struct CONTENT_EXPORT BackgroundFetchDescription {
   // Network params.
   // Generally expected to have a value but passed as an optional for
   // compatibility with fetches that were started before this was added.
-  absl::optional<net::IsolationInfo> isolation_info;
+  std::optional<net::IsolationInfo> isolation_info;
 };
 
 }  // namespace content

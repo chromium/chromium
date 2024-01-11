@@ -5,6 +5,7 @@
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 
 #include <cmath>
+#include <optional>
 #include <set>
 #include <utility>
 #include <vector>
@@ -82,7 +83,6 @@
 #include "services/network/public/mojom/attribution.mojom.h"
 #include "services/network/public/mojom/network_change_manager.mojom-forward.h"
 #include "storage/browser/quota/special_storage_policy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -150,7 +150,7 @@ class AttributionReportScheduler : public ReportSchedulerTimer::Delegate {
  private:
   // ReportSchedulerTimer::Delegate:
   void GetNextReportTime(
-      base::OnceCallback<void(absl::optional<base::Time>)> callback,
+      base::OnceCallback<void(std::optional<base::Time>)> callback,
       base::Time now) override {
     attribution_storage_->AsyncCall(&AttributionStorage::GetNextReportTime)
         .WithArgs(now)
@@ -161,7 +161,7 @@ class AttributionReportScheduler : public ReportSchedulerTimer::Delegate {
     send_reports_.Run();
   }
   void AdjustOfflineReportTimes(
-      base::OnceCallback<void(absl::optional<base::Time>)> maybe_set_timer_cb)
+      base::OnceCallback<void(std::optional<base::Time>)> maybe_set_timer_cb)
       override {
     // Add delay to all reports that should have been sent while the browser was
     // offline so they are not temporally joinable. We do this in storage to
@@ -432,7 +432,7 @@ struct AttributionManagerImpl::SourceOrTriggerRFH {
   GlobalRenderFrameHostId rfh_id;
 };
 
-absl::optional<base::TimeDelta> GetFailedReportDelay(int failed_send_attempts) {
+std::optional<base::TimeDelta> GetFailedReportDelay(int failed_send_attempts) {
   DCHECK_GT(failed_send_attempts, 0);
 
   const int kMaxFailedSendAttempts = 2;
@@ -440,7 +440,7 @@ absl::optional<base::TimeDelta> GetFailedReportDelay(int failed_send_attempts) {
   const int kDelayFactor = 3;
 
   if (failed_send_attempts > kMaxFailedSendAttempts) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return kInitialReportDelay * std::pow(kDelayFactor, failed_send_attempts - 1);
@@ -625,7 +625,7 @@ void AttributionManagerImpl::RecordPendingAggregatableReportsTimings() {
 
 void AttributionManagerImpl::OnSourceStored(
     const StorableSource& source,
-    absl::optional<uint64_t> cleared_debug_key,
+    std::optional<uint64_t> cleared_debug_key,
     bool is_debug_cookie_set,
     StoreSourceResult result) {
   CHECK(IsReady());
@@ -657,10 +657,10 @@ void AttributionManagerImpl::HandleTrigger(
 
 void AttributionManagerImpl::StoreTrigger(AttributionTrigger trigger,
                                           bool is_debug_cookie_set) {
-  absl::optional<uint64_t> cleared_debug_key;
+  std::optional<uint64_t> cleared_debug_key;
   if (!is_debug_cookie_set) {
     cleared_debug_key =
-        std::exchange(trigger.registration().debug_key, absl::nullopt);
+        std::exchange(trigger.registration().debug_key, std::nullopt);
   }
 
   attribution_storage_.AsyncCall(&AttributionStorage::MaybeCreateAndStoreReport)
@@ -776,7 +776,7 @@ void AttributionManagerImpl::ProcessNextEvent(bool registration_allowed,
               StoreSource(std::move(source), is_debug_cookie_set);
             } else {
               OnSourceStored(source,
-                             /*cleared_debug_key=*/absl::nullopt,
+                             /*cleared_debug_key=*/std::nullopt,
                              /*is_debug_cookie_set=*/false,
                              StoreSourceResult::ProhibitedByBrowserPolicy());
             }
@@ -786,7 +786,7 @@ void AttributionManagerImpl::ProcessNextEvent(bool registration_allowed,
               StoreTrigger(std::move(trigger), is_debug_cookie_set);
             } else {
               OnReportStored(trigger,
-                             /*cleared_debug_key=*/absl::nullopt,
+                             /*cleared_debug_key=*/std::nullopt,
                              /*is_debug_cookie_set=*/false,
                              CreateReportResult(
                                  /*trigger_time=*/base::Time::Now(),
@@ -804,10 +804,10 @@ void AttributionManagerImpl::ProcessNextEvent(bool registration_allowed,
 
 void AttributionManagerImpl::StoreSource(StorableSource source,
                                          bool is_debug_cookie_set) {
-  absl::optional<uint64_t> cleared_debug_key;
+  std::optional<uint64_t> cleared_debug_key;
   if (!is_debug_cookie_set) {
     cleared_debug_key =
-        std::exchange(source.registration().debug_key, absl::nullopt);
+        std::exchange(source.registration().debug_key, std::nullopt);
   }
 
   attribution_storage_.AsyncCall(&AttributionStorage::StoreSource)
@@ -839,14 +839,14 @@ void AttributionManagerImpl::AddPendingAggregatableReportTiming(
 
 void AttributionManagerImpl::OnReportStored(
     const AttributionTrigger& trigger,
-    absl::optional<uint64_t> cleared_debug_key,
+    std::optional<uint64_t> cleared_debug_key,
     bool is_debug_cookie_set,
     CreateReportResult result) {
   CHECK(IsReady());
 
   RecordCreateReportStatus(result);
 
-  absl::optional<base::Time> min_new_report_time;
+  std::optional<base::Time> min_new_report_time;
 
   if (auto& report = result.new_event_level_report()) {
     min_new_report_time = report->report_time();
@@ -1152,13 +1152,13 @@ void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
   // update the report's DB state to reflect that. Otherwise, delete the report
   // from storage.
 
-  absl::optional<base::Time> new_report_time;
+  std::optional<base::Time> new_report_time;
   // TODO(linnan): Retry on transient assembly failure isn't privacy sensitive,
   // therefore we could consider subjecting these failures to a different limit.
   if (info.status == SendResult::Status::kTransientFailure ||
       info.status == SendResult::Status::kTransientAssemblyFailure) {
     int retry_attempts = report.failed_send_attempts() + 1;
-    if (absl::optional<base::TimeDelta> delay =
+    if (std::optional<base::TimeDelta> delay =
             GetFailedReportDelay(retry_attempts)) {
       new_report_time = base::Time::Now() + *delay;
     } else {
@@ -1184,7 +1184,7 @@ void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
   base::OnceCallback then = base::BindOnce(
       [](base::OnceClosure done, base::WeakPtr<AttributionManagerImpl> manager,
          AttributionReport::Id report_id,
-         absl::optional<base::Time> new_report_time, bool success) {
+         std::optional<base::Time> new_report_time, bool success) {
         if (done) {
           std::move(done).Run();
         }
@@ -1254,7 +1254,7 @@ void AttributionManagerImpl::AssembleAggregatableReport(
     return;
   }
 
-  absl::optional<AggregatableReportRequest> request =
+  std::optional<AggregatableReportRequest> request =
       CreateAggregatableReportRequest(report);
   if (!request.has_value()) {
     RecordAssembleAggregatableReportStatus(
@@ -1276,7 +1276,7 @@ void AttributionManagerImpl::OnAggregatableReportAssembled(
     bool is_debug_report,
     ReportSentCallback callback,
     AggregatableReportRequest,
-    absl::optional<AggregatableReport> assembled_report,
+    std::optional<AggregatableReport> assembled_report,
     AggregationService::AssemblyStatus) {
   if (!assembled_report.has_value()) {
     RecordAssembleAggregatableReportStatus(
@@ -1338,7 +1338,7 @@ void AttributionManagerImpl::MaybeSendVerboseDebugReport(
     return;
   }
 
-  if (absl::optional<AttributionDebugReport> debug_report =
+  if (std::optional<AttributionDebugReport> debug_report =
           AttributionDebugReport::Create(source, is_debug_cookie_set, result)) {
     report_sender_->SendReport(
         std::move(*debug_report),
@@ -1365,7 +1365,7 @@ void AttributionManagerImpl::MaybeSendVerboseDebugReport(
     return;
   }
 
-  if (absl::optional<AttributionDebugReport> debug_report =
+  if (std::optional<AttributionDebugReport> debug_report =
           AttributionDebugReport::Create(trigger, is_debug_cookie_set,
                                          result)) {
     report_sender_->SendReport(
@@ -1531,7 +1531,7 @@ void AttributionManagerImpl::OnOsRegistration(
                                : OsRegistrationResult::kRejectedByOs);
 }
 
-void AttributionManagerImpl::SetDebugMode(absl::optional<bool> enabled,
+void AttributionManagerImpl::SetDebugMode(std::optional<bool> enabled,
                                           base::OnceClosure done) {
   bool debug_mode =
       enabled.value_or(base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -1577,7 +1577,7 @@ void AttributionManagerImpl::MaybeSendVerboseDebugReport(
     return;
   }
 
-  if (absl::optional<AttributionDebugReport> debug_report =
+  if (std::optional<AttributionDebugReport> debug_report =
           AttributionDebugReport::Create(registration)) {
     report_sender_->SendReport(
         std::move(*debug_report),

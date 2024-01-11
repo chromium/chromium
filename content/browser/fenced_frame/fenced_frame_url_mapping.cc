@@ -6,6 +6,7 @@
 
 #include <cstring>
 #include <map>
+#include <optional>
 #include <string>
 
 #include "base/containers/contains.h"
@@ -18,7 +19,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/types/id_type.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/common/frame/fenced_frame_permissions_policies.h"
@@ -137,7 +137,7 @@ void FencedFrameURLMapping::ImportPendingAdComponents(
   }
 }
 
-absl::optional<GURL> FencedFrameURLMapping::AddFencedFrameURLForTesting(
+std::optional<GURL> FencedFrameURLMapping::AddFencedFrameURLForTesting(
     const GURL& url,
     scoped_refptr<FencedFrameReporter> fenced_frame_reporter) {
   DCHECK(url.is_valid());
@@ -147,7 +147,7 @@ absl::optional<GURL> FencedFrameURLMapping::AddFencedFrameURLForTesting(
 
   if (!it.has_value()) {
     // Insertion fails, the number of urn mappings has reached limit.
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   auto& [urn, config] = *it.value();
@@ -169,11 +169,11 @@ absl::optional<GURL> FencedFrameURLMapping::AddFencedFrameURLForTesting(
   return urn;
 }
 
-absl::optional<FencedFrameURLMapping::UrnUuidToUrlMap::iterator>
+std::optional<FencedFrameURLMapping::UrnUuidToUrlMap::iterator>
 FencedFrameURLMapping::AddMappingForUrl(const GURL& url) {
   if (IsFull()) {
     // Number of urn mappings has reached limit, url will not be inserted.
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Create a urn::uuid.
@@ -188,7 +188,7 @@ FencedFrameURLMapping::AddMappingForUrl(const GURL& url) {
 blink::FencedFrame::RedactedFencedFrameConfig
 FencedFrameURLMapping::AssignFencedFrameURLAndInterestGroupInfo(
     const GURL& urn_uuid,
-    absl::optional<blink::AdSize> container_size,
+    std::optional<blink::AdSize> container_size,
     const blink::AdDescriptor& ad_descriptor,
     AdAuctionData ad_auction_data,
     base::RepeatingClosure on_navigate_callback,
@@ -290,9 +290,9 @@ FencedFrameURLMapping::AssignFencedFrameURLAndInterestGroupInfo(
   return config.RedactFor(FencedFrameEntity::kEmbedder);
 }
 
-absl::optional<GURL> FencedFrameURLMapping::GeneratePendingMappedURN() {
+std::optional<GURL> FencedFrameURLMapping::GeneratePendingMappedURN() {
   if (IsFull()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   GURL urn_uuid = GenerateUrnUuid();
@@ -315,7 +315,7 @@ void FencedFrameURLMapping::ConvertFencedFrameURNToURL(
     return;
   }
 
-  absl::optional<FencedFrameProperties> properties;
+  std::optional<FencedFrameProperties> properties;
 
   auto it = urn_uuid_to_url_map_.find(urn_uuid);
   if (it != urn_uuid_to_url_map_.end()) {
@@ -349,7 +349,7 @@ void FencedFrameURLMapping::RemoveObserverForURN(
   it->second.erase(observer_it);
 }
 
-absl::optional<FencedFrameConfig>
+std::optional<FencedFrameConfig>
 FencedFrameURLMapping::OnSharedStorageURNMappingResultDetermined(
     const GURL& urn_uuid,
     const SharedStorageURNMappingResult& mapping_result) {
@@ -358,7 +358,7 @@ FencedFrameURLMapping::OnSharedStorageURNMappingResultDetermined(
 
   DCHECK(!IsMapped(urn_uuid));
 
-  absl::optional<FencedFrameConfig> config = absl::nullopt;
+  std::optional<FencedFrameConfig> config = std::nullopt;
 
   // Only if the resolved URL is fenced-frame-compatible do we:
   //   1.) Add it to `urn_uuid_to_url_map_`
@@ -379,7 +379,7 @@ FencedFrameURLMapping::OnSharedStorageURNMappingResultDetermined(
 
   std::set<raw_ptr<MappingResultObserver>>& observers = pending_it->second;
 
-  absl::optional<FencedFrameProperties> properties = absl::nullopt;
+  std::optional<FencedFrameProperties> properties = std::nullopt;
   auto final_it = urn_uuid_to_url_map_.find(urn_uuid);
   if (final_it != urn_uuid_to_url_map_.end()) {
     properties = FencedFrameProperties(final_it->second);

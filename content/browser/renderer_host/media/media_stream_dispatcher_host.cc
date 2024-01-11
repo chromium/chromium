@@ -424,7 +424,7 @@ void MediaStreamDispatcherHost::GenerateStreams(
     GenerateStreamsCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  const absl::optional<bad_message::BadMessageReason> bad_message =
+  const std::optional<bad_message::BadMessageReason> bad_message =
       ValidateControlsForGenerateStreams(controls);
   if (bad_message.has_value()) {
     ReceivedBadMessage(render_frame_host_id_.child_id, bad_message.value());
@@ -530,7 +530,7 @@ void MediaStreamDispatcherHost::CancelRequest(int page_request_id) {
 
 void MediaStreamDispatcherHost::StopStreamDevice(
     const std::string& device_id,
-    const absl::optional<base::UnguessableToken>& session_id) {
+    const std::optional<base::UnguessableToken>& session_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   media_stream_manager_->StopStreamDevice(
@@ -590,7 +590,7 @@ void MediaStreamDispatcherHost::CloseDevice(const std::string& label) {
 }
 
 void MediaStreamDispatcherHost::SetCapturingLinkSecured(
-    const absl::optional<base::UnguessableToken>& session_id,
+    const std::optional<base::UnguessableToken>& session_id,
     blink::mojom::MediaStreamType type,
     bool is_secure) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -704,7 +704,7 @@ void MediaStreamDispatcherHost::GetZoomLevel(
     ReceivedBadMessage(
         render_frame_host_id_.child_id,
         bad_message::MSDH_GET_ZOOM_LEVEL_BUT_CSC_FEATURE_DISABLED);
-    std::move(callback).Run(absl::nullopt,
+    std::move(callback).Run(std::nullopt,
                             CapturedSurfaceControlResult::kUnknownError);
     return;
   }
@@ -825,7 +825,7 @@ void MediaStreamDispatcherHost::DoGetOpenDevice(
           weak_factory_.GetWeakPtr()));
 }
 
-absl::optional<bad_message::BadMessageReason>
+std::optional<bad_message::BadMessageReason>
 MediaStreamDispatcherHost::ValidateControlsForGenerateStreams(
     const blink::StreamControls& controls) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -856,7 +856,7 @@ MediaStreamDispatcherHost::ValidateControlsForGenerateStreams(
     }
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void MediaStreamDispatcherHost::ReceivedBadMessage(

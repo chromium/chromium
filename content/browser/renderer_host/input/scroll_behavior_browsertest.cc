@@ -136,8 +136,7 @@ namespace content {
 class ScrollBehaviorBrowserTest : public ContentBrowserTest {
  public:
   explicit ScrollBehaviorBrowserTest(
-      const absl::optional<bool> enable_percent_based_scrolling =
-          absl::nullopt) {
+      const std::optional<bool> enable_percent_based_scrolling = std::nullopt) {
     if (enable_percent_based_scrolling.has_value() &&
         *enable_percent_based_scrolling) {
       scoped_feature_list.InitAndEnableFeature(
@@ -326,7 +325,7 @@ class ScrollBehaviorBrowserTestWithPercentBasedScrolling
     : public ScrollBehaviorBrowserTest {
  public:
   ScrollBehaviorBrowserTestWithPercentBasedScrolling()
-      : ScrollBehaviorBrowserTest(absl::optional<bool>(true)) {}
+      : ScrollBehaviorBrowserTest(std::optional<bool>(true)) {}
 };
 
 // This tests that a in-progress smooth scroll on an overflow:scroll element

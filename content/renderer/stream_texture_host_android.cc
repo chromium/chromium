@@ -83,7 +83,7 @@ void StreamTextureHost::OnFrameWithInfoAvailable(
     const gpu::Mailbox& mailbox,
     const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
-    absl::optional<gpu::VulkanYCbCrInfo> ycbcr_info) {
+    std::optional<gpu::VulkanYCbCrInfo> ycbcr_info) {
   if (listener_) {
     listener_->OnFrameWithInfoAvailable(mailbox, coded_size, visible_rect,
                                         ycbcr_info);

@@ -44,7 +44,7 @@ class ShellBluetoothDelegateImplClient
       const std::u16string& device_identifier,
       BluetoothDelegate::PairPromptCallback callback,
       BluetoothDelegate::PairingKind pairing_kind,
-      const absl::optional<std::u16string>& pin) override;
+      const std::optional<std::u16string>& pin) override;
 };
 
 }  // namespace content

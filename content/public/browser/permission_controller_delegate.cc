@@ -11,7 +11,7 @@ namespace content {
 
 bool PermissionControllerDelegate::IsPermissionOverridable(
     blink::PermissionType permission,
-    const absl::optional<url::Origin>& origin) {
+    const std::optional<url::Origin>& origin) {
   return true;
 }
 
@@ -23,10 +23,10 @@ PermissionControllerDelegate::GetPermissionResultForCurrentDocument(
                           PermissionStatusSource::UNSPECIFIED);
 }
 
-absl::optional<gfx::Rect>
+std::optional<gfx::Rect>
 PermissionControllerDelegate::GetExclusionAreaBoundsInScreen(
     content::WebContents* web_contents) const {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace content

@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <tuple>
@@ -47,7 +48,6 @@
 #include "content/test/storage_partition_test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 using base::test::RunOnceCallback;
@@ -149,7 +149,7 @@ class MockDownloadItemFactory
       const std::string& serialized_embedder_download_data,
       const GURL& tab_url,
       const GURL& tab_referrer_url,
-      const absl::optional<url::Origin>& request_initiator,
+      const std::optional<url::Origin>& request_initiator,
       const std::string& mime_type,
       const std::string& original_mime_type,
       base::Time start_time,
@@ -228,7 +228,7 @@ download::DownloadItemImpl* MockDownloadItemFactory::CreatePersistedItem(
     const std::string& serialized_embedder_download_data,
     const GURL& tab_url,
     const GURL& tab_referrer_url,
-    const absl::optional<url::Origin>& request_initiator,
+    const std::optional<url::Origin>& request_initiator,
     const std::string& mime_type,
     const std::string& original_mime_type,
     base::Time start_time,

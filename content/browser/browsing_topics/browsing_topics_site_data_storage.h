@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_BROWSING_TOPICS_BROWSING_TOPICS_SITE_DATA_STORAGE_H_
 
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -18,7 +19,6 @@
 #include "components/browsing_topics/common/common_types.h"
 #include "content/common/content_export.h"
 #include "sql/meta_table.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sql {
 class Database;

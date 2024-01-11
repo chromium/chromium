@@ -308,7 +308,7 @@ struct KeepAliveURLLoader::StoredURLLoad {
   struct ResponseData {
     ResponseData(network::mojom::URLResponseHeadPtr response_head,
                  mojo::ScopedDataPipeConsumerHandle body_handle,
-                 absl::optional<mojo_base::BigBuffer> cached_metadata)
+                 std::optional<mojo_base::BigBuffer> cached_metadata)
         : head(std::move(response_head)),
           body(std::move(body_handle)),
           metadata(std::move(cached_metadata)) {}
@@ -321,7 +321,7 @@ struct KeepAliveURLLoader::StoredURLLoad {
     // The original body handle not yet passed to renderer.
     mojo::ScopedDataPipeConsumerHandle body;
     // The original cached metadata not yet passed to renderer.
-    absl::optional<mojo_base::BigBuffer> metadata;
+    std::optional<mojo_base::BigBuffer> metadata;
   };
 
   // Stores all intermediate redirect data received from `OnReceiveRedirect()`.
@@ -331,8 +331,8 @@ struct KeepAliveURLLoader::StoredURLLoad {
   std::unique_ptr<ResponseData> response = nullptr;
   // Stores the completion status received from `OnComplete()` for later use in
   // renderer.
-  absl::optional<network::URLLoaderCompletionStatus> completion_status =
-      absl::nullopt;
+  std::optional<network::URLLoaderCompletionStatus> completion_status =
+      std::nullopt;
   // Tells whether any of the above field has been used (forwarded to renderer).
   bool forwarding = false;
 };
@@ -476,12 +476,12 @@ void KeepAliveURLLoader::FollowRedirect(
     const std::vector<std::string>& removed_headers,
     const net::HttpRequestHeaders& modified_headers,
     const net::HttpRequestHeaders& modified_cors_exempt_headers,
-    const absl::optional<GURL>& new_url) {
+    const std::optional<GURL>& new_url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   TRACE_EVENT("loading", "KeepAliveURLLoader::FollowRedirect", "request_id",
               request_id_, "url", new_url);
 
-  if (new_url != absl::nullopt) {
+  if (new_url != std::nullopt) {
     mojo::ReportBadMessage(
         "Unexpected `new_url` in KeepAliveURLLoader::FollowRedirect(): "
         "must be null");
@@ -663,13 +663,13 @@ void KeepAliveURLLoader::OnReceiveRedirect(
   // `OnReceiveResponse()`.
   loader_->FollowRedirect(modified.removed_headers, modified.modified_headers,
                           modified.modified_cors_exempt_headers,
-                          /*new_url=*/absl::nullopt);
+                          /*new_url=*/std::nullopt);
 }
 
 void KeepAliveURLLoader::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr response,
     mojo::ScopedDataPipeConsumerHandle body,
-    absl::optional<mojo_base::BigBuffer> cached_metadata) {
+    std::optional<mojo_base::BigBuffer> cached_metadata) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   TRACE_EVENT("loading", "KeepAliveURLLoader::OnReceiveResponse", "request_id",
               request_id_, "url", last_url_);

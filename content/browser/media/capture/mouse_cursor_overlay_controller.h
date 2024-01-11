@@ -191,7 +191,7 @@ class CONTENT_EXPORT MouseCursorOverlayController {
   base::OneShotTimer last_observed_coordinates_timer_;
 
   // Latest coordinates sent to the the overlay and time when it happened.
-  absl::optional<gfx::Point> last_emitted_coordinates_;
+  std::optional<gfx::Point> last_emitted_coordinates_;
   base::TimeTicks last_emitted_coordinates_time_;
 
   // Everything except the constructor and IsUserInteractingWithView() must be

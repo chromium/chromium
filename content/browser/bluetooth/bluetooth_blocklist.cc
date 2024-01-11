@@ -4,13 +4,14 @@
 
 #include "content/browser/bluetooth/bluetooth_blocklist.h"
 
+#include <optional>
+
 #include "base/check.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_split.h"
 #include "content/browser/bluetooth/bluetooth_util.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom.h"
 
 using device::BluetoothUUID;

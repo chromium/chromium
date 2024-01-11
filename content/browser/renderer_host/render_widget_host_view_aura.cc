@@ -548,7 +548,7 @@ bool RenderWidgetHostViewAura::IsSurfaceAvailableForCopy() {
 void RenderWidgetHostViewAura::EnsureSurfaceSynchronizedForWebTest() {
   ++latest_capture_sequence_number_;
   SynchronizeVisualProperties(cc::DeadlinePolicy::UseInfiniteDeadline(),
-                              absl::nullopt);
+                              std::nullopt);
 }
 
 bool RenderWidgetHostViewAura::IsShowing() {
@@ -769,7 +769,7 @@ void RenderWidgetHostViewAura::EnsureDevicePostureServiceConnection() {
 
 void RenderWidgetHostViewAura::OnViewportSegmentsChanged(
     const std::vector<gfx::Rect>& segments) {
-  display_feature_ = absl::nullopt;
+  display_feature_ = std::nullopt;
   viewport_segments_.clear();
   if (segments.empty()) {
     SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
@@ -790,7 +790,7 @@ void RenderWidgetHostViewAura::ComputeDisplayFeature() {
     return;
   }
 
-  display_feature_ = absl::nullopt;
+  display_feature_ = std::nullopt;
   if (!window_->GetRootWindow()) {
     return;
   }
@@ -822,7 +822,7 @@ void RenderWidgetHostViewAura::ComputeDisplayFeature() {
   }
 }
 
-absl::optional<DisplayFeature> RenderWidgetHostViewAura::GetDisplayFeature() {
+std::optional<DisplayFeature> RenderWidgetHostViewAura::GetDisplayFeature() {
   return display_feature_;
 }
 
@@ -831,7 +831,7 @@ void RenderWidgetHostViewAura::SetDisplayFeatureForTesting(
   if (display_feature)
     display_feature_ = *display_feature;
   else
-    display_feature_ = absl::nullopt;
+    display_feature_ = std::nullopt;
 }
 
 void RenderWidgetHostViewAura::WindowTitleChanged() {
@@ -1048,7 +1048,7 @@ void RenderWidgetHostViewAura::ResetFallbackToFirstNavigationSurface() {
 
 bool RenderWidgetHostViewAura::RequestRepaintForTesting() {
   return SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
-                                     absl::nullopt);
+                                     std::nullopt);
 }
 
 void RenderWidgetHostViewAura::DidStopFlinging() {
@@ -1316,7 +1316,7 @@ bool RenderWidgetHostViewAura::GetIsMouseLockedUnadjustedMovementForTesting() {
 }
 
 bool RenderWidgetHostViewAura::LockKeyboard(
-    absl::optional<base::flat_set<ui::DomCode>> codes) {
+    std::optional<base::flat_set<ui::DomCode>> codes) {
   return event_handler_->LockKeyboard(std::move(codes));
 }
 
@@ -1486,7 +1486,7 @@ gfx::Rect RenderWidgetHostViewAura::GetCaretBounds() const {
     return gfx::Rect();
 
   // Check selection bound first (currently populated only for EditContext)
-  const absl::optional<gfx::Rect> text_selection_bound =
+  const std::optional<gfx::Rect> text_selection_bound =
       text_input_manager_->GetTextSelectionBounds();
   if (text_selection_bound)
     return ConvertRectToScreen(text_selection_bound.value());
@@ -1810,15 +1810,15 @@ bool RenderWidgetHostViewAura::SetAutocorrectRange(
   return true;
 }
 
-absl::optional<ui::GrammarFragment>
+std::optional<ui::GrammarFragment>
 RenderWidgetHostViewAura::GetGrammarFragmentAtCursor() const {
   if (!text_input_manager_ || !text_input_manager_->GetActiveWidget())
-    return absl::nullopt;
+    return std::nullopt;
   gfx::Range selection_range;
   if (GetEditableSelectionRange(&selection_range)) {
     return text_input_manager_->GetGrammarFragment(selection_range);
   } else {
-    return absl::nullopt;
+    return std::nullopt;
   }
 }
 
@@ -1872,10 +1872,10 @@ bool RenderWidgetHostViewAura::AddGrammarFragments(
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 void RenderWidgetHostViewAura::GetActiveTextInputControlLayoutBounds(
-    absl::optional<gfx::Rect>* control_bounds,
-    absl::optional<gfx::Rect>* selection_bounds) {
+    std::optional<gfx::Rect>* control_bounds,
+    std::optional<gfx::Rect>* selection_bounds) {
   if (text_input_manager_) {
-    const absl::optional<gfx::Rect> text_control_bounds =
+    const std::optional<gfx::Rect> text_control_bounds =
         text_input_manager_->GetTextControlBounds();
     if (text_control_bounds) {
       *control_bounds = ConvertRectToScreen(text_control_bounds.value());
@@ -1886,7 +1886,7 @@ void RenderWidgetHostViewAura::GetActiveTextInputControlLayoutBounds(
     }
     // Selection bounds are currently populated only for EditContext.
     // For editable elements we use GetCompositionCharacterBounds.
-    const absl::optional<gfx::Rect> text_selection_bounds =
+    const std::optional<gfx::Rect> text_selection_bounds =
         text_input_manager_->GetTextSelectionBounds();
     if (text_selection_bounds) {
       *selection_bounds = ConvertRectToScreen(text_selection_bounds.value());
@@ -2439,7 +2439,7 @@ void RenderWidgetHostViewAura::UpdateCursorIfOverSelf() {
 
 bool RenderWidgetHostViewAura::SynchronizeVisualProperties(
     const cc::DeadlinePolicy& deadline_policy,
-    const absl::optional<viz::LocalSurfaceId>& child_local_surface_id) {
+    const std::optional<viz::LocalSurfaceId>& child_local_surface_id) {
   DCHECK(window_);
   DCHECK(delegated_frame_host_) << "Cannot be invoked during destruction.";
 
@@ -2970,7 +2970,7 @@ void RenderWidgetHostViewAura::ScrollFocusedEditableNodeIntoView() {
 void RenderWidgetHostViewAura::OnSynchronizedDisplayPropertiesChanged(
     bool rotation) {
   SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
-                              absl::nullopt);
+                              std::nullopt);
 }
 
 viz::ScopedSurfaceIdAllocator
@@ -2998,7 +2998,7 @@ void RenderWidgetHostViewAura::DidNavigate() {
                                   window_->GetLocalSurfaceId());
     } else {
       SynchronizeVisualProperties(cc::DeadlinePolicy::UseExistingDeadline(),
-                                  absl::nullopt);
+                                  std::nullopt);
     }
   }
   delegated_frame_host_->DidNavigate();

@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_MEDIA_AUDIO_LOOPBACK_STREAM_BROKER_H_
 
 #include <cstdint>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -19,7 +20,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace audio {
 namespace mojom {
@@ -77,7 +77,7 @@ class CONTENT_EXPORT AudioLoopbackStreamBroker final
 
   // Constructed only if the loopback source playback should be muted while the
   // loopback stream is running.
-  absl::optional<AudioMutingSession> muter_;
+  std::optional<AudioMutingSession> muter_;
 
   mojo::Remote<blink::mojom::RendererAudioInputStreamFactoryClient>
       renderer_factory_client_;

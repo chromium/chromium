@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_INTEREST_GROUP_TEST_INTEREST_GROUP_MANAGER_IMPL_H_
 
 #include <list>
+#include <optional>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -15,7 +16,6 @@
 #include "content/public/browser/k_anonymity_service_delegate.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -110,7 +110,7 @@ class TestInterestGroupManagerImpl
 
   // Retrieves the specified interest group if it exists, spinning a RunLoop
   // until the group is retrieved.
-  absl::optional<SingleStorageInterestGroup> BlockingGetInterestGroup(
+  std::optional<SingleStorageInterestGroup> BlockingGetInterestGroup(
       const url::Origin& owner,
       const std::string& name);
 

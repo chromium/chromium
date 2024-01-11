@@ -81,7 +81,7 @@ class NavigationURLLoaderTest : public testing::Test {
       NavigationURLLoaderDelegate* delegate) {
     blink::mojom::BeginNavigationParamsPtr begin_params =
         blink::mojom::BeginNavigationParams::New(
-            absl::nullopt /* initiator_frame_token */,
+            std::nullopt /* initiator_frame_token */,
             std::string() /* headers */, net::LOAD_NORMAL,
             false /* skip_service_worker */,
             blink::mojom::RequestContextType::LOCATION,
@@ -92,8 +92,8 @@ class NavigationURLLoaderTest : public testing::Test {
             GURL() /* searchable_form_url */,
             std::string() /* searchable_form_encoding */,
             GURL() /* client_side_redirect_url */,
-            absl::nullopt /* devtools_initiator_info */,
-            nullptr /* trust_token_params */, absl::nullopt /* impression */,
+            std::nullopt /* devtools_initiator_info */,
+            nullptr /* trust_token_params */, std::nullopt /* impression */,
             base::TimeTicks() /* renderer_before_unload_start */,
             base::TimeTicks() /* renderer_before_unload_end */,
             blink::mojom::NavigationInitiatorActivationAndAdStatus::
@@ -130,10 +130,10 @@ class NavigationURLLoaderTest : public testing::Test {
             base::UnguessableToken::Create() /* devtools_frame_token */,
             net::HttpRequestHeaders() /* cors_exempt_headers */,
             nullptr /* client_security_state */,
-            absl::nullopt /* devtools_accepted_stream_types */,
+            std::nullopt /* devtools_accepted_stream_types */,
             false /* is_pdf */,
             ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
-            absl::nullopt /* initiator_document_token */,
+            std::nullopt /* initiator_document_token */,
             GlobalRenderFrameHostId() /* previous_render_frame_host_id */,
             nullptr /* serving_page_metrics_container */,
             false /* allow_cookies_from_browser */, 0 /* navigation_id */,

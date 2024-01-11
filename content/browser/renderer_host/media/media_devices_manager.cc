@@ -702,7 +702,7 @@ media::VideoCaptureFormats MediaDevicesManager::GetVideoInputFormats(
   media::VideoCaptureFormats formats;
 
   if (try_in_use_first) {
-    absl::optional<media::VideoCaptureFormat> format =
+    std::optional<media::VideoCaptureFormat> format =
         video_capture_manager_->GetDeviceFormatInUse(
             blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, device_id);
     if (format.has_value()) {
@@ -920,7 +920,7 @@ void MediaDevicesManager::GetAudioInputCapabilities(
 void MediaDevicesManager::GotAudioInputCapabilities(
     size_t state_id,
     size_t capabilities_index,
-    const absl::optional<media::AudioParameters>& parameters) {
+    const std::optional<media::AudioParameters>& parameters) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(base::Contains(enumeration_states_, state_id));
 

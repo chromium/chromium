@@ -6,6 +6,8 @@
 #define CONTENT_BROWSER_MEDIA_CDM_STORAGE_COMMON_H_
 
 #include <stdint.h>
+
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -13,7 +15,6 @@
 #include "base/functional/callback.h"
 #include "content/common/content_export.h"
 #include "media/cdm/cdm_type.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {

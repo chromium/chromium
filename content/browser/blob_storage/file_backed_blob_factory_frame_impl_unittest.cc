@@ -84,7 +84,7 @@ TEST_F(FileBackedBlobFactoryFrameImplTest, Register_UnreadableFile) {
       process_id_, path));
 
   auto element =
-      blink::mojom::DataElementFile::New(path, kOffset, kSize, absl::nullopt);
+      blink::mojom::DataElementFile::New(path, kOffset, kSize, std::nullopt);
 
   mojo::Remote<blink::mojom::Blob> blob;
   factory_->RegisterBlob(blob.BindNewPipeAndPassReceiver(), kId, kType,
@@ -116,7 +116,7 @@ TEST_F(FileBackedBlobFactoryFrameImplTest, Register_ValidFile) {
       process_id_, path));
 
   auto element =
-      blink::mojom::DataElementFile::New(path, kOffset, kSize, absl::nullopt);
+      blink::mojom::DataElementFile::New(path, kOffset, kSize, std::nullopt);
 
   mojo::Remote<blink::mojom::Blob> blob;
   factory_->RegisterBlob(blob.BindNewPipeAndPassReceiver(), kId, kType,
@@ -155,7 +155,7 @@ TEST_F(FileBackedBlobFactoryFrameImplTest, Register_ExistingUUID) {
       process_id_, path));
 
   auto element1 =
-      blink::mojom::DataElementFile::New(path, kOffset, kSize, absl::nullopt);
+      blink::mojom::DataElementFile::New(path, kOffset, kSize, std::nullopt);
 
   mojo::Remote<blink::mojom::Blob> blob1;
   factory_->RegisterBlob(blob1.BindNewPipeAndPassReceiver(), kId, kType,
@@ -176,7 +176,7 @@ TEST_F(FileBackedBlobFactoryFrameImplTest, Register_ExistingUUID) {
   EXPECT_FALSE(handle->IsBroken());
 
   auto element2 =
-      blink::mojom::DataElementFile::New(path, kOffset, kSize, absl::nullopt);
+      blink::mojom::DataElementFile::New(path, kOffset, kSize, std::nullopt);
 
   mojo::Remote<blink::mojom::Blob> blob2;
   factory_->RegisterBlob(blob2.BindNewPipeAndPassReceiver(), kId, kType,
@@ -227,7 +227,7 @@ TEST_F(FileBackedBlobFactoryFrameImplTest,
       process_id_, path));
 
   auto element =
-      blink::mojom::DataElementFile::New(path, kOffset, kSize, absl::nullopt);
+      blink::mojom::DataElementFile::New(path, kOffset, kSize, std::nullopt);
 
   mojo::Remote<blink::mojom::Blob> blob;
   factory_->RegisterBlob(blob.BindNewPipeAndPassReceiver(), kId, kType,

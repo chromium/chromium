@@ -203,7 +203,7 @@ TEST_F(EmbeddedFrameSinkProviderImplTest,
   // Renderer submits a CompositorFrame with |local_id|.
   const viz::LocalSurfaceId local_id(1, base::UnguessableToken::Create());
   compositor_frame_sink->SubmitCompositorFrame(
-      local_id, viz::MakeDefaultCompositorFrame(), absl::nullopt, 0);
+      local_id, viz::MakeDefaultCompositorFrame(), std::nullopt, 0);
 
   RunUntilIdle();
 

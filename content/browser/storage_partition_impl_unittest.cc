@@ -151,8 +151,8 @@ class RemoveCookieTester {
     net::CookieInclusionStatus status;
     std::unique_ptr<net::CanonicalCookie> cc(
         net::CanonicalCookie::Create(origin.GetURL(), "A=1", base::Time::Now(),
-                                     /*server_time=*/absl::nullopt,
-                                     /*cookie_partition_key=*/absl::nullopt,
+                                     /*server_time=*/std::nullopt,
+                                     /*cookie_partition_key=*/std::nullopt,
                                      /*block_truncated=*/true, &status));
     base::RunLoop loop;
     storage_partition_->GetCookieManagerForBrowserProcess()->SetCanonicalCookie(
@@ -258,7 +258,7 @@ class RemoveInterestGroupTester {
 
   void GetLastKAnonymityReportedCallback(
       base::OnceClosure quit_closure,
-      absl::optional<base::Time> last_reported) {
+      std::optional<base::Time> last_reported) {
     contains_kanon_ =
         last_reported.has_value() && last_reported.value() > base::Time::Min();
     std::move(quit_closure).Run();
@@ -312,7 +312,7 @@ class RemoveLocalStorageTester {
     auto database = storage::AsyncDomStorageDatabase::OpenDirectory(
         std::move(options),
         storage_partition_->GetPath().Append(storage::kLocalStoragePath),
-        storage::kLocalStorageLeveldbName, absl::nullopt,
+        storage::kLocalStorageLeveldbName, std::nullopt,
         base::SingleThreadTaskRunner::GetCurrentDefault(),
         base::BindLambdaForTesting([&](leveldb::Status status) {
           ASSERT_TRUE(status.ok());
@@ -1740,27 +1740,27 @@ TEST(StoragePartitionImplStaticTest, CreatePredicateForHostCookies) {
   GURL url2("https://www.example.com/");
   GURL url3("https://www.google.com/");
 
-  absl::optional<base::Time> server_time = absl::nullopt;
+  std::optional<base::Time> server_time = std::nullopt;
   CookieDeletionFilterPtr deletion_filter = CookieDeletionFilter::New();
   deletion_filter->host_name = url.host();
 
   base::Time now = base::Time::Now();
   std::vector<std::unique_ptr<CanonicalCookie>> valid_cookies;
   valid_cookies.push_back(CanonicalCookie::Create(
-      url, "A=B", now, server_time, absl::nullopt /* cookie_partition_key */));
+      url, "A=B", now, server_time, std::nullopt /* cookie_partition_key */));
   valid_cookies.push_back(CanonicalCookie::Create(
-      url, "C=F", now, server_time, absl::nullopt /* cookie_partition_key */));
+      url, "C=F", now, server_time, std::nullopt /* cookie_partition_key */));
   // We should match a different scheme with the same host.
   valid_cookies.push_back(CanonicalCookie::Create(
-      url2, "A=B", now, server_time, absl::nullopt /* cookie_partition_key */));
+      url2, "A=B", now, server_time, std::nullopt /* cookie_partition_key */));
 
   std::vector<std::unique_ptr<CanonicalCookie>> invalid_cookies;
   // We don't match domain cookies.
   invalid_cookies.push_back(
       CanonicalCookie::Create(url2, "A=B;domain=.example.com", now, server_time,
-                              absl::nullopt /* cookie_partition_key */));
+                              std::nullopt /* cookie_partition_key */));
   invalid_cookies.push_back(CanonicalCookie::Create(
-      url3, "A=B", now, server_time, absl::nullopt /* cookie_partition_key */));
+      url3, "A=B", now, server_time, std::nullopt /* cookie_partition_key */));
 
   for (const auto& cookie : valid_cookies) {
     EXPECT_TRUE(FilterMatchesCookie(deletion_filter, *cookie))

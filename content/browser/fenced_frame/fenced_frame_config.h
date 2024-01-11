@@ -69,6 +69,8 @@
 #ifndef CONTENT_BROWSER_FENCED_FRAME_FENCED_FRAME_CONFIG_H_
 #define CONTENT_BROWSER_FENCED_FRAME_FENCED_FRAME_CONFIG_H_
 
+#include <optional>
+
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -77,7 +79,6 @@
 #include "content/browser/fenced_frame/fenced_document_data.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom.h"
 #include "ui/gfx/geometry/size.h"
@@ -171,22 +172,22 @@ class CONTENT_EXPORT FencedFrameProperty {
   // Get the value of the property, redacted as necessary for the given
   // `entity`. Should be used whenever the returned information will be
   // sent to a different process or is observable from a web surface API.
-  absl::optional<T> GetValueForEntity(FencedFrameEntity entity) const {
+  std::optional<T> GetValueForEntity(FencedFrameEntity entity) const {
     switch (entity) {
       case FencedFrameEntity::kEmbedder: {
         if (visibility_to_embedder_ == VisibilityToEmbedder::kOpaque) {
-          return absl::nullopt;
+          return std::nullopt;
         }
         break;
       }
       case FencedFrameEntity::kCrossOriginContent: {
         // For now, content that is cross-origin to the mapped URL does not get
         // access to any of the redacted properties in the config.
-        return absl::nullopt;
+        return std::nullopt;
       }
       case FencedFrameEntity::kSameOriginContent: {
         if (visibility_to_content_ == VisibilityToContent::kOpaque) {
-          return absl::nullopt;
+          return std::nullopt;
         }
         break;
       }
@@ -247,9 +248,9 @@ class CONTENT_EXPORT FencedFrameConfig {
     return fenced_frame_reporter_;
   }
 
-  const absl::optional<GURL>& urn_uuid() const { return urn_uuid_; }
+  const std::optional<GURL>& urn_uuid() const { return urn_uuid_; }
 
-  const absl::optional<FencedFrameProperty<GURL>>& mapped_url() const {
+  const std::optional<FencedFrameProperty<GURL>>& mapped_url() const {
     return mapped_url_;
   }
 
@@ -270,31 +271,31 @@ class CONTENT_EXPORT FencedFrameConfig {
   FRIEND_TEST_ALL_PREFIXES(FencedFrameConfigMojomTraitsTest,
                            ConfigMojomTraitsModeTest);
 
-  absl::optional<GURL> urn_uuid_;
+  std::optional<GURL> urn_uuid_;
 
-  absl::optional<FencedFrameProperty<GURL>> mapped_url_;
+  std::optional<FencedFrameProperty<GURL>> mapped_url_;
 
   // The initial size of the outer container (the size that the embedder sees
   // for the fenced frame). This will only be respected if the embedder hasn't
   // explicitly declared a size for the <fencedframe> element, and will be
   // disregarded if the embedder subsequently resizes the fenced frame.
-  absl::optional<FencedFrameProperty<gfx::Size>> container_size_;
+  std::optional<FencedFrameProperty<gfx::Size>> container_size_;
 
   // The size of the inner frame (the size that the fenced frame sees for
   // itself).
-  absl::optional<FencedFrameProperty<gfx::Size>> content_size_;
+  std::optional<FencedFrameProperty<gfx::Size>> content_size_;
 
   // Whether we should use the old size freezing behavior for backwards
   // compatibility. (The old behavior is to freeze the fenced frame to its size
   // at navigation start, coerced to a list of allowed sizes. The new behavior
   // uses `container_size` and `content_size` above.)
-  absl::optional<FencedFrameProperty<bool>>
+  std::optional<FencedFrameProperty<bool>>
       deprecated_should_freeze_initial_size_;
 
   // Extra data set if `mapped_url` is the result of a FLEDGE auction. Used
   // to fill in `AdAuctionDocumentData` for the fenced frame that navigates
   // to `mapped_url`.
-  absl::optional<FencedFrameProperty<AdAuctionData>> ad_auction_data_;
+  std::optional<FencedFrameProperty<AdAuctionData>> ad_auction_data_;
 
   // Should be invoked whenever the URN is navigated to.
   base::RepeatingClosure on_navigate_callback_;
@@ -304,14 +305,14 @@ class CONTENT_EXPORT FencedFrameConfig {
   // When a fenced frame loads this configuration, these component
   // configurations will be mapped to URNs themselves, and those URNs will be
   // provided to the fenced frame for use in nested fenced frames.
-  absl::optional<FencedFrameProperty<std::vector<FencedFrameConfig>>>
+  std::optional<FencedFrameProperty<std::vector<FencedFrameConfig>>>
       nested_configs_;
 
   // Contains the metadata needed for shared storage budget charging. Will be
-  // initialized to absl::nullopt if the associated URN is not generated from
+  // initialized to std::nullopt if the associated URN is not generated from
   // shared storage. Its `budget_to_charge` can be updated to 0 when the
   // budget is charged.
-  absl::optional<FencedFrameProperty<SharedStorageBudgetMetadata>>
+  std::optional<FencedFrameProperty<SharedStorageBudgetMetadata>>
       shared_storage_budget_metadata_;
 
   // If reporting events from fenced frames are registered, then this
@@ -400,14 +401,14 @@ class CONTENT_EXPORT FencedFrameProperties {
       blink::mojom::AutomaticBeaconType event_type);
 
   // Attempts to retrieve the automatic beacon data for a given event type.
-  const absl::optional<AutomaticBeaconInfo> GetAutomaticBeaconInfo(
+  const std::optional<AutomaticBeaconInfo> GetAutomaticBeaconInfo(
       blink::mojom::AutomaticBeaconType event_type) const;
 
-  const absl::optional<FencedFrameProperty<GURL>>& mapped_url() const {
+  const std::optional<FencedFrameProperty<GURL>>& mapped_url() const {
     return mapped_url_;
   }
 
-  const absl::optional<FencedFrameProperty<AdAuctionData>>& ad_auction_data()
+  const std::optional<FencedFrameProperty<AdAuctionData>>& ad_auction_data()
       const {
     return ad_auction_data_;
   }
@@ -416,20 +417,19 @@ class CONTENT_EXPORT FencedFrameProperties {
     return on_navigate_callback_;
   }
 
-  const absl::optional<
+  const std::optional<
       FencedFrameProperty<std::vector<std::pair<GURL, FencedFrameConfig>>>>
   nested_urn_config_pairs() const {
     return nested_urn_config_pairs_;
   }
 
-  const absl::optional<
+  const std::optional<
       FencedFrameProperty<raw_ptr<const SharedStorageBudgetMetadata>>>&
   shared_storage_budget_metadata() const {
     return shared_storage_budget_metadata_;
   }
 
-  const absl::optional<std::u16string>& embedder_shared_storage_context()
-      const {
+  const std::optional<std::u16string>& embedder_shared_storage_context() const {
     return embedder_shared_storage_context_;
   }
 
@@ -439,7 +439,7 @@ class CONTENT_EXPORT FencedFrameProperties {
   // FencedFrameProperties constructor rather than
   // OnFencedFrameURLMappingComplete.
   void SetEmbedderSharedStorageContext(
-      const absl::optional<std::u16string>& embedder_shared_storage_context) {
+      const std::optional<std::u16string>& embedder_shared_storage_context) {
     embedder_shared_storage_context_ = embedder_shared_storage_context;
   }
 
@@ -447,7 +447,7 @@ class CONTENT_EXPORT FencedFrameProperties {
     return fenced_frame_reporter_;
   }
 
-  const absl::optional<FencedFrameProperty<base::UnguessableToken>>&
+  const std::optional<FencedFrameProperty<base::UnguessableToken>>&
   partition_nonce() const {
     return partition_nonce_;
   }
@@ -457,7 +457,7 @@ class CONTENT_EXPORT FencedFrameProperties {
   // TODO(crbug.com/1417871): Refactor this to be part of the
   // FencedFrameProperties constructor rather than
   // OnFencedFrameURLMappingComplete.
-  void ClearPartitionNonce() { partition_nonce_ = absl::nullopt; }
+  void ClearPartitionNonce() { partition_nonce_ = std::nullopt; }
 
   const DeprecatedFencedFrameMode& mode() const { return mode_; }
 
@@ -487,18 +487,18 @@ class CONTENT_EXPORT FencedFrameProperties {
   GenerateURNConfigVectorForConfigs(
       const std::vector<FencedFrameConfig>& nested_configs);
 
-  absl::optional<FencedFrameProperty<GURL>> mapped_url_;
+  std::optional<FencedFrameProperty<GURL>> mapped_url_;
 
-  absl::optional<FencedFrameProperty<gfx::Size>> container_size_;
+  std::optional<FencedFrameProperty<gfx::Size>> container_size_;
 
   // TODO(crbug.com/1420638): The representation of size in fenced frame config
   // will need to work with the size carried with the winning bid.
-  absl::optional<FencedFrameProperty<gfx::Size>> content_size_;
+  std::optional<FencedFrameProperty<gfx::Size>> content_size_;
 
-  absl::optional<FencedFrameProperty<bool>>
+  std::optional<FencedFrameProperty<bool>>
       deprecated_should_freeze_initial_size_;
 
-  absl::optional<FencedFrameProperty<AdAuctionData>> ad_auction_data_;
+  std::optional<FencedFrameProperty<AdAuctionData>> ad_auction_data_;
 
   // Should be invoked when `mapped_url` is navigated to via the passed in
   // URN.
@@ -506,7 +506,7 @@ class CONTENT_EXPORT FencedFrameProperties {
 
   // urn/url mappings for ad components. These are inserted into the
   // fenced frame page's urn/url mapping when the urn navigation commits.
-  absl::optional<
+  std::optional<
       FencedFrameProperty<std::vector<std::pair<GURL, FencedFrameConfig>>>>
       nested_urn_config_pairs_;
 
@@ -518,19 +518,18 @@ class CONTENT_EXPORT FencedFrameProperties {
   // This metadata can be on fenced frame roots, and if `kAllowURNsInIframes`
   // is enabled, it can also be on any node except for the main frame node in
   // the outermost frame tree.
-  absl::optional<
-      FencedFrameProperty<raw_ptr<const SharedStorageBudgetMetadata>>>
+  std::optional<FencedFrameProperty<raw_ptr<const SharedStorageBudgetMetadata>>>
       shared_storage_budget_metadata_;
 
   // Any context that is written by the embedder using
   // `blink::FencedFrameConfig::setSharedStorageContext`. Only readable in
   // shared storage worklets via `sharedStorage.context()`. Not copied during
   // redaction.
-  absl::optional<std::u16string> embedder_shared_storage_context_;
+  std::optional<std::u16string> embedder_shared_storage_context_;
 
   scoped_refptr<FencedFrameReporter> fenced_frame_reporter_;
 
-  absl::optional<FencedFrameProperty<base::UnguessableToken>> partition_nonce_;
+  std::optional<FencedFrameProperty<base::UnguessableToken>> partition_nonce_;
 
   DeprecatedFencedFrameMode mode_ = DeprecatedFencedFrameMode::kDefault;
 

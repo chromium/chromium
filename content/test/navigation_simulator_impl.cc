@@ -1326,7 +1326,7 @@ bool NavigationSimulatorImpl::SimulateRendererInitiatedStart() {
     static_cast<NavigationControllerImpl&>(web_contents_->GetController())
         .GoToOffsetFromRenderer(
             session_history_offset_, render_frame_host_,
-            /*soft_navigation_heuristics_task_id=*/absl::nullopt);
+            /*soft_navigation_heuristics_task_id=*/std::nullopt);
     request_ = render_frame_host_->frame_tree_node()->navigation_request();
     return true;
   }
@@ -1334,14 +1334,14 @@ bool NavigationSimulatorImpl::SimulateRendererInitiatedStart() {
   blink::mojom::BeginNavigationParamsPtr begin_params =
       blink::mojom::BeginNavigationParams::New(
           initiator_frame_host_
-              ? absl::make_optional(initiator_frame_host_->GetFrameToken())
-              : absl::nullopt,
+              ? std::make_optional(initiator_frame_host_->GetFrameToken())
+              : std::nullopt,
           headers_, load_flags_, skip_service_worker_, request_context_type_,
           mixed_content_context_type_, is_form_submission_,
           false /* was_initiated_by_link_click */,
           blink::mojom::ForceHistoryPush::kNo, searchable_form_url_,
           searchable_form_encoding_, GURL() /* client_side_redirect_url */,
-          absl::nullopt /* detools_initiator_info */,
+          std::nullopt /* detools_initiator_info */,
           nullptr /* trust_token_params */, impression_,
           base::TimeTicks() /* renderer_before_unload_start */,
           base::TimeTicks() /* renderer_before_unload_end */,

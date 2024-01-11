@@ -277,8 +277,8 @@ blink::WebView* AgentSchedulingGroup::CreateWebView(
       new SelfOwnedWebViewClient(), params->hidden, params->is_prerendering,
       /*is_inside_portal=*/false,
       params->type == mojom::ViewWidgetType::kFencedFrame
-          ? absl::make_optional(params->fenced_frame_mode)
-          : absl::nullopt,
+          ? std::make_optional(params->fenced_frame_mode)
+          : std::nullopt,
       /*compositing_enabled=*/true, params->never_composited,
       opener_frame ? opener_frame->View() : nullptr,
       std::move(params->blink_page_broadcast), agent_group_scheduler(),
@@ -380,8 +380,8 @@ blink::WebView* AgentSchedulingGroup::CreateWebView(
           std::move(local_params->associated_interface_provider_remote),
           web_view, local_params->previous_frame_token,
           params->opener_frame_token,
-          /*parent_frame_token=*/absl::nullopt,
-          /*previous_sibling_frame_token=*/absl::nullopt,
+          /*parent_frame_token=*/std::nullopt,
+          /*previous_sibling_frame_token=*/std::nullopt,
           params->devtools_main_frame_token,
           blink::mojom::TreeScopeType::kDocument,
           std::move(params->replication_state),

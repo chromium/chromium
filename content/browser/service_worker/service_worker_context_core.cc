@@ -733,24 +733,24 @@ void ServiceWorkerContextCore::AddWarmUpRequest(
   }
 }
 
-absl::optional<ServiceWorkerContextCore::WarmUpRequest>
+std::optional<ServiceWorkerContextCore::WarmUpRequest>
 ServiceWorkerContextCore::PopNextWarmUpRequest() {
   DCHECK(!IsProcessingWarmingUp());
 
   if (warm_up_requests_.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (GetWarmedUpServiceWorkerCount(live_versions_) >=
       blink::features::kSpeculativeServiceWorkerWarmUpMaxCount.Get()) {
     warm_up_requests_.clear();
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Return the most recent queued request (LIFO order) to prioritize recently
   // added URLs. For example, the recent mouse-hoverd link will have a higher
   // chance to navigate than the previously mouse-hoverd link.
-  absl::optional<ServiceWorkerContextCore::WarmUpRequest> request(
+  std::optional<ServiceWorkerContextCore::WarmUpRequest> request(
       std::move(warm_up_requests_.back()));
   warm_up_requests_.pop_back();
   BeginProcessingWarmingUp();

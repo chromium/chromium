@@ -38,10 +38,10 @@ std::unique_ptr<ContactsProvider> CreateProvider(
 void OnContactsSelected(
     blink::mojom::ContactsManager::SelectCallback callback,
     ukm::SourceId source_id,
-    absl::optional<std::vector<blink::mojom::ContactInfoPtr>> contacts,
+    std::optional<std::vector<blink::mojom::ContactInfoPtr>> contacts,
     int percentage_shared,
     ContactsPickerProperties properties_requested) {
-  if (contacts != absl::nullopt) {
+  if (contacts != std::nullopt) {
     int select_count = contacts.value().size();
     ukm::builders::ContactsPicker_ShareStatistics(source_id)
         .SetSelectCount(ukm::GetExponentialBucketMinForCounts1000(select_count))
@@ -80,7 +80,7 @@ void ContactsManagerImpl::Select(bool multiple,
         base::BindOnce(&OnContactsSelected, std::move(mojom_callback),
                        source_id_));
   } else {
-    std::move(mojom_callback).Run(absl::nullopt);
+    std::move(mojom_callback).Run(std::nullopt);
   }
 }
 

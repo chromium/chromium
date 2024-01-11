@@ -5,6 +5,7 @@
 #include "content/public/test/fenced_frame_reporter_observer.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
@@ -13,7 +14,6 @@
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace content {
@@ -51,7 +51,7 @@ std::unique_ptr<FencedFrameReporterObserverForTesting>
 InstallFencedFrameReporterObserver(
     RenderFrameHost* fenced_frame_rfh,
     const FencedFrameReporter::DestinationVariant& event_variant) {
-  absl::optional<content::FencedFrameProperties> fenced_frame_properties =
+  std::optional<content::FencedFrameProperties> fenced_frame_properties =
       static_cast<content::RenderFrameHostImpl*>(fenced_frame_rfh)
           ->frame_tree_node()
           ->GetFencedFrameProperties();

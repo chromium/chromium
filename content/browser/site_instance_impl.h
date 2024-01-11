@@ -488,7 +488,7 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   // BrowsingInstance. This is only guaranteed by the use of a unique COOP value
   // across the BrowsingInstance. It is empty if the BrowsingInstance does not
   // contain COOP: same-origin or COOP: restrict-properties documents.
-  const absl::optional<url::Origin>& GetCommonCoopOrigin() const;
+  const std::optional<url::Origin>& GetCommonCoopOrigin() const;
 
   // Finds an existing SiteInstance in this SiteInstance's BrowsingInstance that
   // matches this `url_info` but with the `is_sandboxed_` flag true. It's

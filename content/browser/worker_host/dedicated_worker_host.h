@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_WORKER_HOST_DEDICATED_WORKER_HOST_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -28,7 +29,6 @@
 #include "services/device/public/mojom/pressure_manager.mojom.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -120,7 +120,7 @@ class CONTENT_EXPORT DedicatedWorkerHost final
     return ancestor_render_frame_host_id_;
   }
   DedicatedWorkerCreator GetCreator() const { return creator_; }
-  const absl::optional<GURL>& GetFinalResponseURL() const {
+  const std::optional<GURL>& GetFinalResponseURL() const {
     return final_response_url_;
   }
 
@@ -434,7 +434,7 @@ class CONTENT_EXPORT DedicatedWorkerHost final
   base::WeakPtr<CrossOriginEmbedderPolicyReporter> ancestor_coep_reporter_;
 
   // Will be set once the worker script started loading.
-  absl::optional<GURL> final_response_url_;
+  std::optional<GURL> final_response_url_;
 
   // CodeCacheHost processes requests to fetch / write generated code for
   // JavaScript / WebAssembly resources.

@@ -4,6 +4,8 @@
 
 #include "content/browser/permissions/embedded_permission_control_checker.h"
 
+#include <optional>
+
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/public/browser/render_frame_host.h"
@@ -15,7 +17,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "url/gurl.h"
@@ -46,7 +47,7 @@ class MockEmbeddedPermissionControlClient
   MOCK_METHOD2(
       OnEmbeddedPermissionControlRegistered,
       void(bool allowed,
-           const absl::optional<std::vector<PermissionStatus>>& statuses));
+           const std::optional<std::vector<PermissionStatus>>& statuses));
 
   void ExpectEmbeddedPermissionControlRegistered() {
     base::RunLoop run_loop;

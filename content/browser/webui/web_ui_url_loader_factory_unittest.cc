@@ -4,6 +4,8 @@
 
 #include "content/public/browser/web_ui_url_loader_factory.h"
 
+#include <optional>
+
 #include "base/memory/ref_counted_memory.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -23,7 +25,6 @@
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/test/test_url_loader_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -115,19 +116,19 @@ class OversizedWebUIDataSource final : public URLDataSource {
 
 const struct RangeRequestTestData {
   size_t resource_size = 0;
-  absl::optional<int> first_byte_position;
-  absl::optional<int> last_byte_position;
+  std::optional<int> first_byte_position;
+  std::optional<int> last_byte_position;
   int expected_error_code = net::OK;
   uint32_t expected_size = 0;
 } kRangeRequestTestData[] = {
     // No range.
-    {kMaxTestResourceSize, absl::nullopt, absl::nullopt, net::OK,
+    {kMaxTestResourceSize, std::nullopt, std::nullopt, net::OK,
      kMaxTestResourceSize},
 
     // No range, 0-size resource.
-    {0, absl::nullopt, absl::nullopt, net::OK, 0},
+    {0, std::nullopt, std::nullopt, net::OK, 0},
 
-    {kMaxTestResourceSize, 3, absl::nullopt, net::OK, kMaxTestResourceSize - 3},
+    {kMaxTestResourceSize, 3, std::nullopt, net::OK, kMaxTestResourceSize - 3},
 
     {kMaxTestResourceSize, 1, 1, net::OK, 1},
 
@@ -145,7 +146,7 @@ const struct RangeRequestTestData {
 #if defined(ARCH_CPU_64_BITS)
     // Resource too large.
     {static_cast<size_t>(std::numeric_limits<uint32_t>::max()) + 1,
-     absl::nullopt, absl::nullopt, net::ERR_INSUFFICIENT_RESOURCES, 0},
+     std::nullopt, std::nullopt, net::ERR_INSUFFICIENT_RESOURCES, 0},
 #endif  // defined(ARCH_CPU_64_BITS)
 };
 

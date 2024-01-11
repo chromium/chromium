@@ -341,7 +341,7 @@ void PepperRendererConnection::DidDeleteOutOfProcessPepperInstance(
 void PepperRendererConnection::OpenChannelToPepperPlugin(
     const url::Origin& embedder_origin,
     const base::FilePath& path,
-    const absl::optional<url::Origin>& origin_lock,
+    const std::optional<url::Origin>& origin_lock,
     mojom::PepperHost::OpenChannelToPepperPluginCallback callback) {
   // Enforce that the sender of the IPC (i.e. |render_process_id_|) is actually
   // able/allowed to host a frame with |embedder_origin|.

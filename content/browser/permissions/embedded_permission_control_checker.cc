@@ -4,7 +4,7 @@
 
 #include "content/browser/permissions/embedded_permission_control_checker.h"
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include <optional>
 
 using blink::mojom::EmbeddedPermissionControlClient;
 using blink::mojom::PermissionName;

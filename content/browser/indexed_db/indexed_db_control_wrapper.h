@@ -69,7 +69,7 @@ class IndexedDBControlWrapper : public storage::mojom::IndexedDBControl {
  private:
   void BindRemoteIfNeeded();
 
-  absl::optional<storage::StoragePolicyObserver> storage_policy_observer_;
+  std::optional<storage::StoragePolicyObserver> storage_policy_observer_;
 
   mojo::Remote<storage::mojom::IndexedDBControl> indexed_db_control_;
   std::unique_ptr<IndexedDBContextImpl> context_;

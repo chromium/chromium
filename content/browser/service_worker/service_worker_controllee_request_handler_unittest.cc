@@ -243,7 +243,7 @@ class ServiceWorkerTestContentBrowserClient : public TestContentBrowserClient {
   AllowServiceWorkerResult AllowServiceWorker(
       const GURL& scope,
       const net::SiteForCookies& site_for_cookies,
-      const absl::optional<url::Origin>& top_frame_origin,
+      const std::optional<url::Origin>& top_frame_origin,
       const GURL& script_url,
       content::BrowserContext* context) override {
     return AllowServiceWorkerResult::No();

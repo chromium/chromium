@@ -36,10 +36,10 @@ class MockAnchorElementPreconnector : public AnchorElementPreconnectDelegate {
   ~MockAnchorElementPreconnector() override = default;
 
   void MaybePreconnect(const GURL& target) override { target_ = target; }
-  absl::optional<GURL>& Target() { return target_; }
+  std::optional<GURL>& Target() { return target_; }
 
  private:
-  absl::optional<GURL> target_;
+  std::optional<GURL> target_;
 };
 
 class TestPrefetchService : public PrefetchService {

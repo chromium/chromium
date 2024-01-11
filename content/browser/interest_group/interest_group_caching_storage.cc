@@ -30,14 +30,14 @@ bool CacheIsEnabled() {
          base::FeatureList::IsEnabled(features::kFledgeUseInterestGroupCache);
 }
 
-absl::optional<content::SingleStorageInterestGroup>
+std::optional<content::SingleStorageInterestGroup>
 ConvertOptionalGroupToSingleStorageInterestGroup(
-    absl::optional<content::StorageInterestGroup> possible_group) {
+    std::optional<content::StorageInterestGroup> possible_group) {
   if (possible_group) {
     return content::SingleStorageInterestGroup(
         std::move(possible_group.value()));
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace
@@ -83,7 +83,7 @@ StorageInterestGroups::StorageInterestGroups(
   }
 }
 
-absl::optional<SingleStorageInterestGroup> StorageInterestGroups::FindGroup(
+std::optional<SingleStorageInterestGroup> StorageInterestGroups::FindGroup(
     std::string_view name) {
   for (const StorageInterestGroup& interest_group : storage_interest_groups_) {
     if (interest_group.interest_group.name == name) {
@@ -91,7 +91,7 @@ absl::optional<SingleStorageInterestGroup> StorageInterestGroups::FindGroup(
       return output;
     }
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 StorageInterestGroups::~StorageInterestGroups() = default;
@@ -288,7 +288,7 @@ void InterestGroupCachingStorage::UpdateKAnonymity(
 
 void InterestGroupCachingStorage::GetLastKAnonymityReported(
     const std::string& key,
-    base::OnceCallback<void(absl::optional<base::Time>)> callback) {
+    base::OnceCallback<void(std::optional<base::Time>)> callback) {
   interest_group_storage_
       .AsyncCall(&InterestGroupStorage::GetLastKAnonymityReported)
       .WithArgs(key)
@@ -306,12 +306,12 @@ void InterestGroupCachingStorage::UpdateLastKAnonymityReported(
 
 void InterestGroupCachingStorage::GetInterestGroup(
     const blink::InterestGroupKey& group_key,
-    base::OnceCallback<void(absl::optional<SingleStorageInterestGroup>)>
+    base::OnceCallback<void(std::optional<SingleStorageInterestGroup>)>
         callback) {
   if (CacheIsEnabled()) {
     auto cached_groups_it = cached_interest_groups_.find(group_key.owner);
     if (cached_groups_it != cached_interest_groups_.end()) {
-      absl::optional<SingleStorageInterestGroup> output =
+      std::optional<SingleStorageInterestGroup> output =
           cached_groups_it->second.get()->FindGroup(group_key.name);
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback), std::move(output)));
@@ -358,7 +358,7 @@ void InterestGroupCachingStorage::GetKAnonymityDataForUpdate(
 
 void InterestGroupCachingStorage::GetDebugReportLockoutAndCooldowns(
     base::flat_set<url::Origin> origins,
-    base::OnceCallback<void(absl::optional<DebugReportLockoutAndCooldowns>)>
+    base::OnceCallback<void(std::optional<DebugReportLockoutAndCooldowns>)>
         callback) {
   return interest_group_storage_
       .AsyncCall(&InterestGroupStorage::GetDebugReportLockoutAndCooldowns)

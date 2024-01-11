@@ -5,9 +5,10 @@
 #ifndef CONTENT_PUBLIC_BROWSER_PICTURE_IN_PICTURE_WINDOW_CONTROLLER_H_
 #define CONTENT_PUBLIC_BROWSER_PICTURE_IN_PICTURE_WINDOW_CONTROLLER_H_
 
+#include <optional>
+
 #include "build/build_config.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/origin.h"
 
@@ -60,15 +61,15 @@ class PictureInPictureWindowController {
   virtual WebContents* GetWebContents() = 0;
 
   // Called to get the Picture-in-Picture window bounds.
-  virtual absl::optional<gfx::Rect> GetWindowBounds() = 0;
+  virtual std::optional<gfx::Rect> GetWindowBounds() = 0;
 
   // Called to get the child web contents to be PiP for document PiP. This will
   // be null for video PiP.
   virtual WebContents* GetChildWebContents() = 0;
 
-  // Called to get the origin of the initiator. This will return `absl::nullopt`
+  // Called to get the origin of the initiator. This will return `std::nullopt`
   // except for video PiP.
-  virtual absl::optional<url::Origin> GetOrigin() = 0;
+  virtual std::optional<url::Origin> GetOrigin() = 0;
 
  protected:
   // Use PictureInPictureWindowController::GetOrCreateForWebContents() to

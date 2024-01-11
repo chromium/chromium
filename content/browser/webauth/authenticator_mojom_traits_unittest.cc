@@ -123,9 +123,9 @@ TEST(AuthenticatorMojomTraitsTest, SerializePublicKeyCredentialRpEntity) {
       PublicKeyCredentialRpEntity(std::string(kRpId)),
       PublicKeyCredentialRpEntity(std::string(kRpId))};
   // TODO(kenrb): There is a mismatch between the types, where
-  // device::PublicKeyCredentialRpEntity can have absl::nullopt for
+  // device::PublicKeyCredentialRpEntity can have std::nullopt for
   // the name but the mapped mojom type is not optional. This should
-  // be corrected at some point. We can't currently test absl::nullopt
+  // be corrected at some point. We can't currently test std::nullopt
   // because it won't serialize.
   success_cases[0].name = std::string(kRpName);
   success_cases[1].name = std::string(kRpName);

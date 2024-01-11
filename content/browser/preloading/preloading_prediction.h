@@ -5,11 +5,11 @@
 #ifndef CONTENT_BROWSER_PRELOADING_PRELOADING_PREDICTION_H_
 #define CONTENT_BROWSER_PRELOADING_PRELOADING_PREDICTION_H_
 
-#include "content/public/browser/preloading_data.h"
+#include <optional>
 
 #include "base/timer/elapsed_timer.h"
+#include "content/public/browser/preloading_data.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -76,7 +76,7 @@ class PreloadingPrediction {
   // The time between the creation of the prediction and the start of the next
   // navigation, whether accurate or not. The latency is reported as standard
   // buckets, of 1.15 spacing.
-  absl::optional<base::TimeDelta> time_to_next_navigation_;
+  std::optional<base::TimeDelta> time_to_next_navigation_;
 };
 
 // The output of many predictors is a logit/probability score. To use this score

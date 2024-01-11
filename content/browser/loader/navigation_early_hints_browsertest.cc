@@ -713,7 +713,7 @@ IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsTest, NetworkAnonymizationKey) {
   ResponseEntry entry = CreateEmptyPageEntryWithHintedScript();
   RegisterResponse(entry);
 
-  absl::optional<bool> is_cached;
+  std::optional<bool> is_cached;
   URLLoaderInterceptor interceptor(
       base::BindLambdaForTesting(
           [&](URLLoaderInterceptor::RequestParams* params) { return false; }),
@@ -737,7 +737,7 @@ IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsTest, NetworkAnonymizationKey) {
   ASSERT_EQ(it->second.error_code.value(), net::OK);
 
   ASSERT_FALSE(is_cached.value());
-  is_cached = absl::nullopt;
+  is_cached = std::nullopt;
 
   // Fetch the hinted resource from the main frame. It should come from the
   // cache.
@@ -745,7 +745,7 @@ IN_PROC_BROWSER_TEST_F(NavigationEarlyHintsTest, NetworkAnonymizationKey) {
   ASSERT_TRUE(is_cached.value());
 
   // Reset `is_cached` to make sure it is set true or false.
-  is_cached = absl::nullopt;
+  is_cached = std::nullopt;
 
   // Create an iframe with a different origin and fetch the hinted resource from
   // the iframe. It should not come from the cache.

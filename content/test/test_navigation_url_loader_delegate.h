@@ -6,11 +6,11 @@
 #define CONTENT_TEST_TEST_NAVIGATION_URL_LOADER_DELEGATE_H_
 
 #include <memory>
+#include <optional>
 
 #include "content/browser/loader/navigation_url_loader_delegate.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class RunLoop;
@@ -56,11 +56,11 @@ class TestNavigationURLLoaderDelegate : public NavigationURLLoaderDelegate {
       GlobalRequestID request_id,
       bool is_download,
       net::NetworkAnonymizationKey network_anonymization_key,
-      absl::optional<SubresourceLoaderParams> subresource_loader_params,
+      std::optional<SubresourceLoaderParams> subresource_loader_params,
       EarlyHints early_hints) override;
   void OnRequestFailed(
       const network::URLLoaderCompletionStatus& status) override;
-  absl::optional<NavigationEarlyHintsManagerParams>
+  std::optional<NavigationEarlyHintsManagerParams>
   CreateNavigationEarlyHintsManagerParams(
       const network::mojom::EarlyHints& early_hints) override;
 

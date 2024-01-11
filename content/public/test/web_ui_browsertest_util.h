@@ -6,6 +6,7 @@
 #define CONTENT_PUBLIC_TEST_WEB_UI_BROWSERTEST_UTIL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -14,7 +15,6 @@
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/bindings_policy.h"
 #include "services/network/public/mojom/cross_origin_opener_policy.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -23,23 +23,23 @@ struct TestUntrustedDataSourceHeaders {
   TestUntrustedDataSourceHeaders(const TestUntrustedDataSourceHeaders& other);
   ~TestUntrustedDataSourceHeaders();
 
-  absl::optional<std::string> child_src = absl::nullopt;
-  absl::optional<std::string> script_src = absl::nullopt;
-  absl::optional<std::string> default_src = absl::nullopt;
+  std::optional<std::string> child_src = std::nullopt;
+  std::optional<std::string> script_src = std::nullopt;
+  std::optional<std::string> default_src = std::nullopt;
   // Trusted Types is enabled by default for TestUntrustedDataSource.
   // Setting this to true will disable Trusted Types.
   bool no_trusted_types = false;
   bool no_xfo = false;
-  absl::optional<std::vector<std::string>> frame_ancestors = absl::nullopt;
-  absl::optional<network::mojom::CrossOriginOpenerPolicyValue>
-      cross_origin_opener_policy = absl::nullopt;
+  std::optional<std::vector<std::string>> frame_ancestors = std::nullopt;
+  std::optional<network::mojom::CrossOriginOpenerPolicyValue>
+      cross_origin_opener_policy = std::nullopt;
 };
 
 // Adds a DataSource for chrome-untrusted://|host| URLs.
 void AddUntrustedDataSource(
     BrowserContext* browser_context,
     const std::string& host,
-    absl::optional<TestUntrustedDataSourceHeaders> headers = absl::nullopt);
+    std::optional<TestUntrustedDataSourceHeaders> headers = std::nullopt);
 
 // Returns chrome-untrusted://|host_and_path| as a GURL.
 GURL GetChromeUntrustedUIURL(const std::string& host_and_path);

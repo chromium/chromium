@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <string_view>
 #include <tuple>
 
@@ -44,7 +45,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -486,7 +486,7 @@ void RenderViewTest::SetUp() {
           ui::ColorProviderKey::ForcedColors::kActive)};
 
   mojom::CreateViewParamsPtr view_params = mojom::CreateViewParams::New();
-  view_params->opener_frame_token = absl::nullopt;
+  view_params->opener_frame_token = std::nullopt;
   view_params->window_was_opened_by_another_window = false;
   view_params->renderer_preferences = blink::RendererPreferences();
   view_params->web_preferences = blink::web_pref::WebPreferences();
@@ -747,8 +747,8 @@ void RenderViewTest::ChangeFocusToNull(const blink::WebDocument& document) {
 
 void RenderViewTest::Reload(const GURL& url) {
   auto common_params = blink::mojom::CommonNavigationParams::New(
-      url, /* initiator_origin= */ absl::nullopt,
-      /* initiator_base_url= */ absl::nullopt, blink::mojom::Referrer::New(),
+      url, /* initiator_origin= */ std::nullopt,
+      /* initiator_base_url= */ std::nullopt, blink::mojom::Referrer::New(),
       ui::PAGE_TRANSITION_LINK, blink::mojom::NavigationType::RELOAD,
       blink::NavigationDownloadPolicy(), false, GURL(), base::TimeTicks::Now(),
       "GET", nullptr, network::mojom::SourceLocation::New(),
@@ -879,8 +879,8 @@ void RenderViewTest::GoToOffset(int offset,
   int pending_offset = offset + webview->HistoryBackListCount();
 
   auto common_params = blink::mojom::CommonNavigationParams::New(
-      url, /* initiator_origin= */ absl::nullopt,
-      /* initiator_base_url= */ absl::nullopt, blink::mojom::Referrer::New(),
+      url, /* initiator_origin= */ std::nullopt,
+      /* initiator_base_url= */ std::nullopt, blink::mojom::Referrer::New(),
       ui::PAGE_TRANSITION_FORWARD_BACK,
       blink::mojom::NavigationType::HISTORY_DIFFERENT_DOCUMENT,
       blink::NavigationDownloadPolicy(), false, GURL(), base::TimeTicks::Now(),

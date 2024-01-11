@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -32,7 +33,6 @@
 #include "content/public/browser/browser_context.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "storage/browser/blob/blob_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
@@ -270,7 +270,7 @@ SharedStorageWorkletHost::~SharedStorageWorkletHost() {
     const GURL& urn_uuid = it->first;
 
     bool failed_due_to_no_budget = false;
-    absl::optional<FencedFrameConfig> config =
+    std::optional<FencedFrameConfig> config =
         page_->fenced_frame_urls_map()
             .OnSharedStorageURNMappingResultDetermined(
                 urn_uuid, CreateSharedStorageURNMappingResult(
@@ -292,8 +292,8 @@ void SharedStorageWorkletHost::SelectURL(
         urls_with_metadata,
     blink::CloneableMessage serialized_data,
     bool keep_alive_after_operation,
-    const absl::optional<std::string>& context_id,
-    const absl::optional<url::Origin>& aggregation_coordinator_origin,
+    const std::optional<std::string>& context_id,
+    const std::optional<url::Origin>& aggregation_coordinator_origin,
     SelectURLCallback callback) {
   // `page_` can be null. See test
   // MainFrameDocumentAssociatedDataChangesOnSameSiteNavigation in
@@ -302,7 +302,7 @@ void SharedStorageWorkletHost::SelectURL(
     std::move(callback).Run(
         /*success=*/false, /*error_message=*/
         "Internal error: page does not exist.",
-        /*result_config=*/absl::nullopt);
+        /*result_config=*/std::nullopt);
     return;
   }
 
@@ -311,7 +311,7 @@ void SharedStorageWorkletHost::SelectURL(
     std::move(callback).Run(
         /*success=*/false, /*error_message=*/
         "Internal error: document does not exist.",
-        /*result_config=*/absl::nullopt);
+        /*result_config=*/std::nullopt);
     return;
   }
 
@@ -373,7 +373,7 @@ void SharedStorageWorkletHost::SelectURL(
     std::move(callback).Run(
         /*success=*/false,
         /*error_message=*/kSharedStorageSelectURLDisabledMessage,
-        /*result_config=*/absl::nullopt);
+        /*result_config=*/std::nullopt);
     return;
   }
 
@@ -409,7 +409,7 @@ void SharedStorageWorkletHost::SelectURL(
              base::NumberToString(fenced_frame_depth),
              ") exceeding the maximum allowed number (",
              base::NumberToString(max_allowed_fenced_frame_depth), ")."}),
-        /*result_config=*/absl::nullopt);
+        /*result_config=*/std::nullopt);
     return;
   }
 
@@ -423,7 +423,7 @@ void SharedStorageWorkletHost::SelectURL(
         /*success=*/false, /*error_message=*/
         "sharedStorage.selectURL() failed because number of urn::uuid to url "
         "mappings has reached the limit.",
-        /*result_config=*/absl::nullopt);
+        /*result_config=*/std::nullopt);
     return;
   }
 
@@ -468,8 +468,8 @@ void SharedStorageWorkletHost::Run(
     const std::string& name,
     blink::CloneableMessage serialized_data,
     bool keep_alive_after_operation,
-    const absl::optional<std::string>& context_id,
-    const absl::optional<url::Origin>& aggregation_coordinator_origin,
+    const std::optional<std::string>& context_id,
+    const std::optional<url::Origin>& aggregation_coordinator_origin,
     RunCallback callback) {
   // `page_` can be null. See test
   // MainFrameDocumentAssociatedDataChangesOnSameSiteNavigation in
@@ -1027,7 +1027,7 @@ void SharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished(
       }
     }
 
-    absl::optional<FencedFrameConfig> config =
+    std::optional<FencedFrameConfig> config =
         page_->fenced_frame_urls_map()
             .OnSharedStorageURNMappingResultDetermined(
                 urn_uuid, std::move(mapping_result));
@@ -1145,8 +1145,8 @@ SharedStorageWorkletHost::GetAndConnectToSharedStorageWorkletService() {
 
 mojo::PendingRemote<blink::mojom::PrivateAggregationHost>
 SharedStorageWorkletHost::MaybeBindPrivateAggregationHost(
-    const absl::optional<std::string>& context_id,
-    const absl::optional<url::Origin>& aggregation_coordinator_origin) {
+    const std::optional<std::string>& context_id,
+    const std::optional<url::Origin>& aggregation_coordinator_origin) {
   DCHECK(browser_context_);
 
   if (!blink::ShouldDefinePrivateAggregationInSharedStorage()) {
@@ -1160,11 +1160,11 @@ SharedStorageWorkletHost::MaybeBindPrivateAggregationHost(
   mojo::PendingRemote<blink::mojom::PrivateAggregationHost>
       pending_pa_host_remote;
 
-  absl::optional<base::TimeDelta> timeout =
+  std::optional<base::TimeDelta> timeout =
       (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPIM118) &&
        context_id)
-          ? absl::optional<base::TimeDelta>(base::Seconds(5))
-          : absl::nullopt;
+          ? std::optional<base::TimeDelta>(base::Seconds(5))
+          : std::nullopt;
 
   bool success = private_aggregation_manager->BindNewReceiver(
       shared_storage_origin_, main_frame_origin_,

@@ -200,10 +200,10 @@ void BrowserTaskExecutor::PostFeatureListSetup() {
 }
 
 // static
-absl::optional<BrowserUIThreadScheduler::UserInputActiveHandle>
+std::optional<BrowserUIThreadScheduler::UserInputActiveHandle>
 BrowserTaskExecutor::OnUserInputStart() {
   DCHECK(Get()->ui_thread_executor_);
-  return absl::optional<BrowserUIThreadScheduler::UserInputActiveHandle>(
+  return std::optional<BrowserUIThreadScheduler::UserInputActiveHandle>(
       Get()->ui_thread_executor_->OnUserInputStart());
 }
 
@@ -319,7 +319,7 @@ BrowserTaskExecutor::UIThreadExecutor::UIThreadExecutor(
 
 BrowserTaskExecutor::UIThreadExecutor::~UIThreadExecutor() = default;
 
-absl::optional<BrowserUIThreadScheduler::UserInputActiveHandle>
+std::optional<BrowserUIThreadScheduler::UserInputActiveHandle>
 BrowserTaskExecutor::UIThreadExecutor::OnUserInputStart() {
   DCHECK(browser_ui_thread_scheduler_);
   return browser_ui_thread_scheduler_->OnUserInputStart();

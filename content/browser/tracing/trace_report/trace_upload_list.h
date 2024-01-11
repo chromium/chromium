@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_TRACING_TRACE_REPORT_TRACE_UPLOAD_LIST_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -14,7 +15,6 @@
 #include "base/token.h"
 #include "content/browser/tracing/trace_report/trace_report_database.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -26,7 +26,7 @@ class TraceUploadList {
   using GetReportsCallback =
       base::OnceCallback<void(std::vector<ClientTraceReport> result)>;
   using GetProtoCallback =
-      base::OnceCallback<void(absl::optional<base::span<const char>> result)>;
+      base::OnceCallback<void(std::optional<base::span<const char>> result)>;
 
   virtual void OpenDatabaseIfExists() = 0;
 

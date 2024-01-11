@@ -323,7 +323,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, BasicRegistration) {
 
   EXPECT_FALSE(watcher_manager().HasObservationsForTesting());
 
-  absl::optional<FileSystemAccessWatchScope> observation_scope = absl::nullopt;
+  std::optional<FileSystemAccessWatchScope> observation_scope = std::nullopt;
   {
     base::test::TestFuture<base::expected<
         std::unique_ptr<Observation>, blink::mojom::FileSystemAccessErrorPtr>>

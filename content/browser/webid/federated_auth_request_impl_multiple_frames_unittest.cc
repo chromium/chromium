@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/webid/federated_auth_request_impl.h"
-
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <set>
 #include <string>
@@ -19,6 +18,7 @@
 #include "base/test/task_environment.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/browser/webid/federated_auth_request_impl.h"
 #include "content/browser/webid/test/federated_auth_request_request_token_callback_helper.h"
 #include "content/browser/webid/test/mock_api_permission_delegate.h"
 #include "content/browser/webid/test/mock_auto_reauthn_permission_delegate.h"
@@ -38,7 +38,6 @@
 #include "net/http/http_status_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -144,7 +143,7 @@ class TestDialogController
   struct State {
     bool did_show_accounts_dialog{false};
     std::string top_frame_for_display;
-    absl::optional<std::string> iframe_for_display;
+    std::optional<std::string> iframe_for_display;
   };
 
   enum class AccountsDialogAction {
@@ -163,7 +162,7 @@ class TestDialogController
 
   void ShowAccountsDialog(
       const std::string& top_frame_for_display,
-      const absl::optional<std::string>& iframe_for_display,
+      const std::optional<std::string>& iframe_for_display,
       const std::vector<IdentityProviderData>& identity_provider_data,
       IdentityRequestAccount::SignInMode sign_in_mode,
       bool show_auto_reauthn_checkbox,
@@ -374,7 +373,7 @@ TEST_F(FederatedAuthRequestImplMultipleFramesTest, SameOriginIframe) {
   EXPECT_EQ(RequestTokenStatus::kSuccess, iframe_callback_helper.status());
   EXPECT_TRUE(iframe_dialog_state.did_show_accounts_dialog);
   EXPECT_EQ("top-frame.example", iframe_dialog_state.top_frame_for_display);
-  EXPECT_EQ(absl::nullopt, iframe_dialog_state.iframe_for_display);
+  EXPECT_EQ(std::nullopt, iframe_dialog_state.iframe_for_display);
 }
 
 // Test that only top frame URL is available for display when FedCM is called
@@ -400,7 +399,7 @@ TEST_F(FederatedAuthRequestImplMultipleFramesTest, SameSiteIframe) {
   EXPECT_EQ(RequestTokenStatus::kSuccess, iframe_callback_helper.status());
   EXPECT_TRUE(iframe_dialog_state.did_show_accounts_dialog);
   EXPECT_EQ("top-frame.example", iframe_dialog_state.top_frame_for_display);
-  EXPECT_EQ(absl::nullopt, iframe_dialog_state.iframe_for_display);
+  EXPECT_EQ(std::nullopt, iframe_dialog_state.iframe_for_display);
 }
 
 // Test that both top frame and iframe URLs are available for display when FedCM

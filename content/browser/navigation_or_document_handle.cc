@@ -4,12 +4,13 @@
 
 #include "content/browser/navigation_or_document_handle.h"
 
+#include <optional>
+
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/frame_type.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace content {
@@ -69,7 +70,7 @@ FrameTreeNode* NavigationOrDocumentHandle::GetFrameTreeNode() const {
   return nullptr;
 }
 
-absl::optional<url::Origin> NavigationOrDocumentHandle::GetTopmostFrameOrigin()
+std::optional<url::Origin> NavigationOrDocumentHandle::GetTopmostFrameOrigin()
     const {
   if (auto* navigation_request = GetNavigationRequest()) {
     auto* current_rfh =
@@ -79,7 +80,7 @@ absl::optional<url::Origin> NavigationOrDocumentHandle::GetTopmostFrameOrigin()
   if (auto* rfh = GetDocument()) {
     return rfh->GetOutermostMainFrame()->GetLastCommittedOrigin();
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool NavigationOrDocumentHandle::IsInPrimaryMainFrame() const {

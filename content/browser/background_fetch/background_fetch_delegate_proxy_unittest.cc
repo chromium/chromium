@@ -82,8 +82,8 @@ class FakeBackgroundFetchDelegate : public BackgroundFetchDelegate {
   void MarkJobComplete(const std::string& job_unique_id) override {}
 
   void UpdateUI(const std::string& job_unique_id,
-                const absl::optional<std::string>& title,
-                const absl::optional<SkBitmap>& icon) override {
+                const std::optional<std::string>& title,
+                const std::optional<SkBitmap>& icon) override {
     ++ui_update_count_;
   }
 
@@ -110,7 +110,7 @@ class FakeBackgroundFetchDelegate : public BackgroundFetchDelegate {
         job_unique_id, guid,
         std::make_unique<BackgroundFetchResult>(
             std::move(response), base::Time::Now(), base::FilePath(),
-            absl::nullopt /* blob_handle */, 10u));
+            std::nullopt /* blob_handle */, 10u));
     download_guid_to_url_map_.erase(guid);
   }
 
@@ -218,7 +218,7 @@ TEST_F(BackgroundFetchDelegateProxyTest, StartRequest) {
       /* downloaded_bytes= */ 0u, /* uploaded_bytes= */ 0u,
       /* download_total= */ 0u, /* upload_total= */ 0u,
       /* outstanding_guids= */ std::vector<std::string>(),
-      /* start_paused= */ false, /* isolation_info= */ absl::nullopt);
+      /* start_paused= */ false, /* isolation_info= */ std::nullopt);
   delegate_proxy_->CreateDownloadJob(controller.weak_ptr_factory_.GetWeakPtr(),
                                      std::move(fetch_description));
 
@@ -245,7 +245,7 @@ TEST_F(BackgroundFetchDelegateProxyTest, StartRequest_NotCompleted) {
       /* downloaded_bytes= */ 0u, /* uploaded_bytes= */ 0u,
       /* download_total= */ 0u, /* upload_total= */ 0u,
       /* outstanding_guids= */ std::vector<std::string>(),
-      /* start_paused= */ false, /* isolation_info= */ absl::nullopt);
+      /* start_paused= */ false, /* isolation_info= */ std::nullopt);
   delegate_proxy_->CreateDownloadJob(controller.weak_ptr_factory_.GetWeakPtr(),
                                      std::move(fetch_description));
 
@@ -277,7 +277,7 @@ TEST_F(BackgroundFetchDelegateProxyTest, Abort) {
       /* downloaded_bytes= */ 0u, /* uploaded_bytes= */ 0u,
       /* download_total= */ 0u, /* upload_total= */ 0u,
       /* outstanding_guids= */ std::vector<std::string>(),
-      /* start_paused= */ false, /* isolation_info= */ absl::nullopt);
+      /* start_paused= */ false, /* isolation_info= */ std::nullopt);
   delegate_proxy_->CreateDownloadJob(controller.weak_ptr_factory_.GetWeakPtr(),
                                      std::move(fetch_description1));
 
@@ -287,7 +287,7 @@ TEST_F(BackgroundFetchDelegateProxyTest, Abort) {
       /* downloaded_bytes= */ 0u, /* uploaded_bytes= */ 0u,
       /* download_total= */ 0u, /* upload_total= */ 0u,
       /* outstanding_guids= */ std::vector<std::string>(),
-      /* start_paused= */ false, /* isolation_info= */ absl::nullopt);
+      /* start_paused= */ false, /* isolation_info= */ std::nullopt);
   delegate_proxy_->CreateDownloadJob(controller2.weak_ptr_factory_.GetWeakPtr(),
                                      std::move(fetch_description2));
 
@@ -326,7 +326,7 @@ TEST_F(BackgroundFetchDelegateProxyTest, UpdateUI) {
       /* download_total= */ 0u, /* upload_total= */ 0u,
       /* outstanding_guids= */ std::vector<std::string>(),
       /* start_paused= */ false,
-      /* isolation_info= */ absl::nullopt);
+      /* isolation_info= */ std::nullopt);
 
   delegate_proxy_->CreateDownloadJob(controller.weak_ptr_factory_.GetWeakPtr(),
                                      std::move(fetch_description));
@@ -337,7 +337,7 @@ TEST_F(BackgroundFetchDelegateProxyTest, UpdateUI) {
   EXPECT_TRUE(controller.request_started_);
   EXPECT_TRUE(controller.request_completed_);
 
-  delegate_proxy_->UpdateUI(kExampleUniqueId, "Job 1 Complete!", absl::nullopt,
+  delegate_proxy_->UpdateUI(kExampleUniqueId, "Job 1 Complete!", std::nullopt,
                             base::DoNothing());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(delegate_->ui_update_count_, 1);
@@ -361,14 +361,14 @@ TEST_F(BackgroundFetchDelegateProxyTest, MultipleClients) {
       /* downloaded_bytes= */ 0u, /* uploaded_bytes= */ 0u,
       /* download_total= */ 0u, /* upload_total= */ 0u,
       /* outstanding_guids= */ std::vector<std::string>(),
-      /* start_paused= */ false, /* isolation_info= */ absl::nullopt);
+      /* start_paused= */ false, /* isolation_info= */ std::nullopt);
   auto fetch_description2 = std::make_unique<BackgroundFetchDescription>(
       kExampleUniqueId2, url::Origin(), /* title= */ "Job 2", SkBitmap(),
       /* completed_requests= */ 0, /* total_requests= */ 1,
       /* downloaded_bytes= */ 0u, /* uploaded_bytes= */ 0u,
       /* download_total= */ 0u, /* upload_total= */ 0u,
       /* outstanding_guids= */ std::vector<std::string>(),
-      /* start_paused= */ false, /* isolation_info= */ absl::nullopt);
+      /* start_paused= */ false, /* isolation_info= */ std::nullopt);
 
   delegate_proxy1.CreateDownloadJob(controller1.weak_ptr_factory_.GetWeakPtr(),
                                     std::move(fetch_description1));

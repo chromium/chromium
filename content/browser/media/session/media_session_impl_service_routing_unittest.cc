@@ -76,13 +76,13 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
   MOCK_METHOD2(OnSetMute, void(int player_id, bool mute));
   MOCK_METHOD(void, OnRequestMediaRemoting, (int player_id), (override));
 
-  absl::optional<media_session::MediaPosition> GetPosition(
+  std::optional<media_session::MediaPosition> GetPosition(
       int player_id) const override {
     return position_;
   }
 
   void SetPosition(
-      const absl::optional<media_session::MediaPosition>& position) {
+      const std::optional<media_session::MediaPosition>& position) {
     position_ = position;
   }
 
@@ -121,7 +121,7 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
 
   media::MediaContentType media_content_type_;
 
-  absl::optional<media_session::MediaPosition> position_;
+  std::optional<media_session::MediaPosition> position_;
 };
 
 }  // anonymous namespace
@@ -1231,7 +1231,7 @@ TEST_F(MediaSessionImplServiceRoutingTest, PositionFromServiceCanBeReset) {
 
   observer.WaitForExpectedPosition(expected_position);
 
-  services_[main_frame_]->SetPositionState(absl::nullopt);
+  services_[main_frame_]->SetPositionState(std::nullopt);
 
   EXPECT_EQ(services_[main_frame_].get(), ComputeServiceForRouting());
 

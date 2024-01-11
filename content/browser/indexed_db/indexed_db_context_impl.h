@@ -10,6 +10,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -35,7 +36,6 @@
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "net/base/schemeful_site.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace base {
@@ -176,7 +176,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
 
   // Returns a list of all BucketLocators with backing stores.
   std::vector<storage::BucketLocator> GetAllBuckets();
-  absl::optional<storage::BucketLocator> LookUpBucket(
+  std::optional<storage::BucketLocator> LookUpBucket(
       storage::BucketId bucket_id);
 
   // GetStoragePaths returns all paths owned by this database, in arbitrary
@@ -238,7 +238,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
   void ForceCloseImpl(
       const storage::mojom::ForceCloseReason reason,
       base::OnceClosure closure,
-      const absl::optional<storage::BucketLocator>& bucket_locator);
+      const std::optional<storage::BucketLocator>& bucket_locator);
 
   void OnGotBucketsForDeletion(
       base::OnceCallback<void(bool)> callback,
@@ -268,7 +268,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
   std::vector<base::OnceClosure> on_initialize_from_files_callbacks_;
 
   using DidGetBucketLocatorCallback = base::OnceCallback<void(
-      const absl::optional<storage::BucketLocator>& bucket_locator)>;
+      const std::optional<storage::BucketLocator>& bucket_locator)>;
 
   void GetOrCreateDefaultBucket(const blink::StorageKey& storage_key,
                                 DidGetBucketLocatorCallback callback);
@@ -348,7 +348,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
 
   mojo::ReceiverSet<storage::mojom::IndexedDBControl> receivers_;
   mojo::ReceiverSet<storage::mojom::IndexedDBControlTest> test_receivers_;
-  absl::optional<mojo::Receiver<storage::mojom::MockFailureInjector>>
+  std::optional<mojo::Receiver<storage::mojom::MockFailureInjector>>
       mock_failure_injector_;
   mojo::RemoteSet<storage::mojom::IndexedDBObserver> observers_;
   mojo::Receiver<storage::mojom::QuotaClient> quota_client_receiver_;

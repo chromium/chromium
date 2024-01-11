@@ -71,7 +71,7 @@ class ServiceWorkerTestContentBrowserClient : public TestContentBrowserClient {
     AllowServiceWorkerCallLog(
         const GURL& scope,
         const net::SiteForCookies& site_for_cookies,
-        const absl::optional<url::Origin>& top_frame_origin,
+        const std::optional<url::Origin>& top_frame_origin,
         const GURL& script_url)
         : scope(scope),
           site_for_cookies(site_for_cookies),
@@ -79,7 +79,7 @@ class ServiceWorkerTestContentBrowserClient : public TestContentBrowserClient {
           script_url(script_url) {}
     const GURL scope;
     const net::SiteForCookies site_for_cookies;
-    const absl::optional<url::Origin> top_frame_origin;
+    const std::optional<url::Origin> top_frame_origin;
     const GURL script_url;
   };
 
@@ -88,7 +88,7 @@ class ServiceWorkerTestContentBrowserClient : public TestContentBrowserClient {
   AllowServiceWorkerResult AllowServiceWorker(
       const GURL& scope,
       const net::SiteForCookies& site_for_cookies,
-      const absl::optional<url::Origin>& top_frame_origin,
+      const std::optional<url::Origin>& top_frame_origin,
       const GURL& script_url,
       content::BrowserContext* context) override {
     logs_.emplace_back(scope, site_for_cookies, top_frame_origin, script_url);
@@ -174,7 +174,7 @@ class ServiceWorkerContainerHostTest : public testing::Test {
   ServiceWorkerRemoteContainerEndpoint
   PrepareServiceWorkerContainerHostWithSiteForCookies(
       const GURL& document_url,
-      const absl::optional<url::Origin>& top_frame_origin) {
+      const std::optional<url::Origin>& top_frame_origin) {
     ServiceWorkerRemoteContainerEndpoint remote_endpoint;
     CreateContainerHostInternal(document_url, top_frame_origin,
                                 &remote_endpoint);
@@ -238,7 +238,7 @@ class ServiceWorkerContainerHostTest : public testing::Test {
         blink::mojom::FetchClientSettingsObject::New(),
         base::BindOnce([](blink::mojom::ServiceWorkerErrorType* out_error,
                           blink::mojom::ServiceWorkerErrorType error,
-                          const absl::optional<std::string>& error_msg,
+                          const std::optional<std::string>& error_msg,
                           blink::mojom::ServiceWorkerRegistrationObjectInfoPtr
                               registration) { *out_error = error; },
                        &error));
@@ -259,7 +259,7 @@ class ServiceWorkerContainerHostTest : public testing::Test {
             [](blink::mojom::ServiceWorkerErrorType* out_error,
                blink::mojom::ServiceWorkerRegistrationObjectInfoPtr* out_info,
                blink::mojom::ServiceWorkerErrorType error,
-               const absl::optional<std::string>& error_msg,
+               const std::optional<std::string>& error_msg,
                blink::mojom::ServiceWorkerRegistrationObjectInfoPtr
                    registration) {
               *out_error = error;
@@ -279,8 +279,8 @@ class ServiceWorkerContainerHostTest : public testing::Test {
     container_host->GetRegistrations(base::BindOnce(
         [](blink::mojom::ServiceWorkerErrorType* out_error,
            blink::mojom::ServiceWorkerErrorType error,
-           const absl::optional<std::string>& error_msg,
-           absl::optional<std::vector<
+           const std::optional<std::string>& error_msg,
+           std::optional<std::vector<
                blink::mojom::ServiceWorkerRegistrationObjectInfoPtr>> infos) {
           *out_error = error;
         },
@@ -350,7 +350,7 @@ class ServiceWorkerContainerHostTest : public testing::Test {
  private:
   base::WeakPtr<ServiceWorkerContainerHost> CreateContainerHostInternal(
       const GURL& document_url,
-      const absl::optional<url::Origin>& top_frame_origin,
+      const std::optional<url::Origin>& top_frame_origin,
       ServiceWorkerRemoteContainerEndpoint* remote_endpoint) {
     base::WeakPtr<ServiceWorkerContainerHost> container_host =
         CreateContainerHostForWindow(

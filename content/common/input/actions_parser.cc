@@ -534,7 +534,7 @@ bool ActionsParser::ParsePointerAction(
     key_modifiers |= key_modifier;
   }
 
-  const absl::optional<double> width_optional = action.FindDouble("width");
+  const std::optional<double> width_optional = action.FindDouble("width");
   double width = width_optional.value_or(40);
   if (width < 0) {
     error_message_ = base::StringPrintf(
@@ -542,7 +542,7 @@ bool ActionsParser::ParsePointerAction(
     return false;
   }
 
-  const absl::optional<double> height_optional = action.FindDouble("height");
+  const std::optional<double> height_optional = action.FindDouble("height");
   double height = height_optional.value_or(40);
   if (height < 0) {
     error_message_ = base::StringPrintf(
@@ -550,8 +550,7 @@ bool ActionsParser::ParsePointerAction(
     return false;
   }
 
-  const absl::optional<double> pressure_optional =
-      action.FindDouble("pressure");
+  const std::optional<double> pressure_optional = action.FindDouble("pressure");
   double pressure = pressure_optional.value_or(0.5);
   if (pressure < 0 || pressure > 1) {
     error_message_ = base::StringPrintf(
@@ -561,7 +560,7 @@ bool ActionsParser::ParsePointerAction(
     return false;
   }
 
-  const absl::optional<double> tangential_pressure_optional =
+  const std::optional<double> tangential_pressure_optional =
       action.FindDouble("tangentialPressure");
   double tangential_pressure = tangential_pressure_optional.value_or(0);
   if (tangential_pressure < -1 || tangential_pressure > 1) {
@@ -701,8 +700,8 @@ bool ActionsParser::ParseNullAction(
 bool ActionsParser::GetPosition(const base::Value::Dict& action,
                                 double& position_x,
                                 double& position_y) {
-  const absl::optional<double> position_x_optional = action.FindDouble("x");
-  const absl::optional<double> position_y_optional = action.FindDouble("y");
+  const std::optional<double> position_x_optional = action.FindDouble("x");
+  const std::optional<double> position_y_optional = action.FindDouble("y");
   // TODO(lanwei): we should clarify the case when x or y is undefined in the
   // WebDriver spec.
   // https://www.w3.org/TR/webdriver/#dfn-process-a-pointer-move-action.
@@ -725,8 +724,8 @@ bool ActionsParser::GetPosition(const base::Value::Dict& action,
 bool ActionsParser::GetScrollDelta(const base::Value::Dict& action,
                                    int& delta_x,
                                    int& delta_y) {
-  const absl::optional<int> delta_x_optional = action.FindInt("deltaX");
-  const absl::optional<int> delta_y_optional = action.FindInt("deltaY");
+  const std::optional<int> delta_x_optional = action.FindInt("deltaX");
+  const std::optional<int> delta_y_optional = action.FindInt("deltaY");
   if (!delta_x_optional) {
     error_message_ = base::StringPrintf(
         "actions[%zu].actions.delta_x is not defined or not an integer",

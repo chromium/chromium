@@ -175,7 +175,7 @@ IndexedDBFactory::~IndexedDBFactory() {
 }
 
 void IndexedDBFactory::AddReceiver(
-    absl::optional<storage::BucketInfo> bucket,
+    std::optional<storage::BucketInfo> bucket,
     mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
         client_state_checker_remote,
     mojo::PendingReceiver<blink::mojom::IDBFactory> pending_receiver) {
@@ -189,7 +189,7 @@ void IndexedDBFactory::GetDatabaseInfo(GetDatabaseInfoCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("IndexedDB", "IndexedDBFactory::GetDatabaseInfo");
 
-  const absl::optional<storage::BucketInfo>& bucket =
+  const std::optional<storage::BucketInfo>& bucket =
       receivers_.current_context().bucket;
 
   // Return error if failed to retrieve bucket from the QuotaManager.
@@ -256,7 +256,7 @@ void IndexedDBFactory::Open(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("IndexedDB", "IndexedDBFactory::Open");
 
-  const absl::optional<storage::BucketInfo>& bucket =
+  const std::optional<storage::BucketInfo>& bucket =
       receivers_.current_context().bucket;
 
   // Return error if failed to retrieve bucket from the QuotaManager.
@@ -313,7 +313,7 @@ void IndexedDBFactory::DeleteDatabase(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("IndexedDB", "IndexedDBFactory::DeleteDatabase");
 
-  const absl::optional<storage::BucketInfo>& bucket =
+  const std::optional<storage::BucketInfo>& bucket =
       receivers_.current_context().bucket;
 
   // Return error if failed to retrieve bucket from the QuotaManager.
@@ -926,7 +926,7 @@ void IndexedDBFactory::OnDatabaseDeleted(
 }
 
 IndexedDBFactory::ReceiverContext::ReceiverContext(
-    absl::optional<storage::BucketInfo> bucket,
+    std::optional<storage::BucketInfo> bucket,
     mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
         client_state_checker)
     : bucket(bucket),

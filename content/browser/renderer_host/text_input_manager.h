@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_TEXT_INPUT_MANAGER_H__
 #define CONTENT_BROWSER_RENDERER_HOST_TEXT_INPUT_MANAGER_H__
 
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <utility>
@@ -13,7 +14,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/mojom/text_input_state.mojom.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/gfx/geometry/rect.h"
@@ -66,7 +66,7 @@ class CONTENT_EXPORT TextInputManager {
         TextInputManager* text_input_manager,
         RenderWidgetHostViewBase* updated_view,
         bool character_bounds_changed,
-        const absl::optional<std::vector<gfx::Rect>>& line_bounds) {}
+        const std::optional<std::vector<gfx::Rect>>& line_bounds) {}
     // Called when the text selection for the |updated_view_| has changed.
     virtual void OnTextSelectionChanged(
         TextInputManager* text_input_manager,
@@ -172,8 +172,7 @@ class CONTENT_EXPORT TextInputManager {
 
   // Returns the grammar fragment which contains |range|. If non-existent,
   // returns nullopt.
-  absl::optional<ui::GrammarFragment> GetGrammarFragment(
-      gfx::Range range) const;
+  std::optional<ui::GrammarFragment> GetGrammarFragment(gfx::Range range) const;
 
   // Returns the selection bounds information for |view|. If |view| == nullptr,
   // it will return the corresponding information for |active_view_| or nullptr
@@ -192,10 +191,10 @@ class CONTENT_EXPORT TextInputManager {
       RenderWidgetHostViewBase* view = nullptr) const;
 
   // Returns the bounds of the text control in the root frame.
-  const absl::optional<gfx::Rect> GetTextControlBounds() const;
+  const std::optional<gfx::Rect> GetTextControlBounds() const;
 
   // Returns the bounds of the selected text in the root frame.
-  const absl::optional<gfx::Rect> GetTextSelectionBounds() const;
+  const std::optional<gfx::Rect> GetTextSelectionBounds() const;
 
   // ---------------------------------------------------------------------------
   // The following methods are called by RWHVs on the tab to update their IME-
@@ -228,8 +227,8 @@ class CONTENT_EXPORT TextInputManager {
   void ImeCompositionRangeChanged(
       RenderWidgetHostViewBase* view,
       const gfx::Range& range,
-      const absl::optional<std::vector<gfx::Rect>>& character_bounds,
-      const absl::optional<std::vector<gfx::Rect>>& line_bounds);
+      const std::optional<std::vector<gfx::Rect>>& character_bounds,
+      const std::optional<std::vector<gfx::Rect>>& line_bounds);
 
   // Updates the new text selection information for the |view|.
   void SelectionChanged(RenderWidgetHostViewBase* view,

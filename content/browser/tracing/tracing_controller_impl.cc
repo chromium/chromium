@@ -5,7 +5,9 @@
 #include "content/browser/tracing/tracing_controller_impl.h"
 
 #include <inttypes.h>
+
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -52,7 +54,6 @@
 #include "services/tracing/public/cpp/traced_process_impl.h"
 #include "services/tracing/public/cpp/tracing_features.h"
 #include "services/tracing/public/mojom/constants.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "third_party/perfetto/include/perfetto/protozero/message.h"
 #include "third_party/perfetto/protos/perfetto/trace/extension_descriptor.pbzero.h"
@@ -260,8 +261,7 @@ void TracingControllerImpl::GenerateMetadataPacket(
 }
 
 // Can be called on any thread.
-absl::optional<base::Value::Dict>
-TracingControllerImpl::GenerateMetadataDict() {
+std::optional<base::Value::Dict> TracingControllerImpl::GenerateMetadataDict() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   auto metadata_dict =
@@ -276,7 +276,7 @@ TracingControllerImpl::GenerateMetadataDict() {
   // obtained from process maps since library can be mapped from apk directly.
   // This is not added as part of memory-infra os dumps since it is special case
   // only for chrome library.
-  absl::optional<base::StringPiece> soname =
+  std::optional<base::StringPiece> soname =
       base::debug::ReadElfLibraryName(&__ehdr_start);
   if (soname)
     metadata_dict.Set("chrome-library-name", *soname);
@@ -577,7 +577,7 @@ void TracingControllerImpl::OnReadBuffersComplete() {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void TracingControllerImpl::OnMachineStatisticsLoaded() {
-  if (const absl::optional<base::StringPiece> hardware_class =
+  if (const std::optional<base::StringPiece> hardware_class =
           ash::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
               ash::system::kHardwareClassKey)) {
     hardware_class_ = std::string(hardware_class.value());

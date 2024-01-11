@@ -13,9 +13,10 @@
 #endif
 #endif
 
+#include <optional>
+
 #include "base/functional/callback_forward.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"
 
 #if defined(__OBJC__)
@@ -39,7 +40,7 @@ class CONTENT_EXPORT WebContentsViewDelegate {
   // OnPerformingDrop() completes. Returns an updated DropData or nothing if
   // the drop operation should be aborted.
   using DropCompletionCallback =
-      base::OnceCallback<void(absl::optional<DropData>)>;
+      base::OnceCallback<void(std::optional<DropData>)>;
 
   virtual ~WebContentsViewDelegate();
 

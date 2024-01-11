@@ -32,7 +32,7 @@ RenderViewHost* RenderViewHostFactory::Create(
     bool renderer_initiated_creation,
     scoped_refptr<BrowsingContextState> main_browsing_context_state,
     CreateRenderViewHostCase create_case,
-    absl::optional<viz::FrameSinkId> frame_sink_id) {
+    std::optional<viz::FrameSinkId> frame_sink_id) {
   int32_t routing_id = group->process()->GetNextRoutingID();
   int32_t widget_routing_id = group->process()->GetNextRoutingID();
 

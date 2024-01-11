@@ -130,7 +130,7 @@ void CdmFileImpl::Read(ReadCallback callback) {
   }
 }
 
-void CdmFileImpl::DidRead(absl::optional<std::vector<uint8_t>> data) {
+void CdmFileImpl::DidRead(std::optional<std::vector<uint8_t>> data) {
   DVLOG(3) << __func__ << " file: " << file_name_
            << ", success: " << (data.has_value() ? "yes" : "no");
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);

@@ -193,7 +193,7 @@ class ScopedPrefetchServiceContentBrowserClient
 // This is only used to test the proxy lookup.
 class TestNetworkContext : public network::TestNetworkContext {
  public:
-  explicit TestNetworkContext(absl::optional<net::ProxyInfo> proxy_info)
+  explicit TestNetworkContext(std::optional<net::ProxyInfo> proxy_info)
       : proxy_info_(proxy_info) {}
 
   void LookUpProxyForURL(
@@ -207,7 +207,7 @@ class TestNetworkContext : public network::TestNetworkContext {
   }
 
  private:
-  absl::optional<net::ProxyInfo> proxy_info_;
+  std::optional<net::ProxyInfo> proxy_info_;
 };
 
 net::RequestPriority ExpectedPriorityForEagerness(
@@ -454,7 +454,7 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
             ? net::ProxyChain::FromSchemeHostAndPort(
                   net::ProxyServer::Scheme::SCHEME_HTTPS,
                   PrefetchProxyHost(GURL(kPrefetchProxyAddress)).spec(),
-                  absl::nullopt)
+                  std::nullopt)
             : net::ProxyChain::Direct();
 
     head->mime_type = mime_type;
@@ -587,8 +587,8 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
 
   bool SetCookie(const GURL& url, const std::string& value) {
     std::unique_ptr<net::CanonicalCookie> cookie(net::CanonicalCookie::Create(
-        url, value, base::Time::Now(), /*server_time=*/absl::nullopt,
-        /*cookie_partition_key=*/absl::nullopt));
+        url, value, base::Time::Now(), /*server_time=*/std::nullopt,
+        /*cookie_partition_key=*/std::nullopt));
 
     EXPECT_TRUE(cookie.get());
 
@@ -616,8 +616,8 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
   void Navigate(
       const GURL& url,
       int initiator_process_id,
-      const absl::optional<blink::LocalFrameToken>& initiator_local_frame_token,
-      const absl::optional<blink::DocumentToken>& initiator_document_token) {
+      const std::optional<blink::LocalFrameToken>& initiator_local_frame_token,
+      const std::optional<blink::DocumentToken>& initiator_document_token) {
     mock_navigation_handle_ =
         std::make_unique<testing::NiceMock<MockNavigationHandle>>(
             web_contents());
@@ -641,10 +641,10 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
              main_rfh()->GetFrameToken(), MainDocumentToken());
   }
 
-  absl::optional<PrefetchServingPageMetrics>
+  std::optional<PrefetchServingPageMetrics>
   GetMetricsForMostRecentNavigation() {
     if (!mock_navigation_handle_)
-      return absl::nullopt;
+      return std::nullopt;
 
     return PrefetchServingPageMetrics::GetForNavigationHandle(
         *mock_navigation_handle_);
@@ -682,8 +682,8 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
   void GetPrefetchToServe(
       base::test::TestFuture<PrefetchContainer::Reader>& future,
       const GURL& url,
-      absl::optional<blink::DocumentToken> initiator_document_token =
-          absl::nullopt) {
+      std::optional<blink::DocumentToken> initiator_document_token =
+          std::nullopt) {
     if (!initiator_document_token) {
       initiator_document_token = MainDocumentToken();
     }
@@ -717,13 +717,13 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
 
   // A valid `initiator_document_token` is given as an argument when
   // to test that prefetched results are not used for unexpected initiator
-  // Documents. Otherwise (`absl::nullopt`), use the ID of the expected
+  // Documents. Otherwise (`std::nullopt`), use the ID of the expected
   // initiator Document (the Document where the `PrefetchDocumentManager` is
   // associated).
   PrefetchContainer::Reader GetPrefetchToServe(
       const GURL& url,
-      absl::optional<blink::DocumentToken> initiator_document_token =
-          absl::nullopt) {
+      std::optional<blink::DocumentToken> initiator_document_token =
+          std::nullopt) {
     base::test::TestFuture<PrefetchContainer::Reader> future;
     GetPrefetchToServe(future, url, std::move(initiator_document_token));
     return future.Take();
@@ -762,7 +762,7 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
     histogram_tester.ExpectTotalCount(
         "PrefetchProxy.Prefetch.Mainframe.ConnectTime", 0);
 
-    absl::optional<PrefetchReferringPageMetrics> referring_page_metrics =
+    std::optional<PrefetchReferringPageMetrics> referring_page_metrics =
         PrefetchReferringPageMetrics::GetForCurrentDocument(main_rfh());
     EXPECT_EQ(referring_page_metrics->prefetch_attempted_count, 1);
     EXPECT_EQ(referring_page_metrics->prefetch_eligible_count,
@@ -815,7 +815,7 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
     histogram_tester.ExpectTotalCount(
         "PrefetchProxy.Prefetch.Mainframe.ConnectTime", 0);
 
-    absl::optional<PrefetchReferringPageMetrics> referring_page_metrics =
+    std::optional<PrefetchReferringPageMetrics> referring_page_metrics =
         PrefetchReferringPageMetrics::GetForCurrentDocument(main_rfh());
     EXPECT_EQ(referring_page_metrics->prefetch_attempted_count, 1);
     EXPECT_EQ(referring_page_metrics->prefetch_eligible_count, 1);
@@ -849,7 +849,7 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
         "PrefetchProxy.Prefetch.Mainframe.ConnectTime", kConnectTimeDuration,
         1);
 
-    absl::optional<PrefetchReferringPageMetrics> referring_page_metrics =
+    std::optional<PrefetchReferringPageMetrics> referring_page_metrics =
         PrefetchReferringPageMetrics::GetForCurrentDocument(main_rfh());
     EXPECT_EQ(referring_page_metrics->prefetch_attempted_count, 1);
     EXPECT_EQ(referring_page_metrics->prefetch_eligible_count, 1);
@@ -880,7 +880,7 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
         "PrefetchProxy.Prefetch.Mainframe.ConnectTime", kConnectTimeDuration,
         1);
 
-    absl::optional<PrefetchReferringPageMetrics> referring_page_metrics =
+    std::optional<PrefetchReferringPageMetrics> referring_page_metrics =
         PrefetchReferringPageMetrics::GetForCurrentDocument(main_rfh());
     EXPECT_EQ(referring_page_metrics->prefetch_attempted_count, 1);
     EXPECT_EQ(referring_page_metrics->prefetch_eligible_count, 1);
@@ -924,7 +924,7 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
         test::kPreloadingAttemptUkmMetrics);
     EXPECT_EQ(actual_attempts.size(), 1u);
 
-    absl::optional<base::TimeDelta> ready_time = absl::nullopt;
+    std::optional<base::TimeDelta> ready_time = std::nullopt;
     if (args.outcome == PreloadingTriggeringOutcome::kReady ||
         args.outcome == PreloadingTriggeringOutcome::kSuccess ||
         args.expect_ready_time) {
@@ -948,7 +948,7 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
   void ExpectServingMetrics(PrefetchStatus expected_prefetch_status,
                             bool prefetch_header_latency = false,
                             bool required_private_prefetch_proxy = true) {
-    absl::optional<PrefetchServingPageMetrics> serving_page_metrics =
+    std::optional<PrefetchServingPageMetrics> serving_page_metrics =
         GetMetricsForMostRecentNavigation();
     ASSERT_TRUE(serving_page_metrics);
     ASSERT_TRUE(serving_page_metrics->prefetch_status);
@@ -1064,7 +1064,7 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
               MOJO_RESULT_OK);
 
     request->client->OnReceiveResponse(std::move(head), std::move(body),
-                                       absl::nullopt);
+                                       std::nullopt);
     task_environment()->RunUntilIdle();
   }
 
@@ -1238,7 +1238,7 @@ TEST_F(PrefetchServiceTest, NoPrefetchingDomainNotInAllowList) {
   Navigate(GURL("https://example.com"));
   EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
 
-  absl::optional<PrefetchServingPageMetrics> serving_page_metrics =
+  std::optional<PrefetchServingPageMetrics> serving_page_metrics =
       GetMetricsForMostRecentNavigation();
   ASSERT_TRUE(serving_page_metrics);
   EXPECT_FALSE(serving_page_metrics->prefetch_status);
@@ -1374,7 +1374,7 @@ TEST_F(PrefetchServiceAllowAllDomainsForExtendedPreloadingTest,
   Navigate(GURL("https://example.com"));
   EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com")));
 
-  absl::optional<PrefetchServingPageMetrics> serving_page_metrics =
+  std::optional<PrefetchServingPageMetrics> serving_page_metrics =
       GetMetricsForMostRecentNavigation();
   ASSERT_TRUE(serving_page_metrics);
   EXPECT_FALSE(serving_page_metrics->prefetch_status);
@@ -2040,7 +2040,7 @@ TEST_F(PrefetchServiceTest, MAYBE_FailedCookiesChangedAfterPrefetchStarted) {
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.ConnectTime", kConnectTimeDuration, 1);
 
-  absl::optional<PrefetchReferringPageMetrics> referring_page_metrics =
+  std::optional<PrefetchReferringPageMetrics> referring_page_metrics =
       PrefetchReferringPageMetrics::GetForCurrentDocument(main_rfh());
   EXPECT_EQ(referring_page_metrics->prefetch_attempted_count, 1);
   EXPECT_EQ(referring_page_metrics->prefetch_eligible_count, 1);
@@ -2360,7 +2360,7 @@ TEST_F(PrefetchServiceTest, NotServeableNavigationInDifferentRenderFrameHost) {
   ExpectPrefetchSuccess(histogram_tester, std::size(kHTMLBody));
   EXPECT_FALSE(GetPrefetchToServe(GURL("https://example.com"),
                                   different_document_token));
-  absl::optional<PrefetchServingPageMetrics> serving_page_metrics =
+  std::optional<PrefetchServingPageMetrics> serving_page_metrics =
       GetMetricsForMostRecentNavigation();
   EXPECT_FALSE(serving_page_metrics);
 }
@@ -2436,7 +2436,7 @@ TEST_F(PrefetchServiceLimitedPrefetchesTest, LimitedNumberOfPrefetches) {
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.ConnectTime", kConnectTimeDuration, 2);
 
-  absl::optional<PrefetchReferringPageMetrics> referring_page_metrics =
+  std::optional<PrefetchReferringPageMetrics> referring_page_metrics =
       PrefetchReferringPageMetrics::GetForCurrentDocument(main_rfh());
   EXPECT_EQ(referring_page_metrics->prefetch_attempted_count, 3);
   EXPECT_EQ(referring_page_metrics->prefetch_eligible_count, 3);
@@ -2452,7 +2452,7 @@ TEST_F(PrefetchServiceLimitedPrefetchesTest, LimitedNumberOfPrefetches) {
 
   Navigate(GURL("https://example3.com"));
   EXPECT_FALSE(GetPrefetchToServe(GURL("https://example3.com")));
-  absl::optional<PrefetchServingPageMetrics> serving_page_metrics3 =
+  std::optional<PrefetchServingPageMetrics> serving_page_metrics3 =
       GetMetricsForMostRecentNavigation();
   ASSERT_TRUE(serving_page_metrics3);
   // The prefetch attempt that exceeds the limit is just rejected with no
@@ -2499,7 +2499,7 @@ TEST_F(PrefetchServiceLimitedPrefetchesTest, LimitedNumberOfPrefetches) {
              ToPreloadingFailureReason(
                  content::PrefetchStatus::kPrefetchFailedPerPageLimitExceeded),
              /*accurate=*/false,
-             /*ready_time=*/absl::nullopt,
+             /*ready_time=*/std::nullopt,
              blink::mojom::SpeculationEagerness::kEager)};
     EXPECT_THAT(actual_attempts,
                 testing::UnorderedElementsAreArray(expected_attempts))
@@ -2802,7 +2802,7 @@ TEST_F(PrefetchServiceStreamingURLLoaderTest,
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.ConnectTime", kConnectTimeDuration, 1);
 
-  absl::optional<PrefetchReferringPageMetrics> referring_page_metrics =
+  std::optional<PrefetchReferringPageMetrics> referring_page_metrics =
       PrefetchReferringPageMetrics::GetForCurrentDocument(main_rfh());
   EXPECT_EQ(referring_page_metrics->prefetch_attempted_count, 1);
   EXPECT_EQ(referring_page_metrics->prefetch_eligible_count, 1);
@@ -3715,7 +3715,7 @@ TEST_F(PrefetchServiceNeverBlockUntilHeadTest, MAYBE_HeadNotReceived) {
   histogram_tester.ExpectTotalCount(
       "PrefetchProxy.Prefetch.Mainframe.ConnectTime", 0);
 
-  absl::optional<PrefetchReferringPageMetrics> referring_page_metrics =
+  std::optional<PrefetchReferringPageMetrics> referring_page_metrics =
       PrefetchReferringPageMetrics::GetForCurrentDocument(main_rfh());
   EXPECT_EQ(referring_page_metrics->prefetch_attempted_count, 1);
   EXPECT_EQ(referring_page_metrics->prefetch_eligible_count, 1);
@@ -4123,7 +4123,7 @@ TEST_P(PrefetchServiceAlwaysBlockUntilHeadTest,
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.ConnectTime", kConnectTimeDuration, 1);
 
-  absl::optional<PrefetchReferringPageMetrics> referring_page_metrics =
+  std::optional<PrefetchReferringPageMetrics> referring_page_metrics =
       PrefetchReferringPageMetrics::GetForCurrentDocument(main_rfh());
   EXPECT_EQ(referring_page_metrics->prefetch_attempted_count, 1);
   EXPECT_EQ(referring_page_metrics->prefetch_eligible_count, 1);
@@ -4666,7 +4666,7 @@ TEST_F(PrefetchServiceNewLimitsTest,
   EXPECT_EQ(non_eager_prefetch.GetPrefetchStatus(),
             PrefetchStatus::kPrefetchSuccessful);
 
-  absl::optional<PrefetchReferringPageMetrics> referring_page_metrics =
+  std::optional<PrefetchReferringPageMetrics> referring_page_metrics =
       PrefetchReferringPageMetrics::GetForCurrentDocument(main_rfh());
   EXPECT_EQ(referring_page_metrics->prefetch_attempted_count, 4);
   EXPECT_EQ(referring_page_metrics->prefetch_eligible_count, 4);
@@ -5490,7 +5490,7 @@ TEST_P(PrefetchServiceWaitForMultiplePrefetchesBlockedUntilHeadTest,
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.ConnectTime", kConnectTimeDuration, 1);
 
-  absl::optional<PrefetchReferringPageMetrics> referring_page_metrics =
+  std::optional<PrefetchReferringPageMetrics> referring_page_metrics =
       PrefetchReferringPageMetrics::GetForCurrentDocument(main_rfh());
   EXPECT_EQ(referring_page_metrics->prefetch_attempted_count, 2);
   EXPECT_EQ(referring_page_metrics->prefetch_eligible_count, 2);
@@ -5580,7 +5580,7 @@ TEST_P(PrefetchServiceWaitForMultiplePrefetchesBlockedUntilHeadTest,
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.ConnectTime", kConnectTimeDuration, 1);
 
-  absl::optional<PrefetchReferringPageMetrics> referring_page_metrics =
+  std::optional<PrefetchReferringPageMetrics> referring_page_metrics =
       PrefetchReferringPageMetrics::GetForCurrentDocument(main_rfh());
   EXPECT_EQ(referring_page_metrics->prefetch_attempted_count, 2);
   EXPECT_EQ(referring_page_metrics->prefetch_eligible_count, 2);
@@ -5691,7 +5691,7 @@ TEST_P(PrefetchServiceWaitForMultiplePrefetchesBlockedUntilHeadTest,
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.ConnectTime", kConnectTimeDuration, 1);
 
-  absl::optional<PrefetchReferringPageMetrics> referring_page_metrics =
+  std::optional<PrefetchReferringPageMetrics> referring_page_metrics =
       PrefetchReferringPageMetrics::GetForCurrentDocument(main_rfh());
   EXPECT_EQ(referring_page_metrics->prefetch_attempted_count, 2);
   EXPECT_EQ(referring_page_metrics->prefetch_eligible_count, 2);
@@ -5819,7 +5819,7 @@ TEST_P(PrefetchServiceWaitForMultiplePrefetchesBlockedUntilHeadTest,
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.Mainframe.ConnectTime", kConnectTimeDuration, 2);
 
-  absl::optional<PrefetchReferringPageMetrics> referring_page_metrics =
+  std::optional<PrefetchReferringPageMetrics> referring_page_metrics =
       PrefetchReferringPageMetrics::GetForCurrentDocument(main_rfh());
   EXPECT_EQ(referring_page_metrics->prefetch_attempted_count, 2);
   EXPECT_EQ(referring_page_metrics->prefetch_eligible_count, 2);

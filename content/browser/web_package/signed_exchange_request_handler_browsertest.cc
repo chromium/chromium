@@ -108,10 +108,10 @@ class RedirectObserver : public WebContentsObserver {
       response_code_ = response->response_code();
   }
 
-  const absl::optional<int>& response_code() const { return response_code_; }
+  const std::optional<int>& response_code() const { return response_code_; }
 
  private:
-  absl::optional<int> response_code_;
+  std::optional<int> response_code_;
 };
 
 class AssertNavigationHandleFlagObserver : public WebContentsObserver {
@@ -145,11 +145,11 @@ class FinishNavigationObserver : public WebContentsObserver {
     std::move(done_closure_).Run();
   }
 
-  const absl::optional<net::Error>& error_code() const { return error_code_; }
+  const std::optional<net::Error>& error_code() const { return error_code_; }
 
  private:
   base::OnceClosure done_closure_;
-  absl::optional<net::Error> error_code_;
+  std::optional<net::Error> error_code_;
 };
 
 class MockContentBrowserClient final
@@ -1172,12 +1172,11 @@ class SignedExchangeAcceptHeaderBrowserTest
     }
   }
 
-  absl::optional<std::string> GetInterceptedAcceptHeader(
-      const GURL& url) const {
+  std::optional<std::string> GetInterceptedAcceptHeader(const GURL& url) const {
     base::AutoLock lock(url_accept_header_map_lock_);
     const auto it = url_accept_header_map_.find(url);
     if (it == url_accept_header_map_.end())
-      return absl::nullopt;
+      return std::nullopt;
     return it->second;
   }
 
@@ -1353,12 +1352,12 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeAcceptHeaderBrowserTest, ServiceWorker) {
         is_generated_scope
             ? (IsSignedExchangeEnabled() ? frame_accept_with_sxg : frame_accept)
             : "Done";
-    const absl::optional<std::string> expected_target_accept_header =
+    const std::optional<std::string> expected_target_accept_header =
         is_generated_scope
-            ? absl::nullopt
-            : absl::optional<std::string>(IsSignedExchangeEnabled()
-                                              ? frame_accept_with_sxg
-                                              : frame_accept);
+            ? std::nullopt
+            : std::optional<std::string>(IsSignedExchangeEnabled()
+                                             ? frame_accept_with_sxg
+                                             : frame_accept);
 
     NavigateAndWaitForTitle(target_url, expected_title);
     EXPECT_EQ(expected_target_accept_header,

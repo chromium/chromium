@@ -5,6 +5,7 @@
 #include "content/browser/renderer_host/pepper/pepper_proxy_lookup_helper.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/check_op.h"
@@ -20,7 +21,6 @@
 #include "net/proxy_resolution/proxy_info.h"
 #include "services/network/public/mojom/proxy_lookup_client.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -79,7 +79,7 @@ class PepperProxyLookupHelperTest : public testing::Test {
   }
 
   // Get the proxy information passed into OnLookupCompleteOnIOThread().
-  const absl::optional<net::ProxyInfo>& proxy_info() const {
+  const std::optional<net::ProxyInfo>& proxy_info() const {
     return proxy_info_;
   }
 
@@ -127,7 +127,7 @@ class PepperProxyLookupHelperTest : public testing::Test {
 
   // Invoked by |lookup_helper_| on the IO thread once the proxy lookup has
   // completed.
-  void OnLookupCompleteOnIOThread(absl::optional<net::ProxyInfo> proxy_info) {
+  void OnLookupCompleteOnIOThread(std::optional<net::ProxyInfo> proxy_info) {
     DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
     proxy_info_ = std::move(proxy_info);
@@ -146,7 +146,7 @@ class PepperProxyLookupHelperTest : public testing::Test {
 
   std::unique_ptr<PepperProxyLookupHelper> lookup_helper_;
 
-  absl::optional<net::ProxyInfo> proxy_info_;
+  std::optional<net::ProxyInfo> proxy_info_;
   mojo::Remote<network::mojom::ProxyLookupClient> proxy_lookup_client_;
 
   base::RunLoop lookup_complete_run_loop_;
@@ -167,7 +167,7 @@ TEST_F(PepperProxyLookupHelperTest, Success) {
 TEST_F(PepperProxyLookupHelperTest, Failure) {
   StartLookup();
   ClaimProxyLookupClient()->OnProxyLookupComplete(net::ERR_FAILED,
-                                                  absl::nullopt);
+                                                  std::nullopt);
   WaitForLookupCompletion();
   EXPECT_FALSE(proxy_info());
 }

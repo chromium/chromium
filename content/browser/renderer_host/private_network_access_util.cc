@@ -231,8 +231,8 @@ AddressSpace CalculateIPAddressSpace(
     ContentBrowserClient* client) {
   // Determine the IPAddressSpace, based on the IP address and the response
   // headers received.
-  absl::optional<network::CalculateClientAddressSpaceParams> params =
-      absl::nullopt;
+  std::optional<network::CalculateClientAddressSpaceParams> params =
+      std::nullopt;
   if (response_head) {
     params.emplace(response_head->url_list_via_service_worker,
                    response_head->parsed_headers,

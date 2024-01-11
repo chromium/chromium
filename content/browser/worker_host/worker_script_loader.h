@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_WORKER_HOST_WORKER_SCRIPT_LOADER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -24,7 +25,6 @@
 #include "services/network/public/cpp/single_request_url_loader_factory.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace net {
@@ -88,7 +88,7 @@ class WorkerScriptLoader : public network::mojom::URLLoader,
       const std::vector<std::string>& removed_headers,
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
-      const absl::optional<GURL>& new_url) override;
+      const std::optional<GURL>& new_url) override;
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override;
   void PauseReadingBodyFromNet() override;
@@ -99,7 +99,7 @@ class WorkerScriptLoader : public network::mojom::URLLoader,
   void OnReceiveResponse(
       network::mojom::URLResponseHeadPtr response_head,
       mojo::ScopedDataPipeConsumerHandle body,
-      absl::optional<mojo_base::BigBuffer> cached_metadata) override;
+      std::optional<mojo_base::BigBuffer> cached_metadata) override;
   void OnReceiveRedirect(
       const net::RedirectInfo& redirect_info,
       network::mojom::URLResponseHeadPtr response_head) override;
@@ -109,7 +109,7 @@ class WorkerScriptLoader : public network::mojom::URLLoader,
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override;
   void OnComplete(const network::URLLoaderCompletionStatus& status) override;
 
-  absl::optional<SubresourceLoaderParams> TakeSubresourceLoaderParams() {
+  std::optional<SubresourceLoaderParams> TakeSubresourceLoaderParams() {
     return std::move(subresource_loader_params_);
   }
 
@@ -130,7 +130,7 @@ class WorkerScriptLoader : public network::mojom::URLLoader,
 
   std::unique_ptr<ServiceWorkerMainResourceLoaderInterceptor> interceptor_;
 
-  absl::optional<SubresourceLoaderParams> subresource_loader_params_;
+  std::optional<SubresourceLoaderParams> subresource_loader_params_;
 
   const int32_t request_id_;
   const uint32_t options_;
@@ -142,7 +142,7 @@ class WorkerScriptLoader : public network::mojom::URLLoader,
   net::MutableNetworkTrafficAnnotationTag traffic_annotation_;
   const ukm::SourceId ukm_source_id_;
 
-  absl::optional<net::RedirectInfo> redirect_info_;
+  std::optional<net::RedirectInfo> redirect_info_;
   int redirect_limit_ = net::URLRequest::kMaxRedirects;
 
   mojo::Remote<network::mojom::URLLoader> url_loader_;

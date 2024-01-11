@@ -110,7 +110,7 @@ class CONTENT_EXPORT AudioOutputAuthorizationHandler {
       AuthorizationCompletedCallback cb,
       const std::string& device_id_for_renderer,
       const std::string& raw_device_id,
-      const absl::optional<media::AudioParameters>& params) const;
+      const std::optional<media::AudioParameters>& params) const;
 
   const raw_ptr<media::AudioSystem> audio_system_;
   const raw_ptr<MediaStreamManager> media_stream_manager_;

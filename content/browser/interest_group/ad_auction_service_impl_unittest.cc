@@ -239,7 +239,7 @@ class AllowInterestGroupContentBrowserClient : public TestContentBrowserClient {
 
  private:
   // If not present, all origins are allowed.
-  absl::optional<base::flat_set<url::Origin>> allow_list_;
+  std::optional<base::flat_set<url::Origin>> allow_list_;
 };
 
 constexpr char kFledgeUpdateHeaders[] =
@@ -835,7 +835,7 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
         return interest_group;
       }
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   int GetJoinCount(const url::Origin& owner, const std::string& name) {
@@ -858,7 +858,7 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
 
   // Retrieves the FencedFrameProperties for the specified URN from the main
   // frame. Returns nullopt if no such URN exists.
-  absl::optional<FencedFrameProperties> GetFencedFramePropertiesForURN(
+  std::optional<FencedFrameProperties> GetFencedFramePropertiesForURN(
       const GURL& urn_url) {
     TestFencedFrameURLMappingResultObserver observer;
     FencedFrameURLMapping& fenced_frame_urls_map =
@@ -869,12 +869,12 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
     return observer.fenced_frame_properties();
   }
 
-  absl::optional<GURL> ConvertFencedFrameURNToURL(const GURL& urn_url) {
+  std::optional<GURL> ConvertFencedFrameURNToURL(const GURL& urn_url) {
     auto properties = GetFencedFramePropertiesForURN(urn_url);
     if (properties && properties->mapped_url().has_value()) {
       return properties->mapped_url()->GetValueIgnoringVisibility();
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Invokes the callback for the provided URN in the scope of the main frame,
@@ -1041,8 +1041,8 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
 
   // Runs an ad auction using the config specified in `auction_config` in the
   // frame `rfh`. Returns the result of the auction, which is either a URL to
-  // the winning ad, or absl::nullopt if no ad won the auction.
-  absl::optional<GURL> RunAdAuctionAndFlushForFrame(
+  // the winning ad, or std::nullopt if no ad won the auction.
+  std::optional<GURL> RunAdAuctionAndFlushForFrame(
       const blink::AuctionConfig& auction_config,
       RenderFrameHost* rfh) {
     // Use a new service for each call. Keep the service alive as some calls
@@ -1052,13 +1052,13 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
         rfh, ad_auction_service_.BindNewPipeAndPassReceiver());
 
     base::RunLoop run_loop;
-    absl::optional<blink::FencedFrame::RedactedFencedFrameConfig> maybe_config;
+    std::optional<blink::FencedFrame::RedactedFencedFrameConfig> maybe_config;
     ad_auction_service_->RunAdAuction(
         auction_config, mojo::NullReceiver(),
         base::BindLambdaForTesting(
             [&run_loop, &maybe_config](
                 bool aborted_by_script,
-                const absl::optional<
+                const std::optional<
                     blink::FencedFrame::RedactedFencedFrameConfig>& config) {
               EXPECT_FALSE(aborted_by_script);
               maybe_config = config;
@@ -1067,7 +1067,7 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
     ad_auction_service_.FlushForTesting();
     run_loop.Run();
     if (!maybe_config) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     CHECK(maybe_config->urn_uuid().has_value());
     return maybe_config->urn_uuid();
@@ -1075,7 +1075,7 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
 
   // Like RunAdAuctionAndFlushForFrame(), but uses the RenderFrameHost of the
   // main frame.
-  absl::optional<GURL> RunAdAuctionAndFlush(
+  std::optional<GURL> RunAdAuctionAndFlush(
       const blink::AuctionConfig& auction_config) {
     return RunAdAuctionAndFlushForFrame(auction_config, main_rfh());
   }
@@ -1119,7 +1119,7 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
     interest_service->FinalizeAd(
         guid, config,
         base::BindLambdaForTesting(
-            [&](const absl::optional<GURL>& creative_url) {
+            [&](const std::optional<GURL>& creative_url) {
               ADD_FAILURE() << "Callback unexpectedly invoked.";
             }));
     run_loop.Run();
@@ -1282,11 +1282,11 @@ TEST_F(AdAuctionServiceImplTest,
                                                         kOriginG};
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt,
-      /*size_group=*/absl::nullopt,
-      /*buyer_reporting_id=*/absl::nullopt,
-      /*buyer_and_seller_reporting_id=*/absl::nullopt,
-      /*ad_render_id=*/absl::nullopt,
+      /*metadata=*/std::nullopt,
+      /*size_group=*/std::nullopt,
+      /*buyer_reporting_id=*/std::nullopt,
+      /*buyer_and_seller_reporting_id=*/std::nullopt,
+      /*ad_render_id=*/std::nullopt,
       /*allowed_reporting_origins=*/std::move(allowed_reporting_origins));
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -1296,7 +1296,7 @@ TEST_F(AdAuctionServiceImplTest,
   auto group = groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
-  absl::optional<std::vector<int>> x = {{1, 2, 3}};
+  std::optional<std::vector<int>> x = {{1, 2, 3}};
   EXPECT_THAT(x.value(), ::testing::UnorderedElementsAre(1, 2, 3));
   EXPECT_THAT(group.ads.value()[0].allowed_reporting_origins.value(),
               ::testing::UnorderedElementsAre(kOriginF, kOriginG));
@@ -1316,11 +1316,11 @@ TEST_F(AdAuctionServiceImplTest,
                                                         kNotAttestedOrigin};
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt,
-      /*size_group=*/absl::nullopt,
-      /*buyer_reporting_id=*/absl::nullopt,
-      /*buyer_and_seller_reporting_id=*/absl::nullopt,
-      /*ad_render_id=*/absl::nullopt,
+      /*metadata=*/std::nullopt,
+      /*size_group=*/std::nullopt,
+      /*buyer_reporting_id=*/std::nullopt,
+      /*buyer_and_seller_reporting_id=*/std::nullopt,
+      /*ad_render_id=*/std::nullopt,
       /*allowed_reporting_origins=*/std::move(allowed_reporting_origins));
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
@@ -1528,8 +1528,8 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
       /*render_url=*/GURL("https://example.com/render"),
       /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}",
       /*size_group=*/"group_old",
-      /*buyer_reporting_id=*/absl::nullopt,
-      /*buyer_and_seller_reporting_id=*/absl::nullopt,
+      /*buyer_reporting_id=*/std::nullopt,
+      /*buyer_and_seller_reporting_id=*/std::nullopt,
       /*ad_render_id=*/"123def");
   interest_group.ad_components->emplace_back(std::move(ad_component));
   interest_group.ad_sizes.emplace();
@@ -1878,7 +1878,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateDoesntChangeExpiration) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -1973,7 +1973,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateSucceedsIfOptionalNameOwnerMatch) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -2059,7 +2059,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateIgnoresUnknownFields) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -2100,7 +2100,7 @@ TEST_F(AdAuctionServiceImplTest, NoUpdateIfOptionalNameDoesntMatch) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -2139,7 +2139,7 @@ TEST_F(AdAuctionServiceImplTest, NoUpdateIfOptionalOwnerDoesntMatch) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -2196,7 +2196,7 @@ TEST_F(AdAuctionServiceImplTest, UpdatePriorityVector) {
       GetInterestGroupsForOwner(kOriginA);
   ASSERT_EQ(groups->size(), 1u);
   EXPECT_EQ(groups->GetInterestGroups()[0]->interest_group.priority_vector,
-            absl::nullopt);
+            std::nullopt);
 
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.priority_vector_value);
@@ -2261,7 +2261,7 @@ TEST_F(AdAuctionServiceImplTest, UpdatePrioritySignalsOverrides) {
   ASSERT_EQ(groups->size(), 1u);
   EXPECT_EQ(
       groups->GetInterestGroups()[0]->interest_group.priority_signals_overrides,
-      absl::nullopt);
+      std::nullopt);
 
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.priority_signals_overrides_value);
@@ -2309,7 +2309,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateMultipleInterestGroups) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kGroupName1));
@@ -2325,7 +2325,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateMultipleInterestGroups) {
   interest_group_2.ads.emplace();
   ad = blink::InterestGroup::Ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group_2.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_2);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kGroupName2));
@@ -2426,7 +2426,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group, subframeA);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kGroupNameA));
@@ -2445,7 +2445,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group_2.ads.emplace();
   ad = blink::InterestGroup::Ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group_2.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_2, subframeC);
   EXPECT_EQ(1, GetJoinCount(kOriginC, kGroupNameC));
@@ -2513,7 +2513,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group, subframe_1);
   EXPECT_EQ(1, GetJoinCount(kOriginC, kGroupName1));
@@ -2537,7 +2537,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group_2.ads.emplace();
   ad = blink::InterestGroup::Ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group_2.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_2, subframe_2);
   EXPECT_EQ(1, GetJoinCount(kOriginC, kGroupName2));
@@ -2604,7 +2604,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group, subframeA);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kGroupNameA));
@@ -2627,7 +2627,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group_2.ads.emplace();
   ad = blink::InterestGroup::Ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group_2.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_2, subframeC);
   EXPECT_EQ(1, GetJoinCount(kOriginC, kGroupNameC));
@@ -2697,7 +2697,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group, subframeA);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kGroupNameA));
@@ -2717,7 +2717,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group_2.ads.emplace();
   ad = blink::InterestGroup::Ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group_2.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_2, subframeC);
   EXPECT_EQ(1, GetJoinCount(kOriginC, kGroupNameC));
@@ -2760,7 +2760,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group, subframe_1);
   EXPECT_EQ(1, GetJoinCount(kOriginC, kGroupName1));
@@ -2773,7 +2773,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group_2.ads.emplace();
   ad = blink::InterestGroup::Ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group_2.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_2, subframe_1);
   EXPECT_EQ(1, GetJoinCount(kOriginC, kGroupName2));
@@ -2797,7 +2797,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group_3.ads.emplace();
   ad = blink::InterestGroup::Ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group_3.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_3, subframe_2);
   EXPECT_EQ(1, GetJoinCount(kOriginC, kGroupName3));
@@ -2810,7 +2810,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group_4.ads.emplace();
   ad = blink::InterestGroup::Ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group_4.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_4, subframe_2);
   EXPECT_EQ(1, GetJoinCount(kOriginC, kGroupName3));
@@ -2863,7 +2863,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group, subframe_1);
   EXPECT_EQ(1, GetJoinCount(kOriginC, kGroupName1));
@@ -2876,7 +2876,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group_2.ads.emplace();
   ad = blink::InterestGroup::Ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group_2.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_2, subframe_1);
   EXPECT_EQ(1, GetJoinCount(kOriginC, kGroupName2));
@@ -2889,7 +2889,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group_3.ads.emplace();
   ad = blink::InterestGroup::Ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group_3.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_3, subframe_1);
   EXPECT_EQ(1, GetJoinCount(kOriginC, kGroupName3));
@@ -2913,7 +2913,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group_4.ads.emplace();
   ad = blink::InterestGroup::Ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group_4.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_4, subframe_2);
   EXPECT_EQ(1, GetJoinCount(kOriginC, kGroupName4));
@@ -2969,7 +2969,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group, subframe_1);
   EXPECT_EQ(1, GetJoinCount(kOriginC, kGroupName1));
@@ -2982,7 +2982,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group_2.ads.emplace();
   ad = blink::InterestGroup::Ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group_2.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_2, subframe_1);
   EXPECT_EQ(1, GetJoinCount(kOriginC, kGroupName2));
@@ -2995,7 +2995,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group_3.ads.emplace();
   ad = blink::InterestGroup::Ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group_3.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_3, subframe_1);
   EXPECT_EQ(1, GetJoinCount(kOriginC, kGroupName3));
@@ -3019,7 +3019,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group_4.ads.emplace();
   ad = blink::InterestGroup::Ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group_4.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_4, subframe_2);
   EXPECT_EQ(1, GetJoinCount(kOriginC, kGroupName3));
@@ -3079,7 +3079,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group, subframe_1);
   EXPECT_EQ(1, GetJoinCount(kOriginC, kGroupName1));
@@ -3103,7 +3103,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group_2.ads.emplace();
   ad = blink::InterestGroup::Ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group_2.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_2, subframe_2);
   EXPECT_EQ(1, GetJoinCount(kOriginC, kGroupName2));
@@ -3116,7 +3116,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group_3.ads.emplace();
   ad = blink::InterestGroup::Ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group_3.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_3, subframe_2);
   EXPECT_EQ(1, GetJoinCount(kOriginC, kGroupName3));
@@ -3139,7 +3139,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group_4.ads.emplace();
   ad = blink::InterestGroup::Ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group_4.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_4, subframe_3);
   EXPECT_EQ(1, GetJoinCount(kOriginC, kGroupName4));
@@ -3228,7 +3228,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group, subframe_1);
   EXPECT_EQ(1, GetJoinCount(kOriginC, kGroupName1));
@@ -3252,7 +3252,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group_2.ads.emplace();
   ad = blink::InterestGroup::Ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group_2.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_2, subframe_2);
   EXPECT_EQ(1, GetJoinCount(kOriginC, kGroupName2));
@@ -3265,7 +3265,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group_3.ads.emplace();
   ad = blink::InterestGroup::Ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group_3.ads->emplace_back(std::move(ad));
 
   network_responder_->RegisterDeferredUpdateResponse(kUpdateUrlPath);
@@ -3341,7 +3341,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group_3.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group_3.ads->emplace_back(std::move(ad));
   interest_group_3.expiry = base::Time::Now() + base::Days(3);
   JoinInterestGroupAndFlush(interest_group_3, subframe_1);
@@ -3406,7 +3406,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group.ads.emplace();
   ad = blink::InterestGroup::Ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group, subframe_2);
   EXPECT_EQ(1, GetJoinCount(kOriginC, kGroupName1));
@@ -3432,7 +3432,7 @@ TEST_F(AdAuctionServiceImplDifferentNIKDuringUpdateTest,
   interest_group_2.ads.emplace();
   ad = blink::InterestGroup::Ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group_2.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_2, subframe_3);
   EXPECT_EQ(1, GetJoinCount(kOriginC, kGroupName2));
@@ -3475,7 +3475,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateOnlyOwnOrigin) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -3493,7 +3493,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateOnlyOwnOrigin) {
   interest_group_b.ads.emplace();
   ad = blink::InterestGroup::Ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group_b.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_b);
   EXPECT_EQ(1, GetJoinCount(kOriginB, kInterestGroupName));
@@ -3544,7 +3544,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateFromCrossSiteIFrame) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -3562,7 +3562,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateFromCrossSiteIFrame) {
   interest_group_b.ads.emplace();
   ad = blink::InterestGroup::Ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group_b.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_b);
   EXPECT_EQ(1, GetJoinCount(kOriginB, kInterestGroupName));
@@ -3580,7 +3580,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateFromCrossSiteIFrame) {
   interest_group_c.ads.emplace();
   ad = blink::InterestGroup::Ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group_c.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_c);
   EXPECT_EQ(1, GetJoinCount(kOriginC, kInterestGroupName));
@@ -3806,7 +3806,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateInvalidSellerCapabilitiesIgnored) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -3844,7 +3844,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateInvalidJSONIgnored) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -3887,7 +3887,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateJSONParserCrash) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -3945,7 +3945,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateBlockedByContentBrowserClient) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginNoUpdate, kInterestGroupName));
@@ -3976,7 +3976,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateNetworkFailure) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -4007,7 +4007,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateTimeout) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -4054,7 +4054,7 @@ TEST_F(AdAuctionServiceImplTest,
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -4131,7 +4131,7 @@ TEST_F(AdAuctionServiceImplTest,
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -4192,7 +4192,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateNeverFinishesBeforeDestruction) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -4231,7 +4231,7 @@ TEST_F(AdAuctionServiceImplTest, DoesntChangeGroupsWithNoUpdateUrl) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -4267,7 +4267,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateDoesntChangeBrowserSignals) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -4327,7 +4327,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterSuccessfulUpdate) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -4419,7 +4419,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterBadUpdateResponse) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -4519,7 +4519,7 @@ TEST_F(AdAuctionServiceImplTest,
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -4615,7 +4615,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterFailedUpdate) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -4703,7 +4703,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateNotRateLimitedIfDisconnected) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -4768,7 +4768,7 @@ TEST_F(AdAuctionServiceImplTest, DisconnectedAndSuccessInFlightTogether) {
   interest_group_1.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group_1.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_1);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -4784,7 +4784,7 @@ TEST_F(AdAuctionServiceImplTest, DisconnectedAndSuccessInFlightTogether) {
   interest_group_2.ads.emplace();
   ad = blink::InterestGroup::Ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group_2.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_2);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName2));
@@ -4861,7 +4861,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedTightLoop) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -4917,7 +4917,7 @@ TEST_F(AdAuctionServiceImplTest, OnlyOneOriginUpdatesAtATime) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -4933,7 +4933,7 @@ TEST_F(AdAuctionServiceImplTest, OnlyOneOriginUpdatesAtATime) {
   interest_group.ads.emplace();
   ad = blink::InterestGroup::Ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginB, kInterestGroupName));
@@ -4949,7 +4949,7 @@ TEST_F(AdAuctionServiceImplTest, OnlyOneOriginUpdatesAtATime) {
   interest_group.ads.emplace();
   ad = blink::InterestGroup::Ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginC, kInterestGroupName));
@@ -5053,7 +5053,7 @@ TEST_F(AdAuctionServiceImplTest, UpdatesInBatches) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -5066,7 +5066,7 @@ TEST_F(AdAuctionServiceImplTest, UpdatesInBatches) {
   interest_group.ads.emplace();
   ad = blink::InterestGroup::Ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName2));
@@ -5079,7 +5079,7 @@ TEST_F(AdAuctionServiceImplTest, UpdatesInBatches) {
   interest_group.ads.emplace();
   ad = blink::InterestGroup::Ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName3));
@@ -5131,7 +5131,7 @@ TEST_F(AdAuctionServiceImplTest, UpdatesInBatchesWithFailuresAndTimeouts) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -5144,7 +5144,7 @@ TEST_F(AdAuctionServiceImplTest, UpdatesInBatchesWithFailuresAndTimeouts) {
   interest_group.ads.emplace();
   ad = blink::InterestGroup::Ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName2));
@@ -5157,7 +5157,7 @@ TEST_F(AdAuctionServiceImplTest, UpdatesInBatchesWithFailuresAndTimeouts) {
   interest_group.ads.emplace();
   ad = blink::InterestGroup::Ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName3));
@@ -5241,7 +5241,7 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdates) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -5257,7 +5257,7 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdates) {
   interest_group.ads.emplace();
   ad = blink::InterestGroup::Ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginB, kInterestGroupName));
@@ -5382,7 +5382,7 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdates2) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -5398,7 +5398,7 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdates2) {
   interest_group.ads.emplace();
   ad = blink::InterestGroup::Ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginB, kInterestGroupName));
@@ -5477,7 +5477,7 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdates2) {
   interest_group.ads.emplace();
   ad = blink::InterestGroup::Ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   ASSERT_TRUE(interest_group.IsValid());
   JoinInterestGroupAndFlush(interest_group);
@@ -5538,7 +5538,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateCancellationTimerClearedOnCompletion) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -5554,7 +5554,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateCancellationTimerClearedOnCompletion) {
   interest_group.ads.emplace();
   ad = blink::InterestGroup::Ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginB, kInterestGroupName));
@@ -5658,7 +5658,7 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdatesComplex) {
     interest_group.ads.emplace();
     blink::InterestGroup::Ad ad(
         /*render_url=*/GURL("https://example.com/render"),
-        /*metadata=*/absl::nullopt);
+        /*metadata=*/std::nullopt);
     interest_group.ads->emplace_back(std::move(ad));
     JoinInterestGroupAndFlush(interest_group);
     EXPECT_EQ(1, GetJoinCount(kOriginA, /*name=*/update_url.path()));
@@ -5675,7 +5675,7 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdatesComplex) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginB, kInterestGroupName));
@@ -5857,8 +5857,8 @@ TEST_F(AdAuctionServiceImplNoNegativeTargetingTest, RunAdAuctionNonceDisabled) {
       auction_config, mojo::NullReceiver(),
       base::BindOnce(
           [](bool aborted_by_script,
-             const absl::optional<
-                 blink::FencedFrame::RedactedFencedFrameConfig>& config) {
+             const std::optional<blink::FencedFrame::RedactedFencedFrameConfig>&
+                 config) {
             ADD_FAILURE() << "Callback unexpectedly invoked.";
           }));
   ad_auction_service.FlushForTesting();
@@ -5892,8 +5892,8 @@ TEST_F(AdAuctionServiceImplNoNegativeTargetingTest,
       auction_config, mojo::NullReceiver(),
       base::BindOnce(
           [](bool aborted_by_script,
-             const absl::optional<
-                 blink::FencedFrame::RedactedFencedFrameConfig>& config) {
+             const std::optional<blink::FencedFrame::RedactedFencedFrameConfig>&
+                 config) {
             ADD_FAILURE() << "Callback unexpectedly invoked.";
           }));
   ad_auction_service.FlushForTesting();
@@ -5925,7 +5925,7 @@ function scoreAd(
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -5934,8 +5934,8 @@ function scoreAd(
   auction_config.seller = kOriginA;
   auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
   auction_config.non_shared_params.interest_group_buyers = {kOriginA};
-  absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
-  ASSERT_NE(auction_result, absl::nullopt);
+  std::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+  ASSERT_NE(auction_result, std::nullopt);
   EXPECT_EQ(ConvertFencedFrameURNToURL(*auction_result),
             GURL("https://example.com/render"));
 
@@ -6001,7 +6001,7 @@ function scoreAd(
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -6010,8 +6010,8 @@ function scoreAd(
   auction_config.seller = kOriginA;
   auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
   auction_config.non_shared_params.interest_group_buyers = {kOriginA};
-  absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
-  EXPECT_EQ(auction_result, absl::nullopt);
+  std::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+  EXPECT_EQ(auction_result, std::nullopt);
 
   // The bid count should be updated immediately, since theere's no URN to wait
   // to be loaded in a frame.
@@ -6054,7 +6054,7 @@ function scoreAd(
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -6075,9 +6075,9 @@ function scoreAd(
   GURL url("https://a.test");
   fenced_frame_url_mapping_test_peer.FillMap(url);
 
-  absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+  std::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
   // Auction failed because the number of urn mappings has reached limit.
-  ASSERT_EQ(auction_result, absl::nullopt);
+  ASSERT_EQ(auction_result, std::nullopt);
 }
 
 // Runs an auction, and expects that the interest group that participated in
@@ -6119,7 +6119,7 @@ function scoreAd(
   interest_group_a.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group_a.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_a);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -6128,8 +6128,8 @@ function scoreAd(
   auction_config.seller = kOriginA;
   auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
   auction_config.non_shared_params.interest_group_buyers = {kOriginA};
-  absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
-  ASSERT_NE(auction_result, absl::nullopt);
+  std::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+  ASSERT_NE(auction_result, std::nullopt);
   EXPECT_EQ(ConvertFencedFrameURNToURL(*auction_result),
             GURL("https://example.com/render"));
 
@@ -6187,7 +6187,7 @@ function scoreAd(
   interest_group_a.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group_a.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_a);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -6196,8 +6196,8 @@ function scoreAd(
   auction_config.seller = kOriginA;
   auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
   auction_config.non_shared_params.interest_group_buyers = {kOriginA};
-  absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
-  ASSERT_NE(auction_result, absl::nullopt);
+  std::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+  ASSERT_NE(auction_result, std::nullopt);
   EXPECT_EQ(ConvertFencedFrameURNToURL(*auction_result),
             GURL("https://example.com/render"));
 
@@ -6260,7 +6260,7 @@ function scoreAd(
   interest_group_a.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group_a.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_a);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -6269,8 +6269,8 @@ function scoreAd(
   auction_config.seller = kOriginA;
   auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
   auction_config.non_shared_params.interest_group_buyers = {kOriginA};
-  absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
-  EXPECT_EQ(auction_result, absl::nullopt);
+  std::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+  EXPECT_EQ(auction_result, std::nullopt);
 
   // Now that the auction has completed, check that the interest group updated.
   task_environment()->RunUntilIdle();
@@ -6312,7 +6312,7 @@ function generateBid(
   interest_group_a.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group_a.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_a);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -6321,8 +6321,8 @@ function generateBid(
   auction_config.seller = kOriginA;
   auction_config.decision_logic_url = kUrlA.Resolve(kMissingScriptPath);
   auction_config.non_shared_params.interest_group_buyers = {kOriginA};
-  absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
-  EXPECT_EQ(auction_result, absl::nullopt);
+  std::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+  EXPECT_EQ(auction_result, std::nullopt);
 
   // Now that the auction has completed, check that the interest group updated.
   task_environment()->RunUntilIdle();
@@ -6371,7 +6371,7 @@ function scoreAd(
   interest_group_no_update.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group_no_update.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_no_update);
   EXPECT_EQ(1, GetJoinCount(kOriginNoUpdate, kInterestGroupName));
@@ -6380,8 +6380,8 @@ function scoreAd(
   auction_config.seller = kOriginNoUpdate;
   auction_config.decision_logic_url = kUrlNoUpdate.Resolve(kDecisionUrlPath);
   auction_config.non_shared_params.interest_group_buyers = {kOriginNoUpdate};
-  absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
-  ASSERT_NE(auction_result, absl::nullopt);
+  std::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+  ASSERT_NE(auction_result, std::nullopt);
   EXPECT_EQ(ConvertFencedFrameURNToURL(*auction_result),
             GURL("https://example.com/render"));
 
@@ -6458,7 +6458,7 @@ function scoreAd(
   interest_group_a.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render1"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group_a.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_a);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -6471,7 +6471,7 @@ function scoreAd(
   interest_group_b.ads.emplace();
   ad = blink::InterestGroup::Ad(
       /*render_url=*/GURL("https://example.com/render2"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group_b.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_b);
   EXPECT_EQ(1, GetJoinCount(kOriginC, kInterestGroupName));
@@ -6496,8 +6496,8 @@ function scoreAd(
   auction_config.non_shared_params.component_auctions.emplace_back(
       std::move(component_auction2));
 
-  absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
-  ASSERT_NE(auction_result, absl::nullopt);
+  std::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+  ASSERT_NE(auction_result, std::nullopt);
   EXPECT_EQ(ConvertFencedFrameURNToURL(*auction_result),
             GURL("https://example.com/render2"));
 
@@ -6572,7 +6572,7 @@ function scoreAd(
   interest_group_a.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render1"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group_a.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_a);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -6585,7 +6585,7 @@ function scoreAd(
   interest_group_b.ads.emplace();
   ad = blink::InterestGroup::Ad(
       /*render_url=*/GURL("https://example.com/render2"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group_b.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group_b);
   EXPECT_EQ(1, GetJoinCount(kOriginC, kInterestGroupName));
@@ -6610,8 +6610,8 @@ function scoreAd(
   auction_config.non_shared_params.component_auctions.emplace_back(
       std::move(component_auction2));
 
-  absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
-  EXPECT_EQ(auction_result, absl::nullopt);
+  std::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+  EXPECT_EQ(auction_result, std::nullopt);
 
   // Now that the auction has completed, check that the interest groups updated.
   task_environment()->RunUntilIdle();
@@ -6654,8 +6654,8 @@ TEST_F(AdAuctionServiceImplTest, UpdatesInterestGroupsAfterAuctionNoAds) {
   auction_config.seller = kOriginA;
   auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
   auction_config.non_shared_params.interest_group_buyers = {kOriginA};
-  absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
-  EXPECT_EQ(auction_result, absl::nullopt);
+  std::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+  EXPECT_EQ(auction_result, std::nullopt);
 
   // Now that the auction has completed, check that the interest group updated.
   task_environment()->RunUntilIdle();
@@ -6691,7 +6691,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateSupportsDeprecatedNames) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -6733,7 +6733,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateIgnoresUnknownEnumFields) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -6768,7 +6768,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRenamedFields) {
   updated_interest_group_ads.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   updated_interest_group_ads.ads->emplace_back(std::move(ad));
 
   blink::InterestGroup updated_interest_group_ad_components =
@@ -6778,7 +6778,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRenamedFields) {
   updated_interest_group_ad_components.ad_components.emplace();
   blink::InterestGroup::Ad ad_component(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   updated_interest_group_ad_components.ad_components->emplace_back(
       std::move(ad_component));
 
@@ -6928,7 +6928,7 @@ TEST_F(AdAuctionServiceImplTest, SendReports) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -6937,8 +6937,8 @@ TEST_F(AdAuctionServiceImplTest, SendReports) {
   auction_config.seller = kOriginA;
   auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
   auction_config.non_shared_params.interest_group_buyers = {kOriginA};
-  absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
-  ASSERT_NE(auction_result, absl::nullopt);
+  std::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+  ASSERT_NE(auction_result, std::nullopt);
   InvokeCallbackForURN(*auction_result);
 
   task_environment()->FastForwardBy(base::Seconds(30) - base::Seconds(1));
@@ -6983,7 +6983,7 @@ TEST_F(AdAuctionServiceImplTest, SendReportsWaitsForCallback) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -6992,8 +6992,8 @@ TEST_F(AdAuctionServiceImplTest, SendReportsWaitsForCallback) {
   auction_config.seller = kOriginA;
   auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
   auction_config.non_shared_params.interest_group_buyers = {kOriginA};
-  absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
-  ASSERT_NE(auction_result, absl::nullopt);
+  std::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+  ASSERT_NE(auction_result, std::nullopt);
 
   // Nothing should happen until the URN's callback is invoked.
   task_environment()->FastForwardBy(base::Days(1));
@@ -7019,7 +7019,7 @@ TEST_F(AdAuctionServiceImplTest, SendReportsTwoAuctionsWithDelay) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -7028,8 +7028,8 @@ TEST_F(AdAuctionServiceImplTest, SendReportsTwoAuctionsWithDelay) {
   auction_config.seller = kOriginA;
   auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
   auction_config.non_shared_params.interest_group_buyers = {kOriginA};
-  absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
-  ASSERT_NE(auction_result, absl::nullopt);
+  std::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+  ASSERT_NE(auction_result, std::nullopt);
   InvokeCallbackForURN(*auction_result);
   network_responder_->WaitForNumReports(2u);
 
@@ -7040,7 +7040,7 @@ TEST_F(AdAuctionServiceImplTest, SendReportsTwoAuctionsWithDelay) {
 
   // Re-running the auction should result in 2 more reports.
   auction_result = RunAdAuctionAndFlush(auction_config);
-  ASSERT_NE(auction_result, absl::nullopt);
+  ASSERT_NE(auction_result, std::nullopt);
   InvokeCallbackForURN(*auction_result);
   network_responder_->WaitForNumReports(4u);
 }
@@ -7064,7 +7064,7 @@ TEST_F(AdAuctionServiceImplTest, SendReportsTwoAuctionsRespectsReportInterval) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -7075,8 +7075,8 @@ TEST_F(AdAuctionServiceImplTest, SendReportsTwoAuctionsRespectsReportInterval) {
   auction_config.seller = kOriginA;
   auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
   auction_config.non_shared_params.interest_group_buyers = {kOriginA};
-  absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
-  EXPECT_NE(auction_result, absl::nullopt);
+  std::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+  EXPECT_NE(auction_result, std::nullopt);
   InvokeCallbackForURN(*auction_result);
 
   // First report should be sent immediately.
@@ -7094,7 +7094,7 @@ TEST_F(AdAuctionServiceImplTest, SendReportsTwoAuctionsRespectsReportInterval) {
 
   // Re-running the auction should result in 2 more reports.
   auction_result = RunAdAuctionAndFlush(auction_config);
-  EXPECT_NE(auction_result, absl::nullopt);
+  EXPECT_NE(auction_result, std::nullopt);
   InvokeCallbackForURN(*auction_result);
 
   // The third report (first report for the second auction) should be only be
@@ -7127,7 +7127,7 @@ TEST_F(AdAuctionServiceImplTest, SendReportsOneReportFailed) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -7136,8 +7136,8 @@ TEST_F(AdAuctionServiceImplTest, SendReportsOneReportFailed) {
   auction_config.seller = kOriginA;
   auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
   auction_config.non_shared_params.interest_group_buyers = {kOriginA};
-  absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
-  ASSERT_NE(auction_result, absl::nullopt);
+  std::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+  ASSERT_NE(auction_result, std::nullopt);
   InvokeCallbackForURN(*auction_result);
 
   // There should be no report since the seller report failed, and the bidder
@@ -7218,7 +7218,7 @@ function reportResult(auctionConfig, browserSignals) {
     interest_group.ads.emplace();
     blink::InterestGroup::Ad ad(
         /*render_url=*/GURL("https://example.com/render"),
-        /*metadata=*/absl::nullopt);
+        /*metadata=*/std::nullopt);
     interest_group.ads->emplace_back(std::move(ad));
     JoinInterestGroupAndFlush(interest_group);
     EXPECT_EQ(1, GetJoinCount(kOriginA, name));
@@ -7228,8 +7228,8 @@ function reportResult(auctionConfig, browserSignals) {
 
     auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
     auction_config.non_shared_params.interest_group_buyers = {kOriginA};
-    absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
-    ASSERT_NE(auction_result, absl::nullopt);
+    std::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+    ASSERT_NE(auction_result, std::nullopt);
     InvokeCallbackForURN(*auction_result);
     // Wait for the reporting scripts to complete and reporting URLs to be
     // requested. Need to do this for each auction to make sure reporting
@@ -7275,7 +7275,7 @@ TEST_F(AdAuctionServiceImplTest, SendReportsMaxReportRoundDuration) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -7284,8 +7284,8 @@ TEST_F(AdAuctionServiceImplTest, SendReportsMaxReportRoundDuration) {
   auction_config.seller = kOriginA;
   auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
   auction_config.non_shared_params.interest_group_buyers = {kOriginA};
-  absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
-  ASSERT_NE(auction_result, absl::nullopt);
+  std::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+  ASSERT_NE(auction_result, std::nullopt);
   InvokeCallbackForURN(*auction_result);
   // Wait for the reporting scripts to complete and all reporting URLs to be
   // requested.
@@ -7302,7 +7302,7 @@ TEST_F(AdAuctionServiceImplTest, SendReportsMaxReportRoundDuration) {
   auction_config2.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
   auction_config2.non_shared_params.interest_group_buyers = {kOriginA};
   auction_result = RunAdAuctionAndFlush(auction_config2);
-  ASSERT_NE(auction_result, absl::nullopt);
+  ASSERT_NE(auction_result, std::nullopt);
   InvokeCallbackForURN(*auction_result);
   // Wait for the reporting scripts to complete and all reporting URLs to be
   // requested.
@@ -7328,7 +7328,7 @@ TEST_F(AdAuctionServiceImplTest, SendReportsMaxReportRoundDuration) {
   auction_config3.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
   auction_config3.non_shared_params.interest_group_buyers = {kOriginA};
   auction_result = RunAdAuctionAndFlush(auction_config3);
-  ASSERT_NE(auction_result, absl::nullopt);
+  ASSERT_NE(auction_result, std::nullopt);
   InvokeCallbackForURN(*auction_result);
   // Wait for the reporting scripts to complete and all reporting URLs to be
   // requested.
@@ -7360,7 +7360,7 @@ TEST_F(AdAuctionServiceImplTest, ReportingWorkletsDoNotBlockCompletion) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
 
   JoinInterestGroupAndFlush(interest_group);
@@ -7376,13 +7376,13 @@ TEST_F(AdAuctionServiceImplTest, ReportingWorkletsDoNotBlockCompletion) {
 
   // Start the auction.
   base::RunLoop run_loop;
-  absl::optional<blink::FencedFrame::RedactedFencedFrameConfig> maybe_config;
+  std::optional<blink::FencedFrame::RedactedFencedFrameConfig> maybe_config;
   ad_auction_service_->RunAdAuction(
       auction_config, mojo::NullReceiver(),
       base::BindLambdaForTesting(
           [&run_loop, &maybe_config](
               bool aborted_by_script,
-              const absl::optional<
+              const std::optional<
                   blink::FencedFrame::RedactedFencedFrameConfig>& config) {
             EXPECT_FALSE(aborted_by_script);
             maybe_config = config;
@@ -7459,7 +7459,7 @@ function reportResult() {}
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -7487,49 +7487,49 @@ function reportResult() {}
   fail_auction_config.non_shared_params.interest_group_buyers = {kOriginA};
 
   // 1st auction
-  EXPECT_NE(RunAdAuctionAndFlush(succeed_auction_config), absl::nullopt);
+  EXPECT_NE(RunAdAuctionAndFlush(succeed_auction_config), std::nullopt);
   // Time metrics are published every auction.
   histogram_tester.ExpectUniqueTimeSample(
       "Ads.InterestGroup.Auction.TimeSinceLastAuctionPerPage", kMaxTime, 1);
 
   // 2nd auction
   task_environment()->FastForwardBy(base::Seconds(1));
-  EXPECT_EQ(RunAdAuctionAndFlush(fail_auction_config), absl::nullopt);
+  EXPECT_EQ(RunAdAuctionAndFlush(fail_auction_config), std::nullopt);
   histogram_tester.ExpectTimeBucketCount(
       "Ads.InterestGroup.Auction.TimeSinceLastAuctionPerPage", base::Seconds(1),
       1);
 
   // 3rd auction
   task_environment()->FastForwardBy(base::Seconds(3));
-  EXPECT_NE(RunAdAuctionAndFlush(succeed_auction_config), absl::nullopt);
+  EXPECT_NE(RunAdAuctionAndFlush(succeed_auction_config), std::nullopt);
   histogram_tester.ExpectTimeBucketCount(
       "Ads.InterestGroup.Auction.TimeSinceLastAuctionPerPage", base::Seconds(3),
       1);
 
   // 4th auction
   task_environment()->FastForwardBy(base::Minutes(1));
-  EXPECT_NE(RunAdAuctionAndFlush(succeed_auction_config), absl::nullopt);
+  EXPECT_NE(RunAdAuctionAndFlush(succeed_auction_config), std::nullopt);
   histogram_tester.ExpectTimeBucketCount(
       "Ads.InterestGroup.Auction.TimeSinceLastAuctionPerPage", base::Minutes(1),
       1);
 
   // 5th auction
   task_environment()->FastForwardBy(base::Minutes(10));
-  EXPECT_NE(RunAdAuctionAndFlush(succeed_auction_config), absl::nullopt);
+  EXPECT_NE(RunAdAuctionAndFlush(succeed_auction_config), std::nullopt);
   histogram_tester.ExpectTimeBucketCount(
       "Ads.InterestGroup.Auction.TimeSinceLastAuctionPerPage",
       base::Minutes(10), 1);
 
   // 6th auction
   task_environment()->FastForwardBy(base::Minutes(30));
-  EXPECT_EQ(RunAdAuctionAndFlush(fail_auction_config), absl::nullopt);
+  EXPECT_EQ(RunAdAuctionAndFlush(fail_auction_config), std::nullopt);
   histogram_tester.ExpectTimeBucketCount(
       "Ads.InterestGroup.Auction.TimeSinceLastAuctionPerPage",
       base::Minutes(30), 1);
 
   // 7th auction
   task_environment()->FastForwardBy(base::Hours(1));
-  EXPECT_EQ(RunAdAuctionAndFlush(fail_auction_config), absl::nullopt);
+  EXPECT_EQ(RunAdAuctionAndFlush(fail_auction_config), std::nullopt);
   // Since the 1st auction has no prior auction -- it gets put in the same
   // bucket with the 7th auction -- there are 2 auctions now in this bucket.
   histogram_tester.ExpectTimeBucketCount(
@@ -7617,7 +7617,7 @@ function reportResult() {}
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -7642,14 +7642,14 @@ function reportResult() {}
   fail_auction_config.non_shared_params.interest_group_buyers = {kOriginA};
 
   // 1st auction
-  EXPECT_NE(RunAdAuctionAndFlush(succeed_auction_config), absl::nullopt);
+  EXPECT_NE(RunAdAuctionAndFlush(succeed_auction_config), std::nullopt);
   // Time metrics are published every auction.
   histogram_tester.ExpectUniqueTimeSample(
       "Ads.InterestGroup.Auction.TimeSinceLastAuctionPerPage", kMaxTime, 1);
 
   // 2nd auction
   task_environment()->FastForwardBy(base::Seconds(1));
-  EXPECT_EQ(RunAdAuctionAndFlush(fail_auction_config), absl::nullopt);
+  EXPECT_EQ(RunAdAuctionAndFlush(fail_auction_config), std::nullopt);
   histogram_tester.ExpectTimeBucketCount(
       "Ads.InterestGroup.Auction.TimeSinceLastAuctionPerPage", base::Seconds(1),
       1);
@@ -7776,7 +7776,7 @@ function reportResult() {}
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -7789,7 +7789,7 @@ function reportResult() {}
   succeed_auction_config.non_shared_params.interest_group_buyers = {kOriginA};
 
   for (int i = 0; i < kNumAuctions; i++) {
-    EXPECT_NE(RunAdAuctionAndFlush(succeed_auction_config), absl::nullopt);
+    EXPECT_NE(RunAdAuctionAndFlush(succeed_auction_config), std::nullopt);
   }
 
   // Some metrics only get reported until after navigation.
@@ -7836,7 +7836,7 @@ TEST_F(AdAuctionServiceImplTest, CreateAdRequestRejectsEmptyConfigRequest) {
   bool callback_fired = false;
   CreateAdRequest(std::move(mojo_config),
                   base::BindLambdaForTesting(
-                      [&](const absl::optional<std::string>& ads_guid) {
+                      [&](const std::optional<std::string>& ads_guid) {
                         ASSERT_FALSE(ads_guid.has_value());
                         callback_fired = true;
                       }));
@@ -7860,7 +7860,7 @@ TEST_F(AdAuctionServiceImplTest, CreateAdRequestRejectsHttpUrls) {
   bool callback_fired = false;
   CreateAdRequest(std::move(mojo_config),
                   base::BindLambdaForTesting(
-                      [&](const absl::optional<std::string>& ads_guid) {
+                      [&](const std::optional<std::string>& ads_guid) {
                         ASSERT_FALSE(ads_guid.has_value());
                         callback_fired = true;
                       }));
@@ -7876,7 +7876,7 @@ TEST_F(AdAuctionServiceImplTest, CreateAdRequestRejectsMissingAds) {
   bool callback_fired = false;
   CreateAdRequest(std::move(mojo_config),
                   base::BindLambdaForTesting(
-                      [&](const absl::optional<std::string>& ads_guid) {
+                      [&](const std::optional<std::string>& ads_guid) {
                         ASSERT_FALSE(ads_guid.has_value());
                         callback_fired = true;
                       }));
@@ -7902,7 +7902,7 @@ TEST_F(AdAuctionServiceImplTest, CreateAdRequestRejectsHttpFallback) {
   bool callback_fired = false;
   CreateAdRequest(std::move(mojo_config),
                   base::BindLambdaForTesting(
-                      [&](const absl::optional<std::string>& ads_guid) {
+                      [&](const std::optional<std::string>& ads_guid) {
                         ASSERT_FALSE(ads_guid.has_value());
                         callback_fired = true;
                       }));
@@ -7964,7 +7964,7 @@ function scoreAd(
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(2, GetPriority(kOriginA, kInterestGroupName));
@@ -7973,8 +7973,8 @@ function scoreAd(
   auction_config.seller = kOriginA;
   auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
   auction_config.non_shared_params.interest_group_buyers = {kOriginA};
-  absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
-  ASSERT_NE(auction_result, absl::nullopt);
+  std::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+  ASSERT_NE(auction_result, std::nullopt);
   EXPECT_EQ(ConvertFencedFrameURNToURL(*auction_result),
             GURL("https://example.com/render"));
   EXPECT_EQ(99, GetPriority(kOriginA, kInterestGroupName));
@@ -8037,7 +8037,7 @@ function reportResult() {}
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -8064,14 +8064,14 @@ function reportResult() {}
   fail_auction_config.non_shared_params.interest_group_buyers = {kOriginA};
 
   // 1st auction
-  EXPECT_NE(RunAdAuctionAndFlush(succeed_auction_config), absl::nullopt);
+  EXPECT_NE(RunAdAuctionAndFlush(succeed_auction_config), std::nullopt);
   // Time metrics are published every auction.
   histogram_tester.ExpectUniqueTimeSample(
       "Ads.InterestGroup.Auction.TimeSinceLastAuctionPerPage", kMaxTime, 1);
 
   // 2nd auction
   task_environment()->FastForwardBy(base::Seconds(1));
-  EXPECT_EQ(RunAdAuctionAndFlush(fail_auction_config), absl::nullopt);
+  EXPECT_EQ(RunAdAuctionAndFlush(fail_auction_config), std::nullopt);
   histogram_tester.ExpectTimeBucketCount(
       "Ads.InterestGroup.Auction.TimeSinceLastAuctionPerPage", base::Seconds(1),
       1);
@@ -8079,7 +8079,7 @@ function reportResult() {}
   // 3rd auction -- fails even though decision_logic.js is used because the
   // auction limit is encountered.
   task_environment()->FastForwardBy(base::Seconds(3));
-  EXPECT_EQ(RunAdAuctionAndFlush(succeed_auction_config), absl::nullopt);
+  EXPECT_EQ(RunAdAuctionAndFlush(succeed_auction_config), std::nullopt);
   // The time metrics shouldn't get updated.
   histogram_tester.ExpectTimeBucketCount(
       "Ads.InterestGroup.Auction.TimeSinceLastAuctionPerPage", base::Seconds(3),
@@ -8156,7 +8156,7 @@ function reportResult() {}
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -8181,7 +8181,7 @@ function reportResult() {}
         base::BindLambdaForTesting(
             [&one_auction_complete](
                 bool aborted_by_script,
-                const absl::optional<
+                const std::optional<
                     blink::FencedFrame::RedactedFencedFrameConfig>&
                     ignored_config) { one_auction_complete.Run(); }));
   }
@@ -8432,7 +8432,7 @@ function reportResult(auctionConfig, browserSignals) {
     interest_group.ads.emplace();
     blink::InterestGroup::Ad ad(
         /*render_url=*/GURL("https://example.com/render"),
-        /*metadata=*/absl::nullopt);
+        /*metadata=*/std::nullopt);
     interest_group.ads->emplace_back(std::move(ad));
     JoinInterestGroupAndFlush(interest_group);
     EXPECT_EQ(1, GetJoinCount(kOriginA, name));
@@ -8442,8 +8442,8 @@ function reportResult(auctionConfig, browserSignals) {
 
     auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
     auction_config.non_shared_params.interest_group_buyers = {kOriginA};
-    absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
-    ASSERT_NE(auction_result, absl::nullopt);
+    std::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+    ASSERT_NE(auction_result, std::nullopt);
     // Wait for the reporting scripts to complete. Doing this before invoking
     // the navigation callback results in reports being sent in the order:
     // * Seller reportResult() report.
@@ -8554,7 +8554,7 @@ function reportResult(auctionConfig, browserSignals) {
       interest_group.ads.emplace();
       blink::InterestGroup::Ad ad(
           /*render_url=*/GURL("https://example.com/render"),
-          /*metadata=*/absl::nullopt);
+          /*metadata=*/std::nullopt);
       interest_group.ads->emplace_back(std::move(ad));
       JoinInterestGroupAndFlush(interest_group);
       EXPECT_EQ(1, GetJoinCount(kOriginA, name));
@@ -8574,8 +8574,8 @@ function reportResult(auctionConfig, browserSignals) {
 
     auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
     auction_config.non_shared_params.interest_group_buyers = {kOriginA};
-    absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
-    ASSERT_NE(auction_result, absl::nullopt);
+    std::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+    ASSERT_NE(auction_result, std::nullopt);
     task_environment()->RunUntilIdle();
     // This will cause the reports to be queued.
     InvokeCallbackForURN(*auction_result);
@@ -8642,7 +8642,7 @@ TEST_F(AdAuctionServiceImplTest, FencedFrameUrlMappingChangedDuringAuction) {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
 
   JoinInterestGroupAndFlush(interest_group);
@@ -8658,13 +8658,13 @@ TEST_F(AdAuctionServiceImplTest, FencedFrameUrlMappingChangedDuringAuction) {
 
   // Start the auction.
   base::RunLoop run_loop;
-  absl::optional<blink::FencedFrame::RedactedFencedFrameConfig> maybe_config;
+  std::optional<blink::FencedFrame::RedactedFencedFrameConfig> maybe_config;
   ad_auction_service_->RunAdAuction(
       auction_config, mojo::NullReceiver(),
       base::BindLambdaForTesting(
           [&run_loop, &maybe_config](
               bool aborted_by_script,
-              const absl::optional<
+              const std::optional<
                   blink::FencedFrame::RedactedFencedFrameConfig>& config) {
             EXPECT_FALSE(aborted_by_script);
             maybe_config = config;
@@ -8763,7 +8763,7 @@ function reportResult() {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
 
@@ -8773,8 +8773,8 @@ function reportResult() {
   auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
   auction_config.non_shared_params.interest_group_buyers = {kOriginC};
 
-  absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
-  EXPECT_NE(auction_result, absl::nullopt);
+  std::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+  EXPECT_NE(auction_result, std::nullopt);
 
   // Make sure the shared storage mojom methods are invoked as they use a
   // dedicated pipe.
@@ -8828,7 +8828,7 @@ function reportResult() {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
 
@@ -8838,8 +8838,8 @@ function reportResult() {
   auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
   auction_config.non_shared_params.interest_group_buyers = {kOriginC};
 
-  absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
-  EXPECT_EQ(auction_result, absl::nullopt);
+  std::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+  EXPECT_EQ(auction_result, std::nullopt);
 
   // Make sure the shared storage mojom methods are invoked as they use a
   // dedicated pipe.
@@ -8889,7 +8889,7 @@ function reportResult() {
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
 
@@ -8902,7 +8902,7 @@ function reportResult() {
       blink::mojom::PermissionsPolicyFeature::kSharedStorage,
       /*allowed_origins=*/
       std::vector{*blink::OriginWithPossibleWildcards::FromOrigin(kOriginA)},
-      /*self_if_matches=*/absl::nullopt,
+      /*self_if_matches=*/std::nullopt,
       /*matches_all_origins=*/false,
       /*matches_opaque_src=*/false);
   simulator->SetPermissionsPolicyHeader(std::move(policy));
@@ -8913,8 +8913,8 @@ function reportResult() {
   auction_config.decision_logic_url = kUrlC.Resolve(kDecisionUrlPath);
   auction_config.non_shared_params.interest_group_buyers = {kOriginA};
 
-  absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
-  EXPECT_EQ(auction_result, absl::nullopt);
+  std::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+  EXPECT_EQ(auction_result, std::nullopt);
 
   // Make sure the shared storage mojom methods are invoked as they use a
   // dedicated pipe.
@@ -8965,7 +8965,7 @@ function scoreAd(
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
 
@@ -8974,8 +8974,8 @@ function scoreAd(
   auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
   auction_config.non_shared_params.interest_group_buyers = {kOriginA};
 
-  absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
-  EXPECT_EQ(auction_result, absl::nullopt);
+  std::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+  EXPECT_EQ(auction_result, std::nullopt);
 }
 
 class AdAuctionServiceImplPrivateAggregationEnabledTest
@@ -9044,7 +9044,7 @@ function scoreAd(
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
 
@@ -9079,8 +9079,8 @@ function scoreAd(
             run_loop.Quit();
           }));
 
-  absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
-  EXPECT_NE(auction_result, absl::nullopt);
+  std::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+  EXPECT_NE(auction_result, std::nullopt);
   InvokeCallbackForURN(*auction_result);
   run_loop.Run();
 }
@@ -9112,7 +9112,7 @@ function scoreAd(
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
 
@@ -9126,7 +9126,7 @@ function scoreAd(
         blink::mojom::PermissionsPolicyFeature::kPrivateAggregation,
         /*allowed_origins=*/
         std::vector{*blink::OriginWithPossibleWildcards::FromOrigin(kOriginA)},
-        /*self_if_matches=*/absl::nullopt,
+        /*self_if_matches=*/std::nullopt,
         /*matches_all_origins=*/false,
         /*matches_opaque_src=*/false);
     simulator->SetPermissionsPolicyHeader(std::move(policy));
@@ -9137,8 +9137,8 @@ function scoreAd(
     auction_config.decision_logic_url = kUrlC.Resolve(kDecisionUrlPath);
     auction_config.non_shared_params.interest_group_buyers = {kOriginA};
 
-    absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
-    EXPECT_EQ(auction_result, absl::nullopt);
+    std::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+    EXPECT_EQ(auction_result, std::nullopt);
   }
 
   // In contrast to the case above, additionally allow origin C in the
@@ -9152,7 +9152,7 @@ function scoreAd(
         /*allowed_origins=*/
         std::vector{*blink::OriginWithPossibleWildcards::FromOrigin(kOriginA),
                     *blink::OriginWithPossibleWildcards::FromOrigin(kOriginC)},
-        /*self_if_matches=*/absl::nullopt,
+        /*self_if_matches=*/std::nullopt,
         /*matches_all_origins=*/false,
         /*matches_opaque_src=*/false);
     simulator->SetPermissionsPolicyHeader(std::move(policy));
@@ -9163,8 +9163,8 @@ function scoreAd(
     auction_config.decision_logic_url = kUrlC.Resolve(kDecisionUrlPath);
     auction_config.non_shared_params.interest_group_buyers = {kOriginA};
 
-    absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
-    EXPECT_NE(auction_result, absl::nullopt);
+    std::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+    EXPECT_NE(auction_result, std::nullopt);
   }
 }
 
@@ -9197,7 +9197,7 @@ function scoreAd(
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
 
@@ -9211,7 +9211,7 @@ function scoreAd(
         blink::mojom::PermissionsPolicyFeature::kPrivateAggregation,
         /*allowed_origins=*/
         std::vector{*blink::OriginWithPossibleWildcards::FromOrigin(kOriginA)},
-        /*self_if_matches=*/absl::nullopt,
+        /*self_if_matches=*/std::nullopt,
         /*matches_all_origins=*/false,
         /*matches_opaque_src=*/false);
     simulator->SetPermissionsPolicyHeader(std::move(policy));
@@ -9222,8 +9222,8 @@ function scoreAd(
     auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
     auction_config.non_shared_params.interest_group_buyers = {kOriginC};
 
-    absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
-    EXPECT_EQ(auction_result, absl::nullopt);
+    std::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+    EXPECT_EQ(auction_result, std::nullopt);
   }
 
   // In contrast to the case above, additionally allow origin C in the
@@ -9237,7 +9237,7 @@ function scoreAd(
         /*allowed_origins=*/
         std::vector{*blink::OriginWithPossibleWildcards::FromOrigin(kOriginA),
                     *blink::OriginWithPossibleWildcards::FromOrigin(kOriginC)},
-        /*self_if_matches=*/absl::nullopt,
+        /*self_if_matches=*/std::nullopt,
         /*matches_all_origins=*/false,
         /*matches_opaque_src=*/false);
     simulator->SetPermissionsPolicyHeader(std::move(policy));
@@ -9248,8 +9248,8 @@ function scoreAd(
     auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
     auction_config.non_shared_params.interest_group_buyers = {kOriginC};
 
-    absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
-    EXPECT_NE(auction_result, absl::nullopt);
+    std::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+    EXPECT_NE(auction_result, std::nullopt);
   }
 }
 
@@ -9297,7 +9297,7 @@ function scoreAd(
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
 
@@ -9326,8 +9326,8 @@ function scoreAd(
           blink::mojom::WebFeature::kPrivateAggregationApiEnableDebugMode))
       .Times(0);
 
-  absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
-  ASSERT_NE(auction_result, absl::nullopt);
+  std::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+  ASSERT_NE(auction_result, std::nullopt);
   InvokeCallbackForURN(*auction_result);
 }
 
@@ -9361,7 +9361,7 @@ function scoreAd(
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
 
@@ -9391,8 +9391,8 @@ function scoreAd(
           blink::mojom::WebFeature::kPrivateAggregationApiEnableDebugMode))
       .Times(0);
 
-  absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
-  ASSERT_NE(auction_result, absl::nullopt);
+  std::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+  ASSERT_NE(auction_result, std::nullopt);
   InvokeCallbackForURN(*auction_result);
 }
 
@@ -9427,7 +9427,7 @@ function scoreAd(
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
 
@@ -9456,8 +9456,8 @@ function scoreAd(
           main_rfh(),
           blink::mojom::WebFeature::kPrivateAggregationApiEnableDebugMode));
 
-  absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
-  ASSERT_NE(auction_result, absl::nullopt);
+  std::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+  ASSERT_NE(auction_result, std::nullopt);
   InvokeCallbackForURN(*auction_result);
 }
 
@@ -9493,7 +9493,7 @@ function scoreAd(
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
 
@@ -9524,10 +9524,10 @@ function scoreAd(
           main_rfh(),
           blink::mojom::WebFeature::kPrivateAggregationApiEnableDebugMode))
       .Times(0);
-  absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+  std::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
 
   // There should've been a contributeToHistogram() error.
-  EXPECT_EQ(auction_result, absl::nullopt);
+  EXPECT_EQ(auction_result, std::nullopt);
 }
 
 // Tests that the use counters are logged only once, even when the API is used
@@ -9567,7 +9567,7 @@ function scoreAd(
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
 
@@ -9590,8 +9590,8 @@ function scoreAd(
           main_rfh(),
           blink::mojom::WebFeature::kPrivateAggregationApiFledgeExtensions));
 
-  absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
-  ASSERT_NE(auction_result, absl::nullopt);
+  std::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+  ASSERT_NE(auction_result, std::nullopt);
   InvokeCallbackForURN(*auction_result);
 }
 
@@ -9616,7 +9616,7 @@ TEST_F(AdAuctionServiceImplPrivateAggregationMultiCloudTest,
   class MockPrivateAggregationHost : public PrivateAggregationHost {
    public:
     MockPrivateAggregationHost(
-        base::RepeatingCallback<void(const absl::optional<url::Origin>&,
+        base::RepeatingCallback<void(const std::optional<url::Origin>&,
                                      const url::Origin&)> check_coordinator,
         base::RepeatingCallback<void(
             ReportRequestGenerator,
@@ -9632,9 +9632,9 @@ TEST_F(AdAuctionServiceImplPrivateAggregationMultiCloudTest,
           .WillByDefault(
               [this](url::Origin worklet_origin, url::Origin top_frame_origin,
                      PrivateAggregationBudgetKey::Api api_for_budgeting,
-                     absl::optional<std::string> context_id,
-                     absl::optional<base::TimeDelta> timeout,
-                     absl::optional<url::Origin> aggregation_coordinator_origin,
+                     std::optional<std::string> context_id,
+                     std::optional<base::TimeDelta> timeout,
+                     std::optional<url::Origin> aggregation_coordinator_origin,
                      mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>
                          pending_receiver) -> bool {
                 check_coordinator_.Run(aggregation_coordinator_origin,
@@ -9654,14 +9654,14 @@ TEST_F(AdAuctionServiceImplPrivateAggregationMultiCloudTest,
                 (url::Origin,
                  url::Origin,
                  PrivateAggregationBudgetKey::Api,
-                 absl::optional<std::string>,
-                 absl::optional<base::TimeDelta>,
-                 absl::optional<url::Origin>,
+                 std::optional<std::string>,
+                 std::optional<base::TimeDelta>,
+                 std::optional<url::Origin>,
                  mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>),
                 (override));
 
    private:
-    base::RepeatingCallback<void(const absl::optional<url::Origin>&,
+    base::RepeatingCallback<void(const std::optional<url::Origin>&,
                                  const url::Origin&)>
         check_coordinator_;
   };
@@ -9703,10 +9703,10 @@ function reportResult() {}
       GURL(aggregation_service::kDefaultAggregationCoordinatorAwsCloud));
 
   base::RunLoop run_loop;
-  base::RepeatingCallback<void(const absl::optional<url::Origin>&,
+  base::RepeatingCallback<void(const std::optional<url::Origin>&,
                                const url::Origin&)>
       check_coordinator = base::BindLambdaForTesting(
-          [&](const absl::optional<url::Origin>& got_coordinator,
+          [&](const std::optional<url::Origin>& got_coordinator,
               const url::Origin& got_worklet) {
             EXPECT_EQ(kAwsAggCoordinator, got_coordinator);
             run_loop.Quit();
@@ -9746,7 +9746,7 @@ function reportResult() {}
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
 
   interest_group.aggregation_coordinator_origin = kAwsAggCoordinator;
@@ -9760,8 +9760,8 @@ function reportResult() {}
 
   EXPECT_CALL(*private_aggregation_host, BindNewReceiver);
 
-  absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
-  EXPECT_NE(auction_result, absl::nullopt);
+  std::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+  EXPECT_NE(auction_result, std::nullopt);
   InvokeCallbackForURN(*auction_result);
   run_loop.Run();
 }
@@ -9805,7 +9805,7 @@ function scoreAd(
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
 
@@ -9814,10 +9814,10 @@ function scoreAd(
   auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
   auction_config.non_shared_params.interest_group_buyers = {kOriginA};
 
-  absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+  std::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
 
   // privateAggregation should cause a ReferenceError.
-  EXPECT_EQ(auction_result, absl::nullopt);
+  EXPECT_EQ(auction_result, std::nullopt);
 }
 
 TEST_F(AdAuctionServiceImplPrivateAggregationDisabledTest,
@@ -9850,7 +9850,7 @@ function scoreAd(
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
 
@@ -9870,10 +9870,10 @@ function scoreAd(
           testing::_, blink::mojom::WebFeature::kPrivateAggregationApiFledge))
       .Times(0);
 
-  absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+  std::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
 
   // privateAggregation should cause a ReferenceError.
-  EXPECT_EQ(auction_result, absl::nullopt);
+  EXPECT_EQ(auction_result, std::nullopt);
 }
 
 class AdAuctionServiceImplUpdateUserBiddingSignalsDisabledTest
@@ -9913,7 +9913,7 @@ TEST_F(AdAuctionServiceImplUpdateUserBiddingSignalsDisabledTest,
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -9992,7 +9992,7 @@ function scoreAd(
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -10001,11 +10001,11 @@ function scoreAd(
   auction_config.seller = kOriginA;
   auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
   auction_config.non_shared_params.interest_group_buyers = {kOriginA};
-  absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+  std::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
   switch (kanon_mode()) {
     case auction_worklet::mojom::KAnonymityBidMode::kNone:
     case auction_worklet::mojom::KAnonymityBidMode::kSimulate: {
-      ASSERT_NE(auction_result, absl::nullopt);
+      ASSERT_NE(auction_result, std::nullopt);
       EXPECT_EQ(ConvertFencedFrameURNToURL(*auction_result),
                 GURL("https://example.com/render"));
 
@@ -10104,13 +10104,13 @@ class AdAuctionServiceImplBAndATest : public AdAuctionServiceImplTest {
 
   struct AdAuctionDataAndId {
     std::string request;
-    absl::optional<base::Uuid> request_id;
+    std::optional<base::Uuid> request_id;
     std::string error_message;
   };
 
   // Gets auction data in the frame `rfh`. If `rfh` is nullptr, uses the main
   // frame. Returns the auction data.
-  absl::optional<AdAuctionDataAndId> GetAdAuctionDataAndFlushForFrame(
+  std::optional<AdAuctionDataAndId> GetAdAuctionDataAndFlushForFrame(
       url::Origin seller,
       RenderFrameHost* rfh = nullptr) {
     mojo::Remote<blink::mojom::AdAuctionService> interest_service;
@@ -10118,13 +10118,13 @@ class AdAuctionServiceImplBAndATest : public AdAuctionServiceImplTest {
         rfh ? rfh : main_rfh(), interest_service.BindNewPipeAndPassReceiver());
 
     base::RunLoop run_loop;
-    absl::optional<AdAuctionDataAndId> output;
+    std::optional<AdAuctionDataAndId> output;
     interest_service->GetInterestGroupAdAuctionData(
         seller,
         url::Origin::Create(
             GURL(kDefaultBiddingAndAuctionGCPCoordinatorOrigin)),
         base::BindLambdaForTesting([&](mojo_base::BigBuffer result,
-                                       const absl::optional<base::Uuid>& id,
+                                       const std::optional<base::Uuid>& id,
                                        const std::string& error_message) {
           AdAuctionDataAndId data;
           data.request = std::string(reinterpret_cast<char*>(result.data()),
@@ -10142,9 +10142,9 @@ class AdAuctionServiceImplBAndATest : public AdAuctionServiceImplTest {
   // Runs an ad auction using the config specified in `auction_config` in the
   // frame `rfh`. Calls the provided `promise_callback` during the auction so
   // that test code can resolve any promises. Returns the result of the
-  // auction, which is either a URL to the winning ad, or absl::nullopt if no
+  // auction, which is either a URL to the winning ad, or std::nullopt if no
   // ad won the auction.
-  absl::optional<GURL> RunAdAuctionWithPromiseAndFlushForFrame(
+  std::optional<GURL> RunAdAuctionWithPromiseAndFlushForFrame(
       const blink::AuctionConfig& auction_config,
       base::OnceCallback<void(mojo::Remote<blink::mojom::AbortableAdAuction>&
                                   runner)> promise_callback,
@@ -10157,13 +10157,13 @@ class AdAuctionServiceImplBAndATest : public AdAuctionServiceImplTest {
         rfh, ad_auction_service_.BindNewPipeAndPassReceiver());
 
     base::RunLoop run_loop;
-    absl::optional<blink::FencedFrame::RedactedFencedFrameConfig> maybe_config;
+    std::optional<blink::FencedFrame::RedactedFencedFrameConfig> maybe_config;
     ad_auction_service_->RunAdAuction(
         auction_config, abortable_ad_auction.BindNewPipeAndPassReceiver(),
         base::BindLambdaForTesting(
             [&run_loop, &maybe_config](
                 bool aborted_by_script,
-                const absl::optional<
+                const std::optional<
                     blink::FencedFrame::RedactedFencedFrameConfig>& config) {
               EXPECT_FALSE(aborted_by_script);
               maybe_config = config;
@@ -10173,7 +10173,7 @@ class AdAuctionServiceImplBAndATest : public AdAuctionServiceImplTest {
     ad_auction_service_.FlushForTesting();
     run_loop.Run();
     if (!maybe_config) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     CHECK(maybe_config->urn_uuid().has_value());
     return maybe_config->urn_uuid();
@@ -10201,7 +10201,7 @@ TEST_F(AdAuctionServiceImplTest, HandlesInvalidCoordinatorOrigin) {
       /*coordinator=*/bad_coordinator,
       /*callback=*/
       base::BindLambdaForTesting([&](mojo_base::BigBuffer result,
-                                     const absl::optional<base::Uuid>& id,
+                                     const std::optional<base::Uuid>& id,
                                      const std::string& error_message) {
         ADD_FAILURE() << "This callback should not be invoked.";
       }));
@@ -10217,19 +10217,19 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlob) {
           .SetUserBiddingSignals("{}")
           .SetAds(
               {{{GURL("https://c.test/ad.html"), /*metadata=*/"do not send",
-                 /*size_group=*/absl::nullopt,
-                 /*buyer_reporting_id=*/absl::nullopt,
-                 /*buyer_and_seller_reporting_id=*/absl::nullopt, "1234"},
-                {GURL("https://c.test/ad2.html"), /*metadata=*/absl::nullopt},
-                {GURL("https://c.test/ad3.html"), /*metadata=*/absl::nullopt,
-                 /*size_group=*/absl::nullopt,
-                 /*buyer_reporting_id=*/absl::nullopt,
-                 /*buyer_and_seller_reporting_id=*/absl::nullopt, "456"}}})
+                 /*size_group=*/std::nullopt,
+                 /*buyer_reporting_id=*/std::nullopt,
+                 /*buyer_and_seller_reporting_id=*/std::nullopt, "1234"},
+                {GURL("https://c.test/ad2.html"), /*metadata=*/std::nullopt},
+                {GURL("https://c.test/ad3.html"), /*metadata=*/std::nullopt,
+                 /*size_group=*/std::nullopt,
+                 /*buyer_reporting_id=*/std::nullopt,
+                 /*buyer_and_seller_reporting_id=*/std::nullopt, "456"}}})
           .SetAdComponents(
-              {{{GURL("https://c.test/ad4.html"), /*metadata=*/absl::nullopt,
-                 /*size_group=*/absl::nullopt,
-                 /*buyer_reporting_id=*/absl::nullopt,
-                 /*buyer_and_seller_reporting_id=*/absl::nullopt, "789"}}})
+              {{{GURL("https://c.test/ad4.html"), /*metadata=*/std::nullopt,
+                 /*size_group=*/std::nullopt,
+                 /*buyer_reporting_id=*/std::nullopt,
+                 /*buyer_and_seller_reporting_id=*/std::nullopt, "789"}}})
           .Build(),
       GURL("https://a.test/example.html"));
   task_environment()->FastForwardBy(base::Seconds(1));
@@ -10327,20 +10327,20 @@ TEST_F(AdAuctionServiceImplTest, SerializesMultipleOwnersAuctionBlob) {
   manager_->JoinInterestGroup(
       blink::TestInterestGroupBuilder(test_origin_a, "cars")
           .SetAds(
-              {{{GURL("https://c.test/ad.html"), /*metadata=*/absl::nullopt,
-                 /*size_group=*/absl::nullopt,
-                 /*buyer_reporting_id=*/absl::nullopt,
-                 /*buyer_and_seller_reporting_id=*/absl::nullopt, "1234"},
-                {GURL("https://c.test/ad2.html"), /*metadata=*/absl::nullopt},
-                {GURL("https://c.test/ad3.html"), /*metadata=*/absl::nullopt,
-                 /*size_group=*/absl::nullopt,
-                 /*buyer_reporting_id=*/absl::nullopt,
-                 /*buyer_and_seller_reporting_id=*/absl::nullopt, "456"}}})
+              {{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
+                 /*size_group=*/std::nullopt,
+                 /*buyer_reporting_id=*/std::nullopt,
+                 /*buyer_and_seller_reporting_id=*/std::nullopt, "1234"},
+                {GURL("https://c.test/ad2.html"), /*metadata=*/std::nullopt},
+                {GURL("https://c.test/ad3.html"), /*metadata=*/std::nullopt,
+                 /*size_group=*/std::nullopt,
+                 /*buyer_reporting_id=*/std::nullopt,
+                 /*buyer_and_seller_reporting_id=*/std::nullopt, "456"}}})
           .SetAdComponents(
-              {{{GURL("https://c.test/ad4.html"), /*metadata=*/absl::nullopt,
-                 /*size_group=*/absl::nullopt,
-                 /*buyer_reporting_id=*/absl::nullopt,
-                 /*buyer_and_seller_reporting_id=*/absl::nullopt, "789"}}})
+              {{{GURL("https://c.test/ad4.html"), /*metadata=*/std::nullopt,
+                 /*size_group=*/std::nullopt,
+                 /*buyer_reporting_id=*/std::nullopt,
+                 /*buyer_and_seller_reporting_id=*/std::nullopt, "789"}}})
           .Build(),
       test_origin_a.GetURL().Resolve("/example.html"));
   manager_->RecordInterestGroupWin(
@@ -10354,20 +10354,20 @@ TEST_F(AdAuctionServiceImplTest, SerializesMultipleOwnersAuctionBlob) {
   manager_->JoinInterestGroup(
       blink::TestInterestGroupBuilder(test_origin_a, "boats")
           .SetAds(
-              {{{GURL("https://c.test/ad6.html"), /*metadata=*/absl::nullopt,
-                 /*size_group=*/absl::nullopt,
-                 /*buyer_reporting_id=*/absl::nullopt,
-                 /*buyer_and_seller_reporting_id=*/absl::nullopt, "Boat1"},
-                {GURL("https://c.test/ad7.html"), /*metadata=*/absl::nullopt},
-                {GURL("https://c.test/ad8.html"), /*metadata=*/absl::nullopt,
-                 /*size_group=*/absl::nullopt,
-                 /*buyer_reporting_id=*/absl::nullopt,
-                 /*buyer_and_seller_reporting_id=*/absl::nullopt, "Boat2"}}})
+              {{{GURL("https://c.test/ad6.html"), /*metadata=*/std::nullopt,
+                 /*size_group=*/std::nullopt,
+                 /*buyer_reporting_id=*/std::nullopt,
+                 /*buyer_and_seller_reporting_id=*/std::nullopt, "Boat1"},
+                {GURL("https://c.test/ad7.html"), /*metadata=*/std::nullopt},
+                {GURL("https://c.test/ad8.html"), /*metadata=*/std::nullopt,
+                 /*size_group=*/std::nullopt,
+                 /*buyer_reporting_id=*/std::nullopt,
+                 /*buyer_and_seller_reporting_id=*/std::nullopt, "Boat2"}}})
           .SetAdComponents(
-              {{{GURL("https://c.test/ad9.html"), /*metadata=*/absl::nullopt,
-                 /*size_group=*/absl::nullopt,
-                 /*buyer_reporting_id=*/absl::nullopt,
-                 /*buyer_and_seller_reporting_id=*/absl::nullopt, "Boat3"}}})
+              {{{GURL("https://c.test/ad9.html"), /*metadata=*/std::nullopt,
+                 /*size_group=*/std::nullopt,
+                 /*buyer_reporting_id=*/std::nullopt,
+                 /*buyer_and_seller_reporting_id=*/std::nullopt, "Boat3"}}})
           .Build(),
       test_origin_a.GetURL().Resolve("/example.html"));
 
@@ -10375,20 +10375,20 @@ TEST_F(AdAuctionServiceImplTest, SerializesMultipleOwnersAuctionBlob) {
   manager_->JoinInterestGroup(
       blink::TestInterestGroupBuilder(test_origin_b, "trains")
           .SetAds(
-              {{{GURL("https://b.test/ad6.html"), /*metadata=*/absl::nullopt,
-                 /*size_group=*/absl::nullopt,
-                 /*buyer_reporting_id=*/absl::nullopt,
-                 /*buyer_and_seller_reporting_id=*/absl::nullopt, "Train1"},
-                {GURL("https://b.test/ad7.html"), /*metadata=*/absl::nullopt},
-                {GURL("https://b.test/ad8.html"), /*metadata=*/absl::nullopt,
-                 /*size_group=*/absl::nullopt,
-                 /*buyer_reporting_id=*/absl::nullopt,
-                 /*buyer_and_seller_reporting_id=*/absl::nullopt, "Train2"}}})
+              {{{GURL("https://b.test/ad6.html"), /*metadata=*/std::nullopt,
+                 /*size_group=*/std::nullopt,
+                 /*buyer_reporting_id=*/std::nullopt,
+                 /*buyer_and_seller_reporting_id=*/std::nullopt, "Train1"},
+                {GURL("https://b.test/ad7.html"), /*metadata=*/std::nullopt},
+                {GURL("https://b.test/ad8.html"), /*metadata=*/std::nullopt,
+                 /*size_group=*/std::nullopt,
+                 /*buyer_reporting_id=*/std::nullopt,
+                 /*buyer_and_seller_reporting_id=*/std::nullopt, "Train2"}}})
           .SetAdComponents(
-              {{{GURL("https://b.test/ad9.html"), /*metadata=*/absl::nullopt,
-                 /*size_group=*/absl::nullopt,
-                 /*buyer_reporting_id=*/absl::nullopt,
-                 /*buyer_and_seller_reporting_id=*/absl::nullopt, "Train3"}}})
+              {{{GURL("https://b.test/ad9.html"), /*metadata=*/std::nullopt,
+                 /*size_group=*/std::nullopt,
+                 /*buyer_reporting_id=*/std::nullopt,
+                 /*buyer_and_seller_reporting_id=*/std::nullopt, "Train3"}}})
           .Build(),
       test_origin_b.GetURL().Resolve("/example.html"));
   task_environment()->FastForwardBy(base::Seconds(1));
@@ -10438,9 +10438,9 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithoutDebugReporting) {
   manager_->JoinInterestGroup(
       blink::TestInterestGroupBuilder(test_origin, "cars")
           .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/"do not send",
-                     /*size_group=*/absl::nullopt,
-                     /*buyer_reporting_id=*/absl::nullopt,
-                     /*buyer_and_seller_reporting_id=*/absl::nullopt, "1234"}}})
+                     /*size_group=*/std::nullopt,
+                     /*buyer_reporting_id=*/std::nullopt,
+                     /*buyer_and_seller_reporting_id=*/std::nullopt, "1234"}}})
           .Build(),
       GURL("https://a.test/example.html"));
   task_environment()->FastForwardBy(base::Seconds(1));
@@ -10479,14 +10479,14 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithDebugToken) {
       blink::TestInterestGroupBuilder(test_origin, "cars")
           .SetAds(
               {{{GURL("https://c.test/ad.html"), /*metadata=*/"do not send",
-                 /*size_group=*/absl::nullopt,
-                 /*buyer_reporting_id=*/absl::nullopt,
-                 /*buyer_and_seller_reporting_id=*/absl::nullopt, "1234"},
-                {GURL("https://c.test/ad2.html"), /*metadata=*/absl::nullopt},
-                {GURL("https://c.test/ad3.html"), /*metadata=*/absl::nullopt,
-                 /*size_group=*/absl::nullopt,
-                 /*buyer_reporting_id=*/absl::nullopt,
-                 /*buyer_and_seller_reporting_id=*/absl::nullopt, "456"}}})
+                 /*size_group=*/std::nullopt,
+                 /*buyer_reporting_id=*/std::nullopt,
+                 /*buyer_and_seller_reporting_id=*/std::nullopt, "1234"},
+                {GURL("https://c.test/ad2.html"), /*metadata=*/std::nullopt},
+                {GURL("https://c.test/ad3.html"), /*metadata=*/std::nullopt,
+                 /*size_group=*/std::nullopt,
+                 /*buyer_reporting_id=*/std::nullopt,
+                 /*buyer_and_seller_reporting_id=*/std::nullopt, "456"}}})
           .Build(),
       GURL("https://a.test/example.html"));
   task_environment()->FastForwardBy(base::Seconds(1));
@@ -10527,9 +10527,9 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithOmitAds) {
   manager_->JoinInterestGroup(
       blink::TestInterestGroupBuilder(test_origin, "cars")
           .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/"do not send",
-                     /*size_group=*/absl::nullopt,
-                     /*buyer_reporting_id=*/absl::nullopt,
-                     /*buyer_and_seller_reporting_id=*/absl::nullopt, "1234"}}})
+                     /*size_group=*/std::nullopt,
+                     /*buyer_reporting_id=*/std::nullopt,
+                     /*buyer_and_seller_reporting_id=*/std::nullopt, "1234"}}})
           .SetAuctionServerRequestFlags(
               {blink::AuctionServerRequestFlagsEnum::kOmitAds})
           .Build(),
@@ -10576,8 +10576,8 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithFullAds) {
       blink::TestInterestGroupBuilder(test_origin, "cars")
           .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/"please send",
                      /*size_group=*/"foo",
-                     /*buyer_reporting_id=*/absl::nullopt,
-                     /*buyer_and_seller_reporting_id=*/absl::nullopt, "1234"}}})
+                     /*buyer_reporting_id=*/std::nullopt,
+                     /*buyer_and_seller_reporting_id=*/std::nullopt, "1234"}}})
           .SetSizeGroups({{{"foo", {"bar"}}}})
           .SetAdSizes(
               {{{"bar",
@@ -10632,20 +10632,20 @@ TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayload) {
   manager_->JoinInterestGroup(
       blink::TestInterestGroupBuilder(test_origin, "cars")
           .SetAds(
-              {{{GURL("https://c.test/ad.html"), /*metadata=*/absl::nullopt,
-                 /*size_group=*/absl::nullopt,
-                 /*buyer_reporting_id=*/absl::nullopt,
-                 /*buyer_and_seller_reporting_id=*/absl::nullopt, "1234"},
-                {GURL("https://c.test/ad2.html"), /*metadata=*/absl::nullopt},
-                {GURL("https://c.test/ad3.html"), /*metadata=*/absl::nullopt,
-                 /*size_group=*/absl::nullopt,
-                 /*buyer_reporting_id=*/absl::nullopt,
-                 /*buyer_and_seller_reporting_id=*/absl::nullopt, "456"}}})
+              {{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
+                 /*size_group=*/std::nullopt,
+                 /*buyer_reporting_id=*/std::nullopt,
+                 /*buyer_and_seller_reporting_id=*/std::nullopt, "1234"},
+                {GURL("https://c.test/ad2.html"), /*metadata=*/std::nullopt},
+                {GURL("https://c.test/ad3.html"), /*metadata=*/std::nullopt,
+                 /*size_group=*/std::nullopt,
+                 /*buyer_reporting_id=*/std::nullopt,
+                 /*buyer_and_seller_reporting_id=*/std::nullopt, "456"}}})
           .SetAdComponents(
-              {{{GURL("https://c.test/ad4.html"), /*metadata=*/absl::nullopt,
-                 /*size_group=*/absl::nullopt,
-                 /*buyer_reporting_id=*/absl::nullopt,
-                 /*buyer_and_seller_reporting_id=*/absl::nullopt, "789"}}})
+              {{{GURL("https://c.test/ad4.html"), /*metadata=*/std::nullopt,
+                 /*size_group=*/std::nullopt,
+                 /*buyer_reporting_id=*/std::nullopt,
+                 /*buyer_and_seller_reporting_id=*/std::nullopt, "789"}}})
           .Build(),
       GURL("https://a.test/example.html"));
   task_environment()->FastForwardBy(base::Seconds(1));
@@ -10660,25 +10660,25 @@ TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayload) {
   manager_->JoinInterestGroup(
       blink::TestInterestGroupBuilder(test_origin, "boats")
           .SetAds(
-              {{{GURL("https://c.test/ad6.html"), /*metadata=*/absl::nullopt,
-                 /*size_group=*/absl::nullopt,
-                 /*buyer_reporting_id=*/absl::nullopt,
-                 /*buyer_and_seller_reporting_id=*/absl::nullopt, "Boat1"},
-                {GURL("https://c.test/ad7.html"), /*metadata=*/absl::nullopt},
-                {GURL("https://c.test/ad8.html"), /*metadata=*/absl::nullopt,
-                 /*size_group=*/absl::nullopt,
-                 /*buyer_reporting_id=*/absl::nullopt,
-                 /*buyer_and_seller_reporting_id=*/absl::nullopt, "Boat2"}}})
+              {{{GURL("https://c.test/ad6.html"), /*metadata=*/std::nullopt,
+                 /*size_group=*/std::nullopt,
+                 /*buyer_reporting_id=*/std::nullopt,
+                 /*buyer_and_seller_reporting_id=*/std::nullopt, "Boat1"},
+                {GURL("https://c.test/ad7.html"), /*metadata=*/std::nullopt},
+                {GURL("https://c.test/ad8.html"), /*metadata=*/std::nullopt,
+                 /*size_group=*/std::nullopt,
+                 /*buyer_reporting_id=*/std::nullopt,
+                 /*buyer_and_seller_reporting_id=*/std::nullopt, "Boat2"}}})
           .SetAdComponents(
-              {{{GURL("https://c.test/ad9.html"), /*metadata=*/absl::nullopt,
-                 /*size_group=*/absl::nullopt,
-                 /*buyer_reporting_id=*/absl::nullopt,
-                 /*buyer_and_seller_reporting_id=*/absl::nullopt, "Boat3"}}})
+              {{{GURL("https://c.test/ad9.html"), /*metadata=*/std::nullopt,
+                 /*size_group=*/std::nullopt,
+                 /*buyer_reporting_id=*/std::nullopt,
+                 /*buyer_and_seller_reporting_id=*/std::nullopt, "Boat3"}}})
           .Build(),
       test_origin.GetURL().Resolve("/example.html"));
   task_environment()->FastForwardBy(base::Seconds(1));
 
-  absl::optional<AdAuctionDataAndId> result =
+  std::optional<AdAuctionDataAndId> result =
       GetAdAuctionDataAndFlushForFrame(test_origin);
   ASSERT_TRUE(result.has_value());
   ASSERT_LT(0u, result.value().request.size());
@@ -10753,23 +10753,23 @@ TEST_F(AdAuctionServiceImplBAndATest, OriginNotAllowed) {
   manager_->JoinInterestGroup(
       blink::TestInterestGroupBuilder(kOriginA, "cars")
           .SetAds(
-              {{{GURL("https://c.test/ad.html"), /*metadata=*/absl::nullopt,
-                 /*size_group=*/absl::nullopt,
-                 /*buyer_reporting_id=*/absl::nullopt,
-                 /*buyer_and_seller_reporting_id=*/absl::nullopt, "1234"},
-                {GURL("https://c.test/ad2.html"), /*metadata=*/absl::nullopt},
-                {GURL("https://c.test/ad3.html"), /*metadata=*/absl::nullopt,
-                 /*size_group=*/absl::nullopt,
-                 /*buyer_reporting_id=*/absl::nullopt,
-                 /*buyer_and_seller_reporting_id=*/absl::nullopt, "456"}}})
+              {{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
+                 /*size_group=*/std::nullopt,
+                 /*buyer_reporting_id=*/std::nullopt,
+                 /*buyer_and_seller_reporting_id=*/std::nullopt, "1234"},
+                {GURL("https://c.test/ad2.html"), /*metadata=*/std::nullopt},
+                {GURL("https://c.test/ad3.html"), /*metadata=*/std::nullopt,
+                 /*size_group=*/std::nullopt,
+                 /*buyer_reporting_id=*/std::nullopt,
+                 /*buyer_and_seller_reporting_id=*/std::nullopt, "456"}}})
           .SetAdComponents(
-              {{{GURL("https://c.test/ad4.html"), /*metadata=*/absl::nullopt,
-                 /*size_group=*/absl::nullopt,
-                 /*buyer_reporting_id=*/absl::nullopt,
-                 /*buyer_and_seller_reporting_id=*/absl::nullopt, "789"}}})
+              {{{GURL("https://c.test/ad4.html"), /*metadata=*/std::nullopt,
+                 /*size_group=*/std::nullopt,
+                 /*buyer_reporting_id=*/std::nullopt,
+                 /*buyer_and_seller_reporting_id=*/std::nullopt, "789"}}})
           .Build(),
       GURL("https://a.test/example.html"));
-  absl::optional<AdAuctionDataAndId> result =
+  std::optional<AdAuctionDataAndId> result =
       GetAdAuctionDataAndFlushForFrame(test_origin);
   EXPECT_TRUE(result.has_value());
   EXPECT_EQ("", result.value().request);
@@ -10785,16 +10785,16 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuction) {
   NavigateAndCommit(kUrlA);
   manager_->JoinInterestGroup(
       blink::TestInterestGroupBuilder(kOriginA, "cars")
-          .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/absl::nullopt,
-                     /*size_group=*/absl::nullopt,
-                     /*buyer_reporting_id=*/absl::nullopt,
-                     /*buyer_and_seller_reporting_id=*/absl::nullopt, "1234"}}})
+          .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
+                     /*size_group=*/std::nullopt,
+                     /*buyer_reporting_id=*/std::nullopt,
+                     /*buyer_and_seller_reporting_id=*/std::nullopt, "1234"}}})
           .SetBiddingUrl(kBiddingLogicUrlA)
           .Build(),
       GURL("https://a.test/example.html"));
   task_environment()->FastForwardBy(base::Seconds(1));
 
-  absl::optional<AdAuctionDataAndId> auction_data =
+  std::optional<AdAuctionDataAndId> auction_data =
       GetAdAuctionDataAndFlushForFrame(kOriginA);
   EXPECT_TRUE(auction_data.has_value());
 
@@ -10858,7 +10858,7 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuction) {
   auction_config.non_shared_params.interest_group_buyers = {kOriginA};
   auction_config.server_response.emplace();
   auction_config.server_response->request_id = *auction_data->request_id;
-  absl::optional<GURL> result = RunAdAuctionWithPromiseAndFlushForFrame(
+  std::optional<GURL> result = RunAdAuctionWithPromiseAndFlushForFrame(
       auction_config,
       base::BindLambdaForTesting(
           [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
@@ -10878,7 +10878,7 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuction) {
   EXPECT_TRUE(network_responder_->ReportSent("/buyerReporting"));
   EXPECT_TRUE(network_responder_->ReportSent("/sellerReporting"));
 
-  absl::optional<FencedFrameProperties> properties =
+  std::optional<FencedFrameProperties> properties =
       GetFencedFramePropertiesForURN(*result);
   ASSERT_TRUE(properties);
   EXPECT_THAT(
@@ -10937,16 +10937,16 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuctionNoBids) {
   NavigateAndCommit(kUrlA);
   manager_->JoinInterestGroup(
       blink::TestInterestGroupBuilder(kOriginA, "cars")
-          .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/absl::nullopt,
-                     /*size_group=*/absl::nullopt,
-                     /*buyer_reporting_id=*/absl::nullopt,
-                     /*buyer_and_seller_reporting_id=*/absl::nullopt, "1234"}}})
+          .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
+                     /*size_group=*/std::nullopt,
+                     /*buyer_reporting_id=*/std::nullopt,
+                     /*buyer_and_seller_reporting_id=*/std::nullopt, "1234"}}})
           .SetBiddingUrl(kBiddingLogicUrlA)
           .Build(),
       GURL("https://a.test/example.html"));
   task_environment()->FastForwardBy(base::Seconds(1));
 
-  absl::optional<AdAuctionDataAndId> auction_data =
+  std::optional<AdAuctionDataAndId> auction_data =
       GetAdAuctionDataAndFlushForFrame(kOriginA);
   EXPECT_TRUE(auction_data.has_value());
 
@@ -10983,7 +10983,7 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuctionNoBids) {
   auction_config.non_shared_params.interest_group_buyers = {kOriginA};
   auction_config.server_response.emplace();
   auction_config.server_response->request_id = *auction_data->request_id;
-  absl::optional<GURL> result = RunAdAuctionWithPromiseAndFlushForFrame(
+  std::optional<GURL> result = RunAdAuctionWithPromiseAndFlushForFrame(
       auction_config,
       base::BindLambdaForTesting(
           [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
@@ -11026,16 +11026,16 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuctionServerError) {
   NavigateAndCommit(kUrlA);
   manager_->JoinInterestGroup(
       blink::TestInterestGroupBuilder(kOriginA, "cars")
-          .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/absl::nullopt,
-                     /*size_group=*/absl::nullopt,
-                     /*buyer_reporting_id=*/absl::nullopt,
-                     /*buyer_and_seller_reporting_id=*/absl::nullopt, "1234"}}})
+          .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
+                     /*size_group=*/std::nullopt,
+                     /*buyer_reporting_id=*/std::nullopt,
+                     /*buyer_and_seller_reporting_id=*/std::nullopt, "1234"}}})
           .SetBiddingUrl(kBiddingLogicUrlA)
           .Build(),
       GURL("https://a.test/example.html"));
   task_environment()->FastForwardBy(base::Seconds(1));
 
-  absl::optional<AdAuctionDataAndId> auction_data =
+  std::optional<AdAuctionDataAndId> auction_data =
       GetAdAuctionDataAndFlushForFrame(kOriginA);
   EXPECT_TRUE(auction_data.has_value());
 
@@ -11071,7 +11071,7 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuctionServerError) {
   auction_config.non_shared_params.interest_group_buyers = {kOriginA};
   auction_config.server_response.emplace();
   auction_config.server_response->request_id = *auction_data->request_id;
-  absl::optional<GURL> result = RunAdAuctionWithPromiseAndFlushForFrame(
+  std::optional<GURL> result = RunAdAuctionWithPromiseAndFlushForFrame(
       auction_config,
       base::BindLambdaForTesting(
           [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
@@ -11117,16 +11117,16 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuctionWithoutCustomMediaType) {
   NavigateAndCommit(kUrlA);
   manager_->JoinInterestGroup(
       blink::TestInterestGroupBuilder(kOriginA, "cars")
-          .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/absl::nullopt,
-                     /*size_group=*/absl::nullopt,
-                     /*buyer_reporting_id=*/absl::nullopt,
-                     /*buyer_and_seller_reporting_id=*/absl::nullopt, "1234"}}})
+          .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
+                     /*size_group=*/std::nullopt,
+                     /*buyer_reporting_id=*/std::nullopt,
+                     /*buyer_and_seller_reporting_id=*/std::nullopt, "1234"}}})
           .SetBiddingUrl(kBiddingLogicUrlA)
           .Build(),
       GURL("https://a.test/example.html"));
   task_environment()->FastForwardBy(base::Seconds(1));
 
-  absl::optional<AdAuctionDataAndId> auction_data =
+  std::optional<AdAuctionDataAndId> auction_data =
       GetAdAuctionDataAndFlushForFrame(kOriginA);
   EXPECT_TRUE(auction_data.has_value());
 
@@ -11237,7 +11237,7 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuctionWithoutCustomMediaType) {
   auction_config.non_shared_params.interest_group_buyers = {kOriginA};
   auction_config.server_response.emplace();
   auction_config.server_response->request_id = *auction_data->request_id;
-  absl::optional<GURL> result = RunAdAuctionWithPromiseAndFlushForFrame(
+  std::optional<GURL> result = RunAdAuctionWithPromiseAndFlushForFrame(
       auction_config,
       base::BindLambdaForTesting(
           [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
@@ -11257,7 +11257,7 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuctionWithoutCustomMediaType) {
   EXPECT_TRUE(network_responder_->ReportSent("/buyerReporting"));
   EXPECT_TRUE(network_responder_->ReportSent("/sellerReporting"));
 
-  absl::optional<FencedFrameProperties> properties =
+  std::optional<FencedFrameProperties> properties =
       GetFencedFramePropertiesForURN(*result);
   ASSERT_TRUE(properties);
   EXPECT_THAT(
@@ -11290,16 +11290,16 @@ TEST_F(AdAuctionServiceImplBAndATest, HandlesBadResponseForBAndAAuction) {
   NavigateAndCommit(kUrlA);
   manager_->JoinInterestGroup(
       blink::TestInterestGroupBuilder(kOriginA, "cars")
-          .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/absl::nullopt,
-                     /*size_group=*/absl::nullopt,
-                     /*buyer_reporting_id=*/absl::nullopt,
-                     /*buyer_and_seller_reporting_id=*/absl::nullopt, "1234"}}})
+          .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
+                     /*size_group=*/std::nullopt,
+                     /*buyer_reporting_id=*/std::nullopt,
+                     /*buyer_and_seller_reporting_id=*/std::nullopt, "1234"}}})
           .SetBiddingUrl(kBiddingLogicUrlA)
           .Build(),
       GURL("https://a.test/example.html"));
   task_environment()->FastForwardBy(base::Seconds(1));
 
-  absl::optional<AdAuctionDataAndId> auction_data =
+  std::optional<AdAuctionDataAndId> auction_data =
       GetAdAuctionDataAndFlushForFrame(kOriginA);
   EXPECT_TRUE(auction_data.has_value());
 
@@ -11331,7 +11331,7 @@ TEST_F(AdAuctionServiceImplBAndATest, HandlesBadResponseForBAndAAuction) {
   auction_config.non_shared_params.interest_group_buyers = {kOriginA};
   auction_config.server_response.emplace();
   auction_config.server_response->request_id = *auction_data->request_id;
-  absl::optional<GURL> result = RunAdAuctionWithPromiseAndFlushForFrame(
+  std::optional<GURL> result = RunAdAuctionWithPromiseAndFlushForFrame(
       auction_config,
       base::BindLambdaForTesting(
           [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
@@ -11373,16 +11373,16 @@ TEST_F(AdAuctionServiceImplBAndATest,
   NavigateAndCommit(kUrlA);
   manager_->JoinInterestGroup(
       blink::TestInterestGroupBuilder(kOriginA, "cars")
-          .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/absl::nullopt,
-                     /*size_group=*/absl::nullopt,
-                     /*buyer_reporting_id=*/absl::nullopt,
-                     /*buyer_and_seller_reporting_id=*/absl::nullopt, "1234"}}})
+          .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
+                     /*size_group=*/std::nullopt,
+                     /*buyer_reporting_id=*/std::nullopt,
+                     /*buyer_and_seller_reporting_id=*/std::nullopt, "1234"}}})
           .SetBiddingUrl(kBiddingLogicUrlA)
           .Build(),
       GURL("https://a.test/example.html"));
   task_environment()->FastForwardBy(base::Seconds(1));
 
-  absl::optional<AdAuctionDataAndId> auction_data =
+  std::optional<AdAuctionDataAndId> auction_data =
       GetAdAuctionDataAndFlushForFrame(kOriginA);
   EXPECT_TRUE(auction_data.has_value());
 
@@ -11449,7 +11449,7 @@ TEST_F(AdAuctionServiceImplBAndATest,
   auction_config.non_shared_params.interest_group_buyers = {kOriginA};
   auction_config.server_response.emplace();
   auction_config.server_response->request_id = *auction_data->request_id;
-  absl::optional<GURL> result = RunAdAuctionWithPromiseAndFlushForFrame(
+  std::optional<GURL> result = RunAdAuctionWithPromiseAndFlushForFrame(
       auction_config,
       base::BindLambdaForTesting(
           [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
@@ -11502,16 +11502,16 @@ function reportResult(auctionConfig, browserSignals) {
   NavigateAndCommit(kUrlA);
   manager_->JoinInterestGroup(
       blink::TestInterestGroupBuilder(kOriginA, "cars")
-          .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/absl::nullopt,
-                     /*size_group=*/absl::nullopt,
-                     /*buyer_reporting_id=*/absl::nullopt,
-                     /*buyer_and_seller_reporting_id=*/absl::nullopt, "1234"}}})
+          .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
+                     /*size_group=*/std::nullopt,
+                     /*buyer_reporting_id=*/std::nullopt,
+                     /*buyer_and_seller_reporting_id=*/std::nullopt, "1234"}}})
           .SetBiddingUrl(kBiddingLogicUrlA)
           .Build(),
       GURL("https://a.test/example.html"));
   task_environment()->FastForwardBy(base::Seconds(1));
 
-  absl::optional<AdAuctionDataAndId> auction_data =
+  std::optional<AdAuctionDataAndId> auction_data =
       GetAdAuctionDataAndFlushForFrame(kOriginA);
   EXPECT_TRUE(auction_data.has_value());
 
@@ -11584,7 +11584,7 @@ function reportResult(auctionConfig, browserSignals) {
   auction_config.non_shared_params.component_auctions.emplace_back(
       std::move(component_auction1));
 
-  absl::optional<GURL> result = RunAdAuctionWithPromiseAndFlushForFrame(
+  std::optional<GURL> result = RunAdAuctionWithPromiseAndFlushForFrame(
       auction_config,
       base::BindLambdaForTesting(
           [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
@@ -11624,16 +11624,16 @@ TEST_F(AdAuctionServiceImplBAndATest, RunMultiSellerBAndAAuctionWrongSeller) {
   NavigateAndCommit(kUrlA);
   manager_->JoinInterestGroup(
       blink::TestInterestGroupBuilder(kOriginA, "cars")
-          .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/absl::nullopt,
-                     /*size_group=*/absl::nullopt,
-                     /*buyer_reporting_id=*/absl::nullopt,
-                     /*buyer_and_seller_reporting_id=*/absl::nullopt, "1234"}}})
+          .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
+                     /*size_group=*/std::nullopt,
+                     /*buyer_reporting_id=*/std::nullopt,
+                     /*buyer_and_seller_reporting_id=*/std::nullopt, "1234"}}})
           .SetBiddingUrl(kBiddingLogicUrlA)
           .Build(),
       GURL("https://a.test/example.html"));
   task_environment()->FastForwardBy(base::Seconds(1));
 
-  absl::optional<AdAuctionDataAndId> auction_data =
+  std::optional<AdAuctionDataAndId> auction_data =
       GetAdAuctionDataAndFlushForFrame(kOriginA);
   EXPECT_TRUE(auction_data.has_value());
 
@@ -11707,7 +11707,7 @@ TEST_F(AdAuctionServiceImplBAndATest, RunMultiSellerBAndAAuctionWrongSeller) {
 
   auction_config.non_shared_params.component_auctions.emplace_back(
       std::move(component_auction1));
-  absl::optional<GURL> result = RunAdAuctionWithPromiseAndFlushForFrame(
+  std::optional<GURL> result = RunAdAuctionWithPromiseAndFlushForFrame(
       auction_config,
       base::BindLambdaForTesting(
           [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
@@ -11778,16 +11778,16 @@ function reportResult(auctionConfig, browserSignals) {
   NavigateAndCommit(kUrlA);
   manager_->JoinInterestGroup(
       blink::TestInterestGroupBuilder(kOriginA, "cars")
-          .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/absl::nullopt,
-                     /*size_group=*/absl::nullopt,
-                     /*buyer_reporting_id=*/absl::nullopt,
-                     /*buyer_and_seller_reporting_id=*/absl::nullopt, "1234"}}})
+          .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
+                     /*size_group=*/std::nullopt,
+                     /*buyer_reporting_id=*/std::nullopt,
+                     /*buyer_and_seller_reporting_id=*/std::nullopt, "1234"}}})
           .SetBiddingUrl(kBiddingLogicUrlA)
           .Build(),
       GURL("https://a.test/example.html"));
   task_environment()->FastForwardBy(base::Seconds(1));
 
-  absl::optional<AdAuctionDataAndId> auction_data =
+  std::optional<AdAuctionDataAndId> auction_data =
       GetAdAuctionDataAndFlushForFrame(kOriginA);
   EXPECT_TRUE(auction_data.has_value());
 
@@ -11866,7 +11866,7 @@ function reportResult(auctionConfig, browserSignals) {
   auction_config.non_shared_params.component_auctions.emplace_back(
       std::move(component_auction1));
 
-  absl::optional<GURL> result = RunAdAuctionWithPromiseAndFlushForFrame(
+  std::optional<GURL> result = RunAdAuctionWithPromiseAndFlushForFrame(
       auction_config,
       base::BindLambdaForTesting(
           [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
@@ -11887,7 +11887,7 @@ function reportResult(auctionConfig, browserSignals) {
   EXPECT_TRUE(network_responder_->ReportSent("/sellerReporting"));
   EXPECT_TRUE(network_responder_->ReportSent("/topLevelSellerReporting"));
 
-  absl::optional<FencedFrameProperties> properties =
+  std::optional<FencedFrameProperties> properties =
       GetFencedFramePropertiesForURN(*result);
   ASSERT_TRUE(properties);
   EXPECT_THAT(
@@ -11945,16 +11945,16 @@ function reportResult(auctionConfig, browserSignals) {
   NavigateAndCommit(kUrlA);
   manager_->JoinInterestGroup(
       blink::TestInterestGroupBuilder(kOriginA, "cars")
-          .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/absl::nullopt,
-                     /*size_group=*/absl::nullopt,
-                     /*buyer_reporting_id=*/absl::nullopt,
-                     /*buyer_and_seller_reporting_id=*/absl::nullopt, "1234"}}})
+          .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
+                     /*size_group=*/std::nullopt,
+                     /*buyer_reporting_id=*/std::nullopt,
+                     /*buyer_and_seller_reporting_id=*/std::nullopt, "1234"}}})
           .SetBiddingUrl(kBiddingLogicUrlA)
           .Build(),
       GURL("https://a.test/example.html"));
   task_environment()->FastForwardBy(base::Seconds(1));
 
-  absl::optional<AdAuctionDataAndId> auction_data =
+  std::optional<AdAuctionDataAndId> auction_data =
       GetAdAuctionDataAndFlushForFrame(kOriginA);
   EXPECT_TRUE(auction_data.has_value());
 
@@ -12048,7 +12048,7 @@ function reportResult(auctionConfig, browserSignals) {
   auction_config.non_shared_params.component_auctions.emplace_back(
       std::move(component_auction1));
 
-  absl::optional<GURL> result = RunAdAuctionWithPromiseAndFlushForFrame(
+  std::optional<GURL> result = RunAdAuctionWithPromiseAndFlushForFrame(
       auction_config,
       base::BindLambdaForTesting([&](mojo::Remote<
                                      blink::mojom::AbortableAdAuction>&
@@ -12094,7 +12094,7 @@ function reportResult(auctionConfig, browserSignals) {
   EXPECT_TRUE(network_responder_->ReportSent("/sellerReporting"));
   EXPECT_TRUE(network_responder_->ReportSent("/topLevelSellerReporting"));
 
-  absl::optional<FencedFrameProperties> properties =
+  std::optional<FencedFrameProperties> properties =
       GetFencedFramePropertiesForURN(*result);
   ASSERT_TRUE(properties);
   EXPECT_THAT(
@@ -12152,16 +12152,16 @@ function reportResult(auctionConfig, browserSignals) {
   NavigateAndCommit(kUrlA);
   manager_->JoinInterestGroup(
       blink::TestInterestGroupBuilder(kOriginA, "cars")
-          .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/absl::nullopt,
-                     /*size_group=*/absl::nullopt,
-                     /*buyer_reporting_id=*/absl::nullopt,
-                     /*buyer_and_seller_reporting_id=*/absl::nullopt, "1234"}}})
+          .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
+                     /*size_group=*/std::nullopt,
+                     /*buyer_reporting_id=*/std::nullopt,
+                     /*buyer_and_seller_reporting_id=*/std::nullopt, "1234"}}})
           .SetBiddingUrl(kBiddingLogicUrlA)
           .Build(),
       GURL("https://a.test/example.html"));
   task_environment()->FastForwardBy(base::Seconds(1));
 
-  absl::optional<AdAuctionDataAndId> auction_data =
+  std::optional<AdAuctionDataAndId> auction_data =
       GetAdAuctionDataAndFlushForFrame(kOriginA);
   EXPECT_TRUE(auction_data.has_value());
 
@@ -12255,7 +12255,7 @@ function reportResult(auctionConfig, browserSignals) {
   auction_config.non_shared_params.component_auctions.emplace_back(
       std::move(component_auction1));
 
-  absl::optional<GURL> result = RunAdAuctionWithPromiseAndFlushForFrame(
+  std::optional<GURL> result = RunAdAuctionWithPromiseAndFlushForFrame(
       auction_config,
       base::BindLambdaForTesting([&](mojo::Remote<
                                      blink::mojom::AbortableAdAuction>&
@@ -12303,7 +12303,7 @@ function reportResult(auctionConfig, browserSignals) {
   EXPECT_TRUE(network_responder_->ReportSent("/sellerReporting"));
   EXPECT_TRUE(network_responder_->ReportSent("/topLevelSellerReporting"));
 
-  absl::optional<FencedFrameProperties> properties =
+  std::optional<FencedFrameProperties> properties =
       GetFencedFramePropertiesForURN(*result);
   ASSERT_TRUE(properties);
   EXPECT_THAT(
@@ -12360,16 +12360,16 @@ function reportResult(auctionConfig, browserSignals) {
   NavigateAndCommit(kUrlA);
   manager_->JoinInterestGroup(
       blink::TestInterestGroupBuilder(kOriginA, "cars")
-          .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/absl::nullopt,
-                     /*size_group=*/absl::nullopt,
-                     /*buyer_reporting_id=*/absl::nullopt,
-                     /*buyer_and_seller_reporting_id=*/absl::nullopt, "1234"}}})
+          .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
+                     /*size_group=*/std::nullopt,
+                     /*buyer_reporting_id=*/std::nullopt,
+                     /*buyer_and_seller_reporting_id=*/std::nullopt, "1234"}}})
           .SetBiddingUrl(kBiddingLogicUrlA)
           .Build(),
       GURL("https://a.test/example.html"));
   task_environment()->FastForwardBy(base::Seconds(1));
 
-  absl::optional<AdAuctionDataAndId> auction_data =
+  std::optional<AdAuctionDataAndId> auction_data =
       GetAdAuctionDataAndFlushForFrame(kOriginA);
   EXPECT_TRUE(auction_data.has_value());
 
@@ -12453,7 +12453,7 @@ function reportResult(auctionConfig, browserSignals) {
   auction_config.non_shared_params.component_auctions.emplace_back(
       std::move(component_auction2));
 
-  absl::optional<GURL> result = RunAdAuctionWithPromiseAndFlushForFrame(
+  std::optional<GURL> result = RunAdAuctionWithPromiseAndFlushForFrame(
       auction_config,
       base::BindLambdaForTesting(
           [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
@@ -12474,7 +12474,7 @@ function reportResult(auctionConfig, browserSignals) {
   EXPECT_TRUE(network_responder_->ReportSent("/sellerReporting"));
   EXPECT_TRUE(network_responder_->ReportSent("/topLevelSellerReporting"));
 
-  absl::optional<FencedFrameProperties> properties =
+  std::optional<FencedFrameProperties> properties =
       GetFencedFramePropertiesForURN(*result);
   ASSERT_TRUE(properties);
   EXPECT_THAT(
@@ -12544,16 +12544,16 @@ function reportResult(auctionConfig, browserSignals) {
   NavigateAndCommit(kUrlA);
   manager_->JoinInterestGroup(
       blink::TestInterestGroupBuilder(kOriginA, "cars")
-          .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/absl::nullopt,
-                     /*size_group=*/absl::nullopt,
-                     /*buyer_reporting_id=*/absl::nullopt,
-                     /*buyer_and_seller_reporting_id=*/absl::nullopt, "1234"}}})
+          .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
+                     /*size_group=*/std::nullopt,
+                     /*buyer_reporting_id=*/std::nullopt,
+                     /*buyer_and_seller_reporting_id=*/std::nullopt, "1234"}}})
           .SetBiddingUrl(kBiddingLogicUrlA)
           .Build(),
       GURL("https://a.test/example.html"));
   task_environment()->FastForwardBy(base::Seconds(1));
 
-  absl::optional<AdAuctionDataAndId> auction_data =
+  std::optional<AdAuctionDataAndId> auction_data =
       GetAdAuctionDataAndFlushForFrame(kOriginA);
   EXPECT_TRUE(auction_data.has_value());
 
@@ -12635,7 +12635,7 @@ function reportResult(auctionConfig, browserSignals) {
   auction_config.non_shared_params.component_auctions.emplace_back(
       std::move(component_auction2));
 
-  absl::optional<GURL> result = RunAdAuctionWithPromiseAndFlushForFrame(
+  std::optional<GURL> result = RunAdAuctionWithPromiseAndFlushForFrame(
       auction_config,
       base::BindLambdaForTesting(
           [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
@@ -12655,7 +12655,7 @@ function reportResult(auctionConfig, browserSignals) {
   EXPECT_TRUE(network_responder_->ReportSent("/localWinner"));
   EXPECT_TRUE(network_responder_->ReportSent("/topLevelSellerReporting"));
 
-  absl::optional<FencedFrameProperties> properties =
+  std::optional<FencedFrameProperties> properties =
       GetFencedFramePropertiesForURN(*result);
   ASSERT_TRUE(properties);
   EXPECT_THAT(
@@ -12751,7 +12751,7 @@ function scoreAd(
   interest_group.ads.emplace();
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
-      /*metadata=*/absl::nullopt);
+      /*metadata=*/std::nullopt);
   interest_group.ads->emplace_back(std::move(ad));
   JoinInterestGroupAndFlush(interest_group);
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
@@ -12761,8 +12761,8 @@ function scoreAd(
   auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
   auction_config.trusted_scoring_signals_url = kTrustedScoringSignalsUrlA;
   auction_config.non_shared_params.interest_group_buyers = {kOriginA};
-  absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
-  ASSERT_NE(auction_result, absl::nullopt);
+  std::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+  ASSERT_NE(auction_result, std::nullopt);
   EXPECT_EQ(ConvertFencedFrameURNToURL(*auction_result),
             GURL("https://example.com/render"));
   EXPECT_TRUE(bidding_kv_called);

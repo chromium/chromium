@@ -42,7 +42,7 @@ void GotSalt(const std::string& frame_salt,
              const url::Origin& origin,
              bool has_focus,
              bool is_background,
-             absl::optional<ukm::SourceId> source_id,
+             std::optional<ukm::SourceId> source_id,
              MediaDeviceSaltAndOriginCallback callback,
              bool are_persistent_device_ids_allowed,
              const std::string& salt) {
@@ -68,7 +68,7 @@ void FinalizeGetRawMediaDeviceIDForHMAC(
     const MediaDeviceSaltAndOrigin& salt_and_origin,
     const std::string& source_id,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    base::OnceCallback<void(const absl::optional<std::string>&)> callback,
+    base::OnceCallback<void(const std::optional<std::string>&)> callback,
     const MediaDeviceEnumeration& enumeration) {
   for (const auto& device : enumeration[static_cast<size_t>(type)]) {
     if (DoesRawMediaDeviceIDMatchHMAC(salt_and_origin, source_id,
@@ -79,7 +79,7 @@ void FinalizeGetRawMediaDeviceIDForHMAC(
     }
   }
   task_runner->PostTask(FROM_HERE,
-                        base::BindOnce(std::move(callback), absl::nullopt));
+                        base::BindOnce(std::move(callback), std::nullopt));
 }
 
 MediaDeviceType ConvertToMediaDeviceType(MediaStreamType stream_type) {
@@ -103,7 +103,7 @@ MediaDeviceSaltAndOrigin::MediaDeviceSaltAndOrigin(
     std::string group_id_salt,
     bool has_focus,
     bool is_background,
-    absl::optional<ukm::SourceId> ukm_source_id)
+    std::optional<ukm::SourceId> ukm_source_id)
     : device_id_salt_(std::move(device_id_salt)),
       group_id_salt_(std::move(group_id_salt)),
       origin_(std::move(origin)),
@@ -148,7 +148,7 @@ void GetMediaDeviceSaltAndOrigin(GlobalRenderFrameHostId render_frame_host_id,
   net::SiteForCookies site_for_cookies = frame_host->ComputeSiteForCookies();
   url::Origin origin = frame_host->GetLastCommittedOrigin();
   bool has_focus = frame_host->GetView() && frame_host->GetView()->HasFocus();
-  absl::optional<ukm::SourceId> source_id = frame_host->GetPageUkmSourceId();
+  std::optional<ukm::SourceId> source_id = frame_host->GetPageUkmSourceId();
   WebContents* web_contents = WebContents::FromRenderFrameHost(frame_host);
   bool is_background =
       web_contents && web_contents->GetDelegate() &&

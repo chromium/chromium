@@ -4,6 +4,7 @@
 
 #include "content/browser/attribution_reporting/sql_query_plan_test_util.h"
 
+#include <optional>
 #include <ostream>
 #include <string>
 #include <utility>
@@ -22,7 +23,6 @@
 #include "base/strings/string_util.h"
 #include "base/types/expected.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -198,7 +198,7 @@ SqlQueryPlanExplainer::~SqlQueryPlanExplainer() = default;
 base::expected<SqlQueryPlan, SqlQueryPlanExplainer::Error>
 SqlQueryPlanExplainer::GetPlan(
     std::string query,
-    absl::optional<SqlFullScanReason> full_scan_reason) {
+    std::optional<SqlFullScanReason> full_scan_reason) {
   base::CommandLine command_line(shell_path_);
   command_line.AppendArgPath(db_path_);
 

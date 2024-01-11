@@ -24,7 +24,7 @@ ProcessVisibilityTracker::~ProcessVisibilityTracker() {
 
 void ProcessVisibilityTracker::AddObserver(
     ProcessVisibilityObserver* observer) {
-  absl::optional<bool> is_visible;
+  std::optional<bool> is_visible;
   {
     // Synchronize access to |observers_| and |is_visible_| to ensure
     // consistency in notifications to observers (in case of concurrent

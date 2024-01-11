@@ -283,7 +283,7 @@ void DWriteFontProxyImpl::GetFamilyNames(UINT32 family_index,
     }
     CHECK_EQ(L'\0', name[length - 1]);
 
-    family_names.emplace_back(absl::in_place, base::WideToUTF16(locale.data()),
+    family_names.emplace_back(std::in_place, base::WideToUTF16(locale.data()),
                               base::WideToUTF16(name.data()));
   }
   std::move(callback).Run(std::move(family_names));

@@ -100,7 +100,7 @@ class DOMStorageContextWrapperTest : public testing::Test {
 TEST_F(DOMStorageContextWrapperTest,
        OpenLocalStorageProcessLockedToOtherStorageKey) {
   mojo::Remote<blink::mojom::StorageArea> area;
-  context_->OpenLocalStorage(test_storage_key2_, absl::nullopt,
+  context_->OpenLocalStorage(test_storage_key2_, std::nullopt,
                              area.BindNewPipeAndPassReceiver(),
                              CreateSecurityPolicyHandle(kTestProcessIdOrigin1),
                              MakeBadMessageCallback());
@@ -127,7 +127,7 @@ TEST_F(DOMStorageContextWrapperTest,
 TEST_F(DOMStorageContextWrapperTest,
        BindStorageAreaProcessLockedToOtherStorageKey) {
   mojo::Remote<blink::mojom::StorageArea> area;
-  context_->BindStorageArea(test_storage_key2_, absl::nullopt,
+  context_->BindStorageArea(test_storage_key2_, std::nullopt,
                             test_namespace_id_,
                             area.BindNewPipeAndPassReceiver(),
                             CreateSecurityPolicyHandle(kTestProcessIdOrigin1),

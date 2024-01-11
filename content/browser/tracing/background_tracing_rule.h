@@ -43,7 +43,7 @@ class CONTENT_EXPORT BackgroundTracingRule {
 
   // Probability that we should allow a tigger to  happen.
   double trigger_chance() const { return trigger_chance_; }
-  absl::optional<base::TimeDelta> delay() const { return delay_; }
+  std::optional<base::TimeDelta> delay() const { return delay_; }
 
   static std::unique_ptr<BackgroundTracingRule> CreateRuleFromDict(
       const base::Value::Dict& dict);
@@ -72,8 +72,8 @@ class CONTENT_EXPORT BackgroundTracingRule {
   bool installed_ = false;
   double trigger_chance_ = 1.0;
   base::TimeDelta trigger_delay_;
-  absl::optional<base::TimeDelta> delay_;
-  absl::optional<base::TimeDelta> activation_delay_;
+  std::optional<base::TimeDelta> delay_;
+  std::optional<base::TimeDelta> activation_delay_;
   base::OneShotTimer trigger_timer_;
   base::OneShotTimer activation_timer_;
   std::string rule_id_;

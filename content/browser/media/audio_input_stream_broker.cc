@@ -4,6 +4,7 @@
 
 #include "content/browser/media/audio_input_stream_broker.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/command_line.h"
@@ -24,7 +25,6 @@
 #include "media/base/media_switches.h"
 #include "media/base/user_input_monitor.h"
 #include "media/mojo/mojom/audio_processing.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -146,7 +146,7 @@ void AudioInputStreamBroker::StreamCreated(
     mojo::PendingRemote<media::mojom::AudioInputStream> stream,
     media::mojom::ReadOnlyAudioDataPipePtr data_pipe,
     bool initially_muted,
-    const absl::optional<base::UnguessableToken>& stream_id) {
+    const std::optional<base::UnguessableToken>& stream_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   awaiting_created_ = false;
   TRACE_EVENT_NESTABLE_ASYNC_END1("audio", "CreateStream", this, "success",

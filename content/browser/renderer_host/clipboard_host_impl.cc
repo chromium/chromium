@@ -273,7 +273,7 @@ void ClipboardHostImpl::ReadText(ui::ClipboardBuffer clipboard_buffer,
       std::move(clipboard_paste_data),
       base::BindOnce(
           [](std::u16string result, ReadTextCallback callback,
-             absl::optional<ClipboardPasteData> clipboard_paste_data) {
+             std::optional<ClipboardPasteData> clipboard_paste_data) {
             if (!clipboard_paste_data) {
               result.clear();
             }
@@ -306,7 +306,7 @@ void ClipboardHostImpl::ReadHtml(ui::ClipboardBuffer clipboard_buffer,
           [](std::u16string markup, std::string src_url_str,
              uint32_t fragment_start, uint32_t fragment_end,
              ReadHtmlCallback callback,
-             absl::optional<ClipboardPasteData> clipboard_paste_data) {
+             std::optional<ClipboardPasteData> clipboard_paste_data) {
             if (!clipboard_paste_data) {
               markup.clear();
             }
@@ -334,7 +334,7 @@ void ClipboardHostImpl::ReadSvg(ui::ClipboardBuffer clipboard_buffer,
       std::move(clipboard_paste_data),
       base::BindOnce(
           [](std::u16string markup, ReadSvgCallback callback,
-             absl::optional<ClipboardPasteData> clipboard_paste_data) {
+             std::optional<ClipboardPasteData> clipboard_paste_data) {
             if (!clipboard_paste_data) {
               markup.clear();
             }
@@ -361,7 +361,7 @@ void ClipboardHostImpl::ReadRtf(ui::ClipboardBuffer clipboard_buffer,
       std::move(clipboard_paste_data),
       base::BindOnce(
           [](std::string result, ReadRtfCallback callback,
-             absl::optional<ClipboardPasteData> clipboard_paste_data) {
+             std::optional<ClipboardPasteData> clipboard_paste_data) {
             if (!clipboard_paste_data) {
               result.clear();
             }
@@ -396,7 +396,7 @@ void ClipboardHostImpl::OnReadPng(ui::ClipboardBuffer clipboard_buffer,
       std::move(clipboard_paste_data),
       base::BindOnce(
           [](std::vector<uint8_t> data, ReadPngCallback callback,
-             absl::optional<ClipboardPasteData> clipboard_paste_data) {
+             std::optional<ClipboardPasteData> clipboard_paste_data) {
             if (!clipboard_paste_data.has_value()) {
               std::move(callback).Run(mojo_base::BigBuffer());
               return;
@@ -455,7 +455,7 @@ void ClipboardHostImpl::ReadFiles(ui::ClipboardBuffer clipboard_buffer,
       std::move(clipboard_paste_data),
       base::BindOnce(
           [](blink::mojom::ClipboardFilesPtr result, ReadFilesCallback callback,
-             absl::optional<ClipboardPasteData> clipboard_paste_data) {
+             std::optional<ClipboardPasteData> clipboard_paste_data) {
             if (!clipboard_paste_data) {
               result->files.clear();
               result->file_system_id->clear();
@@ -501,7 +501,7 @@ void ClipboardHostImpl::ReadCustomData(ui::ClipboardBuffer clipboard_buffer,
       std::move(clipboard_paste_data),
       base::BindOnce(
           [](std::u16string result, ReadCustomDataCallback callback,
-             absl::optional<ClipboardPasteData> clipboard_paste_data) {
+             std::optional<ClipboardPasteData> clipboard_paste_data) {
             if (!clipboard_paste_data) {
               result.clear();
             }
@@ -669,7 +669,7 @@ void ClipboardHostImpl::StartIsPasteAllowedRequest(
     const ui::ClipboardFormatType& data_type,
     ui::ClipboardBuffer clipboard_buffer,
     ClipboardPasteData clipboard_paste_data) {
-  absl::optional<size_t> data_size;
+  std::optional<size_t> data_size;
   if (clipboard_paste_data.file_paths.empty()) {
     data_size =
         clipboard_paste_data.text.size() + clipboard_paste_data.image.size();
@@ -703,7 +703,7 @@ void ClipboardHostImpl::StartIsPasteAllowedRequest(
 
 void ClipboardHostImpl::FinishPasteIfAllowed(
     const ui::ClipboardSequenceNumberToken& seqno,
-    absl::optional<ClipboardPasteData> clipboard_paste_data) {
+    std::optional<ClipboardPasteData> clipboard_paste_data) {
   if (is_allowed_requests_.count(seqno) == 0)
     return;
 

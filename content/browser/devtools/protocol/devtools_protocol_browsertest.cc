@@ -695,7 +695,7 @@ class CaptureScreenshotTest : public DevToolsProtocolTest {
                                 int height,
                                 float device_scale_factor,
                                 bool mobile,
-                                absl::optional<bool> fitWindow) {
+                                std::optional<bool> fitWindow) {
     auto params = base::Value::Dict();
     params.Set("width", width);
     params.Set("height", height);
@@ -739,7 +739,7 @@ class CaptureScreenshotTest : public DevToolsProtocolTest {
     // change during screenshotting. This verifies that the page doesn't observe
     // a change in frame size as a side effect of screenshotting.
     SetDeviceMetricsOverride(frame_size.width(), frame_size.height(),
-                             device_scale_factor, false, absl::nullopt);
+                             device_scale_factor, false, std::nullopt);
 
     // Resize frame to scaled blue box size.
     gfx::RectF clip;
@@ -964,7 +964,7 @@ IN_PROC_BROWSER_TEST_F(NoGPUCaptureScreenshotTest, MAYBE_LargeScreenshot) {
   SetDeviceMetricsOverride(/*width=*/1280, /*height=*/8440,
                            /*device_scale_factor=*/1,
                            /*mobile=*/false,
-                           /*fitWindow=*/absl::nullopt);
+                           /*fitWindow=*/std::nullopt);
   auto bitmap = CaptureScreenshot(ScreenshotEncoding::PNG, true,
                                   gfx::RectF(0, 0, 1280, 8440), 1);
   SendCommandSync("Emulation.clearDeviceMetricsOverride");
@@ -3626,11 +3626,11 @@ IN_PROC_BROWSER_TEST_F(NetworkResponseProtocolTest, SecurityDetails) {
   ASSERT_TRUE(group);
   EXPECT_EQ("X25519", *group);
 
-  absl::optional<int> sigalg = response.FindIntByDottedPath(
+  std::optional<int> sigalg = response.FindIntByDottedPath(
       "response.securityDetails.serverSignatureAlgorithm");
   EXPECT_EQ(SSL_SIGN_RSA_PSS_RSAE_SHA384, sigalg);
 
-  absl::optional<bool> ech = response.FindBoolByDottedPath(
+  std::optional<bool> ech = response.FindBoolByDottedPath(
       "response.securityDetails.encryptedClientHello");
   EXPECT_EQ(false, ech);
 
@@ -3651,12 +3651,12 @@ IN_PROC_BROWSER_TEST_F(NetworkResponseProtocolTest, SecurityDetails) {
   ASSERT_EQ(1u, sans->GetList().size());
   EXPECT_EQ(base::Value("127.0.0.1"), sans->GetList()[0]);
 
-  absl::optional<double> valid_from =
+  std::optional<double> valid_from =
       response.FindDoubleByDottedPath("response.securityDetails.validFrom");
   EXPECT_EQ(server.GetCertificate()->valid_start().InSecondsFSinceUnixEpoch(),
             valid_from);
 
-  absl::optional<double> valid_to =
+  std::optional<double> valid_to =
       response.FindDoubleByDottedPath("response.securityDetails.validTo");
   EXPECT_EQ(server.GetCertificate()->valid_expiry().InSecondsFSinceUnixEpoch(),
             valid_to);
@@ -3711,11 +3711,11 @@ IN_PROC_BROWSER_TEST_F(NetworkResponseProtocolTest, SecurityDetailsTLS13) {
   ASSERT_TRUE(group);
   EXPECT_EQ("X25519", *group);
 
-  absl::optional<int> sigalg = response.FindIntByDottedPath(
+  std::optional<int> sigalg = response.FindIntByDottedPath(
       "response.securityDetails.serverSignatureAlgorithm");
   EXPECT_EQ(SSL_SIGN_RSA_PSS_RSAE_SHA384, sigalg);
 
-  absl::optional<bool> ech = response.FindBoolByDottedPath(
+  std::optional<bool> ech = response.FindBoolByDottedPath(
       "response.securityDetails.encryptedClientHello");
   EXPECT_EQ(false, ech);
 }
@@ -3842,7 +3842,7 @@ class NetworkResponseProtocolECHTest : public NetworkResponseProtocolTest {
     host_resolver()->AddRule(kDohServerHostname, "127.0.0.1");
 
     // Configure the network service to use the test DoH server.
-    absl::optional<net::DnsOverHttpsConfig> doh_config =
+    std::optional<net::DnsOverHttpsConfig> doh_config =
         net::DnsOverHttpsConfig::FromString(doh_server_.GetTemplate());
     ASSERT_TRUE(doh_config.has_value());
     SetTestDohConfig(net::SecureDnsMode::kSecure,
@@ -3869,7 +3869,7 @@ IN_PROC_BROWSER_TEST_F(NetworkResponseProtocolECHTest, SecurityDetailsECH) {
   SendCommandAsync("Network.enable");
 
   base::Value::Dict response = FetchAndWaitForResponse(GetURL("/empty.html"));
-  absl::optional<bool> ech = response.FindBoolByDottedPath(
+  std::optional<bool> ech = response.FindBoolByDottedPath(
       "response.securityDetails.encryptedClientHello");
   EXPECT_EQ(true, ech);
 }

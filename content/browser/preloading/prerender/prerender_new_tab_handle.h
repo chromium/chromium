@@ -60,7 +60,7 @@ class PrerenderNewTabHandle {
   }
 
   // Returns SpeculationEagerness.
-  absl::optional<blink::mojom::SpeculationEagerness> eagerness() const {
+  std::optional<blink::mojom::SpeculationEagerness> eagerness() const {
     return attributes_.eagerness;
   }
 

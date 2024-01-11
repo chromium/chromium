@@ -52,7 +52,7 @@ class NavigationEntryTest : public testing::Test {
     entry2_ = std::make_unique<NavigationEntryImpl>(
         instance_, GURL("test:url"),
         Referrer(GURL("from"), network::mojom::ReferrerPolicy::kDefault),
-        kInitiatorOrigin, /* initiator_base_url= */ absl::nullopt, u"title",
+        kInitiatorOrigin, /* initiator_base_url= */ std::nullopt, u"title",
         ui::PAGE_TRANSITION_TYPED, false, nullptr /* blob_url_loader_factory */,
         false /* is_initial_entry */);
   }

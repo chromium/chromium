@@ -10,6 +10,7 @@
 #include <functional>
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -62,7 +63,6 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "services/device/public/mojom/geolocation_context.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/frame/transient_allow_fullscreen.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
@@ -358,9 +358,9 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   RenderWidgetHostView* GetRenderWidgetHostView() override;
   RenderWidgetHostView* GetTopLevelRenderWidgetHostView() override;
   void ClosePage() override;
-  absl::optional<SkColor> GetThemeColor() override;
-  absl::optional<SkColor> GetBackgroundColor() override;
-  void SetPageBaseBackgroundColor(absl::optional<SkColor> color) override;
+  std::optional<SkColor> GetThemeColor() override;
+  std::optional<SkColor> GetBackgroundColor() override;
+  void SetPageBaseBackgroundColor(std::optional<SkColor> color) override;
   void SetColorProviderSource(ui::ColorProviderSource* source) override;
   ui::ColorProviderKey::ColorMode GetColorMode() const override;
   WebUI* GetWebUI() override;
@@ -572,7 +572,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   bool HasActiveEffectivelyFullscreenVideo() override;
   void WriteIntoTrace(perfetto::TracedValue context) override;
   const base::Location& GetCreatorLocation() override;
-  const absl::optional<blink::mojom::PictureInPictureWindowOptions>&
+  const std::optional<blink::mojom::PictureInPictureWindowOptions>&
   GetPictureInPictureOptions() const override;
   void UpdateBrowserControlsState(cc::BrowserControlsState constraints,
                                   cc::BrowserControlsState current,
@@ -667,7 +667,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       std::vector<ui::AXPropertyFilter> property_filters) override;
   void RecordAccessibilityEvents(
       bool start_recording,
-      absl::optional<ui::AXEventCallback> callback) override;
+      std::optional<ui::AXEventCallback> callback) override;
   device::mojom::GeolocationContext* GetGeolocationContext() override;
   device::mojom::WakeLockContext* GetWakeLockContext() override;
 #if BUILDFLAG(IS_ANDROID)
@@ -774,7 +774,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       IsClipboardPasteAllowedCallback callback) override;
   void IsClipboardPasteAllowedWrapperCallback(
       IsClipboardPasteAllowedCallback callback,
-      absl::optional<ClipboardPasteData> clipboard_paste_data);
+      std::optional<ClipboardPasteData> clipboard_paste_data);
   void OnPageScaleFactorChanged(PageImpl& source) override;
   void BindScreenOrientation(
       RenderFrameHost* rfh,
@@ -856,7 +856,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       const std::u16string& message,
       int32_t line_no,
       const std::u16string& source_id,
-      const absl::optional<std::u16string>& untrusted_stack_trace) override;
+      const std::optional<std::u16string>& untrusted_stack_trace) override;
   const blink::RendererPreferences& GetRendererPrefs() const override;
   void DidReceiveInputEvent(RenderWidgetHostImpl* render_widget_host,
                             const blink::WebInputEvent& event) override;
@@ -880,7 +880,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   bool ShouldIgnoreUnresponsiveRenderer() override;
   bool IsGuest() override;
   void RecomputeWebPreferencesSlow() override;
-  absl::optional<SkColor> GetBaseBackgroundColor() override;
+  std::optional<SkColor> GetBaseBackgroundColor() override;
   std::unique_ptr<PrerenderHandle> StartPrerendering(
       const GURL& prerendering_url,
       PreloadingTriggerType trigger_type,
@@ -888,14 +888,14 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       ui::PageTransition page_transition,
       PreloadingHoldbackStatus holdback_status_override,
       PreloadingAttempt* preloading_attempt,
-      absl::optional<base::RepeatingCallback<bool(const GURL&)>>
-          url_match_predicate = absl::nullopt,
-      absl::optional<base::RepeatingCallback<void(NavigationHandle&)>>
-          prerender_navigation_handle_callback = absl::nullopt) override;
+      std::optional<base::RepeatingCallback<bool(const GURL&)>>
+          url_match_predicate = std::nullopt,
+      std::optional<base::RepeatingCallback<void(NavigationHandle&)>>
+          prerender_navigation_handle_callback = std::nullopt) override;
   void BackNavigationLikely(PreloadingPredictor predictor,
                             WindowOpenDisposition disposition) override;
   void SetOwnerLocationForDebug(
-      absl::optional<base::Location> owner_location) override;
+      std::optional<base::Location> owner_location) override;
   blink::ColorProviderColorMaps GetColorProviderColorMaps() const override;
 
   network::mojom::AttributionSupport GetAttributionSupport() override;
@@ -978,7 +978,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // void Paste() override;
   // void SelectAll() override;
   void ExecuteEditCommand(const std::string& command,
-                          const absl::optional<std::u16string>& value) override;
+                          const std::optional<std::u16string>& value) override;
   void MoveRangeSelectionExtent(const gfx::Point& extent) override;
   void SelectRange(const gfx::Point& base, const gfx::Point& extent) override;
   void SelectAroundCaret(blink::mojom::SelectionGranularity granularity,
@@ -1031,7 +1031,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   bool CreateRenderViewForRenderManager(
       RenderViewHost* render_view_host,
-      const absl::optional<blink::FrameToken>& opener_frame_token,
+      const std::optional<blink::FrameToken>& opener_frame_token,
       RenderFrameProxyHost* proxy_host) override;
   void ReattachOuterDelegateIfNeeded() override;
   void CreateRenderWidgetHostViewForRenderManager(
@@ -1152,7 +1152,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void MediaSessionCreated(MediaSession* media_session);
 
   int GetCurrentlyPlayingVideoCount() override;
-  absl::optional<gfx::Size> GetFullscreenVideoSize() override;
+  std::optional<gfx::Size> GetFullscreenVideoSize() override;
 
   MediaWebContentsObserver* media_web_contents_observer() {
     return media_web_contents_observer_.get();
@@ -1390,7 +1390,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   ui::mojom::VirtualKeyboardMode GetVirtualKeyboardMode() const;
 
-  const absl::optional<base::Location>& ownership_location() const {
+  const std::optional<base::Location>& ownership_location() const {
     return ownership_location_;
   }
 
@@ -1746,9 +1746,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // Finds the new CreatedWindow by |main_frame_widget_route_id|, initializes
   // it for renderer-initiated creation, and returns it. Note that this can only
   // be called once as this call also removes it from the internal map.
-  absl::optional<CreatedWindow> GetCreatedWindow(
-      int process_id,
-      int main_frame_widget_route_id);
+  std::optional<CreatedWindow> GetCreatedWindow(int process_id,
+                                                int main_frame_widget_route_id);
 
   // Execute a PageBroadcast Mojo method.
   void ExecutePageBroadcastMethod(PageBroadcastMethodCallback callback);
@@ -2041,10 +2040,10 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // Data for current page -----------------------------------------------------
 
   // The last published theme color.
-  absl::optional<SkColor> last_sent_theme_color_;
+  std::optional<SkColor> last_sent_theme_color_;
 
   // The last published background color.
-  absl::optional<SkColor> last_sent_background_color_;
+  std::optional<SkColor> last_sent_background_color_;
 
   // Data for misc internal state ----------------------------------------------
 
@@ -2218,7 +2217,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   AudioStreamMonitor audio_stream_monitor_;
 
   // Coordinates all the audio streams for this WebContents. Lazily initialized.
-  absl::optional<ForwardingAudioStreamFactory> audio_stream_factory_;
+  std::optional<ForwardingAudioStreamFactory> audio_stream_factory_;
 
   size_t bluetooth_connected_device_count_ = 0;
   size_t bluetooth_scanning_sessions_count_ = 0;
@@ -2384,7 +2383,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // renderers attached to this WebContents, for use in the main frame.
   // It is used when the page has not loaded enough to know a background
   // color or if the page does not set a background color.
-  absl::optional<SkColor> page_base_background_color_;
+  std::optional<SkColor> page_base_background_color_;
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(USE_STARSCAN)
   // TODO(1231679): Remove/reevaluate after the PCScan experiment is finished.
@@ -2402,7 +2401,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // The options used for WebContents associated with a PictureInPicture window.
   // This value is the parameter given in
   // WebContents::CreateParams::picture_in_picture_options.
-  absl::optional<blink::mojom::PictureInPictureWindowOptions>
+  std::optional<blink::mojom::PictureInPictureWindowOptions>
       picture_in_picture_options_;
 
   VisibleTimeRequestTrigger visible_time_request_trigger_;
@@ -2413,7 +2412,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   base::WeakPtr<FileChooserImpl> active_file_chooser_;
 
-  absl::optional<base::Location> ownership_location_;
+  std::optional<base::Location> ownership_location_;
 
   base::WeakPtrFactory<WebContentsImpl> loading_weak_factory_{this};
   base::WeakPtrFactory<WebContentsImpl> weak_factory_{this};

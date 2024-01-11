@@ -158,7 +158,7 @@ class CONTENT_EXPORT VideoCaptureHost
            mojo::Remote<media::mojom::VideoCaptureObserver>>
       device_id_to_observer_map_;
 
-  absl::optional<gfx::Rect> region_capture_rect_;
+  std::optional<gfx::Rect> region_capture_rect_;
 
   base::WeakPtrFactory<VideoCaptureHost> weak_factory_{this};
 };

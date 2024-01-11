@@ -82,17 +82,17 @@ class InterestGroupKAnonymityManagerTest : public testing::Test {
  public:
   void SetUp() override { ASSERT_TRUE(temp_directory_.CreateUniqueTempDir()); }
 
-  absl::optional<SingleStorageInterestGroup> GetGroup(
+  std::optional<SingleStorageInterestGroup> GetGroup(
       InterestGroupManagerImpl* manager,
       url::Origin owner,
       std::string name) {
-    absl::optional<SingleStorageInterestGroup> result;
+    std::optional<SingleStorageInterestGroup> result;
     base::RunLoop run_loop;
     manager->GetInterestGroup(
         blink::InterestGroupKey(owner, name),
         base::BindLambdaForTesting(
             [&result,
-             &run_loop](absl::optional<SingleStorageInterestGroup> group) {
+             &run_loop](std::optional<SingleStorageInterestGroup> group) {
               result = std::move(group);
               run_loop.Quit();
             }));
@@ -100,13 +100,13 @@ class InterestGroupKAnonymityManagerTest : public testing::Test {
     return result;
   }
 
-  absl::optional<base::Time> GetLastReported(InterestGroupManagerImpl* manager,
-                                             std::string key) {
-    absl::optional<base::Time> result;
+  std::optional<base::Time> GetLastReported(InterestGroupManagerImpl* manager,
+                                            std::string key) {
+    std::optional<base::Time> result;
     base::RunLoop run_loop;
     manager->GetLastKAnonymityReported(
         key, base::BindLambdaForTesting(
-                 [&result, &run_loop](absl::optional<base::Time> reported) {
+                 [&result, &run_loop](std::optional<base::Time> reported) {
                    result = std::move(reported);
                    run_loop.Quit();
                  }));
@@ -220,7 +220,7 @@ TEST_F(InterestGroupKAnonymityManagerTest,
   task_environment().FastForwardBy(base::Minutes(1));
 
   // Ads are *not* reported as part of joining an interest group.
-  absl::optional<base::Time> reported =
+  std::optional<base::Time> reported =
       GetLastReported(manager.get(), kAd1KAnonBidKey);
   EXPECT_EQ(base::Time::Min(), reported);
   EXPECT_EQ(base::Time::Min(),
@@ -287,7 +287,7 @@ TEST_F(InterestGroupKAnonymityManagerTest, HandlesServerErrors) {
   // When the server is actually implemented we'll need to change the expected
   // values below.
 
-  absl::optional<base::Time> ad_reported =
+  std::optional<base::Time> ad_reported =
       GetLastReported(manager.get(), kAd1KAnonBidKey);
   ASSERT_TRUE(ad_reported);
 

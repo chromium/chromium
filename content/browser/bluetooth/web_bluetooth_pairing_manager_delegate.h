@@ -114,7 +114,7 @@ class WebBluetoothPairingManagerDelegate {
       const std::u16string& device_identifier,
       BluetoothDelegate::PairPromptCallback callback,
       BluetoothDelegate::PairingKind pairing_kind,
-      const absl::optional<std::u16string>& pin) = 0;
+      const std::optional<std::u16string>& pin) = 0;
 };
 
 }  // namespace content

@@ -7,6 +7,7 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include <optional>
 #include <set>
 #include <vector>
 
@@ -14,7 +15,6 @@
 #include "content/browser/renderer_host/input/mouse_wheel_rails_filter_mac.h"
 #include "content/common/render_widget_host_ns_view.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-shared.h"
 #import "ui/base/cocoa/command_dispatcher.h"
 #import "ui/base/cocoa/tool_tip_base_view.h"
@@ -108,7 +108,7 @@ struct DidOverscrollParams;
 - (void)setCompositionRange:(gfx::Range)range;
 
 // KeyboardLock methods.
-- (void)lockKeyboard:(absl::optional<base::flat_set<ui::DomCode>>)keysToLock;
+- (void)lockKeyboard:(std::optional<base::flat_set<ui::DomCode>>)keysToLock;
 - (void)unlockKeyboard;
 
 // Cursorlock methods.

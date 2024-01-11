@@ -5,6 +5,8 @@
 #ifndef UI_WEBUI_EXAMPLES_APP_MAIN_DELEGATE_H_
 #define UI_WEBUI_EXAMPLES_APP_MAIN_DELEGATE_H_
 
+#include <optional>
+
 #include "content/public/app/content_main_delegate.h"
 
 namespace content {
@@ -24,10 +26,10 @@ class MainDelegate : public content::ContentMainDelegate {
 
  private:
   // content::ContentMainDelegate:
-  absl::optional<int> BasicStartupComplete() override;
+  std::optional<int> BasicStartupComplete() override;
   void PreSandboxStartup() override;
   content::ContentBrowserClient* CreateContentBrowserClient() override;
-  absl::optional<int> PreBrowserMain() override;
+  std::optional<int> PreBrowserMain() override;
   content::ContentRendererClient* CreateContentRendererClient() override;
 
   std::unique_ptr<content::ContentClient> content_client_;

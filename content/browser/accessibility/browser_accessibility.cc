@@ -1059,7 +1059,7 @@ BrowserAccessibility::PlatformChildIterator::GetNativeViewAccessible() const {
   return platform_iterator->GetNativeViewAccessible();
 }
 
-absl::optional<size_t>
+std::optional<size_t>
 BrowserAccessibility::PlatformChildIterator::GetIndexInParent() const {
   if (platform_iterator == parent_->PlatformChildrenEnd().platform_iterator)
     return parent_->PlatformChildCount();
@@ -1127,13 +1127,13 @@ ui::AXPlatformNode* BrowserAccessibility::GetFromTreeIDAndNodeID(
   return node->GetAXPlatformNode();
 }
 
-absl::optional<size_t> BrowserAccessibility::GetIndexInParent() const {
+std::optional<size_t> BrowserAccessibility::GetIndexInParent() const {
   if (manager()->GetBrowserAccessibilityRoot() == this &&
       PlatformGetParent() == nullptr) {
     // If it is a root node of WebContent, it doesn't have a parent and a
     // valid index in parent. So it returns -1 in order to compute its
     // index at AXPlatformNodeBase.
-    return absl::nullopt;
+    return std::nullopt;
   }
   return node()->GetUnignoredIndexInParent();
 }
@@ -1803,11 +1803,11 @@ bool BrowserAccessibility::ShouldIgnoreHoveredStateForTesting() {
   return accessibility_state->disable_hot_tracking_for_testing();
 }
 
-absl::optional<int> BrowserAccessibility::GetPosInSet() const {
+std::optional<int> BrowserAccessibility::GetPosInSet() const {
   return node()->GetPosInSet();
 }
 
-absl::optional<int> BrowserAccessibility::GetSetSize() const {
+std::optional<int> BrowserAccessibility::GetSetSize() const {
   return node()->GetSetSize();
 }
 

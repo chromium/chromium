@@ -49,7 +49,7 @@ class CONTENT_EXPORT CapturedSurfaceController {
   // Get the zoom level of the captured tab.
   virtual void GetZoomLevel(
       base::OnceCallback<void(
-          absl::optional<int> zoom_level,
+          std::optional<int> zoom_level,
           blink::mojom::CapturedSurfaceControlResult result)> reply_callback);
 
   // Set the zoom level of the captured tab.

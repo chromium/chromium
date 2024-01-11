@@ -155,7 +155,7 @@ void TestDevToolsProtocolClient::DispatchProtocolMessage(
   base::StringPiece message_str(reinterpret_cast<const char*>(message.data()),
                                 message.size());
   base::Value parsed = *base::JSONReader::Read(message_str);
-  if (absl::optional<int> id = parsed.GetDict().FindInt("id")) {
+  if (std::optional<int> id = parsed.GetDict().FindInt("id")) {
     received_responses_count_++;
     response_ = std::move(parsed).TakeDict();
     in_dispatch_ = false;
@@ -201,7 +201,7 @@ bool TestDevToolsProtocolClient::MayWriteLocalFiles() {
   return may_write_local_files_;
 }
 
-absl::optional<url::Origin>
+std::optional<url::Origin>
 TestDevToolsProtocolClient::GetNavigationInitiatorOrigin() {
   return navigation_initiator_origin_;
 }

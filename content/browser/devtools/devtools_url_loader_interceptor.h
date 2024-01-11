@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_DEVTOOLS_DEVTOOLS_URL_LOADER_INTERCEPTOR_H_
 #define CONTENT_BROWSER_DEVTOOLS_DEVTOOLS_URL_LOADER_INTERCEPTOR_H_
 
+#include <optional>
+
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -19,7 +21,6 @@
 #include "net/base/net_errors.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 
 namespace net {
@@ -103,7 +104,7 @@ class DevToolsURLLoaderInterceptor {
                   std::unique_ptr<HeadersVector> modified_headers,
                   protocol::Maybe<bool> intercept_response);
     Modifications(
-        absl::optional<net::Error> error_reason,
+        std::optional<net::Error> error_reason,
         scoped_refptr<net::HttpResponseHeaders> response_headers,
         scoped_refptr<base::RefCountedMemory> response_body,
         size_t body_offset,
@@ -116,7 +117,7 @@ class DevToolsURLLoaderInterceptor {
 
     // If none of the following are set then the request will be allowed to
     // continue unchanged.
-    absl::optional<net::Error> error_reason;  // Finish with error.
+    std::optional<net::Error> error_reason;  // Finish with error.
     // If either of the below fields is set, complete the request by
     // responding with the provided headers and body.
     scoped_refptr<net::HttpResponseHeaders> response_headers;
@@ -176,7 +177,7 @@ class DevToolsURLLoaderInterceptor {
 
   using HandleAuthRequestCallback =
       base::OnceCallback<void(bool use_fallback,
-                              const absl::optional<net::AuthCredentials>&)>;
+                              const std::optional<net::AuthCredentials>&)>;
   // Can only be called on the IO thread.
   static void HandleAuthRequest(GlobalRequestID req_id,
                                 const net::AuthChallengeInfo& auth_info,
@@ -218,7 +219,7 @@ class DevToolsURLLoaderInterceptor {
       const base::UnguessableToken& frame_token,
       int32_t process_id,
       bool is_download,
-      const absl::optional<std::string>& renderer_request_id,
+      const std::optional<std::string>& renderer_request_id,
       std::unique_ptr<CreateLoaderParameters> create_params,
       mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,

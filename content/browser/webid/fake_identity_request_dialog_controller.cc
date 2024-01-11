@@ -12,7 +12,7 @@
 namespace content {
 
 FakeIdentityRequestDialogController::FakeIdentityRequestDialogController(
-    absl::optional<std::string> selected_account,
+    std::optional<std::string> selected_account,
     WebContents* web_contents)
     : selected_account_(selected_account), web_contents_(web_contents) {}
 
@@ -21,7 +21,7 @@ FakeIdentityRequestDialogController::~FakeIdentityRequestDialogController() =
 
 void FakeIdentityRequestDialogController::ShowAccountsDialog(
     const std::string& top_frame_for_display,
-    const absl::optional<std::string>& iframe_for_display,
+    const std::optional<std::string>& iframe_for_display,
     const std::vector<content::IdentityProviderData>& identity_provider_data,
     IdentityRequestAccount::SignInMode sign_in_mode,
     bool show_auto_reauthn_checkbox,
@@ -72,7 +72,7 @@ void FakeIdentityRequestDialogController::ShowAccountsDialog(
 
 void FakeIdentityRequestDialogController::ShowFailureDialog(
     const std::string& top_frame_for_display,
-    const absl::optional<std::string>& iframe_for_display,
+    const std::optional<std::string>& iframe_for_display,
     const std::string& idp_for_display,
     const blink::mojom::RpContext& rp_context,
     const IdentityProviderMetadata& idp_metadata,
@@ -83,11 +83,11 @@ void FakeIdentityRequestDialogController::ShowFailureDialog(
 
 void FakeIdentityRequestDialogController::ShowErrorDialog(
     const std::string& top_frame_for_display,
-    const absl::optional<std::string>& iframe_for_display,
+    const std::optional<std::string>& iframe_for_display,
     const std::string& idp_for_display,
     const blink::mojom::RpContext& rp_context,
     const IdentityProviderMetadata& idp_metadata,
-    const absl::optional<TokenError>& error,
+    const std::optional<TokenError>& error,
     DismissCallback dismiss_callback,
     MoreDetailsCallback more_details_callback) {
   DCHECK(dismiss_callback);

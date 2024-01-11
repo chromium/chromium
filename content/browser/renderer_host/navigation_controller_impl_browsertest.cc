@@ -116,7 +116,7 @@ class DataURLOriginToCommitObserver : public WebContentsObserver {
   explicit DataURLOriginToCommitObserver(WebContents* web_contents)
       : WebContentsObserver(web_contents) {}
 
-  absl::optional<url::Origin> origin_to_commit() { return origin_to_commit_; }
+  std::optional<url::Origin> origin_to_commit() { return origin_to_commit_; }
 
  private:
   void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override {
@@ -125,7 +125,7 @@ class DataURLOriginToCommitObserver : public WebContentsObserver {
                             .origin_to_commit;
   }
 
-  absl::optional<url::Origin> origin_to_commit_;
+  std::optional<url::Origin> origin_to_commit_;
 };
 
 }  // namespace
@@ -8083,8 +8083,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   std::unique_ptr<NavigationEntryImpl> restored_entry =
       NavigationEntryImpl::FromNavigationEntry(
           NavigationController::CreateNavigationEntry(
-              main_url_a, Referrer(), /* initiator_origin= */ absl::nullopt,
-              /* initiator_base_url= */ absl::nullopt,
+              main_url_a, Referrer(), /* initiator_origin= */ std::nullopt,
+              /* initiator_base_url= */ std::nullopt,
               ui::PAGE_TRANSITION_RELOAD, false, std::string(),
               controller.GetBrowserContext(),
               nullptr /* blob_url_loader_factory */));
@@ -8154,8 +8154,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   std::unique_ptr<NavigationEntryImpl> restored_entry =
       NavigationEntryImpl::FromNavigationEntry(
           NavigationController::CreateNavigationEntry(
-              main_url, Referrer(), absl::nullopt /* initiator_origin= */,
-              /* initiator_base_url= */ absl::nullopt,
+              main_url, Referrer(), std::nullopt /* initiator_origin= */,
+              /* initiator_base_url= */ std::nullopt,
               ui::PAGE_TRANSITION_RELOAD, false, std::string(),
               controller.GetBrowserContext(),
               nullptr /* blob_url_loader_factory */));
@@ -8222,8 +8222,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   std::unique_ptr<NavigationEntryImpl> restored_entry =
       NavigationEntryImpl::FromNavigationEntry(
           NavigationController::CreateNavigationEntry(
-              url_1, Referrer(), absl::nullopt /* initiator_origin= */,
-              /* initiator_base_url= */ absl::nullopt,
+              url_1, Referrer(), std::nullopt /* initiator_origin= */,
+              /* initiator_base_url= */ std::nullopt,
               ui::PAGE_TRANSITION_RELOAD, false, std::string(),
               controller.GetBrowserContext(),
               nullptr /* blob_url_loader_factory */));
@@ -8404,8 +8404,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   std::unique_ptr<NavigationEntryImpl> restored_entry =
       NavigationEntryImpl::FromNavigationEntry(
           NavigationController::CreateNavigationEntry(
-              GURL(), Referrer(), absl::nullopt /* initiator_origin= */,
-              /* initiator_base_url= */ absl::nullopt,
+              GURL(), Referrer(), std::nullopt /* initiator_origin= */,
+              /* initiator_base_url= */ std::nullopt,
               ui::PAGE_TRANSITION_RELOAD, false, std::string(),
               controller.GetBrowserContext(),
               nullptr /* blob_url_loader_factory */));
@@ -8470,8 +8470,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   std::unique_ptr<NavigationEntryImpl> restored_entry1 =
       NavigationEntryImpl::FromNavigationEntry(
           NavigationController::CreateNavigationEntry(
-              url_1, Referrer(), absl::nullopt /* initiator_origin= */,
-              /* initiator_base_url= */ absl::nullopt,
+              url_1, Referrer(), std::nullopt /* initiator_origin= */,
+              /* initiator_base_url= */ std::nullopt,
               ui::PAGE_TRANSITION_RELOAD, false, std::string(),
               controller.GetBrowserContext(),
               nullptr /* blob_url_loader_factory */));
@@ -8479,8 +8479,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   std::unique_ptr<NavigationEntryImpl> restored_entry2 =
       NavigationEntryImpl::FromNavigationEntry(
           NavigationController::CreateNavigationEntry(
-              url_2, Referrer(), absl::nullopt /* initiator_origin= */,
-              /* initiator_base_url= */ absl::nullopt,
+              url_2, Referrer(), std::nullopt /* initiator_origin= */,
+              /* initiator_base_url= */ std::nullopt,
               ui::PAGE_TRANSITION_RELOAD, false, std::string(),
               controller.GetBrowserContext(),
               nullptr /* blob_url_loader_factory */));
@@ -10969,8 +10969,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   std::unique_ptr<NavigationEntryImpl> restored_entry =
       NavigationEntryImpl::FromNavigationEntry(
           NavigationController::CreateNavigationEntry(
-              main_url_a, Referrer(), absl::nullopt /* initiator_origin= */,
-              /* initiator_base_url= */ absl::nullopt,
+              main_url_a, Referrer(), std::nullopt /* initiator_origin= */,
+              /* initiator_base_url= */ std::nullopt,
               ui::PAGE_TRANSITION_RELOAD, false, std::string(),
               controller.GetBrowserContext(),
               nullptr /* blob_url_loader_factory */));
@@ -19580,7 +19580,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, ReloadFrame) {
   ASSERT_EQ(1U, entry_1->root_node()->children.size());
   scoped_refptr<FrameNavigationEntry> frame_entry_1 =
       entry_1->root_node()->children[0]->frame_entry.get();
-  absl::optional<url::Origin> origin_1 = frame_entry_1->initiator_origin();
+  std::optional<url::Origin> origin_1 = frame_entry_1->initiator_origin();
   ASSERT_TRUE(frame_entry_1->initiator_origin().has_value());
   EXPECT_EQ(url::Origin::Create(main_url),
             frame_entry_1->initiator_origin().value());
@@ -19617,7 +19617,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, ReloadFrame) {
   ASSERT_EQ(1U, entry_1->root_node()->children.size());
   scoped_refptr<FrameNavigationEntry> frame_entry_2 =
       entry_2->root_node()->children[0]->frame_entry.get();
-  absl::optional<url::Origin> origin_2 = frame_entry_2->initiator_origin();
+  std::optional<url::Origin> origin_2 = frame_entry_2->initiator_origin();
   ASSERT_TRUE(frame_entry_2->initiator_origin().has_value());
   EXPECT_EQ(url::Origin::Create(main_url),
             frame_entry_2->initiator_origin().value());
@@ -20148,8 +20148,8 @@ IN_PROC_BROWSER_TEST_P(
   std::unique_ptr<NavigationEntryImpl> restored_entry =
       NavigationEntryImpl::FromNavigationEntry(
           NavigationController::CreateNavigationEntry(
-              url_1, Referrer(), absl::nullopt /* initiator_origin= */,
-              /* initiator_base_url= */ absl::nullopt,
+              url_1, Referrer(), std::nullopt /* initiator_origin= */,
+              /* initiator_base_url= */ std::nullopt,
               ui::PAGE_TRANSITION_RELOAD, false, std::string(),
               controller.GetBrowserContext(),
               nullptr /* blob_url_loader_factory */));
@@ -22074,7 +22074,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   // Check that the browser-calculated origin_to_commit is used and matches the
   // committed origin.
-  absl::optional<url::Origin> origin_to_commit = observer.origin_to_commit();
+  std::optional<url::Origin> origin_to_commit = observer.origin_to_commit();
   EXPECT_TRUE(origin_to_commit.has_value());
   url::Origin committed_origin =
       shell()->web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin();

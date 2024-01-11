@@ -71,7 +71,7 @@ blink::ParsedPermissionsPolicy CreatePermissivePolicy() {
                       url::Origin::Create(GURL("https://google.com"))),
                   *blink::OriginWithPossibleWildcards::FromOrigin(
                       url::Origin::Create(GURL("https://foo1.com")))},
-      /*self_if_matches=*/absl::nullopt,
+      /*self_if_matches=*/std::nullopt,
       /*matches_all_origins=*/false,
       /*matches_opaque_src=*/false);
   return policy;
@@ -82,7 +82,7 @@ blink::ParsedPermissionsPolicy CreateRestrictivePolicy() {
   policy.emplace_back(
       blink::mojom::PermissionsPolicyFeature::kRunAdAuction,
       /*allowed_origins=*/std::vector<blink::OriginWithPossibleWildcards>(),
-      /*self_if_matches=*/absl::nullopt,
+      /*self_if_matches=*/std::nullopt,
       /*matches_all_origins=*/false,
       /*matches_opaque_src=*/false);
   return policy;

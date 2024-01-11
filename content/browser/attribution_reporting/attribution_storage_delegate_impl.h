@@ -80,7 +80,7 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
   base::TimeDelta GetDeleteExpiredSourcesFrequency() const override;
   base::TimeDelta GetDeleteExpiredRateLimitsFrequency() const override;
   base::Uuid NewReportID() const override;
-  absl::optional<OfflineReportDelayConfig> GetOfflineReportDelayConfig()
+  std::optional<OfflineReportDelayConfig> GetOfflineReportDelayConfig()
       const override;
   void ShuffleReports(std::vector<AttributionReport>& reports) override;
   void ShuffleTriggerVerifications(
@@ -98,8 +98,7 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
   std::vector<NullAggregatableReport> GetNullAggregatableReports(
       const AttributionTrigger&,
       base::Time trigger_time,
-      absl::optional<base::Time> attributed_source_time) const override;
-
+      std::optional<base::Time> attributed_source_time) const override;
 
  private:
   AttributionStorageDelegateImpl(AttributionNoiseMode noise_mode,
@@ -112,7 +111,7 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
   std::vector<NullAggregatableReport> GetNullAggregatableReportsImpl(
       const AttributionTrigger&,
       base::Time trigger_time,
-      absl::optional<base::Time> attributed_source_time) const;
+      std::optional<base::Time> attributed_source_time) const;
 };
 
 }  // namespace content

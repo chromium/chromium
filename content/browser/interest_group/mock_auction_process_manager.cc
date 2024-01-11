@@ -8,6 +8,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -30,7 +31,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/ad_display_size.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom.h"
@@ -72,14 +72,14 @@ void MockBidderWorklet::BeginGenerateBid(
         bidder_worklet_non_shared_params,
     auction_worklet::mojom::KAnonymityBidMode kanon_mode,
     const url::Origin& interest_group_join_origin,
-    const absl::optional<GURL>& direct_from_seller_per_buyer_signals,
-    const absl::optional<GURL>& direct_from_seller_auction_signals,
+    const std::optional<GURL>& direct_from_seller_per_buyer_signals,
+    const std::optional<GURL>& direct_from_seller_auction_signals,
     const url::Origin& browser_signal_seller_origin,
-    const absl::optional<url::Origin>& browser_signal_top_level_seller_origin,
+    const std::optional<url::Origin>& browser_signal_top_level_seller_origin,
     const base::TimeDelta browser_signal_recency,
     auction_worklet::mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
     base::Time auction_start_time,
-    const absl::optional<blink::AdSize>& requested_ad_size,
+    const std::optional<blink::AdSize>& requested_ad_size,
     uint64_t trace_id,
     mojo::PendingAssociatedRemote<auction_worklet::mojom::GenerateBidClient>
         generate_bid_client,
@@ -120,31 +120,31 @@ void MockBidderWorklet::ReportWin(
     bool is_for_additional_bid,
     auction_worklet::mojom::ReportingIdField reporting_id_field,
     const std::string& reporting_id,
-    const absl::optional<std::string>& auction_signals_json,
-    const absl::optional<std::string>& per_buyer_signals_json,
-    const absl::optional<GURL>& direct_from_seller_per_buyer_signals,
-    const absl::optional<std::string>&
+    const std::optional<std::string>& auction_signals_json,
+    const std::optional<std::string>& per_buyer_signals_json,
+    const std::optional<GURL>& direct_from_seller_per_buyer_signals,
+    const std::optional<std::string>&
         direct_from_seller_per_buyer_signals_header_ad_slot,
-    const absl::optional<GURL>& direct_from_seller_auction_signals,
-    const absl::optional<std::string>&
+    const std::optional<GURL>& direct_from_seller_auction_signals,
+    const std::optional<std::string>&
         direct_from_seller_auction_signals_header_ad_slot,
     const std::string& seller_signals_json,
     auction_worklet::mojom::KAnonymityBidMode kanon_mode,
     bool bid_is_kanon,
     const GURL& browser_signal_render_url,
     double browser_signal_bid,
-    const absl::optional<blink::AdCurrency>& browser_signal_bid_currency,
+    const std::optional<blink::AdCurrency>& browser_signal_bid_currency,
     double browser_signal_highest_scoring_other_bid,
-    const absl::optional<blink::AdCurrency>&
+    const std::optional<blink::AdCurrency>&
         browser_signal_highest_scoring_other_bid_currency,
     bool browser_signal_made_highest_scoring_other_bid,
-    absl::optional<double> browser_signal_ad_cost,
-    absl::optional<uint16_t> browser_signal_modeling_signals,
+    std::optional<double> browser_signal_ad_cost,
+    std::optional<uint16_t> browser_signal_modeling_signals,
     uint8_t browser_signal_join_count,
     uint8_t browser_signal_recency,
     const url::Origin& browser_signal_seller_origin,
-    const absl::optional<url::Origin>& browser_signal_top_level_seller_origin,
-    absl::optional<uint32_t> bidding_signals_data_version,
+    const std::optional<url::Origin>& browser_signal_top_level_seller_origin,
+    std::optional<uint32_t> bidding_signals_data_version,
     uint64_t trace_id,
     ReportWinCallback report_win_callback) {
   // While the real BidderWorklet implementation supports multiple pending
@@ -163,15 +163,15 @@ void MockBidderWorklet::ConnectDevToolsAgent(
 }
 
 void MockBidderWorklet::FinishGenerateBid(
-    const absl::optional<std::string>& auction_signals_json,
-    const absl::optional<std::string>& per_buyer_signals_json,
-    const absl::optional<base::TimeDelta> per_buyer_timeout,
-    const absl::optional<blink::AdCurrency>& per_buyer_currency,
-    const absl::optional<GURL>& direct_from_seller_per_buyer_signals,
-    const absl::optional<std::string>&
+    const std::optional<std::string>& auction_signals_json,
+    const std::optional<std::string>& per_buyer_signals_json,
+    const std::optional<base::TimeDelta> per_buyer_timeout,
+    const std::optional<blink::AdCurrency>& per_buyer_currency,
+    const std::optional<GURL>& direct_from_seller_per_buyer_signals,
+    const std::optional<std::string>&
         direct_from_seller_per_buyer_signals_header_ad_slot,
-    const absl::optional<GURL>& direct_from_seller_auction_signals,
-    const absl::optional<std::string>&
+    const std::optional<GURL>& direct_from_seller_auction_signals,
+    const std::optional<std::string>&
         direct_from_seller_auction_signals_header_ad_slot) {
   // per_buyer_timeout passed to GenerateBid() should not be empty, because
   // auction_config's all_buyers_timeout (which is the key of '*' in
@@ -207,15 +207,15 @@ void MockBidderWorklet::SetBiddingLatency(base::TimeDelta delta) {
 }
 
 void MockBidderWorklet::InvokeGenerateBidCallback(
-    absl::optional<double> bid,
-    const absl::optional<blink::AdCurrency>& bid_currency,
+    std::optional<double> bid,
+    const std::optional<blink::AdCurrency>& bid_currency,
     const blink::AdDescriptor& ad_descriptor,
     auction_worklet::mojom::BidderWorkletKAnonEnforcedBidPtr mojo_kanon_bid,
-    absl::optional<std::vector<blink::AdDescriptor>> ad_component_descriptors,
+    std::optional<std::vector<blink::AdDescriptor>> ad_component_descriptors,
     base::TimeDelta duration,
-    const absl::optional<uint32_t>& bidding_signals_data_version,
-    const absl::optional<GURL>& debug_loss_report_url,
-    const absl::optional<GURL>& debug_win_report_url,
+    const std::optional<uint32_t>& bidding_signals_data_version,
+    const std::optional<GURL>& debug_loss_report_url,
+    const std::optional<GURL>& debug_win_report_url,
     std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>
         pa_requests,
     auction_worklet::mojom::GenerateBidDependencyLatenciesPtr
@@ -233,10 +233,10 @@ void MockBidderWorklet::InvokeGenerateBidCallback(
   if (!dependency_latencies) {
     dependency_latencies =
         auction_worklet::mojom::GenerateBidDependencyLatencies::New(
-            /*code_ready_latency=*/absl::nullopt,
-            /*config_promises_latency=*/absl::nullopt,
-            /*direct_from_seller_signals_latency=*/absl::nullopt,
-            /*trusted_bidding_signals_latency=*/absl::nullopt);
+            /*code_ready_latency=*/std::nullopt,
+            /*config_promises_latency=*/std::nullopt,
+            /*direct_from_seller_signals_latency=*/std::nullopt,
+            /*trusted_bidding_signals_latency=*/std::nullopt);
   }
 
   if (!bid.has_value()) {
@@ -245,7 +245,7 @@ void MockBidderWorklet::InvokeGenerateBidCallback(
         /*kanon_bid=*/std::move(mojo_kanon_bid),
         /*bidding_signals_data_version=*/0,
         /*has_bidding_signals_data_version=*/false, debug_loss_report_url,
-        /*debug_win_report_url=*/absl::nullopt,
+        /*debug_win_report_url=*/std::nullopt,
         /*set_priority=*/0,
         /*has_set_priority=*/false,
         /*update_priority_signals_overrides=*/
@@ -262,9 +262,9 @@ void MockBidderWorklet::InvokeGenerateBidCallback(
 
   generate_bid_client_->OnGenerateBidComplete(
       auction_worklet::mojom::BidderWorkletBid::New(
-          "ad", *bid, bid_currency, /*ad_cost=*/absl::nullopt,
+          "ad", *bid, bid_currency, /*ad_cost=*/std::nullopt,
           std::move(ad_descriptor), ad_component_descriptors,
-          /*modeling_signals=*/absl::nullopt, duration),
+          /*modeling_signals=*/std::nullopt, duration),
       /*kanon_bid=*/std::move(mojo_kanon_bid),
       bidding_signals_data_version.value_or(0),
       bidding_signals_data_version.has_value(), debug_loss_report_url,
@@ -294,7 +294,7 @@ void MockBidderWorklet::WaitForReportWin() {
 }
 
 void MockBidderWorklet::InvokeReportWinCallback(
-    absl::optional<GURL> report_url,
+    std::optional<GURL> report_url,
     base::flat_map<std::string, GURL> ad_beacon_map,
     base::flat_map<std::string, std::string> ad_macro_map,
     std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>
@@ -346,24 +346,24 @@ MockSellerWorklet::~MockSellerWorklet() {
 void MockSellerWorklet::ScoreAd(
     const std::string& ad_metadata_json,
     double bid,
-    const absl::optional<blink::AdCurrency>& bid_currency,
+    const std::optional<blink::AdCurrency>& bid_currency,
     const blink::AuctionConfig::NonSharedParams&
         auction_ad_config_non_shared_params,
-    const absl::optional<GURL>& direct_from_seller_seller_signals,
-    const absl::optional<std::string>&
+    const std::optional<GURL>& direct_from_seller_seller_signals,
+    const std::optional<std::string>&
         direct_from_seller_seller_signals_header_ad_slot,
-    const absl::optional<GURL>& direct_from_seller_auction_signals,
-    const absl::optional<std::string>&
+    const std::optional<GURL>& direct_from_seller_auction_signals,
+    const std::optional<std::string>&
         direct_from_seller_auction_signals_header_ad_slot,
     auction_worklet::mojom::ComponentAuctionOtherSellerPtr
         browser_signals_other_seller,
-    const absl::optional<blink::AdCurrency>& component_expect_bid_currency,
+    const std::optional<blink::AdCurrency>& component_expect_bid_currency,
     const url::Origin& browser_signal_interest_group_owner,
     const GURL& browser_signal_render_url,
     const std::vector<GURL>& browser_signal_ad_components,
     uint32_t browser_signal_bidding_duration_msecs,
     bool browser_signal_for_debugging_only_in_cooldown_or_lockout,
-    const absl::optional<base::TimeDelta> seller_timeout,
+    const std::optional<base::TimeDelta> seller_timeout,
     uint64_t trace_id,
     mojo::PendingRemote<auction_worklet::mojom::ScoreAdClient>
         score_ad_client) {
@@ -398,23 +398,23 @@ void MockSellerWorklet::SendPendingSignalsRequests() {
 void MockSellerWorklet::ReportResult(
     const blink::AuctionConfig::NonSharedParams&
         auction_ad_config_non_shared_params,
-    const absl::optional<GURL>& direct_from_seller_seller_signals,
-    const absl::optional<std::string>&
+    const std::optional<GURL>& direct_from_seller_seller_signals,
+    const std::optional<std::string>&
         direct_from_seller_seller_signals_header_ad_slot,
-    const absl::optional<GURL>& direct_from_seller_auction_signals,
-    const absl::optional<std::string>&
+    const std::optional<GURL>& direct_from_seller_auction_signals,
+    const std::optional<std::string>&
         direct_from_seller_auction_signals_header_ad_slot,
     auction_worklet::mojom::ComponentAuctionOtherSellerPtr
         browser_signals_other_seller,
     const url::Origin& browser_signal_interest_group_owner,
-    const absl::optional<std::string>&
+    const std::optional<std::string>&
         browser_signal_buyer_and_seller_reporting_id,
     const GURL& browser_signal_render_url,
     double browser_signal_bid,
-    const absl::optional<blink::AdCurrency>& browser_signal_bid_currency,
+    const std::optional<blink::AdCurrency>& browser_signal_bid_currency,
     double browser_signal_desirability,
     double browser_signal_highest_scoring_other_bid,
-    const absl::optional<blink::AdCurrency>&
+    const std::optional<blink::AdCurrency>&
         browser_signal_highest_scoring_other_bid_currency,
     auction_worklet::mojom::ComponentAuctionReportResultParamsPtr
         browser_signals_component_auction_report_result_params,
@@ -465,14 +465,14 @@ void MockSellerWorklet::WaitForReportResult() {
 }
 
 void MockSellerWorklet::InvokeReportResultCallback(
-    absl::optional<GURL> report_url,
+    std::optional<GURL> report_url,
     base::flat_map<std::string, GURL> ad_beacon_map,
     std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>
         pa_requests,
     std::vector<std::string> errors) {
   DCHECK(report_result_callback_);
   std::move(report_result_callback_)
-      .Run(/*signals_for_winner=*/absl::nullopt, std::move(report_url),
+      .Run(/*signals_for_winner=*/std::nullopt, std::move(report_url),
            ad_beacon_map, std::move(pa_requests), reporting_latency_, errors);
 }
 
@@ -529,8 +529,8 @@ void MockAuctionProcessManager::LoadBidderWorklet(
     mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
         auction_network_events_handler,
     const GURL& script_source_url,
-    const absl::optional<GURL>& bidding_wasm_helper_url,
-    const absl::optional<GURL>& trusted_bidding_signals_url,
+    const std::optional<GURL>& bidding_wasm_helper_url,
+    const std::optional<GURL>& trusted_bidding_signals_url,
     const std::string& trusted_bidding_signals_slot_size_param,
     const url::Origin& top_window_origin,
     auction_worklet::mojom::AuctionWorkletPermissionsPolicyStatePtr
@@ -562,7 +562,7 @@ void MockAuctionProcessManager::LoadSellerWorklet(
     mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
         auction_network_events_handler,
     const GURL& script_source_url,
-    const absl::optional<GURL>& trusted_scoring_signals_url,
+    const std::optional<GURL>& trusted_scoring_signals_url,
     const url::Origin& top_window_origin,
     auction_worklet::mojom::AuctionWorkletPermissionsPolicyStatePtr
         permissions_policy_state,

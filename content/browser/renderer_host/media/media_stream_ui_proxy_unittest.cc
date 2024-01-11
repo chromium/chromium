@@ -561,7 +561,7 @@ class MediaStreamUIProxyPermissionsPolicyTest
     auto navigation = NavigationSimulator::CreateRendererInitiated(
         main_rfh()->GetLastCommittedURL(), main_rfh());
     navigation->SetPermissionsPolicyHeader(
-        {{feature, /*allowed_origins=*/{}, /*self_if_matches=*/absl::nullopt,
+        {{feature, /*allowed_origins=*/{}, /*self_if_matches=*/std::nullopt,
           /*matches_all_origins=*/false,
           /*matches_opaque_src=*/false}});
     navigation->Commit();

@@ -115,7 +115,7 @@ blink::WebTouchPoint CreateWebTouchPoint(
     UIView* view,
     UITouch* event,
     bool was_changed,
-    const absl::optional<gfx::Vector2dF>& view_offset) {
+    const std::optional<gfx::Vector2dF>& view_offset) {
   blink::WebTouchPoint touch;
 
   size_t pointer_index = GetTouchPointerId(event);
@@ -190,7 +190,7 @@ blink::WebTouchEvent WebTouchEventBuilder::Build(
     UITouch* touch,
     UIEvent* event,
     UIView* view,
-    const absl::optional<gfx::Vector2dF>& view_offset) {
+    const std::optional<gfx::Vector2dF>& view_offset) {
   blink::WebTouchEvent result(type, ModifiersFromEvent(event),
                               ui::EventTimeStampFromSeconds([event timestamp]));
   // TODO(dtapuska): Enable

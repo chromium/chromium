@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "build/build_config.h"
@@ -17,7 +19,6 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/save_page_type.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 class GURL;
@@ -212,7 +213,7 @@ class CONTENT_EXPORT DownloadManagerDelegate {
       const WebContents::Getter& web_contents_getter,
       const GURL& url,
       const std::string& request_method,
-      absl::optional<url::Origin> request_initiator,
+      std::optional<url::Origin> request_initiator,
       bool from_download_cross_origin_redirect,
       bool content_initiated,
       CheckDownloadAllowedCallback check_download_allowed_cb);

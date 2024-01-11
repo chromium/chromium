@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_SERVICE_H_
 
 #include <map>
+#include <optional>
 
 #include "base/dcheck_is_on.h"
 #include "base/functional/callback_forward.h"
@@ -19,7 +20,6 @@
 #include "net/cookies/canonical_cookie.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace network::mojom {
@@ -256,9 +256,9 @@ class CONTENT_EXPORT PrefetchService {
 
   // Called when the response for |prefetch_container| has started. Based on
   // |head|, returns a status to inform the |PrefetchStreamingURLLoader| whether
-  // the prefetch is servable. If servable, then `absl::nullopt` will be
+  // the prefetch is servable. If servable, then `std::nullopt` will be
   // returned, otherwise a failure status is returned.
-  absl::optional<PrefetchErrorOnResponseReceived> OnPrefetchResponseStarted(
+  std::optional<PrefetchErrorOnResponseReceived> OnPrefetchResponseStarted(
       base::WeakPtr<PrefetchContainer> prefetch_container,
       network::mojom::URLResponseHead* head);
 

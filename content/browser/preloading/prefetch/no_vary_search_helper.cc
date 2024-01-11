@@ -29,7 +29,7 @@ net::HttpNoVarySearchData ParseHttpNoVarySearchDataFromMojom(
       no_vary_search_ptr->vary_on_key_order);
 }
 
-absl::optional<net::HttpNoVarySearchData> ProcessHead(
+std::optional<net::HttpNoVarySearchData> ProcessHead(
     const network::mojom::URLResponseHead& head,
     const GURL& url,
     RenderFrameHost* rfh) {
@@ -38,7 +38,7 @@ absl::optional<net::HttpNoVarySearchData> ProcessHead(
   // No No-Vary-Search headers.
   if (!(head.parsed_headers &&
         head.parsed_headers->no_vary_search_with_parse_error)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Success.
@@ -53,7 +53,7 @@ absl::optional<net::HttpNoVarySearchData> ProcessHead(
       head.parsed_headers->no_vary_search_with_parse_error->get_parse_error();
   // TODO(crbug.com/1494916): Maybe `CHECK_NE(parse_error, kOk)`.
   if (parse_error == network::mojom::NoVarySearchParseError::kOk) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   blink::mojom::ConsoleMessageLevel error_level =
       parse_error == network::mojom::NoVarySearchParseError::kDefaultValue
@@ -64,7 +64,7 @@ absl::optional<net::HttpNoVarySearchData> ProcessHead(
   if (rfh) {
     rfh->AddMessageToConsole(error_level, error_message.value());
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace no_vary_search

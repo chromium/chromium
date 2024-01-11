@@ -584,8 +584,8 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, ReuseInitialRFHInRestoredTab) {
   std::unique_ptr<NavigationEntryImpl> restored_entry =
       NavigationEntryImpl::FromNavigationEntry(
           NavigationController::CreateNavigationEntry(
-              web_ui_url, Referrer(), absl::nullopt /* initiator_origin= */,
-              /* initiator_base_url= */ absl::nullopt,
+              web_ui_url, Referrer(), std::nullopt /* initiator_origin= */,
+              /* initiator_base_url= */ std::nullopt,
               ui::PAGE_TRANSITION_RELOAD, false, std::string(),
               controller.GetBrowserContext(),
               nullptr /* blob_url_loader_factory */));

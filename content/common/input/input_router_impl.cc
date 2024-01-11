@@ -234,7 +234,7 @@ bool InputRouterImpl::HandleGestureScrollForStylusWriting(
         break;
       }
 
-      absl::optional<cc::TouchAction> allowed_touch_action =
+      std::optional<cc::TouchAction> allowed_touch_action =
           AllowedTouchAction();
       // Don't handle for non-writable areas as kInternalNotWritable bit is set.
       if (!allowed_touch_action.has_value() ||
@@ -299,11 +299,11 @@ void InputRouterImpl::SetForceEnableZoom(bool enabled) {
   touch_action_filter_.SetForceEnableZoom(enabled);
 }
 
-absl::optional<cc::TouchAction> InputRouterImpl::AllowedTouchAction() {
+std::optional<cc::TouchAction> InputRouterImpl::AllowedTouchAction() {
   return touch_action_filter_.allowed_touch_action();
 }
 
-absl::optional<cc::TouchAction> InputRouterImpl::ActiveTouchAction() {
+std::optional<cc::TouchAction> InputRouterImpl::ActiveTouchAction() {
   return touch_action_filter_.active_touch_action();
 }
 
@@ -385,8 +385,8 @@ void InputRouterImpl::ImeCancelComposition() {
 
 void InputRouterImpl::ImeCompositionRangeChanged(
     const gfx::Range& range,
-    const absl::optional<std::vector<gfx::Rect>>& character_bounds,
-    const absl::optional<std::vector<gfx::Rect>>& line_bounds) {
+    const std::optional<std::vector<gfx::Rect>>& character_bounds,
+    const std::optional<std::vector<gfx::Rect>>& line_bounds) {
   client_->OnImeCompositionRangeChanged(range, character_bounds, line_bounds);
 }
 
@@ -818,7 +818,7 @@ void InputRouterImpl::UpdateTouchAckTimeoutEnabled() {
   // TouchAction::kNone will prevent scrolling, in which case the timeout serves
   // little purpose. It's also a strong signal that touch handling is critical
   // to page functionality, so the timeout could do more harm than good.
-  absl::optional<cc::TouchAction> allowed_touch_action =
+  std::optional<cc::TouchAction> allowed_touch_action =
       touch_action_filter_.allowed_touch_action();
   cc::TouchAction compositor_allowed_touch_action =
       touch_action_filter_.compositor_allowed_touch_action();

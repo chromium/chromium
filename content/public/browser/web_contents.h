@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -38,7 +39,6 @@
 #include "content/public/browser/visibility.h"
 #include "content/public/common/stop_find_action.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/find_in_page.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/remote_frame.mojom-forward.h"
@@ -279,7 +279,7 @@ class WebContents : public PageNavigator,
     bool enable_wake_locks = true;
 
     // Options specific to WebContents created for picture-in-picture windows.
-    absl::optional<blink::mojom::PictureInPictureWindowOptions>
+    std::optional<blink::mojom::PictureInPictureWindowOptions>
         picture_in_picture_options;
 
     // WebContentsDelegate given for the case early initialization code depends
@@ -528,11 +528,11 @@ class WebContents : public PageNavigator,
 
   // Returns the theme color for the underlying content as set by the
   // theme-color meta tag if any.
-  virtual absl::optional<SkColor> GetThemeColor() = 0;
+  virtual std::optional<SkColor> GetThemeColor() = 0;
 
   // Returns the background color for the underlying content as set by CSS if
   // any.
-  virtual absl::optional<SkColor> GetBackgroundColor() = 0;
+  virtual std::optional<SkColor> GetBackgroundColor() = 0;
 
   // Sets the renderer-side default background color of the page. This is used
   // when the page has not loaded enough to know a background color or if the
@@ -545,7 +545,7 @@ class WebContents : public PageNavigator,
   // refactor to remove `RenderWidgetHostView::SetBackgroundColor` and merge its
   // functionality here, which will be more consistent and simpler to
   // understand.
-  virtual void SetPageBaseBackgroundColor(absl::optional<SkColor> color) = 0;
+  virtual void SetPageBaseBackgroundColor(std::optional<SkColor> color) = 0;
 
   // Sets the ColorProviderSource for the WebContents. The WebContents will
   // maintain an observation of `source` until a new source is set or the
@@ -624,7 +624,7 @@ class WebContents : public PageNavigator,
   // |start_recording| is false, it is expected that |callback| does not.
   virtual void RecordAccessibilityEvents(
       bool start_recording,
-      absl::optional<AccessibilityEventCallback> callback) = 0;
+      std::optional<AccessibilityEventCallback> callback) = 0;
 
   // Tab navigation state ------------------------------------------------------
 
@@ -1316,7 +1316,7 @@ class WebContents : public PageNavigator,
 
   virtual int GetCurrentlyPlayingVideoCount() = 0;
 
-  virtual absl::optional<gfx::Size> GetFullscreenVideoSize() = 0;
+  virtual std::optional<gfx::Size> GetFullscreenVideoSize() = 0;
 
   // Tells the renderer to clear the focused element (if any).
   virtual void ClearFocusedElement() = 0;
@@ -1407,7 +1407,7 @@ class WebContents : public PageNavigator,
   virtual const base::Location& GetCreatorLocation() = 0;
 
   // Returns the parameters associated with PictureInPicture WebContents
-  virtual const absl::optional<blink::mojom::PictureInPictureWindowOptions>&
+  virtual const std::optional<blink::mojom::PictureInPictureWindowOptions>&
   GetPictureInPictureOptions() const = 0;
 
   // Hide or show the browser controls for the given WebContents, based on
@@ -1462,10 +1462,10 @@ class WebContents : public PageNavigator,
       ui::PageTransition page_transition,
       PreloadingHoldbackStatus holdback_status_override,
       PreloadingAttempt* preloading_attempt,
-      absl::optional<base::RepeatingCallback<bool(const GURL&)>>
-          url_match_predicate = absl::nullopt,
-      absl::optional<base::RepeatingCallback<void(NavigationHandle&)>>
-          prerender_navigation_handle_callback = absl::nullopt) = 0;
+      std::optional<base::RepeatingCallback<bool(const GURL&)>>
+          url_match_predicate = std::nullopt,
+      std::optional<base::RepeatingCallback<void(NavigationHandle&)>>
+          prerender_navigation_handle_callback = std::nullopt) = 0;
 
   // May be called when the embedder believes that it is likely that the user
   // will perform a back navigation due to the trigger indicated by `predictor`
@@ -1489,7 +1489,7 @@ class WebContents : public PageNavigator,
   // does not need to be exhaustive or perfectly correct.
   // TODO(crbug.com/1407197): Remove after bug is fixed.
   virtual void SetOwnerLocationForDebug(
-      absl::optional<base::Location> owner_location) = 0;
+      std::optional<base::Location> owner_location) = 0;
 
   // Sends the attribution support state to all renderer processes for the
   // current page.

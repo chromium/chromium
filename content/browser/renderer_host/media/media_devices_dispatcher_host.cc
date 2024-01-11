@@ -423,7 +423,7 @@ void MediaDevicesDispatcherHost::GetVideoInputDeviceFormatsWithRawId(
     bool try_in_use_first,
     GetVideoInputDeviceFormatsCallback client_callback,
     std::unique_ptr<ScopedMediaStreamTrace> scoped_trace,
-    const absl::optional<std::string>& raw_id) {
+    const std::optional<std::string>& raw_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   if (scoped_trace)
     scoped_trace->AddStep(__func__);
@@ -497,7 +497,7 @@ void MediaDevicesDispatcherHost::GotAudioInputEnumeration(
 
 void MediaDevicesDispatcherHost::GotAudioInputParameters(
     size_t index,
-    const absl::optional<media::AudioParameters>& parameters) {
+    const std::optional<media::AudioParameters>& parameters) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK_GT(pending_audio_input_capabilities_requests_.size(), 0U);
   DCHECK_GT(current_audio_input_capabilities_.size(), index);

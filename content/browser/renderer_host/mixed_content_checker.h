@@ -5,12 +5,12 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_MIXED_CONTENT_CHECKER_H_
 #define CONTENT_BROWSER_RENDERER_HOST_MIXED_CONTENT_CHECKER_H_
 
+#include <optional>
 #include <set>
 
 #include "base/gtest_prod_util.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/navigation_handle.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 #include "third_party/blink/public/mojom/loader/mixed_content.mojom-forward.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"

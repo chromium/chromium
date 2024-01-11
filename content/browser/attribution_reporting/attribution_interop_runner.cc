@@ -9,6 +9,7 @@
 
 #include <limits>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -62,7 +63,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
 #include "url/gurl.h"
@@ -97,15 +97,15 @@ class AttributionReportConverter {
               // and therefore are sources of nondeterminism in the output.
 
               // Output attribution_destination from the shared_info field.
-              if (absl::optional<base::Value> shared_info =
+              if (std::optional<base::Value> shared_info =
                       report_body.Extract("shared_info");
                   shared_info.has_value() && shared_info->is_string()) {
-                if (absl::optional<base::Value> shared_info_value =
+                if (std::optional<base::Value> shared_info_value =
                         base::JSONReader::Read(shared_info->GetString(),
                                                base::JSON_PARSE_RFC)) {
                   static constexpr char kKeyAttributionDestination[] =
                       "attribution_destination";
-                  if (absl::optional<base::Value> attribution_destination =
+                  if (std::optional<base::Value> attribution_destination =
                           shared_info_value->GetDict().Extract(
                               kKeyAttributionDestination)) {
                     report_body.Set(kKeyAttributionDestination,

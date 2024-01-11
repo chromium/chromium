@@ -144,7 +144,7 @@ class WebRtcInternalsTest : public testing::Test {
   void VerifyInt(const base::Value::Dict& dict,
                  const std::string& key,
                  int expected) {
-    absl::optional<int> actual = dict.FindInt(key);
+    std::optional<int> actual = dict.FindInt(key);
     ASSERT_TRUE(actual.has_value());
     EXPECT_EQ(expected, actual.value());
   }

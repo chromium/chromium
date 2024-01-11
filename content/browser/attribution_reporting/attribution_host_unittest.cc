@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -36,7 +37,6 @@
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
@@ -135,7 +135,7 @@ class AttributionHostTest : public RenderViewHostTestHarness {
         blink::mojom::PermissionsPolicyFeature::kAttributionReporting,
         /*allowed_origins=*/
         {*blink::OriginWithPossibleWildcards::FromOrigin(allowed_origin)},
-        /*self_if_matches=*/absl::nullopt,
+        /*self_if_matches=*/std::nullopt,
         /*matches_all_origins=*/false, /*matches_opaque_src=*/false)};
   }
 
@@ -785,7 +785,7 @@ TEST_F(AttributionHostTest, FencedFrameReportingBeacon_FeaturePolicyChecked) {
     fenced_frame = simulator->GetFinalRenderFrameHost();
 
     EXPECT_EQ(attribution_host()->NotifyFencedFrameReportingBeaconStarted(
-                  kBeaconId, /*navigation_id=*/absl::nullopt,
+                  kBeaconId, /*navigation_id=*/std::nullopt,
                   static_cast<RenderFrameHostImpl*>(fenced_frame),
                   "devtools-request-id"),
               test_case.expected);

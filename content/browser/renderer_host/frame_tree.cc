@@ -686,7 +686,7 @@ scoped_refptr<RenderViewHostImpl> FrameTree::CreateRenderViewHost(
     bool renderer_initiated_creation,
     scoped_refptr<BrowsingContextState> main_browsing_context_state,
     CreateRenderViewHostCase create_case,
-    absl::optional<viz::FrameSinkId> frame_sink_id) {
+    std::optional<viz::FrameSinkId> frame_sink_id) {
   if (main_browsing_context_state) {
     DCHECK(main_browsing_context_state->is_main_frame());
   }

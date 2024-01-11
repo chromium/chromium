@@ -47,7 +47,7 @@ namespace content {
 namespace {
 
 network::CrossOriginOpenerPolicy CoopSameOrigin(
-    const absl::optional<url::Origin>& origin = absl::nullopt) {
+    const std::optional<url::Origin>& origin = std::nullopt) {
   network::CrossOriginOpenerPolicy coop;
   coop.value = network::mojom::CrossOriginOpenerPolicyValue::kSameOrigin;
   coop.soap_by_default_value =
@@ -57,7 +57,7 @@ network::CrossOriginOpenerPolicy CoopSameOrigin(
 }
 
 network::CrossOriginOpenerPolicy CoopSameOriginPlusCoep(
-    const absl::optional<url::Origin>& origin = absl::nullopt) {
+    const std::optional<url::Origin>& origin = std::nullopt) {
   network::CrossOriginOpenerPolicy coop;
   coop.value =
       network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep;
@@ -68,7 +68,7 @@ network::CrossOriginOpenerPolicy CoopSameOriginPlusCoep(
 }
 
 network::CrossOriginOpenerPolicy CoopSameOriginAllowPopups(
-    const absl::optional<url::Origin>& origin = absl::nullopt) {
+    const std::optional<url::Origin>& origin = std::nullopt) {
   network::CrossOriginOpenerPolicy coop;
   coop.value =
       network::mojom::CrossOriginOpenerPolicyValue::kSameOriginAllowPopups;
@@ -79,7 +79,7 @@ network::CrossOriginOpenerPolicy CoopSameOriginAllowPopups(
 }
 
 network::CrossOriginOpenerPolicy CoopRestrictProperties(
-    const absl::optional<url::Origin>& origin = absl::nullopt) {
+    const std::optional<url::Origin>& origin = std::nullopt) {
   network::CrossOriginOpenerPolicy coop;
   coop.value =
       network::mojom::CrossOriginOpenerPolicyValue::kRestrictProperties;
@@ -90,7 +90,7 @@ network::CrossOriginOpenerPolicy CoopRestrictProperties(
 }
 
 network::CrossOriginOpenerPolicy CoopRestrictPropertiesPlusCoep(
-    const absl::optional<url::Origin>& origin = absl::nullopt) {
+    const std::optional<url::Origin>& origin = std::nullopt) {
   network::CrossOriginOpenerPolicy coop;
   coop.value =
       network::mojom::CrossOriginOpenerPolicyValue::kRestrictPropertiesPlusCoep;
@@ -102,7 +102,7 @@ network::CrossOriginOpenerPolicy CoopRestrictPropertiesPlusCoep(
 
 network::CrossOriginOpenerPolicy
 CoopReportOnlyRestrictPropertiesWithSoapByDefault(
-    const absl::optional<url::Origin>& origin = absl::nullopt) {
+    const std::optional<url::Origin>& origin = std::nullopt) {
   network::CrossOriginOpenerPolicy coop;
   coop.report_only_value =
       network::mojom::CrossOriginOpenerPolicyValue::kRestrictProperties;
@@ -114,7 +114,7 @@ CoopReportOnlyRestrictPropertiesWithSoapByDefault(
 
 network::CrossOriginOpenerPolicy
 CoopReportOnlyRestrictPropertiesPlusCoepWithSoapByDefault(
-    const absl::optional<url::Origin>& origin = absl::nullopt) {
+    const std::optional<url::Origin>& origin = std::nullopt) {
   network::CrossOriginOpenerPolicy coop;
   coop.report_only_value =
       network::mojom::CrossOriginOpenerPolicyValue::kRestrictPropertiesPlusCoep;
@@ -128,7 +128,7 @@ CoopReportOnlyRestrictPropertiesPlusCoepWithSoapByDefault(
 //  - value is kUnsafeNone
 //  - soap_by_default_value is kSameOriginAllowPopups
 network::CrossOriginOpenerPolicy CoopUnsafeNoneWithSoapByDefault(
-    const absl::optional<url::Origin>& origin = absl::nullopt) {
+    const std::optional<url::Origin>& origin = std::nullopt) {
   network::CrossOriginOpenerPolicy coop;
   coop.soap_by_default_value =
       network::mojom::CrossOriginOpenerPolicyValue::kSameOriginAllowPopups;
@@ -137,7 +137,7 @@ network::CrossOriginOpenerPolicy CoopUnsafeNoneWithSoapByDefault(
 }
 
 network::CrossOriginOpenerPolicy CoopUnsafeNone(
-    const absl::optional<url::Origin>& origin = absl::nullopt) {
+    const std::optional<url::Origin>& origin = std::nullopt) {
   network::CrossOriginOpenerPolicy coop;
   // Using the default value.
   coop.origin = origin;

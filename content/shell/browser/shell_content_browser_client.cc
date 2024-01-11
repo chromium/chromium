@@ -168,7 +168,7 @@ class ShellControllerImpl : public mojom::ShellController {
     if (command_line.HasSwitch(name))
       std::move(callback).Run(command_line.GetSwitchValueASCII(name));
     else
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(std::nullopt);
   }
 
   void ExecuteJavaScript(const std::u16string& script,
@@ -655,7 +655,7 @@ base::FilePath ShellContentBrowserClient::GetFirstPartySetsDirectory() {
   return browser_context()->GetPath();
 }
 
-absl::optional<base::FilePath>
+std::optional<base::FilePath>
 ShellContentBrowserClient::GetLocalTracesDirectory() {
   return browser_context()->GetPath();
 }
@@ -875,14 +875,14 @@ void ShellContentBrowserClient::SetUpFieldTrials() {
       /*add_entropy_source_to_variations_ids=*/false);
 }
 
-absl::optional<blink::ParsedPermissionsPolicy>
+std::optional<blink::ParsedPermissionsPolicy>
 ShellContentBrowserClient::GetPermissionsPolicyForIsolatedWebApp(
     content::BrowserContext* browser_context,
     const url::Origin& app_origin) {
   blink::ParsedPermissionsPolicyDeclaration coi_decl(
       blink::mojom::PermissionsPolicyFeature::kCrossOriginIsolated,
       /*allowed_origins=*/{},
-      /*self_if_matches=*/absl::nullopt,
+      /*self_if_matches=*/std::nullopt,
       /*matches_all_origins=*/true, /*matches_opaque_src=*/false);
 
   blink::ParsedPermissionsPolicyDeclaration socket_decl(

@@ -154,7 +154,7 @@ HRESULT DWriteFontCollectionProxy::FindFamilyName(
   TRACE_EVENT0("dwrite,fonts", "FontProxy::FindFamilyName");
 
   HRESULT hr = S_OK;
-  if (absl::optional<UINT32> family_index = FindFamilyIndex(family_name, &hr)) {
+  if (std::optional<UINT32> family_index = FindFamilyIndex(family_name, &hr)) {
     DCHECK_EQ(hr, S_OK);
     DCHECK(IsValidFamilyIndex(*family_index));
     *index = *family_index;
@@ -167,7 +167,7 @@ HRESULT DWriteFontCollectionProxy::FindFamilyName(
   return hr;
 }
 
-absl::optional<UINT32> DWriteFontCollectionProxy::FindFamilyIndex(
+std::optional<UINT32> DWriteFontCollectionProxy::FindFamilyIndex(
     const std::u16string& family_name,
     HRESULT* hresult_out) {
   DCHECK(!hresult_out || *hresult_out == S_OK);
@@ -177,13 +177,13 @@ absl::optional<UINT32> DWriteFontCollectionProxy::FindFamilyIndex(
     if (iter != family_names_.end()) {
       if (iter->second != kFamilyNotFound)
         return iter->second;
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     if (base::FeatureList::IsEnabled(kLimitFontFamilyNamesPerRenderer) &&
         family_names_.size() > kFamilyNamesLimit &&
         !IsLastResortFontName(family_name)) {
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
 
@@ -194,7 +194,7 @@ absl::optional<UINT32> DWriteFontCollectionProxy::FindFamilyIndex(
   if (!GetFontProxy().FindFamily(family_name, &family_index)) {
     if (hresult_out)
       *hresult_out = E_FAIL;
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   {
@@ -203,7 +203,7 @@ absl::optional<UINT32> DWriteFontCollectionProxy::FindFamilyIndex(
            family_names_[family_name] == family_index);
     family_names_[family_name] = family_index;
     if (UNLIKELY(family_index == kFamilyNotFound))
-      return absl::nullopt;
+      return std::nullopt;
     DCHECK(IsValidFamilyIndex(family_index));
 
     if (DWriteFontFamilyProxy* family =
@@ -214,14 +214,13 @@ absl::optional<UINT32> DWriteFontCollectionProxy::FindFamilyIndex(
 
     if (hresult_out)
       *hresult_out = E_FAIL;
-    return absl::nullopt;
+    return std::nullopt;
   }
 }
 
 DWriteFontFamilyProxy* DWriteFontCollectionProxy::FindFamily(
     const std::u16string& family_name) {
-  if (const absl::optional<UINT32> family_index =
-          FindFamilyIndex(family_name)) {
+  if (const std::optional<UINT32> family_index = FindFamilyIndex(family_name)) {
     if (DWriteFontFamilyProxy* family = GetFamily(*family_index))
       return family;
   }

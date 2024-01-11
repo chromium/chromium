@@ -39,7 +39,7 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
                         const std::string& raw_device_id) override;
   void OnSetMute(int player_id, bool mute) override;
   void OnRequestMediaRemoting(int player_id) override;
-  absl::optional<media_session::MediaPosition> GetPosition(
+  std::optional<media_session::MediaPosition> GetPosition(
       int player_id) const override;
   bool IsPictureInPictureAvailable(int player_id) const override;
   RenderFrameHost* render_frame_host() const override;
@@ -90,7 +90,7 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
 
     bool is_playing_;
     double volume_multiplier_;
-    absl::optional<media_session::MediaPosition> position_;
+    std::optional<media_session::MediaPosition> position_;
     bool is_in_picture_in_picture_;
     std::string audio_sink_id_ =
         media::AudioDeviceDescription::kDefaultDeviceId;
@@ -101,7 +101,7 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
   // player_id. The value of the vector is the playing status and volume.
   std::vector<MockPlayer> players_;
 
-  absl::optional<GlobalRenderFrameHostId> render_frame_host_global_id_;
+  std::optional<GlobalRenderFrameHostId> render_frame_host_global_id_;
 
   int received_resume_calls_ = 0;
   int received_suspend_calls_ = 0;

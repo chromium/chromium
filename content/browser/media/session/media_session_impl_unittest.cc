@@ -58,7 +58,7 @@ class MockAudioFocusDelegate : public AudioFocusDelegate {
     return AudioFocusResult::kSuccess;
   }
 
-  absl::optional<AudioFocusType> GetCurrentFocusType() const override {
+  std::optional<AudioFocusType> GetCurrentFocusType() const override {
     return AudioFocusType::kGain;
   }
 

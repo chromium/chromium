@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "content/browser/file_system_access/file_system_access_lock_manager.h"
+
+#include <optional>
+
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ref.h"
@@ -14,7 +17,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features_generated.h"
 
 namespace content {
@@ -421,7 +423,7 @@ class RootLock : public Lock {
       : Lock({},
              lock_manager->ancestor_lock_type_,
              lock_manager->exclusive_lock_type_,
-             /*parent_lock=*/absl::nullopt),
+             /*parent_lock=*/std::nullopt),
         lock_manager_(lock_manager),
         root_locator_(root_locator) {}
 
@@ -436,7 +438,7 @@ class RootLock : public Lock {
 FileSystemAccessLockManager::RootLocator
 FileSystemAccessLockManager::RootLocator::FromFileSystemURL(
     const storage::FileSystemURL& url) {
-  absl::optional<storage::BucketLocator> maybe_bucket_locator = absl::nullopt;
+  std::optional<storage::BucketLocator> maybe_bucket_locator = std::nullopt;
   EntryPathType path_type;
   switch (url.type()) {
     case storage::kFileSystemTypeLocal:
@@ -461,7 +463,7 @@ FileSystemAccessLockManager::RootLocator::FromFileSystemURL(
 
 FileSystemAccessLockManager::RootLocator::RootLocator(
     const EntryPathType& type,
-    const absl::optional<storage::BucketLocator>& bucket_locator)
+    const std::optional<storage::BucketLocator>& bucket_locator)
     : type(type), bucket_locator(bucket_locator) {
   // Files in the sandboxed file system must have a `bucket_locator`. See the
   // comment in `RootLocator::FromFileSystemURL()`. Files outside of the

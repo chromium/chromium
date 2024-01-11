@@ -179,7 +179,7 @@ class WebDragSourceAura : public content::WebContentsObserver,
 // necessary.
 void PrepareDragForFileContents(const DropData& drop_data,
                                 ui::OSExchangeDataProvider* provider) {
-  absl::optional<base::FilePath> filename =
+  std::optional<base::FilePath> filename =
       drop_data.GetSafeFilenameForImageFileContents();
   if (filename)
     provider->SetFileContents(*filename, drop_data.file_contents);
@@ -375,7 +375,7 @@ WebContentsViewAura::OnPerformingDropContext::OnPerformingDropContext(
     DropMetadata drop_metadata,
     std::unique_ptr<ui::OSExchangeData> data,
     base::ScopedClosureRunner end_drag_runner,
-    absl::optional<gfx::PointF> transformed_pt,
+    std::optional<gfx::PointF> transformed_pt,
     gfx::PointF screen_pt)
     : target_rwh(target_rwh->GetWeakPtr()),
       drop_data(std::move(drop_data)),
@@ -771,7 +771,7 @@ void WebContentsViewAura::PrepareDropData(
 
   if (data.GetPickledData(ui::ClipboardFormatType::WebCustomDataType(),
                           &pickle)) {
-    if (absl::optional<std::unordered_map<std::u16string, std::u16string>>
+    if (std::optional<std::unordered_map<std::u16string, std::u16string>>
             maybe_custom_data = ui::ReadCustomDataIntoMap(pickle);
         maybe_custom_data) {
       drop_data->custom_data = std::move(*maybe_custom_data);
@@ -1341,7 +1341,7 @@ void WebContentsViewAura::DragEnteredCallback(
     DropMetadata drop_metadata,
     std::unique_ptr<DropData> drop_data,
     base::WeakPtr<RenderWidgetHostViewBase> target,
-    absl::optional<gfx::PointF> transformed_pt) {
+    std::optional<gfx::PointF> transformed_pt) {
   drag_in_progress_ = true;
   if (!target)
     return;
@@ -1428,7 +1428,7 @@ void WebContentsViewAura::DragUpdatedCallback(
     DropMetadata drop_metadata,
     std::unique_ptr<DropData> drop_data,
     base::WeakPtr<RenderWidgetHostViewBase> target,
-    absl::optional<gfx::PointF> transformed_pt) {
+    std::optional<gfx::PointF> transformed_pt) {
   // If drag is not in progress it means drag has already finished and we get
   // this callback after that already. This happens for example when drag leaves
   // out window and we get the exit signal while still waiting for this
@@ -1590,7 +1590,7 @@ void WebContentsViewAura::PerformDropCallback(
     DropMetadata drop_metadata,
     std::unique_ptr<ui::OSExchangeData> data,
     base::WeakPtr<RenderWidgetHostViewBase> target,
-    absl::optional<gfx::PointF> transformed_pt) {
+    std::optional<gfx::PointF> transformed_pt) {
   drag_in_progress_ = false;
   base::ScopedClosureRunner end_drag_runner(std::move(end_drag_runner_));
 
@@ -1668,7 +1668,7 @@ void WebContentsViewAura::MaybeLetDelegateProcessDrop(
 
 void WebContentsViewAura::GotModifiedDropDataFromDelegate(
     OnPerformingDropContext drop_context,
-    absl::optional<DropData> drop_data) {
+    std::optional<DropData> drop_data) {
   // This is possibly an async callback.  Make sure the RWH is still valid.
   if (!drop_context.target_rwh ||
       !drag_security_info_.IsValidDragTarget(drop_context.target_rwh.get())) {

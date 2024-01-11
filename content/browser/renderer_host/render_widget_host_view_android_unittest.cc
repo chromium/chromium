@@ -109,7 +109,7 @@ class RenderWidgetHostViewAndroidTest : public RenderViewHostImplTestHarness {
   // Directly map to `RenderWidgetHostViewAndroid` methods.
   bool SynchronizeVisualProperties(
       const cc::DeadlinePolicy& deadline_policy,
-      const absl::optional<viz::LocalSurfaceId>& child_local_surface_id);
+      const std::optional<viz::LocalSurfaceId>& child_local_surface_id);
   void WasEvicted();
   ui::ViewAndroid* GetNativeView();
   void OnRenderFrameMetadataChangedAfterActivation(
@@ -167,7 +167,7 @@ RenderWidgetHostViewAndroidTest::GetLocalSurfaceIdAndConfirmNewerThan(
 
 bool RenderWidgetHostViewAndroidTest::SynchronizeVisualProperties(
     const cc::DeadlinePolicy& deadline_policy,
-    const absl::optional<viz::LocalSurfaceId>& child_local_surface_id) {
+    const std::optional<viz::LocalSurfaceId>& child_local_surface_id) {
   return render_widget_host_view_android_->SynchronizeVisualProperties(
       deadline_policy, child_local_surface_id);
 }
@@ -337,7 +337,7 @@ TEST_F(RenderWidgetHostViewAndroidTest, DisplayFeature) {
   RenderWidgetHostViewBase* rwhv = rwhva;
   rwhva->GetNativeView()->SetLayoutForTesting(0, 0, 200, 400);
   test_view_android_delegate_->SetupTestDelegate(rwhva->GetNativeView());
-  EXPECT_EQ(absl::nullopt, rwhv->GetDisplayFeature());
+  EXPECT_EQ(std::nullopt, rwhv->GetDisplayFeature());
 
   // Set a vertical display feature, and verify this is reflected in the
   // computed display feature.
@@ -355,7 +355,7 @@ TEST_F(RenderWidgetHostViewAndroidTest, DisplayFeature) {
   rwhva->GetNativeView()->SetLayoutForTesting(0, 0, 400, 200);
   test_view_android_delegate_->SetDisplayFeatureForTesting(
       gfx::Rect(200, 100, 100, 200));
-  EXPECT_EQ(absl::nullopt, rwhv->GetDisplayFeature());
+  EXPECT_EQ(std::nullopt, rwhv->GetDisplayFeature());
 
   // Verify that horizontal display feature is correctly validated.
   test_view_android_delegate_->SetDisplayFeatureForTesting(

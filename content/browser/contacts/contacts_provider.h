@@ -5,8 +5,9 @@
 #ifndef CONTENT_BROWSER_CONTACTS_CONTACTS_PROVIDER_H_
 #define CONTENT_BROWSER_CONTACTS_CONTACTS_PROVIDER_H_
 
+#include <optional>
+
 #include "content/public/browser/contacts_picker_properties.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/contacts/contacts_manager.mojom.h"
 
 namespace content {
@@ -14,7 +15,7 @@ namespace content {
 class ContactsProvider {
  public:
   using ContactsSelectedCallback = base::OnceCallback<void(
-      absl::optional<std::vector<blink::mojom::ContactInfoPtr>> contacts,
+      std::optional<std::vector<blink::mojom::ContactInfoPtr>> contacts,
       int percentage_shared,
       ContactsPickerProperties properties_requested)>;
 

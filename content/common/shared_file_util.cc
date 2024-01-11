@@ -24,7 +24,7 @@ void PopulateFDsFromCommandLine(bool use_global_descriptors) {
     return;
   }
 
-  absl::optional<std::map<int, std::string>> shared_file_descriptors =
+  std::optional<std::map<int, std::string>> shared_file_descriptors =
       ParseSharedFileSwitchValue(shared_file_param);
   if (!shared_file_descriptors.has_value()) {
     return;
@@ -67,7 +67,7 @@ void SharedFileSwitchValueBuilder::AddEntry(const std::string& key_str,
   switch_value_ += base::NumberToString(key_id);
 }
 
-absl::optional<std::map<int, std::string>> ParseSharedFileSwitchValue(
+std::optional<std::map<int, std::string>> ParseSharedFileSwitchValue(
     const std::string& value) {
   std::map<int, std::string> values;
   std::vector<std::string> string_pairs = base::SplitString(
@@ -78,7 +78,7 @@ absl::optional<std::map<int, std::string>> ParseSharedFileSwitchValue(
         colon_position == pair.size() - 1) {
       DLOG(ERROR) << "Found invalid entry parsing shared file string value:"
                   << pair;
-      return absl::nullopt;
+      return std::nullopt;
     }
     std::string key = pair.substr(0, colon_position);
     std::string number_string =
@@ -87,12 +87,12 @@ absl::optional<std::map<int, std::string>> ParseSharedFileSwitchValue(
     if (!base::StringToInt(number_string, &key_int)) {
       DLOG(ERROR) << "Found invalid entry parsing shared file string value:"
                   << number_string << " (not an int).";
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     values[key_int] = key;
   }
-  return absl::make_optional(std::move(values));
+  return std::make_optional(std::move(values));
 }
 
 }  // namespace content

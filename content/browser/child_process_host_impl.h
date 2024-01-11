@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -22,7 +23,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/invitation.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/memory/memory_pressure_listener.h"
@@ -76,7 +76,7 @@ class CONTENT_EXPORT ChildProcessHostImpl : public ChildProcessHost,
   // ChildProcessHost implementation
   bool Send(IPC::Message* message) override;
   void ForceShutdown() override;
-  absl::optional<mojo::OutgoingInvitation>& GetMojoInvitation() override;
+  std::optional<mojo::OutgoingInvitation>& GetMojoInvitation() override;
   void CreateChannelMojo() override;
   bool IsChannelOpening() override;
 #if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
@@ -133,7 +133,7 @@ class CONTENT_EXPORT ChildProcessHostImpl : public ChildProcessHost,
 
   // The outgoing Mojo invitation which must be consumed to bootstrap Mojo IPC
   // to the child process.
-  absl::optional<mojo::OutgoingInvitation> mojo_invitation_{absl::in_place};
+  std::optional<mojo::OutgoingInvitation> mojo_invitation_{std::in_place};
 
   const IpcMode ipc_mode_;
   raw_ptr<ChildProcessHostDelegate> delegate_;

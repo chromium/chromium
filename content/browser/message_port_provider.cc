@@ -4,6 +4,7 @@
 
 #include "content/public/browser/message_port_provider.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/unguessable_token.h"
@@ -14,7 +15,6 @@
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/messaging/string_message_codec.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -52,7 +52,7 @@ void PostMessageToFrameInternal(
 
   RenderFrameHostImpl* rfh =
       static_cast<RenderFrameHostImpl*>(&page.GetMainDocument());
-  rfh->PostMessageEvent(absl::nullopt, source_origin, target_origin,
+  rfh->PostMessageEvent(std::nullopt, source_origin, target_origin,
                         std::move(message));
 }
 
@@ -100,7 +100,7 @@ void MessagePortProvider::PostMessageToFrame(
 void MessagePortProvider::PostMessageToFrame(
     Page& page,
     const std::u16string& source_origin,
-    const absl::optional<std::u16string>& target_origin,
+    const std::optional<std::u16string>& target_origin,
     const std::u16string& data,
     std::vector<blink::WebMessagePort> ports) {
   // Extract the underlying descriptors.

@@ -5,11 +5,11 @@
 #ifndef CONTENT_PUBLIC_BROWSER_CHILD_PROCESS_SECURITY_POLICY_H_
 #define CONTENT_PUBLIC_BROWSER_CHILD_PROCESS_SECURITY_POLICY_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -325,7 +325,7 @@ class ChildProcessSecurityPolicy {
   // by the source of how they were added and/or by BrowserContext.
   //
   // If |source| is provided, only origins that were added with the same source
-  // will be returned; if |source| is absl::nullopt, origins from all sources
+  // will be returned; if |source| is std::nullopt, origins from all sources
   // will be returned.
   //
   // If |browser_context| is null, only globally applicable origins will be
@@ -341,7 +341,7 @@ class ChildProcessSecurityPolicy {
   // Origin-Agent-Cluster as well as COOP documents loaded without user
   // activation.)
   virtual std::vector<url::Origin> GetIsolatedOrigins(
-      absl::optional<IsolatedOriginSource> source = absl::nullopt,
+      std::optional<IsolatedOriginSource> source = std::nullopt,
       BrowserContext* browser_context = nullptr) = 0;
 
   // Returns whether the site of |origin| is isolated and was added by the

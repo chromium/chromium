@@ -38,7 +38,7 @@ class BlinkTestEnvironment : public ::testing::Environment {
   virtual void InitializeBlinkTestSupport();
 
   base::TestDiscardableMemoryAllocator discardable_memory_allocator_;
-  absl::optional<content::TestContentClientInitializer> content_initializer_;
+  std::optional<content::TestContentClientInitializer> content_initializer_;
   std::unique_ptr<content::TestBlinkWebUnitTestSupport> blink_test_support_;
 };
 

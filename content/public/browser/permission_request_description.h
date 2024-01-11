@@ -5,10 +5,10 @@
 #ifndef CONTENT_PUBLIC_BROWSER_PERMISSION_REQUEST_DESCRIPTION_H_
 #define CONTENT_PUBLIC_BROWSER_PERMISSION_REQUEST_DESCRIPTION_H_
 
+#include <optional>
 #include <vector>
 
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "ui/gfx/geometry/rect.h"
@@ -24,14 +24,14 @@ struct CONTENT_EXPORT PermissionRequestDescription {
       bool user_gesture = false,
       const GURL& requesting_origin = GURL(),
       bool embedded_permission_element_initiated = false,
-      const absl::optional<gfx::Rect>& anchor_element_position = absl::nullopt);
+      const std::optional<gfx::Rect>& anchor_element_position = std::nullopt);
 
   explicit PermissionRequestDescription(
       blink::PermissionType permission,
       bool user_gesture = false,
       const GURL& requesting_origin = GURL(),
       bool embedded_permission_element_initiated = false,
-      const absl::optional<gfx::Rect>& anchor_element_position = absl::nullopt);
+      const std::optional<gfx::Rect>& anchor_element_position = std::nullopt);
 
   PermissionRequestDescription& operator=(const PermissionRequestDescription&) =
       delete;
@@ -60,7 +60,7 @@ struct CONTENT_EXPORT PermissionRequestDescription {
   // Anchor element position (in screen coordinates), when the permission
   // request is initiated from a <permission> element. Used on the embedder side
   // to help position the permission prompt.
-  absl::optional<gfx::Rect> anchor_element_position;
+  std::optional<gfx::Rect> anchor_element_position;
 };
 
 }  // namespace content

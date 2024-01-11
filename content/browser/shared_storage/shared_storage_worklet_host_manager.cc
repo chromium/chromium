@@ -116,7 +116,7 @@ void SharedStorageWorkletHostManager::NotifyUrnUuidGenerated(
 }
 
 void SharedStorageWorkletHostManager::NotifyConfigPopulated(
-    const absl::optional<FencedFrameConfig>& config) {
+    const std::optional<FencedFrameConfig>& config) {
   for (SharedStorageObserverInterface& observer : observers_) {
     observer.OnConfigPopulated(config);
   }

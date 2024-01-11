@@ -62,9 +62,9 @@ PaymentAppProviderUtil::CreateBlankPaymentHandlerResponse(
     payments::mojom::PaymentEventResponseType response_type) {
   return payments::mojom::PaymentHandlerResponse::New(
       /*method_name=*/"", /*stringified_details=*/"", response_type,
-      /*payer_name=*/absl::nullopt, /*payer_email=*/absl::nullopt,
-      /*payer_phone=*/absl::nullopt, /*shipping_address=*/nullptr,
-      /*shipping_option=*/absl::nullopt);
+      /*payer_name=*/std::nullopt, /*payer_email=*/std::nullopt,
+      /*payer_phone=*/std::nullopt, /*shipping_address=*/nullptr,
+      /*shipping_option=*/std::nullopt);
 }
 
 }  // namespace content

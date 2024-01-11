@@ -13,54 +13,54 @@ class Params : public mojom::Params {
  public:
   static void Bind(mojo::PendingReceiver<mojom::Params> receiver);
 
-  void SendNullBool(absl::optional<bool> optional_bool,
+  void SendNullBool(std::optional<bool> optional_bool,
                     SendNullBoolCallback callback) override;
-  void SendNullUint8(absl::optional<uint8_t> optional_uint8,
+  void SendNullUint8(std::optional<uint8_t> optional_uint8,
                      SendNullUint8Callback callback) override;
-  void SendNullInt8(absl::optional<int8_t> optional_int8,
+  void SendNullInt8(std::optional<int8_t> optional_int8,
                     SendNullInt8Callback callback) override;
-  void SendNullUint16(absl::optional<uint16_t> optional_uint16,
+  void SendNullUint16(std::optional<uint16_t> optional_uint16,
                       SendNullUint16Callback callback) override;
-  void SendNullInt16(absl::optional<int16_t> optional_int16,
+  void SendNullInt16(std::optional<int16_t> optional_int16,
                      SendNullInt16Callback callback) override;
-  void SendNullUint32(absl::optional<uint32_t> optional_uint32,
+  void SendNullUint32(std::optional<uint32_t> optional_uint32,
                       SendNullUint32Callback callback) override;
-  void SendNullInt32(absl::optional<int32_t> optional_int32,
+  void SendNullInt32(std::optional<int32_t> optional_int32,
                      SendNullInt32Callback callback) override;
-  void SendNullUint64(absl::optional<uint64_t> optional_uint64,
+  void SendNullUint64(std::optional<uint64_t> optional_uint64,
                       SendNullUint64Callback callback) override;
-  void SendNullInt64(absl::optional<int64_t> optional_int64,
+  void SendNullInt64(std::optional<int64_t> optional_int64,
                      SendNullInt64Callback callback) override;
-  void SendNullFloat(absl::optional<float> optional_float,
+  void SendNullFloat(std::optional<float> optional_float,
                      SendNullFloatCallback callback) override;
-  void SendNullDouble(absl::optional<double> optional_double,
+  void SendNullDouble(std::optional<double> optional_double,
                       SendNullDoubleCallback callback) override;
-  void SendNullEnum(absl::optional<mojom::RegularEnum> optional_enum,
+  void SendNullEnum(std::optional<mojom::RegularEnum> optional_enum,
                     SendNullEnumCallback callback) override;
 
-  void SendOptionalBool(absl::optional<bool> optional_bool,
+  void SendOptionalBool(std::optional<bool> optional_bool,
                         SendOptionalBoolCallback callback) override;
-  void SendOptionalUint8(absl::optional<uint8_t> optional_uint8,
+  void SendOptionalUint8(std::optional<uint8_t> optional_uint8,
                          SendOptionalUint8Callback callback) override;
-  void SendOptionalInt8(absl::optional<int8_t> optional_int8,
+  void SendOptionalInt8(std::optional<int8_t> optional_int8,
                         SendOptionalInt8Callback callback) override;
-  void SendOptionalUint16(absl::optional<uint16_t> optional_uint16,
+  void SendOptionalUint16(std::optional<uint16_t> optional_uint16,
                           SendOptionalUint16Callback callback) override;
-  void SendOptionalInt16(absl::optional<int16_t> optional_int16,
+  void SendOptionalInt16(std::optional<int16_t> optional_int16,
                          SendOptionalInt16Callback callback) override;
-  void SendOptionalUint32(absl::optional<uint32_t> optional_uint32,
+  void SendOptionalUint32(std::optional<uint32_t> optional_uint32,
                           SendOptionalUint32Callback callback) override;
-  void SendOptionalInt32(absl::optional<int32_t> optional_int32,
+  void SendOptionalInt32(std::optional<int32_t> optional_int32,
                          SendOptionalInt32Callback callback) override;
-  void SendOptionalUint64(absl::optional<uint64_t> optional_uint64,
+  void SendOptionalUint64(std::optional<uint64_t> optional_uint64,
                           SendOptionalUint64Callback callback) override;
-  void SendOptionalInt64(absl::optional<int64_t> optional_int64,
+  void SendOptionalInt64(std::optional<int64_t> optional_int64,
                          SendOptionalInt64Callback callback) override;
-  void SendOptionalFloat(absl::optional<float> optional_float,
+  void SendOptionalFloat(std::optional<float> optional_float,
                          SendOptionalFloatCallback callback) override;
-  void SendOptionalDouble(absl::optional<double> optional_double,
+  void SendOptionalDouble(std::optional<double> optional_double,
                           SendOptionalDoubleCallback callback) override;
-  void SendOptionalEnum(absl::optional<mojom::RegularEnum> optional_enum,
+  void SendOptionalEnum(std::optional<mojom::RegularEnum> optional_enum,
                         SendOptionalEnumCallback callback) override;
 
   void SendNullStructWithOptionalNumerics(

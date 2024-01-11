@@ -105,7 +105,7 @@ WorkletLoaderBase::~WorkletLoaderBase() = default;
 void WorkletLoaderBase::OnDownloadComplete(
     std::unique_ptr<std::string> body,
     scoped_refptr<net::HttpResponseHeaders> headers,
-    absl::optional<std::string> error_msg) {
+    std::optional<std::string> error_msg) {
   DCHECK(load_worklet_callback_);
   auction_downloader_.reset();
   if (!body) {
@@ -141,7 +141,7 @@ void WorkletLoaderBase::HandleDownloadResultOnV8Thread(
     scoped_refptr<AuctionV8Helper> v8_helper,
     scoped_refptr<AuctionV8Helper::DebugId> debug_id,
     std::unique_ptr<std::string> body,
-    absl::optional<std::string> error_msg,
+    std::optional<std::string> error_msg,
     WorkletLoaderBase::Result::V8Data* out_data,
     scoped_refptr<base::SequencedTaskRunner> user_thread_task_runner,
     base::WeakPtr<WorkletLoaderBase> weak_instance) {
@@ -168,7 +168,7 @@ bool WorkletLoaderBase::CompileJs(const std::string& body,
                                   scoped_refptr<AuctionV8Helper> v8_helper,
                                   const GURL& source_url,
                                   AuctionV8Helper::DebugId* debug_id,
-                                  absl::optional<std::string>& error_msg,
+                                  std::optional<std::string>& error_msg,
                                   WorkletLoaderBase::Result::V8Data* out_data) {
   AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper.get());
   v8::Context::Scope context_scope(v8_helper->scratch_context());
@@ -190,7 +190,7 @@ bool WorkletLoaderBase::CompileWasm(
     scoped_refptr<AuctionV8Helper> v8_helper,
     const GURL& source_url,
     AuctionV8Helper::DebugId* debug_id,
-    absl::optional<std::string>& error_msg,
+    std::optional<std::string>& error_msg,
     WorkletLoaderBase::Result::V8Data* out_data) {
   AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper.get());
   v8::Context::Scope context_scope(v8_helper->scratch_context());
@@ -207,7 +207,7 @@ bool WorkletLoaderBase::CompileWasm(
 
 void WorkletLoaderBase::DeliverCallbackOnUserThread(
     bool success,
-    absl::optional<std::string> error_msg) {
+    std::optional<std::string> error_msg) {
   DCHECK(load_worklet_callback_);
   pending_result_.set_success(success);
   // Note that this is posted with a weak pointer bound in order to provide

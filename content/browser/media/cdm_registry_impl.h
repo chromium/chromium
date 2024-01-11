@@ -75,12 +75,13 @@ class CONTENT_EXPORT CdmRegistryImpl : public CdmRegistry,
   // Get the capability for `key_system` with robustness `robustness`
   // synchronously. If lazy initialization is needed, return
   // Status::kUninitialized.
-  std::pair<absl::optional<media::CdmCapability>, CdmInfo::Status>
-  GetCapability(const std::string& key_system, CdmInfo::Robustness robustness);
+  std::pair<std::optional<media::CdmCapability>, CdmInfo::Status> GetCapability(
+      const std::string& key_system,
+      CdmInfo::Robustness robustness);
 
   // Get the capability for `key_system` with robustness `robustness`
   // synchronously. All initialization should have been completed.
-  std::pair<absl::optional<media::CdmCapability>, CdmInfo::Status>
+  std::pair<std::optional<media::CdmCapability>, CdmInfo::Status>
   GetFinalCapability(const std::string& key_system,
                      CdmInfo::Robustness robustness);
 
@@ -101,12 +102,12 @@ class CONTENT_EXPORT CdmRegistryImpl : public CdmRegistry,
                                 media::CdmCapabilityCB cdm_capability_cb);
 
   // Called when initialization of `key_system` with robustness `robustness`
-  // is complete. `cdm_capability` will be absl::nullopt if the key system
+  // is complete. `cdm_capability` will be std::nullopt if the key system
   // with specified robustness isn't supported.
   void OnCapabilityInitialized(
       const std::string& key_system,
       const CdmInfo::Robustness robustness,
-      absl::optional<media::CdmCapability> cdm_capability);
+      std::optional<media::CdmCapability> cdm_capability);
 
   // Finalizes the CdmInfo corresponding to `key_system` and `robustness` if its
   // CdmCapability is null (lazy initialization). No-op if the CdmInfo does not
@@ -115,7 +116,7 @@ class CONTENT_EXPORT CdmRegistryImpl : public CdmRegistry,
   // capability.
   void FinalizeCapability(const std::string& key_system,
                           const CdmInfo::Robustness robustness,
-                          absl::optional<media::CdmCapability> cdm_capability,
+                          std::optional<media::CdmCapability> cdm_capability,
                           CdmInfo::Status status);
 
   // When capabilities for all registered key systems have been determined,
@@ -143,7 +144,7 @@ class CONTENT_EXPORT CdmRegistryImpl : public CdmRegistry,
       key_system_capabilities_update_callbacks_;
 
   // Cached current KeySystemCapabilities value.
-  absl::optional<KeySystemCapabilities> key_system_capabilities_;
+  std::optional<KeySystemCapabilities> key_system_capabilities_;
 
   // Key system and robustness pairs pending CdmCapability lazy initialization.
   std::set<std::pair<std::string, CdmInfo::Robustness>>

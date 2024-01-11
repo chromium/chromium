@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -35,7 +36,6 @@
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
@@ -99,7 +99,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   struct CONTENT_EXPORT PrivateAggregationKey {
     PrivateAggregationKey(
         url::Origin reporting_origin,
-        absl::optional<url::Origin> aggregation_coordinator_origin);
+        std::optional<url::Origin> aggregation_coordinator_origin);
     PrivateAggregationKey(const PrivateAggregationKey&);
     PrivateAggregationKey& operator=(const PrivateAggregationKey&);
     PrivateAggregationKey(PrivateAggregationKey&&);
@@ -113,7 +113,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
     }
 
     url::Origin reporting_origin;
-    absl::optional<url::Origin> aggregation_coordinator_origin;
+    std::optional<url::Origin> aggregation_coordinator_origin;
   };
 
   using PrivateAggregationRequests =
@@ -148,7 +148,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
     double bid;
 
     // Currency the bid is in.
-    absl::optional<blink::AdCurrency> bid_currency;
+    std::optional<blink::AdCurrency> bid_currency;
 
     // Bid converted to the appropriate auction's sellerCurrency;
     double bid_in_seller_currency;
@@ -157,15 +157,15 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
     double score;
 
     double highest_scoring_other_bid;
-    absl::optional<double> highest_scoring_other_bid_in_seller_currency;
-    absl::optional<url::Origin> highest_scoring_other_bid_owner;
+    std::optional<double> highest_scoring_other_bid_in_seller_currency;
+    std::optional<url::Origin> highest_scoring_other_bid_owner;
 
-    absl::optional<uint32_t> scoring_signals_data_version;
+    std::optional<uint32_t> scoring_signals_data_version;
 
     uint64_t trace_id;
 
     // Saved response from the server if the actual auction ran on a B&A server.
-    absl::optional<BiddingAndAuctionResponse> saved_response;
+    std::optional<BiddingAndAuctionResponse> saved_response;
 
     // If this is a component seller, information about how the component seller
     // modified the bid.
@@ -184,24 +184,24 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
 
     GURL render_url;
     std::vector<GURL> ad_components;
-    absl::optional<std::vector<url::Origin>> allowed_reporting_origins;
+    std::optional<std::vector<url::Origin>> allowed_reporting_origins;
 
     // Bid returned by the bidder.
     double bid;
 
     // Currency the bid is in.
-    absl::optional<blink::AdCurrency> bid_currency;
+    std::optional<blink::AdCurrency> bid_currency;
 
     // Ad cost returned by the bidder.
-    absl::optional<double> ad_cost;
+    std::optional<double> ad_cost;
 
     // Modeling signals returned by the bidder.
-    absl::optional<uint16_t> modeling_signals;
+    std::optional<uint16_t> modeling_signals;
 
     // How long it took to generate the bid.
     base::TimeDelta bid_duration;
 
-    absl::optional<uint32_t> bidding_signals_data_version;
+    std::optional<uint32_t> bidding_signals_data_version;
 
     // The metadata associated with the winning ad, to be made available to the
     // interest group in future auctions in the `prevWins` field.
@@ -254,7 +254,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
       bool bid_is_kanon,
       WinningBidInfo winning_bid_info,
       SellerWinningBidInfo top_level_seller_winning_bid_info,
-      absl::optional<SellerWinningBidInfo> component_seller_winning_bid_info,
+      std::optional<SellerWinningBidInfo> component_seller_winning_bid_info,
       blink::InterestGroupSet interest_groups_that_bid,
       std::vector<GURL> debug_win_report_urls,
       std::vector<GURL> debug_loss_report_urls,
@@ -341,7 +341,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   // success, OnSellerWorkletFatalError() on error.
   void RequestSellerWorklet(
       const SellerWinningBidInfo* seller_info,
-      const absl::optional<std::string>& top_seller_signals);
+      const std::optional<std::string>& top_seller_signals);
 
   // Invoked when a seller worklet crashes or fails to load.
   void OnSellerWorkletFatalError(
@@ -353,7 +353,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   // worklet.
   void OnSellerWorkletReceived(
       const SellerWinningBidInfo* seller_info,
-      const absl::optional<std::string>& top_seller_signals);
+      const std::optional<std::string>& top_seller_signals);
 
   // Invoked once a seller's ReportResult() call has completed. Either starts
   // loading the component seller worklet, If the winning bid is from a
@@ -365,8 +365,8 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
       const SellerWinningBidInfo* seller_info,
       double winning_bid,
       double highest_scoring_other_bid,
-      const absl::optional<std::string>& signals_for_winner,
-      const absl::optional<GURL>& seller_report_url,
+      const std::optional<std::string>& signals_for_winner,
+      const std::optional<GURL>& seller_report_url,
       const base::flat_map<std::string, GURL>& seller_ad_beacon_map,
       PrivateAggregationRequests pa_requests,
       base::TimeDelta reporting_latency,
@@ -377,7 +377,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   // `InitializeFromServerResponse()`.
   bool AddReportResultResult(
       const url::Origin& seller_origin,
-      const absl::optional<GURL>& seller_report_url,
+      const std::optional<GURL>& seller_report_url,
       const base::flat_map<std::string, GURL>& seller_ad_beacon_map,
       blink::FencedFrame::ReportingDestination destination,
       std::vector<std::string>& errors_out);
@@ -402,7 +402,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   void OnBidderReportWinComplete(
       double winning_bid,
       double highest_scoring_other_bid,
-      const absl::optional<GURL>& bidder_report_url,
+      const std::optional<GURL>& bidder_report_url,
       const base::flat_map<std::string, GURL>& bidder_ad_beacon_map,
       const base::flat_map<std::string, std::string>& bidder_ad_macro_map,
       PrivateAggregationRequests pa_requests,
@@ -412,14 +412,14 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   // Invoked with the results from ReportWin. Split out as a separate function
   // from OnBidderReportWinComplete since this is also called by
   // `InitializeFromServerResponse()`.
-  // `bidder_ad_macro_map` is always absl::nullopt from
+  // `bidder_ad_macro_map` is always std::nullopt from
   // `InitializeFromServerResponse()` since macro expanded reporting is not
   // supported from server auction.
   bool AddReportWinResult(
       const url::Origin& bidder_origin,
-      const absl::optional<GURL>& bidder_report_url,
+      const std::optional<GURL>& bidder_report_url,
       const base::flat_map<std::string, GURL>& bidder_ad_beacon_map,
-      const absl::optional<base::flat_map<std::string, std::string>>&
+      const std::optional<base::flat_map<std::string, std::string>>&
           bidder_ad_macro_map,
       std::vector<std::string>& errors_out);
 
@@ -490,7 +490,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
 
   const WinningBidInfo winning_bid_info_;
   const SellerWinningBidInfo top_level_seller_winning_bid_info_;
-  const absl::optional<SellerWinningBidInfo> component_seller_winning_bid_info_;
+  const std::optional<SellerWinningBidInfo> component_seller_winning_bid_info_;
 
   blink::InterestGroupSet interest_groups_that_bid_;
 

@@ -39,7 +39,7 @@ void ReportBindings::AttachToContext(v8::Local<v8::Context> context) {
 }
 
 void ReportBindings::Reset() {
-  report_url_ = absl::nullopt;
+  report_url_ = std::nullopt;
   already_called_ = false;
 }
 

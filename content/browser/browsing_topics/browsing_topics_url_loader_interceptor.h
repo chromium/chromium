@@ -39,7 +39,7 @@ class CONTENT_EXPORT BrowsingTopicsURLLoaderInterceptor
 
   // SubresourceProxyingURLLoader::Interceptor
   void WillStartRequest(net::HttpRequestHeaders& headers) override;
-  void WillFollowRedirect(const absl::optional<GURL>& new_url,
+  void WillFollowRedirect(const std::optional<GURL>& new_url,
                           std::vector<std::string>& removed_headers,
                           net::HttpRequestHeaders& modified_headers) override;
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,

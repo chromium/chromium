@@ -5,6 +5,8 @@
 #include "content/public/browser/tracing_controller.h"
 
 #include <stdint.h>
+
+#include <optional>
 #include <utility>
 
 #include "base/files/file_util.h"
@@ -32,7 +34,6 @@
 #include "services/tracing/public/cpp/perfetto/trace_event_data_source.h"
 #include "services/tracing/public/cpp/trace_event_agent.h"
 #include "services/tracing/public/cpp/tracing_features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
@@ -125,7 +126,7 @@ class TracingControllerTest : public ContentBrowserTest {
     EXPECT_TRUE(NavigateToURL(shell, GetTestUrl("", "title1.html")));
   }
 
-  absl::optional<base::Value::Dict> GenerateMetadataDict() {
+  std::optional<base::Value::Dict> GenerateMetadataDict() {
     return std::move(metadata_);
   }
 
@@ -334,7 +335,7 @@ class TracingControllerTest : public ContentBrowserTest {
   int enable_recording_done_callback_count_;
   int disable_recording_done_callback_count_;
   base::FilePath last_actual_recording_file_path_;
-  absl::optional<base::Value::Dict> metadata_;
+  std::optional<base::Value::Dict> metadata_;
   std::unique_ptr<std::string> last_data_;
 };
 
@@ -389,7 +390,7 @@ IN_PROC_BROWSER_TEST_F(TracingControllerTest,
   TestStartAndStopTracingString();
   // Check that a number of important keys exist in the metadata dictionary. The
   // values are not checked to ensure the test is robust.
-  absl::optional<base::Value> trace_json = base::JSONReader::Read(last_data());
+  std::optional<base::Value> trace_json = base::JSONReader::Read(last_data());
   ASSERT_TRUE(trace_json);
   ASSERT_TRUE(trace_json->is_dict());
   auto* metadata_json = trace_json->GetDict().FindDict("metadata");
@@ -426,7 +427,7 @@ IN_PROC_BROWSER_TEST_F(TracingControllerTest,
                        MAYBE_NotWhitelistedMetadataStripped) {
   TestStartAndStopTracingStringWithFilter();
   // Check that a number of important keys exist in the metadata dictionary.
-  absl::optional<base::Value> trace_json = base::JSONReader::Read(last_data());
+  std::optional<base::Value> trace_json = base::JSONReader::Read(last_data());
   ASSERT_TRUE(trace_json);
   const base::Value::Dict* metadata_json =
       trace_json->GetDict().FindDict("metadata");

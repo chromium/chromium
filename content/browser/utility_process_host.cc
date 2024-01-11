@@ -197,7 +197,7 @@ void UtilityProcessHost::RunServiceDeprecated(
     mojo::ScopedMessagePipeHandle service_pipe,
     RunServiceDeprecatedCallback callback) {
   if (launch_state_ == LaunchState::kLaunchFailed) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -511,7 +511,7 @@ void UtilityProcessHost::OnProcessLaunchFailed(int error_code) {
 // TODO(crbug.com/1328879): Remove this when fixing the bug.
 #if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
   for (auto& callback : pending_run_service_callbacks_)
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
   pending_run_service_callbacks_.clear();
 #endif
 }
@@ -526,7 +526,7 @@ void UtilityProcessHost::OnProcessCrashed(int exit_code) {
   client->OnProcessCrashed();
 }
 
-absl::optional<std::string> UtilityProcessHost::GetServiceName() {
+std::optional<std::string> UtilityProcessHost::GetServiceName() {
   return metrics_name_;
 }
 

@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/media/capture/mouse_cursor_overlay_controller.h"
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "content/browser/media/capture/mouse_cursor_overlay_controller.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/aura/client/cursor_shape_client.h"
 #include "ui/aura/window.h"
@@ -200,7 +200,7 @@ gfx::RectF MouseCursorOverlayController::ComputeRelativeBoundsForOverlay(
     return gfx::RectF();
 
   const gfx::Size& window_size = window->bounds().size();
-  absl::optional<ui::CursorData> cursor_data =
+  std::optional<ui::CursorData> cursor_data =
       aura::client::GetCursorShapeClient().GetCursorData(cursor);
   if (window_size.IsEmpty() || !window->GetRootWindow() || !cursor_data)
     return gfx::RectF();
@@ -236,7 +236,7 @@ void MouseCursorOverlayController::DisconnectFromToolkitForTesting() {
 // static
 SkBitmap MouseCursorOverlayController::GetCursorImage(
     const gfx::NativeCursor& cursor) {
-  absl::optional<ui::CursorData> cursor_data =
+  std::optional<ui::CursorData> cursor_data =
       aura::client::GetCursorShapeClient().GetCursorData(cursor);
   if (!cursor_data)
     return SkBitmap();

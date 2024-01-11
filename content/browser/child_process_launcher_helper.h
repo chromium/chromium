@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -23,7 +24,6 @@
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
 #include "ppapi/buildflags/buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !BUILDFLAG(IS_FUCHSIA)
 #include "mojo/public/cpp/platform/named_platform_channel.h"
@@ -134,9 +134,9 @@ class ChildProcessLauncherHelper
 
 #if !BUILDFLAG(IS_FUCHSIA)
   // Called to give implementors a chance at creating a server pipe. Platform-
-  // specific. Returns |absl::nullopt| if the helper should initialize
+  // specific. Returns |std::nullopt| if the helper should initialize
   // a regular PlatformChannel for communication instead.
-  absl::optional<mojo::NamedPlatformChannel>
+  std::optional<mojo::NamedPlatformChannel>
   CreateNamedPlatformChannelOnLauncherThread();
 #endif
 
@@ -272,20 +272,20 @@ class ChildProcessLauncherHelper
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // The priority of the process. The state is stored to avoid changing the
   // setting repeatedly.
-  absl::optional<base::Process::Priority> priority_;
+  std::optional<base::Process::Priority> priority_;
 #endif
 
   // The PlatformChannel that will be used to transmit an invitation to the
   // child process in most cases. Only used if the platform's helper
   // implementation doesn't return a server endpoint from
   // |CreateNamedPlatformChannelOnLauncherThread()|.
-  absl::optional<mojo::PlatformChannel> mojo_channel_;
+  std::optional<mojo::PlatformChannel> mojo_channel_;
 
 #if !BUILDFLAG(IS_FUCHSIA)
   // May be used in exclusion to the above if the platform helper implementation
   // returns a valid server endpoint from
   // |CreateNamedPlatformChannelOnLauncherThread()|.
-  absl::optional<mojo::NamedPlatformChannel> mojo_named_channel_;
+  std::optional<mojo::NamedPlatformChannel> mojo_named_channel_;
 #endif
 
   bool terminate_on_shutdown_;

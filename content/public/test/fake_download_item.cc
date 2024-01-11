@@ -206,7 +206,7 @@ FakeDownloadItem::GetDownloadCreationType() const {
   return ::network::mojom::CredentialsMode::kInclude;
 }
 
-const absl::optional<net::IsolationInfo>& FakeDownloadItem::GetIsolationInfo()
+const std::optional<net::IsolationInfo>& FakeDownloadItem::GetIsolationInfo()
     const {
   return isolation_info_;
 }
@@ -379,7 +379,7 @@ const GURL& FakeDownloadItem::GetTabReferrerUrl() const {
   return dummy_url;
 }
 
-const absl::optional<url::Origin>& FakeDownloadItem::GetRequestInitiator()
+const std::optional<url::Origin>& FakeDownloadItem::GetRequestInitiator()
     const {
   NOTREACHED();
   return dummy_origin;

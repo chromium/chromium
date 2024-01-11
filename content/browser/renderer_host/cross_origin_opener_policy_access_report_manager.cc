@@ -30,7 +30,7 @@ std::map<int, int>& GetVirtualBrowsingContextGroupToCoopRelatedGroupMap() {
   return bcg_to_coop_group_map;
 }
 
-absl::optional<blink::FrameToken> GetFrameToken(
+std::optional<blink::FrameToken> GetFrameToken(
     FrameTreeNode* frame,
     SiteInstanceGroup* site_instance_group) {
   RenderFrameHostImpl* rfh = frame->current_frame_host();
@@ -43,7 +43,7 @@ absl::optional<blink::FrameToken> GetFrameToken(
   if (proxy)
     return proxy->GetFrameToken();
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Find all the related windows that might try to access the new document in
@@ -158,7 +158,7 @@ void CrossOriginOpenerPolicyAccessReportManager::MonitorAccesses(
   SiteInstanceGroup* site_instance_group =
       accessing_node->current_frame_host()->GetSiteInstance()->group();
 
-  absl::optional<blink::FrameToken> accessed_window_token =
+  std::optional<blink::FrameToken> accessed_window_token =
       GetFrameToken(accessed_node, site_instance_group);
   if (!accessed_window_token)
     return;

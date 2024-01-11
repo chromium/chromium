@@ -42,7 +42,7 @@ std::vector<std::string> FeaturesToStringVector(
 }
 
 const char* BrowsingInstanceSwapResultToString(
-    absl::optional<ShouldSwapBrowsingInstance> reason) {
+    std::optional<ShouldSwapBrowsingInstance> reason) {
   if (!reason)
     return "no BI swap result";
   switch (reason.value()) {
@@ -613,7 +613,7 @@ void BackForwardCacheCanStoreDocumentResult::
 }
 
 void BackForwardCacheCanStoreDocumentResult::NoDueToRelatedActiveContents(
-    absl::optional<ShouldSwapBrowsingInstance> browsing_instance_swap_result) {
+    std::optional<ShouldSwapBrowsingInstance> browsing_instance_swap_result) {
   AddNotRestoredReason(
       BackForwardCacheMetrics::NotRestoredReason::kRelatedActiveContentsExist);
   browsing_instance_swap_result_ = browsing_instance_swap_result;

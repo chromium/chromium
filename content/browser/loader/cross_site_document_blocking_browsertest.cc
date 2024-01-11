@@ -319,7 +319,7 @@ class RequestInterceptor {
                                      consumer_handle),
                 MOJO_RESULT_OK);
       original_client_->OnReceiveResponse(
-          std::move(response_head), std::move(consumer_handle), absl::nullopt);
+          std::move(response_head), std::move(consumer_handle), std::nullopt);
 
       uint32_t num_bytes = response_body.size();
       EXPECT_EQ(MOJO_RESULT_OK,
@@ -337,8 +337,8 @@ class RequestInterceptor {
   const GURL url_to_intercept_;
   URLLoaderInterceptor interceptor_;
 
-  absl::optional<url::Origin> request_initiator_to_inject_;
-  absl::optional<network::mojom::RequestMode> request_mode_to_inject_;
+  std::optional<url::Origin> request_initiator_to_inject_;
+  std::optional<network::mojom::RequestMode> request_mode_to_inject_;
 
   // |pending_test_client_remote_| below is used to transition results of
   // |test_client_.CreateRemote()| into IO thread.

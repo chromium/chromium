@@ -56,7 +56,7 @@ class MockCapturedSurfaceControlPermissionManager
   }
 
  private:
-  absl::optional<CSCPermissionResult> result_;
+  std::optional<CSCPermissionResult> result_;
 };
 
 using MockPermissionManager = MockCapturedSurfaceControlPermissionManager;
@@ -74,13 +74,13 @@ base::OnceCallback<void(CSCResult)> MakeCallbackExpectingResult(
 }
 
 // Make a callback that expects `result` and then unblock `run_loop`.
-base::OnceCallback<void(absl::optional<int>, CSCResult)>
+base::OnceCallback<void(std::optional<int>, CSCResult)>
 MakeGetZoomLevelCallbackExpectingResult(base::RunLoop* run_loop,
-                                        absl::optional<int> expected_zoom_level,
+                                        std::optional<int> expected_zoom_level,
                                         CSCResult expected_result) {
   return base::BindOnce(
-      [](base::RunLoop* run_loop, absl::optional<int> expected_zoom_level,
-         CSCResult expected_result, absl::optional<int> zoom_level,
+      [](base::RunLoop* run_loop, std::optional<int> expected_zoom_level,
+         CSCResult expected_result, std::optional<int> zoom_level,
          CSCResult result) {
         EXPECT_EQ(zoom_level, expected_zoom_level);
         EXPECT_EQ(result, expected_result);
@@ -148,7 +148,7 @@ TEST_F(CapturedSurfaceControllerTestBase, GetZoomLevelUnknownError) {
   base::RunLoop run_loop;
   captured_wc_.reset();
   controller_->GetZoomLevel(MakeGetZoomLevelCallbackExpectingResult(
-      &run_loop, absl::nullopt, CSCResult::kCapturedSurfaceNotFoundError));
+      &run_loop, std::nullopt, CSCResult::kCapturedSurfaceNotFoundError));
   run_loop.Run();
 }
 

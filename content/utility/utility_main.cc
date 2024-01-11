@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+
 #include "base/allocator/partition_alloc_support.h"
 #include "base/command_line.h"
 #include "base/debug/leak_annotations.h"
@@ -32,7 +34,6 @@
 #include "sandbox/policy/sandbox_type.h"
 #include "services/on_device_model/on_device_model_service.h"
 #include "services/tracing/public/cpp/trace_startup.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
@@ -383,7 +384,7 @@ int UtilityMain(MainFunctionParams parameters) {
   // TODO(leonhsl): Once http://crbug.com/646833 got resolved, re-enable
   // base::HighResolutionTimerManager here for future possible usage of high
   // resolution timer in service utility process.
-  absl::optional<base::HighResolutionTimerManager> hi_res_timer_manager;
+  std::optional<base::HighResolutionTimerManager> hi_res_timer_manager;
   if (base::PowerMonitor::IsInitialized()) {
     hi_res_timer_manager.emplace();
   }

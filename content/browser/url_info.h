@@ -5,10 +5,11 @@
 #ifndef CONTENT_BROWSER_URL_INFO_H_
 #define CONTENT_BROWSER_URL_INFO_H_
 
+#include <optional>
+
 #include "content/browser/web_exposed_isolation_info.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/storage_partition_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -81,8 +82,8 @@ struct CONTENT_EXPORT UrlInfo {
   // Used to convert GURL to UrlInfo in tests where opt-in isolation is not
   // being tested.
   static UrlInfo CreateForTesting(const GURL& url_in,
-                                  absl::optional<StoragePartitionConfig>
-                                      storage_partition_config = absl::nullopt);
+                                  std::optional<StoragePartitionConfig>
+                                      storage_partition_config = std::nullopt);
 
   // Depending on enabled features (some of which can change at runtime),
   // default can be no isolation, requests origin agent cluster only, or
@@ -155,7 +156,7 @@ struct CONTENT_EXPORT UrlInfo {
   // by the renderer at DidCommitNavigation() time, for use in commit-time URL
   // and origin checks that require a UrlInfo.  Investigate whether there's a
   // cleaner way to organize these checks.  See https://crbug.com/1320402.
-  absl::optional<url::Origin> origin;
+  std::optional<url::Origin> origin;
 
   // If url is being loaded in a frame that is in a origin-restricted sandboxed,
   // then this flag will be true.
@@ -174,7 +175,7 @@ struct CONTENT_EXPORT UrlInfo {
   // containing a StoragePartitionConfig that isn't compatible with the
   // BrowsingInstance that the SiteInstance should belong to will lead to a
   // CHECK failure.
-  absl::optional<StoragePartitionConfig> storage_partition_config;
+  std::optional<StoragePartitionConfig> storage_partition_config;
 
   // Pages may choose to isolate themselves more strongly than the web's
   // default, thus allowing access to APIs that would be difficult to
@@ -184,7 +185,7 @@ struct CONTENT_EXPORT UrlInfo {
   // When we haven't yet been to the network or inherited properties that are
   // sufficient to know the future isolation state - we are in a speculative
   // state - this member will be empty.
-  absl::optional<WebExposedIsolationInfo> web_exposed_isolation_info;
+  std::optional<WebExposedIsolationInfo> web_exposed_isolation_info;
 
   // Indicates that the URL directs to PDF content, which should be isolated
   // from other types of content.
@@ -203,7 +204,7 @@ struct CONTENT_EXPORT UrlInfo {
   // Under memory pressure they should be able to reuse the same process. This
   // is not the case if the top-level document sets COOP: restrict-properties +
   // COEP, because it then has an isolated WebExposedIsolationInfo.
-  absl::optional<url::Origin> common_coop_origin;
+  std::optional<url::Origin> common_coop_origin;
 
   // Any new UrlInfo fields should be added to UrlInfoInit as well, and the
   // UrlInfo constructor that takes a UrlInfoInit should be updated as well.
@@ -225,13 +226,13 @@ class CONTENT_EXPORT UrlInfoInit {
   UrlInfoInit& WithSandbox(bool is_sandboxed);
   UrlInfoInit& WithUniqueSandboxId(int unique_sandbox_id);
   UrlInfoInit& WithStoragePartitionConfig(
-      absl::optional<StoragePartitionConfig> storage_partition_config);
+      std::optional<StoragePartitionConfig> storage_partition_config);
   UrlInfoInit& WithWebExposedIsolationInfo(
-      absl::optional<WebExposedIsolationInfo> web_exposed_isolation_info);
+      std::optional<WebExposedIsolationInfo> web_exposed_isolation_info);
   UrlInfoInit& WithIsPdf(bool is_pdf);
   UrlInfoInit& WithCommonCoopOrigin(const url::Origin& origin);
 
-  const absl::optional<url::Origin>& origin() { return origin_; }
+  const std::optional<url::Origin>& origin() { return origin_; }
 
  private:
   UrlInfoInit(UrlInfoInit&);
@@ -242,13 +243,13 @@ class CONTENT_EXPORT UrlInfoInit {
   UrlInfo::OriginIsolationRequest origin_isolation_request_ =
       UrlInfo::OriginIsolationRequest::kDefault;
   bool requests_coop_isolation_ = false;
-  absl::optional<url::Origin> origin_;
+  std::optional<url::Origin> origin_;
   bool is_sandboxed_ = false;
   int64_t unique_sandbox_id_ = UrlInfo::kInvalidUniqueSandboxId;
-  absl::optional<StoragePartitionConfig> storage_partition_config_;
-  absl::optional<WebExposedIsolationInfo> web_exposed_isolation_info_;
+  std::optional<StoragePartitionConfig> storage_partition_config_;
+  std::optional<WebExposedIsolationInfo> web_exposed_isolation_info_;
   bool is_pdf_ = false;
-  absl::optional<url::Origin> common_coop_origin_;
+  std::optional<url::Origin> common_coop_origin_;
 
   // Any new fields should be added to the UrlInfoInit(UrlInfo) constructor.
 };  // class UrlInfoInit

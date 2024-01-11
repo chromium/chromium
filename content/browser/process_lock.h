@@ -5,12 +5,13 @@
 #ifndef CONTENT_BROWSER_PROCESS_LOCK_H_
 #define CONTENT_BROWSER_PROCESS_LOCK_H_
 
+#include <optional>
+
 #include "content/browser/site_info.h"
 #include "content/browser/url_info.h"
 #include "content/browser/web_exposed_isolation_info.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_exposed_isolation_level.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace content {
@@ -213,7 +214,7 @@ class CONTENT_EXPORT ProcessLock {
   // (e.g., multiple sites when Site Isolation is disabled). This can better
   // restrict what the process has access to in cases that we currently use an
   // allows-any-site ProcessLock.
-  absl::optional<SiteInfo> site_info_;
+  std::optional<SiteInfo> site_info_;
 };
 
 CONTENT_EXPORT std::ostream& operator<<(std::ostream& out,

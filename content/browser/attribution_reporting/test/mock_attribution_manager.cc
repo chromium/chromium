@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -18,7 +19,6 @@
 #include "content/browser/attribution_reporting/attribution_reporting.mojom-forward.h"
 #include "content/browser/attribution_reporting/os_registration.h"
 #include "content/browser/attribution_reporting/storable_source.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -54,7 +54,7 @@ void MockAttributionManager::NotifyReportsChanged() {
 void MockAttributionManager::NotifySourceHandled(
     const StorableSource& source,
     StorableSource::Result result,
-    absl::optional<uint64_t> cleared_debug_key) {
+    std::optional<uint64_t> cleared_debug_key) {
   base::Time now = base::Time::Now();
   for (auto& observer : observers_) {
     observer.OnSourceHandled(source, now, cleared_debug_key, result);
@@ -72,7 +72,7 @@ void MockAttributionManager::NotifyReportSent(const AttributionReport& report,
 void MockAttributionManager::NotifyTriggerHandled(
     const AttributionTrigger& trigger,
     const CreateReportResult& result,
-    absl::optional<uint64_t> cleared_debug_key) {
+    std::optional<uint64_t> cleared_debug_key) {
   for (auto& observer : observers_) {
     observer.OnTriggerHandled(trigger, cleared_debug_key, result);
   }

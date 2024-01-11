@@ -4,6 +4,7 @@
 
 #include "content/browser/service_worker/service_worker_controllee_request_handler.h"
 
+#include <optional>
 #include <set>
 #include <utility>
 
@@ -34,7 +35,6 @@
 #include "net/base/load_flags.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/resource_request_body.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
 #include "third_party/blink/public/common/service_worker/service_worker_loader_helpers.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -292,7 +292,7 @@ void ServiceWorkerControlleeRequestHandler::InitializeContainerHost(
                               tentative_resource_request.trusted_params
                                   ? tentative_resource_request.trusted_params
                                         ->isolation_info.top_frame_origin()
-                                  : absl::nullopt,
+                                  : std::nullopt,
                               storage_key_);
 }
 

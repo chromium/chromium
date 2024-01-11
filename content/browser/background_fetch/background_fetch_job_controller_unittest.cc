@@ -172,7 +172,7 @@ class BackgroundFetchJobControllerTest : public BackgroundFetchTestBase {
                                         total_downloads,
                                         /* outstanding_guids= */ {},
                                         /* start_paused= */ false,
-                                        /* isolation_info= */ absl::nullopt);
+                                        /* isolation_info= */ std::nullopt);
 
     return controller;
   }

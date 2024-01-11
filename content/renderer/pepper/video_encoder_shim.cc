@@ -109,7 +109,7 @@ class VideoEncoderShim::EncoderImpl {
   void UseOutputBitstreamBuffer(media::BitstreamBuffer buffer, uint8_t* mem);
   void RequestEncodingParametersChange(const media::Bitrate& bitrate,
                                        uint32_t framerate,
-                                       const absl::optional<gfx::Size>& size);
+                                       const std::optional<gfx::Size>& size);
   void Stop();
 
  private:
@@ -261,7 +261,7 @@ void VideoEncoderShim::EncoderImpl::UseOutputBitstreamBuffer(
 void VideoEncoderShim::EncoderImpl::RequestEncodingParametersChange(
     const media::Bitrate& bitrate,
     uint32_t framerate,
-    const absl::optional<gfx::Size>& size) {
+    const std::optional<gfx::Size>& size) {
   // If this is changed to use variable bitrate encoding, change the mode check
   // to check that the mode matches the current mode.
   if (bitrate.mode() != media::Bitrate::Mode::kConstant) {
@@ -463,7 +463,7 @@ void VideoEncoderShim::UseOutputBitstreamBuffer(media::BitstreamBuffer buffer) {
 void VideoEncoderShim::RequestEncodingParametersChange(
     const media::Bitrate& bitrate,
     uint32_t framerate,
-    const absl::optional<gfx::Size>& size) {
+    const std::optional<gfx::Size>& size) {
   DCHECK(RenderThreadImpl::current());
 
   media_task_runner_->PostTask(

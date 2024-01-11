@@ -39,37 +39,37 @@ class TestFencedFrameURLMappingResultObserver
   ~TestFencedFrameURLMappingResultObserver() override;
 
   void OnFencedFrameURLMappingComplete(
-      const absl::optional<FencedFrameProperties>& properties) override;
+      const std::optional<FencedFrameProperties>& properties) override;
 
   bool mapping_complete_observed() const { return mapping_complete_observed_; }
 
-  const absl::optional<FencedFrameProperties>& fenced_frame_properties() {
+  const std::optional<FencedFrameProperties>& fenced_frame_properties() {
     return observed_fenced_frame_properties_;
   }
 
-  absl::optional<GURL> mapped_url() const {
+  std::optional<GURL> mapped_url() const {
     if (!observed_fenced_frame_properties_ ||
         !observed_fenced_frame_properties_->mapped_url()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     return observed_fenced_frame_properties_->mapped_url()
         ->GetValueIgnoringVisibility();
   }
 
-  absl::optional<std::vector<std::pair<GURL, FencedFrameConfig>>>
+  std::optional<std::vector<std::pair<GURL, FencedFrameConfig>>>
   nested_urn_config_pairs() const {
     if (!observed_fenced_frame_properties_ ||
         !observed_fenced_frame_properties_->nested_urn_config_pairs()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     return observed_fenced_frame_properties_->nested_urn_config_pairs()
         ->GetValueIgnoringVisibility();
   }
 
-  absl::optional<AdAuctionData> ad_auction_data() const {
+  std::optional<AdAuctionData> ad_auction_data() const {
     if (!observed_fenced_frame_properties_ ||
         !observed_fenced_frame_properties_->ad_auction_data()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     return observed_fenced_frame_properties_->ad_auction_data()
         ->GetValueIgnoringVisibility();
@@ -88,7 +88,7 @@ class TestFencedFrameURLMappingResultObserver
 
  private:
   bool mapping_complete_observed_ = false;
-  absl::optional<FencedFrameProperties> observed_fenced_frame_properties_;
+  std::optional<FencedFrameProperties> observed_fenced_frame_properties_;
 };
 
 class FencedFrameURLMappingTestPeer {

@@ -113,7 +113,7 @@ void SharedStorageBindings::Set(
   args_converter.ConvertArg(0, "key", arg0_key);
   args_converter.ConvertArg(1, "value", arg1_value);
 
-  absl::optional<bool> ignore_if_present;
+  std::optional<bool> ignore_if_present;
   if (args_converter.is_success() && args.Length() > 2) {
     DictConverter options_dict_converter(
         v8_helper, time_limit_scope, "sharedStorage.set 'options' argument ",

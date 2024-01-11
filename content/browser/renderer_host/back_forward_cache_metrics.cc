@@ -226,10 +226,10 @@ void BackForwardCacheMetrics::DidCommitNavigation(
   page_store_result_ =
       std::make_unique<BackForwardCacheCanStoreDocumentResult>();
   page_store_tree_result_ = nullptr;
-  navigated_away_from_main_document_timestamp_ = absl::nullopt;
-  started_navigation_timestamp_ = absl::nullopt;
-  renderer_killed_timestamp_ = absl::nullopt;
-  browsing_instance_swap_result_ = absl::nullopt;
+  navigated_away_from_main_document_timestamp_ = std::nullopt;
+  started_navigation_timestamp_ = std::nullopt;
+  renderer_killed_timestamp_ = std::nullopt;
+  browsing_instance_swap_result_ = std::nullopt;
 }
 
 namespace {
@@ -595,7 +595,7 @@ uint64_t BackForwardCacheMetrics::MetricValue(
 }
 
 void BackForwardCacheMetrics::SetBrowsingInstanceSwapResult(
-    absl::optional<ShouldSwapBrowsingInstance> reason,
+    std::optional<ShouldSwapBrowsingInstance> reason,
     RenderFrameHostImpl* navigated_away_rfh) {
   browsing_instance_swap_result_ = reason;
   if (navigated_away_rfh) {

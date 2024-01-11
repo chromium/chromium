@@ -174,7 +174,7 @@ class FileURLDirectoryLoader
       const std::vector<std::string>& removed_headers,
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
-      const absl::optional<GURL>& new_url) override {}
+      const std::optional<GURL>& new_url) override {}
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override {}
   void PauseReadingBodyFromNet() override {}
@@ -231,7 +231,7 @@ class FileURLDirectoryLoader
     head->charset = "utf-8";
     head->response_type = response_type;
     client->OnReceiveResponse(std::move(head), std::move(consumer_handle),
-                              absl::nullopt);
+                              std::nullopt);
     client_ = std::move(client);
 
     lister_ = std::make_unique<net::DirectoryLister>(path_, this);
@@ -394,7 +394,7 @@ class FileURLLoader : public network::mojom::URLLoader {
       const std::vector<std::string>& removed_headers,
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
-      const absl::optional<GURL>& new_url) override {
+      const std::optional<GURL>& new_url) override {
     // |removed_headers| and |modified_headers| are unused. It doesn't make
     // sense for files. The FileURLLoader can redirect only to another file.
     std::unique_ptr<RedirectData> redirect_data = std::move(redirect_data_);
@@ -709,7 +709,7 @@ class FileURLLoader : public network::mojom::URLLoader {
     head->headers->AddHeader(net::HttpResponseHeaders::kLastModified,
                              base::TimeFormatHTTP(info.last_modified));
     client_->OnReceiveResponse(std::move(head), std::move(consumer_handle),
-                               absl::nullopt);
+                               std::nullopt);
 
     if (total_bytes_to_send == 0) {
       // There's definitely no more data, so we're already done.

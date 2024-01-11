@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cmath>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -53,7 +54,6 @@
 #include "services/tracing/public/cpp/tracing_features.h"
 #include "services/tracing/public/mojom/constants.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/inspector_protocol/crdtp/json.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -217,7 +217,7 @@ void FillFrameData(base::trace_event::TracedValue* data,
   }
 }
 
-absl::optional<base::trace_event::MemoryDumpLevelOfDetail>
+std::optional<base::trace_event::MemoryDumpLevelOfDetail>
 StringToMemoryDumpLevelOfDetail(const std::string& str) {
   if (str == Tracing::MemoryDumpLevelOfDetailEnum::Detailed)
     return {base::trace_event::MemoryDumpLevelOfDetail::kDetailed};
@@ -254,7 +254,7 @@ bool IsChromeDataSource(const std::string& data_source_name) {
          data_source_name == "track_event";
 }
 
-absl::optional<perfetto::BackendType> GetBackendTypeFromParameters(
+std::optional<perfetto::BackendType> GetBackendTypeFromParameters(
     const std::string& tracing_backend,
     perfetto::TraceConfig& perfetto_config) {
   if (tracing_backend == Tracing::TracingBackendEnum::Chrome)
@@ -271,7 +271,7 @@ absl::optional<perfetto::BackendType> GetBackendTypeFromParameters(
     }
     return perfetto::BackendType::kCustomBackend;
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 // Perfetto SDK build expects track_event data source to be configured via
@@ -775,7 +775,7 @@ void TracingHandler::Start(Maybe<std::string> categories,
                                                proto_format);
   }
 
-  absl::optional<perfetto::BackendType> backend = GetBackendTypeFromParameters(
+  std::optional<perfetto::BackendType> backend = GetBackendTypeFromParameters(
       tracing_backend.value_or(Tracing::TracingBackendEnum::Auto),
       trace_config);
 
@@ -1006,7 +1006,7 @@ void TracingHandler::RequestMemoryDump(
     return;
   }
 
-  absl::optional<base::trace_event::MemoryDumpLevelOfDetail> memory_detail =
+  std::optional<base::trace_event::MemoryDumpLevelOfDetail> memory_detail =
       StringToMemoryDumpLevelOfDetail(level_of_detail.value_or(
           Tracing::MemoryDumpLevelOfDetailEnum::Detailed));
 
@@ -1193,7 +1193,7 @@ base::trace_event::TraceConfig TracingHandler::GetTraceConfigFromDevToolsConfig(
   if (std::string* mode = config_dict.FindString(kRecordModeParam)) {
     config_dict.Set(kRecordModeParam, ConvertFromCamelCase(*mode, '-'));
   }
-  if (absl::optional<double> buffer_size =
+  if (std::optional<double> buffer_size =
           config_dict.FindDouble(kTraceBufferSizeInKb)) {
     config_dict.Set(
         kTraceBufferSizeInKb,

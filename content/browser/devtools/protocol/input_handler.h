@@ -259,7 +259,7 @@ class InputHandler : public DevToolsDomainHandler, public Input::Backend {
         std::unique_ptr<blink::WebMouseEvent> event,
         std::unique_ptr<FailSafe<DispatchMouseEventCallback>> callback,
         base::WeakPtr<RenderWidgetHostViewBase> view,
-        absl::optional<gfx::PointF> maybe_point);
+        std::optional<gfx::PointF> maybe_point);
 
     InputHandler& handler_;
 
@@ -289,7 +289,7 @@ class InputHandler : public DevToolsDomainHandler, public Input::Backend {
       std::unique_ptr<DispatchMouseEventCallback> callback,
       std::unique_ptr<blink::WebMouseEvent> mouse_event,
       base::WeakPtr<RenderWidgetHostViewBase> target,
-      absl::optional<gfx::PointF> point);
+      std::optional<gfx::PointF> point);
 
   void OnWidgetForDispatchDragEvent(
       const std::string& event_type,
@@ -299,13 +299,13 @@ class InputHandler : public DevToolsDomainHandler, public Input::Backend {
       Maybe<int> modifiers,
       std::unique_ptr<DispatchDragEventCallback> callback,
       base::WeakPtr<RenderWidgetHostViewBase> target,
-      absl::optional<gfx::PointF> point);
+      std::optional<gfx::PointF> point);
 
   void OnWidgetForDispatchWebTouchEvent(
       std::unique_ptr<DispatchTouchEventCallback> callback,
       std::vector<blink::WebTouchEvent> events,
       base::WeakPtr<RenderWidgetHostViewBase> target,
-      absl::optional<gfx::PointF> point);
+      std::optional<gfx::PointF> point);
 
   SyntheticPointerActionParams PrepareSyntheticPointerActionParams(
       SyntheticPointerActionParams::PointerActionType pointer_action_type,
@@ -354,7 +354,7 @@ class InputHandler : public DevToolsDomainHandler, public Input::Backend {
       injectors_;
   int last_id_ = 0;
   bool ignore_input_events_ = false;
-  absl::optional<content::WebContents::ScopedIgnoreInputEvents>
+  std::optional<content::WebContents::ScopedIgnoreInputEvents>
       scoped_ignore_input_events_;
   bool intercept_drags_ = false;
   DragController drag_controller_;

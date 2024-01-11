@@ -25,15 +25,15 @@ class TestSelectURLFencedFrameConfigObserverImpl
                                const SharedStorageEventParams& params) override;
   void OnUrnUuidGenerated(const GURL& urn_uuid) override;
   void OnConfigPopulated(
-      const absl::optional<FencedFrameConfig>& config) override;
+      const std::optional<FencedFrameConfig>& config) override;
 
-  const absl::optional<GURL>& GetUrnUuid() const;
-  const absl::optional<FencedFrameConfig>& GetConfig() const;
+  const std::optional<GURL>& GetUrnUuid() const;
+  const std::optional<FencedFrameConfig>& GetConfig() const;
   bool ConfigObserved() const;
 
  private:
-  absl::optional<GURL> urn_uuid_;
-  absl::optional<FencedFrameConfig> config_;
+  std::optional<GURL> urn_uuid_;
+  std::optional<FencedFrameConfig> config_;
   bool config_observed_ = false;
 };
 

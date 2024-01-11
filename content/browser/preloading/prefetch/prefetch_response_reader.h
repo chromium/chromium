@@ -58,7 +58,7 @@ class CONTENT_EXPORT PrefetchResponseReader final
   // `PrefetchStreamingURLLoader` to `event_queue_` and existing
   // `serving_url_loader_clients_`.
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints);
-  void OnReceiveResponse(absl::optional<PrefetchErrorOnResponseReceived> status,
+  void OnReceiveResponse(std::optional<PrefetchErrorOnResponseReceived> status,
                          network::mojom::URLResponseHeadPtr head,
                          mojo::ScopedDataPipeConsumerHandle body);
   void HandleRedirect(PrefetchRedirectStatus redirect_status,
@@ -87,7 +87,7 @@ class CONTENT_EXPORT PrefetchResponseReader final
 
   bool Servable(base::TimeDelta cacheable_duration) const;
   bool IsWaitingForResponse() const;
-  absl::optional<network::URLLoaderCompletionStatus> GetCompletionStatus()
+  std::optional<network::URLLoaderCompletionStatus> GetCompletionStatus()
       const {
     return completion_status_;
   }
@@ -137,7 +137,7 @@ class CONTENT_EXPORT PrefetchResponseReader final
       const std::vector<std::string>& removed_headers,
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
-      const absl::optional<GURL>& new_url) override;
+      const std::optional<GURL>& new_url) override;
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override;
   void PauseReadingBodyFromNet() override;
@@ -202,7 +202,7 @@ class CONTENT_EXPORT PrefetchResponseReader final
   // TODO(crbug.com/1449360): we might want to adapt these flags and UMA
   // semantics for multiple client settings, but so far we don't have any
   // specific plans.
-  absl::optional<PrefetchErrorOnResponseReceived> failure_reason_;
+  std::optional<PrefetchErrorOnResponseReceived> failure_reason_;
   bool served_before_completion_{false};
   bool served_after_completion_{false};
   bool should_record_metrics_{true};
@@ -213,8 +213,8 @@ class CONTENT_EXPORT PrefetchResponseReader final
   mojo::ScopedDataPipeConsumerHandle body_;
   // `body_tee_` is set/used only when `features::kPrefetchReusable` is enabled.
   scoped_refptr<PrefetchDataPipeTee> body_tee_;
-  absl::optional<network::URLLoaderCompletionStatus> completion_status_;
-  absl::optional<base::TimeTicks> response_complete_time_;
+  std::optional<network::URLLoaderCompletionStatus> completion_status_;
+  std::optional<base::TimeTicks> response_complete_time_;
 
   // Only used temporarily to plumb the body `BindAndStart()` to
   // `ForwardResponse()`.

@@ -25,7 +25,7 @@ class CONTENT_EXPORT FencedDocumentData
   ~FencedDocumentData() override;
 
   // Attempts to retrieve the automatic beacon data for a given event type.
-  const absl::optional<AutomaticBeaconInfo> GetAutomaticBeaconInfo(
+  const std::optional<AutomaticBeaconInfo> GetAutomaticBeaconInfo(
       blink::mojom::AutomaticBeaconType event_type) const;
 
   // Writes the beacon data set in `setReportEventDataForAutomaticBeacons()`.

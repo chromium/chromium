@@ -577,8 +577,8 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraActiveWidgetTest,
   // TODO(b/204006085): Remove this sleep call and replace with polling.
   GiveItSomeTime();
 
-  absl::optional<gfx::Rect> control_bounds;
-  absl::optional<gfx::Rect> selection_bounds;
+  std::optional<gfx::Rect> control_bounds;
+  std::optional<gfx::Rect> selection_bounds;
   GetRenderWidgetHostView()->GetActiveTextInputControlLayoutBounds(
       &control_bounds, &selection_bounds);
 

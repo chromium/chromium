@@ -38,7 +38,7 @@ class StorageAccessBrowserTest : public ContentBrowserTest {
     static_cast<PermissionControllerImpl*>(
         host()->GetBrowserContext()->GetPermissionController())
         ->SetPermissionOverride(
-            absl::nullopt, blink::PermissionType::STORAGE_ACCESS_GRANT, status);
+            std::nullopt, blink::PermissionType::STORAGE_ACCESS_GRANT, status);
 
     // We need access to the interface broker to test bad messages, so must
     // unbind the existing one and bind our own.

@@ -8,10 +8,12 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
+
 #include <algorithm>
 #include <iterator>
 #include <map>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/apple/foundation_util.h"
@@ -29,7 +31,6 @@
 #include "content/browser/accessibility/one_shot_accessibility_tree_search.h"
 #include "content/browser/accessibility/web_ax_platform_tree_manager_delegate.h"
 #include "content/public/common/content_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_common.h"
@@ -660,8 +661,8 @@ bool content::IsNSRange(id value) {
   if (![self instanceActive])
     return nil;
 
-  absl::optional<int> column = _owner->node()->GetTableCellColIndex();
-  absl::optional<int> colspan = _owner->node()->GetTableCellColSpan();
+  std::optional<int> column = _owner->node()->GetTableCellColIndex();
+  std::optional<int> colspan = _owner->node()->GetTableCellColSpan();
   if (column && colspan)
     return [NSValue valueWithRange:NSMakeRange(*column, *colspan)];
   return nil;
@@ -801,12 +802,12 @@ bool content::IsNSRange(id value) {
     return [self treeItemRowIndex];
   } else if ([self internalRole] == ax::mojom::Role::kColumn) {
     DCHECK(_owner->node());
-    absl::optional<int> col_index = *_owner->node()->GetTableColColIndex();
+    std::optional<int> col_index = *_owner->node()->GetTableColColIndex();
     if (col_index)
       return @(*col_index);
   } else if ([self internalRole] == ax::mojom::Role::kRow) {
     DCHECK(_owner->node());
-    absl::optional<int> row_index = _owner->node()->GetTableRowRowIndex();
+    std::optional<int> row_index = _owner->node()->GetTableRowRowIndex();
     if (row_index)
       return @(*row_index);
   }
@@ -1194,8 +1195,8 @@ bool content::IsNSRange(id value) {
   if (![self instanceActive])
     return nil;
 
-  absl::optional<int> row = _owner->node()->GetTableCellRowIndex();
-  absl::optional<int> rowspan = _owner->node()->GetTableCellRowSpan();
+  std::optional<int> row = _owner->node()->GetTableCellRowIndex();
+  std::optional<int> rowspan = _owner->node()->GetTableCellRowSpan();
   if (row && rowspan)
     return [NSValue valueWithRange:NSMakeRange(*row, *rowspan)];
   return nil;

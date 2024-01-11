@@ -72,7 +72,7 @@ void AdAuctionURLLoaderInterceptor::OnReceiveRedirect(
 }
 
 void AdAuctionURLLoaderInterceptor::WillFollowRedirect(
-    const absl::optional<GURL>& new_url,
+    const std::optional<GURL>& new_url,
     std::vector<std::string>& removed_headers,
     net::HttpRequestHeaders& modified_headers) {
   CHECK(!ad_auction_headers_eligible_);

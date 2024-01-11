@@ -46,14 +46,14 @@ bool IsSpecialAudioDeviceId(MediaDeviceType device_type,
           media::AudioDeviceDescription::IsCommunicationsDevice(device_id));
 }
 
-absl::optional<MediaStreamType> ToMediaStreamType(MediaDeviceType device_type) {
+std::optional<MediaStreamType> ToMediaStreamType(MediaDeviceType device_type) {
   switch (device_type) {
     case MediaDeviceType::kMediaAudioInput:
       return MediaStreamType::DEVICE_AUDIO_CAPTURE;
     case MediaDeviceType::kMediaVideoInput:
       return MediaStreamType::DEVICE_VIDEO_CAPTURE;
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 
@@ -177,18 +177,18 @@ IN_PROC_BROWSER_TEST_F(MediaDevicesUtilBrowserTest, TranslateDeviceIdAndBack) {
           GetHMACForMediaDeviceID(salt, origin_, device_info.device_id);
       VerifyHMACDeviceID(device_type, hmac_device_id, device_info.device_id);
 
-      absl::optional<MediaStreamType> stream_type =
+      std::optional<MediaStreamType> stream_type =
           ToMediaStreamType(device_type);
       EXPECT_EQ(stream_type.has_value(),
                 device_type != MediaDeviceType::kMediaAudioOuput);
       if (!stream_type.has_value()) {
         continue;
       }
-      base::test::TestFuture<const absl::optional<std::string>&> future;
+      base::test::TestFuture<const std::optional<std::string>&> future;
       GetMediaDeviceIDForHMAC(*stream_type, salt, origin_, hmac_device_id,
                               base::SequencedTaskRunner::GetCurrentDefault(),
                               future.GetCallback());
-      absl::optional<std::string> raw_device_id = future.Get();
+      std::optional<std::string> raw_device_id = future.Get();
       EXPECT_THAT(raw_device_id, Optional(device_info.device_id));
     }
   }
@@ -254,10 +254,10 @@ IN_PROC_BROWSER_TEST_F(MediaDevicesUtilBrowserTest, TranslationWithoutSalt) {
       std::string hmac_device_id = future_hmac.Get();
       VerifyHMACDeviceID(device_type, hmac_device_id, device_info.device_id);
 
-      base::test::TestFuture<const absl::optional<std::string>&> future_raw;
+      base::test::TestFuture<const std::optional<std::string>&> future_raw;
       GetRawDeviceIdFromHMAC(frame_id_, hmac_device_id, device_type,
                              future_raw.GetCallback());
-      absl::optional<std::string> raw_device_id = future_raw.Get();
+      std::optional<std::string> raw_device_id = future_raw.Get();
       EXPECT_THAT(raw_device_id, Optional(device_info.device_id));
     }
   }
@@ -271,14 +271,14 @@ IN_PROC_BROWSER_TEST_F(MediaDevicesUtilBrowserTest,
   const std::string existing_hmac_device_id =
       GetHMACForRawMediaDeviceID(salt_and_origin, existing_raw_device_id);
 
-  base::test::TestFuture<const absl::optional<std::string>&> future;
+  base::test::TestFuture<const std::optional<std::string>&> future;
   GetIOThreadTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&GetRawDeviceIDForMediaStreamHMAC,
                                 MediaStreamType::DEVICE_AUDIO_CAPTURE,
                                 salt_and_origin, existing_hmac_device_id,
                                 base::SequencedTaskRunner::GetCurrentDefault(),
                                 future.GetCallback()));
-  absl::optional<std::string> raw_device_id = future.Get();
+  std::optional<std::string> raw_device_id = future.Get();
   ASSERT_TRUE(raw_device_id.has_value());
   EXPECT_EQ(*raw_device_id, existing_raw_device_id);
 }
@@ -292,21 +292,21 @@ IN_PROC_BROWSER_TEST_F(MediaDevicesUtilBrowserTest, GetRawAudioOutputDeviceID) {
   const std::string existing_hmac_device_id =
       GetHMACForRawMediaDeviceID(salt_and_origin, existing_raw_device_id);
 
-  base::test::TestFuture<const absl::optional<std::string>&> future;
+  base::test::TestFuture<const std::optional<std::string>&> future;
   GetIOThreadTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&GetRawDeviceIDForMediaDeviceHMAC,
                                 MediaDeviceType::kMediaAudioOuput,
                                 salt_and_origin, existing_hmac_device_id,
                                 base::SequencedTaskRunner::GetCurrentDefault(),
                                 future.GetCallback()));
-  absl::optional<std::string> raw_device_id = future.Get();
+  std::optional<std::string> raw_device_id = future.Get();
   ASSERT_TRUE(raw_device_id.has_value());
   EXPECT_EQ(*raw_device_id, existing_raw_device_id);
 }
 
 IN_PROC_BROWSER_TEST_F(MediaDevicesUtilBrowserTest,
                        GetRawDeviceIDForNonexistingHMAC) {
-  base::test::TestFuture<const absl::optional<std::string>&> future;
+  base::test::TestFuture<const std::optional<std::string>&> future;
   GetIOThreadTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&GetRawDeviceIDForMediaDeviceHMAC,
@@ -314,7 +314,7 @@ IN_PROC_BROWSER_TEST_F(MediaDevicesUtilBrowserTest,
                      "nonexisting_hmac_device_id",
                      base::SequencedTaskRunner::GetCurrentDefault(),
                      future.GetCallback()));
-  absl::optional<std::string> raw_device_id = future.Get();
+  std::optional<std::string> raw_device_id = future.Get();
   EXPECT_FALSE(raw_device_id.has_value());
 }
 
@@ -332,7 +332,7 @@ IN_PROC_BROWSER_TEST_F(MediaDevicesUtilBrowserTest,
                 /* tests_use_fake_render_frame_hosts=*/true);
           }),
           /*use_for_gum_desktop_capture=*/false,
-          /*captured_tab_id=*/absl::nullopt),
+          /*captured_tab_id=*/std::nullopt),
       use_fake_ui_factory_for_tests_future.GetCallback());
   ASSERT_TRUE(use_fake_ui_factory_for_tests_future.Wait());
 

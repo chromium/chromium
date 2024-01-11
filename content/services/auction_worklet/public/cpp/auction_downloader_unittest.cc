@@ -6,6 +6,7 @@
 
 #include <cstddef>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -23,7 +24,6 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace auction_worklet {
@@ -47,10 +47,10 @@ class AuctionDownloaderTest
   class TestDelegate : public AuctionDownloader::NetworkEventsDelegate {
    public:
     TestDelegate(network::URLLoaderCompletionStatus& completetion_status,
-                 absl::optional<GURL>& response_url,
-                 absl::optional<std::string>& request_id,
-                 absl::optional<GURL>& request_url,
-                 absl::optional<network::mojom::URLResponseHeadPtr>& head)
+                 std::optional<GURL>& response_url,
+                 std::optional<std::string>& request_id,
+                 std::optional<GURL>& request_url,
+                 std::optional<network::mojom::URLResponseHeadPtr>& head)
         : request_url_ref_(request_url),
           head_ref_(head),
           request_id_ref_(request_id),
@@ -77,10 +77,10 @@ class AuctionDownloaderTest
     }
 
    private:
-    raw_ref<absl::optional<GURL>> request_url_ref_;
-    raw_ref<absl::optional<network::mojom::URLResponseHeadPtr>> head_ref_;
-    raw_ref<absl::optional<std::string>> request_id_ref_;
-    raw_ref<absl::optional<GURL>> response_url_ref_;
+    raw_ref<std::optional<GURL>> request_url_ref_;
+    raw_ref<std::optional<network::mojom::URLResponseHeadPtr>> head_ref_;
+    raw_ref<std::optional<std::string>> request_id_ref_;
+    raw_ref<std::optional<GURL>> response_url_ref_;
     raw_ref<network::URLLoaderCompletionStatus> completetion_status_ref_;
   };
 
@@ -88,12 +88,12 @@ class AuctionDownloaderTest
     DCHECK(!run_loop_);
 
     // reset values
-    observed_request_id_ = absl::nullopt;
-    observed_request_url_ = absl::nullopt;
-    observed_response_url_ = absl::nullopt;
+    observed_request_id_ = std::nullopt;
+    observed_request_url_ = std::nullopt;
+    observed_response_url_ = std::nullopt;
     observed_completion_status_ =
         network::URLLoaderCompletionStatus(net::Error());
-    observed_response_head_ = absl::nullopt;
+    observed_response_head_ = std::nullopt;
 
     auto test_network_events_delegate = std::make_unique<TestDelegate>(
         observed_completion_status_, observed_response_url_,
@@ -133,7 +133,7 @@ class AuctionDownloaderTest
  protected:
   void DownloadCompleteCallback(std::unique_ptr<std::string> body,
                                 scoped_refptr<net::HttpResponseHeaders> headers,
-                                absl::optional<std::string> error) {
+                                std::optional<std::string> error) {
     DCHECK(!body_);
     DCHECK(run_loop_);
     body_ = std::move(body);
@@ -153,14 +153,14 @@ class AuctionDownloaderTest
   std::unique_ptr<base::RunLoop> run_loop_;
   std::unique_ptr<std::string> body_;
   scoped_refptr<net::HttpResponseHeaders> headers_;
-  absl::optional<std::string> error_;
+  std::optional<std::string> error_;
 
   network::TestURLLoaderFactory url_loader_factory_;
 
-  absl::optional<GURL> observed_request_url_;
-  absl::optional<std::string> observed_request_id_;
-  absl::optional<GURL> observed_response_url_;
-  absl::optional<network::mojom::URLResponseHeadPtr> observed_response_head_;
+  std::optional<GURL> observed_request_url_;
+  std::optional<std::string> observed_request_id_;
+  std::optional<GURL> observed_response_url_;
+  std::optional<network::mojom::URLResponseHeadPtr> observed_response_head_;
   network::URLLoaderCompletionStatus observed_completion_status_;
 };
 
@@ -290,7 +290,7 @@ TEST_P(AuctionDownloaderTest, AllowAdAuction) {
       last_error_msg());
 
   AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
-              kAsciiResponseBody, absl::nullopt);
+              kAsciiResponseBody, std::nullopt);
   EXPECT_FALSE(RunRequest());
   EXPECT_EQ(
       "Rejecting load of https://url.test/script.js due to lack of "
@@ -379,7 +379,7 @@ TEST_P(AuctionDownloaderTest, MimeType) {
       last_error_msg());
 
   // Javascript request, no response type.
-  AddResponse(&url_loader_factory_, url_, absl::nullopt, kUtf8Charset,
+  AddResponse(&url_loader_factory_, url_, std::nullopt, kUtf8Charset,
               kAsciiResponseBody);
   EXPECT_FALSE(RunRequest());
   EXPECT_EQ(
@@ -415,7 +415,7 @@ TEST_P(AuctionDownloaderTest, MimeType) {
       last_error_msg());
 
   // JSON request, no response type.
-  AddResponse(&url_loader_factory_, url_, absl::nullopt, kUtf8Charset,
+  AddResponse(&url_loader_factory_, url_, std::nullopt, kUtf8Charset,
               kAsciiResponseBody);
   EXPECT_FALSE(RunRequest());
   EXPECT_EQ(
@@ -462,8 +462,8 @@ TEST_P(AuctionDownloaderTest, MimeTypeWasm) {
       last_error_msg());
 
   // WASM request, no response type.
-  AddResponse(&url_loader_factory_, url_, /*mime_type=*/absl::nullopt,
-              /*charset=*/absl::nullopt, kAsciiResponseBody);
+  AddResponse(&url_loader_factory_, url_, /*mime_type=*/std::nullopt,
+              /*charset=*/std::nullopt, kAsciiResponseBody);
   EXPECT_FALSE(RunRequest());
   EXPECT_EQ(
       "Rejecting load of https://url.test/script.js due to unexpected MIME "
@@ -481,14 +481,14 @@ TEST_P(AuctionDownloaderTest, MimeTypeWasm) {
 
   // WASM request, WASM response type.
   AddResponse(&url_loader_factory_, url_, kWasmMimeType,
-              /*charset=*/absl::nullopt, kNonUtf8ResponseBody);
+              /*charset=*/std::nullopt, kNonUtf8ResponseBody);
   std::unique_ptr<std::string> body = RunRequest();
   ASSERT_TRUE(body);
   EXPECT_EQ(EmptyIfSimulated(kNonUtf8ResponseBody), *body);
 
   // Mimetypes are case insensitive.
   AddResponse(&url_loader_factory_, url_, "Application/WasM",
-              /*charset=*/absl::nullopt, kNonUtf8ResponseBody);
+              /*charset=*/std::nullopt, kNonUtf8ResponseBody);
   body = RunRequest();
   ASSERT_TRUE(body);
   EXPECT_EQ(EmptyIfSimulated(kNonUtf8ResponseBody), *body);
@@ -505,7 +505,7 @@ TEST_P(AuctionDownloaderTest, MimeTypeWasm) {
 
   // Even an empty parameter list is to be rejected.
   AddResponse(&url_loader_factory_, url_, "application/wasm;",
-              /*charset=*/absl::nullopt, kNonUtf8ResponseBody);
+              /*charset=*/std::nullopt, kNonUtf8ResponseBody);
   EXPECT_FALSE(RunRequest());
   EXPECT_EQ(
       "Rejecting load of https://url.test/script.js due to unexpected MIME "
@@ -658,12 +658,12 @@ TEST_P(AuctionDownloaderTest, Charset) {
   }
 
   // Null charset should act like UTF-8.
-  AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, absl::nullopt,
+  AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, std::nullopt,
               kAsciiResponseBody);
   body = RunRequest();
   ASSERT_TRUE(body);
   EXPECT_EQ(EmptyIfSimulated(kAsciiResponseBody), *body);
-  AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, absl::nullopt,
+  AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, std::nullopt,
               kUtf8ResponseBody);
   body = RunRequest();
   ASSERT_TRUE(body);
@@ -671,7 +671,7 @@ TEST_P(AuctionDownloaderTest, Charset) {
 
   // (Not relevant in kSimulatedDownload since that doesn't have a body).
   if (download_mode() != AuctionDownloader::DownloadMode::kSimulatedDownload) {
-    AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, absl::nullopt,
+    AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, std::nullopt,
                 kNonUtf8ResponseBody);
     EXPECT_FALSE(RunRequest());
     EXPECT_EQ(

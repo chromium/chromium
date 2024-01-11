@@ -360,7 +360,7 @@ DropData ProtocolDragDataToDropData(std::unique_ptr<Input::DragData> data) {
   }
 
   blink::mojom::DragDataPtr mojo_data = blink::mojom::DragData::New(
-      std::move(items), absl::nullopt,
+      std::move(items), std::nullopt,
       /*force_default_action=*/false, network::mojom::ReferrerPolicy::kDefault);
   DropData drop_data = DragDataToDropData(*mojo_data);
 
@@ -1023,7 +1023,7 @@ void InputHandler::DragController::EndDraggingWithRenderWidgetHostAtPoint(
     std::unique_ptr<blink::WebMouseEvent> event,
     std::unique_ptr<FailSafe<DispatchMouseEventCallback>> callback,
     base::WeakPtr<RenderWidgetHostViewBase> view,
-    absl::optional<gfx::PointF> maybe_point) {
+    std::optional<gfx::PointF> maybe_point) {
   if (!view || !maybe_point) {
     CancelDragging(
         base::BindOnce(&FailSafe<DispatchMouseEventCallback>::sendFailure,
@@ -1392,7 +1392,7 @@ void InputHandler::OnWidgetForDispatchDragEvent(
     Maybe<int> modifiers,
     std::unique_ptr<DispatchDragEventCallback> callback,
     base::WeakPtr<RenderWidgetHostViewBase> target,
-    absl::optional<gfx::PointF> maybe_point) {
+    std::optional<gfx::PointF> maybe_point) {
   if (!target || !maybe_point.has_value()) {
     callback->sendFailure(Response::InternalError());
     return;
@@ -1534,7 +1534,7 @@ void InputHandler::OnWidgetForDispatchMouseEvent(
     std::unique_ptr<DispatchMouseEventCallback> callback,
     std::unique_ptr<blink::WebMouseEvent> event,
     base::WeakPtr<RenderWidgetHostViewBase> target,
-    absl::optional<gfx::PointF> point) {
+    std::optional<gfx::PointF> point) {
   if (!target || !point.has_value()) {
     callback->sendFailure(Response::InternalError());
     return;
@@ -1639,7 +1639,7 @@ void InputHandler::OnWidgetForDispatchWebTouchEvent(
     std::unique_ptr<DispatchTouchEventCallback> callback,
     std::vector<blink::WebTouchEvent> events,
     base::WeakPtr<RenderWidgetHostViewBase> target,
-    absl::optional<gfx::PointF> transformed) {
+    std::optional<gfx::PointF> transformed) {
   if (!target || !transformed.has_value()) {
     callback->sendFailure(Response::InternalError());
     return;

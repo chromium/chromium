@@ -214,8 +214,8 @@ blink::mojom::DragDataPtr DropDataToDragData(
       // browser messages, in which case the field is unused and this will hit
       // a DCHECK.
       drop_data.filesystem_id.empty()
-          ? absl::nullopt
-          : absl::optional<std::string>(
+          ? std::nullopt
+          : std::optional<std::string>(
                 base::UTF16ToUTF8(drop_data.filesystem_id)),
       /*force_default_action=*/!drop_data.document_is_handling_drag,
       drop_data.referrer_policy);
@@ -271,7 +271,7 @@ blink::mojom::DragDataPtr DropMetaDataToDragData(
       continue;
     }
   }
-  return blink::mojom::DragData::New(std::move(items), absl::nullopt,
+  return blink::mojom::DragData::New(std::move(items), std::nullopt,
                                      /*force_default_action=*/false,
                                      network::mojom::ReferrerPolicy::kDefault);
 }

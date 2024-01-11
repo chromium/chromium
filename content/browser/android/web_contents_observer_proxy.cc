@@ -4,6 +4,7 @@
 
 #include "content/browser/android/web_contents_observer_proxy.h"
 
+#include <optional>
 #include <string>
 
 #include "base/android/jni_android.h"
@@ -21,7 +22,6 @@
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/android/gurl_android.h"
 
 using base::android::AttachCurrentThread;

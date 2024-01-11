@@ -4,6 +4,7 @@
 
 #include "content/browser/tracing/background_tracing_manager_impl.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/command_line.h"
@@ -46,7 +47,6 @@
 #include "services/tracing/public/cpp/perfetto/trace_event_data_source.h"
 #include "services/tracing/public/cpp/trace_event_agent.h"
 #include "services/tracing/public/cpp/tracing_features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/zlib/google/compression_utils.h"
 
 namespace content {
@@ -71,9 +71,9 @@ BackgroundTracingManagerImpl* g_background_tracing_manager_impl = nullptr;
 
 void OpenDatabaseOnDatabaseTaskRunner(
     TraceReportDatabase* database,
-    absl::optional<base::FilePath> database_dir,
+    std::optional<base::FilePath> database_dir,
     base::OnceCallback<void(BackgroundTracingManagerImpl::ScenarioCountMap,
-                            absl::optional<BaseTraceReport>,
+                            std::optional<BaseTraceReport>,
                             bool)> on_database_created) {
   if (database->is_initialized()) {
     return;
@@ -84,7 +84,7 @@ void OpenDatabaseOnDatabaseTaskRunner(
   } else {
     success = database->OpenDatabase(*database_dir);
   }
-  absl::optional<NewTraceReport> report_to_upload;
+  std::optional<NewTraceReport> report_to_upload;
   if (base::FeatureList::IsEnabled(kBackgroundTracingDatabase)) {
     report_to_upload = database->GetNextReportPendingUpload();
   } else {
@@ -104,7 +104,7 @@ void AddTraceOnDatabaseTaskRunner(
     BaseTraceReport base_report,
     bool should_save_trace,
     bool is_crash_scenario,
-    base::OnceCallback<void(absl::optional<NewTraceReport>, bool)>
+    base::OnceCallback<void(std::optional<NewTraceReport>, bool)>
         on_trace_saved) {
   if (!database->is_initialized()) {
     return;
@@ -122,7 +122,7 @@ void AddTraceOnDatabaseTaskRunner(
 
   std::string compressed_trace;
   bool success = compression::GzipCompress(serialized_trace, &compressed_trace);
-  absl::optional<NewTraceReport> report_to_upload;
+  std::optional<NewTraceReport> report_to_upload;
   if (success) {
     UMA_HISTOGRAM_COUNTS_100000("Tracing.Background.CompressedTraceSizeInKB",
                                 compressed_trace.size() / 1024);
@@ -154,14 +154,14 @@ void AddTraceOnDatabaseTaskRunner(
 void GetProtoValueOnDatabaseTaskRunner(
     TraceReportDatabase* database,
     base::Token uuid,
-    base::OnceCallback<void(absl::optional<std::string>,
-                            absl::optional<std::string>)> receive_callback,
-    base::OnceCallback<void(absl::optional<BaseTraceReport>, bool)>
+    base::OnceCallback<void(std::optional<std::string>,
+                            std::optional<std::string>)> receive_callback,
+    base::OnceCallback<void(std::optional<BaseTraceReport>, bool)>
         on_finalize_complete) {
   DCHECK(base::FeatureList::IsEnabled(kBackgroundTracingDatabase));
   auto trace_content = database->GetTraceContent(uuid);
   auto serialized_system_profile = database->GetSystemProfile(uuid);
-  absl::optional<ClientTraceReport> next_report;
+  std::optional<ClientTraceReport> next_report;
   if (trace_content) {
     if (database->UploadComplete(uuid, base::Time::Now())) {
       next_report = database->GetNextReportPendingUpload();
@@ -273,7 +273,7 @@ void BackgroundTracingManagerImpl::OpenDatabaseIfExists() {
   if (trace_database_) {
     return;
   }
-  absl::optional<base::FilePath> database_dir =
+  std::optional<base::FilePath> database_dir =
       GetContentClient()->browser()->GetLocalTracesDirectory();
   if (!database_dir.has_value()) {
     return;
@@ -350,7 +350,7 @@ void BackgroundTracingManagerImpl::UserUploadSingleTrace(
 void BackgroundTracingManagerImpl::DownloadTrace(const base::Token& trace_uuid,
                                                  GetProtoCallback callback) {
   if (!trace_database_) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
@@ -360,11 +360,11 @@ void BackgroundTracingManagerImpl::DownloadTrace(const base::Token& trace_uuid,
                      base::Unretained(trace_database_.get()), trace_uuid),
       base::BindOnce(
           [](GetProtoCallback callback,
-             const absl::optional<std::string>& result) {
+             const std::optional<std::string>& result) {
             if (result) {
               std::move(callback).Run(base::span<const char>(*result));
             } else {
-              std::move(callback).Run(absl::nullopt);
+              std::move(callback).Run(std::nullopt);
             }
           },
           std::move(callback)));
@@ -372,7 +372,7 @@ void BackgroundTracingManagerImpl::DownloadTrace(const base::Token& trace_uuid,
 
 void BackgroundTracingManagerImpl::OnTraceDatabaseCreated(
     ScenarioCountMap scenario_saved_counts,
-    absl::optional<BaseTraceReport> trace_to_upload,
+    std::optional<BaseTraceReport> trace_to_upload,
     bool creation_result) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   scenario_saved_counts_ = std::move(scenario_saved_counts);
@@ -395,7 +395,7 @@ void BackgroundTracingManagerImpl::OnTraceDatabaseUpdated(
 
 void BackgroundTracingManagerImpl::OnTraceSaved(
     const std::string& scenario_name,
-    absl::optional<NewTraceReport> trace_to_upload,
+    std::optional<NewTraceReport> trace_to_upload,
     bool success) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   RecordMetric(success ? Metrics::SAVE_TRACE_SUCCEEDED
@@ -548,14 +548,14 @@ bool BackgroundTracingManagerImpl::SetActiveScenario(
 
 void BackgroundTracingManagerImpl::InitializeTraceReportDatabase(
     bool open_in_memory) {
-  absl::optional<base::FilePath> database_dir;
+  std::optional<base::FilePath> database_dir;
   if (!trace_database_) {
     trace_database_ = {new TraceReportDatabase,
                        base::OnTaskRunnerDeleter(database_task_runner_)};
     if (!open_in_memory) {
       database_dir = GetContentClient()->browser()->GetLocalTracesDirectory();
       if (!database_dir.has_value()) {
-        OnTraceDatabaseCreated({}, absl::nullopt, false);
+        OnTraceDatabaseCreated({}, std::nullopt, false);
         return;
       }
     }
@@ -654,11 +654,11 @@ bool BackgroundTracingManagerImpl::HasTraceToUpload() {
 }
 
 void BackgroundTracingManagerImpl::GetTraceToUpload(
-    base::OnceCallback<void(absl::optional<std::string>,
-                            absl::optional<std::string>)> receive_callback) {
+    base::OnceCallback<void(std::optional<std::string>,
+                            std::optional<std::string>)> receive_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!trace_report_to_upload_) {
-    std::move(receive_callback).Run(absl::nullopt, absl::nullopt);
+    std::move(receive_callback).Run(std::nullopt, std::nullopt);
     return;
   }
 
@@ -675,7 +675,7 @@ void BackgroundTracingManagerImpl::GetTraceToUpload(
             },
             base::Unretained(trace_database_.get()),
             trace_report_to_upload_->uuid));
-    OnFinalizeComplete(absl::nullopt, true);
+    OnFinalizeComplete(std::nullopt, true);
     return;
   }
 
@@ -692,7 +692,7 @@ void BackgroundTracingManagerImpl::GetTraceToUpload(
 }
 
 void BackgroundTracingManagerImpl::OnFinalizeComplete(
-    absl::optional<BaseTraceReport> trace_to_upload,
+    std::optional<BaseTraceReport> trace_to_upload,
     bool success) {
   trace_report_to_upload_ = std::move(trace_to_upload);
   if (success) {
@@ -855,7 +855,7 @@ void BackgroundTracingManagerImpl::OnProtoDataComplete(
     receive_callback_.Run(
         std::move(serialized_trace),
         base::BindOnce(&BackgroundTracingManagerImpl::OnFinalizeComplete,
-                       weak_factory_.GetWeakPtr(), absl::nullopt));
+                       weak_factory_.GetWeakPtr(), std::nullopt));
   }
 }
 
@@ -963,7 +963,7 @@ void BackgroundTracingManagerImpl::DeleteTracesInDateRange(base::Time start,
                                                            base::Time end) {
   // The trace report database needs to exist for clean up. Avoid creating or
   // initializing the trace report database to perform a database clean up.
-  absl::optional<base::FilePath> database_dir;
+  std::optional<base::FilePath> database_dir;
   if (!trace_database_) {
     database_dir = GetContentClient()->browser()->GetLocalTracesDirectory();
     if (database_dir.has_value()) {
@@ -979,7 +979,7 @@ void BackgroundTracingManagerImpl::DeleteTracesInDateRange(base::Time start,
       FROM_HERE,
       base::BindOnce(
           [](TraceReportDatabase* trace_database,
-             absl::optional<base::FilePath> database_dir, base::Time start,
+             std::optional<base::FilePath> database_dir, base::Time start,
              base::Time end,
              base::OnceCallback<void(ScenarioCountMap)> on_database_updated) {
             if (database_dir.has_value() &&

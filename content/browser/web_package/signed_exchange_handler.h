@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_WEB_PACKAGE_SIGNED_EXCHANGE_HANDLER_H_
 #define CONTENT_BROWSER_WEB_PACKAGE_SIGNED_EXCHANGE_HANDLER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -26,7 +27,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -102,7 +102,7 @@ class CONTENT_EXPORT SignedExchangeHandler {
       std::unique_ptr<net::SourceStream> body,
       ExchangeHeadersCallback headers_callback,
       std::unique_ptr<SignedExchangeCertFetcherFactory> cert_fetcher_factory,
-      const absl::optional<net::IsolationInfo> outer_request_isolation_info,
+      const std::optional<net::IsolationInfo> outer_request_isolation_info,
       int load_flags,
       const net::IPEndPoint& remote_endpoint,
       std::unique_ptr<blink::WebPackageRequestMatcher> request_matcher,
@@ -169,7 +169,7 @@ class CONTENT_EXPORT SignedExchangeHandler {
   const bool is_secure_transport_;
   const bool has_nosniff_;
   ExchangeHeadersCallback headers_callback_;
-  absl::optional<SignedExchangeVersion> version_;
+  std::optional<SignedExchangeVersion> version_;
   std::unique_ptr<net::SourceStream> source_;
 
   State state_ = State::kReadingPrologueBeforeFallbackUrl;
@@ -182,7 +182,7 @@ class CONTENT_EXPORT SignedExchangeHandler {
   signed_exchange_prologue::BeforeFallbackUrl prologue_before_fallback_url_;
   signed_exchange_prologue::FallbackUrlAndAfter
       prologue_fallback_url_and_after_;
-  absl::optional<SignedExchangeEnvelope> envelope_;
+  std::optional<SignedExchangeEnvelope> envelope_;
 
   std::unique_ptr<SignedExchangeCertFetcherFactory> cert_fetcher_factory_;
 
@@ -191,7 +191,7 @@ class CONTENT_EXPORT SignedExchangeHandler {
   // `cert_fetcher_` borrows reference from `devtools_proxy_`, so it needs to be
   // declared last, so that it is destroyed first.
   std::unique_ptr<SignedExchangeCertFetcher> cert_fetcher_;
-  absl::optional<net::IsolationInfo> outer_request_isolation_info_;
+  std::optional<net::IsolationInfo> outer_request_isolation_info_;
   const int load_flags_ = 0;
   const net::IPEndPoint remote_endpoint_;
 

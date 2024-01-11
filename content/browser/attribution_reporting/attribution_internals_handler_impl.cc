@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <iterator>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -51,7 +52,6 @@
 #include "content/public/common/content_switches.h"
 #include "net/base/net_errors.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -331,7 +331,7 @@ attribution_internals::mojom::WebUIRegistrationPtr GetRegistration(
     const attribution_reporting::SuitableOrigin& context_origin,
     const attribution_reporting::SuitableOrigin& reporting_origin,
     std::string registration_json,
-    absl::optional<uint64_t> cleared_debug_key) {
+    std::optional<uint64_t> cleared_debug_key) {
   auto reg = attribution_internals::mojom::WebUIRegistration::New();
   reg->time = time.InMillisecondsFSinceUnixEpoch();
   reg->context_origin = context_origin;
@@ -346,7 +346,7 @@ attribution_internals::mojom::WebUIRegistrationPtr GetRegistration(
 void AttributionInternalsHandlerImpl::OnSourceHandled(
     const StorableSource& source,
     base::Time source_time,
-    absl::optional<uint64_t> cleared_debug_key,
+    std::optional<uint64_t> cleared_debug_key,
     attribution_reporting::mojom::StoreSourceResult result) {
   auto web_ui_source = WebUISourceRegistration::New();
   web_ui_source->registration =
@@ -429,7 +429,7 @@ void AttributionInternalsHandlerImpl::OnOsRegistration(
 
 void AttributionInternalsHandlerImpl::OnTriggerHandled(
     const AttributionTrigger& trigger,
-    const absl::optional<uint64_t> cleared_debug_key,
+    const std::optional<uint64_t> cleared_debug_key,
     const CreateReportResult& result) {
   const attribution_reporting::TriggerRegistration& registration =
       trigger.registration();
@@ -447,7 +447,7 @@ void AttributionInternalsHandlerImpl::OnTriggerHandled(
 
   observer_->OnTriggerHandled(std::move(web_ui_trigger));
 
-  if (const absl::optional<AttributionReport>& report =
+  if (const std::optional<AttributionReport>& report =
           result.replaced_event_level_report()) {
     DCHECK_EQ(
         result.event_level_status(),

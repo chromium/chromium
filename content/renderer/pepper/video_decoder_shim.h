@@ -77,7 +77,7 @@ class VideoDecoderShim {
                        pepper_video_decode_context_provider);
 
   void OnInitializeFailed();
-  void OnDecodeComplete(int32_t result, absl::optional<uint32_t> decode_id);
+  void OnDecodeComplete(int32_t result, std::optional<uint32_t> decode_id);
   void OnOutputComplete(std::unique_ptr<PendingFrame> frame);
   void SendPictures();
   void SendSharedImages();

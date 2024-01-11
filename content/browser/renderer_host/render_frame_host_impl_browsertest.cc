@@ -6,6 +6,7 @@
 
 #include <initializer_list>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <tuple>
@@ -109,7 +110,6 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/switches.h"
@@ -3040,11 +3040,11 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // Helper function to fetch the canonical link URL from the provided frame.
-absl::optional<GURL> GetCanonicalUrlFromFrame(RenderFrameHostImpl* frame) {
+std::optional<GURL> GetCanonicalUrlFromFrame(RenderFrameHostImpl* frame) {
   base::RunLoop loop;
-  absl::optional<GURL> canon_url;
+  std::optional<GURL> canon_url;
   frame->GetCanonicalUrl(
-      base::BindLambdaForTesting([&](const absl::optional<GURL>& url) {
+      base::BindLambdaForTesting([&](const std::optional<GURL>& url) {
         canon_url = url;
         loop.Quit();
       }));
@@ -3056,7 +3056,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, GetCanonicalUrl_None) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
   base::HistogramTester histogram_tester;
-  absl::optional<GURL> canon_url =
+  std::optional<GURL> canon_url =
       GetCanonicalUrlFromFrame(web_contents()->GetPrimaryMainFrame());
   // No canonical link should be returned if the page has none.
   ASSERT_FALSE(canon_url.has_value());
@@ -3076,7 +3076,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, GetCanonicalUrl_InBody) {
       shell(), GetTestUrl("render_frame_host", "canonical_link_in_body.html")));
 
   base::HistogramTester histogram_tester;
-  absl::optional<GURL> canon_url =
+  std::optional<GURL> canon_url =
       GetCanonicalUrlFromFrame(web_contents()->GetPrimaryMainFrame());
   // A canonical link in the body should be ignored.
   ASSERT_FALSE(canon_url.has_value());
@@ -3101,7 +3101,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), url_with_fragment));
 
   base::HistogramTester histogram_tester;
-  absl::optional<GURL> canon_url =
+  std::optional<GURL> canon_url =
       GetCanonicalUrlFromFrame(web_contents()->GetPrimaryMainFrame());
   ASSERT_TRUE(canon_url.has_value());
   // The canonical link should be returned appended with the fragment from the
@@ -3129,7 +3129,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), url_with_fragment));
 
   base::HistogramTester histogram_tester;
-  absl::optional<GURL> canon_url =
+  std::optional<GURL> canon_url =
       GetCanonicalUrlFromFrame(web_contents()->GetPrimaryMainFrame());
   ASSERT_TRUE(canon_url.has_value());
   // The first canonical link should be returned, and its fragment should
@@ -7313,7 +7313,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                        DevToolsNavigationToken_InitialNavigation) {
   RenderFrameHostImplWrapper rfh(web_contents()->GetPrimaryMainFrame());
-  EXPECT_EQ(rfh->GetDevToolsNavigationToken(), absl::nullopt);
+  EXPECT_EQ(rfh->GetDevToolsNavigationToken(), std::nullopt);
 
   GURL url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   TestNavigationManager nav_manager(web_contents(), url);
@@ -7455,7 +7455,7 @@ IN_PROC_BROWSER_TEST_F(
   // "same-document" navigations; but the synchronously committed about:blank
   // document is still considered to be the initial empty document, and the
   // devtools_navigation_token remains null.
-  EXPECT_EQ(subframe->GetDevToolsNavigationToken(), absl::nullopt);
+  EXPECT_EQ(subframe->GetDevToolsNavigationToken(), std::nullopt);
 }
 
 // Tests that the devtools_navigation_token of an RFH is updated after a

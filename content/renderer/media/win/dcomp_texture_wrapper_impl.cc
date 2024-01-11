@@ -58,7 +58,7 @@ class DCOMPTextureMailboxResources
 
   // TODO(xhwang): Follow the example of UpdateReleaseSyncToken to wait for
   // all SyncTokens and create a new one for DestroySharedImage().
-  absl::optional<gpu::SyncToken> last_sync_token_;
+  std::optional<gpu::SyncToken> last_sync_token_;
 };
 
 namespace {

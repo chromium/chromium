@@ -97,7 +97,7 @@ void CdmStorageManager::ReadFile(
     const blink::StorageKey& storage_key,
     const media::CdmType& cdm_type,
     const std::string& file_name,
-    base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)> callback) {
+    base::OnceCallback<void(std::optional<std::vector<uint8_t>>)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   db_.AsyncCall(&CdmStorageDatabase::ReadFile)
@@ -200,12 +200,12 @@ void CdmStorageManager::DidOpenFile(const blink::StorageKey& storage_key,
 }
 
 void CdmStorageManager::DidReadFile(
-    base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)> callback,
-    absl::optional<std::vector<uint8_t>> data) {
+    base::OnceCallback<void(std::optional<std::vector<uint8_t>>)> callback,
+    std::optional<std::vector<uint8_t>> data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::UmaHistogramBoolean(GetHistogramName(kReadFileError),
-                            data == absl::nullopt);
+                            data == std::nullopt);
 
   std::move(callback).Run(data);
 }

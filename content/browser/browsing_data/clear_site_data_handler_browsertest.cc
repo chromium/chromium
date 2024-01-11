@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/command_line.h"
@@ -49,7 +50,6 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "storage/browser/quota/quota_settings.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -190,8 +190,8 @@ class ClearSiteDataHandlerBrowserTest : public ContentBrowserTest {
 
   // Adds a cookie for the |url|. Used in the cookie integration tests.
   void AddCookie(const GURL& url,
-                 const absl::optional<net::CookiePartitionKey>&
-                     cookie_partition_key = absl::nullopt) {
+                 const std::optional<net::CookiePartitionKey>&
+                     cookie_partition_key = std::nullopt) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     network::mojom::CookieManager* cookie_manager =
         storage_partition()->GetCookieManagerForBrowserProcess();
@@ -201,7 +201,7 @@ class ClearSiteDataHandlerBrowserTest : public ContentBrowserTest {
       cookie_line += "; Secure; Partitioned";
     }
     std::unique_ptr<net::CanonicalCookie> cookie(net::CanonicalCookie::Create(
-        url, cookie_line, base::Time::Now(), /*server_time=*/absl::nullopt,
+        url, cookie_line, base::Time::Now(), /*server_time=*/std::nullopt,
         cookie_partition_key));
 
     base::RunLoop run_loop;

@@ -40,8 +40,8 @@ class PrefetchCookieListenerTest : public RenderViewHostTestHarness {
   // partition using |cookie_manager_|.
   bool SetHostCookie(const GURL& url, const std::string& value) {
     std::unique_ptr<net::CanonicalCookie> cookie(net::CanonicalCookie::Create(
-        url, value, base::Time::Now(), /*server_time=*/absl::nullopt,
-        /*cookie_partition_key=*/absl::nullopt));
+        url, value, base::Time::Now(), /*server_time=*/std::nullopt,
+        /*cookie_partition_key=*/std::nullopt));
     EXPECT_TRUE(cookie.get());
     EXPECT_TRUE(cookie->IsHostCookie());
 
@@ -61,7 +61,7 @@ class PrefetchCookieListenerTest : public RenderViewHostTestHarness {
             base::Time::Now() + base::Hours(1), base::Time::Now(),
             /*secure=*/true, /*http_only=*/false,
             net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT,
-            /*partition_key=*/absl::nullopt, &status));
+            /*partition_key=*/std::nullopt, &status));
     EXPECT_TRUE(cookie.get());
     EXPECT_TRUE(cookie->IsDomainCookie());
     EXPECT_TRUE(status.IsInclude());

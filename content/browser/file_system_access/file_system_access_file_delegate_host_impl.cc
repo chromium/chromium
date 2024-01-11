@@ -127,7 +127,7 @@ void FileSystemAccessFileDelegateHostImpl::DidRead(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (rv < 0) {
-    std::move(callback).Run(absl::optional<mojo_base::BigBuffer>(),
+    std::move(callback).Run(std::optional<mojo_base::BigBuffer>(),
                             storage::NetErrorToFileError(rv),
                             /*bytes_read=*/0);
     return;

@@ -4,6 +4,7 @@
 
 #include "content/browser/interest_group/test_interest_group_manager_impl.h"
 
+#include <optional>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -23,7 +24,6 @@
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -163,16 +163,16 @@ std::vector<std::string> TestInterestGroupManagerImpl::TakeJoinedKAnonSets() {
   return std::exchange(joined_k_anon_sets_, {});
 }
 
-absl::optional<SingleStorageInterestGroup>
+std::optional<SingleStorageInterestGroup>
 TestInterestGroupManagerImpl::BlockingGetInterestGroup(
     const url::Origin& owner,
     const std::string& name) {
   base::RunLoop run_loop;
-  absl::optional<SingleStorageInterestGroup> out;
+  std::optional<SingleStorageInterestGroup> out;
   GetInterestGroup(
       {owner, name},
       base::BindLambdaForTesting(
-          [&](absl::optional<SingleStorageInterestGroup> interest_group) {
+          [&](std::optional<SingleStorageInterestGroup> interest_group) {
             out = std::move(interest_group);
             run_loop.Quit();
           }));

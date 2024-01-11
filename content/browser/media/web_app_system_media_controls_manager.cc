@@ -84,7 +84,7 @@ void WebAppSystemMediaControlsManager::OnMojoError() {
 void WebAppSystemMediaControlsManager::OnFocusGained(
     media_session::mojom::AudioFocusRequestStatePtr state) {
   CHECK(initialized_);
-  const absl::optional<base::UnguessableToken>& maybe_id = state->request_id;
+  const std::optional<base::UnguessableToken>& maybe_id = state->request_id;
   if (!maybe_id.has_value()) {
     return;
   }

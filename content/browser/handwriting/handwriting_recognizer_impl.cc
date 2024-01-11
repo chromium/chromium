@@ -5,13 +5,13 @@
 #include "content/browser/handwriting/handwriting_recognizer_impl.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
 #include "base/functional/bind.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -32,7 +32,7 @@ void HandwritingRecognizerImpl::GetPrediction(
     std::vector<handwriting::mojom::HandwritingStrokePtr> strokes,
     handwriting::mojom::HandwritingHintsPtr hints,
     GetPredictionCallback callback) {
-  std::move(callback).Run(absl::nullopt);
+  std::move(callback).Run(std::nullopt);
 }
 
 }  // namespace content

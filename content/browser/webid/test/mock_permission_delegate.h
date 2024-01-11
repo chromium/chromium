@@ -39,7 +39,7 @@ class MockPermissionDelegate
                bool(const url::Origin&,
                     const url::Origin&,
                     const url::Origin& identity_provider,
-                    const absl::optional<std::string>& account_id));
+                    const std::optional<std::string>& account_id));
   MOCK_METHOD1(HasSharingPermission, bool(const url::Origin&));
   MOCK_METHOD4(GrantSharingPermission,
                void(const url::Origin&,
@@ -51,7 +51,7 @@ class MockPermissionDelegate
                     const url::Origin&,
                     const url::Origin&,
                     const std::string&));
-  MOCK_METHOD1(GetIdpSigninStatus, absl::optional<bool>(const url::Origin&));
+  MOCK_METHOD1(GetIdpSigninStatus, std::optional<bool>(const url::Origin&));
   MOCK_METHOD2(SetIdpSigninStatus, void(const url::Origin&, bool));
   MOCK_METHOD1(RegisterIdP, void(const ::GURL&));
   MOCK_METHOD1(UnregisterIdP, void(const ::GURL&));

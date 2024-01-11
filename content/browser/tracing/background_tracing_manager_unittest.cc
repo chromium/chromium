@@ -77,7 +77,7 @@ class MockBrowserClient : public content::ContentBrowserClient {
   MockBrowserClient(base::FilePath traces_dir) : traces_dir_(traces_dir) {}
   ~MockBrowserClient() override {}
 
-  absl::optional<base::FilePath> GetLocalTracesDirectory() override {
+  std::optional<base::FilePath> GetLocalTracesDirectory() override {
     return traces_dir_;
   }
 
@@ -152,8 +152,8 @@ TEST_F(BackgroundTracingManagerTest, GetTraceToUpload) {
   std::string compressed_trace;
   base::RunLoop run_loop;
   background_tracing_manager_->GetTraceToUpload(base::BindLambdaForTesting(
-      [&](absl::optional<std::string> trace_content,
-          absl::optional<std::string> system_profile) {
+      [&](std::optional<std::string> trace_content,
+          std::optional<std::string> system_profile) {
         ASSERT_TRUE(trace_content);
         compressed_trace = std::move(*trace_content);
         run_loop.Quit();
@@ -251,8 +251,8 @@ TEST_F(BackgroundTracingManagerTest, UploadScenarioQuotaExceeded) {
 
   base::RunLoop run_loop;
   background_tracing_manager_->GetTraceToUpload(
-      base::IgnoreArgs<absl::optional<std::string>,
-                       absl::optional<std::string>>(run_loop.QuitClosure()));
+      base::IgnoreArgs<std::optional<std::string>, std::optional<std::string>>(
+          run_loop.QuitClosure()));
   run_loop.Run();
 
   {
@@ -275,8 +275,8 @@ TEST_F(BackgroundTracingManagerTest, UploadScenarioQuotaReset) {
 
   base::RunLoop run_loop;
   background_tracing_manager_->GetTraceToUpload(
-      base::IgnoreArgs<absl::optional<std::string>,
-                       absl::optional<std::string>>(run_loop.QuitClosure()));
+      base::IgnoreArgs<std::optional<std::string>, std::optional<std::string>>(
+          run_loop.QuitClosure()));
   run_loop.Run();
 
   task_environment_.FastForwardBy(base::Days(8));

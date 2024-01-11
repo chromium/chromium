@@ -141,7 +141,7 @@ void BucketHost::SetExpires(base::Time expires, SetExpiresCallback callback) {
 
 void BucketHost::Expires(ExpiresCallback callback) {
   if (bucket_info_.is_null()) {
-    std::move(callback).Run(absl::nullopt, /*success=*/false);
+    std::move(callback).Run(std::nullopt, /*success=*/false);
     return;
   }
 
@@ -155,7 +155,7 @@ void BucketHost::Expires(ExpiresCallback callback) {
 
 void BucketHost::DidValidateForExpires(ExpiresCallback callback,
                                        bool bucket_exists) {
-  absl::optional<base::Time> expires;
+  std::optional<base::Time> expires;
   if (bucket_exists && !bucket_info_.expiration.is_null()) {
     expires = bucket_info_.expiration;
   }

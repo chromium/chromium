@@ -7,13 +7,13 @@
 #import <CoreFoundation/CoreFoundation.h>
 #import <CoreText/CoreText.h>
 
+#include <optional>
 #include <string>
 
 #include "base/apple/bridging.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/font_access/font_enumeration_table.pb.h"
 
 namespace content {

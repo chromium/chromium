@@ -80,7 +80,7 @@ class CONTENT_EXPORT BackgroundFetchScheduler
       int num_requests,
       std::vector<scoped_refptr<BackgroundFetchRequestInfo>>
           active_fetch_requests,
-      absl::optional<net::IsolationInfo> isolation_info) override;
+      std::optional<net::IsolationInfo> isolation_info) override;
   void OnServiceWorkerDatabaseCorrupted(
       int64_t service_worker_registration_id) override;
   void OnRegistrationQueried(
@@ -130,7 +130,7 @@ class CONTENT_EXPORT BackgroundFetchScheduler
       std::vector<scoped_refptr<BackgroundFetchRequestInfo>>
           active_fetch_requests,
       bool start_paused,
-      absl::optional<net::IsolationInfo> isolation_info);
+      std::optional<net::IsolationInfo> isolation_info);
 
   void DidStartRequest(const BackgroundFetchRegistrationId& registration_id,
                        const BackgroundFetchRequestInfo* request_info);

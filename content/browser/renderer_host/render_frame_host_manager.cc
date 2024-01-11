@@ -208,7 +208,7 @@ bool IsSiteInstanceCompatibleWithErrorIsolation(
 // within the process model.
 bool IsSiteInstanceCompatibleWithWebExposedIsolation(
     SiteInstanceImpl* site_instance,
-    const absl::optional<WebExposedIsolationInfo>& web_exposed_isolation_info) {
+    const std::optional<WebExposedIsolationInfo>& web_exposed_isolation_info) {
   return WebExposedIsolationInfo::AreCompatible(
       site_instance->GetWebExposedIsolationInfo(), web_exposed_isolation_info);
 }
@@ -473,7 +473,7 @@ void PrepareViewTransitionForBFCacheActivation(
 }  // namespace
 
 RenderFrameHostManager::IsSameSiteGetter::IsSameSiteGetter()
-    : is_same_site_(absl::nullopt) {}
+    : is_same_site_(std::nullopt) {}
 
 RenderFrameHostManager::IsSameSiteGetter::IsSameSiteGetter(bool is_same_site)
     : is_same_site_(is_same_site) {}
@@ -551,11 +551,10 @@ void RenderFrameHostManager::InitRoot(
               false /* is_ad_frame */),
           frame_tree_node_->parent(),
           is_legacy_browsing_context_state_mode
-              ? static_cast<absl::optional<BrowsingInstanceId>>(absl::nullopt)
+              ? static_cast<std::optional<BrowsingInstanceId>>(std::nullopt)
               : site_instance->GetBrowsingInstanceId(),
           is_legacy_browsing_context_state_mode
-              ? static_cast<absl::optional<base::UnguessableToken>>(
-                    absl::nullopt)
+              ? static_cast<std::optional<base::UnguessableToken>>(std::nullopt)
               : site_instance->coop_related_group_token());
   browsing_context_state->CommitFramePolicy(initial_main_frame_policy);
   browsing_context_state->SetFrameName(name, "");
@@ -603,11 +602,10 @@ void RenderFrameHostManager::InitChild(
               false /* is_ad_frame */),
           frame_tree_node_->parent(),
           is_legacy_browsing_context_state_mode
-              ? static_cast<absl::optional<BrowsingInstanceId>>(absl::nullopt)
+              ? static_cast<std::optional<BrowsingInstanceId>>(std::nullopt)
               : site_instance->GetBrowsingInstanceId(),
           is_legacy_browsing_context_state_mode
-              ? static_cast<absl::optional<base::UnguessableToken>>(
-                    absl::nullopt)
+              ? static_cast<std::optional<base::UnguessableToken>>(std::nullopt)
               : site_instance->coop_related_group_token());
   browsing_context_state->CommitFramePolicy(frame_policy);
   SetRenderFrameHost(CreateRenderFrameHost(
@@ -865,7 +863,7 @@ void RenderFrameHostManager::CommitPendingIfNecessary(
 }
 
 void RenderFrameHostManager::DidChangeOpener(
-    const absl::optional<blink::LocalFrameToken>& opener_frame_token,
+    const std::optional<blink::LocalFrameToken>& opener_frame_token,
     SiteInstanceGroup* source_site_instance_group) {
   FrameTreeNode* opener = nullptr;
   if (opener_frame_token) {
@@ -1242,7 +1240,7 @@ void RenderFrameHostManager::ActivatePrerender(
   BackForwardCacheMetrics* back_forward_cache_metrics =
       render_frame_host_->GetBackForwardCacheMetrics();
   if (back_forward_cache_metrics)
-    back_forward_cache_metrics->SetBrowsingInstanceSwapResult(absl::nullopt,
+    back_forward_cache_metrics->SetBrowsingInstanceSwapResult(std::nullopt,
                                                               nullptr);
 
   RestorePage(std::move(stored_page));
@@ -3609,7 +3607,7 @@ RenderFrameHostManager::CreateRenderFrameHost(
           : CreateRenderViewHostCase::kDefault;
 
   scoped_refptr<RenderViewHostImpl> render_view_host = nullptr;
-  absl::optional<viz::FrameSinkId> frame_sink_id;
+  std::optional<viz::FrameSinkId> frame_sink_id;
   // In the case a speculative RenderViewHost will be created, we don't need to
   // check if there's an existing RenderViewHost. Otherwise, get the appropriate
   // RenderViewHost.
@@ -3958,7 +3956,7 @@ void RenderFrameHostManager::CreateRenderFrameProxy(
                       kSwapForCrossBrowsingInstanceNavigations
               ? render_frame_host_->browsing_context_state()
               : nullptr,
-          CreateRenderViewHostCase::kDefault, absl::nullopt);
+          CreateRenderViewHostCase::kDefault, std::nullopt);
     } else {
       TRACE_EVENT_INSTANT("navigation",
                           "RenderFrameHostManager::CreateRenderFrameProxy_RVH",
@@ -4249,11 +4247,11 @@ bool RenderFrameHostManager::InitRenderFrame(
   SiteInstanceGroup* site_instance_group =
       render_frame_host->GetSiteInstance()->group();
 
-  absl::optional<blink::FrameToken> opener_frame_token;
+  std::optional<blink::FrameToken> opener_frame_token;
   if (frame_tree_node_->opener())
     opener_frame_token = GetOpenerFrameToken(site_instance_group);
 
-  absl::optional<blink::FrameToken> parent_frame_token;
+  std::optional<blink::FrameToken> parent_frame_token;
   if (frame_tree_node_->parent()) {
     parent_frame_token =
         frame_tree_node_->parent()
@@ -4268,7 +4266,7 @@ bool RenderFrameHostManager::InitRenderFrame(
   // correct order for indexed window access (e.g., window.frames[1]), pass the
   // previous sibling frame so that this frame is correctly inserted into the
   // frame tree on the renderer side.
-  absl::optional<blink::FrameToken> previous_sibling_frame_token;
+  std::optional<blink::FrameToken> previous_sibling_frame_token;
   FrameTreeNode* previous_sibling =
       frame_tree_node_->current_frame_host()->PreviousSibling();
   if (previous_sibling) {
@@ -4287,7 +4285,7 @@ bool RenderFrameHostManager::InitRenderFrame(
   // Figure out the FrameToken of the frame or proxy that this frame will
   // replace. This usually will be `existing_proxy`'s FrameToken, but
   // with RenderDocument it might also be a RenderFrameHost's FrameToken.
-  absl::optional<blink::FrameToken> previous_frame_token =
+  std::optional<blink::FrameToken> previous_frame_token =
       GetReplacementFrameToken(existing_proxy, render_frame_host);
 
   return render_frame_host->CreateRenderFrame(
@@ -4295,7 +4293,7 @@ bool RenderFrameHostManager::InitRenderFrame(
       previous_sibling_frame_token);
 }
 
-absl::optional<blink::FrameToken>
+std::optional<blink::FrameToken>
 RenderFrameHostManager::GetReplacementFrameToken(
     RenderFrameProxyHost* existing_proxy,
     RenderFrameHostImpl* render_frame_host) const {
@@ -4332,7 +4330,7 @@ RenderFrameHostManager::GetReplacementFrameToken(
       // in the renderer to be replaced.
       DCHECK(current_frame_host()->must_be_replaced());
       DCHECK_NE(render_frame_host, current_frame_host());
-      return absl::nullopt;
+      return std::nullopt;
     }
   }
 }
@@ -4387,7 +4385,7 @@ int RenderFrameHostManager::GetRoutingIdForSiteInstanceGroup(
   return MSG_ROUTING_NONE;
 }
 
-absl::optional<blink::FrameToken>
+std::optional<blink::FrameToken>
 RenderFrameHostManager::GetFrameTokenForSiteInstanceGroup(
     SiteInstanceGroup* site_instance_group) {
   // We want to ensure that we don't create proxies for the new speculative site
@@ -4400,7 +4398,7 @@ RenderFrameHostManager::GetFrameTokenForSiteInstanceGroup(
       !render_frame_host_->GetSiteInstance()
            ->group()
            ->IsRelatedSiteInstanceGroup(site_instance_group)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (render_frame_host_->GetSiteInstance()->group() == site_instance_group)
     return render_frame_host_->GetFrameToken();
@@ -4411,7 +4409,7 @@ RenderFrameHostManager::GetFrameTokenForSiteInstanceGroup(
   if (proxy)
     return proxy->GetFrameToken();
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void RenderFrameHostManager::CommitPending(
@@ -4730,7 +4728,7 @@ void RenderFrameHostManager::CommitPending(
 
   // Store the old_render_frame_host's current frame size so that it can be used
   // to initialize the child RWHV.
-  absl::optional<gfx::Size> old_size = old_render_frame_host->frame_size();
+  std::optional<gfx::Size> old_size = old_render_frame_host->frame_size();
 
   // Store the old_render_frame_host's BrowsingContextState so that it can be
   // used to update/delete proxies.
@@ -5095,10 +5093,10 @@ void RenderFrameHostManager::CreateOpenerProxiesForFrameTree(
                                           browsing_context_state);
 }
 
-absl::optional<blink::FrameToken> RenderFrameHostManager::GetOpenerFrameToken(
+std::optional<blink::FrameToken> RenderFrameHostManager::GetOpenerFrameToken(
     SiteInstanceGroup* group) {
   if (!frame_tree_node_->opener())
-    return absl::nullopt;
+    return std::nullopt;
 
   return frame_tree_node_->opener()
       ->render_manager()

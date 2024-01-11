@@ -248,10 +248,10 @@ class RequestObserver {
 
 // Removes `prefix` from the start of `str`, if present.
 // Returns nullopt otherwise.
-absl::optional<base::StringPiece> StripPrefix(base::StringPiece str,
-                                              base::StringPiece prefix) {
+std::optional<base::StringPiece> StripPrefix(base::StringPiece str,
+                                             base::StringPiece prefix) {
   if (!base::StartsWith(str, prefix)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return str.substr(prefix.size());
@@ -288,7 +288,7 @@ std::string GetContentRangeHeader(const net::HttpByteRange& range,
 // Route: /echorange?<body>
 std::unique_ptr<net::test_server::HttpResponse> HandleRangeRequest(
     const net::test_server::HttpRequest& request) {
-  absl::optional<base::StringPiece> query =
+  std::optional<base::StringPiece> query =
       StripPrefix(request.relative_url, "/echorange?");
   if (!query) {
     return nullptr;

@@ -94,8 +94,8 @@ class StoredPage : public SiteInstanceGroup::Observer {
   RenderViewHostImplSafeRefSet TakeRenderViewHosts();
 
   void SetViewTransitionState(
-      absl::optional<blink::ViewTransitionState> view_transition_state);
-  absl::optional<blink::ViewTransitionState> TakeViewTransitionState();
+      std::optional<blink::ViewTransitionState> view_transition_state);
+  std::optional<blink::ViewTransitionState> TakeViewTransitionState();
 
  private:
   void ClearAllObservers();
@@ -131,7 +131,7 @@ class StoredPage : public SiteInstanceGroup::Observer {
 
   // View transition state to use when the page is activated, either via BFCache
   // activation or prerender activation.
-  absl::optional<blink::ViewTransitionState> view_transition_state_;
+  std::optional<blink::ViewTransitionState> view_transition_state_;
 };
 
 }  // namespace content

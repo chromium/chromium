@@ -5,6 +5,7 @@
 #ifndef CONTENT_RENDERER_ACCESSIBILITY_AX_IMAGE_ANNOTATOR_H_
 #define CONTENT_RENDERER_ACCESSIBILITY_AX_IMAGE_ANNOTATOR_H_
 
+#include <optional>
 #include <string>
 #include <unordered_map>
 
@@ -18,7 +19,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/image_annotation/public/cpp/image_processor.h"
 #include "services/image_annotation/public/mojom/image_annotation.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 
@@ -87,7 +87,7 @@ class CONTENT_EXPORT AXImageAnnotator : public base::CheckedObserver {
    private:
     image_annotation::ImageProcessor image_processor_;
     ax::mojom::ImageAnnotationStatus status_;
-    absl::optional<std::string> annotation_;
+    std::optional<std::string> annotation_;
   };
 
   // Retrieves the image data from the renderer.

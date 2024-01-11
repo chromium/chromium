@@ -392,7 +392,7 @@ void VideoCaptureController::ReturnBuffer(
   OnClientFinishedConsumingBuffer(client, buffer_id, feedback);
 }
 
-const absl::optional<media::VideoCaptureFormat>
+const std::optional<media::VideoCaptureFormat>
 VideoCaptureController::GetVideoCaptureFormat() const {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   return video_capture_format_;

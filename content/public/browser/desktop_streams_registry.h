@@ -5,8 +5,9 @@
 #ifndef CONTENT_PUBLIC_BROWSER_DESKTOP_STREAMS_REGISTRY_H_
 #define CONTENT_PUBLIC_BROWSER_DESKTOP_STREAMS_REGISTRY_H_
 
+#include <optional>
+
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace url {
 class Origin;
@@ -39,7 +40,7 @@ class CONTENT_EXPORT DesktopStreamsRegistry {
   // same origin and process may use the stream.
   virtual std::string RegisterStream(
       int render_process_id,
-      absl::optional<int> restrict_to_render_frame_id,
+      std::optional<int> restrict_to_render_frame_id,
       const url::Origin& origin,
       const DesktopMediaID& source,
       const DesktopStreamRegistryType type) = 0;

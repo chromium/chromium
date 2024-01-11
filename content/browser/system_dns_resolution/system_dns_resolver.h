@@ -5,8 +5,9 @@
 #ifndef CONTENT_BROWSER_SYSTEM_DNS_RESOLUTION_SYSTEM_DNS_RESOLVER_H_
 #define CONTENT_BROWSER_SYSTEM_DNS_RESOLUTION_SYSTEM_DNS_RESOLVER_H_
 
+#include <optional>
+
 #include "services/network/public/mojom/system_dns_resolution.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -23,7 +24,7 @@ class SystemDnsResolverMojoImpl : public network::mojom::SystemDnsResolver {
   ~SystemDnsResolverMojoImpl() override = default;
 
   // network::mojom::SystemDnsResolver impl:
-  void Resolve(const absl::optional<std::string>& hostname,
+  void Resolve(const std::optional<std::string>& hostname,
                net::AddressFamily addr_family,
                int32_t flags,
                uint64_t network,

@@ -9,6 +9,7 @@
   to the relevant set of devtools protocol handlers.
 */
 
+#include <optional>
 #include <vector>
 
 #include "content/browser/devtools/devtools_device_request_prompt_info.h"
@@ -25,7 +26,6 @@
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-forward.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-forward.h"
@@ -95,7 +95,7 @@ void ApplyNetworkRequestOverrides(
     FrameTreeNode* frame_tree_node,
     blink::mojom::BeginNavigationParams* begin_params,
     bool* report_raw_headers,
-    absl::optional<std::vector<net::SourceStream::SourceType>>*
+    std::optional<std::vector<net::SourceStream::SourceType>>*
         devtools_accepted_stream_types,
     bool* devtools_user_agent_overridden,
     bool* devtools_accept_language_overridden);
@@ -106,7 +106,7 @@ void ApplyNetworkRequestOverrides(
 //  the behavior).
 bool ApplyUserAgentMetadataOverrides(
     FrameTreeNode* frame_tree_node,
-    absl::optional<blink::UserAgentMetadata>* override_out);
+    std::optional<blink::UserAgentMetadata>* override_out);
 
 bool WillCreateURLLoaderFactory(
     RenderFrameHostImpl* rfh,
@@ -158,9 +158,8 @@ void OnPrefetchRequestWillBeSent(
     const std::string& request_id,
     const GURL& initiator,
     const network::ResourceRequest& request,
-    absl::optional<
-        std::pair<const GURL&,
-                  const network::mojom::URLResponseHeadDevToolsInfo&>>
+    std::optional<std::pair<const GURL&,
+                            const network::mojom::URLResponseHeadDevToolsInfo&>>
         redirect_info);
 void OnPrefetchResponseReceived(FrameTreeNode* frame_tree_node,
                                 const std::string& request_id,
@@ -200,10 +199,9 @@ void OnFetchKeepAliveRequestWillBeSent(
     FrameTreeNode* frame_tree_node,
     const std::string& request_id,
     const network::ResourceRequest& request,
-    absl::optional<
-        std::pair<const GURL&,
-                  const network::mojom::URLResponseHeadDevToolsInfo&>>
-        redirect_info = absl::nullopt);
+    std::optional<std::pair<const GURL&,
+                            const network::mojom::URLResponseHeadDevToolsInfo&>>
+        redirect_info = std::nullopt);
 void OnFetchKeepAliveResponseReceived(
     FrameTreeNode* frame_tree_node,
     const std::string& request_id,
@@ -250,7 +248,7 @@ void OnFrameTreeNodeDestroyed(FrameTreeNode& frame_tree_node);
 bool IsPrerenderAllowed(FrameTree& frame_tree);
 void WillInitiatePrerender(FrameTree& frame_tree);
 void DidActivatePrerender(const NavigationRequest& nav_request,
-                          const absl::optional<base::UnguessableToken>&
+                          const std::optional<base::UnguessableToken>&
                               initiator_devtools_navigation_token);
 
 void DidUpdatePrefetchStatus(
@@ -265,20 +263,20 @@ void DidUpdatePrerenderStatus(
     int initiator_frame_tree_node_id,
     const base::UnguessableToken& initiator_devtools_navigation_token,
     const GURL& prerender_url,
-    absl::optional<blink::mojom::SpeculationTargetHint> target_hint,
+    std::optional<blink::mojom::SpeculationTargetHint> target_hint,
     PreloadingTriggeringOutcome status,
-    absl::optional<PrerenderFinalStatus> prerender_status,
-    absl::optional<std::string> disallowed_mojo_interface,
+    std::optional<PrerenderFinalStatus> prerender_status,
+    std::optional<std::string> disallowed_mojo_interface,
     const std::vector<PrerenderMismatchedHeaders>* mismatched_headers);
 
 void OnSignedExchangeReceived(
     FrameTreeNode* frame_tree_node,
-    absl::optional<const base::UnguessableToken> devtools_navigation_token,
+    std::optional<const base::UnguessableToken> devtools_navigation_token,
     const GURL& outer_request_url,
     const network::mojom::URLResponseHead& outer_response,
-    const absl::optional<SignedExchangeEnvelope>& header,
+    const std::optional<SignedExchangeEnvelope>& header,
     const scoped_refptr<net::X509Certificate>& certificate,
-    const absl::optional<net::SSLInfo>& ssl_info,
+    const std::optional<net::SSLInfo>& ssl_info,
     const std::vector<SignedExchangeError>& errors);
 void OnSignedExchangeCertificateRequestSent(
     FrameTreeNode* frame_tree_node,
@@ -362,7 +360,7 @@ void ReportCookieIssue(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
     blink::mojom::CookieOperation operation,
-    const absl::optional<std::string>& devtools_request_id);
+    const std::optional<std::string>& devtools_request_id);
 
 // This function works similar to RenderFrameHostImpl::AddInspectorIssue, in
 // that it reports an InspectorIssue to DevTools clients. The difference is that
@@ -385,7 +383,7 @@ void BuildAndReportBrowserInitiatedIssue(
 void OnWebTransportHandshakeFailed(
     RenderFrameHostImpl* frame_host,
     const GURL& url,
-    const absl::optional<net::WebTransportError>& error);
+    const std::optional<net::WebTransportError>& error);
 
 void OnServiceWorkerMainScriptFetchingFailed(
     const GlobalRenderFrameHostId& requesting_frame_id,

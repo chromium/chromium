@@ -484,7 +484,7 @@ class RenderProcessHostIsReadyObserver : public RenderProcessHostObserver {
 bool MayReuseAndIsSuitableWithMainFrameThreshold(
     RenderProcessHost* host,
     SiteInstanceImpl* site_instance,
-    absl::optional<size_t> main_frame_threshold) {
+    std::optional<size_t> main_frame_threshold) {
   // It's possible that |host| has become unsuitable for hosting
   // |site_instance|, for example if it was reused by a navigation to a
   // different site, and |site_instance| requires a dedicated process. Do not
@@ -597,7 +597,7 @@ class SiteProcessCountTracker : public base::SupportsUserData::Data,
 
   void FindRenderProcessesForSiteInstance(
       SiteInstanceImpl* site_instance,
-      absl::optional<size_t> main_frame_threshold,
+      std::optional<size_t> main_frame_threshold,
       std::set<RenderProcessHost*>* foreground_processes,
       std::set<RenderProcessHost*>* background_processes) {
     auto result = map_.find(site_instance->GetSiteInfo());
@@ -884,7 +884,7 @@ class UnmatchedServiceWorkerProcessTracker
 
   RenderProcessHost* TakeFreshestProcessForSite(
       SiteInstanceImpl* site_instance) {
-    absl::optional<SiteProcessIDPair> site_process_pair =
+    std::optional<SiteProcessIDPair> site_process_pair =
         FindFreshestProcessForSite(site_instance);
 
     if (!site_process_pair)
@@ -909,7 +909,7 @@ class UnmatchedServiceWorkerProcessTracker
     return host;
   }
 
-  absl::optional<SiteProcessIDPair> FindFreshestProcessForSite(
+  std::optional<SiteProcessIDPair> FindFreshestProcessForSite(
       SiteInstanceImpl* site_instance) const {
     const auto reversed_site_process_set = base::Reversed(site_process_set_);
     if (site_instance->IsDefaultSiteInstance()) {
@@ -927,7 +927,7 @@ class UnmatchedServiceWorkerProcessTracker
           return site_process_pair;
       }
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // Returns true if this tracker contains the process ID |host->GetID()|.
@@ -2664,7 +2664,7 @@ void RenderProcessHostImpl::RegisterCoordinatorClient(
                 GetMemoryInstrumentationRegistry()->RegisterClientProcess(
                     std::move(receiver), std::move(client_process),
                     memory_instrumentation::mojom::ProcessType::RENDERER, pid,
-                    /*service_name=*/absl::nullopt);
+                    /*service_name=*/std::nullopt);
               },
               std::move(receiver), std::move(client_process),
               GetProcess().Pid()));
@@ -5381,7 +5381,7 @@ void RenderProcessHostImpl::OnProcessLaunchFailed(int error_code) {
 RenderProcessHost*
 RenderProcessHostImpl::FindReusableProcessHostForSiteInstance(
     SiteInstanceImpl* site_instance,
-    absl::optional<size_t> main_frame_threshold) {
+    std::optional<size_t> main_frame_threshold) {
   BrowserContext* browser_context = site_instance->GetBrowserContext();
   if (!ShouldFindReusableProcessHostForSite(site_instance->GetSiteInfo()))
     return nullptr;

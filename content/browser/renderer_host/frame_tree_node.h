@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -17,6 +18,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/time/time.h"
 #include "content/browser/renderer_host/navigation_discard_reason.h"
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -26,7 +28,6 @@
 #include "content/public/browser/frame_type.h"
 #include "services/network/public/mojom/content_security_policy.mojom-forward.h"
 #include "services/network/public/mojom/referrer_policy.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
@@ -34,8 +35,6 @@
 #include "third_party/blink/public/mojom/frame/tree_scope_type.mojom.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom-forward.h"
 #include "third_party/blink/public/mojom/webauthn/virtual_authenticator.mojom-forward.h"
-
-#include "base/time/time.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -160,7 +159,7 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
     return first_live_main_frame_in_original_opener_chain_;
   }
 
-  const absl::optional<base::UnguessableToken>& opener_devtools_frame_token() {
+  const std::optional<base::UnguessableToken>& opener_devtools_frame_token() {
     return opener_devtools_frame_token_;
   }
 
@@ -297,16 +296,14 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   bool shared_storage_writable_opted_in() const {
     return attributes_->shared_storage_writable_opted_in;
   }
-  const absl::optional<std::string> html_id() const { return attributes_->id; }
+  const std::optional<std::string> html_id() const { return attributes_->id; }
   // This tracks iframe's 'name' attribute instead of window.name, which is
   // tracked in FrameReplicationState. See the comment for frame_name() for
   // more details.
-  const absl::optional<std::string> html_name() const {
+  const std::optional<std::string> html_name() const {
     return attributes_->name;
   }
-  const absl::optional<std::string> html_src() const {
-    return attributes_->src;
-  }
+  const std::optional<std::string> html_src() const { return attributes_->src; }
 
   void SetAttributes(blink::mojom::IframeAttributesPtr attributes);
 
@@ -516,7 +513,7 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   // privacy leak via storage shared between two embedder initiated navigations.
   // Note that this reinitialization is implemented for all embedder-initiated
   // navigations in MPArch, but only urn:uuid navigations in ShadowDOM.
-  absl::optional<base::UnguessableToken> GetFencedFrameNonce();
+  std::optional<base::UnguessableToken> GetFencedFrameNonce();
 
   // If applicable, initialize the default fenced frame properties. Right now,
   // this means setting a new fenced frame nonce. See comment on
@@ -576,7 +573,7 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   const std::string& srcdoc_value() const { return srcdoc_value_; }
 
   void set_fenced_frame_properties(
-      const absl::optional<FencedFrameProperties>& fenced_frame_properties) {
+      const std::optional<FencedFrameProperties>& fenced_frame_properties) {
     // TODO(crbug.com/1262022): Reenable this DCHECK once ShadowDOM and
     // loading urns in iframes (for FLEDGE OT) are gone.
     // DCHECK_EQ(fenced_frame_status_,
@@ -600,7 +597,7 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   // the fenced frame properties interact with urn iframes.
   // TODO(crbug.com/1355857): Once navigation support for urn::uuid in iframes
   // is deprecated, remove the parameter `node_source`.
-  absl::optional<FencedFrameProperties>& GetFencedFrameProperties(
+  std::optional<FencedFrameProperties>& GetFencedFrameProperties(
       FencedFramePropertiesNodeSource node_source =
           FencedFramePropertiesNodeSource::kClosestAncestor);
 
@@ -652,7 +649,7 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   // `setSharedStorageContext()`, as long as the request is for a same-origin
   // frame within the config's fenced frame tree (or a same-origin descendant of
   // a URN iframe).
-  absl::optional<std::u16string> GetEmbedderSharedStorageContextIfAllowed();
+  std::optional<std::u16string> GetEmbedderSharedStorageContextIfAllowed();
 
   // Accessor to BrowsingContextState for subframes only. Only main frame
   // navigations can change BrowsingInstances and BrowsingContextStates,
@@ -718,7 +715,7 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
       bool is_same_document,
       const GURL& url,
       const url::Origin& origin,
-      const absl::optional<GURL>& initiator_base_url,
+      const std::optional<GURL>& initiator_base_url,
       const net::IsolationInfo& isolation_info_for_subresources,
       blink::mojom::ReferrerPtr referrer,
       const ui::PageTransition& transition,
@@ -839,7 +836,7 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
 
   // The devtools frame token of the frame which opened this frame. This is
   // not cleared even if the opener is destroyed or disowns the frame.
-  absl::optional<base::UnguessableToken> opener_devtools_frame_token_;
+  std::optional<base::UnguessableToken> opener_devtools_frame_token_;
 
   // An observer that updates this node's
   // |first_live_main_frame_in_original_opener_chain_| to the next original
@@ -917,7 +914,7 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   // contains all the metadata specifying the resulting context.
   // TODO(crbug.com/1262022): Move this into the FrameTree once ShadowDOM
   // and urn iframes are gone.
-  absl::optional<FencedFrameProperties> fenced_frame_properties_;
+  std::optional<FencedFrameProperties> fenced_frame_properties_;
 
   // The tracker of the task that restarts the BFCache navigation. It might be
   // used to cancel the task.

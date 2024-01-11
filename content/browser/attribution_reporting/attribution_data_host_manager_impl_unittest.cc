@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -65,7 +66,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
@@ -260,7 +260,7 @@ TEST_F(AttributionDataHostManagerImplTest, TriggerDataHost_TriggerRegistered) {
           /*dedup_key=*/3, event_trigger_data_filters),
       attribution_reporting::EventTriggerData(
           /*data=*/4, /*priority=*/5,
-          /*dedup_key=*/absl::nullopt, FilterPair())};
+          /*dedup_key=*/std::nullopt, FilterPair())};
 
   trigger_data.aggregatable_dedup_keys = aggregatable_dedup_keys;
   trigger_data.debug_reporting = true;
@@ -2005,7 +2005,7 @@ TEST_F(AttributionDataHostManagerImplTest,
                      R"("https://r.test/x")");
 
   data_host_manager_.NotifyFencedFrameReportingBeaconStarted(
-      kBeaconId, /*navigation_id=*/absl::nullopt, source_origin,
+      kBeaconId, /*navigation_id=*/std::nullopt, source_origin,
       /*is_within_fenced_frame=*/false, AttributionInputEvent(), kFrameId,
       kDevtoolsRequestId);
 
@@ -2445,7 +2445,7 @@ TEST_F(AttributionDataHostManagerImplTest, EventBeaconSource_DataReceived) {
                            kFrameId));
 
   data_host_manager_.NotifyFencedFrameReportingBeaconStarted(
-      kBeaconId, /*navigation_id=*/absl::nullopt,
+      kBeaconId, /*navigation_id=*/std::nullopt,
       /*source_origin=*/*SuitableOrigin::Deserialize("https://source.test"),
       /*is_within_fenced_frame=*/true,
       /*input_event=*/AttributionInputEvent(), kFrameId, kDevtoolsRequestId);
@@ -2492,7 +2492,7 @@ TEST_F(AttributionDataHostManagerImplTest, OsTriggerAvailable) {
   EXPECT_CALL(mock_manager_,
               HandleOsRegistration(OsRegistration(
                   kRegistrationUrl, /*debug_reporting=*/true, *kTopLevelOrigin,
-                  /*input_event=*/absl::nullopt,
+                  /*input_event=*/std::nullopt,
                   /*is_within_fenced_frame=*/true, kFrameId)));
 
   mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
@@ -2592,7 +2592,7 @@ TEST_F(AttributionDataHostManagerImplTest, HeadersSize_SourceMetricsRecorded) {
                      os_registration);
 
   data_host_manager_.NotifyFencedFrameReportingBeaconStarted(
-      kBeaconId, /*navigation_id=*/absl::nullopt, source_origin,
+      kBeaconId, /*navigation_id=*/std::nullopt, source_origin,
       /*is_within_fenced_frame=*/false, AttributionInputEvent(), kFrameId,
       kDevtoolsRequestId);
 
@@ -2628,7 +2628,7 @@ TEST_F(AttributionDataHostManagerImplTest, HeadersSize_TriggerMetricsRecorded) {
     data_host_manager_.NotifyBackgroundRegistrationStarted(
         kBackgroundId, context_origin,
         /*is_within_fenced_frame=*/false, RegistrationEligibility::kTrigger,
-        kFrameId, kLastNavigationId, /*attribution_src_token=*/absl::nullopt,
+        kFrameId, kLastNavigationId, /*attribution_src_token=*/std::nullopt,
         kDevtoolsRequestId);
 
     auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
@@ -2652,7 +2652,7 @@ TEST_F(AttributionDataHostManagerImplTest, HeadersSize_TriggerMetricsRecorded) {
     data_host_manager_.NotifyBackgroundRegistrationStarted(
         kBackgroundId, context_origin,
         /*is_within_fenced_frame=*/false, RegistrationEligibility::kTrigger,
-        kFrameId, kLastNavigationId, /*attribution_src_token=*/absl::nullopt,
+        kFrameId, kLastNavigationId, /*attribution_src_token=*/std::nullopt,
         kDevtoolsRequestId);
 
     auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
@@ -2736,7 +2736,7 @@ TEST_F(
       /*is_within_fenced_frame=*/false,
       RegistrationEligibility::kSourceOrTrigger, kFrameId,
       /*last_navigation_id=*/kNavigationId,
-      /*attribution_src_token=*/absl::nullopt, kDevtoolsRequestId);
+      /*attribution_src_token=*/std::nullopt, kDevtoolsRequestId);
   auto triggerHeaders = base::MakeRefCounted<net::HttpResponseHeaders>("");
   triggerHeaders->SetHeader(kAttributionReportingRegisterTriggerHeader,
                             kRegisterTriggerJson);
@@ -3281,7 +3281,7 @@ TEST_F(AttributionDataHostManagerImplTest, BackgroundOsSource) {
       kBackgroundId, context_origin,
       /*is_within_fenced_frame=*/false,
       RegistrationEligibility::kSourceOrTrigger, kFrameId, kLastNavigationId,
-      /*attribution_src_token=*/absl::nullopt, kDevtoolsRequestId);
+      /*attribution_src_token=*/std::nullopt, kDevtoolsRequestId);
 
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
   headers->SetHeader(kAttributionReportingRegisterOsSourceHeader,
@@ -3328,7 +3328,7 @@ TEST_F(AttributionDataHostManagerImplTest, Background_NonNavigationTied) {
   data_host_manager_.NotifyBackgroundRegistrationStarted(
       kBackgroundId, context_origin,
       /*is_within_fenced_frame=*/false, RegistrationEligibility::kSource,
-      kFrameId, kLastNavigationId, /*attribution_src_token=*/absl::nullopt,
+      kFrameId, kLastNavigationId, /*attribution_src_token=*/std::nullopt,
       kDevtoolsRequestId);
 
   // Trigger registration that should not be delayed.
@@ -3381,7 +3381,7 @@ TEST_F(AttributionDataHostManagerImplTest, BackgroundTrigger) {
   data_host_manager_.NotifyBackgroundRegistrationStarted(
       kBackgroundId, context_origin,
       /*is_within_fenced_frame=*/false, RegistrationEligibility::kTrigger,
-      kFrameId, kLastNavigationId, /*attribution_src_token=*/absl::nullopt,
+      kFrameId, kLastNavigationId, /*attribution_src_token=*/std::nullopt,
       kDevtoolsRequestId);
 
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
@@ -3414,13 +3414,13 @@ TEST_F(AttributionDataHostManagerImplTest, BackgroundOsTrigger) {
   EXPECT_CALL(mock_manager_,
               HandleOsRegistration(OsRegistration(
                   GURL("https://r.test/x"), /*debug_reporting=*/false,
-                  context_origin, /*input_event=*/absl::nullopt,
+                  context_origin, /*input_event=*/std::nullopt,
                   /*is_within_fenced_frame=*/false, kFrameId)));
 
   data_host_manager_.NotifyBackgroundRegistrationStarted(
       kBackgroundId, context_origin,
       /*is_within_fenced_frame=*/false, RegistrationEligibility::kTrigger,
-      kFrameId, kLastNavigationId, /*attribution_src_token=*/absl::nullopt,
+      kFrameId, kLastNavigationId, /*attribution_src_token=*/std::nullopt,
       kDevtoolsRequestId);
 
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
@@ -3450,8 +3450,8 @@ TEST_F(AttributionDataHostManagerImplTest, BackgroundTrigger_ParsingFails) {
       *SuitableOrigin::Deserialize("https://destination.test");
 
   for (const auto& devtools_request_id :
-       std::vector<absl::optional<std::string>>{absl::nullopt,
-                                                kDevtoolsRequestId}) {
+       std::vector<std::optional<std::string>>{std::nullopt,
+                                               kDevtoolsRequestId}) {
     EXPECT_CALL(mock_manager_, HandleTrigger).Times(0);
 
     // TODO(https://crbug.com/1457238): Add expectation that
@@ -3460,7 +3460,7 @@ TEST_F(AttributionDataHostManagerImplTest, BackgroundTrigger_ParsingFails) {
     data_host_manager_.NotifyBackgroundRegistrationStarted(
         kBackgroundId, context_origin,
         /*is_within_fenced_frame=*/false, RegistrationEligibility::kTrigger,
-        kFrameId, kLastNavigationId, /*attribution_src_token=*/absl::nullopt,
+        kFrameId, kLastNavigationId, /*attribution_src_token=*/std::nullopt,
         devtools_request_id);
 
     auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
@@ -3570,13 +3570,13 @@ TEST_F(AttributionDataHostManagerImplTest, Background_InvalidHeaders) {
   };
 
   for (const auto& devtools_request_id :
-       std::vector<absl::optional<std::string>>{absl::nullopt,
-                                                kDevtoolsRequestId}) {
+       std::vector<std::optional<std::string>>{std::nullopt,
+                                               kDevtoolsRequestId}) {
     for (const auto& test_case : kTestCases) {
       data_host_manager_.NotifyBackgroundRegistrationStarted(
           kBackgroundId, context_origin,
           /*is_within_fenced_frame=*/false, test_case.eligibility, kFrameId,
-          kLastNavigationId, /*attribution_src_token=*/absl::nullopt,
+          kLastNavigationId, /*attribution_src_token=*/std::nullopt,
           devtools_request_id);
 
       auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");

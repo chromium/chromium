@@ -4,6 +4,7 @@
 
 #include "content/browser/webauth/virtual_authenticator.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -15,7 +16,6 @@
 #include "device/fido/virtual_ctap2_device.h"
 #include "device/fido/virtual_u2f_device.h"
 #include "mojo/public/cpp/base/big_buffer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -58,7 +58,7 @@ bool VirtualAuthenticator::AddRegistration(
     const std::string& rp_id,
     base::span<const uint8_t> private_key,
     int32_t counter) {
-  absl::optional<std::unique_ptr<device::VirtualFidoDevice::PrivateKey>>
+  std::optional<std::unique_ptr<device::VirtualFidoDevice::PrivateKey>>
       fido_private_key =
           device::VirtualFidoDevice::PrivateKey::FromPKCS8(private_key);
   if (!fido_private_key)
@@ -79,7 +79,7 @@ bool VirtualAuthenticator::AddResidentRegistration(
     base::span<const uint8_t> private_key,
     int32_t counter,
     std::vector<uint8_t> user_handle) {
-  absl::optional<std::unique_ptr<device::VirtualFidoDevice::PrivateKey>>
+  std::optional<std::unique_ptr<device::VirtualFidoDevice::PrivateKey>>
       fido_private_key =
           device::VirtualFidoDevice::PrivateKey::FromPKCS8(private_key);
   if (!fido_private_key)
@@ -179,13 +179,13 @@ void VirtualAuthenticator::GetLargeBlob(const std::vector<uint8_t>& key_handle,
                                         GetLargeBlobCallback callback) {
   auto registration = state_->registrations.find(key_handle);
   if (registration == state_->registrations.end()) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
-  absl::optional<device::LargeBlob> blob =
+  std::optional<device::LargeBlob> blob =
       state_->GetLargeBlob(registration->second);
   if (!blob) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
   data_decoder_.Inflate(
@@ -264,7 +264,7 @@ void VirtualAuthenticator::OnAssertion(
 void VirtualAuthenticator::OnLargeBlobUncompressed(
     GetLargeBlobCallback callback,
     base::expected<mojo_base::BigBuffer, std::string> result) {
-  absl::optional<mojo_base::BigBuffer> value;
+  std::optional<mojo_base::BigBuffer> value;
   if (result.has_value())
     value = std::move(*result);
 

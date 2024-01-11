@@ -50,7 +50,7 @@ void MediaPowerExperimentManager::PlayerStopped(
 void MediaPowerExperimentManager::CheckExperimentState() {
   // See if an experiment should be running.
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  absl::optional<MediaPlayerId> new_experiment_player;
+  std::optional<MediaPlayerId> new_experiment_player;
   if (players_.size() == 1)
     new_experiment_player = players_.begin()->first;
 

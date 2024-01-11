@@ -28,7 +28,7 @@ class TouchActionFilterTest : public testing::Test {
   ~TouchActionFilterTest() override = default;
 
  protected:
-  absl::optional<cc::TouchAction> ActiveTouchAction() const {
+  std::optional<cc::TouchAction> ActiveTouchAction() const {
     return filter_.active_touch_action_;
   }
   void ResetTouchAction() { filter_.ResetTouchAction(); }

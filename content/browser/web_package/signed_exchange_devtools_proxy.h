@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_WEB_PACKAGE_SIGNED_EXCHANGE_DEVTOOLS_PROXY_H_
 #define CONTENT_BROWSER_WEB_PACKAGE_SIGNED_EXCHANGE_DEVTOOLS_PROXY_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -13,7 +14,6 @@
 #include "content/browser/web_package/signed_exchange_error.h"
 #include "content/common/content_export.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -48,7 +48,7 @@ class CONTENT_EXPORT SignedExchangeDevToolsProxy {
       const GURL& outer_request_url,
       network::mojom::URLResponseHeadPtr outer_response_head,
       int frame_tree_node_id,
-      absl::optional<const base::UnguessableToken> devtools_navigation_token,
+      std::optional<const base::UnguessableToken> devtools_navigation_token,
       bool report_raw_headers);
 
   SignedExchangeDevToolsProxy(const SignedExchangeDevToolsProxy&) = delete;
@@ -59,7 +59,7 @@ class CONTENT_EXPORT SignedExchangeDevToolsProxy {
 
   void ReportError(
       const std::string& message,
-      absl::optional<SignedExchangeError::FieldIndexPair> error_field);
+      std::optional<SignedExchangeError::FieldIndexPair> error_field);
 
   void CertificateRequestSent(const base::UnguessableToken& request_id,
                               const network::ResourceRequest& request);
@@ -71,15 +71,15 @@ class CONTENT_EXPORT SignedExchangeDevToolsProxy {
       const network::URLLoaderCompletionStatus& status);
 
   void OnSignedExchangeReceived(
-      const absl::optional<SignedExchangeEnvelope>& envelope,
+      const std::optional<SignedExchangeEnvelope>& envelope,
       const scoped_refptr<net::X509Certificate>& certificate,
-      const absl::optional<net::SSLInfo>& ssl_info);
+      const std::optional<net::SSLInfo>& ssl_info);
 
  private:
   const GURL outer_request_url_;
   const network::mojom::URLResponseHeadPtr outer_response_;
   const int frame_tree_node_id_;
-  const absl::optional<const base::UnguessableToken> devtools_navigation_token_;
+  const std::optional<const base::UnguessableToken> devtools_navigation_token_;
   const bool devtools_enabled_;
   std::vector<SignedExchangeError> errors_;
 };

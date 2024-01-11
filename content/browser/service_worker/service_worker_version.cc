@@ -146,7 +146,7 @@ void OnOpenWindowFinished(
     blink::mojom::ServiceWorkerClientInfoPtr client_info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   const bool success = (status == blink::ServiceWorkerStatusCode::kOk);
-  absl::optional<std::string> error_msg;
+  std::optional<std::string> error_msg;
   if (!success) {
     DCHECK(!client_info);
     error_msg.emplace("Something went wrong while trying to open the window.");
@@ -181,7 +181,7 @@ void DidNavigateClient(
     blink::mojom::ServiceWorkerClientInfoPtr client) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   const bool success = (status == blink::ServiceWorkerStatusCode::kOk);
-  absl::optional<std::string> error_msg;
+  std::optional<std::string> error_msg;
   if (!success) {
     DCHECK(!client);
     error_msg.emplace("Cannot navigate to URL: " + url.spec());
@@ -203,10 +203,10 @@ const char* FetchHandlerTypeToSuffix(
 
 // This function merges SHA256 checksum hash strings in
 // ServiceWokrerResourceRecord and return a single hash string.
-absl::optional<std::string> MergeResourceRecordSHA256ScriptChecksum(
+std::optional<std::string> MergeResourceRecordSHA256ScriptChecksum(
     const GURL& main_script_url,
     const ServiceWorkerScriptCacheMap& script_cache_map,
-    absl::optional<blink::mojom::ServiceWorkerFetchHandlerType>
+    std::optional<blink::mojom::ServiceWorkerFetchHandlerType>
         fetch_handler_type) {
   const std::unique_ptr<crypto::SecureHash> checksum =
       crypto::SecureHash::Create(crypto::SecureHash::SHA256);
@@ -225,7 +225,7 @@ absl::optional<std::string> MergeResourceRecordSHA256ScriptChecksum(
 
   for (auto& resource : resources) {
     if (!resource->sha256_checksum) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     // This may not be the case because we use the fixed length string, but
     // insert a delimiter here to distinguish following cases to avoid hash
@@ -450,7 +450,7 @@ void ServiceWorkerVersion::RegisterStatusChangeCallback(
 
 ServiceWorkerVersionInfo ServiceWorkerVersion::GetInfo() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  absl::optional<std::string> router_rules;
+  std::optional<std::string> router_rules;
   if (router_evaluator_) {
     router_rules = router_evaluator_->ToString();
   }
@@ -1605,7 +1605,7 @@ void ServiceWorkerVersion::ClaimClients(ClaimClientsCallback callback) {
 
   registration->ClaimClients();
   std::move(callback).Run(blink::mojom::ServiceWorkerErrorType::kNone,
-                          absl::nullopt);
+                          std::nullopt);
 }
 
 void ServiceWorkerVersion::GetClients(
@@ -1756,7 +1756,7 @@ void ServiceWorkerVersion::PostMessageToClient(
   }
   // As we don't track tasks between workers and renderers, we can nullify the
   // message's parent task ID.
-  message.parent_task_id = absl::nullopt;
+  message.parent_task_id = std::nullopt;
   container_host->PostMessageToClient(this, std::move(message));
 }
 

@@ -365,7 +365,7 @@ void CrossProcessFrameConnector::OnSynchronizeVisualProperties(
 
 void CrossProcessFrameConnector::UpdateViewportIntersection(
     const blink::mojom::ViewportIntersectionState& intersection_state,
-    const absl::optional<blink::FrameVisualProperties>& visual_properties) {
+    const std::optional<blink::FrameVisualProperties>& visual_properties) {
   bool intersection_changed = !intersection_state.Equals(intersection_state_);
   if (intersection_changed) {
     RenderWidgetHostImpl* host = view_ ? view_->host() : nullptr;
@@ -376,7 +376,7 @@ void CrossProcessFrameConnector::UpdateViewportIntersection(
       // will quietly fail to propagate the new intersection state for main
       // frames, including portals and fenced frames. For those cases, we need
       // to ensure that the updated VisualProperties are still propagated.
-      absl::optional<blink::VisualProperties> last_properties;
+      std::optional<blink::VisualProperties> last_properties;
       if (host && !main_frame)
         last_properties = host->LastComputedVisualProperties();
       SynchronizeVisualProperties(visual_properties.value(), main_frame);
@@ -402,7 +402,7 @@ void CrossProcessFrameConnector::UpdateViewportIntersectionInternal(
     view_->UpdateViewportIntersection(
         intersection_state_, include_visual_properties
                                  ? view_->host()->LastComputedVisualProperties()
-                                 : absl::nullopt);
+                                 : std::nullopt);
   }
 
   if (IsVisible()) {

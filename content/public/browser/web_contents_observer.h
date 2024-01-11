@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list_types.h"
 #include "base/process/kill.h"
@@ -22,7 +24,6 @@
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"
 #include "services/service_manager/public/cpp/bind_source_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom.h"
@@ -577,7 +578,7 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
   // WebContents is updated (either because the primary main document's color
   // has been inferred or the primary main document has changed).
   virtual void InferredColorSchemeUpdated(
-      absl::optional<blink::mojom::PreferredColorScheme> color_scheme) {}
+      std::optional<blink::mojom::PreferredColorScheme> color_scheme) {}
 
   // Called when a frame receives user activation. This may be called multiple
   // times for the same frame. This should not be used to determine a
@@ -775,7 +776,7 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
       const std::u16string& message,
       int32_t line_no,
       const std::u16string& source_id,
-      const absl::optional<std::u16string>& untrusted_stack_trace) {}
+      const std::optional<std::u16string>& untrusted_stack_trace) {}
 
   // Invoked when media is playing or paused.  |id| is unique per player and per
   // RenderFrameHost.  There may be multiple players within a RenderFrameHost

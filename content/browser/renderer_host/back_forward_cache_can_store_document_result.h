@@ -7,6 +7,7 @@
 
 #include <bitset>
 #include <cstdint>
+#include <optional>
 #include <set>
 
 #include "base/containers/enum_set.h"
@@ -17,7 +18,6 @@
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/render_frame_host.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom.h"
 #include "ui/accessibility/ax_event.h"
@@ -48,7 +48,7 @@ class CONTENT_EXPORT BackForwardCacheCanStoreDocumentResult {
   // source ID is set, then it will be reported to UKM metrics; if it's not set,
   // then the source id from the navigation itself will be used.
   using DisabledReasonsMap = std::map<BackForwardCache::DisabledReason,
-                                      std::set<absl::optional<ukm::SourceId>>>;
+                                      std::set<std::optional<ukm::SourceId>>>;
 
   BackForwardCacheCanStoreDocumentResult();
   BackForwardCacheCanStoreDocumentResult(
@@ -72,7 +72,7 @@ class CONTENT_EXPORT BackForwardCacheCanStoreDocumentResult {
   void NoDueToFeatures(BlockingDetailsMap map);
 
   void NoDueToRelatedActiveContents(
-      absl::optional<ShouldSwapBrowsingInstance> browsing_instance_swap_result);
+      std::optional<ShouldSwapBrowsingInstance> browsing_instance_swap_result);
 
   // TODO(hajimehoshi): Replace the arbitrary strings with base::Location /
   // FROM_HERE for privacy reasons.
@@ -102,7 +102,7 @@ class CONTENT_EXPORT BackForwardCacheCanStoreDocumentResult {
     return disabled_reasons_;
   }
 
-  const absl::optional<ShouldSwapBrowsingInstance>
+  const std::optional<ShouldSwapBrowsingInstance>
   browsing_instance_swap_result() const {
     return browsing_instance_swap_result_;
   }
@@ -133,7 +133,7 @@ class CONTENT_EXPORT BackForwardCacheCanStoreDocumentResult {
   NotRestoredReasons not_restored_reasons_;
   BlockingDetailsMap blocking_details_map_;
   DisabledReasonsMap disabled_reasons_;
-  absl::optional<ShouldSwapBrowsingInstance> browsing_instance_swap_result_;
+  std::optional<ShouldSwapBrowsingInstance> browsing_instance_swap_result_;
   std::set<uint64_t> disallow_activation_reasons_;
   // The list of the accessibility events that made the page bfcache ineligible.
   std::set<ax::mojom::Event> ax_events_;

@@ -46,22 +46,22 @@ class WebContentsIsolationInfo
  private:
   friend class WebContentsUserData<WebContentsIsolationInfo>;
   explicit WebContentsIsolationInfo(WebContents* web_contents,
-                                    absl::optional<url::Origin> isolated_origin)
+                                    std::optional<url::Origin> isolated_origin)
       : WebContentsUserData<WebContentsIsolationInfo>(*web_contents),
         isolated_origin_(isolated_origin) {}
 
-  absl::optional<url::Origin> isolated_origin_;
+  std::optional<url::Origin> isolated_origin_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 WEB_CONTENTS_USER_DATA_KEY_IMPL(WebContentsIsolationInfo);
 
-absl::optional<url::SchemeHostPort> GetTupleFromOptionalOrigin(
-    const absl::optional<url::Origin>& origin) {
+std::optional<url::SchemeHostPort> GetTupleFromOptionalOrigin(
+    const std::optional<url::Origin>& origin) {
   if (origin.has_value()) {
     return origin->GetTupleOrPrecursorTupleIfOpaque();
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace
@@ -100,8 +100,8 @@ IsolatedWebAppThrottle::WillStartRequest() {
   if (!web_contents_isolation_info) {
     WebContentsIsolationInfo::CreateForWebContents(
         navigation_handle()->GetWebContents(),
-        requests_app_isolation ? absl::make_optional(dest_origin_)
-                               : absl::nullopt);
+        requests_app_isolation ? std::make_optional(dest_origin_)
+                               : std::nullopt);
   }
 
   FrameTreeNode* frame_tree_node = navigation_request->frame_tree_node();
@@ -162,7 +162,7 @@ bool IsolatedWebAppThrottle::OpenUrlExternal(const GURL& url) {
           ? ui::PageTransition::PAGE_TRANSITION_SERVER_REDIRECT
           : ui::PageTransition::PAGE_TRANSITION_LINK,
       navigation_request->HasUserGesture(),
-      /*initiating_origin=*/absl::nullopt,
+      /*initiating_origin=*/std::nullopt,
       /*initiator_document=*/nullptr, &loader_factory);
 }
 
@@ -205,7 +205,7 @@ NavigationThrottle::ThrottleCheckResult IsolatedWebAppThrottle::DoThrottle(
   // Block renderer-initiated iframe navigations into the app that were
   // initiated by a non-app frame. This ensures that all iframe navigations into
   // the app come from the app itself.
-  absl::optional<url::SchemeHostPort> prev_tuple =
+  std::optional<url::SchemeHostPort> prev_tuple =
       GetTupleFromOptionalOrigin(prev_origin_);
   if (prev_tuple.has_value() &&
       prev_tuple.value() != web_contents_isolation_tuple &&

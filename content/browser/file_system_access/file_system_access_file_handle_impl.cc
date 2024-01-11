@@ -598,7 +598,7 @@ void FileSystemAccessFileHandleImpl::StartCreateSwapFile(
 
     // First attempt to just create the swap file in the same directory (and
     // file system) as this file.
-    absl::optional<base::SafeBaseName> opt_swap_name =
+    std::optional<base::SafeBaseName> opt_swap_name =
         base::SafeBaseName::Create(swap_name);
     CHECK(opt_swap_name.has_value());
     storage::FileSystemURL swap_url = url().CreateSibling(*opt_swap_name);

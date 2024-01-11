@@ -57,7 +57,7 @@ class CdmFileImpl final : public media::mojom::CdmFile {
   void Write(const std::vector<uint8_t>& data, WriteCallback callback) final;
 
  private:
-  void DidRead(absl::optional<std::vector<uint8_t>> data);
+  void DidRead(std::optional<std::vector<uint8_t>> data);
   void DidWrite(bool success);
 
   // Deletes |file_name_| asynchronously.

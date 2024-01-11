@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -19,7 +20,6 @@
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace content {
@@ -43,20 +43,20 @@ class CONTENT_EXPORT HeaderDirectFromSellerSignals {
    public:
     Result();
 
-    Result(absl::optional<std::string> seller_signals,
-           absl::optional<std::string> auction_signals,
+    Result(std::optional<std::string> seller_signals,
+           std::optional<std::string> auction_signals,
            base::flat_map<url::Origin, std::string> per_buyer_signals);
 
     Result(Result&) = delete;
     Result& operator=(Result&) = delete;
 
     // Results of the `sellerSignals` JSON dictionary field.
-    const absl::optional<std::string>& seller_signals() const {
+    const std::optional<std::string>& seller_signals() const {
       return seller_signals_;
     }
 
     // Results of the `auctionSignals` JSON dictionary field.
-    const absl::optional<std::string>& auction_signals() const {
+    const std::optional<std::string>& auction_signals() const {
       return auction_signals_;
     }
 
@@ -69,8 +69,8 @@ class CONTENT_EXPORT HeaderDirectFromSellerSignals {
     friend class base::RefCounted<Result>;
     ~Result();
 
-    const absl::optional<std::string> seller_signals_;
-    const absl::optional<std::string> auction_signals_;
+    const std::optional<std::string> seller_signals_;
+    const std::optional<std::string> auction_signals_;
     const base::flat_map<url::Origin, std::string> per_buyer_signals_;
   };
 

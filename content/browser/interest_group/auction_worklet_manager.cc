@@ -8,6 +8,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -43,7 +44,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -184,7 +184,7 @@ class AuctionWorkletManager::WorkletOwner
   // If true, we will split callback notifications into small batches.
   bool split_up_notifications_;
   bool notifications_pending_ = false;
-  absl::optional<FatalErrorType> notify_error_type_;
+  std::optional<FatalErrorType> notify_error_type_;
   std::vector<std::string> notify_errors_;
 
   uint64_t next_handle_seq_num_ = 0;
@@ -348,7 +348,7 @@ void AuctionWorkletManager::WorkletOwner::OnProcessAssigned() {
       worklet_manager_->top_window_origin(), worklet_manager_->frame_origin(),
       // NOTE: `rfh` can be null in tests.
       /*renderer_process_id=*/
-      rfh ? absl::optional<int>(rfh->GetProcess()->GetID()) : absl::nullopt,
+      rfh ? std::optional<int>(rfh->GetProcess()->GetID()) : std::nullopt,
       /*is_for_seller_=*/worklet_info_.type == WorkletType::kSeller,
       delegate->GetClientSecurityState(), worklet_info_.script_url,
       worklet_info_.wasm_url, worklet_info_.signals_url,
@@ -435,10 +435,10 @@ void AuctionWorkletManager::WorkletOwner::OnWorkletDisconnected(
 AuctionWorkletManager::WorkletKey::WorkletKey(
     WorkletType type,
     const GURL& script_url,
-    const absl::optional<GURL>& wasm_url,
-    const absl::optional<GURL>& signals_url,
+    const std::optional<GURL>& wasm_url,
+    const std::optional<GURL>& signals_url,
     bool needs_cors_for_additional_bid,
-    absl::optional<uint16_t> experiment_group_id,
+    std::optional<uint16_t> experiment_group_id,
     const std::string& trusted_bidding_signals_slot_size_param)
     : type(type),
       script_url(script_url),
@@ -615,10 +615,10 @@ AuctionWorkletManager::~AuctionWorkletManager() = default;
 // static
 AuctionWorkletManager::WorkletKey AuctionWorkletManager::BidderWorkletKey(
     const GURL& bidding_logic_url,
-    const absl::optional<GURL>& wasm_url,
-    const absl::optional<GURL>& trusted_bidding_signals_url,
+    const std::optional<GURL>& wasm_url,
+    const std::optional<GURL>& trusted_bidding_signals_url,
     bool needs_cors_for_additional_bid,
-    absl::optional<uint16_t> experiment_group_id,
+    std::optional<uint16_t> experiment_group_id,
     const std::string& trusted_bidding_signals_slot_size_param) {
   return WorkletKey(WorkletType::kBidder,
                     /*script_url=*/bidding_logic_url, wasm_url,
@@ -626,7 +626,7 @@ AuctionWorkletManager::WorkletKey AuctionWorkletManager::BidderWorkletKey(
                     needs_cors_for_additional_bid,
                     trusted_bidding_signals_url.has_value()
                         ? experiment_group_id
-                        : absl::nullopt,
+                        : std::nullopt,
                     trusted_bidding_signals_url.has_value()
                         ? trusted_bidding_signals_slot_size_param
                         : "");
@@ -634,10 +634,10 @@ AuctionWorkletManager::WorkletKey AuctionWorkletManager::BidderWorkletKey(
 
 void AuctionWorkletManager::RequestBidderWorklet(
     const GURL& bidding_logic_url,
-    const absl::optional<GURL>& wasm_url,
-    const absl::optional<GURL>& trusted_bidding_signals_url,
+    const std::optional<GURL>& wasm_url,
+    const std::optional<GURL>& trusted_bidding_signals_url,
     bool needs_cors_for_additional_bid,
-    absl::optional<uint16_t> experiment_group_id,
+    std::optional<uint16_t> experiment_group_id,
     const std::string& trusted_bidding_signals_slot_size_param,
     base::OnceClosure worklet_available_callback,
     FatalErrorCallback fatal_error_callback,
@@ -652,14 +652,14 @@ void AuctionWorkletManager::RequestBidderWorklet(
 
 void AuctionWorkletManager::RequestSellerWorklet(
     const GURL& decision_logic_url,
-    const absl::optional<GURL>& trusted_scoring_signals_url,
-    absl::optional<uint16_t> experiment_group_id,
+    const std::optional<GURL>& trusted_scoring_signals_url,
+    std::optional<uint16_t> experiment_group_id,
     base::OnceClosure worklet_available_callback,
     FatalErrorCallback fatal_error_callback,
     std::unique_ptr<WorkletHandle>& out_worklet_handle) {
   WorkletKey worklet_info(WorkletType::kSeller,
                           /*script_url=*/decision_logic_url,
-                          /*wasm_url=*/absl::nullopt,
+                          /*wasm_url=*/std::nullopt,
                           /*signals_url=*/trusted_scoring_signals_url,
                           /*needs_cors_for_additional_bid=*/false,
                           experiment_group_id,

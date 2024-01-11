@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -37,7 +38,6 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_currencies.h"
 #include "third_party/blink/public/common/interest_group/ad_display_size.h"
@@ -117,10 +117,10 @@ class TestScoreAdClient : public mojom::ScoreAdClient {
       mojom::RejectReason reject_reason,
       mojom::ComponentAuctionModifiedBidParamsPtr
           component_auction_modified_bid_params,
-      absl::optional<double> bid_in_seller_currency,
-      absl::optional<uint32_t> scoring_signals_data_version,
-      const absl::optional<GURL>& debug_loss_report_url,
-      const absl::optional<GURL>& debug_win_report_url,
+      std::optional<double> bid_in_seller_currency,
+      std::optional<uint32_t> scoring_signals_data_version,
+      const std::optional<GURL>& debug_loss_report_url,
+      const std::optional<GURL>& debug_win_report_url,
       PrivateAggregationRequests pa_requests,
       base::TimeDelta scoring_latency,
       mojom::ScoreAdDependencyLatenciesPtr score_ad_dependency_latencies,
@@ -147,10 +147,10 @@ class TestScoreAdClient : public mojom::ScoreAdClient {
       mojom::RejectReason reject_reason,
       mojom::ComponentAuctionModifiedBidParamsPtr
           component_auction_modified_bid_params,
-      absl::optional<double> bid_in_seller_currency,
-      absl::optional<uint32_t> scoring_signals_data_version,
-      const absl::optional<GURL>& debug_loss_report_url,
-      const absl::optional<GURL>& debug_win_report_url,
+      std::optional<double> bid_in_seller_currency,
+      std::optional<uint32_t> scoring_signals_data_version,
+      const std::optional<GURL>& debug_loss_report_url,
+      const std::optional<GURL>& debug_win_report_url,
       PrivateAggregationRequests pa_requests,
       base::TimeDelta scoring_latency,
       mojom::ScoreAdDependencyLatenciesPtr score_ad_dependency_latencies,
@@ -169,10 +169,10 @@ class TestScoreAdClient : public mojom::ScoreAdClient {
         [](double score, mojom::RejectReason reject_reason,
            mojom::ComponentAuctionModifiedBidParamsPtr
                component_auction_modified_bid_params,
-           absl::optional<double> bid_in_seller_currency,
-           absl::optional<uint32_t> scoring_signals_data_version,
-           const absl::optional<GURL>& debug_loss_report_url,
-           const absl::optional<GURL>& debug_win_report_url,
+           std::optional<double> bid_in_seller_currency,
+           std::optional<uint32_t> scoring_signals_data_version,
+           const std::optional<GURL>& debug_loss_report_url,
+           const std::optional<GURL>& debug_win_report_url,
            PrivateAggregationRequests pa_requests,
            base::TimeDelta scoring_latency,
            mojom::ScoreAdDependencyLatenciesPtr score_ad_dependency_latencies,
@@ -226,7 +226,7 @@ class SellerWorkletTest : public testing::Test {
   void SetDefaultParameters() {
     ad_metadata_ = "[1]";
     bid_ = 1;
-    bid_currency_ = absl::nullopt;
+    bid_currency_ = std::nullopt;
     decision_logic_url_ = GURL("https://url.test/");
     trusted_scoring_signals_url_.reset();
     auction_ad_config_non_shared_params_ =
@@ -237,21 +237,21 @@ class SellerWorkletTest : public testing::Test {
         mojom::AuctionWorkletPermissionsPolicyState::New(
             /*private_aggregation_allowed=*/true,
             /*shared_storage_allowed=*/false);
-    experiment_group_id_ = absl::nullopt;
+    experiment_group_id_ = std::nullopt;
     browser_signals_other_seller_.reset();
-    component_expect_bid_currency_ = absl::nullopt;
+    component_expect_bid_currency_ = std::nullopt;
     browser_signal_interest_group_owner_ =
         url::Origin::Create(GURL("https://interest.group.owner.test/"));
-    browser_signal_buyer_and_seller_reporting_id_ = absl::nullopt;
+    browser_signal_buyer_and_seller_reporting_id_ = std::nullopt;
     browser_signal_render_url_ = GURL("https://render.url.test/");
     browser_signal_for_debugging_only_in_cooldown_or_lockout_ = false;
     browser_signal_ad_components_.clear();
     browser_signal_bidding_duration_msecs_ = 0;
     browser_signal_for_debugging_only_in_cooldown_or_lockout_ = false;
     browser_signal_desireability_ = 1;
-    seller_timeout_ = absl::nullopt;
+    seller_timeout_ = std::nullopt;
     browser_signal_highest_scoring_other_bid_ = 0;
-    browser_signal_highest_scoring_other_bid_currency_ = absl::nullopt;
+    browser_signal_highest_scoring_other_bid_currency_ = std::nullopt;
   }
 
   // Configures `url_loader_factory_` to return a script with the specified
@@ -264,14 +264,13 @@ class SellerWorkletTest : public testing::Test {
       mojom::ComponentAuctionModifiedBidParamsPtr
           expected_component_auction_modified_bid_params =
               mojom::ComponentAuctionModifiedBidParamsPtr(),
-      absl::optional<uint32_t> expected_data_version = {},
-      const absl::optional<GURL>& expected_debug_loss_report_url =
-          absl::nullopt,
-      const absl::optional<GURL>& expected_debug_win_report_url = absl::nullopt,
+      std::optional<uint32_t> expected_data_version = {},
+      const std::optional<GURL>& expected_debug_loss_report_url = std::nullopt,
+      const std::optional<GURL>& expected_debug_win_report_url = std::nullopt,
       mojom::RejectReason expected_reject_reason =
           mojom::RejectReason::kNotAvailable,
       PrivateAggregationRequests expected_pa_requests = {},
-      absl::optional<double> expected_bid_in_seller_currency = absl::nullopt) {
+      std::optional<double> expected_bid_in_seller_currency = std::nullopt) {
     RunScoreAdWithJavascriptExpectingResult(
         CreateScoreAdScript(raw_return_value), expected_score, expected_errors,
         std::move(expected_component_auction_modified_bid_params),
@@ -294,14 +293,13 @@ class SellerWorkletTest : public testing::Test {
           expected_component_auction_modified_bid_params,
       base::TimeDelta expected_duration,
       const std::vector<std::string>& expected_errors = {},
-      absl::optional<uint32_t> expected_data_version = {},
-      const absl::optional<GURL>& expected_debug_loss_report_url =
-          absl::nullopt,
-      const absl::optional<GURL>& expected_debug_win_report_url = absl::nullopt,
+      std::optional<uint32_t> expected_data_version = {},
+      const std::optional<GURL>& expected_debug_loss_report_url = std::nullopt,
+      const std::optional<GURL>& expected_debug_win_report_url = std::nullopt,
       mojom::RejectReason expected_reject_reason =
           mojom::RejectReason::kNotAvailable,
       PrivateAggregationRequests expected_pa_requests = {},
-      absl::optional<double> expected_bid_in_seller_currency = absl::nullopt) {
+      std::optional<double> expected_bid_in_seller_currency = std::nullopt) {
     AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
                           CreateScoreAdScript(raw_return_value));
     auto seller_worklet = CreateWorklet();
@@ -314,8 +312,8 @@ class SellerWorkletTest : public testing::Test {
         expected_debug_win_report_url, expected_reject_reason,
         std::move(expected_pa_requests), expected_bid_in_seller_currency,
         /*expected_score_ad_timeout=*/false,
-        /*expected_signals_fetch_latency=*/absl::nullopt,
-        /*expected_code_ready_latency=*/absl::nullopt, run_loop.QuitClosure());
+        /*expected_signals_fetch_latency=*/std::nullopt,
+        /*expected_code_ready_latency=*/std::nullopt, run_loop.QuitClosure());
     task_environment_.FastForwardBy(expected_duration - kTinyTime);
     EXPECT_FALSE(run_loop.AnyQuitCalled());
     task_environment_.FastForwardBy(kTinyTime);
@@ -332,14 +330,13 @@ class SellerWorkletTest : public testing::Test {
       mojom::ComponentAuctionModifiedBidParamsPtr
           expected_component_auction_modified_bid_params =
               mojom::ComponentAuctionModifiedBidParamsPtr(),
-      absl::optional<uint32_t> expected_data_version = {},
-      const absl::optional<GURL>& expected_debug_loss_report_url =
-          absl::nullopt,
-      const absl::optional<GURL>& expected_debug_win_report_url = absl::nullopt,
+      std::optional<uint32_t> expected_data_version = {},
+      const std::optional<GURL>& expected_debug_loss_report_url = std::nullopt,
+      const std::optional<GURL>& expected_debug_win_report_url = std::nullopt,
       mojom::RejectReason expected_reject_reason =
           mojom::RejectReason::kNotAvailable,
       PrivateAggregationRequests expected_pa_requests = {},
-      absl::optional<double> expected_bid_in_seller_currency = absl::nullopt) {
+      std::optional<double> expected_bid_in_seller_currency = std::nullopt) {
     SCOPED_TRACE(javascript);
     AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
                           javascript);
@@ -359,15 +356,15 @@ class SellerWorkletTest : public testing::Test {
       const std::vector<std::string>& expected_errors,
       mojom::ComponentAuctionModifiedBidParamsPtr
           expected_component_auction_modified_bid_params,
-      absl::optional<uint32_t> expected_data_version,
-      const absl::optional<GURL>& expected_debug_loss_report_url,
-      const absl::optional<GURL>& expected_debug_win_report_url,
+      std::optional<uint32_t> expected_data_version,
+      const std::optional<GURL>& expected_debug_loss_report_url,
+      const std::optional<GURL>& expected_debug_win_report_url,
       mojom::RejectReason expected_reject_reason,
       PrivateAggregationRequests expected_pa_requests,
-      absl::optional<double> expected_bid_in_seller_currency,
+      std::optional<double> expected_bid_in_seller_currency,
       bool expected_score_ad_timeout,
-      absl::optional<base::TimeDelta> expected_signals_fetch_latency,
-      absl::optional<base::TimeDelta> expected_code_ready_latency,
+      std::optional<base::TimeDelta> expected_signals_fetch_latency,
+      std::optional<base::TimeDelta> expected_code_ready_latency,
       base::OnceClosure done_closure) {
     seller_worklet->ScoreAd(
         ad_metadata_, bid_, bid_currency_, auction_ad_config_non_shared_params_,
@@ -386,23 +383,23 @@ class SellerWorkletTest : public testing::Test {
                mojom::RejectReason expected_reject_reason,
                mojom::ComponentAuctionModifiedBidParamsPtr
                    expected_component_auction_modified_bid_params,
-               absl::optional<uint32_t> expected_data_version,
-               const absl::optional<GURL>& expected_debug_loss_report_url,
-               const absl::optional<GURL>& expected_debug_win_report_url,
+               std::optional<uint32_t> expected_data_version,
+               const std::optional<GURL>& expected_debug_loss_report_url,
+               const std::optional<GURL>& expected_debug_win_report_url,
                PrivateAggregationRequests expected_pa_requests,
-               absl::optional<double> expected_bid_in_seller_currency,
-               absl::optional<base::TimeDelta> expected_score_ad_timeout,
-               absl::optional<base::TimeDelta> expected_signals_fetch_latency,
-               absl::optional<base::TimeDelta> expected_code_ready_latency,
+               std::optional<double> expected_bid_in_seller_currency,
+               std::optional<base::TimeDelta> expected_score_ad_timeout,
+               std::optional<base::TimeDelta> expected_signals_fetch_latency,
+               std::optional<base::TimeDelta> expected_code_ready_latency,
                std::vector<std::string> expected_errors,
                base::OnceClosure done_closure, double score,
                mojom::RejectReason reject_reason,
                mojom::ComponentAuctionModifiedBidParamsPtr
                    component_auction_modified_bid_params,
-               absl::optional<double> bid_in_seller_currency,
-               absl::optional<uint32_t> scoring_signals_data_version,
-               const absl::optional<GURL>& debug_loss_report_url,
-               const absl::optional<GURL>& debug_win_report_url,
+               std::optional<double> bid_in_seller_currency,
+               std::optional<uint32_t> scoring_signals_data_version,
+               const std::optional<GURL>& debug_loss_report_url,
+               const std::optional<GURL>& debug_win_report_url,
                PrivateAggregationRequests pa_requests,
                base::TimeDelta scoring_latency,
                mojom::ScoreAdDependencyLatenciesPtr
@@ -456,9 +453,9 @@ class SellerWorkletTest : public testing::Test {
             expected_debug_win_report_url, std::move(expected_pa_requests),
             expected_bid_in_seller_currency,
             expected_score_ad_timeout
-                ? absl::make_optional(
+                ? std::make_optional(
                       seller_timeout_.value_or(AuctionV8Helper::kScriptTimeout))
-                : absl::nullopt,
+                : std::nullopt,
             expected_signals_fetch_latency, expected_code_ready_latency,
             expected_errors, std::move(done_closure))));
   }
@@ -490,14 +487,13 @@ class SellerWorkletTest : public testing::Test {
       mojom::ComponentAuctionModifiedBidParamsPtr
           expected_component_auction_modified_bid_params =
               mojom::ComponentAuctionModifiedBidParamsPtr(),
-      absl::optional<uint32_t> expected_data_version = absl::nullopt,
-      const absl::optional<GURL>& expected_debug_loss_report_url =
-          absl::nullopt,
-      const absl::optional<GURL>& expected_debug_win_report_url = absl::nullopt,
+      std::optional<uint32_t> expected_data_version = std::nullopt,
+      const std::optional<GURL>& expected_debug_loss_report_url = std::nullopt,
+      const std::optional<GURL>& expected_debug_win_report_url = std::nullopt,
       mojom::RejectReason expected_reject_reason =
           mojom::RejectReason::kNotAvailable,
       PrivateAggregationRequests expected_pa_requests = {},
-      absl::optional<double> expected_bid_in_seller_currency = absl::nullopt) {
+      std::optional<double> expected_bid_in_seller_currency = std::nullopt) {
     base::RunLoop run_loop;
     RunScoreAdOnWorkletAsync(
         seller_worklet, expected_score, expected_errors,
@@ -506,8 +502,8 @@ class SellerWorkletTest : public testing::Test {
         expected_debug_win_report_url, expected_reject_reason,
         std::move(expected_pa_requests), expected_bid_in_seller_currency,
         /*expected_score_ad_timeout=*/false,
-        /*expected_signals_fetch_latency=*/absl::nullopt,
-        /*expected_code_ready_latency=*/absl::nullopt, run_loop.QuitClosure());
+        /*expected_signals_fetch_latency=*/std::nullopt,
+        /*expected_code_ready_latency=*/std::nullopt, run_loop.QuitClosure());
     run_loop.Run();
   }
 
@@ -519,14 +515,13 @@ class SellerWorkletTest : public testing::Test {
       mojom::ComponentAuctionModifiedBidParamsPtr
           expected_component_auction_modified_bid_params =
               mojom::ComponentAuctionModifiedBidParamsPtr(),
-      absl::optional<uint32_t> expected_data_version = absl::nullopt,
-      const absl::optional<GURL>& expected_debug_loss_report_url =
-          absl::nullopt,
-      const absl::optional<GURL>& expected_debug_win_report_url = absl::nullopt,
+      std::optional<uint32_t> expected_data_version = std::nullopt,
+      const std::optional<GURL>& expected_debug_loss_report_url = std::nullopt,
+      const std::optional<GURL>& expected_debug_win_report_url = std::nullopt,
       mojom::RejectReason expected_reject_reason =
           mojom::RejectReason::kNotAvailable,
       PrivateAggregationRequests expected_pa_requests = {},
-      absl::optional<double> expected_bid_in_seller_currency = absl::nullopt) {
+      std::optional<double> expected_bid_in_seller_currency = std::nullopt) {
     auto seller_worklet = CreateWorklet();
     ASSERT_TRUE(seller_worklet);
     RunScoreAdExpectingResultOnWorklet(
@@ -543,8 +538,8 @@ class SellerWorkletTest : public testing::Test {
   void RunReportResultCreatedScriptExpectingResult(
       const std::string& raw_return_value,
       const std::string& extra_code,
-      const absl::optional<std::string>& expected_signals_for_winner,
-      const absl::optional<GURL>& expected_report_url,
+      const std::optional<std::string>& expected_signals_for_winner,
+      const std::optional<GURL>& expected_report_url,
       const base::flat_map<std::string, GURL>& expected_ad_beacon_map =
           base::flat_map<std::string, GURL>(),
       PrivateAggregationRequests expected_pa_requests = {},
@@ -562,8 +557,8 @@ class SellerWorkletTest : public testing::Test {
   // provided result.
   void RunReportResultWithJavascriptExpectingResult(
       const std::string& javascript,
-      const absl::optional<std::string>& expected_signals_for_winner,
-      const absl::optional<GURL>& expected_report_url,
+      const std::optional<std::string>& expected_signals_for_winner,
+      const std::optional<GURL>& expected_report_url,
       const base::flat_map<std::string, GURL>& expected_ad_beacon_map =
           base::flat_map<std::string, GURL>(),
       PrivateAggregationRequests expected_pa_requests = {},
@@ -583,8 +578,8 @@ class SellerWorkletTest : public testing::Test {
   // `done_closure`.
   void RunReportResultExpectingResultAsync(
       mojom::SellerWorklet* seller_worklet,
-      const absl::optional<std::string>& expected_signals_for_winner,
-      const absl::optional<GURL>& expected_report_url,
+      const std::optional<std::string>& expected_signals_for_winner,
+      const std::optional<GURL>& expected_report_url,
       const base::flat_map<std::string, GURL>& expected_ad_beacon_map,
       PrivateAggregationRequests expected_pa_requests,
       bool expected_reporting_latency_timeout,
@@ -608,15 +603,15 @@ class SellerWorkletTest : public testing::Test {
         browser_signal_data_version_.has_value(),
         /*trace_id=*/1,
         base::BindOnce(
-            [](const absl::optional<std::string>& expected_signals_for_winner,
-               const absl::optional<GURL>& expected_report_url,
+            [](const std::optional<std::string>& expected_signals_for_winner,
+               const std::optional<GURL>& expected_report_url,
                const base::flat_map<std::string, GURL>& expected_ad_beacon_map,
                PrivateAggregationRequests expected_pa_requests,
                bool expected_reporting_latency_timeout,
                const std::vector<std::string>& expected_errors,
                base::OnceClosure done_closure,
-               const absl::optional<std::string>& signals_for_winner,
-               const absl::optional<GURL>& report_url,
+               const std::optional<std::string>& signals_for_winner,
+               const std::optional<GURL>& report_url,
                const base::flat_map<std::string, GURL>& ad_beacon_map,
                PrivateAggregationRequests pa_requests,
                base::TimeDelta reporting_latency,
@@ -669,8 +664,8 @@ class SellerWorkletTest : public testing::Test {
         browser_signal_data_version_.has_value(),
         /*trace_id=*/1,
         base::BindOnce(
-            [](const absl::optional<std::string>& signals_for_winner,
-               const absl::optional<GURL>& report_url,
+            [](const std::optional<std::string>& signals_for_winner,
+               const std::optional<GURL>& report_url,
                const base::flat_map<std::string, GURL>& ad_beacon_map,
                PrivateAggregationRequests pa_requests,
                base::TimeDelta reporting_latency,
@@ -681,8 +676,8 @@ class SellerWorkletTest : public testing::Test {
 
   // Loads and runs a report_result() script, expecting the supplied result.
   void RunReportResultExpectingResult(
-      const absl::optional<std::string>& expected_signals_for_winner,
-      const absl::optional<GURL>& expected_report_url,
+      const std::optional<std::string>& expected_signals_for_winner,
+      const std::optional<GURL>& expected_report_url,
       const base::flat_map<std::string, GURL>& expected_ad_beacon_map =
           base::flat_map<std::string, GURL>(),
       PrivateAggregationRequests expected_pa_requests = {},
@@ -783,38 +778,37 @@ class SellerWorkletTest : public testing::Test {
   // `bid_` is a browser signal for report_result(), but a direct parameter for
   // score_bid().
   double bid_;
-  absl::optional<blink::AdCurrency> bid_currency_;
+  std::optional<blink::AdCurrency> bid_currency_;
   GURL decision_logic_url_;
-  absl::optional<GURL> trusted_scoring_signals_url_;
+  std::optional<GURL> trusted_scoring_signals_url_;
   blink::AuctionConfig::NonSharedParams auction_ad_config_non_shared_params_;
-  absl::optional<GURL> direct_from_seller_seller_signals_;
-  absl::optional<std::string> direct_from_seller_seller_signals_header_ad_slot_;
-  absl::optional<GURL> direct_from_seller_auction_signals_;
-  absl::optional<std::string>
-      direct_from_seller_auction_signals_header_ad_slot_;
+  std::optional<GURL> direct_from_seller_seller_signals_;
+  std::optional<std::string> direct_from_seller_seller_signals_header_ad_slot_;
+  std::optional<GURL> direct_from_seller_auction_signals_;
+  std::optional<std::string> direct_from_seller_auction_signals_header_ad_slot_;
   url::Origin top_window_origin_;
   mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state_;
-  absl::optional<uint16_t> experiment_group_id_;
+  std::optional<uint16_t> experiment_group_id_;
   mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller_;
-  absl::optional<blink::AdCurrency> component_expect_bid_currency_;
+  std::optional<blink::AdCurrency> component_expect_bid_currency_;
   url::Origin browser_signal_interest_group_owner_;
-  absl::optional<std::string> browser_signal_buyer_and_seller_reporting_id_;
+  std::optional<std::string> browser_signal_buyer_and_seller_reporting_id_;
   GURL browser_signal_render_url_;
   std::vector<GURL> browser_signal_ad_components_;
   uint32_t browser_signal_bidding_duration_msecs_;
   bool browser_signal_for_debugging_only_in_cooldown_or_lockout_;
   double browser_signal_desireability_;
   double browser_signal_highest_scoring_other_bid_;
-  absl::optional<blink::AdCurrency>
+  std::optional<blink::AdCurrency>
       browser_signal_highest_scoring_other_bid_currency_;
   mojom::ComponentAuctionReportResultParamsPtr
       browser_signals_component_auction_report_result_params_;
-  absl::optional<uint32_t> browser_signal_data_version_;
-  absl::optional<base::TimeDelta> seller_timeout_;
+  std::optional<uint32_t> browser_signal_data_version_;
+  std::optional<base::TimeDelta> seller_timeout_;
 
   // Reuseable run loop for disconnection errors.
   std::unique_ptr<base::RunLoop> disconnect_run_loop_;
-  absl::optional<std::string> disconnect_reason_;
+  std::optional<std::string> disconnect_reason_;
 
   network::TestURLLoaderFactory url_loader_factory_;
   network::TestURLLoaderFactory alternate_url_loader_factory_;
@@ -959,7 +953,7 @@ TEST_F(SellerWorkletTest, ScoreAdAllowComponentAuction) {
   const mojom::ComponentAuctionModifiedBidParamsPtr
       kExpectedComponentAuctionModifiedBidParams =
           mojom::ComponentAuctionModifiedBidParams::New(
-              /*ad=*/"null", /*bid=*/0, /*bid_currency=*/absl::nullopt,
+              /*ad=*/"null", /*bid=*/0, /*bid_currency=*/std::nullopt,
               /*has_bid=*/false);
 
   // With a null `browser_signals_other_seller_`, returning a raw score is
@@ -1067,25 +1061,25 @@ TEST_F(SellerWorkletTest, ScoreAdAd) {
   RunScoreAdWithReturnValueExpectingResult(
       "{desirability:1, allowComponentAuction:true}", 1, /*expected_errors=*/{},
       mojom::ComponentAuctionModifiedBidParams::New(
-          /*ad=*/"null", /*bid=*/0, /*bid_currency=*/absl::nullopt,
+          /*ad=*/"null", /*bid=*/0, /*bid_currency=*/std::nullopt,
           /*has_bid=*/false));
   RunScoreAdWithReturnValueExpectingResult(
       "{ad:null, desirability:1, allowComponentAuction:true}", 1,
       /*expected_errors=*/{},
       mojom::ComponentAuctionModifiedBidParams::New(
-          /*ad=*/"null", /*bid=*/0, /*bid_currency=*/absl::nullopt,
+          /*ad=*/"null", /*bid=*/0, /*bid_currency=*/std::nullopt,
           /*has_bid=*/false));
   RunScoreAdWithReturnValueExpectingResult(
       R"({ad:"foo", desirability:1, allowComponentAuction:true})", 1,
       /*expected_errors=*/{},
       mojom::ComponentAuctionModifiedBidParams::New(
-          /*ad=*/R"("foo")", /*bid=*/0, /*bid_currency=*/absl::nullopt,
+          /*ad=*/R"("foo")", /*bid=*/0, /*bid_currency=*/std::nullopt,
           /*has_bid=*/false));
   RunScoreAdWithReturnValueExpectingResult(
       "{ad:[[35]], desirability:1, allowComponentAuction:true}", 1,
       /*expected_errors=*/{},
       mojom::ComponentAuctionModifiedBidParams::New(
-          /*ad=*/"[[35]]", /*bid=*/0, /*bid_currency=*/absl::nullopt,
+          /*ad=*/"[[35]]", /*bid=*/0, /*bid_currency=*/std::nullopt,
           /*has_bid=*/false));
 }
 
@@ -1112,9 +1106,9 @@ TEST_F(SellerWorkletTest, ScoreAdRejectReason) {
                            test_case.reason_str.c_str()),
         0,
         /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
-        /*expected_data_version=*/absl::nullopt,
-        /*expected_debug_loss_report_url=*/absl::nullopt,
-        /*expected_debug_win_report_url=*/absl::nullopt, test_case.reason_enum);
+        /*expected_data_version=*/std::nullopt,
+        /*expected_debug_loss_report_url=*/std::nullopt,
+        /*expected_debug_win_report_url=*/std::nullopt, test_case.reason_enum);
   }
 
   // Default reject reason is mojom::RejectReason::kNotAvailable, if scoreAd()
@@ -1122,18 +1116,18 @@ TEST_F(SellerWorkletTest, ScoreAdRejectReason) {
   RunScoreAdWithReturnValueExpectingResult(
       "{desirability:-1}", 0,
       /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
-      /*expected_data_version=*/absl::nullopt,
-      /*expected_debug_loss_report_url=*/absl::nullopt,
-      /*expected_debug_win_report_url=*/absl::nullopt,
+      /*expected_data_version=*/std::nullopt,
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt,
       mojom::RejectReason::kNotAvailable);
 
   // Reject reason is ignored when desirability is positive.
   RunScoreAdWithReturnValueExpectingResult(
       "{desirability:3, rejectReason: 'invalid-bid'}", 3,
       /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
-      /*expected_data_version=*/absl::nullopt,
-      /*expected_debug_loss_report_url=*/absl::nullopt,
-      /*expected_debug_win_report_url=*/absl::nullopt,
+      /*expected_data_version=*/std::nullopt,
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt,
       /*expected_reject_reason*/ mojom::RejectReason::kNotAvailable);
 }
 
@@ -1145,9 +1139,9 @@ TEST_F(SellerWorkletTest, ScoreAdInvalidRejectReason) {
       /*expected_errors=*/
       {"https://url.test/ scoreAd() returned an invalid reject reason."},
       mojom::ComponentAuctionModifiedBidParamsPtr(),
-      /*expected_data_version=*/absl::nullopt,
-      /*expected_debug_loss_report_url=*/absl::nullopt,
-      /*expected_debug_win_report_url=*/absl::nullopt,
+      /*expected_data_version=*/std::nullopt,
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt,
       /*expected_reject_reason*/ mojom::RejectReason::kNotAvailable);
 
   // Reject reason returned by seller script must be a string.
@@ -1156,9 +1150,9 @@ TEST_F(SellerWorkletTest, ScoreAdInvalidRejectReason) {
       /*expected_errors=*/
       {"https://url.test/ scoreAd() returned an invalid reject reason."},
       mojom::ComponentAuctionModifiedBidParamsPtr(),
-      /*expected_data_version=*/absl::nullopt,
-      /*expected_debug_loss_report_url=*/absl::nullopt,
-      /*expected_debug_win_report_url=*/absl::nullopt,
+      /*expected_data_version=*/std::nullopt,
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt,
       /*expected_reject_reason*/ mojom::RejectReason::kNotAvailable);
 }
 
@@ -1185,13 +1179,13 @@ TEST_F(SellerWorkletTest, ScoreAdModifiesBid) {
       "{ad:null, desirability:1, allowComponentAuction:true, bid:13}", 1,
       /*expected_errors=*/{},
       mojom::ComponentAuctionModifiedBidParams::New(
-          /*ad=*/"null", /*bid=*/13, /*bid_currency=*/absl::nullopt,
+          /*ad=*/"null", /*bid=*/13, /*bid_currency=*/std::nullopt,
           /*has_bid=*/true));
   RunScoreAdWithReturnValueExpectingResult(
       "{ad:null, desirability:1, allowComponentAuction:true, bid:1.2}", 1,
       /*expected_errors=*/{},
       mojom::ComponentAuctionModifiedBidParams::New(
-          /*ad=*/"null", /*bid=*/1.2, /*bid_currency=*/absl::nullopt,
+          /*ad=*/"null", /*bid=*/1.2, /*bid_currency=*/std::nullopt,
           /*has_bid=*/true));
 
   // Can also specify the currency.
@@ -1210,7 +1204,7 @@ TEST_F(SellerWorkletTest, ScoreAdModifiesBid) {
       "{ad:null, desirability:1, allowComponentAuction:true}", 1,
       /*expected_errors=*/{},
       mojom::ComponentAuctionModifiedBidParams::New(
-          /*ad=*/"null", /*bid=*/0, /*bid_currency=*/absl::nullopt,
+          /*ad=*/"null", /*bid=*/0, /*bid_currency=*/std::nullopt,
           /*has_bid=*/false));
 
   // JS coercions happen for bid as well.
@@ -1218,13 +1212,13 @@ TEST_F(SellerWorkletTest, ScoreAdModifiesBid) {
       R"({ad:null, desirability:1, allowComponentAuction:true, bid:"5"})", 1,
       /*expected_errors=*/{},
       mojom::ComponentAuctionModifiedBidParams::New(
-          /*ad=*/"null", /*bid=*/5, /*bid_currency=*/absl::nullopt,
+          /*ad=*/"null", /*bid=*/5, /*bid_currency=*/std::nullopt,
           /*has_bid=*/true));
   RunScoreAdWithReturnValueExpectingResult(
       "{ad:null, desirability:1, allowComponentAuction:true, bid:[4]}", 1,
       /*expected_errors=*/{},
       mojom::ComponentAuctionModifiedBidParams::New(
-          /*ad=*/"null", /*bid=*/4, /*bid_currency=*/absl::nullopt,
+          /*ad=*/"null", /*bid=*/4, /*bid_currency=*/std::nullopt,
           /*has_bid=*/true));
 
   // Invalid bids result in errors.
@@ -1260,9 +1254,9 @@ TEST_F(SellerWorkletTest, ScoreAdModifiesBid) {
       0, {"https://url.test/ scoreAd() returned an invalid bidCurrency."},
       /*expected_component_auction_modified_bid_params=*/
       mojom::ComponentAuctionModifiedBidParamsPtr(),
-      /*expected_data_version=*/absl::nullopt,
-      /*expected_debug_loss_report_url=*/absl::nullopt,
-      /*expected_debug_win_report_url=*/absl::nullopt,
+      /*expected_data_version=*/std::nullopt,
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt,
       mojom::RejectReason::kWrongScoreAdCurrency);
 
   // Special case: if there is a manually specified reject-reason, it goes in
@@ -1273,9 +1267,9 @@ TEST_F(SellerWorkletTest, ScoreAdModifiesBid) {
       0, {"https://url.test/ scoreAd() returned an invalid bidCurrency."},
       /*expected_component_auction_modified_bid_params=*/
       mojom::ComponentAuctionModifiedBidParamsPtr(),
-      /*expected_data_version=*/absl::nullopt,
-      /*expected_debug_loss_report_url=*/absl::nullopt,
-      /*expected_debug_win_report_url=*/absl::nullopt,
+      /*expected_data_version=*/std::nullopt,
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt,
       mojom::RejectReason::kCategoryExclusions);
 
   auction_ad_config_non_shared_params_.seller_currency =
@@ -1288,9 +1282,9 @@ TEST_F(SellerWorkletTest, ScoreAdModifiesBid) {
        " expected 'CAD' got 'USD'."},
       /*expected_component_auction_modified_bid_params=*/
       mojom::ComponentAuctionModifiedBidParamsPtr(),
-      /*expected_data_version=*/absl::nullopt,
-      /*expected_debug_loss_report_url=*/absl::nullopt,
-      /*expected_debug_win_report_url=*/absl::nullopt,
+      /*expected_data_version=*/std::nullopt,
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt,
       mojom::RejectReason::kWrongScoreAdCurrency);
 
   RunScoreAdWithReturnValueExpectingResult(
@@ -1302,7 +1296,7 @@ TEST_F(SellerWorkletTest, ScoreAdModifiesBid) {
           /*ad=*/"null", /*bid=*/1.2,
           /*bid_currency=*/blink::AdCurrency::From("CAD"),
           /*has_bid=*/true));
-  auction_ad_config_non_shared_params_.seller_currency = absl::nullopt;
+  auction_ad_config_non_shared_params_.seller_currency = std::nullopt;
 
   // In component auctions, there is also verification against parent auction's
   // bidderCurrencies.
@@ -1315,9 +1309,9 @@ TEST_F(SellerWorkletTest, ScoreAdModifiesBid) {
        "vs parent auction bidderCurrency, expected 'EUR' got 'USD'."},
       /*expected_component_auction_modified_bid_params=*/
       mojom::ComponentAuctionModifiedBidParamsPtr(),
-      /*expected_data_version=*/absl::nullopt,
-      /*expected_debug_loss_report_url=*/absl::nullopt,
-      /*expected_debug_win_report_url=*/absl::nullopt,
+      /*expected_data_version=*/std::nullopt,
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt,
       mojom::RejectReason::kWrongScoreAdCurrency);
   RunScoreAdWithReturnValueExpectingResult(
       "{ad:null, desirability:1, allowComponentAuction:true, "
@@ -1328,7 +1322,7 @@ TEST_F(SellerWorkletTest, ScoreAdModifiesBid) {
           /*ad=*/"null", /*bid=*/1.2,
           /*bid_currency=*/blink::AdCurrency::From("EUR"),
           /*has_bid=*/true));
-  component_expect_bid_currency_ = absl::nullopt;
+  component_expect_bid_currency_ = std::nullopt;
 
   // A 0 bid is normally considered invalid, unless desirability is 0, in which
   // case it is ignored.
@@ -1351,11 +1345,11 @@ TEST_F(SellerWorkletTest, ScoreAdDoesNotModifyBidCurrency) {
        "sellerCurrency, expected 'USD' got 'CAD'."},
       /*expected_component_auction_modified_bid_params=*/
       mojom::ComponentAuctionModifiedBidParams::New(
-          /*ad=*/"null", /*bid=*/0, /*bid_currency=*/absl::nullopt,
+          /*ad=*/"null", /*bid=*/0, /*bid_currency=*/std::nullopt,
           /*has_bid=*/false),
-      /*expected_data_version=*/absl::nullopt,
-      /*expected_debug_loss_report_url=*/absl::nullopt,
-      /*expected_debug_win_report_url=*/absl::nullopt,
+      /*expected_data_version=*/std::nullopt,
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt,
       mojom::RejectReason::kWrongScoreAdCurrency);
 }
 
@@ -1365,7 +1359,7 @@ TEST_F(SellerWorkletTest, ScoreAdIncomingBidInSellerCurrency) {
   bid_currency_ = blink::AdCurrency::From("USD");
 
   // If seller currency isn't configured, can't set it.
-  auction_ad_config_non_shared_params_.seller_currency = absl::nullopt;
+  auction_ad_config_non_shared_params_.seller_currency = std::nullopt;
 
   RunScoreAdWithReturnValueExpectingResult(
       "{desirability:1, incomingBidInSellerCurrency: 4}", 0,
@@ -1390,9 +1384,9 @@ TEST_F(SellerWorkletTest, ScoreAdIncomingBidInSellerCurrency) {
       "{desirability:1, incomingBidInSellerCurrency: 100}", 1,
       /*expected_errors=*/std::vector<std::string>(),
       mojom::ComponentAuctionModifiedBidParamsPtr(),
-      /*expected_data_version=*/absl::nullopt,
-      /*expected_debug_loss_report_url=*/absl::nullopt,
-      /*expected_debug_win_report_url=*/absl::nullopt,
+      /*expected_data_version=*/std::nullopt,
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt,
       /*expected_reject_reason=*/
       mojom::RejectReason::kNotAvailable,
       /*expected_pa_requests=*/{},
@@ -1411,9 +1405,9 @@ TEST_F(SellerWorkletTest, ScoreAdIncomingBidInSellerCurrency) {
       "{desirability:1, incomingBidInSellerCurrency: 1}", 1,
       /*expected_errors=*/std::vector<std::string>(),
       mojom::ComponentAuctionModifiedBidParamsPtr(),
-      /*expected_data_version=*/absl::nullopt,
-      /*expected_debug_loss_report_url=*/absl::nullopt,
-      /*expected_debug_win_report_url=*/absl::nullopt,
+      /*expected_data_version=*/std::nullopt,
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt,
       /*expected_reject_reason=*/
       mojom::RejectReason::kNotAvailable,
       /*expected_pa_requests=*/{},
@@ -1425,9 +1419,9 @@ TEST_F(SellerWorkletTest, ScoreAdIncomingBidInSellerCurrency) {
       "{desirability:1}", 1,
       /*expected_errors=*/std::vector<std::string>(),
       mojom::ComponentAuctionModifiedBidParamsPtr(),
-      /*expected_data_version=*/absl::nullopt,
-      /*expected_debug_loss_report_url=*/absl::nullopt,
-      /*expected_debug_win_report_url=*/absl::nullopt,
+      /*expected_data_version=*/std::nullopt,
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt,
       /*expected_reject_reason=*/
       mojom::RejectReason::kNotAvailable,
       /*expected_pa_requests=*/{},
@@ -1438,9 +1432,9 @@ TEST_F(SellerWorkletTest, ScoreAdIncomingBidInSellerCurrency) {
       "1", 1,
       /*expected_errors=*/std::vector<std::string>(),
       mojom::ComponentAuctionModifiedBidParamsPtr(),
-      /*expected_data_version=*/absl::nullopt,
-      /*expected_debug_loss_report_url=*/absl::nullopt,
-      /*expected_debug_win_report_url=*/absl::nullopt,
+      /*expected_data_version=*/std::nullopt,
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt,
       /*expected_reject_reason=*/
       mojom::RejectReason::kNotAvailable,
       /*expected_pa_requests=*/{},
@@ -1494,7 +1488,7 @@ TEST_F(SellerWorkletTest, ScoreAdTopLevelSeller) {
              {desirability: 2, allowComponentAuction: true} : 0)",
       2, /*expected_errors=*/{},
       mojom::ComponentAuctionModifiedBidParams::New(
-          /*ad=*/"null", /*bid=*/0, /*bid_currency=*/absl::nullopt,
+          /*ad=*/"null", /*bid=*/0, /*bid_currency=*/std::nullopt,
           /*has_bid=*/false));
 
   // `topLevelSeller` should be empty when a component seller is scoring a bid.
@@ -1526,7 +1520,7 @@ TEST_F(SellerWorkletTest, ScoreAdComponentSeller) {
              0 : {desirability: 2, allowComponentAuction: true})",
       2, /*expected_errors=*/{},
       mojom::ComponentAuctionModifiedBidParams::New(
-          /*ad=*/"null", /*bid=*/0, /*bid_currency=*/absl::nullopt,
+          /*ad=*/"null", /*bid=*/0, /*bid_currency=*/std::nullopt,
           /*has_bid=*/false));
 
   // `componentSeller` should be set when a component seller is scoring a bid.
@@ -1659,7 +1653,7 @@ TEST_F(SellerWorkletTest, ScoreAdExperimentGroupIdParam) {
 TEST_F(SellerWorkletTest, ScoreAdTrustedScoringSignals) {
   // With no trusted scoring signals URL, `trustedScoringSignals` should be
   // null.
-  trusted_scoring_signals_url_ = absl::nullopt;
+  trusted_scoring_signals_url_ = std::nullopt;
   RunScoreAdWithReturnValueExpectingResult(
       "trustedScoringSignals === null ? 1 : 0", 1);
 
@@ -1753,14 +1747,14 @@ TEST_F(SellerWorkletTest, ScoreAdTrustedScoringSignalsLatency) {
       seller_worklet.get(), /*expected_score=*/1,
       /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
       /*expected_data_version=*/1,
-      /*expected_debug_loss_report_url=*/absl::nullopt,
-      /*expected_debug_win_report_url=*/absl::nullopt,
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt,
       mojom::RejectReason::kNotAvailable,
       /*expected_pa_requests=*/{},
-      /*expected_bid_in_seller_currency=*/absl::nullopt,
+      /*expected_bid_in_seller_currency=*/std::nullopt,
       /*expected_score_ad_timeout=*/false,
       /*expected_signals_fetch_latency=*/kDelay,
-      /*expected_code_ready_latency=*/absl::nullopt, run_loop.QuitClosure());
+      /*expected_code_ready_latency=*/std::nullopt, run_loop.QuitClosure());
   task_environment_.RunUntilIdle();
   task_environment_.FastForwardBy(kDelay);
   AddVersionedJsonResponse(&url_loader_factory_, kNoComponentSignalsUrl,
@@ -1786,13 +1780,13 @@ TEST_F(SellerWorkletTest, ScoreAdCodeReadyLatency) {
       seller_worklet.get(), /*expected_score=*/1,
       /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
       /*expected_data_version=*/1,
-      /*expected_debug_loss_report_url=*/absl::nullopt,
-      /*expected_debug_win_report_url=*/absl::nullopt,
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt,
       mojom::RejectReason::kNotAvailable,
       /*expected_pa_requests=*/{},
-      /*expected_bid_in_seller_currency=*/absl::nullopt,
+      /*expected_bid_in_seller_currency=*/std::nullopt,
       /*expected_score_ad_timeout=*/false,
-      /*expected_signals_fetch_latency=*/absl::nullopt,
+      /*expected_signals_fetch_latency=*/std::nullopt,
       /*expected_code_ready_latency=*/kDelay, run_loop.QuitClosure());
   task_environment_.RunUntilIdle();
   task_environment_.FastForwardBy(kDelay);
@@ -1851,16 +1845,16 @@ TEST_F(SellerWorkletTest, ScoreAdParallelBeforeLoadComplete) {
     RunScoreAdOnWorkletAsync(seller_worklet.get(), /*expected_score=*/i,
                              /*expected_errors=*/std::vector<std::string>(),
                              mojom::ComponentAuctionModifiedBidParamsPtr(),
-                             /*expected_data_version=*/absl::nullopt,
-                             /*expected_debug_loss_report_url=*/absl::nullopt,
-                             /*expected_debug_win_report_url=*/absl::nullopt,
+                             /*expected_data_version=*/std::nullopt,
+                             /*expected_debug_loss_report_url=*/std::nullopt,
+                             /*expected_debug_win_report_url=*/std::nullopt,
                              /*expected_reject_reason=*/
                              mojom::RejectReason::kNotAvailable,
                              /*expected_pa_requests=*/{},
-                             /*expected_bid_in_seller_currency=*/absl::nullopt,
+                             /*expected_bid_in_seller_currency=*/std::nullopt,
                              /*expected_score_ad_timeout=*/false,
-                             /*expected_signals_fetch_latency=*/absl::nullopt,
-                             /*expected_code_ready_latency=*/absl::nullopt,
+                             /*expected_signals_fetch_latency=*/std::nullopt,
+                             /*expected_code_ready_latency=*/std::nullopt,
                              base::BindLambdaForTesting([&]() {
                                ++num_completed_worklets;
                                if (num_completed_worklets == kNumWorklets) {
@@ -1900,16 +1894,16 @@ TEST_F(SellerWorkletTest, ScoreAdParallelAfterLoadComplete) {
     RunScoreAdOnWorkletAsync(seller_worklet.get(), /*expected_score=*/i,
                              /*expected_errors=*/std::vector<std::string>(),
                              mojom::ComponentAuctionModifiedBidParamsPtr(),
-                             /*expected_data_version=*/absl::nullopt,
-                             /*expected_debug_loss_report_url=*/absl::nullopt,
-                             /*expected_debug_win_report_url=*/absl::nullopt,
+                             /*expected_data_version=*/std::nullopt,
+                             /*expected_debug_loss_report_url=*/std::nullopt,
+                             /*expected_debug_win_report_url=*/std::nullopt,
                              /*expected_reject_reason=*/
                              mojom::RejectReason::kNotAvailable,
                              /*expected_pa_requests=*/{},
-                             /*expected_bid_in_seller_currency=*/absl::nullopt,
+                             /*expected_bid_in_seller_currency=*/std::nullopt,
                              /*expected_score_ad_timeout=*/false,
-                             /*expected_signals_fetch_latency=*/absl::nullopt,
-                             /*expected_code_ready_latency=*/absl::nullopt,
+                             /*expected_signals_fetch_latency=*/std::nullopt,
+                             /*expected_code_ready_latency=*/std::nullopt,
                              base::BindLambdaForTesting([&]() {
                                ++num_completed_worklets;
                                if (num_completed_worklets == kNumWorklets) {
@@ -1972,15 +1966,15 @@ TEST_F(SellerWorkletTest, ScoreAdParallelTrustedScoringSignalsNotBatched) {
                              /*expected_errors=*/std::vector<std::string>(),
                              mojom::ComponentAuctionModifiedBidParamsPtr(),
                              /*expected_data_version=*/i,
-                             /*expected_debug_loss_report_url=*/absl::nullopt,
-                             /*expected_debug_win_report_url=*/absl::nullopt,
+                             /*expected_debug_loss_report_url=*/std::nullopt,
+                             /*expected_debug_win_report_url=*/std::nullopt,
                              /*expected_reject_reason=*/
                              mojom::RejectReason::kNotAvailable,
                              /*expected_pa_requests=*/{},
-                             /*expected_bid_in_seller_currency=*/absl::nullopt,
+                             /*expected_bid_in_seller_currency=*/std::nullopt,
                              /*expected_score_ad_timeout=*/false,
-                             /*expected_signals_fetch_latency=*/absl::nullopt,
-                             /*expected_code_ready_latency=*/absl::nullopt,
+                             /*expected_signals_fetch_latency=*/std::nullopt,
+                             /*expected_code_ready_latency=*/std::nullopt,
                              base::BindLambdaForTesting([&]() {
                                ++num_completed_worklets;
                                if (num_completed_worklets == kNumWorklets) {
@@ -2045,16 +2039,16 @@ TEST_F(SellerWorkletTest, ScoreAdParallelTrustedScoringSignalsBatched1) {
     RunScoreAdOnWorkletAsync(seller_worklet.get(), /*expected_score=*/2 * i,
                              /*expected_errors=*/std::vector<std::string>(),
                              mojom::ComponentAuctionModifiedBidParamsPtr(),
-                             /*expected_data_version=*/absl::nullopt,
-                             /*expected_debug_loss_report_url=*/absl::nullopt,
-                             /*expected_debug_win_report_url=*/absl::nullopt,
+                             /*expected_data_version=*/std::nullopt,
+                             /*expected_debug_loss_report_url=*/std::nullopt,
+                             /*expected_debug_win_report_url=*/std::nullopt,
                              /*expected_reject_reason=*/
                              mojom::RejectReason::kNotAvailable,
                              /*expected_pa_requests=*/{},
-                             /*expected_bid_in_seller_currency=*/absl::nullopt,
+                             /*expected_bid_in_seller_currency=*/std::nullopt,
                              /*expected_score_ad_timeout=*/false,
-                             /*expected_signals_fetch_latency=*/absl::nullopt,
-                             /*expected_code_ready_latency=*/absl::nullopt,
+                             /*expected_signals_fetch_latency=*/std::nullopt,
+                             /*expected_code_ready_latency=*/std::nullopt,
                              base::BindLambdaForTesting([&]() {
                                ++num_completed_worklets;
                                if (num_completed_worklets == kNumWorklets) {
@@ -2111,15 +2105,15 @@ TEST_F(SellerWorkletTest, ScoreAdParallelTrustedScoringSignalsBatched2) {
                              /*expected_errors=*/std::vector<std::string>(),
                              mojom::ComponentAuctionModifiedBidParamsPtr(),
                              /*expected_data_version=*/10,
-                             /*expected_debug_loss_report_url=*/absl::nullopt,
-                             /*expected_debug_win_report_url=*/absl::nullopt,
+                             /*expected_debug_loss_report_url=*/std::nullopt,
+                             /*expected_debug_win_report_url=*/std::nullopt,
                              /*expected_reject_reason=*/
                              mojom::RejectReason::kNotAvailable,
                              /*expected_pa_requests=*/{},
-                             /*expected_bid_in_seller_currency=*/absl::nullopt,
+                             /*expected_bid_in_seller_currency=*/std::nullopt,
                              /*expected_score_ad_timeout=*/false,
-                             /*expected_signals_fetch_latency=*/absl::nullopt,
-                             /*expected_code_ready_latency=*/absl::nullopt,
+                             /*expected_signals_fetch_latency=*/std::nullopt,
+                             /*expected_code_ready_latency=*/std::nullopt,
                              base::BindLambdaForTesting([&]() {
                                ++num_completed_worklets;
                                if (num_completed_worklets == kNumWorklets) {
@@ -2185,15 +2179,15 @@ TEST_F(SellerWorkletTest, ScoreAdParallelTrustedScoringSignalsBatched3) {
                              /*expected_errors=*/std::vector<std::string>(),
                              mojom::ComponentAuctionModifiedBidParamsPtr(),
                              /*expected_data_version=*/10,
-                             /*expected_debug_loss_report_url=*/absl::nullopt,
-                             /*expected_debug_win_report_url=*/absl::nullopt,
+                             /*expected_debug_loss_report_url=*/std::nullopt,
+                             /*expected_debug_win_report_url=*/std::nullopt,
                              /*expected_reject_reason=*/
                              mojom::RejectReason::kNotAvailable,
                              /*expected_pa_requests=*/{},
-                             /*expected_bid_in_seller_currency=*/absl::nullopt,
+                             /*expected_bid_in_seller_currency=*/std::nullopt,
                              /*expected_score_ad_timeout=*/false,
-                             /*expected_signals_fetch_latency=*/absl::nullopt,
-                             /*expected_code_ready_latency=*/absl::nullopt,
+                             /*expected_signals_fetch_latency=*/std::nullopt,
+                             /*expected_code_ready_latency=*/std::nullopt,
                              base::BindLambdaForTesting([&]() {
                                ++num_completed_worklets;
                                if (num_completed_worklets == kNumWorklets) {
@@ -2286,23 +2280,23 @@ TEST_F(SellerWorkletTest, ScoreAdLoadCompletionOrder) {
     RunScoreAdOnWorkletAsync(
         seller_worklet.get(), /*expected_score=*/1.0,
         /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
-        /*expected_data_version=*/absl::nullopt,
-        /*expected_debug_loss_report_url=*/absl::nullopt,
-        /*expected_debug_win_report_url=*/absl::nullopt,
+        /*expected_data_version=*/std::nullopt,
+        /*expected_debug_loss_report_url=*/std::nullopt,
+        /*expected_debug_win_report_url=*/std::nullopt,
         /*expected_reject_reason=*/
         mojom::RejectReason::kNotAvailable,
         /*expected_pa_requests=*/{},
-        /*expected_bid_in_seller_currency=*/absl::nullopt,
+        /*expected_bid_in_seller_currency=*/std::nullopt,
         /*expected_score_ad_timeout=*/false,
-        /*expected_signals_fetch_latency=*/absl::nullopt,
-        /*expected_code_ready_latency=*/absl::nullopt, run_loop->QuitClosure());
+        /*expected_signals_fetch_latency=*/std::nullopt,
+        /*expected_code_ready_latency=*/std::nullopt, run_loop->QuitClosure());
     for (size_t i = 0; i < std::size(kResponses); ++i) {
       SCOPED_TRACE(i);
       const Response& response =
           kResponses[(i + offset) % std::size(kResponses)];
-      AddResponse(
-          &url_loader_factory_, response.response_url, response.response_type,
-          /*charset=*/absl::nullopt, response.content, response.headers);
+      AddResponse(&url_loader_factory_, response.response_url,
+                  response.response_type,
+                  /*charset=*/std::nullopt, response.content, response.headers);
       task_environment_.RunUntilIdle();
       if (i < std::size(kResponses) - 1) {
         // Some URLs haven't finished loading -- generateBid() should be
@@ -2357,10 +2351,10 @@ if (auctionSignalsJson !== '{"worklet":2}') {
 
   mojo::Remote<mojom::SellerWorklet> seller_worklet1 = CreateWorklet();
   AddResponse(&url_loader_factory_, *direct_from_seller_seller_signals_,
-              kJsonMimeType, /*charset=*/absl::nullopt, kWorklet1JsonResponse,
+              kJsonMimeType, /*charset=*/std::nullopt, kWorklet1JsonResponse,
               kDirectFromSellerSignalsHeaders);
   AddResponse(&url_loader_factory_, *direct_from_seller_auction_signals_,
-              kJsonMimeType, /*charset=*/absl::nullopt, kWorklet1JsonResponse,
+              kJsonMimeType, /*charset=*/std::nullopt, kWorklet1JsonResponse,
               kDirectFromSellerSignalsHeaders);
   AddJavascriptResponse(
       &url_loader_factory_, decision_logic_url_,
@@ -2375,11 +2369,11 @@ if (auctionSignalsJson !== '{"worklet":2}') {
       /*use_alternate_url_loader_factory=*/true);
   AddResponse(&alternate_url_loader_factory_,
               *direct_from_seller_seller_signals_, kJsonMimeType,
-              /*charset=*/absl::nullopt, kWorklet2JsonResponse,
+              /*charset=*/std::nullopt, kWorklet2JsonResponse,
               kDirectFromSellerSignalsHeaders);
   AddResponse(&alternate_url_loader_factory_,
               *direct_from_seller_auction_signals_, kJsonMimeType,
-              /*charset=*/absl::nullopt, kWorklet2JsonResponse,
+              /*charset=*/std::nullopt, kWorklet2JsonResponse,
               kDirectFromSellerSignalsHeaders);
   AddJavascriptResponse(
       &alternate_url_loader_factory_, decision_logic_url_,
@@ -2388,32 +2382,32 @@ if (auctionSignalsJson !== '{"worklet":2}') {
   RunScoreAdOnWorkletAsync(
       seller_worklet1.get(), /*expected_score=*/1.0,
       /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
-      /*expected_data_version=*/absl::nullopt,
-      /*expected_debug_loss_report_url=*/absl::nullopt,
-      /*expected_debug_win_report_url=*/absl::nullopt,
+      /*expected_data_version=*/std::nullopt,
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt,
       /*expected_reject_reason=*/
       mojom::RejectReason::kNotAvailable,
       /*expected_pa_requests=*/{},
-      /*expected_bid_in_seller_currency=*/absl::nullopt,
+      /*expected_bid_in_seller_currency=*/std::nullopt,
       /*expected_score_ad_timeout=*/false,
-      /*expected_signals_fetch_latency=*/absl::nullopt,
-      /*expected_code_ready_latency=*/absl::nullopt, run_loop->QuitClosure());
+      /*expected_signals_fetch_latency=*/std::nullopt,
+      /*expected_code_ready_latency=*/std::nullopt, run_loop->QuitClosure());
   run_loop->Run();
 
   run_loop = std::make_unique<base::RunLoop>();
   RunScoreAdOnWorkletAsync(
       seller_worklet2.get(), /*expected_score=*/1.0,
       /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
-      /*expected_data_version=*/absl::nullopt,
-      /*expected_debug_loss_report_url=*/absl::nullopt,
-      /*expected_debug_win_report_url=*/absl::nullopt,
+      /*expected_data_version=*/std::nullopt,
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt,
       /*expected_reject_reason=*/
       mojom::RejectReason::kNotAvailable,
       /*expected_pa_requests=*/{},
-      /*expected_bid_in_seller_currency=*/absl::nullopt,
+      /*expected_bid_in_seller_currency=*/std::nullopt,
       /*expected_score_ad_timeout=*/false,
-      /*expected_signals_fetch_latency=*/absl::nullopt,
-      /*expected_code_ready_latency=*/absl::nullopt, run_loop->QuitClosure());
+      /*expected_signals_fetch_latency=*/std::nullopt,
+      /*expected_code_ready_latency=*/std::nullopt, run_loop->QuitClosure());
   run_loop->Run();
 }
 
@@ -2493,25 +2487,25 @@ TEST_F(SellerWorkletTest, ReportResult) {
   RunReportResultCreatedScriptExpectingResult(
       "1", /*extra_code=*/std::string(),
       /*expected_signals_for_winner=*/"1",
-      /*expected_report_url=*/absl::nullopt);
+      /*expected_report_url=*/std::nullopt);
   RunReportResultCreatedScriptExpectingResult(
       R"("  1   ")", /*extra_code=*/std::string(),
       /*expected_signals_for_winner=*/R"("  1   ")",
-      /*expected_report_url=*/absl::nullopt);
+      /*expected_report_url=*/std::nullopt);
   RunReportResultCreatedScriptExpectingResult(
       "[ null ]", /*extra_code=*/std::string(), "[null]",
-      /*expected_report_url=*/absl::nullopt);
+      /*expected_report_url=*/std::nullopt);
 
   // No return value.
   RunReportResultCreatedScriptExpectingResult(
       "", /*extra_code=*/std::string(), "null",
-      /*expected_report_url=*/absl::nullopt);
+      /*expected_report_url=*/std::nullopt);
 
   // Throw exception.
   RunReportResultCreatedScriptExpectingResult(
       "shrimp", /*extra_code=*/std::string(),
-      /*expected_signals_for_winner=*/absl::nullopt,
-      /*expected_report_url=*/absl::nullopt,
+      /*expected_signals_for_winner=*/std::nullopt,
+      /*expected_report_url=*/std::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_pa_requests=*/{},
       {"https://url.test/:11 Uncaught ReferenceError: "
@@ -2530,16 +2524,16 @@ TEST_F(SellerWorkletTest, ReportResultSendReportTo) {
   // Disallowed schemes.
   RunReportResultCreatedScriptExpectingResult(
       "1", R"(sendReportTo("http://foo.test/"))",
-      /*expected_signals_for_winner=*/absl::nullopt,
-      /*expected_report_url=*/absl::nullopt,
+      /*expected_signals_for_winner=*/std::nullopt,
+      /*expected_report_url=*/std::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_pa_requests=*/{},
       {"https://url.test/:10 Uncaught TypeError: "
        "sendReportTo must be passed a valid HTTPS url."});
   RunReportResultCreatedScriptExpectingResult(
       "1", R"(sendReportTo("file:///foo/"))",
-      /*expected_signals_for_winner=*/absl::nullopt,
-      /*expected_report_url=*/absl::nullopt,
+      /*expected_signals_for_winner=*/std::nullopt,
+      /*expected_report_url=*/std::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_pa_requests=*/{},
       {"https://url.test/:10 Uncaught TypeError: "
@@ -2549,8 +2543,8 @@ TEST_F(SellerWorkletTest, ReportResultSendReportTo) {
   RunReportResultCreatedScriptExpectingResult(
       "1",
       R"(sendReportTo("https://foo.test/"); sendReportTo("https://foo.test/"))",
-      /*expected_signals_for_winner=*/absl::nullopt,
-      /*expected_report_url=*/absl::nullopt,
+      /*expected_signals_for_winner=*/std::nullopt,
+      /*expected_report_url=*/std::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_pa_requests=*/{},
       {"https://url.test/:10 Uncaught TypeError: "
@@ -2563,29 +2557,29 @@ TEST_F(SellerWorkletTest, ReportResultSendReportTo) {
         sendReportTo("https://foo.test/");
         sendReportTo("https://foo.test/")} catch(e) {})",
       /*expected_signals_for_winner=*/"1",
-      /*expected_report_url=*/absl::nullopt);
+      /*expected_report_url=*/std::nullopt);
 
   // Not a URL.
   RunReportResultCreatedScriptExpectingResult(
       "1", R"(sendReportTo("France"))",
-      /*expected_signals_for_winner=*/absl::nullopt,
-      /*expected_report_url=*/absl::nullopt,
+      /*expected_signals_for_winner=*/std::nullopt,
+      /*expected_report_url=*/std::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_pa_requests=*/{},
       {"https://url.test/:10 Uncaught TypeError: "
        "sendReportTo must be passed a valid HTTPS url."});
   RunReportResultCreatedScriptExpectingResult(
       "1", R"(sendReportTo(null))",
-      /*expected_signals_for_winner=*/absl::nullopt,
-      /*expected_report_url=*/absl::nullopt,
+      /*expected_signals_for_winner=*/std::nullopt,
+      /*expected_report_url=*/std::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_pa_requests=*/{},
       {"https://url.test/:10 Uncaught TypeError: "
        "sendReportTo must be passed a valid HTTPS url."});
   RunReportResultCreatedScriptExpectingResult(
       "1", R"(sendReportTo([5]))",
-      /*expected_signals_for_winner=*/absl::nullopt,
-      /*expected_report_url=*/absl::nullopt,
+      /*expected_signals_for_winner=*/std::nullopt,
+      /*expected_report_url=*/std::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_pa_requests=*/{},
       {"https://url.test/:10 Uncaught TypeError: "
@@ -2595,8 +2589,8 @@ TEST_F(SellerWorkletTest, ReportResultSendReportTo) {
 TEST_F(SellerWorkletTest, ReportResultDateNotAvailable) {
   RunReportResultCreatedScriptExpectingResult(
       "1", R"(sendReportTo("https://foo.test/" + Date().toString()))",
-      /*expected_signals_for_winner=*/absl::nullopt,
-      /*expected_report_url=*/absl::nullopt,
+      /*expected_signals_for_winner=*/std::nullopt,
+      /*expected_report_url=*/std::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_pa_requests=*/{},
       {"https://url.test/:10 Uncaught ReferenceError: Date is not defined."});
@@ -2607,13 +2601,13 @@ TEST_F(SellerWorkletTest, ReportResultTopWindowOrigin) {
   RunReportResultCreatedScriptExpectingResult(
       R"(browserSignals.topWindowHostname == "foo.test" ? 2 : 1)",
       /*extra_code=*/std::string(), "2",
-      /*expected_report_url=*/absl::nullopt);
+      /*expected_report_url=*/std::nullopt);
 
   top_window_origin_ = url::Origin::Create(GURL("https://[::1]:40000/"));
   RunReportResultCreatedScriptExpectingResult(
       R"(browserSignals.topWindowHostname == "[::1]" ? 3 : 1)",
       /*extra_code=*/std::string(), "3",
-      /*expected_report_url=*/absl::nullopt);
+      /*expected_report_url=*/std::nullopt);
 }
 
 TEST_F(SellerWorkletTest, ReportResultTopLevelSeller) {
@@ -2621,7 +2615,7 @@ TEST_F(SellerWorkletTest, ReportResultTopLevelSeller) {
   RunReportResultCreatedScriptExpectingResult(
       R"("topLevelSeller" in browserSignals ? 0 : 1)",
       /*extra_code=*/std::string(), /*expected_signals_for_winner=*/"1",
-      /*expected_report_url=*/absl::nullopt);
+      /*expected_report_url=*/std::nullopt);
 
   browser_signals_other_seller_ =
       mojom::ComponentAuctionOtherSeller::NewTopLevelSeller(
@@ -2634,7 +2628,7 @@ TEST_F(SellerWorkletTest, ReportResultTopLevelSeller) {
   RunReportResultCreatedScriptExpectingResult(
       R"(browserSignals.topLevelSeller === "https://top.seller.test" ? 2 : 0)",
       /*extra_code=*/std::string(), /*expected_signals_for_winner=*/"2",
-      /*expected_report_url=*/absl::nullopt);
+      /*expected_report_url=*/std::nullopt);
   browser_signals_component_auction_report_result_params_.reset();
 
   browser_signals_other_seller_ =
@@ -2643,7 +2637,7 @@ TEST_F(SellerWorkletTest, ReportResultTopLevelSeller) {
   RunReportResultCreatedScriptExpectingResult(
       R"("topLevelSeller" in browserSignals ? 0 : 3)",
       /*extra_code=*/std::string(), /*expected_signals_for_winner=*/"3",
-      /*expected_report_url=*/absl::nullopt);
+      /*expected_report_url=*/std::nullopt);
 }
 
 TEST_F(SellerWorkletTest, ReportResultComponentSeller) {
@@ -2651,7 +2645,7 @@ TEST_F(SellerWorkletTest, ReportResultComponentSeller) {
   RunReportResultCreatedScriptExpectingResult(
       R"("componentSeller" in browserSignals ? 0 : 1)",
       /*extra_code=*/std::string(), /*expected_signals_for_winner=*/"1",
-      /*expected_report_url=*/absl::nullopt);
+      /*expected_report_url=*/std::nullopt);
 
   browser_signals_other_seller_ =
       mojom::ComponentAuctionOtherSeller::NewTopLevelSeller(
@@ -2664,7 +2658,7 @@ TEST_F(SellerWorkletTest, ReportResultComponentSeller) {
   RunReportResultCreatedScriptExpectingResult(
       R"("componentSeller" in browserSignals ? 0 : 2)",
       /*extra_code=*/std::string(), /*expected_signals_for_winner=*/"2",
-      /*expected_report_url=*/absl::nullopt);
+      /*expected_report_url=*/std::nullopt);
   browser_signals_component_auction_report_result_params_.reset();
 
   browser_signals_other_seller_ =
@@ -2673,7 +2667,7 @@ TEST_F(SellerWorkletTest, ReportResultComponentSeller) {
   RunReportResultCreatedScriptExpectingResult(
       R"(browserSignals.componentSeller === "https://component.test" ? 3 : 0)",
       /*extra_code=*/std::string(), /*expected_signals_for_winner=*/"3",
-      /*expected_report_url=*/absl::nullopt);
+      /*expected_report_url=*/std::nullopt);
 }
 
 TEST_F(SellerWorkletTest, ReportResultTopLevelSellerSignals) {
@@ -2685,7 +2679,7 @@ TEST_F(SellerWorkletTest, ReportResultTopLevelSellerSignals) {
   RunReportResultCreatedScriptExpectingResult(
       "'topLevelSellerSignals' in browserSignals ? 0 : 1",
       /*extra_code=*/std::string(), /*expected_signals_for_winner=*/"1",
-      /*expected_report_url=*/absl::nullopt);
+      /*expected_report_url=*/std::nullopt);
 
   browser_signals_other_seller_ =
       mojom::ComponentAuctionOtherSeller::NewComponentSeller(
@@ -2693,7 +2687,7 @@ TEST_F(SellerWorkletTest, ReportResultTopLevelSellerSignals) {
   RunReportResultCreatedScriptExpectingResult(
       "'topLevelSellerSignals' in browserSignals ? 0 : 2",
       /*extra_code=*/std::string(), /*expected_signals_for_winner=*/"2",
-      /*expected_report_url=*/absl::nullopt);
+      /*expected_report_url=*/std::nullopt);
 
   // Component auctions should take `topLevelSellerSignals` from the
   // ComponentAuctionReportResultParams argument.
@@ -2708,14 +2702,14 @@ TEST_F(SellerWorkletTest, ReportResultTopLevelSellerSignals) {
   RunReportResultCreatedScriptExpectingResult(
       "browserSignals.topLevelSellerSignals === null ? 3 : 0",
       /*extra_code=*/std::string(), /*expected_signals_for_winner=*/"3",
-      /*expected_report_url=*/absl::nullopt);
+      /*expected_report_url=*/std::nullopt);
 
   browser_signals_component_auction_report_result_params_
       ->top_level_seller_signals = "[4]";
   RunReportResultCreatedScriptExpectingResult(
       "browserSignals.topLevelSellerSignals[0]",
       /*extra_code=*/std::string(), /*expected_signals_for_winner=*/"4",
-      /*expected_report_url=*/absl::nullopt);
+      /*expected_report_url=*/std::nullopt);
 }
 
 TEST_F(SellerWorkletTest, ReportResultModifiedBid) {
@@ -2727,7 +2721,7 @@ TEST_F(SellerWorkletTest, ReportResultModifiedBid) {
   RunReportResultCreatedScriptExpectingResult(
       "'modifiedBid' in browserSignals ? 0 : 1",
       /*extra_code=*/std::string(), /*expected_signals_for_winner=*/"1",
-      /*expected_report_url=*/absl::nullopt);
+      /*expected_report_url=*/std::nullopt);
 
   browser_signals_other_seller_ =
       mojom::ComponentAuctionOtherSeller::NewComponentSeller(
@@ -2735,7 +2729,7 @@ TEST_F(SellerWorkletTest, ReportResultModifiedBid) {
   RunReportResultCreatedScriptExpectingResult(
       "'modifiedBid' in browserSignals ? 0 : 2",
       /*extra_code=*/std::string(), /*expected_signals_for_winner=*/"2",
-      /*expected_report_url=*/absl::nullopt);
+      /*expected_report_url=*/std::nullopt);
 
   // Component auctions should only receive a `modifiedBid` field when
   // `has_modified_bid` is true.
@@ -2750,13 +2744,13 @@ TEST_F(SellerWorkletTest, ReportResultModifiedBid) {
   RunReportResultCreatedScriptExpectingResult(
       "browserSignals.modifiedBid",
       /*extra_code=*/std::string(), /*expected_signals_for_winner=*/"4",
-      /*expected_report_url=*/absl::nullopt);
+      /*expected_report_url=*/std::nullopt);
   browser_signals_component_auction_report_result_params_->has_modified_bid =
       false;
   RunReportResultCreatedScriptExpectingResult(
       "'modifiedBid' in browserSignals ? 0 : 3",
       /*extra_code=*/std::string(), /*expected_signals_for_winner=*/"3",
-      /*expected_report_url=*/absl::nullopt);
+      /*expected_report_url=*/std::nullopt);
 }
 
 TEST_F(SellerWorkletTest, ReportResultInterestGroupOwner) {
@@ -2765,14 +2759,14 @@ TEST_F(SellerWorkletTest, ReportResultInterestGroupOwner) {
   RunReportResultCreatedScriptExpectingResult(
       R"(browserSignals.interestGroupOwner == "https://foo.test" ? 2 : 1)",
       /*extra_code=*/std::string(), "2",
-      /*expected_report_url=*/absl::nullopt);
+      /*expected_report_url=*/std::nullopt);
 
   browser_signal_interest_group_owner_ =
       url::Origin::Create(GURL("https://[::1]:40000/"));
   RunReportResultCreatedScriptExpectingResult(
       R"(browserSignals.interestGroupOwner == "https://[::1]:40000" ? 3 : 1)",
       /*extra_code=*/std::string(), "3",
-      /*expected_report_url=*/absl::nullopt);
+      /*expected_report_url=*/std::nullopt);
 }
 
 TEST_F(SellerWorkletTest, ReportResultBuyerAndSellerReportingId) {
@@ -2780,7 +2774,7 @@ TEST_F(SellerWorkletTest, ReportResultBuyerAndSellerReportingId) {
   RunReportResultCreatedScriptExpectingResult(
       R"(browserSignals.buyerAndSellerReportingId === "campaign" ? 2 : 1)",
       /*extra_code=*/std::string(), "2",
-      /*expected_report_url=*/absl::nullopt);
+      /*expected_report_url=*/std::nullopt);
 }
 
 TEST_F(SellerWorkletTest, ReportResultRenderUrl) {
@@ -2803,7 +2797,7 @@ TEST_F(SellerWorkletTest, ReportResultRegisterAdBeacon) {
         'view': "https://view.example.com/",
       }))",
       /*expected_signals_for_winner=*/"5",
-      /*expected_report_url=*/absl::nullopt, expected_ad_beacon_map);
+      /*expected_report_url=*/std::nullopt, expected_ad_beacon_map);
 
   browser_signal_render_url_ = GURL("https://foo/");
   RunReportResultCreatedScriptExpectingResult(
@@ -2837,7 +2831,7 @@ TEST_F(SellerWorkletTest, ReportResultRegisterAdBeacon) {
       });
       registerAdBeacon())",
       /*expected_signals_for_winner=*/{},
-      /*expected_report_url=*/absl::nullopt,
+      /*expected_report_url=*/std::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_pa_requests=*/{},
       {"https://url.test/:14 Uncaught TypeError: registerAdBeacon may be "
@@ -2853,7 +2847,7 @@ TEST_F(SellerWorkletTest, ReportResultRegisterAdBeacon) {
          try { registerAdBeacon() }
          catch (e) {})",
       /*expected_signals_for_winner=*/"5",
-      /*expected_report_url=*/absl::nullopt, expected_ad_beacon_map);
+      /*expected_report_url=*/std::nullopt, expected_ad_beacon_map);
 
   // If error on first call, can be called again.
   RunReportResultCreatedScriptExpectingResult(
@@ -2865,13 +2859,13 @@ TEST_F(SellerWorkletTest, ReportResultRegisterAdBeacon) {
            'view': "https://view.example.com/",
          }))",
       /*expected_signals_for_winner=*/"5",
-      /*expected_report_url=*/absl::nullopt, expected_ad_beacon_map);
+      /*expected_report_url=*/std::nullopt, expected_ad_beacon_map);
 
   // Error if no parameters
   RunReportResultCreatedScriptExpectingResult(
       R"(5)", R"(registerAdBeacon())",
       /*expected_signals_for_winner=*/{},
-      /*expected_report_url=*/absl::nullopt,
+      /*expected_report_url=*/std::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_pa_requests=*/{},
       {"https://url.test/:10 Uncaught TypeError: registerAdBeacon(): at least "
@@ -2881,7 +2875,7 @@ TEST_F(SellerWorkletTest, ReportResultRegisterAdBeacon) {
   RunReportResultCreatedScriptExpectingResult(
       R"(5)", R"(registerAdBeacon("foo"))",
       /*expected_signals_for_winner=*/{},
-      /*expected_report_url=*/absl::nullopt,
+      /*expected_report_url=*/std::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_pa_requests=*/{},
       {"https://url.test/:10 Uncaught TypeError: registerAdBeacon(): Cannot "
@@ -2895,7 +2889,7 @@ TEST_F(SellerWorkletTest, ReportResultRegisterAdBeacon) {
         1: "https://view.example.com/",
       }))",
       /*expected_signals_for_winner=*/"5",
-      /*expected_report_url=*/absl::nullopt,
+      /*expected_report_url=*/std::nullopt,
       /*expected_ad_beacon_map=*/
       {
           {"click", GURL("https://click.example.com/")},
@@ -2912,7 +2906,7 @@ TEST_F(SellerWorkletTest, ReportResultRegisterAdBeacon) {
          map[Symbol('a')] = "https://view.example.com/";
          registerAdBeacon(map))",
       /*expected_signals_for_winner=*/{},
-      /*expected_report_url=*/absl::nullopt,
+      /*expected_report_url=*/std::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_pa_requests=*/{},
       {"https://url.test/:14 Uncaught TypeError: Cannot convert a Symbol value "
@@ -2926,7 +2920,7 @@ TEST_F(SellerWorkletTest, ReportResultRegisterAdBeacon) {
         'view': "gopher://view.example.com/",
       }))",
       /*expected_signals_for_winner=*/{},
-      /*expected_report_url=*/absl::nullopt,
+      /*expected_report_url=*/std::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_pa_requests=*/{},
       {"https://url.test/:10 Uncaught TypeError: registerAdBeacon(): invalid "
@@ -2940,7 +2934,7 @@ TEST_F(SellerWorkletTest, ReportResultRegisterAdBeacon) {
         'view': "http://view.example.com/",
       }))",
       /*expected_signals_for_winner=*/{},
-      /*expected_report_url=*/absl::nullopt,
+      /*expected_report_url=*/std::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_pa_requests=*/{},
       {"https://url.test/:10 Uncaught TypeError: registerAdBeacon(): invalid "
@@ -2954,7 +2948,7 @@ TEST_F(SellerWorkletTest, ReportResultRegisterAdBeacon) {
         'reserved.bogus': "https://view.example.com/",
       }))",
       /*expected_signals_for_winner=*/{},
-      /*expected_report_url=*/absl::nullopt,
+      /*expected_report_url=*/std::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_pa_requests=*/{},
       {"https://url.test/:10 Uncaught TypeError: registerAdBeacon(): Invalid "
@@ -2967,7 +2961,7 @@ TEST_F(SellerWorkletTest, ReportResultRegisterAdBeacon) {
          '\ud835': "http://127.0.0.1/",
       }))",
       /*expected_signals_for_winner=*/{},
-      /*expected_report_url=*/absl::nullopt,
+      /*expected_report_url=*/std::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_pa_requests=*/{},
       {"https://url.test/:10 Uncaught TypeError: registerAdBeacon(): invalid "
@@ -2979,7 +2973,7 @@ TEST_F(SellerWorkletTest, ReportResultBid) {
   RunReportResultCreatedScriptExpectingResult(
       "browserSignals.bid + typeof browserSignals.bid",
       /*extra_code=*/std::string(), R"("5number")",
-      /*expected_report_url=*/absl::nullopt);
+      /*expected_report_url=*/std::nullopt);
 }
 
 TEST_F(SellerWorkletTest, ReportResultBidCurrency) {
@@ -2987,7 +2981,7 @@ TEST_F(SellerWorkletTest, ReportResultBidCurrency) {
   RunReportResultCreatedScriptExpectingResult(
       "browserSignals.bidCurrency + typeof browserSignals.bidCurrency",
       /*extra_code=*/std::string(), R"("EURstring")",
-      /*expected_report_url=*/absl::nullopt);
+      /*expected_report_url=*/std::nullopt);
 }
 
 TEST_F(SellerWorkletTest, ReportResultDesireability) {
@@ -2995,7 +2989,7 @@ TEST_F(SellerWorkletTest, ReportResultDesireability) {
   RunReportResultCreatedScriptExpectingResult(
       "browserSignals.desirability + typeof browserSignals.desirability",
       /*extra_code=*/std::string(), R"("10number")",
-      /*expected_report_url=*/absl::nullopt);
+      /*expected_report_url=*/std::nullopt);
 }
 
 TEST_F(SellerWorkletTest, ReportResultHighestScoringOtherBid) {
@@ -3004,7 +2998,7 @@ TEST_F(SellerWorkletTest, ReportResultHighestScoringOtherBid) {
       "browserSignals.highestScoringOtherBid + typeof "
       "browserSignals.highestScoringOtherBid",
       /*extra_code=*/std::string(), R"("5number")",
-      /*expected_report_url=*/absl::nullopt);
+      /*expected_report_url=*/std::nullopt);
 }
 
 TEST_F(SellerWorkletTest, ReportResultHighestScoringOtherBidCurrency) {
@@ -3014,7 +3008,7 @@ TEST_F(SellerWorkletTest, ReportResultHighestScoringOtherBidCurrency) {
       "browserSignals.highestScoringOtherBidCurrency + typeof "
       "browserSignals.highestScoringOtherBidCurrency",
       /*extra_code=*/std::string(), R"("EURstring")",
-      /*expected_report_url=*/absl::nullopt);
+      /*expected_report_url=*/std::nullopt);
 }
 
 TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
@@ -3026,7 +3020,7 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
       R"({"seller":"https://example.com",)"
       R"("decisionLogicURL":"https://example.com/auction.js",)"
       R"("decisionLogicUrl":"https://example.com/auction.js"})",
-      /*expected_report_url=*/absl::nullopt);
+      /*expected_report_url=*/std::nullopt);
 
   // Everything filled in but component auctions (can't include component
   // auctions and non-empty interestGroupBuyers, so test those cases
@@ -3110,7 +3104,7 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
         })";
   RunReportResultCreatedScriptExpectingResult(
       "auctionConfig", /*extra_code=*/std::string(), kExpectedJson1,
-      /*expected_report_url=*/absl::nullopt);
+      /*expected_report_url=*/std::nullopt);
 
   // Clear NonSharedParams(), and add and populate two component auctions, each
   // with one the mandatory `seller` and `decision_logic_url` fields filled in,
@@ -3156,7 +3150,7 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
           ]})";
   RunReportResultCreatedScriptExpectingResult(
       "auctionConfig", /*extra_code=*/std::string(), kExpectedJson2,
-      /*expected_report_url=*/absl::nullopt);
+      /*expected_report_url=*/std::nullopt);
 }
 
 TEST_F(SellerWorkletTest,
@@ -3169,7 +3163,7 @@ TEST_F(SellerWorkletTest,
 
   RunReportResultCreatedScriptExpectingResult(
       "directFromSellerSignals", /*extra_code=*/std::string(), kExpectedJson,
-      /*expected_report_url=*/absl::nullopt);
+      /*expected_report_url=*/std::nullopt);
 }
 
 TEST_F(SellerWorkletTest, ReportResultAuctionConfigParamPerBuyerTimeouts) {
@@ -3181,7 +3175,7 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParamPerBuyerTimeouts) {
       R"({"seller":"https://example.com",)"
       R"("decisionLogicURL":"https://example.com/auction.js",)"
       R"("decisionLogicUrl":"https://example.com/auction.js"})",
-      /*expected_report_url=*/absl::nullopt);
+      /*expected_report_url=*/std::nullopt);
 
   {
     blink::AuctionConfig::BuyerTimeouts buyer_timeouts;
@@ -3196,7 +3190,7 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParamPerBuyerTimeouts) {
         R"("decisionLogicURL":"https://example.com/auction.js",)"
         R"("decisionLogicUrl":"https://example.com/auction.js",)"
         R"("perBuyerTimeouts":{}})",
-        /*expected_report_url=*/absl::nullopt);
+        /*expected_report_url=*/std::nullopt);
   }
 
   {
@@ -3213,7 +3207,7 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParamPerBuyerTimeouts) {
         R"("decisionLogicURL":"https://example.com/auction.js",)"
         R"("decisionLogicUrl":"https://example.com/auction.js",)"
         R"("perBuyerTimeouts":{"*":150}})",
-        /*expected_report_url=*/absl::nullopt);
+        /*expected_report_url=*/std::nullopt);
   }
 }
 
@@ -3221,13 +3215,13 @@ TEST_F(SellerWorkletTest, ReportResultExperimentGroupIdParam) {
   RunReportResultCreatedScriptExpectingResult(
       R"("experimentGroupId" in auctionConfig ? 1 : 0)",
       /*extra_code=*/std::string(), /*expected_signals_for_winner=*/"0",
-      /*expected_report_url=*/absl::nullopt);
+      /*expected_report_url=*/std::nullopt);
 
   experiment_group_id_ = 954u;
   RunReportResultCreatedScriptExpectingResult(
       "auctionConfig.experimentGroupId",
       /*extra_code=*/std::string(), /*expected_signals_for_winner=*/"954",
-      /*expected_report_url=*/absl::nullopt);
+      /*expected_report_url=*/std::nullopt);
 }
 
 TEST_F(SellerWorkletTest, ReportResultDataVersion) {
@@ -3235,7 +3229,7 @@ TEST_F(SellerWorkletTest, ReportResultDataVersion) {
   RunReportResultCreatedScriptExpectingResult(
       "browserSignals.dataVersion", /*extra_code=*/std::string(),
       /*expected_signals_for_winner=*/"20",
-      /*expected_report_url=*/absl::nullopt);
+      /*expected_report_url=*/std::nullopt);
 }
 
 // It shouldn't matter the order in which network fetches complete. For each
@@ -3286,9 +3280,9 @@ TEST_F(SellerWorkletTest, ReportResultLoadCompletionOrder) {
       SCOPED_TRACE(i);
       const Response& response =
           kResponses[(i + offset) % std::size(kResponses)];
-      AddResponse(
-          &url_loader_factory_, response.response_url, response.response_type,
-          /*charset=*/absl::nullopt, response.content, response.headers);
+      AddResponse(&url_loader_factory_, response.response_url,
+                  response.response_type,
+                  /*charset=*/std::nullopt, response.content, response.headers);
       task_environment_.RunUntilIdle();
       if (i < std::size(kResponses) - 1) {
         // Some URLs haven't finished loading -- generateBid() should be
@@ -3351,10 +3345,10 @@ TEST_F(SellerWorkletTest, ScriptIsolation) {
               [&run_loop](double score, mojom::RejectReason reject_reason,
                           mojom::ComponentAuctionModifiedBidParamsPtr
                               component_auction_modified_bid_params,
-                          absl::optional<double> bid_in_seller_currency,
-                          absl::optional<uint32_t> scoring_signals_data_version,
-                          const absl::optional<GURL>& debug_loss_report_url,
-                          const absl::optional<GURL>& debug_win_report_url,
+                          std::optional<double> bid_in_seller_currency,
+                          std::optional<uint32_t> scoring_signals_data_version,
+                          const std::optional<GURL>& debug_loss_report_url,
+                          const std::optional<GURL>& debug_win_report_url,
                           PrivateAggregationRequests pa_requests,
                           base::TimeDelta scoring_latency,
                           mojom::ScoreAdDependencyLatenciesPtr
@@ -3389,8 +3383,8 @@ TEST_F(SellerWorkletTest, ScriptIsolation) {
           /*trace_id=*/1,
           base::BindLambdaForTesting(
               [&run_loop](
-                  const absl::optional<std::string>& signals_for_winner,
-                  const absl::optional<GURL>& report_url,
+                  const std::optional<std::string>& signals_for_winner,
+                  const std::optional<GURL>& report_url,
                   const base::flat_map<std::string, GURL>& ad_beacon_map,
                   PrivateAggregationRequests pa_requests,
                   base::TimeDelta reporting_latency,
@@ -3456,8 +3450,8 @@ TEST_F(SellerWorkletTest, DeleteBeforeReportResultCallback) {
       browser_signal_data_version_.value_or(0),
       browser_signal_data_version_.has_value(),
       /*trace_id=*/1,
-      base::BindOnce([](const absl::optional<std::string>& signals_for_winner,
-                        const absl::optional<GURL>& report_url,
+      base::BindOnce([](const std::optional<std::string>& signals_for_winner,
+                        const std::optional<GURL>& report_url,
                         const base::flat_map<std::string, GURL>& ad_beacon_map,
                         PrivateAggregationRequests pa_requests,
                         base::TimeDelta reporting_latency,
@@ -3486,16 +3480,16 @@ TEST_F(SellerWorkletTest, PauseOnStart) {
   RunScoreAdOnWorkletAsync(
       worklet.get(), /*expected_score=*/10,
       /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
-      /*expected_data_version=*/absl::nullopt,
-      /*expected_debug_loss_report_url=*/absl::nullopt,
-      /*expected_debug_win_report_url=*/absl::nullopt,
+      /*expected_data_version=*/std::nullopt,
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt,
       /*expected_reject_reason=*/
       mojom::RejectReason::kNotAvailable,
       /*expected_pa_requests=*/{},
-      /*expected_bid_in_seller_currency=*/absl::nullopt,
+      /*expected_bid_in_seller_currency=*/std::nullopt,
       /*expected_score_ad_timeout=*/false,
-      /*expected_signals_fetch_latency=*/absl::nullopt,
-      /*expected_code_ready_latency=*/absl::nullopt, run_loop.QuitClosure());
+      /*expected_signals_fetch_latency=*/std::nullopt,
+      /*expected_code_ready_latency=*/std::nullopt, run_loop.QuitClosure());
 
   // Give it a chance to fetch.
   task_environment_.RunUntilIdle();
@@ -3575,16 +3569,16 @@ TEST_F(SellerWorkletTest, BasicV8Debug) {
   RunScoreAdOnWorkletAsync(
       worklet1.get(), /*expected_score=*/1,
       /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
-      /*expected_data_version=*/absl::nullopt,
-      /*expected_debug_loss_report_url=*/absl::nullopt,
-      /*expected_debug_win_report_url=*/absl::nullopt,
+      /*expected_data_version=*/std::nullopt,
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt,
       /*expected_reject_reason=*/
       mojom::RejectReason::kNotAvailable,
       /*expected_pa_requests=*/{},
-      /*expected_bid_in_seller_currency=*/absl::nullopt,
+      /*expected_bid_in_seller_currency=*/std::nullopt,
       /*expected_score_ad_timeout=*/false,
-      /*expected_signals_fetch_latency=*/absl::nullopt,
-      /*expected_code_ready_latency=*/absl::nullopt, run_loop1.QuitClosure());
+      /*expected_signals_fetch_latency=*/std::nullopt,
+      /*expected_code_ready_latency=*/std::nullopt, run_loop1.QuitClosure());
 
   decision_logic_url_ = kUrl2;
   SellerWorklet* worklet_impl2 = nullptr;
@@ -3594,16 +3588,16 @@ TEST_F(SellerWorkletTest, BasicV8Debug) {
   RunScoreAdOnWorkletAsync(
       worklet2.get(), /*expected_score=*/2,
       /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
-      /*expected_data_version=*/absl::nullopt,
-      /*expected_debug_loss_report_url=*/absl::nullopt,
-      /*expected_debug_win_report_url=*/absl::nullopt,
+      /*expected_data_version=*/std::nullopt,
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt,
       /*expected_reject_reason=*/
       mojom::RejectReason::kNotAvailable,
       /*expected_pa_requests=*/{},
-      /*expected_bid_in_seller_currency=*/absl::nullopt,
+      /*expected_bid_in_seller_currency=*/std::nullopt,
       /*expected_score_ad_timeout=*/false,
-      /*expected_signals_fetch_latency=*/absl::nullopt,
-      /*expected_code_ready_latency=*/absl::nullopt, run_loop2.QuitClosure());
+      /*expected_signals_fetch_latency=*/std::nullopt,
+      /*expected_code_ready_latency=*/std::nullopt, run_loop2.QuitClosure());
 
   int id1 = worklet_impl1->context_group_id_for_testing();
   int id2 = worklet_impl2->context_group_id_for_testing();
@@ -3720,16 +3714,16 @@ TEST_F(SellerWorkletTest, BasicDevToolsDebug) {
   RunScoreAdOnWorkletAsync(
       worklet1.get(), /*expected_score=*/100.5,
       /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
-      /*expected_data_version=*/absl::nullopt,
-      /*expected_debug_loss_report_url=*/absl::nullopt,
-      /*expected_debug_win_report_url=*/absl::nullopt,
+      /*expected_data_version=*/std::nullopt,
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt,
       /*expected_reject_reason=*/
       mojom::RejectReason::kNotAvailable,
       /*expected_pa_requests=*/{},
-      /*expected_bid_in_seller_currency=*/absl::nullopt,
+      /*expected_bid_in_seller_currency=*/std::nullopt,
       /*expected_score_ad_timeout=*/false,
-      /*expected_signals_fetch_latency=*/absl::nullopt,
-      /*expected_code_ready_latency=*/absl::nullopt, run_loop1.QuitClosure());
+      /*expected_signals_fetch_latency=*/std::nullopt,
+      /*expected_code_ready_latency=*/std::nullopt, run_loop1.QuitClosure());
 
   decision_logic_url_ = GURL(kUrl2);
   auto worklet2 = CreateWorklet(/*pause_for_debugger_on_start=*/true);
@@ -3739,16 +3733,16 @@ TEST_F(SellerWorkletTest, BasicDevToolsDebug) {
       {"http://example.org/second.js scoreAd() return: Value passed as "
        "dictionary is neither object, null, nor undefined."},
       mojom::ComponentAuctionModifiedBidParamsPtr(),
-      /*expected_data_version=*/absl::nullopt,
-      /*expected_debug_loss_report_url=*/absl::nullopt,
-      /*expected_debug_win_report_url=*/absl::nullopt,
+      /*expected_data_version=*/std::nullopt,
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt,
       /*expected_reject_reason=*/
       mojom::RejectReason::kNotAvailable,
       /*expected_pa_requests=*/{},
-      /*expected_bid_in_seller_currency=*/absl::nullopt,
+      /*expected_bid_in_seller_currency=*/std::nullopt,
       /*expected_score_ad_timeout=*/false,
-      /*expected_signals_fetch_latency=*/absl::nullopt,
-      /*expected_code_ready_latency=*/absl::nullopt, run_loop2.QuitClosure());
+      /*expected_signals_fetch_latency=*/std::nullopt,
+      /*expected_code_ready_latency=*/std::nullopt, run_loop2.QuitClosure());
 
   mojo::AssociatedRemote<blink::mojom::DevToolsAgent> agent1, agent2;
   worklet1->ConnectDevToolsAgent(agent1.BindNewEndpointAndPassReceiver());
@@ -3893,16 +3887,16 @@ TEST_F(SellerWorkletTest, InstrumentationBreakpoints) {
   RunScoreAdOnWorkletAsync(
       worklet.get(), /*expected_score=*/1.0,
       /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
-      /*expected_data_version=*/absl::nullopt,
-      /*expected_debug_loss_report_url=*/absl::nullopt,
-      /*expected_debug_win_report_url=*/absl::nullopt,
+      /*expected_data_version=*/std::nullopt,
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt,
       /*expected_reject_reason=*/
       mojom::RejectReason::kNotAvailable,
       /*expected_pa_requests=*/{},
-      /*expected_bid_in_seller_currency=*/absl::nullopt,
+      /*expected_bid_in_seller_currency=*/std::nullopt,
       /*expected_score_ad_timeout=*/false,
-      /*expected_signals_fetch_latency=*/absl::nullopt,
-      /*expected_code_ready_latency=*/absl::nullopt, run_loop.QuitClosure());
+      /*expected_signals_fetch_latency=*/std::nullopt,
+      /*expected_code_ready_latency=*/std::nullopt, run_loop.QuitClosure());
 
   mojo::AssociatedRemote<blink::mojom::DevToolsAgent> agent;
   worklet->ConnectDevToolsAgent(agent.BindNewEndpointAndPassReceiver());
@@ -3978,16 +3972,16 @@ TEST_F(SellerWorkletTest, InstrumentationBreakpoints) {
   RunScoreAdOnWorkletAsync(
       worklet.get(), /*expected_score=*/1.0,
       /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
-      /*expected_data_version=*/absl::nullopt,
-      /*expected_debug_loss_report_url=*/absl::nullopt,
-      /*expected_debug_win_report_url=*/absl::nullopt,
+      /*expected_data_version=*/std::nullopt,
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt,
       /*expected_reject_reason=*/
       mojom::RejectReason::kNotAvailable,
       /*expected_pa_requests=*/{},
-      /*expected_bid_in_seller_currency=*/absl::nullopt,
+      /*expected_bid_in_seller_currency=*/std::nullopt,
       /*expected_score_ad_timeout=*/false,
-      /*expected_signals_fetch_latency=*/absl::nullopt,
-      /*expected_code_ready_latency=*/absl::nullopt, run_loop3.QuitClosure());
+      /*expected_signals_fetch_latency=*/std::nullopt,
+      /*expected_code_ready_latency=*/std::nullopt, run_loop3.QuitClosure());
 
   TestDevToolsAgentClient::Event breakpoint_hit3 =
       debug.WaitForMethodNotification("Debugger.paused");
@@ -4047,16 +4041,16 @@ TEST_F(SellerWorkletTest, UnloadWhilePaused) {
   RunScoreAdOnWorkletAsync(
       worklet.get(), /*expected_score=*/1.0, /*expected_errors=*/{},
       mojom::ComponentAuctionModifiedBidParamsPtr(),
-      /*expected_data_version=*/absl::nullopt,
-      /*expected_debug_loss_report_url=*/absl::nullopt,
-      /*expected_debug_win_report_url=*/absl::nullopt,
+      /*expected_data_version=*/std::nullopt,
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt,
       /*expected_reject_reason=*/
       mojom::RejectReason::kNotAvailable,
       /*expected_pa_requests=*/{},
-      /*expected_bid_in_seller_currency=*/absl::nullopt,
+      /*expected_bid_in_seller_currency=*/std::nullopt,
       /*expected_score_ad_timeout=*/false,
-      /*expected_signals_fetch_latency=*/absl::nullopt,
-      /*expected_code_ready_latency=*/absl::nullopt, base::BindOnce([]() {
+      /*expected_signals_fetch_latency=*/std::nullopt,
+      /*expected_code_ready_latency=*/std::nullopt, base::BindOnce([]() {
         ADD_FAILURE() << "scoreAd shouldn't actually get to finish.";
       }));
 
@@ -4181,17 +4175,17 @@ TEST_F(SellerWorkletTest, ForDebuggingOnlyReportsWithDebugFeatureDisabled) {
       CreateScoreAdScript(
           "1", R"(forDebuggingOnly.reportAdAuctionLoss("https://loss.url"))"),
       1, /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
-      /*expected_data_version=*/absl::nullopt,
-      /*expected_debug_loss_report_url=*/absl::nullopt,
-      /*expected_debug_win_report_url=*/absl::nullopt);
+      /*expected_data_version=*/std::nullopt,
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt);
 
   RunScoreAdWithJavascriptExpectingResult(
       CreateScoreAdScript(
           "1", R"(forDebuggingOnly.reportAdAuctionWin("https://win.url"))"),
       1, /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
-      /*expected_data_version=*/absl::nullopt,
-      /*expected_debug_loss_report_url=*/absl::nullopt,
-      /*expected_debug_win_report_url=*/absl::nullopt);
+      /*expected_data_version=*/std::nullopt,
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt);
 }
 
 TEST_F(SellerWorkletTest, AuctionRequestedSizeIsPresentInScoreAdJavascript) {
@@ -4210,9 +4204,9 @@ TEST_F(SellerWorkletTest, AuctionRequestedSizeIsPresentInScoreAdJavascript) {
   RunScoreAdWithJavascriptExpectingResult(
       CreateScoreAdScript("1", requested_size_validator), 1,
       /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
-      /*expected_data_version=*/absl::nullopt,
-      /*expected_debug_loss_report_url=*/absl::nullopt,
-      /*expected_debug_win_report_url=*/absl::nullopt);
+      /*expected_data_version=*/std::nullopt,
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt);
 }
 
 TEST_F(SellerWorkletTest,
@@ -4227,9 +4221,9 @@ TEST_F(SellerWorkletTest,
   RunScoreAdWithJavascriptExpectingResult(
       CreateScoreAdScript("1", requested_size_validator), 1,
       /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
-      /*expected_data_version=*/absl::nullopt,
-      /*expected_debug_loss_report_url=*/absl::nullopt,
-      /*expected_debug_win_report_url=*/absl::nullopt);
+      /*expected_data_version=*/std::nullopt,
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt);
 }
 
 TEST_F(SellerWorkletTest, AuctionRequestedSizeIsPresentReportResultJavascript) {
@@ -4248,7 +4242,7 @@ TEST_F(SellerWorkletTest, AuctionRequestedSizeIsPresentReportResultJavascript) {
   RunReportResultCreatedScriptExpectingResult(
       "1", requested_size_validator,
       /*expected_signals_for_winner=*/"1",
-      /*expected_report_url=*/absl::nullopt);
+      /*expected_report_url=*/std::nullopt);
 }
 
 TEST_F(SellerWorkletTest,
@@ -4263,7 +4257,7 @@ TEST_F(SellerWorkletTest,
   RunReportResultCreatedScriptExpectingResult(
       "1", requested_size_validator,
       /*expected_signals_for_winner=*/"1",
-      /*expected_report_url=*/absl::nullopt);
+      /*expected_report_url=*/std::nullopt);
 }
 
 TEST_F(SellerWorkletTest,
@@ -4293,9 +4287,9 @@ TEST_F(SellerWorkletSharedStorageAPIDisabledTest, SharedStorageNotExposed) {
       {"https://url.test/:5 Uncaught ReferenceError: sharedStorage is not "
        "defined."},
       mojom::ComponentAuctionModifiedBidParamsPtr(),
-      /*expected_data_version=*/absl::nullopt,
-      /*expected_debug_loss_report_url=*/absl::nullopt,
-      /*expected_debug_win_report_url=*/absl::nullopt,
+      /*expected_data_version=*/std::nullopt,
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt,
       /*expected_reject_reason=*/mojom::RejectReason::kNotAvailable,
       /*expected_pa_requests=*/{});
 
@@ -4304,8 +4298,8 @@ TEST_F(SellerWorkletSharedStorageAPIDisabledTest, SharedStorageNotExposed) {
       R"(
         sharedStorage.clear();
       )",
-      /*expected_signals_for_winner=*/absl::nullopt,
-      /*expected_report_url=*/absl::nullopt, /*expected_ad_beacon_map=*/{},
+      /*expected_signals_for_winner=*/std::nullopt,
+      /*expected_report_url=*/std::nullopt, /*expected_ad_beacon_map=*/{},
       /*expected_pa_requests=*/{},
       /*expected_errors=*/
       {"https://url.test/:11 Uncaught ReferenceError: sharedStorage is not "
@@ -4344,9 +4338,9 @@ TEST_F(SellerWorkletSharedStorageAPIEnabledTest, SharedStorageWriteInScoreAd) {
         )"),
         5, /*expected_errors=*/
         {}, mojom::ComponentAuctionModifiedBidParamsPtr(),
-        /*expected_data_version=*/absl::nullopt,
-        /*expected_debug_loss_report_url=*/absl::nullopt,
-        /*expected_debug_win_report_url=*/absl::nullopt,
+        /*expected_data_version=*/std::nullopt,
+        /*expected_debug_loss_report_url=*/std::nullopt,
+        /*expected_debug_win_report_url=*/std::nullopt,
         /*expected_reject_reason=*/mojom::RejectReason::kNotAvailable,
         /*expected_pa_requests=*/{});
 
@@ -4399,9 +4393,9 @@ TEST_F(SellerWorkletSharedStorageAPIEnabledTest, SharedStorageWriteInScoreAd) {
         {"https://url.test/:5 Uncaught TypeError: The \"shared-storage\" "
          "Permissions Policy denied the method on sharedStorage."},
         mojom::ComponentAuctionModifiedBidParamsPtr(),
-        /*expected_data_version=*/absl::nullopt,
-        /*expected_debug_loss_report_url=*/absl::nullopt,
-        /*expected_debug_win_report_url=*/absl::nullopt,
+        /*expected_data_version=*/std::nullopt,
+        /*expected_debug_loss_report_url=*/std::nullopt,
+        /*expected_debug_win_report_url=*/std::nullopt,
         /*expected_reject_reason=*/mojom::RejectReason::kNotAvailable,
         /*expected_pa_requests=*/{});
 
@@ -4431,7 +4425,7 @@ TEST_F(SellerWorkletSharedStorageAPIEnabledTest,
           sharedStorage.clear();
         )",
         /*expected_signals_for_winner=*/"5",
-        /*expected_report_url=*/absl::nullopt, /*expected_ad_beacon_map=*/{},
+        /*expected_report_url=*/std::nullopt, /*expected_ad_beacon_map=*/{},
         /*expected_pa_requests=*/{},
         /*expected_errors=*/{});
 
@@ -4481,8 +4475,8 @@ TEST_F(SellerWorkletSharedStorageAPIEnabledTest,
         R"(
           sharedStorage.clear();
         )",
-        /*expected_signals_for_winner=*/absl::nullopt,
-        /*expected_report_url=*/absl::nullopt, /*expected_ad_beacon_map=*/{},
+        /*expected_signals_for_winner=*/std::nullopt,
+        /*expected_report_url=*/std::nullopt, /*expected_ad_beacon_map=*/{},
         /*expected_pa_requests=*/{},
         /*expected_errors=*/
         {"https://url.test/:11 Uncaught TypeError: The \"shared-storage\" "
@@ -4516,15 +4510,15 @@ TEST_F(SellerWorkletRealTimeTest, ScoreAdTimedOut) {
       /*expected_errors=*/
       {"https://url.test/ execution of `scoreAd` timed out."},
       mojom::ComponentAuctionModifiedBidParamsPtr(),
-      /*expected_data_version=*/absl::nullopt,
-      /*expected_debug_loss_report_url=*/absl::nullopt,
-      /*expected_debug_win_report_url=*/absl::nullopt,
+      /*expected_data_version=*/std::nullopt,
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt,
       mojom::RejectReason::kNotAvailable,
       /*expected_pa_requests=*/{},
-      /*expected_bid_in_seller_currency=*/absl::nullopt,
+      /*expected_bid_in_seller_currency=*/std::nullopt,
       /*expected_score_ad_timeout=*/true,
-      /*expected_signals_fetch_latency=*/absl::nullopt,
-      /*expected_code_ready_latency=*/absl::nullopt, run_loop.QuitClosure());
+      /*expected_signals_fetch_latency=*/std::nullopt,
+      /*expected_code_ready_latency=*/std::nullopt, run_loop.QuitClosure());
   run_loop.Run();
 }
 
@@ -4556,15 +4550,15 @@ TEST_F(SellerWorkletRealTimeTest, ScoreAdSellerTimeoutFromAuctionConfig) {
       /*expected_errors=*/
       {"https://url.test/ execution of `scoreAd` timed out."},
       mojom::ComponentAuctionModifiedBidParamsPtr(),
-      /*expected_data_version=*/absl::nullopt,
-      /*expected_debug_loss_report_url=*/absl::nullopt,
-      /*expected_debug_win_report_url=*/absl::nullopt,
+      /*expected_data_version=*/std::nullopt,
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt,
       mojom::RejectReason::kNotAvailable,
       /*expected_pa_requests=*/{},
-      /*expected_bid_in_seller_currency=*/absl::nullopt,
+      /*expected_bid_in_seller_currency=*/std::nullopt,
       /*expected_score_ad_timeout=*/true,
-      /*expected_signals_fetch_latency=*/absl::nullopt,
-      /*expected_code_ready_latency=*/absl::nullopt, run_loop.QuitClosure());
+      /*expected_signals_fetch_latency=*/std::nullopt,
+      /*expected_code_ready_latency=*/std::nullopt, run_loop.QuitClosure());
   run_loop.Run();
 }
 
@@ -4579,8 +4573,8 @@ TEST_F(SellerWorkletRealTimeTest, ReportResultLatency) {
   base::RunLoop run_loop;
   RunReportResultExpectingResultAsync(
       seller_worklet.get(),
-      /*expected_signals_for_winner=*/absl::nullopt,
-      /*expected_report_url=*/absl::nullopt,
+      /*expected_signals_for_winner=*/std::nullopt,
+      /*expected_report_url=*/std::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_pa_requests=*/{},
       /*expected_reporting_latency_timeout=*/true,
@@ -4612,7 +4606,7 @@ TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
           R"(forDebuggingOnly.reportAdAuctionLoss("https://loss.url");
             forDebuggingOnly.reportAdAuctionWin("https://win.url"))"),
       1, /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
-      /*expected_data_version=*/absl::nullopt, GURL("https://loss.url"),
+      /*expected_data_version=*/std::nullopt, GURL("https://loss.url"),
       GURL("https://win.url"));
 
   // Should keep debug report URLs when score <= 0.
@@ -4622,7 +4616,7 @@ TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
           R"(forDebuggingOnly.reportAdAuctionLoss("https://loss.url");
             forDebuggingOnly.reportAdAuctionWin("https://win.url"))"),
       0, /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
-      /*expected_data_version=*/absl::nullopt, GURL("https://loss.url"),
+      /*expected_data_version=*/std::nullopt, GURL("https://loss.url"),
       GURL("https://win.url"));
 
   // It's OK to call one API but not the other.
@@ -4630,14 +4624,13 @@ TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
       CreateScoreAdScript(
           "1", R"(forDebuggingOnly.reportAdAuctionLoss("https://loss.url"))"),
       1, /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
-      /*expected_data_version=*/absl::nullopt, GURL("https://loss.url"));
+      /*expected_data_version=*/std::nullopt, GURL("https://loss.url"));
   RunScoreAdWithJavascriptExpectingResult(
       CreateScoreAdScript(
           "1", R"(forDebuggingOnly.reportAdAuctionWin("https://win.url"))"),
       1, /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
-      /*expected_data_version=*/absl::nullopt,
-      /*expected_debug_loss_report_url=*/absl::nullopt,
-      GURL("https://win.url"));
+      /*expected_data_version=*/std::nullopt,
+      /*expected_debug_loss_report_url=*/std::nullopt, GURL("https://win.url"));
 
   // There should be no debugging report URLs when scoreAd() returns invalid
   // value type.
@@ -4650,9 +4643,9 @@ TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
       {"https://url.test/ scoreAd() return: Value passed as dictionary is "
        "neither object, null, nor undefined."},
       mojom::ComponentAuctionModifiedBidParamsPtr(),
-      /*expected_data_version=*/absl::nullopt,
-      /*expected_debug_loss_report_url=*/absl::nullopt,
-      /*expected_debug_win_report_url=*/absl::nullopt);
+      /*expected_data_version=*/std::nullopt,
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt);
 }
 
 // Debugging loss/win report URLs should be nullopt if scoreAd() pareamters are
@@ -4736,9 +4729,9 @@ TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
           R"(forDebuggingOnly.reportAdAuctionLoss("https://loss.url");
             forDebuggingOnly.reportAdAuctionLoss("https://loss.url2"))"),
       1, /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
-      /*expected_data_version=*/absl::nullopt,
+      /*expected_data_version=*/std::nullopt,
       /*expected_debug_loss_report_url=*/GURL("https://loss.url2"),
-      /*expected_debug_win_report_url=*/absl::nullopt);
+      /*expected_debug_win_report_url=*/std::nullopt);
 
   // Test that the first URL is preserved when the second call throws.
   RunScoreAdWithJavascriptExpectingResult(
@@ -4749,9 +4742,9 @@ TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
                forDebuggingOnly.reportAdAuctionLoss("http://invalidloss.url");
              } catch (e) {})"),
       1, /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
-      /*expected_data_version=*/absl::nullopt,
+      /*expected_data_version=*/std::nullopt,
       /*expected_debug_loss_report_url=*/GURL("https://loss.url"),
-      /*expected_debug_win_report_url=*/absl::nullopt);
+      /*expected_debug_win_report_url=*/std::nullopt);
 
   RunScoreAdWithJavascriptExpectingResult(
       CreateScoreAdScript(
@@ -4759,8 +4752,8 @@ TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
           R"(forDebuggingOnly.reportAdAuctionWin("https://win.url");
             forDebuggingOnly.reportAdAuctionWin("https://win.url2"))"),
       1, /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
-      /*expected_data_version=*/absl::nullopt,
-      /*expected_debug_loss_report_url=*/absl::nullopt,
+      /*expected_data_version=*/std::nullopt,
+      /*expected_debug_loss_report_url=*/std::nullopt,
       /*expected_debug_win_report_url=*/GURL("https://win.url2"));
 
   // Test that the first URL is preserved when the second call throws.
@@ -4772,8 +4765,8 @@ TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
               forDebuggingOnly.reportAdAuctionWin("http://invalidwin.url");
              } catch (e) {})"),
       1, /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
-      /*expected_data_version=*/absl::nullopt,
-      /*expected_debug_loss_report_url=*/absl::nullopt,
+      /*expected_data_version=*/std::nullopt,
+      /*expected_debug_loss_report_url=*/std::nullopt,
       /*expected_debug_win_report_url=*/GURL("https://win.url"));
 }
 
@@ -4849,10 +4842,10 @@ TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
             [&run_loop](double score, mojom::RejectReason reject_reason,
                         mojom::ComponentAuctionModifiedBidParamsPtr
                             component_auction_modified_bid_params,
-                        absl::optional<double> bid_in_seller_currency,
-                        absl::optional<uint32_t> scoring_signals_data_version,
-                        const absl::optional<GURL>& debug_loss_report_url,
-                        const absl::optional<GURL>& debug_win_report_url,
+                        std::optional<double> bid_in_seller_currency,
+                        std::optional<uint32_t> scoring_signals_data_version,
+                        const std::optional<GURL>& debug_loss_report_url,
+                        const std::optional<GURL>& debug_win_report_url,
                         PrivateAggregationRequests pa_requests,
                         base::TimeDelta scoring_latency,
                         mojom::ScoreAdDependencyLatenciesPtr
@@ -4866,8 +4859,8 @@ TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
                 EXPECT_EQ(GURL("https://win.url"),
                           debug_win_report_url.value());
               } else {
-                EXPECT_EQ(absl::nullopt, debug_loss_report_url);
-                EXPECT_EQ(absl::nullopt, debug_win_report_url);
+                EXPECT_EQ(std::nullopt, debug_loss_report_url);
+                EXPECT_EQ(std::nullopt, debug_win_report_url);
               }
               run_loop.Quit();
             })));
@@ -4968,9 +4961,9 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ScoreAd) {
         )"),
         5, /*expected_errors=*/{},
         mojom::ComponentAuctionModifiedBidParamsPtr(),
-        /*expected_data_version=*/absl::nullopt,
-        /*expected_debug_loss_report_url=*/absl::nullopt,
-        /*expected_debug_win_report_url=*/absl::nullopt,
+        /*expected_data_version=*/std::nullopt,
+        /*expected_debug_loss_report_url=*/std::nullopt,
+        /*expected_debug_win_report_url=*/std::nullopt,
         /*expected_reject_reason=*/mojom::RejectReason::kNotAvailable,
         std::move(expected_pa_requests));
   }
@@ -4990,9 +4983,9 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ScoreAd) {
         {"https://url.test/:4 Uncaught TypeError: The \"private-aggregation\" "
          "Permissions Policy denied the method on privateAggregation."},
         mojom::ComponentAuctionModifiedBidParamsPtr(),
-        /*expected_data_version=*/absl::nullopt,
-        /*expected_debug_loss_report_url=*/absl::nullopt,
-        /*expected_debug_win_report_url=*/absl::nullopt,
+        /*expected_data_version=*/std::nullopt,
+        /*expected_debug_loss_report_url=*/std::nullopt,
+        /*expected_debug_win_report_url=*/std::nullopt,
         /*expected_reject_reason=*/mojom::RejectReason::kNotAvailable,
         /*expected_pa_requests=*/{});
 
@@ -5017,9 +5010,9 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ScoreAd) {
         )"),
         5, /*expected_errors=*/{},
         mojom::ComponentAuctionModifiedBidParamsPtr(),
-        /*expected_data_version=*/absl::nullopt,
-        /*expected_debug_loss_report_url=*/absl::nullopt,
-        /*expected_debug_win_report_url=*/absl::nullopt,
+        /*expected_data_version=*/std::nullopt,
+        /*expected_debug_loss_report_url=*/std::nullopt,
+        /*expected_debug_win_report_url=*/std::nullopt,
         /*expected_reject_reason=*/mojom::RejectReason::kNotAvailable,
         std::move(expected_pa_requests));
   }
@@ -5044,9 +5037,9 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ScoreAd) {
         )"),
         5, /*expected_errors=*/{},
         mojom::ComponentAuctionModifiedBidParamsPtr(),
-        /*expected_data_version=*/absl::nullopt,
-        /*expected_debug_loss_report_url=*/absl::nullopt,
-        /*expected_debug_win_report_url=*/absl::nullopt,
+        /*expected_data_version=*/std::nullopt,
+        /*expected_debug_loss_report_url=*/std::nullopt,
+        /*expected_debug_win_report_url=*/std::nullopt,
         /*expected_reject_reason=*/mojom::RejectReason::kNotAvailable,
         std::move(expected_pa_requests));
   }
@@ -5068,9 +5061,9 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ScoreAd) {
         0, /*expected_errors=*/
         {"https://url.test/:8 Uncaught ReferenceError: error is not defined."},
         mojom::ComponentAuctionModifiedBidParamsPtr(),
-        /*expected_data_version=*/absl::nullopt,
-        /*expected_debug_loss_report_url=*/absl::nullopt,
-        /*expected_debug_win_report_url=*/absl::nullopt,
+        /*expected_data_version=*/std::nullopt,
+        /*expected_debug_loss_report_url=*/std::nullopt,
+        /*expected_debug_win_report_url=*/std::nullopt,
         /*expected_reject_reason=*/mojom::RejectReason::kNotAvailable,
         std::move(expected_pa_requests));
   }
@@ -5099,9 +5092,9 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ScoreAd) {
           )"),
         5, /*expected_errors=*/{},
         mojom::ComponentAuctionModifiedBidParamsPtr(),
-        /*expected_data_version=*/absl::nullopt,
-        /*expected_debug_loss_report_url=*/absl::nullopt,
-        /*expected_debug_win_report_url=*/absl::nullopt,
+        /*expected_data_version=*/std::nullopt,
+        /*expected_debug_loss_report_url=*/std::nullopt,
+        /*expected_debug_win_report_url=*/std::nullopt,
         /*expected_reject_reason=*/mojom::RejectReason::kNotAvailable,
         std::move(expected_pa_requests));
   }
@@ -5130,9 +5123,9 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ScoreAd) {
           )"),
         5, /*expected_errors=*/{},
         mojom::ComponentAuctionModifiedBidParamsPtr(),
-        /*expected_data_version=*/absl::nullopt,
-        /*expected_debug_loss_report_url=*/absl::nullopt,
-        /*expected_debug_win_report_url=*/absl::nullopt,
+        /*expected_data_version=*/std::nullopt,
+        /*expected_debug_loss_report_url=*/std::nullopt,
+        /*expected_debug_win_report_url=*/std::nullopt,
         /*expected_reject_reason=*/mojom::RejectReason::kNotAvailable,
         std::move(expected_pa_requests));
   }
@@ -5173,7 +5166,7 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ReportResult) {
           privateAggregation.contributeToHistogram({bucket: 123n, value: 45});
         )",
         /*expected_signals_for_winner=*/"5",
-        /*expected_report_url=*/absl::nullopt, /*expected_ad_beacon_map=*/{},
+        /*expected_report_url=*/std::nullopt, /*expected_ad_beacon_map=*/{},
         std::move(expected_pa_requests),
         /*expected_errors=*/{});
   }
@@ -5190,7 +5183,7 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ReportResult) {
               "reserved.win", {bucket: 234n, value: 56});
         )",
         /*expected_signals_for_winner=*/"5",
-        /*expected_report_url=*/absl::nullopt, /*expected_ad_beacon_map=*/{},
+        /*expected_report_url=*/std::nullopt, /*expected_ad_beacon_map=*/{},
         std::move(expected_pa_requests),
         /*expected_errors=*/{});
   }
@@ -5209,7 +5202,7 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ReportResult) {
               "reserved.win", {bucket: 234n, value: 56});
         )",
         /*expected_signals_for_winner=*/"5",
-        /*expected_report_url=*/absl::nullopt, /*expected_ad_beacon_map=*/{},
+        /*expected_report_url=*/std::nullopt, /*expected_ad_beacon_map=*/{},
         std::move(expected_pa_requests),
         /*expected_errors=*/{});
   }
@@ -5226,8 +5219,8 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ReportResult) {
         R"(
           privateAggregation.contributeToHistogram({bucket: 123n, value: 45});
         )",
-        /*expected_signals_for_winner=*/absl::nullopt,
-        /*expected_report_url=*/absl::nullopt, /*expected_ad_beacon_map=*/{},
+        /*expected_signals_for_winner=*/std::nullopt,
+        /*expected_report_url=*/std::nullopt, /*expected_ad_beacon_map=*/{},
         /*expected_pa_requests=*/{},
         /*expected_errors=*/
         {"https://url.test/:11 Uncaught TypeError: The \"private-aggregation\" "
@@ -5250,7 +5243,7 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ReportResult) {
           privateAggregation.contributeToHistogram({bucket: 123n, value: 45});
         )",
         /*expected_signals_for_winner=*/"5",
-        /*expected_report_url=*/absl::nullopt, /*expected_ad_beacon_map=*/{},
+        /*expected_report_url=*/std::nullopt, /*expected_ad_beacon_map=*/{},
         std::move(expected_pa_requests),
         /*expected_errors=*/{});
   }
@@ -5265,7 +5258,7 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ReportResult) {
         R"(privateAggregation.contributeToHistogram(
             {bucket: 18446744073709551616n, value: 1});)",
         /*expected_signals_for_winner=*/"5",
-        /*expected_report_url=*/absl::nullopt, /*expected_ad_beacon_map=*/{},
+        /*expected_report_url=*/std::nullopt, /*expected_ad_beacon_map=*/{},
         std::move(expected_pa_requests),
         /*expected_errors=*/{});
   }
@@ -5284,7 +5277,7 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ReportResult) {
               {bucket: 18446744073709551616n, value: 1});
         )",
         /*expected_signals_for_winner=*/"5",
-        /*expected_report_url=*/absl::nullopt, /*expected_ad_beacon_map=*/{},
+        /*expected_report_url=*/std::nullopt, /*expected_ad_beacon_map=*/{},
         std::move(expected_pa_requests),
         /*expected_errors=*/{});
   }
@@ -5301,8 +5294,8 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ReportResult) {
           privateAggregation.contributeToHistogram({bucket: 123n, value: 45});
           error;
         )",
-        /*expected_signals_for_winner=*/absl::nullopt,
-        /*expected_report_url=*/absl::nullopt, /*expected_ad_beacon_map=*/{},
+        /*expected_signals_for_winner=*/std::nullopt,
+        /*expected_report_url=*/std::nullopt, /*expected_ad_beacon_map=*/{},
         std::move(expected_pa_requests),
         /*expected_errors=*/
         {"https://url.test/:12 Uncaught ReferenceError: error is not "
@@ -5325,7 +5318,7 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ReportResult) {
             privateAggregation.contributeToHistogram({bucket: 123n, value: 45});
         )",
         /*expected_signals_for_winner=*/"5",
-        /*expected_report_url=*/absl::nullopt, /*expected_ad_beacon_map=*/{},
+        /*expected_report_url=*/std::nullopt, /*expected_ad_beacon_map=*/{},
         std::move(expected_pa_requests),
         /*expected_errors=*/{});
   }
@@ -5353,7 +5346,7 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ReportResult) {
                 {bucket: 18446744073709551616n, value: 1});
         )",
         /*expected_signals_for_winner=*/"5",
-        /*expected_report_url=*/absl::nullopt, /*expected_ad_beacon_map=*/{},
+        /*expected_report_url=*/std::nullopt, /*expected_ad_beacon_map=*/{},
         std::move(expected_pa_requests),
         /*expected_errors=*/{});
   }
@@ -5366,8 +5359,8 @@ TEST_F(SellerWorkletPrivateAggregationEnabledTest, ReportResult) {
             privateAggregation.enableDebugMode();
             privateAggregation.enableDebugMode();
         )",
-        /*expected_signals_for_winner=*/absl::nullopt,
-        /*expected_report_url=*/absl::nullopt, /*expected_ad_beacon_map=*/{},
+        /*expected_signals_for_winner=*/std::nullopt,
+        /*expected_report_url=*/std::nullopt, /*expected_ad_beacon_map=*/{},
         /*expected_pa_requests=*/{},
         /*expected_errors=*/
         {"https://url.test/:12 Uncaught TypeError: enableDebugMode may be "
@@ -5395,9 +5388,9 @@ TEST_F(SellerWorkletPrivateAggregationDisabledTest, ScoreAd) {
       {"https://url.test/:4 Uncaught ReferenceError: privateAggregation is not "
        "defined."},
       mojom::ComponentAuctionModifiedBidParamsPtr(),
-      /*expected_data_version=*/absl::nullopt,
-      /*expected_debug_loss_report_url=*/absl::nullopt,
-      /*expected_debug_win_report_url=*/absl::nullopt,
+      /*expected_data_version=*/std::nullopt,
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt,
       /*expected_reject_reason=*/mojom::RejectReason::kNotAvailable,
       /*expected_pa_requests=*/{});
 }
@@ -5406,8 +5399,8 @@ TEST_F(SellerWorkletPrivateAggregationDisabledTest, ReportResult) {
   RunReportResultCreatedScriptExpectingResult(
       R"(5)",
       R"(privateAggregation.contributeToHistogram({bucket: 123n, value: 45});)",
-      /*expected_signals_for_winner=*/absl::nullopt,
-      /*expected_report_url=*/absl::nullopt, /*expected_ad_beacon_map=*/{},
+      /*expected_signals_for_winner=*/std::nullopt,
+      /*expected_report_url=*/std::nullopt, /*expected_ad_beacon_map=*/{},
       /*expected_pa_requests=*/{},
       /*expected_errors=*/
       {"https://url.test/:10 Uncaught ReferenceError: privateAggregation is "

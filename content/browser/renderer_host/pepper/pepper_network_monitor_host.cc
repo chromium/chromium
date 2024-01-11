@@ -39,7 +39,7 @@ bool CanUseNetworkMonitor(bool external_plugin,
 
 void OnGetNetworkList(
     base::OnceCallback<void(const net::NetworkInterfaceList&)> callback,
-    const absl::optional<net::NetworkInterfaceList>& networks) {
+    const std::optional<net::NetworkInterfaceList>& networks) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,

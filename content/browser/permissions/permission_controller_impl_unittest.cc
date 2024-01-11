@@ -60,7 +60,7 @@ class MockManagerWithRequests : public MockPermissionManager {
       (override));
   MOCK_METHOD(bool,
               IsPermissionOverridable,
-              (PermissionType, const absl::optional<url::Origin>&),
+              (PermissionType, const std::optional<url::Origin>&),
               (override));
 };
 
@@ -565,7 +565,7 @@ class PermissionControllerImplWithDelegateTest
           feature,
           std::vector{*blink::OriginWithPossibleWildcards::FromOrigin(
               url::Origin::Create(origin))},
-          /*self_if_matches=*/absl::nullopt,
+          /*self_if_matches=*/std::nullopt,
           /*matches_all_origins=*/false,
           /*matches_opaque_src=*/false);
     }

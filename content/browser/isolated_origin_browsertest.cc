@@ -340,8 +340,8 @@ class OriginIsolationOptInHeaderTest : public IsolatedOriginTestBase {
   net::EmbeddedTestServer https_server_;
   base::test::ScopedFeatureList feature_list_;
 
-  absl::optional<std::string> header_;
-  absl::optional<std::string> redirect_target_;
+  std::optional<std::string> header_;
+  std::optional<std::string> redirect_target_;
   std::queue<std::string> content_;
 };
 
@@ -2678,7 +2678,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
           // override them.
           URLLoaderInterceptor::WriteResponse(
               "content/test/data/isolated_base_origin_with_subframe.html",
-              params->client.get(), &headers, absl::optional<net::SSLInfo>());
+              params->client.get(), &headers, std::optional<net::SSLInfo>());
           return true;
         }
         if (params->url_request.url.host() == "a.foo.com" ||
@@ -4311,8 +4311,8 @@ class StoragePartitonInterceptor
   StoragePartitonInterceptor(
       RenderProcessHostImpl* rph,
       mojo::PendingReceiver<blink::mojom::DomStorage> receiver,
-      absl::optional<blink::StorageKey> storage_key_to_inject,
-      absl::optional<blink::LocalFrameToken> local_frame_token_to_inject,
+      std::optional<blink::StorageKey> storage_key_to_inject,
+      std::optional<blink::LocalFrameToken> local_frame_token_to_inject,
       bool inject_first_local_frame_token)
       : storage_key_to_inject_(storage_key_to_inject),
         local_frame_token_to_inject_(local_frame_token_to_inject),
@@ -4396,17 +4396,17 @@ class StoragePartitonInterceptor
   }
 
  private:
-  static absl::optional<blink::LocalFrameToken> saved_first_local_frame_token_;
+  static std::optional<blink::LocalFrameToken> saved_first_local_frame_token_;
   // Keep a pointer to the original implementation of the service, so all
   // calls can be forwarded to it.
   raw_ptr<blink::mojom::DomStorage> dom_storage_ = nullptr;
-  absl::optional<blink::StorageKey> storage_key_to_inject_;
-  absl::optional<blink::LocalFrameToken> local_frame_token_to_inject_;
+  std::optional<blink::StorageKey> storage_key_to_inject_;
+  std::optional<blink::LocalFrameToken> local_frame_token_to_inject_;
   bool save_first_local_frame_token_;
 };
 
-absl::optional<blink::LocalFrameToken>
-    StoragePartitonInterceptor::saved_first_local_frame_token_ = absl::nullopt;
+std::optional<blink::LocalFrameToken>
+    StoragePartitonInterceptor::saved_first_local_frame_token_ = std::nullopt;
 
 // Save the first LocalFrameToken seen and inject it into future calls.
 void CreateTestDomStorageBackendToSaveFirstFrame(
@@ -4414,15 +4414,15 @@ void CreateTestDomStorageBackendToSaveFirstFrame(
     mojo::PendingReceiver<blink::mojom::DomStorage> receiver) {
   // This object will register as RenderProcessHostObserver, so it will
   // clean itself automatically on process exit.
-  new StoragePartitonInterceptor(rph, std::move(receiver), absl::nullopt,
-                                 absl::nullopt,
+  new StoragePartitonInterceptor(rph, std::move(receiver), std::nullopt,
+                                 std::nullopt,
                                  /* save_first_local_frame_token_ */ true);
 }
 
 // Inject (or not if null) a StorageKey and LocalFrameToken.
 void CreateTestDomStorageBackendToInjectValues(
-    absl::optional<blink::StorageKey> storage_key_to_inject,
-    absl::optional<blink::LocalFrameToken> local_frame_token_to_inject,
+    std::optional<blink::StorageKey> storage_key_to_inject,
+    std::optional<blink::LocalFrameToken> local_frame_token_to_inject,
     RenderProcessHostImpl* rph,
     mojo::PendingReceiver<blink::mojom::DomStorage> receiver) {
   // This object will register as RenderProcessHostObserver, so it will
@@ -4439,7 +4439,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest, SessionStorage_WrongOrigin) {
       blink::StorageKey::CreateFromStringForTesting("http://bar.com");
   RenderProcessHostImpl::SetDomStorageBinderForTesting(
       base::BindRepeating(&CreateTestDomStorageBackendToInjectValues,
-                          mismatched_storage_key, absl::nullopt));
+                          mismatched_storage_key, std::nullopt));
 
   GURL isolated_url(
       embedded_test_server()->GetURL("isolated.foo.com", "/title1.html"));
@@ -4472,7 +4472,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest,
   // Without crashing the renderer, the default IPC will be used.
   RenderProcessHostImpl::SetDomStorageBinderForTesting(
       base::BindRepeating(&CreateTestDomStorageBackendToInjectValues,
-                          absl::nullopt, blink::LocalFrameToken()));
+                          std::nullopt, blink::LocalFrameToken()));
   RenderProcessHost* renderer_process =
       web_contents()->GetPrimaryMainFrame()->GetProcess();
   RenderProcessHostWatcher crash_observer(
@@ -4550,7 +4550,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest, LocalStorage_EmptyLocalFrameToken) {
   // Without crashing the renderer, the default IPC will be used.
   RenderProcessHostImpl::SetDomStorageBinderForTesting(
       base::BindRepeating(&CreateTestDomStorageBackendToInjectValues,
-                          absl::nullopt, blink::LocalFrameToken()));
+                          std::nullopt, blink::LocalFrameToken()));
   RenderProcessHost* renderer_process =
       web_contents()->GetPrimaryMainFrame()->GetProcess();
   RenderProcessHostWatcher crash_observer(
@@ -4622,7 +4622,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(IsIsolatedOrigin(mismatched_storage_key.origin()));
   RenderProcessHostImpl::SetDomStorageBinderForTesting(
       base::BindRepeating(&CreateTestDomStorageBackendToInjectValues,
-                          mismatched_storage_key, absl::nullopt));
+                          mismatched_storage_key, std::nullopt));
 
   GURL isolated_url(
       embedded_test_server()->GetURL("isolated.foo.com", "/title1.html"));
@@ -4668,7 +4668,7 @@ IN_PROC_BROWSER_TEST_F(
 
   RenderProcessHostImpl::SetDomStorageBinderForTesting(
       base::BindRepeating(&CreateTestDomStorageBackendToInjectValues,
-                          isolated_storage_key, absl::nullopt));
+                          isolated_storage_key, std::nullopt));
   EXPECT_TRUE(NavigateToURL(shell(), nonisolated_url));
 
   content::RenderProcessHostBadIpcMessageWaiter kill_waiter(
@@ -4692,7 +4692,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest,
           precursor_origin.DeriveNewOpaqueOrigin());
   RenderProcessHostImpl::SetDomStorageBinderForTesting(
       base::BindRepeating(&CreateTestDomStorageBackendToInjectValues,
-                          opaque_storage_key, absl::nullopt));
+                          opaque_storage_key, std::nullopt));
 
   GURL isolated_url(
       embedded_test_server()->GetURL("isolated.foo.com", "/title1.html"));
@@ -6715,7 +6715,7 @@ IN_PROC_BROWSER_TEST_F(COOPIsolationTest, COOPAndOriginAgentClusterNoPorts) {
               "Cross-Origin-Opener-Policy: same-origin\n";
           URLLoaderInterceptor::WriteResponse(
               "content/test/data" + params->url_request.url.path(),
-              params->client.get(), &headers, absl::optional<net::SSLInfo>());
+              params->client.get(), &headers, std::optional<net::SSLInfo>());
           return true;
         } else if (params->url_request.url.host() == "a.foo.com" ||
                    params->url_request.url.host() == "b.foo.com") {

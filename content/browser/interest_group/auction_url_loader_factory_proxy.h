@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "base/functional/callback_forward.h"
 #include "base/strings/string_piece.h"
 #include "content/browser/interest_group/subresource_url_authorizations.h"
@@ -21,7 +23,6 @@
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -45,7 +46,7 @@ class CONTENT_EXPORT AuctionURLLoaderFactoryProxy
       const net::NetworkAnonymizationKey& network_anonymization_key)>;
 
   using GetCookieDeprecationLabelCallback =
-      base::RepeatingCallback<absl::optional<std::string>()>;
+      base::RepeatingCallback<std::optional<std::string>()>;
 
   // Passed in callbacks must be safe to call at any time during the lifetime of
   // the AuctionURLLoaderFactoryProxy.
@@ -95,12 +96,12 @@ class CONTENT_EXPORT AuctionURLLoaderFactoryProxy
       bool force_reload,
       const url::Origin& top_frame_origin,
       const url::Origin& frame_origin,
-      absl::optional<int> renderer_process_id,
+      std::optional<int> renderer_process_id,
       bool is_for_seller,
       network::mojom::ClientSecurityStatePtr client_security_state,
       const GURL& script_url,
-      const absl::optional<GURL>& wasm_url,
-      const absl::optional<GURL>& trusted_signals_base_url,
+      const std::optional<GURL>& wasm_url,
+      const std::optional<GURL>& trusted_signals_base_url,
       bool needs_cors_for_additional_bid,
       int frame_tree_node_id);
   AuctionURLLoaderFactoryProxy(const AuctionURLLoaderFactoryProxy&) = delete;
@@ -146,7 +147,7 @@ class CONTENT_EXPORT AuctionURLLoaderFactoryProxy
 
   const url::Origin top_frame_origin_;
   const url::Origin frame_origin_;
-  const absl::optional<int> renderer_process_id_;
+  const std::optional<int> renderer_process_id_;
   const bool is_for_seller_;
   const bool force_reload_;
   const network::mojom::ClientSecurityStatePtr client_security_state_;
@@ -158,8 +159,8 @@ class CONTENT_EXPORT AuctionURLLoaderFactoryProxy
 
   const int owner_frame_tree_node_id_;
   const GURL script_url_;
-  const absl::optional<GURL> wasm_url_;
-  const absl::optional<GURL> trusted_signals_base_url_;
+  const std::optional<GURL> wasm_url_;
+  const std::optional<GURL> trusted_signals_base_url_;
   const bool needs_cors_for_additional_bid_;
 };
 

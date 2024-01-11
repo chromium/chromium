@@ -99,7 +99,7 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
   void ShowWithVisibility(PageVisibilityState page_visibility) override;
   gfx::Rect GetBoundsInRootWindow() override;
   gfx::Size GetRequestedRendererSize() override;
-  absl::optional<DisplayFeature> GetDisplayFeature() override;
+  std::optional<DisplayFeature> GetDisplayFeature() override;
   void SetDisplayFeatureForTesting(
       const DisplayFeature* display_feature) override;
   void UpdateBackgroundColor() override;
@@ -245,7 +245,7 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
   // EnsureSurfaceSynchronizedForWebTest().
   uint32_t latest_capture_sequence_number_ = 0u;
 
-  absl::optional<gfx::PointF> last_root_scroll_offset_;
+  std::optional<gfx::PointF> last_root_scroll_offset_;
   bool is_scrolling_ = false;
 
   // This stores the underlying view bounds. The UIView might change size but

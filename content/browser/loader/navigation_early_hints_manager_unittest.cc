@@ -127,7 +127,7 @@ class NavigationEarlyHintsManagerTest : public testing::Test {
         network::mojom::LinkAsAttribute::kScript,
         network::mojom::CrossOriginAttribute::kUnspecified,
         network::mojom::FetchPriorityAttribute::kAuto,
-        /*mime_type=*/absl::nullopt);
+        /*mime_type=*/std::nullopt);
     auto hints = network::mojom::EarlyHints::New();
     hints->headers = network::mojom::ParsedHeaders::New();
     hints->headers->link_headers.push_back(std::move(link_header));
@@ -159,7 +159,7 @@ class NavigationEarlyHintsManagerTest : public testing::Test {
     return network::mojom::LinkHeader::New(
         GURL(kPreloadPath), network::mojom::LinkRelAttribute::kPreload, as,
         network::mojom::CrossOriginAttribute::kUnspecified, fetch_priority,
-        /*mime_type=*/absl::nullopt);
+        /*mime_type=*/std::nullopt);
   }
 
  private:
@@ -247,7 +247,7 @@ TEST_F(NavigationEarlyHintsManagerTest, PreloadSchemeIsUnsupported) {
       network::mojom::LinkAsAttribute::kUnspecified,
       network::mojom::CrossOriginAttribute::kUnspecified,
       network::mojom::FetchPriorityAttribute::kAuto,
-      /*mime_type=*/absl::nullopt);
+      /*mime_type=*/std::nullopt);
   auto hints = network::mojom::EarlyHints::New();
   hints->headers = network::mojom::ParsedHeaders::New();
   hints->headers->link_headers.push_back(std::move(link_header));
@@ -266,7 +266,7 @@ TEST_F(NavigationEarlyHintsManagerTest, SinglePreconnect) {
       network::mojom::LinkAsAttribute::kUnspecified,
       network::mojom::CrossOriginAttribute::kUnspecified,
       network::mojom::FetchPriorityAttribute::kAuto,
-      /*mime_type=*/absl::nullopt);
+      /*mime_type=*/std::nullopt);
   auto hints = network::mojom::EarlyHints::New();
   hints->headers = network::mojom::ParsedHeaders::New();
   hints->headers->link_headers.push_back(std::move(link_header));
@@ -297,25 +297,25 @@ TEST_F(NavigationEarlyHintsManagerTest, MultiplePreconnects) {
       network::mojom::LinkAsAttribute::kUnspecified,
       network::mojom::CrossOriginAttribute::kUnspecified,
       network::mojom::FetchPriorityAttribute::kAuto,
-      /*mime_type=*/absl::nullopt));
+      /*mime_type=*/std::nullopt));
   hints->headers->link_headers.push_back(network::mojom::LinkHeader::New(
       preconnect_url1, network::mojom::LinkRelAttribute::kPreconnect,
       network::mojom::LinkAsAttribute::kUnspecified,
       network::mojom::CrossOriginAttribute::kUnspecified,
       network::mojom::FetchPriorityAttribute::kAuto,
-      /*mime_type=*/absl::nullopt));
+      /*mime_type=*/std::nullopt));
   hints->headers->link_headers.push_back(network::mojom::LinkHeader::New(
       preconnect_url1, network::mojom::LinkRelAttribute::kPreconnect,
       network::mojom::LinkAsAttribute::kUnspecified,
       network::mojom::CrossOriginAttribute::kAnonymous,
       network::mojom::FetchPriorityAttribute::kAuto,
-      /*mime_type=*/absl::nullopt));
+      /*mime_type=*/std::nullopt));
   hints->headers->link_headers.push_back(network::mojom::LinkHeader::New(
       preconnect_url2, network::mojom::LinkRelAttribute::kPreconnect,
       network::mojom::LinkAsAttribute::kUnspecified,
       network::mojom::CrossOriginAttribute::kAnonymous,
       network::mojom::FetchPriorityAttribute::kAuto,
-      /*mime_type=*/absl::nullopt));
+      /*mime_type=*/std::nullopt));
 
   early_hints_manager().HandleEarlyHints(std::move(hints),
                                          CreateNavigationResourceRequest());
@@ -344,7 +344,7 @@ TEST_F(NavigationEarlyHintsManagerTest, InvalidPreconnectLink) {
       network::mojom::LinkAsAttribute::kUnspecified,
       network::mojom::CrossOriginAttribute::kUnspecified,
       network::mojom::FetchPriorityAttribute::kAuto,
-      /*mime_type=*/absl::nullopt);
+      /*mime_type=*/std::nullopt);
   auto hints = network::mojom::EarlyHints::New();
   hints->headers = network::mojom::ParsedHeaders::New();
   hints->headers->link_headers.push_back(std::move(link_header));

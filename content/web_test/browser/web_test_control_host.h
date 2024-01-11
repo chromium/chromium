@@ -243,7 +243,7 @@ class WebTestControlHost : public WebContentsObserver,
   void SimulateWebNotificationClick(
       const std::string& title,
       int32_t action_index,
-      const absl::optional<std::u16string>& reply) override;
+      const std::optional<std::u16string>& reply) override;
   void SimulateWebNotificationClose(const std::string& title,
                                     bool by_user) override;
   void SimulateWebContentIndexDelete(const std::string& id) override;
@@ -367,7 +367,7 @@ class WebTestControlHost : public WebContentsObserver,
   // This is set by the LCPP web_tests via
   // NonAssociatedWebTestControlHost::SetLCPPNavigationHint mojom interface.
   // This is reset before switching to the next test page.
-  absl::optional<blink::mojom::LCPCriticalPathPredictorNavigationTimeHint>
+  std::optional<blink::mojom::LCPCriticalPathPredictorNavigationTimeHint>
       lcpp_hint_;
 
   bool crash_when_leak_found_ = false;
@@ -404,8 +404,8 @@ class WebTestControlHost : public WebContentsObserver,
 
   mojom::WebTestRendererDumpResultPtr renderer_dump_result_;
   std::string navigation_history_dump_;
-  absl::optional<SkBitmap> pixel_dump_;
-  absl::optional<std::string> layout_dump_;
+  std::optional<SkBitmap> pixel_dump_;
+  std::optional<std::string> layout_dump_;
   std::string actual_pixel_hash_;
   // By default a test that opens other windows will have them closed at the end
   // of the test before checking for leaks. It may specify that it has closed
@@ -439,7 +439,7 @@ class WebTestControlHost : public WebContentsObserver,
 
   base::ScopedTempDir writable_directory_for_tests_;
 
-  absl::optional<WebTestTracingController> tracing_controller_;
+  std::optional<WebTestTracingController> tracing_controller_;
 
   enum class NextPointerLockAction {
     kWillSucceed,

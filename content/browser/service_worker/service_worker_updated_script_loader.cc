@@ -138,7 +138,7 @@ void ServiceWorkerUpdatedScriptLoader::FollowRedirect(
     const std::vector<std::string>& removed_headers,
     const net::HttpRequestHeaders& modified_headers,
     const net::HttpRequestHeaders& modified_cors_exempt_headers,
-    const absl::optional<GURL>& new_url) {
+    const std::optional<GURL>& new_url) {
   // Resource requests for service worker scripts should not follow redirects.
   // See comments in OnReceiveRedirect().
   CHECK(false);  // NOTREACHED
@@ -171,7 +171,7 @@ void ServiceWorkerUpdatedScriptLoader::OnReceiveEarlyHints(
 void ServiceWorkerUpdatedScriptLoader::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr response_head,
     mojo::ScopedDataPipeConsumerHandle body,
-    absl::optional<mojo_base::BigBuffer> cached_metadata) {
+    std::optional<mojo_base::BigBuffer> cached_metadata) {
   CHECK(false);  // NOTREACHED
 }
 
@@ -251,7 +251,7 @@ int ServiceWorkerUpdatedScriptLoader::WillWriteResponseHead(
 
   // Pass the consumer handle to the client.
   client_->OnReceiveResponse(std::move(client_response),
-                             std::move(client_consumer), absl::nullopt);
+                             std::move(client_consumer), std::nullopt);
 
   client_producer_watcher_.Watch(
       client_producer_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,

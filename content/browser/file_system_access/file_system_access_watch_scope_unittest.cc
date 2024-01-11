@@ -5,6 +5,7 @@
 #include "content/browser/file_system_access/file_system_access_watch_scope.h"
 
 #include <list>
+#include <optional>
 
 #include "base/files/file_path.h"
 #include "base/files/safe_base_name.h"
@@ -16,7 +17,6 @@
 #include "storage/browser/test/test_file_system_context.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -67,7 +67,7 @@ TEST_F(FileSystemAccessWatchScopeTest, FileScope) {
   EXPECT_FALSE(scope.Contains(
       FileSystemAccessWatchScope::GetScopeForAllBucketFileSystems()));
 
-  absl::optional<base::SafeBaseName> sibling_name =
+  std::optional<base::SafeBaseName> sibling_name =
       base::SafeBaseName::Create(FILE_PATH_LITERAL("sibling"));
   auto sibling_url = file_url.CreateSibling(*sibling_name);
   EXPECT_FALSE(scope.Contains(sibling_url));
@@ -117,7 +117,7 @@ TEST_F(FileSystemAccessWatchScopeTest, DirectoryScope) {
   EXPECT_FALSE(scope.Contains(
       FileSystemAccessWatchScope::GetScopeForAllBucketFileSystems()));
 
-  absl::optional<base::SafeBaseName> sibling_name =
+  std::optional<base::SafeBaseName> sibling_name =
       base::SafeBaseName::Create(FILE_PATH_LITERAL("sibling"));
   auto sibling_url = dir_url.CreateSibling(*sibling_name);
   EXPECT_FALSE(scope.Contains(sibling_url));
@@ -180,7 +180,7 @@ TEST_F(FileSystemAccessWatchScopeTest, RecursiveDirectoryScope) {
   EXPECT_FALSE(scope.Contains(
       FileSystemAccessWatchScope::GetScopeForAllBucketFileSystems()));
 
-  absl::optional<base::SafeBaseName> sibling_name =
+  std::optional<base::SafeBaseName> sibling_name =
       base::SafeBaseName::Create(FILE_PATH_LITERAL("sibling"));
   auto sibling_url = dir_url.CreateSibling(*sibling_name);
   EXPECT_FALSE(scope.Contains(sibling_url));

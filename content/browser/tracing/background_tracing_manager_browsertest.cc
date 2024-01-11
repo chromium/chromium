@@ -1135,7 +1135,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
 
   EXPECT_TRUE(background_tracing_helper.trace_received());
 
-  absl::optional<base::Value> trace_json =
+  std::optional<base::Value> trace_json =
       base::JSONReader::Read(background_tracing_helper.json_file_contents());
   ASSERT_TRUE(trace_json);
   ASSERT_TRUE(trace_json->is_dict());
@@ -1199,7 +1199,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
 
   EXPECT_TRUE(background_tracing_helper.trace_received());
 
-  absl::optional<base::Value> trace_json =
+  std::optional<base::Value> trace_json =
       base::JSONReader::Read(background_tracing_helper.json_file_contents());
   ASSERT_TRUE(trace_json);
   ASSERT_TRUE(trace_json->is_dict());
@@ -1724,8 +1724,8 @@ IN_PROC_BROWSER_TEST_F(ProtoBackgroundTracingTest, ProtoTraceReceived) {
   base::RunLoop run_loop;
   BackgroundTracingManager::GetInstance().GetTraceToUpload(
       base::BindLambdaForTesting(
-          [&](absl::optional<std::string> trace_content,
-              absl::optional<std::string> system_profile) {
+          [&](std::optional<std::string> trace_content,
+              std::optional<std::string> system_profile) {
             ASSERT_TRUE(trace_content);
             compressed_trace = std::move(*trace_content);
             run_loop.Quit();

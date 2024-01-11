@@ -6,6 +6,7 @@
 
 #include <functional>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -21,7 +22,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
@@ -49,8 +49,8 @@ size_t GetResultSizeBytes(const HeaderDirectFromSellerSignals::Result& result) {
 HeaderDirectFromSellerSignals::Result::Result() = default;
 
 HeaderDirectFromSellerSignals::Result::Result(
-    absl::optional<std::string> seller_signals,
-    absl::optional<std::string> auction_signals,
+    std::optional<std::string> seller_signals,
+    std::optional<std::string> auction_signals,
     base::flat_map<url::Origin, std::string> per_buyer_signals)
     : seller_signals_(std::move(seller_signals)),
       auction_signals_(std::move(auction_signals)),
@@ -208,7 +208,7 @@ void HeaderDirectFromSellerSignals::ProcessOneResponse(
     }
 
     const base::Value* maybe_seller_signals = maybe_dict->Find("sellerSignals");
-    absl::optional<std::string> seller_signals;
+    std::optional<std::string> seller_signals;
     if (maybe_seller_signals) {
       seller_signals.emplace();
       JSONStringValueSerializer serializer(&seller_signals.value());
@@ -223,7 +223,7 @@ void HeaderDirectFromSellerSignals::ProcessOneResponse(
 
     const base::Value* maybe_auction_signals =
         maybe_dict->Find("auctionSignals");
-    absl::optional<std::string> auction_signals;
+    std::optional<std::string> auction_signals;
     if (maybe_auction_signals) {
       auction_signals.emplace();
       JSONStringValueSerializer serializer(&auction_signals.value());

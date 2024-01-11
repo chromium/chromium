@@ -284,7 +284,7 @@ void PrefetchDocumentManager::PrefetchUrl(
     return;
   }
 
-  absl::optional<net::HttpNoVarySearchData> no_vary_search_expected;
+  std::optional<net::HttpNoVarySearchData> no_vary_search_expected;
   if (mojo_no_vary_search_expected) {
     no_vary_search_expected =
         no_vary_search::ParseHttpNoVarySearchDataFromMojom(

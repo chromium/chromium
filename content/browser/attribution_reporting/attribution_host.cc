@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -42,7 +43,6 @@
 #include "net/url_request/url_request.h"
 #include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "services/network/public/cpp/features.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
@@ -178,7 +178,7 @@ void AttributionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
   // implicit ordering: a navigation with an impression attached won't be
   // processed after a navigation commit in the initiator RFH, so reading the
   // origin off is safe at the start of the navigation.
-  absl::optional<SuitableOrigin> initiator_root_frame_origin =
+  std::optional<SuitableOrigin> initiator_root_frame_origin =
       SuitableOrigin::Create(initiator_root_frame->GetLastCommittedOrigin());
 
   if (!initiator_root_frame_origin) {
@@ -242,7 +242,7 @@ void AttributionHost::NotifyNavigationRegistrationData(
     return;
   }
 
-  const absl::optional<blink::Impression>& impression =
+  const std::optional<blink::Impression>& impression =
       navigation_handle->GetImpression();
   // If there is an ongoing_registration_eligible_navigation, the navigation
   // must have an associated impression, be in the primary main frame and not in
@@ -291,7 +291,7 @@ void AttributionHost::NotifyNavigationRegistrationData(
   }
 }
 
-absl::optional<SuitableOrigin>
+std::optional<SuitableOrigin>
 AttributionHost::TopFrameOriginForSecureContext() {
   RenderFrameHostImpl* render_frame_host =
       static_cast<RenderFrameHostImpl*>(receivers_.GetCurrentTargetFrame());
@@ -304,13 +304,13 @@ AttributionHost::TopFrameOriginForSecureContext() {
   // `is_web_secure_context` would allow opaque origins to pass through, but
   // they cannot be handled by the storage layer.
 
-  absl::optional<SuitableOrigin> suitable_top_frame_origin =
+  std::optional<SuitableOrigin> suitable_top_frame_origin =
       SuitableOrigin::Create(top_frame_origin);
 
   // TODO(crbug.com/1378749): Invoke mojo::ReportBadMessage here when we can be
   // sure honest renderers won't hit this path.
   if (!suitable_top_frame_origin) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // TODO(crbug.com/1378492): Invoke mojo::ReportBadMessage here when we can be
@@ -319,12 +319,12 @@ AttributionHost::TopFrameOriginForSecureContext() {
       !render_frame_host->policy_container_host()
            ->policies()
            .is_web_secure_context) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (!render_frame_host->IsFeatureEnabled(
           blink::mojom::PermissionsPolicyFeature::kAttributionReporting)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return suitable_top_frame_origin;
@@ -334,7 +334,7 @@ void AttributionHost::RegisterDataHost(
     mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
     attribution_reporting::mojom::RegistrationEligibility
         registration_eligibility) {
-  absl::optional<SuitableOrigin> top_frame_origin =
+  std::optional<SuitableOrigin> top_frame_origin =
       TopFrameOriginForSecureContext();
   if (!top_frame_origin) {
     return;
@@ -417,7 +417,7 @@ void AttributionHost::BindReceiver(
 
 bool AttributionHost::NotifyFencedFrameReportingBeaconStarted(
     BeaconId beacon_id,
-    absl::optional<int64_t> navigation_id,
+    std::optional<int64_t> navigation_id,
     RenderFrameHostImpl* initiator_frame_host,
     std::string devtools_request_id) {
   if (!base::FeatureList::IsEnabled(
@@ -438,7 +438,7 @@ bool AttributionHost::NotifyFencedFrameReportingBeaconStarted(
       initiator_frame_host->GetOutermostMainFrame();
   DCHECK(initiator_root_frame);
 
-  absl::optional<SuitableOrigin> initiator_root_frame_origin =
+  std::optional<SuitableOrigin> initiator_root_frame_origin =
       SuitableOrigin::Create(initiator_root_frame->GetLastCommittedOrigin());
 
   if (!initiator_root_frame_origin) {

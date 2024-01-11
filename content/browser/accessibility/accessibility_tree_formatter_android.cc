@@ -257,7 +257,7 @@ std::string AccessibilityTreeFormatterAndroid::ProcessTreeForOutput(
   }
 
   for (const char* attribute_name : BOOL_ATTRIBUTES) {
-    absl::optional<bool> value = dict.FindBool(attribute_name);
+    std::optional<bool> value = dict.FindBool(attribute_name);
     if (value && *value)
       WriteAttribute(true, attribute_name, &line);
   }

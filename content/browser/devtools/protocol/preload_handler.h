@@ -45,10 +45,10 @@ class PreloadHandler : public DevToolsDomainHandler, public Preload::Backend {
   void DidUpdatePrerenderStatus(
       const base::UnguessableToken& initiator_devtools_navigation_token,
       const GURL& prerender_url,
-      absl::optional<blink::mojom::SpeculationTargetHint> target_hint,
+      std::optional<blink::mojom::SpeculationTargetHint> target_hint,
       PreloadingTriggeringOutcome status,
-      absl::optional<PrerenderFinalStatus> prerender_status,
-      absl::optional<std::string> disallowed_mojo_interface,
+      std::optional<PrerenderFinalStatus> prerender_status,
+      std::optional<std::string> disallowed_mojo_interface,
       const std::vector<PrerenderMismatchedHeaders>* mismatched_headers);
 
  private:

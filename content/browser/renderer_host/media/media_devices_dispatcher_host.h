@@ -100,7 +100,7 @@ class CONTENT_EXPORT MediaDevicesDispatcherHost
 
   void GotAudioInputParameters(
       size_t index,
-      const absl::optional<media::AudioParameters>& parameters);
+      const std::optional<media::AudioParameters>& parameters);
 
   void FinalizeGetAudioInputCapabilities();
 
@@ -119,7 +119,7 @@ class CONTENT_EXPORT MediaDevicesDispatcherHost
       bool try_in_use_first,
       GetVideoInputDeviceFormatsCallback client_callback,
       std::unique_ptr<ScopedMediaStreamTrace> scoped_trace,
-      const absl::optional<std::string>& raw_id);
+      const std::optional<std::string>& raw_id);
 
   void ReceivedBadMessage(int render_process_id,
                           bad_message::BadMessageReason reason);

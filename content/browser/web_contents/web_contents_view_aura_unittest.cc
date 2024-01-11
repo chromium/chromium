@@ -5,6 +5,7 @@
 #include "content/browser/web_contents/web_contents_view_aura.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/command_line.h"
@@ -20,7 +21,6 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/test/test_windows.h"

@@ -171,7 +171,7 @@ void PermissionServiceImpl::OnPageEmbeddedPermissionControlRegistered(
   if (!allow) {
     client->OnEmbeddedPermissionControlRegistered(
         /*allow=*/false,
-        /*statuses=*/absl::nullopt);
+        /*statuses=*/std::nullopt);
     return;
   }
 

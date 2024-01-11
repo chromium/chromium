@@ -240,8 +240,8 @@ void BackgroundFetchContext::AddRegistrationObserver(
 
 void BackgroundFetchContext::UpdateUI(
     const BackgroundFetchRegistrationId& registration_id,
-    const absl::optional<std::string>& title,
-    const absl::optional<SkBitmap>& icon,
+    const std::optional<std::string>& title,
+    const std::optional<SkBitmap>& icon,
     blink::mojom::BackgroundFetchRegistrationService::UpdateUICallback
         callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

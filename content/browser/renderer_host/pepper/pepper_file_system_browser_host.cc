@@ -132,7 +132,7 @@ void PepperFileSystemBrowserHost::IOThreadState::OpenFileSystem(
   // first-party contexts? If so, the implementation below is correct.
   file_system_context_->OpenFileSystem(
       blink::StorageKey::CreateFirstParty(url::Origin::Create(origin)),
-      /*bucket=*/absl::nullopt, file_system_type,
+      /*bucket=*/std::nullopt, file_system_type,
       storage::OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT,
       base::BindOnce(&IOThreadState::OpenFileSystemComplete, this,
                      reply_context));

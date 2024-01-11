@@ -89,7 +89,7 @@ class CONTENT_EXPORT SynchronousCompositorHost
   void UpdateFrameMetaData(
       uint32_t version,
       viz::CompositorFrameMetadata frame_metadata,
-      absl::optional<viz::LocalSurfaceId> new_local_surface_id);
+      std::optional<viz::LocalSurfaceId> new_local_surface_id);
 
   // Called when the mojo channel should be created.
   void InitMojo();

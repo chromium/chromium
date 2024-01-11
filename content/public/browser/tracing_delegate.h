@@ -5,10 +5,11 @@
 #ifndef CONTENT_PUBLIC_BROWSER_TRACING_DELEGATE_H_
 #define CONTENT_PUBLIC_BROWSER_TRACING_DELEGATE_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/values.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -33,7 +34,7 @@ class CONTENT_EXPORT TracingDelegate {
   virtual bool IsSystemWideTracingEnabled();
 
   // Used to add any additional metadata to traces.
-  virtual absl::optional<base::Value::Dict> GenerateMetadataDict();
+  virtual std::optional<base::Value::Dict> GenerateMetadataDict();
 };
 
 }  // namespace content

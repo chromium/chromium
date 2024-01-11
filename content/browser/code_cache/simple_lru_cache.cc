@@ -46,13 +46,13 @@ SimpleLruCache::Value& SimpleLruCache::Value::operator=(Value&&) = default;
 SimpleLruCache::SimpleLruCache(uint64_t capacity) : capacity_(capacity) {}
 SimpleLruCache::~SimpleLruCache() = default;
 
-absl::optional<GetResult> SimpleLruCache::Get(const std::string& key) {
+std::optional<GetResult> SimpleLruCache::Get(const std::string& key) {
   base::Time response_time;
   mojo_base::BigBuffer data;
   if (!GetInternal(key, &response_time, &data)) {
-    return absl::nullopt;
+    return std::nullopt;
   }
-  return absl::make_optional<GetResult>(response_time, std::move(data));
+  return std::make_optional<GetResult>(response_time, std::move(data));
 }
 
 bool SimpleLruCache::Has(const std::string& key) {

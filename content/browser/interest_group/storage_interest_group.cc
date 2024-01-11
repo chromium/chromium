@@ -4,10 +4,11 @@
 
 #include "content/browser/interest_group/storage_interest_group.h"
 
+#include <optional>
+
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 
@@ -26,7 +27,7 @@ std::ostream& operator<<(std::ostream& out,
 
 DebugReportLockoutAndCooldowns::DebugReportLockoutAndCooldowns() = default;
 DebugReportLockoutAndCooldowns::DebugReportLockoutAndCooldowns(
-    absl::optional<base::Time> last_report_sent_time,
+    std::optional<base::Time> last_report_sent_time,
     std::map<url::Origin, DebugReportCooldown> debug_report_cooldown_map)
     : last_report_sent_time(last_report_sent_time),
       debug_report_cooldown_map(std::move(debug_report_cooldown_map)) {}
@@ -36,7 +37,7 @@ DebugReportLockoutAndCooldowns::DebugReportLockoutAndCooldowns(
     DebugReportLockoutAndCooldowns&&) = default;
 DebugReportLockoutAndCooldowns::~DebugReportLockoutAndCooldowns() = default;
 
-absl::optional<base::TimeDelta> ConvertDebugReportCooldownTypeToDuration(
+std::optional<base::TimeDelta> ConvertDebugReportCooldownTypeToDuration(
     DebugReportCooldownType type) {
   switch (type) {
     case DebugReportCooldownType::kShortCooldown:
@@ -44,7 +45,7 @@ absl::optional<base::TimeDelta> ConvertDebugReportCooldownTypeToDuration(
     case DebugReportCooldownType::kRestrictedCooldown:
       return blink::features::kFledgeDebugReportRestrictedCooldown.Get();
   }
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace content

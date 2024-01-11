@@ -57,7 +57,7 @@ void MockUDPSocket::Send(
 }
 
 void MockUDPSocket::MockSend(int32_t result,
-                             const absl::optional<base::span<uint8_t>>& data) {
+                             const std::optional<base::span<uint8_t>>& data) {
   listener_->OnReceived(result, {}, data);
 }
 
@@ -78,7 +78,7 @@ MockNetworkContext::MockNetworkContext(base::StringPiece host_mapping_rules)
     : network::TestNetworkContextWithHostResolver(
           net::HostResolver::CreateStandaloneResolver(
               net::NetLog::Get(),
-              /*options=*/absl::nullopt,
+              /*options=*/std::nullopt,
               host_mapping_rules,
               /*enable_caching=*/false)) {}
 
@@ -168,14 +168,14 @@ bool IsolatedWebAppContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
   return isolated_app_origin_ == url::Origin::Create(url);
 }
 
-absl::optional<blink::ParsedPermissionsPolicy>
+std::optional<blink::ParsedPermissionsPolicy>
 IsolatedWebAppContentBrowserClient::GetPermissionsPolicyForIsolatedWebApp(
     content::BrowserContext* browser_context,
     const url::Origin& app_origin) {
   blink::ParsedPermissionsPolicyDeclaration coi_decl(
       blink::mojom::PermissionsPolicyFeature::kCrossOriginIsolated,
       /*allowed_origins=*/{},
-      /*self_if_matches=*/absl::nullopt,
+      /*self_if_matches=*/std::nullopt,
       /*matches_all_origins=*/true, /*matches_opaque_src=*/false);
 
   blink::ParsedPermissionsPolicyDeclaration sockets_decl(

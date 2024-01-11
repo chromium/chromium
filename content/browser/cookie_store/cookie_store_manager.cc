@@ -4,6 +4,7 @@
 
 #include "content/browser/cookie_store/cookie_store_manager.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -24,7 +25,6 @@
 #include "net/cookies/cookie_partition_key.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
 #include "third_party/blink/public/common/service_worker/service_worker_scope_match.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"

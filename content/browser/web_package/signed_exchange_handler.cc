@@ -79,7 +79,7 @@ network::mojom::NetworkContext* g_network_context_for_testing = nullptr;
 bool g_should_ignore_cert_validity_period_error = false;
 
 bool IsSupportedSignedExchangeVersion(
-    const absl::optional<SignedExchangeVersion>& version) {
+    const std::optional<SignedExchangeVersion>& version) {
   return version == SignedExchangeVersion::kB3;
 }
 
@@ -172,7 +172,7 @@ SignedExchangeHandler::SignedExchangeHandler(
     std::unique_ptr<net::SourceStream> body,
     ExchangeHeadersCallback headers_callback,
     std::unique_ptr<SignedExchangeCertFetcherFactory> cert_fetcher_factory,
-    const absl::optional<net::IsolationInfo> outer_request_isolation_info,
+    const std::optional<net::IsolationInfo> outer_request_isolation_info,
     int load_flags,
     const net::IPEndPoint& remote_endpoint,
     std::unique_ptr<blink::WebPackageRequestMatcher> request_matcher,
@@ -456,7 +456,7 @@ void SignedExchangeHandler::RunErrorCallback(SignedExchangeLoadResult result,
         envelope_,
         unverified_cert_chain_ ? unverified_cert_chain_->cert()
                                : scoped_refptr<net::X509Certificate>(),
-        absl::nullopt);
+        std::nullopt);
   }
   std::move(headers_callback_)
       .Run(result, error, GetFallbackUrl(), nullptr, nullptr);
@@ -501,13 +501,13 @@ void SignedExchangeHandler::OnCertReceived(
   UMA_HISTOGRAM_ENUMERATION(kHistogramSignatureVerificationResult,
                             verify_result);
   if (verify_result != SignedExchangeSignatureVerifier::Result::kSuccess) {
-    absl::optional<SignedExchangeError::Field> error_field =
+    std::optional<SignedExchangeError::Field> error_field =
         SignedExchangeError::GetFieldFromSignatureVerifierResult(verify_result);
     signed_exchange_utils::ReportErrorAndTraceEvent(
         devtools_proxy_.get(), "Failed to verify the signed exchange header.",
-        error_field ? absl::make_optional(
+        error_field ? std::make_optional(
                           std::make_pair(0 /* signature_index */, *error_field))
-                    : absl::nullopt);
+                    : std::nullopt);
     RunErrorCallback(
         signed_exchange_utils::GetLoadResultFromSignatureVerifierResult(
             verify_result),

@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/pending_beacon_host.h"
 
+#include <optional>
 #include <tuple>
 #include <vector>
 
@@ -28,7 +29,6 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/frame/pending_beacon.mojom-shared.h"
@@ -590,8 +590,7 @@ class PostBeaconRequestDataTest : public BeaconTestBase {
   void SetExpectNetworkRequest(
       const base::Location& location,
       scoped_refptr<network::ResourceRequestBody> expected_body,
-      const absl::optional<std::string>& expected_content_type =
-          absl::nullopt) {
+      const std::optional<std::string>& expected_content_type = std::nullopt) {
     test_url_loader_factory_->SetInterceptor(base::BindLambdaForTesting(
         [location, expected_body,
          expected_content_type](const network::ResourceRequest& request) {

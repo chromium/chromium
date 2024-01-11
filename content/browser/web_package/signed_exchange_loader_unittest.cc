@@ -57,7 +57,7 @@ class SignedExchangeLoaderTest : public testing::Test {
     MOCK_METHOD3(OnReceiveResponse,
                  void(const network::mojom::URLResponseHeadPtr,
                       mojo::ScopedDataPipeConsumerHandle,
-                      absl::optional<mojo_base::BigBuffer>));
+                      std::optional<mojo_base::BigBuffer>));
     MOCK_METHOD2(OnReceiveRedirect,
                  void(const net::RedirectInfo&,
                       network::mojom::URLResponseHeadPtr));
@@ -86,7 +86,7 @@ class SignedExchangeLoaderTest : public testing::Test {
                  void(const std::vector<std::string>&,
                       const net::HttpRequestHeaders&,
                       const net::HttpRequestHeaders&,
-                      const absl::optional<GURL>&));
+                      const std::optional<GURL>&));
     MOCK_METHOD2(SetPriority,
                  void(net::RequestPriority priority,
                       int32_t intra_priority_value));

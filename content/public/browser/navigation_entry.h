@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/ref_counted_memory.h"
@@ -17,7 +18,6 @@
 #include "content/common/content_export.h"
 #include "content/public/common/page_type.h"
 #include "content/public/common/referrer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 
 class GURL;
@@ -234,7 +234,7 @@ class NavigationEntry : public base::SupportsUserData {
   // contains some information about the entry prior to being replaced. Even if
   // an entry is replaced multiple times, it represents data prior to the
   // *first* replace.
-  virtual const absl::optional<ReplacedNavigationEntryData>&
+  virtual const std::optional<ReplacedNavigationEntryData>&
   GetReplacedEntryData() = 0;
 
   // True if this entry is restored and hasn't been loaded.

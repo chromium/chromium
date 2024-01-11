@@ -92,7 +92,7 @@ class CONTENT_EXPORT ServiceWorkerResourceLoader {
   virtual void CommitResponseBody(
       const network::mojom::URLResponseHeadPtr& response_head,
       mojo::ScopedDataPipeConsumerHandle response_body,
-      absl::optional<mojo_base::BigBuffer> cached_metadata) = 0;
+      std::optional<mojo_base::BigBuffer> cached_metadata) = 0;
 
   // Creates and sends an empty response's body with the net::OK status.
   // Sends net::ERR_INSUFFICIENT_RESOURCES when it can't be created.

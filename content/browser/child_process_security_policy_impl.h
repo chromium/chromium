@@ -187,7 +187,7 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
       BrowserContext* browser_context = nullptr) override;
   bool IsGloballyIsolatedOriginForTesting(const url::Origin& origin) override;
   std::vector<url::Origin> GetIsolatedOrigins(
-      absl::optional<IsolatedOriginSource> source = absl::nullopt,
+      std::optional<IsolatedOriginSource> source = std::nullopt,
       BrowserContext* browser_context = nullptr) override;
   bool IsIsolatedSiteFromSource(const url::Origin& origin,
                                 IsolatedOriginSource source) override;

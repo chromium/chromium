@@ -5,14 +5,15 @@
 #ifndef CONTENT_BROWSER_METRICS_HISTOGRAM_SHARED_MEMORY_CONFIG_H_
 #define CONTENT_BROWSER_METRICS_HISTOGRAM_SHARED_MEMORY_CONFIG_H_
 
+#include <optional>
+
 #include "base/metrics/histogram_shared_memory.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
 // Returns the histogram shared memory configuration for |process_type|, if any.
-CONTENT_EXPORT absl::optional<base::HistogramSharedMemoryConfig>
+CONTENT_EXPORT std::optional<base::HistogramSharedMemoryConfig>
 GetHistogramSharedMemoryConfig(int process_type);
 
 }  // namespace content

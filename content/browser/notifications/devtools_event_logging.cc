@@ -126,8 +126,8 @@ void LogNotificationScheduledEventToDevTools(
 void LogNotificationClickedEventToDevTools(
     BrowserContext* browser_context,
     const NotificationDatabaseData& data,
-    const absl::optional<int>& action_index,
-    const absl::optional<std::u16string>& reply) {
+    const std::optional<int>& action_index,
+    const std::optional<std::u16string>& reply) {
   DevToolsCallback callback = GetDevToolsCallback(browser_context, data);
   if (!callback)
     return;

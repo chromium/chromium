@@ -60,7 +60,7 @@ class MockMediaSession : public MediaSession {
   MOCK_METHOD(void, ExitPictureInPicture, (), (override));
   MOCK_METHOD(void,
               SetAudioSinkId,
-              (const absl::optional<std::string>& id),
+              (const std::optional<std::string>& id),
               (override));
   MOCK_METHOD(void, ToggleMicrophone, (), (override));
   MOCK_METHOD(void, ToggleCamera, (), (override));

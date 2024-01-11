@@ -8,10 +8,11 @@
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include <optional>
 #include <utility>
+
 #include "base/no_destructor.h"
 #include "base/timer/timer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Process;
@@ -54,7 +55,7 @@ class UserLevelMemoryPressureSignalGenerator {
       uint64_t total_pmf,
       const char* suffix_name);
 
-  static absl::optional<uint64_t> GetPrivateFootprint(
+  static std::optional<uint64_t> GetPrivateFootprint(
       const base::Process& process);
 
   uint64_t memory_threshold_;

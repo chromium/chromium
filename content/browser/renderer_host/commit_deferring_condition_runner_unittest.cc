@@ -21,7 +21,7 @@ class CommitDeferringConditionRunnerTest
     RenderViewHostTestHarness::SetUp();
     runner_ = base::WrapUnique(new CommitDeferringConditionRunner(
         *this, CommitDeferringCondition::NavigationType::kOther,
-        /*candidate_prerender_frame_tree_node_id=*/absl::nullopt));
+        /*candidate_prerender_frame_tree_node_id=*/std::nullopt));
   }
 
   // Whether the callback was called.
@@ -35,7 +35,7 @@ class CommitDeferringConditionRunnerTest
   // CommitDeferringConditionRunner::Delegate:
   void OnCommitDeferringConditionChecksComplete(
       CommitDeferringCondition::NavigationType navigation_type,
-      absl::optional<int> candidate_prerender_frame_tree_node_id) override {
+      std::optional<int> candidate_prerender_frame_tree_node_id) override {
     EXPECT_EQ(navigation_type,
               CommitDeferringCondition::NavigationType::kOther);
     EXPECT_FALSE(candidate_prerender_frame_tree_node_id.has_value());

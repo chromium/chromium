@@ -39,7 +39,7 @@ void PrefetchServingPageMetricsContainer::SetRequiredPrivatePrefetchProxy(
 }
 
 void PrefetchServingPageMetricsContainer::SetPrefetchHeaderLatency(
-    const absl::optional<base::TimeDelta>& prefetch_header_latency) {
+    const std::optional<base::TimeDelta>& prefetch_header_latency) {
   serving_page_metrics_.prefetch_header_latency = prefetch_header_latency;
 }
 

@@ -30,17 +30,17 @@ void OnKeySystemCapability(
   // and 1 encryption scheme to be considered. Support for audio codecs is
   // optional.
   if (!is_supported || !key_system_capability) {
-    std::move(cdm_capability_cb).Run(absl::nullopt);
+    std::move(cdm_capability_cb).Run(std::nullopt);
     return;
   }
-  const absl::optional<media::CdmCapability>& capability =
+  const std::optional<media::CdmCapability>& capability =
       is_hw_secure ? key_system_capability->hw_secure_capability
                    : key_system_capability->sw_secure_capability;
 
   if (!capability || capability->video_codecs.empty() ||
       capability->encryption_schemes.empty() ||
       capability->session_types.empty()) {
-    std::move(cdm_capability_cb).Run(absl::nullopt);
+    std::move(cdm_capability_cb).Run(std::nullopt);
     return;
   }
 
@@ -56,7 +56,7 @@ void GetMediaFoundationServiceCdmCapability(
     media::CdmCapabilityCB cdm_capability_cb) {
   if (!media::MediaFoundationCdm::IsAvailable()) {
     DVLOG(1) << "MediaFoundationCdm not available!";
-    std::move(cdm_capability_cb).Run(absl::nullopt);
+    std::move(cdm_capability_cb).Run(std::nullopt);
     return;
   }
 

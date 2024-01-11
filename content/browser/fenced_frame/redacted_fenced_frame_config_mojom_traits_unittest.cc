@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config_mojom_traits.h"
+
 #include <functional>
+#include <optional>
 #include <tuple>
 #include <type_traits>
 #include <utility>
@@ -16,9 +19,7 @@
 #include "net/base/schemeful_site.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
-#include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config_mojom_traits.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame_config.mojom.h"
 #include "url/origin.h"
 
@@ -73,8 +74,8 @@ template <typename ClassName,
           typename RedactedToRedactedCompare>
 void TestPropertyForEntityIsDefinedIsOpaque(
     ClassName config,
-    absl::optional<FencedFrameProperty<TestType>> ClassName::*property,
-    const absl::optional<
+    std::optional<FencedFrameProperty<TestType>> ClassName::*property,
+    const std::optional<
         blink::FencedFrame::RedactedFencedFrameProperty<RedactedTestType>>& (
         RedactedClassName::*redacted_property)() const,
     Entity entity,
@@ -181,8 +182,8 @@ class FencedFrameConfigMojomTraitsTest : public RenderViewHostTestHarness {
             typename UnredactedToRedactedCompare,
             typename RedactedToRedactedCompare>
   void TestProperty(
-      absl::optional<FencedFrameProperty<TestType>> ClassName::*property,
-      const absl::optional<
+      std::optional<FencedFrameProperty<TestType>> ClassName::*property,
+      const std::optional<
           blink::FencedFrame::RedactedFencedFrameProperty<RedactedTestType>>& (
           RedactedClassName::*redacted_property)() const,
       TestType dummy_value,
@@ -326,20 +327,20 @@ TEST_F(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsNullInternalUrnTest) {
 
 // C++23: Can replace AndThen(opt, acc) with opt.and_then(acc).
 template <typename Opt, typename Acc>
-absl::optional<GURL> AndThen(const Opt& opt, Acc acc) {
-  return opt ? std::invoke(acc, *opt) : absl::nullopt;
+std::optional<GURL> AndThen(const Opt& opt, Acc acc) {
+  return opt ? std::invoke(acc, *opt) : std::nullopt;
 }
 
 // Projections for [un]redacted fenced frame configs to allow comparisons. These
 // only compare the `mapped_url` field for convenience. (We don't need an
 // equality operator for configs outside of tests, so it would be wasteful to
 // declare it as default in the class declaration.)
-absl::optional<GURL> Project(const FencedFrameConfig& config) {
+std::optional<GURL> Project(const FencedFrameConfig& config) {
   return AndThen(config.mapped_url(), [](const FencedFrameProperty<GURL>& url) {
     return url.GetValueForEntity(Entity::kEmbedder);
   });
 }
-absl::optional<GURL> Project(const RedactedFencedFrameConfig& config) {
+std::optional<GURL> Project(const RedactedFencedFrameConfig& config) {
   return AndThen(config.mapped_url(),
                  &blink::FencedFrame::RedactedFencedFrameProperty<
                      GURL>::potentially_opaque_value);
@@ -498,7 +499,7 @@ TEST_F(FencedFrameConfigMojomTraitsTest,
       /*private_aggregation_manager=*/nullptr,
       /*main_frame_origin=*/url::Origin(),
       /*winner_origin=*/url::Origin(),
-      /*winner_aggregation_coordinator_origin=*/absl::nullopt);
+      /*winner_aggregation_coordinator_origin=*/std::nullopt);
   input_properties = properties.RedactFor(FencedFrameEntity::kEmbedder);
   EXPECT_TRUE(input_properties.has_fenced_frame_reporting());
   mojo::test::SerializeAndDeserialize<blink::mojom::FencedFrameProperties>(

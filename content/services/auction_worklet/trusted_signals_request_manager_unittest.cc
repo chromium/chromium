@@ -69,10 +69,10 @@ const char kTopLevelOrigin[] = "https://publisher";
 // Callback for loading signals that stores the result and runs a closure to
 // exit a message loop.
 void LoadSignalsCallback(scoped_refptr<TrustedSignals::Result>* results_out,
-                         absl::optional<std::string>* error_msg_out,
+                         std::optional<std::string>* error_msg_out,
                          base::OnceClosure quit_closure,
                          scoped_refptr<TrustedSignals::Result> result,
-                         absl::optional<std::string> error_msg) {
+                         std::optional<std::string> error_msg) {
   *results_out = std::move(result);
   *error_msg_out = std::move(error_msg);
   EXPECT_EQ(results_out->get() == nullptr, error_msg_out->has_value());
@@ -82,7 +82,7 @@ void LoadSignalsCallback(scoped_refptr<TrustedSignals::Result>* results_out,
 // Callback that should never be invoked, for cancellation tests.
 void NeverInvokedLoadSignalsCallback(
     scoped_refptr<TrustedSignals::Result> result,
-    absl::optional<std::string> error_msg) {
+    std::optional<std::string> error_msg) {
   ADD_FAILURE() << "This should not be invoked";
 }
 
@@ -100,7 +100,7 @@ class TrustedSignalsRequestManagerTest : public testing::Test {
             /*automatically_send_requests=*/false,
             url::Origin::Create(GURL(kTopLevelOrigin)),
             trusted_signals_url_,
-            /*experiment_group_id=*/absl::nullopt,
+            /*experiment_group_id=*/std::nullopt,
             "trusted_bidding_signals_slot_size_param=foo",
             v8_helper_.get()),
         scoring_request_manager_(
@@ -111,7 +111,7 @@ class TrustedSignalsRequestManagerTest : public testing::Test {
             /*automatically_send_requests=*/false,
             url::Origin::Create(GURL(kTopLevelOrigin)),
             trusted_signals_url_,
-            /*experiment_group_id=*/absl::nullopt,
+            /*experiment_group_id=*/std::nullopt,
             /*trusted_bidding_signals_slot_size_param=*/"",
             v8_helper_.get()) {}
 
@@ -125,7 +125,7 @@ class TrustedSignalsRequestManagerTest : public testing::Test {
       const GURL& url,
       const std::string& response,
       const std::string& interest_group_name,
-      const absl::optional<std::vector<std::string>>&
+      const std::optional<std::vector<std::string>>&
           trusted_bidding_signals_keys) {
     AddBidderJsonResponse(&url_loader_factory_, url, response);
     return FetchBiddingSignals(interest_group_name,
@@ -136,7 +136,7 @@ class TrustedSignalsRequestManagerTest : public testing::Test {
   // failure.
   scoped_refptr<TrustedSignals::Result> FetchBiddingSignals(
       const std::string& interest_group_name,
-      const absl::optional<std::vector<std::string>>&
+      const std::optional<std::vector<std::string>>&
           trusted_bidding_signals_keys) {
     scoped_refptr<TrustedSignals::Result> signals;
     base::RunLoop run_loop;
@@ -246,7 +246,7 @@ class TrustedSignalsRequestManagerTest : public testing::Test {
   const GURL trusted_signals_url_ = GURL("https://url.test/");
 
   // The fetch helpers store the most recent error message, if any, here.
-  absl::optional<std::string> error_msg_;
+  std::optional<std::string> error_msg_;
 
   network::TestURLLoaderFactory url_loader_factory_;
   scoped_refptr<AuctionV8Helper> v8_helper_;
@@ -318,7 +318,7 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsBatchedRequestError) {
 
   base::RunLoop run_loop1;
   scoped_refptr<TrustedSignals::Result> signals1;
-  absl::optional<std::string> error_msg1;
+  std::optional<std::string> error_msg1;
   auto request1 = bidding_request_manager_.RequestBiddingSignals(
       {"name1"}, {{"key1"}},
       base::BindOnce(&LoadSignalsCallback, &signals1, &error_msg1,
@@ -326,7 +326,7 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsBatchedRequestError) {
 
   base::RunLoop run_loop2;
   scoped_refptr<TrustedSignals::Result> signals2;
-  absl::optional<std::string> error_msg2;
+  std::optional<std::string> error_msg2;
   auto request2 = bidding_request_manager_.RequestBiddingSignals(
       {"name2"}, {{"key2"}},
       base::BindOnce(&LoadSignalsCallback, &signals2, &error_msg2,
@@ -372,7 +372,7 @@ TEST_F(TrustedSignalsRequestManagerTest, ScoringSignalsBatchedRequestError) {
 
   base::RunLoop run_loop1;
   scoped_refptr<TrustedSignals::Result> signals1;
-  absl::optional<std::string> error_msg1;
+  std::optional<std::string> error_msg1;
   auto request1 = scoring_request_manager_.RequestScoringSignals(
       GURL("https://foo.test/"),
       /*ad_component_render_urls=*/{},
@@ -381,7 +381,7 @@ TEST_F(TrustedSignalsRequestManagerTest, ScoringSignalsBatchedRequestError) {
 
   base::RunLoop run_loop2;
   scoped_refptr<TrustedSignals::Result> signals2;
-  absl::optional<std::string> error_msg2;
+  std::optional<std::string> error_msg2;
   auto request2 = scoring_request_manager_.RequestScoringSignals(
       GURL("https://bar.test/"),
       /*ad_component_render_urls=*/{},
@@ -423,7 +423,7 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsOneRequestNullKeys) {
                "&interestGroupNames=name1"
                "&trusted_bidding_signals_slot_size_param=foo"),
           kBaseBiddingJson, {"name1"},
-          /*trusted_bidding_signals_keys=*/absl::nullopt);
+          /*trusted_bidding_signals_keys=*/std::nullopt);
   ASSERT_TRUE(signals);
   EXPECT_FALSE(error_msg_.has_value());
   const auto* priority_vector = signals->GetPriorityVector("name1");
@@ -625,7 +625,7 @@ TEST_F(TrustedSignalsRequestManagerTest,
 
   base::RunLoop run_loop1;
   scoped_refptr<TrustedSignals::Result> signals1;
-  absl::optional<std::string> error_msg1;
+  std::optional<std::string> error_msg1;
   auto request1 = bidding_request_manager_.RequestBiddingSignals(
       {"name1"}, kKeys1,
       base::BindOnce(&LoadSignalsCallback, &signals1, &error_msg1,
@@ -635,7 +635,7 @@ TEST_F(TrustedSignalsRequestManagerTest,
 
   base::RunLoop run_loop2;
   scoped_refptr<TrustedSignals::Result> signals2;
-  absl::optional<std::string> error_msg2;
+  std::optional<std::string> error_msg2;
   auto request2 = bidding_request_manager_.RequestBiddingSignals(
       {"name2"}, kKeys2,
       base::BindOnce(&LoadSignalsCallback, &signals2, &error_msg2,
@@ -706,7 +706,7 @@ TEST_F(TrustedSignalsRequestManagerTest,
 
   base::RunLoop run_loop1;
   scoped_refptr<TrustedSignals::Result> signals1;
-  absl::optional<std::string> error_msg1;
+  std::optional<std::string> error_msg1;
   auto request1 = scoring_request_manager_.RequestScoringSignals(
       kRenderUrl1, kAdComponentRenderUrls1,
       base::BindOnce(&LoadSignalsCallback, &signals1, &error_msg1,
@@ -716,7 +716,7 @@ TEST_F(TrustedSignalsRequestManagerTest,
 
   base::RunLoop run_loop2;
   scoped_refptr<TrustedSignals::Result> signals2;
-  absl::optional<std::string> error_msg2;
+  std::optional<std::string> error_msg2;
   auto request2 = scoring_request_manager_.RequestScoringSignals(
       kRenderUrl2, kAdComponentRenderUrls2,
       base::BindOnce(&LoadSignalsCallback, &signals2, &error_msg2,
@@ -795,7 +795,7 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsBatchedRequests) {
 
   base::RunLoop run_loop1;
   scoped_refptr<TrustedSignals::Result> signals1;
-  absl::optional<std::string> error_msg1;
+  std::optional<std::string> error_msg1;
   auto request1 = bidding_request_manager_.RequestBiddingSignals(
       {"name1"}, kKeys1,
       base::BindOnce(&LoadSignalsCallback, &signals1, &error_msg1,
@@ -803,7 +803,7 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingSignalsBatchedRequests) {
 
   base::RunLoop run_loop2;
   scoped_refptr<TrustedSignals::Result> signals2;
-  absl::optional<std::string> error_msg2;
+  std::optional<std::string> error_msg2;
   auto request2 = bidding_request_manager_.RequestBiddingSignals(
       {"name2"}, kKeys2,
       base::BindOnce(&LoadSignalsCallback, &signals2, &error_msg2,
@@ -856,7 +856,7 @@ TEST_F(TrustedSignalsRequestManagerTest, ScoringSignalsBatchedRequests) {
 
   base::RunLoop run_loop1;
   scoped_refptr<TrustedSignals::Result> signals1;
-  absl::optional<std::string> error_msg1;
+  std::optional<std::string> error_msg1;
   auto request1 = scoring_request_manager_.RequestScoringSignals(
       kRenderUrl1, kAdComponentRenderUrls1,
       base::BindOnce(&LoadSignalsCallback, &signals1, &error_msg1,
@@ -864,7 +864,7 @@ TEST_F(TrustedSignalsRequestManagerTest, ScoringSignalsBatchedRequests) {
 
   base::RunLoop run_loop2;
   scoped_refptr<TrustedSignals::Result> signals2;
-  absl::optional<std::string> error_msg2;
+  std::optional<std::string> error_msg2;
   auto request2 = scoring_request_manager_.RequestScoringSignals(
       kRenderUrl2, kAdComponentRenderUrls2,
       base::BindOnce(&LoadSignalsCallback, &signals2, &error_msg2,
@@ -872,7 +872,7 @@ TEST_F(TrustedSignalsRequestManagerTest, ScoringSignalsBatchedRequests) {
 
   base::RunLoop run_loop3;
   scoped_refptr<TrustedSignals::Result> signals3;
-  absl::optional<std::string> error_msg3;
+  std::optional<std::string> error_msg3;
   auto request3 = scoring_request_manager_.RequestScoringSignals(
       kRenderUrl3, kAdComponentRenderUrls3,
       base::BindOnce(&LoadSignalsCallback, &signals3, &error_msg3,
@@ -954,7 +954,7 @@ TEST_F(TrustedSignalsRequestManagerTest, CancelOneRequest) {
 
   base::RunLoop run_loop2;
   scoped_refptr<TrustedSignals::Result> signals2;
-  absl::optional<std::string> error_msg2;
+  std::optional<std::string> error_msg2;
   auto request2 = bidding_request_manager_.RequestBiddingSignals(
       {"name2"}, kKeys2,
       base::BindOnce(&LoadSignalsCallback, &signals2, &error_msg2,
@@ -1021,7 +1021,7 @@ TEST_F(TrustedSignalsRequestManagerTest, CancelOneLiveRequest) {
 
   base::RunLoop run_loop2;
   scoped_refptr<TrustedSignals::Result> signals2;
-  absl::optional<std::string> error_msg2;
+  std::optional<std::string> error_msg2;
   auto request2 = bidding_request_manager_.RequestBiddingSignals(
       {"name2"}, kKeys2,
       base::BindOnce(&LoadSignalsCallback, &signals2, &error_msg2,
@@ -1075,13 +1075,13 @@ TEST_F(TrustedSignalsRequestManagerTest, AutomaticallySendRequestsEnabled) {
       auction_network_events_handler_.CreateRemote(),
       /*automatically_send_requests=*/true,
       url::Origin::Create(GURL(kTopLevelOrigin)), trusted_signals_url_,
-      /*experiment_group_id=*/absl::nullopt,
+      /*experiment_group_id=*/std::nullopt,
       /*trusted_bidding_signals_slot_size_param=*/"", v8_helper_.get());
 
   // Create one Request.
   base::RunLoop run_loop1;
   scoped_refptr<TrustedSignals::Result> signals1;
-  absl::optional<std::string> error_msg1;
+  std::optional<std::string> error_msg1;
   auto request1 = bidding_request_manager.RequestBiddingSignals(
       {"name1"}, kKeys1,
       base::BindOnce(&LoadSignalsCallback, &signals1, &error_msg1,
@@ -1096,7 +1096,7 @@ TEST_F(TrustedSignalsRequestManagerTest, AutomaticallySendRequestsEnabled) {
   // Create another Request.
   base::RunLoop run_loop2;
   scoped_refptr<TrustedSignals::Result> signals2;
-  absl::optional<std::string> error_msg2;
+  std::optional<std::string> error_msg2;
   auto request2 = bidding_request_manager.RequestBiddingSignals(
       {"name1"}, kKeys2,
       base::BindOnce(&LoadSignalsCallback, &signals2, &error_msg2,
@@ -1126,7 +1126,7 @@ TEST_F(TrustedSignalsRequestManagerTest, AutomaticallySendRequestsEnabled) {
   // sure it restarts correctly.
   base::RunLoop run_loop3;
   scoped_refptr<TrustedSignals::Result> signals3;
-  absl::optional<std::string> error_msg3;
+  std::optional<std::string> error_msg3;
   auto request3 = bidding_request_manager.RequestBiddingSignals(
       {"name1"}, kKeys3,
       base::BindOnce(&LoadSignalsCallback, &signals3, &error_msg3,
@@ -1158,7 +1158,7 @@ TEST_F(TrustedSignalsRequestManagerTest,
       auction_network_events_handler_.CreateRemote(),
       /*automatically_send_requests=*/true,
       url::Origin::Create(GURL(kTopLevelOrigin)), trusted_signals_url_,
-      /*experiment_group_id=*/absl::nullopt,
+      /*experiment_group_id=*/std::nullopt,
       /*trusted_bidding_signals_slot_size_param=*/"", v8_helper_.get());
 
   // Create one Request.
@@ -1177,7 +1177,7 @@ TEST_F(TrustedSignalsRequestManagerTest,
   // Create another Request.
   base::RunLoop run_loop2;
   scoped_refptr<TrustedSignals::Result> signals2;
-  absl::optional<std::string> error_msg2;
+  std::optional<std::string> error_msg2;
   auto request2 = bidding_request_manager.RequestBiddingSignals(
       {"name1"}, kKeys2,
       base::BindOnce(&LoadSignalsCallback, &signals2, &error_msg2,
@@ -1218,7 +1218,7 @@ TEST_F(TrustedSignalsRequestManagerTest,
       auction_network_events_handler_.CreateRemote(),
       /*automatically_send_requests=*/true,
       url::Origin::Create(GURL(kTopLevelOrigin)), trusted_signals_url_,
-      /*experiment_group_id=*/absl::nullopt,
+      /*experiment_group_id=*/std::nullopt,
       /*trusted_bidding_signals_slot_size_param=*/"", v8_helper_.get());
 
   // Create one Request.
@@ -1234,7 +1234,7 @@ TEST_F(TrustedSignalsRequestManagerTest,
   // Create another Request.
   base::RunLoop run_loop2;
   scoped_refptr<TrustedSignals::Result> signals2;
-  absl::optional<std::string> error_msg2;
+  std::optional<std::string> error_msg2;
   auto request2 = bidding_request_manager.RequestBiddingSignals(
       {"name1"}, kKeys2,
       base::BindOnce(&LoadSignalsCallback, &signals2, &error_msg2,
@@ -1282,7 +1282,7 @@ TEST_F(TrustedSignalsRequestManagerTest, BiddingExperimentGroupIds) {
 
   base::RunLoop run_loop;
   scoped_refptr<TrustedSignals::Result> signals;
-  absl::optional<std::string> error_msg;
+  std::optional<std::string> error_msg;
   auto request = bidding_request_manager.RequestBiddingSignals(
       {"name1"}, kKeys,
       base::BindOnce(&LoadSignalsCallback, &signals, &error_msg,
@@ -1324,7 +1324,7 @@ TEST_F(TrustedSignalsRequestManagerTest, ScoringExperimentGroupIds) {
 
   base::RunLoop run_loop;
   scoped_refptr<TrustedSignals::Result> signals;
-  absl::optional<std::string> error_msg;
+  std::optional<std::string> error_msg;
   auto request1 = scoring_request_manager.RequestScoringSignals(
       kRenderUrl1, kAdComponentRenderUrls1,
       base::BindOnce(&LoadSignalsCallback, &signals, &error_msg,

@@ -22,7 +22,7 @@ SignedExchangeDevToolsProxy::SignedExchangeDevToolsProxy(
     const GURL& outer_request_url,
     network::mojom::URLResponseHeadPtr outer_response,
     int frame_tree_node_id,
-    absl::optional<const base::UnguessableToken> devtools_navigation_token,
+    std::optional<const base::UnguessableToken> devtools_navigation_token,
     bool report_raw_headers)
     : outer_request_url_(outer_request_url),
       outer_response_(std::move(outer_response)),
@@ -38,7 +38,7 @@ SignedExchangeDevToolsProxy::~SignedExchangeDevToolsProxy() {
 
 void SignedExchangeDevToolsProxy::ReportError(
     const std::string& message,
-    absl::optional<SignedExchangeError::FieldIndexPair> error_field) {
+    std::optional<SignedExchangeError::FieldIndexPair> error_field) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   errors_.push_back(SignedExchangeError(message, std::move(error_field)));
   WebContents* web_contents =
@@ -100,9 +100,9 @@ void SignedExchangeDevToolsProxy::CertificateRequestCompleted(
 }
 
 void SignedExchangeDevToolsProxy::OnSignedExchangeReceived(
-    const absl::optional<SignedExchangeEnvelope>& envelope,
+    const std::optional<SignedExchangeEnvelope>& envelope,
     const scoped_refptr<net::X509Certificate>& certificate,
-    const absl::optional<net::SSLInfo>& ssl_info) {
+    const std::optional<net::SSLInfo>& ssl_info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!devtools_enabled_)
     return;

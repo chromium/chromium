@@ -70,14 +70,14 @@ class PlatformNotificationContextTriggerTest : public ::testing::Test {
 
  protected:
   void WriteNotificationData(const std::string& tag,
-                             absl::optional<base::Time> timestamp) {
+                             std::optional<base::Time> timestamp) {
     ASSERT_TRUE(
         TryWriteNotificationData("https://example.com", tag, timestamp));
   }
 
   bool TryWriteNotificationData(const std::string& url,
                                 const std::string& tag,
-                                absl::optional<base::Time> timestamp) {
+                                std::optional<base::Time> timestamp) {
     GURL origin(url);
     NotificationDatabaseData notification_database_data;
     notification_database_data.origin = origin;
@@ -256,7 +256,7 @@ TEST_F(PlatformNotificationContextTriggerTest, EnforcesLimitOnUpdate) {
   ASSERT_TRUE(TryWriteNotificationData(
       "https://example.com",
       std::to_string(kMaximumScheduledNotificationsPerOrigin + 1),
-      absl::nullopt));
+      std::nullopt));
 
   ASSERT_FALSE(TryWriteNotificationData(
       "https://example.com",

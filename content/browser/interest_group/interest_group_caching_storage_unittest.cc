@@ -46,10 +46,10 @@ class InterestGroupCachingStorageTest : public testing::Test {
         /*disabled_features=*/{features::kCookieDeprecationFacilitatedTesting});
   }
 
-  absl::optional<scoped_refptr<StorageInterestGroups>>
-  GetInterestGroupsForOwner(InterestGroupCachingStorage* caching_storage,
-                            const url::Origin& owner) {
-    absl::optional<scoped_refptr<StorageInterestGroups>> result;
+  std::optional<scoped_refptr<StorageInterestGroups>> GetInterestGroupsForOwner(
+      InterestGroupCachingStorage* caching_storage,
+      const url::Origin& owner) {
+    std::optional<scoped_refptr<StorageInterestGroups>> result;
     base::RunLoop run_loop;
     caching_storage->GetInterestGroupsForOwner(
         owner,
@@ -62,15 +62,15 @@ class InterestGroupCachingStorageTest : public testing::Test {
     return result;
   }
 
-  absl::optional<SingleStorageInterestGroup> GetInterestGroup(
+  std::optional<SingleStorageInterestGroup> GetInterestGroup(
       InterestGroupCachingStorage* caching_storage,
       const blink::InterestGroupKey& group_key) {
-    absl::optional<SingleStorageInterestGroup> result;
+    std::optional<SingleStorageInterestGroup> result;
     base::RunLoop run_loop;
     caching_storage->GetInterestGroup(
         group_key, base::BindLambdaForTesting(
                        [&result, &run_loop](
-                           absl::optional<SingleStorageInterestGroup> group) {
+                           std::optional<SingleStorageInterestGroup> group) {
                          result = std::move(group);
                          run_loop.Quit();
                        }));
@@ -156,14 +156,14 @@ class InterestGroupCachingStorageTest : public testing::Test {
     return result;
   }
 
-  absl::optional<base::Time> GetLastKAnonymityReported(
+  std::optional<base::Time> GetLastKAnonymityReported(
       InterestGroupCachingStorage* caching_storage,
       const std::string& key) {
-    absl::optional<base::Time> result;
+    std::optional<base::Time> result;
     base::RunLoop run_loop;
     caching_storage->GetLastKAnonymityReported(
         key, base::BindLambdaForTesting(
-                 [&result, &run_loop](absl::optional<base::Time> res) {
+                 [&result, &run_loop](std::optional<base::Time> res) {
                    result = std::move(res);
                    run_loop.Quit();
                  }));
@@ -229,7 +229,7 @@ TEST_F(InterestGroupCachingStorageTest, DBUpdatesShouldModifyCache) {
   ig_different_owner.name = "other";
   ig_different_owner.expiry = base::Time::Now() + base::Days(30);
 
-  absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs =
+  std::optional<scoped_refptr<StorageInterestGroups>> loaded_igs =
       GetInterestGroupsForOwner(caching_storage.get(), owner);
   ASSERT_EQ(loaded_igs->get()->size(), 0u);
 
@@ -238,7 +238,7 @@ TEST_F(InterestGroupCachingStorageTest, DBUpdatesShouldModifyCache) {
   loaded_igs = GetInterestGroupsForOwner(caching_storage.get(), owner);
   ASSERT_EQ(loaded_igs->get()->size(), 1u);
 
-  absl::optional<scoped_refptr<StorageInterestGroups>> previously_loaded_igs =
+  std::optional<scoped_refptr<StorageInterestGroups>> previously_loaded_igs =
       loaded_igs;
 
   // Getting an interest group a second time works.
@@ -350,7 +350,7 @@ TEST_F(InterestGroupCachingStorageTest, DBUpdatesShouldModifyCache) {
   loaded_igs = GetInterestGroupsForOwner(caching_storage.get(), owner);
   ASSERT_EQ(loaded_igs->get(), previously_loaded_igs->get());
 
-  absl::optional<base::Time> loaded_time =
+  std::optional<base::Time> loaded_time =
       GetLastKAnonymityReported(caching_storage.get(), k_anon_data.key);
   ASSERT_EQ(loaded_time, update_time);
   loaded_igs = GetInterestGroupsForOwner(caching_storage.get(), owner);
@@ -437,10 +437,10 @@ TEST_F(InterestGroupCachingStorageTest, GettersShouldNotModifyCache) {
   JoinInterestGroup(caching_storage.get(), ig1, GURL("https://www.test.com"));
   JoinInterestGroup(caching_storage.get(), ig2, GURL("https://www.test.com"));
 
-  absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs =
+  std::optional<scoped_refptr<StorageInterestGroups>> loaded_igs =
       GetInterestGroupsForOwner(caching_storage.get(), owner);
   ASSERT_EQ(loaded_igs->get()->size(), 2u);
-  absl::optional<scoped_refptr<StorageInterestGroups>> previously_loaded_igs =
+  std::optional<scoped_refptr<StorageInterestGroups>> previously_loaded_igs =
       loaded_igs;
 
   GetInterestGroup(caching_storage.get(),
@@ -482,11 +482,11 @@ TEST_F(InterestGroupCachingStorageTest, GetInterestGroupUsesCache) {
 
   // GetInterestGroupsForOwner was not called yet -- there is no cached result
   // to use.
-  absl::optional<SingleStorageInterestGroup> pre_cache_loaded_group =
+  std::optional<SingleStorageInterestGroup> pre_cache_loaded_group =
       GetInterestGroup(caching_storage.get(),
                        blink::InterestGroupKey(ig.owner, ig.name));
 
-  absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs =
+  std::optional<scoped_refptr<StorageInterestGroups>> loaded_igs =
       GetInterestGroupsForOwner(caching_storage.get(), owner);
 
   ASSERT_EQ(loaded_igs->get()->size(), 1u);
@@ -496,7 +496,7 @@ TEST_F(InterestGroupCachingStorageTest, GetInterestGroupUsesCache) {
       "Ads.InterestGroup.GetInterestGroupCacheHit", false, 1);
 
   // There should be a cached value to use now.
-  absl::optional<SingleStorageInterestGroup> post_cache_loaded_group =
+  std::optional<SingleStorageInterestGroup> post_cache_loaded_group =
       GetInterestGroup(caching_storage.get(),
                        blink::InterestGroupKey(ig.owner, ig.name));
   ASSERT_EQ(&(loaded_igs->get()->GetInterestGroups()[0]->interest_group),
@@ -523,16 +523,16 @@ TEST_F(InterestGroupCachingStorageTest, CacheWorksWhenPointerReleased) {
   JoinInterestGroup(caching_storage.get(), ig2, joining_url);
   JoinInterestGroup(caching_storage.get(), ig_different_owner, joining_url);
 
-  absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs_1 =
+  std::optional<scoped_refptr<StorageInterestGroups>> loaded_igs_1 =
       GetInterestGroupsForOwner(caching_storage.get(), owner1);
-  absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs_2 =
+  std::optional<scoped_refptr<StorageInterestGroups>> loaded_igs_2 =
       GetInterestGroupsForOwner(caching_storage.get(), owner2);
 
   // Releasing loaded_igs_1 shouldn't affect loaded_igs_2.
   loaded_igs_1.reset();
-  absl::optional<scoped_refptr<StorageInterestGroups>> newly_loaded_igs_1 =
+  std::optional<scoped_refptr<StorageInterestGroups>> newly_loaded_igs_1 =
       GetInterestGroupsForOwner(caching_storage.get(), owner1);
-  absl::optional<scoped_refptr<StorageInterestGroups>> newly_loaded_igs_2 =
+  std::optional<scoped_refptr<StorageInterestGroups>> newly_loaded_igs_2 =
       GetInterestGroupsForOwner(caching_storage.get(), owner2);
 
   ASSERT_EQ(loaded_igs_2->get(), newly_loaded_igs_2->get());
@@ -550,9 +550,9 @@ TEST_F(InterestGroupCachingStorageTest,
 
   base::HistogramTester histogram_tester;
 
-  absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs1;
-  absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs2;
-  absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs3;
+  std::optional<scoped_refptr<StorageInterestGroups>> loaded_igs1;
+  std::optional<scoped_refptr<StorageInterestGroups>> loaded_igs2;
+  std::optional<scoped_refptr<StorageInterestGroups>> loaded_igs3;
   base::RunLoop run_loop;
   caching_storage->GetInterestGroupsForOwner(
       owner, base::BindLambdaForTesting(
@@ -588,10 +588,10 @@ TEST_F(InterestGroupCachingStorageTest,
   auto ig = MakeInterestGroup(owner, "name");
   JoinInterestGroup(caching_storage.get(), ig, GURL("https://www.test.com"));
 
-  absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs1;
-  absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs2;
-  absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs3;
-  absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs4;
+  std::optional<scoped_refptr<StorageInterestGroups>> loaded_igs1;
+  std::optional<scoped_refptr<StorageInterestGroups>> loaded_igs2;
+  std::optional<scoped_refptr<StorageInterestGroups>> loaded_igs3;
+  std::optional<scoped_refptr<StorageInterestGroups>> loaded_igs4;
   base::RunLoop run_loop;
   caching_storage->GetInterestGroupsForOwner(
       owner, base::BindLambdaForTesting(
@@ -634,7 +634,7 @@ TEST_F(InterestGroupCachingStorageTest,
 
   // Another call to GetInterestGroupsForOwner should get the newly cached
   // value.
-  absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs5 =
+  std::optional<scoped_refptr<StorageInterestGroups>> loaded_igs5 =
       GetInterestGroupsForOwner(caching_storage.get(), owner);
   ASSERT_EQ(loaded_igs3->get(), loaded_igs5->get());
 }
@@ -645,10 +645,10 @@ TEST_F(InterestGroupCachingStorageTest,
       CreateCachingStorage();
   url::Origin owner = url::Origin::Create(GURL("https://www.example.com/"));
   auto ig = MakeInterestGroup(owner, "name");
-  absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs1;
-  absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs2;
-  absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs3;
-  absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs4;
+  std::optional<scoped_refptr<StorageInterestGroups>> loaded_igs1;
+  std::optional<scoped_refptr<StorageInterestGroups>> loaded_igs2;
+  std::optional<scoped_refptr<StorageInterestGroups>> loaded_igs3;
+  std::optional<scoped_refptr<StorageInterestGroups>> loaded_igs4;
 
   // The join and leave and join calls are three invalidations in a row.
   base::RunLoop run_loop;
@@ -704,11 +704,11 @@ TEST_F(InterestGroupCachingStorageTest,
       CreateCachingStorage();
   url::Origin owner = url::Origin::Create(GURL("https://www.example.com/"));
   auto ig = MakeInterestGroup(owner, "name");
-  absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs1;
-  absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs2;
-  absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs3;
-  absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs4;
-  absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs5;
+  std::optional<scoped_refptr<StorageInterestGroups>> loaded_igs1;
+  std::optional<scoped_refptr<StorageInterestGroups>> loaded_igs2;
+  std::optional<scoped_refptr<StorageInterestGroups>> loaded_igs3;
+  std::optional<scoped_refptr<StorageInterestGroups>> loaded_igs4;
+  std::optional<scoped_refptr<StorageInterestGroups>> loaded_igs5;
 
   // The join and leave are interwoven with outstanding loads.
   base::RunLoop run_loop;
@@ -775,13 +775,13 @@ TEST_F(InterestGroupCachingStorageTest, NoCachingWhenFeatureDisabled) {
 
   JoinInterestGroup(caching_storage.get(), ig, GURL("https://www.test.com"));
 
-  absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs =
+  std::optional<scoped_refptr<StorageInterestGroups>> loaded_igs =
       GetInterestGroupsForOwner(caching_storage.get(), owner);
-  absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs_again =
+  std::optional<scoped_refptr<StorageInterestGroups>> loaded_igs_again =
       GetInterestGroupsForOwner(caching_storage.get(), owner);
   ASSERT_NE(loaded_igs->get(), loaded_igs_again->get());
 
-  absl::optional<SingleStorageInterestGroup> single_loaded_group =
+  std::optional<SingleStorageInterestGroup> single_loaded_group =
       GetInterestGroup(caching_storage.get(),
                        blink::InterestGroupKey(ig.owner, ig.name));
   ASSERT_TRUE(single_loaded_group.has_value());
@@ -810,9 +810,9 @@ TEST_F(InterestGroupCachingStorageTest,
 
   JoinInterestGroup(caching_storage.get(), ig, GURL("https://www.test.com"));
 
-  absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs =
+  std::optional<scoped_refptr<StorageInterestGroups>> loaded_igs =
       GetInterestGroupsForOwner(caching_storage.get(), owner);
-  absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs_again =
+  std::optional<scoped_refptr<StorageInterestGroups>> loaded_igs_again =
       GetInterestGroupsForOwner(caching_storage.get(), owner);
   ASSERT_NE(loaded_igs->get(), loaded_igs_again->get());
 }
@@ -848,7 +848,7 @@ TEST_F(InterestGroupCachingStorageTest, LoadGroupsCacheHitHistogram) {
 
   task_environment_.FastForwardBy(
       InterestGroupCachingStorage::kMinimumCacheHoldTime);
-  absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs =
+  std::optional<scoped_refptr<StorageInterestGroups>> loaded_igs =
       GetInterestGroupsForOwner(caching_storage.get(), owner);
   // Not a cache hit because the previous result of GetInterestGroupsForOwner is
   // not in memory.
@@ -892,11 +892,11 @@ TEST_F(InterestGroupCachingStorageTest, DontLoadCachedInterestGroupsIfExpired) {
 
   JoinInterestGroup(caching_storage.get(), ig, GURL("https://www.test.com"));
 
-  absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs =
+  std::optional<scoped_refptr<StorageInterestGroups>> loaded_igs =
       GetInterestGroupsForOwner(caching_storage.get(), owner);
 
   task_environment().FastForwardBy(base::Days(2));
-  absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs_again =
+  std::optional<scoped_refptr<StorageInterestGroups>> loaded_igs_again =
       GetInterestGroupsForOwner(caching_storage.get(), owner);
   ASSERT_NE(loaded_igs->get(), loaded_igs_again->get());
 }

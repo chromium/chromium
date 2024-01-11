@@ -116,7 +116,7 @@ void PrefetchProxyConfigurator::OnFallback(const net::ProxyChain& bad_chain,
   base::UmaHistogramSparse("PrefetchProxy.Proxy.Fallback.NetError",
                            std::abs(net_error));
 
-  OnTunnelProxyConnectionError(absl::nullopt);
+  OnTunnelProxyConnectionError(std::nullopt);
 }
 
 void PrefetchProxyConfigurator::OnTunnelHeadersReceived(
@@ -147,7 +147,7 @@ void PrefetchProxyConfigurator::OnTunnelHeadersReceived(
     }
   }
 
-  OnTunnelProxyConnectionError(absl::nullopt);
+  OnTunnelProxyConnectionError(std::nullopt);
 }
 
 bool PrefetchProxyConfigurator::IsPrefetchProxyAvailable() const {
@@ -159,7 +159,7 @@ bool PrefetchProxyConfigurator::IsPrefetchProxyAvailable() const {
 }
 
 void PrefetchProxyConfigurator::OnTunnelProxyConnectionError(
-    absl::optional<base::TimeDelta> retry_after) {
+    std::optional<base::TimeDelta> retry_after) {
   base::Time retry_proxy_at;
   if (retry_after) {
     retry_proxy_at = clock_->Now() + *retry_after;

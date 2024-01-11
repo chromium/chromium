@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -20,7 +21,6 @@
 #include "content/public/browser/document_service.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom.h"
 #include "ui/base/clipboard/clipboard.h"
 
@@ -54,7 +54,7 @@ class CONTENT_EXPORT ClipboardHostImpl
   // Represents the underlying type of the argument passed to
   // IsClipboardPasteAllowedCallback without the const& part.
   using IsClipboardPasteAllowedCallbackArgType =
-      absl::optional<ClipboardPasteData>;
+      std::optional<ClipboardPasteData>;
 
   // Keeps track of a request to see if some clipboard content, identified by
   // its sequence number, is allowed to be pasted into the RenderFrameHost
@@ -102,7 +102,7 @@ class CONTENT_EXPORT ClipboardHostImpl
 
     // The data argument to pass to the IsClipboardPasteAllowedCallback.
     // This member is null until Complete() is called.
-    absl::optional<IsClipboardPasteAllowedCallbackArgType> data_;
+    std::optional<IsClipboardPasteAllowedCallbackArgType> data_;
     std::vector<IsClipboardPasteAllowedCallback> callbacks_;
   };
 
@@ -131,7 +131,7 @@ class CONTENT_EXPORT ClipboardHostImpl
   // status for the clipboard data corresponding to sequence number |seqno|.
   void FinishPasteIfAllowed(
       const ui::ClipboardSequenceNumberToken& seqno,
-      absl::optional<ClipboardPasteData> clipboard_paste_data);
+      std::optional<ClipboardPasteData> clipboard_paste_data);
 
   const std::map<ui::ClipboardSequenceNumberToken, IsPasteAllowedRequest>&
   is_paste_allowed_requests_for_testing() {

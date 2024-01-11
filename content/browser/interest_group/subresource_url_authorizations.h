@@ -29,7 +29,7 @@ class CONTENT_EXPORT SubresourceUrlAuthorizations {
       delete;
 
   // Returns the BundleSubresourceInfo for `subresource_url` iff the worklet is
-  // authorized to access `subresource_url`, otherwise returns absl::nullopt. To
+  // authorized to access `subresource_url`, otherwise returns std::nullopt. To
   // be called by the AuctionURLLoaderFactoryProxy.
   //
   // Returned pointer is invaliadted if AuthorizeSubresourceUrls() or

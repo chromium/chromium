@@ -23,7 +23,7 @@ ServiceWorkerVersionInfo::ServiceWorkerVersionInfo()
 ServiceWorkerVersionInfo::ServiceWorkerVersionInfo(
     blink::EmbeddedWorkerStatus running_status,
     ServiceWorkerVersion::Status status,
-    absl::optional<ServiceWorkerVersion::FetchHandlerType> fetch_handler_type,
+    std::optional<ServiceWorkerVersion::FetchHandlerType> fetch_handler_type,
     const GURL& script_url,
     const GURL& scope,
     const blink::StorageKey& storage_key,
@@ -34,7 +34,7 @@ ServiceWorkerVersionInfo::ServiceWorkerVersionInfo(
     int devtools_agent_route_id,
     ukm::SourceId ukm_source_id,
     blink::mojom::AncestorFrameType ancestor_frame_type,
-    absl::optional<std::string> router_rules)
+    std::optional<std::string> router_rules)
     : ServiceWorkerVersionBaseInfo(scope,
                                    storage_key,
                                    registration_id,

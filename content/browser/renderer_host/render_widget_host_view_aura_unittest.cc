@@ -357,8 +357,8 @@ class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
     last_forwarded_gesture_event_ = gesture_event;
   }
 
-  absl::optional<WebGestureEvent> GetAndResetLastForwardedGestureEvent() {
-    absl::optional<WebGestureEvent> ret;
+  std::optional<WebGestureEvent> GetAndResetLastForwardedGestureEvent() {
+    std::optional<WebGestureEvent> ret;
     last_forwarded_gesture_event_.swap(ret);
     return ret;
   }
@@ -445,7 +445,7 @@ class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
   bool new_content_rendering_timeout_fired_ = false;
   MockWidgetInputHandler input_handler_;
   MockWidget widget_;
-  absl::optional<WebGestureEvent> last_forwarded_gesture_event_;
+  std::optional<WebGestureEvent> last_forwarded_gesture_event_;
 };
 
 class TestScopedKeyboardHook : public aura::ScopedKeyboardHook {
@@ -467,7 +467,7 @@ class TestScopedKeyboardHook : public aura::ScopedKeyboardHook {
 
  private:
   bool keyboard_lock_active_ = false;
-  absl::optional<ui::DomCode> locked_key_;
+  std::optional<ui::DomCode> locked_key_;
 };
 
 TestScopedKeyboardHook::TestScopedKeyboardHook() = default;
@@ -2414,7 +2414,7 @@ TEST_F(RenderWidgetHostViewAuraTest,
   // cancel to cancel any ongoing flings before the start of this scroll.
   view_->OnScrollEvent(&scroll_event);
   base::RunLoop().RunUntilIdle();
-  absl::optional<WebGestureEvent> last_gesture =
+  std::optional<WebGestureEvent> last_gesture =
       widget_host_->GetAndResetLastForwardedGestureEvent();
   ASSERT_TRUE(last_gesture);
   EXPECT_EQ(WebInputEvent::Type::kGestureFlingCancel, last_gesture->GetType());
@@ -6341,7 +6341,7 @@ TEST_F(InputMethodStateAuraTest, GetCompositionCharacterBounds) {
     ActivateViewForTextInputManager(views_[index], ui::TEXT_INPUT_TYPE_TEXT);
     // Simulate an IPC to set character bounds for the view.
     views_[index]->ImeCompositionRangeChanged(
-        gfx::Range(), {{gfx::Rect(1, 2, 3, 4 + index)}}, absl::nullopt);
+        gfx::Range(), {{gfx::Rect(1, 2, 3, 4 + index)}}, std::nullopt);
 
     // No bounds at index 1.
     EXPECT_FALSE(text_input_client()->GetCompositionCharacterBounds(1, &bound));

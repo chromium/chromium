@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <map>
+#include <optional>
 #include <set>
 #include <vector>
 
@@ -29,7 +30,6 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 #include "third_party/blink/public/mojom/mediasession/media_session.mojom.h"
 
@@ -283,7 +283,7 @@ class MediaSessionImpl : public MediaSession,
   // rerouted. This setting persists until cross-origin navigation occurs, the
   // renderer reports an audio sink change to a device different from |id|, or
   // this method is called again.
-  void SetAudioSinkId(const absl::optional<std::string>& id) override;
+  void SetAudioSinkId(const std::optional<std::string>& id) override;
 
   // Mute/Unmute the microphone for a WebRTC session.
   void ToggleMicrophone() override;
@@ -495,8 +495,8 @@ class MediaSessionImpl : public MediaSession,
   void ForAllPlayers(base::RepeatingCallback<void(const PlayerIdentifier&)>);
 
   // Restrict duration update under certain frequency.
-  absl::optional<media_session::MediaPosition> MaybeGuardDurationUpdate(
-      absl::optional<media_session::MediaPosition> position);
+  std::optional<media_session::MediaPosition> MaybeGuardDurationUpdate(
+      std::optional<media_session::MediaPosition> position);
 
   void IncreaseDurationUpdateAllowance();
 
@@ -543,7 +543,7 @@ class MediaSessionImpl : public MediaSession,
   media_session::mojom::MediaSessionInfoPtr session_info_;
 
   // The last updated |MediaPosition| that was sent to |observers_|.
-  absl::optional<media_session::MediaPosition> position_;
+  std::optional<media_session::MediaPosition> position_;
 
   MediaSessionUmaHelper uma_helper_;
 
@@ -564,7 +564,7 @@ class MediaSessionImpl : public MediaSession,
   // Used to persist audio device selection between navigations on the same
   // origin.
   url::Origin origin_;
-  absl::optional<std::string> audio_device_id_for_origin_;
+  std::optional<std::string> audio_device_id_for_origin_;
 
   class PageData : public content::PageUserData<PageData> {
    public:
@@ -637,7 +637,7 @@ class MediaSessionImpl : public MediaSession,
   // Whether the associated WebContents is connected to a presentation.
   bool has_presentation_ = false;
 
-  absl::optional<PlayerIdentifier> guarding_player_id_;
+  std::optional<PlayerIdentifier> guarding_player_id_;
 
   media_session::mojom::RemotePlaybackMetadataPtr remote_playback_metadata_;
 

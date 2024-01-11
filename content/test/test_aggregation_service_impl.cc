@@ -4,6 +4,7 @@
 
 #include "content/test/test_aggregation_service_impl.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -27,7 +28,6 @@
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/aggregation_service/public_key.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -57,7 +57,7 @@ blink::mojom::AggregationServiceMode ConvertToAggregationMode(
 void HandleAggregatableReportCallback(
     base::OnceCallback<void(base::Value::Dict)> callback,
     AggregatableReportRequest,
-    absl::optional<AggregatableReport> report,
+    std::optional<AggregatableReport> report,
     AggregatableReportAssembler::AssemblyStatus status) {
   if (!report.has_value()) {
     LOG(ERROR) << "Failed to assemble the report, status: "
@@ -128,7 +128,7 @@ void TestAggregationServiceImpl::AssembleReport(
       {blink::mojom::AggregatableReportHistogramContribution(
           /*bucket=*/request.bucket, /*value=*/request.value)},
       ConvertToAggregationMode(request.aggregation_mode),
-      /*aggregation_coordinator_origin=*/absl::nullopt,
+      /*aggregation_coordinator_origin=*/std::nullopt,
       /*max_contributions_allowed=*/20);
 
   AggregatableReportSharedInfo shared_info(
@@ -141,7 +141,7 @@ void TestAggregationServiceImpl::AssembleReport(
       std::move(request.additional_fields), std::move(request.api_version),
       std::move(request.api_identifier));
 
-  absl::optional<AggregatableReportRequest> report_request =
+  std::optional<AggregatableReportRequest> report_request =
       AggregatableReportRequest::CreateForTesting(
           std::move(request.processing_urls), std::move(payload_contents),
           std::move(shared_info));

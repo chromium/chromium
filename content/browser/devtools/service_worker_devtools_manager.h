@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <map>
+#include <optional>
 
 #include "base/containers/flat_set.h"
 #include "base/no_destructor.h"
@@ -18,7 +19,6 @@
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom.h"
 #include "url/gurl.h"
 

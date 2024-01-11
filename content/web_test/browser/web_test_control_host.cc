@@ -703,7 +703,7 @@ void WebTestControlHost::ResetBrowserAfterWebTest() {
   expected_pixel_hash_.clear();
   test_url_ = GURL();
   prefs_ = blink::web_pref::WebPreferences();
-  lcpp_hint_ = absl::nullopt;
+  lcpp_hint_ = std::nullopt;
   should_override_prefs_ = false;
   WebTestContentBrowserClient::Get()->SetPopupBlockingEnabled(true);
   WebTestContentBrowserClient::Get()->ResetMockClipboardHosts();
@@ -1666,15 +1666,15 @@ void WebTestControlHost::ClearAllDatabases() {
 void WebTestControlHost::SimulateWebNotificationClick(
     const std::string& title,
     int32_t action_index,
-    const absl::optional<std::u16string>& reply) {
+    const std::optional<std::u16string>& reply) {
   auto* client = WebTestContentBrowserClient::Get();
   auto* context = client->GetWebTestBrowserContext();
   auto* service = context->GetPlatformNotificationService();
   static_cast<MockPlatformNotificationService*>(service)->SimulateClick(
       title,
       action_index == std::numeric_limits<int32_t>::min()
-          ? absl::optional<int>()
-          : absl::optional<int>(action_index),
+          ? std::optional<int>()
+          : std::optional<int>(action_index),
       reply);
 }
 
@@ -1891,7 +1891,7 @@ void WebTestControlHost::PrepareRendererForNextWebTest() {
   // COOP policy of the previous document.
 
   // Avoid sending LCPP hint on the about:blank navigation.
-  lcpp_hint_ = absl::nullopt;
+  lcpp_hint_ = std::nullopt;
 
   NavigationController::LoadURLParams params((GURL(kAboutBlankResetWebTest)));
   params.transition_type = ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED);

@@ -251,7 +251,7 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
 
   // Token to return this token in the next IPC, so that RenderFrameHostImpl
   // can discard stale data, when the token does not match the expected token.
-  absl::optional<uint32_t> reset_token_;
+  std::optional<uint32_t> reset_token_;
 
   // Whether or not we've injected a stylesheet in this document
   // (only when debugging flags are enabled, never under normal circumstances).
@@ -299,7 +299,7 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   //
   // Used to ensure that the tutor message that explains to screen reader users
   // how to turn on automatic image labels is provided only once.
-  mutable absl::optional<int32_t> first_unlabeled_image_id_ = absl::nullopt;
+  mutable std::optional<int32_t> first_unlabeled_image_id_ = std::nullopt;
 
   // Note: this is the accessibility mode communicated to this object.
   // The actual accessibility mode on a Document is the combination of this

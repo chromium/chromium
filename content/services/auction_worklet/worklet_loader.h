@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -23,7 +24,6 @@
 #include "content/services/auction_worklet/public/cpp/auction_network_events_delegate.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "v8/include/v8-persistent-handle.h"
 
@@ -106,7 +106,7 @@ class CONTENT_EXPORT WorkletLoaderBase {
 
   using LoadWorkletCallback =
       base::OnceCallback<void(Result result,
-                              absl::optional<std::string> error_msg)>;
+                              std::optional<std::string> error_msg)>;
 
   explicit WorkletLoaderBase(const WorkletLoaderBase&) = delete;
   WorkletLoaderBase& operator=(const WorkletLoaderBase&) = delete;
@@ -131,7 +131,7 @@ class CONTENT_EXPORT WorkletLoaderBase {
  private:
   void OnDownloadComplete(std::unique_ptr<std::string> body,
                           scoped_refptr<net::HttpResponseHeaders> headers,
-                          absl::optional<std::string> error_msg);
+                          std::optional<std::string> error_msg);
 
   static void HandleDownloadResultOnV8Thread(
       GURL source_url,
@@ -139,7 +139,7 @@ class CONTENT_EXPORT WorkletLoaderBase {
       scoped_refptr<AuctionV8Helper> v8_helper,
       scoped_refptr<AuctionV8Helper::DebugId> debug_id,
       std::unique_ptr<std::string> body,
-      absl::optional<std::string> error_msg,
+      std::optional<std::string> error_msg,
       WorkletLoaderBase::Result::V8Data* out_data,
       scoped_refptr<base::SequencedTaskRunner> user_thread_task_runner,
       base::WeakPtr<WorkletLoaderBase> weak_instance);
@@ -148,18 +148,18 @@ class CONTENT_EXPORT WorkletLoaderBase {
                         scoped_refptr<AuctionV8Helper> v8_helper,
                         const GURL& source_url,
                         AuctionV8Helper::DebugId* debug_id,
-                        absl::optional<std::string>& error_msg,
+                        std::optional<std::string>& error_msg,
                         WorkletLoaderBase::Result::V8Data* out_data);
 
   static bool CompileWasm(const std::string& body,
                           scoped_refptr<AuctionV8Helper> v8_helper,
                           const GURL& source_url,
                           AuctionV8Helper::DebugId* debug_id,
-                          absl::optional<std::string>& error_msg,
+                          std::optional<std::string>& error_msg,
                           WorkletLoaderBase::Result::V8Data* out_data);
 
   void DeliverCallbackOnUserThread(bool success,
-                                   absl::optional<std::string> error_msg);
+                                   std::optional<std::string> error_msg);
 
   const GURL source_url_;
   const AuctionDownloader::MimeType mime_type_;

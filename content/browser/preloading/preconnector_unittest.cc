@@ -21,14 +21,14 @@ class MockAnchorElementPreconnector : public AnchorElementPreconnectDelegate {
   ~MockAnchorElementPreconnector() override = default;
 
   void MaybePreconnect(const GURL& target) override { target_ = target; }
-  absl::optional<GURL>& Target() { return target_; }
+  std::optional<GURL>& Target() { return target_; }
 
   base::WeakPtr<MockAnchorElementPreconnector> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
  private:
-  absl::optional<GURL> target_;
+  std::optional<GURL> target_;
   base::WeakPtrFactory<MockAnchorElementPreconnector> weak_ptr_factory_{this};
 };
 

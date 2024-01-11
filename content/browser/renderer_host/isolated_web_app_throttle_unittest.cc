@@ -4,6 +4,8 @@
 
 #include "content/browser/renderer_host/isolated_web_app_throttle.h"
 
+#include <optional>
+
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -20,7 +22,6 @@
 #include "content/test/test_render_frame_host.h"
 #include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "ui/base/page_transition_types.h"
@@ -56,7 +57,7 @@ class IsolatedWebAppContentBrowserClient : public ContentBrowserClient {
       network::mojom::WebSandboxFlags sandbox_flags,
       ui::PageTransition page_transition,
       bool has_user_gesture,
-      const absl::optional<url::Origin>& initiating_origin,
+      const std::optional<url::Origin>& initiating_origin,
       RenderFrameHost* initiator_document,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>* out_factory)
       override {
@@ -78,14 +79,14 @@ class IsolatedWebAppContentBrowserClient : public ContentBrowserClient {
 
   bool AreIsolatedWebAppsEnabled(BrowserContext*) override { return true; }
 
-  absl::optional<blink::ParsedPermissionsPolicy>
+  std::optional<blink::ParsedPermissionsPolicy>
   GetPermissionsPolicyForIsolatedWebApp(
       content::BrowserContext* browser_context,
       const url::Origin& app_origin) override {
     return {{blink::ParsedPermissionsPolicyDeclaration(
         blink::mojom::PermissionsPolicyFeature::kCrossOriginIsolated,
         /*allowed_origins=*/{},
-        /*self_if_matches=*/absl::nullopt,
+        /*self_if_matches=*/std::nullopt,
         /*matches_all_origins=*/true, /*matches_opaque_src=*/false)}};
   }
 

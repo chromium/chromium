@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -37,7 +38,6 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -65,12 +65,12 @@ AuctionURLLoaderFactoryProxy::AuctionURLLoaderFactoryProxy(
     bool force_reload,
     const url::Origin& top_frame_origin,
     const url::Origin& frame_origin,
-    absl::optional<int> renderer_process_id,
+    std::optional<int> renderer_process_id,
     bool is_for_seller,
     network::mojom::ClientSecurityStatePtr client_security_state,
     const GURL& script_url,
-    const absl::optional<GURL>& wasm_url,
-    const absl::optional<GURL>& trusted_signals_base_url,
+    const std::optional<GURL>& wasm_url,
+    const std::optional<GURL>& trusted_signals_base_url,
     bool needs_cors_for_additional_bid,
     int frame_tree_node_id)
     : receiver_(this, std::move(pending_receiver)),
@@ -125,7 +125,7 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
 
   const SubresourceUrlBuilder::BundleSubresourceInfo* maybe_subresource_info =
       nullptr;
-  absl::optional<network::ResourceRequest::WebBundleTokenParams>
+  std::optional<network::ResourceRequest::WebBundleTokenParams>
       maybe_web_bundle_token_params;
   if (url_request.url == script_url_ &&
       accept_header == "application/javascript") {
@@ -189,7 +189,7 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
   new_request.enable_load_timing = url_request.enable_load_timing;
 
   if (is_trusted_bidding_signals_request) {
-    absl::optional<std::string> maybe_deprecation_label =
+    std::optional<std::string> maybe_deprecation_label =
         get_cookie_deprecation_label_.Run();
     if (maybe_deprecation_label) {
       new_request.headers.SetHeader("Sec-Cookie-Deprecation",

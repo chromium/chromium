@@ -82,10 +82,10 @@ class CONTENT_EXPORT VideoPictureInPictureWindowControllerImpl
   void NextSlide() override;
 
   const gfx::Rect& GetSourceBounds() const override;
-  absl::optional<gfx::Rect> GetWindowBounds() override;
+  std::optional<gfx::Rect> GetWindowBounds() override;
 
-  absl::optional<url::Origin> GetOrigin() override;
-  void SetOrigin(absl::optional<url::Origin> origin);
+  std::optional<url::Origin> GetOrigin() override;
+  void SetOrigin(std::optional<url::Origin> origin);
 
   // Called by the MediaSessionImpl when the MediaSessionInfo changes.
   void MediaSessionInfoChanged(
@@ -95,7 +95,7 @@ class CONTENT_EXPORT VideoPictureInPictureWindowControllerImpl
       const std::set<media_session::mojom::MediaSessionAction>& actions);
 
   void MediaSessionPositionChanged(
-      const absl::optional<media_session::MediaPosition>& media_position);
+      const std::optional<media_session::MediaPosition>& media_position);
 
   gfx::Size GetSize();
 
@@ -200,13 +200,13 @@ class CONTENT_EXPORT VideoPictureInPictureWindowControllerImpl
   std::unique_ptr<PictureInPictureSession> active_session_;
 
   // The media position info as last reported to us by MediaSessionImpl.
-  absl::optional<media_session::MediaPosition> media_position_;
+  std::optional<media_session::MediaPosition> media_position_;
 
   // Coordinates of the video element in WebContents coordinates.
   gfx::Rect source_bounds_;
 
   // The origin of the initiator.
-  absl::optional<url::Origin> origin_;
+  std::optional<url::Origin> origin_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

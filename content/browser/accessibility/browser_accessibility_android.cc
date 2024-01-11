@@ -652,11 +652,11 @@ std::u16string BrowserAccessibilityAndroid::GetBrailleRoleDescription() const {
 }
 
 std::u16string BrowserAccessibilityAndroid::GetTextContentUTF16() const {
-  return GetSubstringTextContentUTF16(absl::nullopt);
+  return GetSubstringTextContentUTF16(std::nullopt);
 }
 
 std::u16string BrowserAccessibilityAndroid::GetSubstringTextContentUTF16(
-    absl::optional<EarlyExitPredicate> predicate) const {
+    std::optional<EarlyExitPredicate> predicate) const {
   if (ui::IsIframe(GetRole()))
     return std::u16string();
 
@@ -1238,7 +1238,7 @@ int BrowserAccessibilityAndroid::GetItemIndex() const {
     if (max > min && value >= min && value <= max)
       index = static_cast<int>(((value - min)) * 100 / (max - min));
   } else {
-    absl::optional<int> pos_in_set = GetPosInSet();
+    std::optional<int> pos_in_set = GetPosInSet();
     if (pos_in_set && *pos_in_set > 0)
       index = *pos_in_set - 1;
   }
@@ -1628,7 +1628,7 @@ int BrowserAccessibilityAndroid::ColumnCount() const {
 }
 
 int BrowserAccessibilityAndroid::RowIndex() const {
-  absl::optional<int> pos_in_set = GetPosInSet();
+  std::optional<int> pos_in_set = GetPosInSet();
   if (pos_in_set && pos_in_set > 0)
     return *pos_in_set - 1;
   return node()->GetTableCellRowIndex().value_or(0);

@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <tuple>
 
 #include "base/command_line.h"
@@ -67,7 +68,6 @@
 #include "services/network/public/cpp/resource_request_body.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 #include "third_party/blink/public/common/navigation/navigation_params.h"
 #include "third_party/blink/public/common/origin_trials/scoped_test_origin_trial_policy.h"
@@ -729,7 +729,7 @@ class UpdateTitleLocalFrameHost : public LocalFrameHostInterceptor {
       : LocalFrameHostInterceptor(provider) {}
 
   MOCK_METHOD2(UpdateTitle,
-               void(const absl::optional<::std::u16string>& title,
+               void(const std::optional<::std::u16string>& title,
                     base::i18n::TextDirection title_direction));
 };
 }  // namespace
@@ -759,8 +759,8 @@ TEST_F(RenderViewImplUpdateTitleTest, OnNavigationLoadDataWithBaseURL) {
   commit_params->data_url_as_string =
       "data:text/html,<html><head><title>Data page</title></head></html>";
 
-  const absl::optional<::std::u16string>& title =
-      absl::make_optional(u"Data page");
+  const std::optional<::std::u16string>& title =
+      std::make_optional(u"Data page");
   EXPECT_CALL(*title_mock_frame_host(), UpdateTitle(title, testing::_))
       .Times(1);
   FrameLoadWaiter waiter(frame());
@@ -953,7 +953,7 @@ TEST_F(RenderViewImplTest, BeginNavigationForWebUI) {
       blink::kWebNavigationPolicyNewForegroundTab,
       network::mojom::WebSandboxFlags::kNone,
       blink::AllocateSessionStorageNamespaceId(), consumed_user_gesture,
-      absl::nullopt, absl::nullopt, /*base_url=*/blink::WebURL());
+      std::nullopt, std::nullopt, /*base_url=*/blink::WebURL());
   auto popup_navigation_info = std::make_unique<blink::WebNavigationInfo>();
   popup_navigation_info->url_request = std::move(popup_request);
   popup_navigation_info->frame_type =
@@ -1118,9 +1118,9 @@ TEST_F(RenderViewImplScaleFactorTest, DeviceScaleCorrectAfterCrossOriginNav) {
       TestRenderFrame::CreateStubAssociatedInterfaceProviderRemote(),
       /*web_view=*/nullptr,
       /*previous_frame_token=*/remote_child_frame_token,
-      /*opener_frame_token=*/absl::nullopt,
-      /*parent_frame_token=*/absl::nullopt,
-      /*previous_sibling_frame_token=*/absl::nullopt,
+      /*opener_frame_token=*/std::nullopt,
+      /*parent_frame_token=*/std::nullopt,
+      /*previous_sibling_frame_token=*/std::nullopt,
       base::UnguessableToken::Create(), blink::mojom::TreeScopeType::kDocument,
       std::move(replication_state), std::move(widget_params),
       blink::mojom::FrameOwnerProperties::New(),
@@ -1185,9 +1185,9 @@ TEST_F(RenderViewImplTest, DetachingProxyAlsoDestroysProvisionalFrame) {
       TestRenderFrame::CreateStubBrowserInterfaceBrokerRemote(),
       TestRenderFrame::CreateStubAssociatedInterfaceProviderRemote(),
       /*web_view=*/nullptr, child_remote_frame_token,
-      /*opener_frame_token=*/absl::nullopt,
+      /*opener_frame_token=*/std::nullopt,
       /*parent_frame_token=*/web_frame->GetFrameToken(),
-      /*previous_sibling_frame_token=*/absl::nullopt,
+      /*previous_sibling_frame_token=*/std::nullopt,
       base::UnguessableToken::Create(), blink::mojom::TreeScopeType::kDocument,
       std::move(replication_state),
       /*widget_params=*/nullptr, blink::mojom::FrameOwnerProperties::New(),
@@ -2903,8 +2903,8 @@ class AddMessageToConsoleMockLocalFrameHost : public LocalFrameHostInterceptor {
       blink::mojom::ConsoleMessageLevel log_level,
       const std::u16string& msg,
       uint32_t line_number,
-      const absl::optional<std::u16string>& source_id,
-      const absl::optional<std::u16string>& untrusted_stack_trace) override {
+      const std::optional<std::u16string>& source_id,
+      const std::optional<std::u16string>& untrusted_stack_trace) override {
     if (did_add_message_to_console_callback_) {
       std::move(did_add_message_to_console_callback_).Run(msg);
     }

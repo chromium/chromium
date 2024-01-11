@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <queue>
 #include <set>
 #include <string>
@@ -16,7 +17,6 @@
 #include "base/memory/weak_ptr.h"
 #include "ppapi/host/host_message_context.h"
 #include "ppapi/host/resource_host.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -74,7 +74,7 @@ class PepperNetworkProxyHost : public ppapi::host::ResourceHost {
 
   void OnResolveProxyCompleted(ppapi::host::ReplyMessageContext context,
                                PepperProxyLookupHelper* pending_request,
-                               absl::optional<net::ProxyInfo> proxy_info);
+                               std::optional<net::ProxyInfo> proxy_info);
   void SendFailureReply(int32_t error,
                         ppapi::host::ReplyMessageContext context);
 

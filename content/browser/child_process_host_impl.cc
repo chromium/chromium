@@ -214,7 +214,7 @@ void ChildProcessHostImpl::ForceShutdown() {
   child_process_->ProcessShutdown();
 }
 
-absl::optional<mojo::OutgoingInvitation>&
+std::optional<mojo::OutgoingInvitation>&
 ChildProcessHostImpl::GetMojoInvitation() {
   return mojo_invitation_;
 }

@@ -6,6 +6,7 @@
 
 #include <cmath>
 #include <functional>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -24,7 +25,6 @@
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace content {
@@ -151,7 +151,7 @@ TEST(AttributionInteropParserTest, ValidTriggerParses) {
             *SuitableOrigin::Deserialize("https://a.r.test"));
   EXPECT_EQ(result.front().context_origin,
             *SuitableOrigin::Deserialize("https://b.d.test"));
-  EXPECT_EQ(result.front().source_type, absl::nullopt);
+  EXPECT_EQ(result.front().source_type, std::nullopt);
   EXPECT_EQ(result.front().registration, base::Value(789));
   EXPECT_TRUE(result.front().debug_permission);
 }

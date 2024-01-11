@@ -6,6 +6,8 @@
 #define CONTENT_TEST_MOCK_PLATFORM_NOTIFICATION_SERVICE_H_
 
 #include <stdint.h>
+
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
@@ -14,7 +16,6 @@
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/notification_database_data.h"
 #include "content/public/browser/platform_notification_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace blink {
@@ -43,8 +44,8 @@ class MockPlatformNotificationService : public PlatformNotificationService {
   // indicates which action was clicked. |reply| indicates the user reply.
   // Must be called on the UI thread.
   void SimulateClick(const std::string& title,
-                     const absl::optional<int>& action_index,
-                     const absl::optional<std::u16string>& reply);
+                     const std::optional<int>& action_index,
+                     const std::optional<std::u16string>& reply);
 
   // Simulates the closing a notification titled |title|. Must be called on
   // the UI thread.

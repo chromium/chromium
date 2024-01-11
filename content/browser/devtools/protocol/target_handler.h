@@ -210,7 +210,7 @@ class TargetHandler : public DevToolsDomainHandler,
   base::flat_set<std::string> dispose_on_detach_context_ids_;
   base::flat_map<std::string, net::ProxyConfig> contexts_with_overridden_proxy_;
   base::flat_set<Throttle*> throttles_;
-  absl::optional<net::ProxyConfig> pending_proxy_config_;
+  std::optional<net::ProxyConfig> pending_proxy_config_;
   base::WeakPtrFactory<TargetHandler> weak_factory_{this};
 };
 

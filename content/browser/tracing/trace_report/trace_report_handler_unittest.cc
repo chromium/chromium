@@ -147,7 +147,7 @@ TEST_F(TraceReportHandlerTest, DownloadTrace) {
   auto uuid = base::Token::CreateRandom();
   base::MockCallback<TraceReportHandler::DownloadTraceCallback> callback;
 
-  const auto result = absl::optional<base::span<const char>>("PROTO RESULT");
+  const auto result = std::optional<base::span<const char>>("PROTO RESULT");
 
   EXPECT_CALL(fake_trace_upload_list_, DownloadTrace)
       .WillOnce(
@@ -158,7 +158,7 @@ TEST_F(TraceReportHandlerTest, DownloadTrace) {
           });
   EXPECT_CALL(callback, Run)
       .WillOnce(
-          [&result](absl::optional<mojo_base::BigBuffer> converted_value) {
+          [&result](std::optional<mojo_base::BigBuffer> converted_value) {
             EXPECT_EQ(std::string_view(
                           reinterpret_cast<char*>(converted_value->data()),
                           converted_value->size()),

@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_set.h"
@@ -23,7 +24,6 @@
 #include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/media/renderer_audio_input_stream_factory.mojom.h"
 
 namespace media {
@@ -156,7 +156,7 @@ class CONTENT_EXPORT ForwardingAudioStreamFactory final
     int stream_id_counter_ = 0;
 
     // Instantiated when |outputs_| should be muted, empty otherwise.
-    absl::optional<AudioMutingSession> muter_;
+    std::optional<AudioMutingSession> muter_;
 
     StreamBrokerSet inputs_;
     StreamBrokerSet outputs_;

@@ -67,7 +67,7 @@ void BrowsingTopicsURLLoaderInterceptor::WillStartRequest(
 }
 
 void BrowsingTopicsURLLoaderInterceptor::WillFollowRedirect(
-    const absl::optional<GURL>& new_url,
+    const std::optional<GURL>& new_url,
     std::vector<std::string>& removed_headers,
     net::HttpRequestHeaders& modified_headers) {
   if (new_url) {

@@ -57,7 +57,7 @@ struct SandboxParameters {
 // not be deleted.
 SandboxGrantResult MaybeDeleteOldData(
     const base::FilePath& old_path,
-    const absl::optional<base::FilePath>& filename,
+    const std::optional<base::FilePath>& filename,
     bool is_sql) {
   // The path to the specific data file might not have been specified in the
   // network context params. In that case, nothing to delete.
@@ -107,7 +107,7 @@ SandboxGrantResult MaybeDeleteOldData(
 // Returns SandboxGrantResult::kFailedToCopyData if a file could not be copied.
 SandboxGrantResult MaybeCopyData(const base::FilePath& old_path,
                                  const base::FilePath& new_path,
-                                 const absl::optional<base::FilePath>& filename,
+                                 const std::optional<base::FilePath>& filename,
                                  bool is_sql) {
   // The path to the specific data file might not have been specified in the
   // network context params. In that case, no files need to be moved.

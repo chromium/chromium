@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -23,7 +24,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/mojom/interest_group/ad_auction_service.mojom.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
@@ -84,9 +84,9 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   using RunAuctionCallback = base::OnceCallback<void(
       AuctionRunner* auction_runner,
       bool aborted_by_script,
-      absl::optional<blink::InterestGroupKey> winning_group_id,
-      absl::optional<blink::AdSize> requested_ad_size,
-      absl::optional<blink::AdDescriptor> ad_descriptor,
+      std::optional<blink::InterestGroupKey> winning_group_id,
+      std::optional<blink::AdSize> requested_ad_size,
+      std::optional<blink::AdDescriptor> ad_descriptor,
       std::vector<blink::AdDescriptor> ad_component_descriptors,
       std::vector<std::string> errors,
       std::unique_ptr<InterestGroupAuctionReporter>
@@ -166,10 +166,10 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   void ResolvedPromiseParam(
       blink::mojom::AuctionAdConfigAuctionIdPtr auction_id,
       blink::mojom::AuctionAdConfigField field,
-      const absl::optional<std::string>& json_value) override;
+      const std::optional<std::string>& json_value) override;
   void ResolvedPerBuyerSignalsPromise(
       blink::mojom::AuctionAdConfigAuctionIdPtr auction_id,
-      const absl::optional<base::flat_map<url::Origin, std::string>>&
+      const std::optional<base::flat_map<url::Origin, std::string>>&
           per_buyer_signals) override;
   void ResolvedBuyerTimeoutsPromise(
       blink::mojom::AuctionAdConfigAuctionIdPtr auction_id,
@@ -180,11 +180,11 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
       const blink::AuctionConfig::BuyerCurrencies& buyer_currencies) override;
   void ResolvedDirectFromSellerSignalsPromise(
       blink::mojom::AuctionAdConfigAuctionIdPtr auction_id,
-      const absl::optional<blink::DirectFromSellerSignals>&
+      const std::optional<blink::DirectFromSellerSignals>&
           direct_from_seller_signals) override;
   void ResolvedDirectFromSellerSignalsHeaderAdSlotPromise(
       blink::mojom::AuctionAdConfigAuctionIdPtr auction_id,
-      const absl::optional<std::string>&
+      const std::optional<std::string>&
           direct_from_seller_signals_header_ad_slot) override;
   void ResolvedAuctionAdResponsePromise(
       blink::mojom::AuctionAdConfigAuctionIdPtr auction_id,
@@ -246,7 +246,7 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   // cooldown for sending forDebuggingOnly reports have loaded. Only invoked
   // when flag kEnableSamplingDebugReports is enabled.
   void OnLoadDebugReportLockoutAndCooldownsComplete(
-      absl::optional<DebugReportLockoutAndCooldowns>
+      std::optional<DebugReportLockoutAndCooldowns>
           debug_report_lockout_and_cooldowns);
 
   // Invoked asynchronously by `auction_` once the bidding and scoring phase is

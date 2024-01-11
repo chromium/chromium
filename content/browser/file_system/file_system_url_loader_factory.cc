@@ -117,7 +117,7 @@ class FileSystemEntryURLLoader
       const std::vector<std::string>& removed_headers,
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
-      const absl::optional<GURL>& new_url) override {}
+      const std::optional<GURL>& new_url) override {}
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override {}
   void PauseReadingBodyFromNet() override {}
@@ -395,7 +395,7 @@ class FileSystemDirectoryURLLoader : public FileSystemEntryURLLoader {
     head->headers = CreateHttpResponseHeaders(200);
 
     client_->OnReceiveResponse(std::move(head), std::move(consumer_handle),
-                               absl::nullopt);
+                               std::nullopt);
 
     data_producer_ =
         std::make_unique<mojo::DataPipeProducer>(std::move(producer_handle));
@@ -546,7 +546,7 @@ class FileSystemFileURLLoader : public FileSystemEntryURLLoader {
         // This was an empty file; make sure to call OnReceiveResponse
         // regardless.
         client_->OnReceiveResponse(std::move(head_),
-                                   std::move(consumer_handle_), absl::nullopt);
+                                   std::move(consumer_handle_), std::nullopt);
       }
       OnFileWritten(net::OK);
       return;
@@ -590,7 +590,7 @@ class FileSystemFileURLLoader : public FileSystemEntryURLLoader {
       }
 
       client_->OnReceiveResponse(std::move(head_), std::move(consumer_handle_),
-                                 absl::nullopt);
+                                 std::nullopt);
     }
     remaining_bytes_ -= result;
     DCHECK_GE(remaining_bytes_, 0);

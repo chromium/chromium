@@ -21,7 +21,7 @@ void JNI_GpuProcessCallback_CompleteScopedSurfaceRequest(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& token,
     const base::android::JavaParamRef<jobject>& surface) {
-  absl::optional<base::UnguessableToken> requestToken =
+  std::optional<base::UnguessableToken> requestToken =
       base::android::UnguessableTokenAndroid::FromJavaUnguessableToken(env,
                                                                        token);
   if (!requestToken) {

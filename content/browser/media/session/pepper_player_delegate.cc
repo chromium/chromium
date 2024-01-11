@@ -83,11 +83,11 @@ void PepperPlayerDelegate::OnSetAudioSinkId(int player_id,
 
 void PepperPlayerDelegate::OnSetMute(int player_id, bool mute) {}
 
-absl::optional<media_session::MediaPosition> PepperPlayerDelegate::GetPosition(
+std::optional<media_session::MediaPosition> PepperPlayerDelegate::GetPosition(
     int player_id) const {
   // Pepper does not support position data.
   DCHECK_EQ(player_id, kPlayerId);
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 bool PepperPlayerDelegate::IsPictureInPictureAvailable(int player_id) const {

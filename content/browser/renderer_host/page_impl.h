@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_RENDERER_HOST_PAGE_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <vector>
 
@@ -21,7 +22,6 @@
 #include "net/base/schemeful_site.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
@@ -52,19 +52,19 @@ class CONTENT_EXPORT PageImpl : public Page {
   ~PageImpl() override;
 
   // Page implementation.
-  const absl::optional<GURL>& GetManifestUrl() const override;
+  const std::optional<GURL>& GetManifestUrl() const override;
   void GetManifest(GetManifestCallback callback) override;
   bool IsPrimary() const override;
   void WriteIntoTrace(perfetto::TracedValue context) override;
   base::WeakPtr<Page> GetWeakPtr() override;
   bool IsPageScaleFactorOne() override;
   const std::string& GetContentsMimeType() const override;
-  void SetResizableForTesting(absl::optional<bool> resizable) override;
-  absl::optional<bool> GetResizable() override;
+  void SetResizableForTesting(std::optional<bool> resizable) override;
+  std::optional<bool> GetResizable() override;
 
   // Setter for the `window.setResizable(bool)` API's value defining whether the
-  // window can be resized or not. `absl::nullopt` means the value is not set.
-  void SetResizable(absl::optional<bool> resizable);
+  // window can be resized or not. `std::nullopt` means the value is not set.
+  void SetResizable(std::optional<bool> resizable);
 
   base::WeakPtr<PageImpl> GetWeakPtrImpl();
 
@@ -103,7 +103,7 @@ class CONTENT_EXPORT PageImpl : public Page {
     favicon_urls_ = std::move(favicon_urls);
   }
 
-  void OnThemeColorChanged(const absl::optional<SkColor>& theme_color);
+  void OnThemeColorChanged(const std::optional<SkColor>& theme_color);
 
   void DidChangeBackgroundColor(SkColor4f background_color, bool color_adjust);
 
@@ -112,15 +112,15 @@ class CONTENT_EXPORT PageImpl : public Page {
 
   void NotifyPageBecameCurrent();
 
-  absl::optional<SkColor> theme_color() const {
+  std::optional<SkColor> theme_color() const {
     return main_document_theme_color_;
   }
 
-  absl::optional<SkColor> background_color() const {
+  std::optional<SkColor> background_color() const {
     return main_document_background_color_;
   }
 
-  absl::optional<blink::mojom::PreferredColorScheme> inferred_color_scheme()
+  std::optional<blink::mojom::PreferredColorScheme> inferred_color_scheme()
       const {
     return main_document_inferred_color_scheme_;
   }
@@ -157,7 +157,7 @@ class CONTENT_EXPORT PageImpl : public Page {
   void Activate(
       ActivationType type,
       StoredPage::RenderViewHostImplSafeRefSet& render_view_hosts_to_activate,
-      absl::optional<blink::ViewTransitionState> view_transition_state,
+      std::optional<blink::ViewTransitionState> view_transition_state,
       base::OnceCallback<void(base::TimeTicks)> completion_callback);
 
   // Prerender2:
@@ -265,7 +265,7 @@ class CONTENT_EXPORT PageImpl : public Page {
   //
   // nullopt indicates that the page did not get an update of the
   // manifest URL, and DidUpdateWebManifestURL() will not be called.
-  absl::optional<GURL> manifest_url_;
+  std::optional<GURL> manifest_url_;
 
   // Candidate favicon URLs. Each page may have a collection and will be
   // displayed when active (i.e., upon activation for prerendering).
@@ -275,18 +275,18 @@ class CONTENT_EXPORT PageImpl : public Page {
   bool did_first_visually_non_empty_paint_ = false;
 
   // Stores the value set by `window.setResizable(bool)` API for whether the
-  // window can be resized or not. `absl::nullopt` means the value is not set.
-  absl::optional<bool> resizable_ = absl::nullopt;
+  // window can be resized or not. `std::nullopt` means the value is not set.
+  std::optional<bool> resizable_ = std::nullopt;
 
   // The theme color for the underlying document as specified
   // by theme-color meta tag.
-  absl::optional<SkColor> main_document_theme_color_;
+  std::optional<SkColor> main_document_theme_color_;
 
   // The background color for the underlying document as computed by CSS.
-  absl::optional<SkColor> main_document_background_color_;
+  std::optional<SkColor> main_document_background_color_;
 
   // The inferred color scheme of the document.
-  absl::optional<blink::mojom::PreferredColorScheme>
+  std::optional<blink::mojom::PreferredColorScheme>
       main_document_inferred_color_scheme_;
 
   // Contents MIME type for the main document. It can be used to check whether
@@ -303,11 +303,11 @@ class CONTENT_EXPORT PageImpl : public Page {
   // charged to this budget. `select_url_overall_budget_` is not renewed until
   // `this` is destroyed, and it does not rely on any assumptions about when
   // specifically `this` is destroyed (e.g. during navigation or not).
-  absl::optional<double> select_url_overall_budget_;
+  std::optional<double> select_url_overall_budget_;
 
   // If `blink::features::kSharedStorageSelectURLLimit` is enabled, the maximum
   // number of bits of entropy in a single site's budget.
-  absl::optional<double> select_url_max_bits_per_site_;
+  std::optional<double> select_url_max_bits_per_site_;
 
   // A map of sites to the number bits of entropy remaining in the site's
   // budget for calls to `sharedStorage.selectURL()` during this pageload.
@@ -340,7 +340,7 @@ class CONTENT_EXPORT PageImpl : public Page {
   // navigation commit.
   // TODO(b:291867362): Plumb NavigationRequest to
   // RenderFrameHostManager::CommitPending and remove this.
-  absl::optional<base::TimeTicks> activation_start_time_;
+  std::optional<base::TimeTicks> activation_start_time_;
 
   // The resizing mode requested by Blink for the virtual keyboard.
   ui::mojom::VirtualKeyboardMode virtual_keyboard_mode_ =

@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_TEST_CONFIGURABLE_STORAGE_DELEGATE_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_TEST_CONFIGURABLE_STORAGE_DELEGATE_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/thread_annotations.h"
@@ -12,7 +13,6 @@
 #include "content/browser/attribution_reporting/attribution_config.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -30,7 +30,7 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
   base::TimeDelta GetDeleteExpiredSourcesFrequency() const override;
   base::TimeDelta GetDeleteExpiredRateLimitsFrequency() const override;
   base::Uuid NewReportID() const override;
-  absl::optional<OfflineReportDelayConfig> GetOfflineReportDelayConfig()
+  std::optional<OfflineReportDelayConfig> GetOfflineReportDelayConfig()
       const override;
   void ShuffleReports(std::vector<AttributionReport>&) override;
   void ShuffleTriggerVerifications(
@@ -48,7 +48,7 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
   std::vector<NullAggregatableReport> GetNullAggregatableReports(
       const AttributionTrigger&,
       base::Time trigger_time,
-      absl::optional<base::Time> attributed_source_time) const override;
+      std::optional<base::Time> attributed_source_time) const override;
 
   void set_max_sources_per_origin(int max);
 
@@ -66,8 +66,7 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
 
   void set_report_delay(base::TimeDelta report_delay);
 
-  void set_offline_report_delay_config(
-      absl::optional<OfflineReportDelayConfig>);
+  void set_offline_report_delay_config(std::optional<OfflineReportDelayConfig>);
 
   void set_reverse_reports_on_shuffle(bool reverse);
 
@@ -99,7 +98,7 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
   bool use_realistic_report_times_ GUARDED_BY_CONTEXT(sequence_checker_) =
       false;
 
-  absl::optional<OfflineReportDelayConfig> offline_report_delay_config_
+  std::optional<OfflineReportDelayConfig> offline_report_delay_config_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // If true, `ShuffleReports()` reverses the reports to allow testing the

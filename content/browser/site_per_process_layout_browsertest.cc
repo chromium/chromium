@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/site_per_process_browsertest.h"
+#include <optional>
 
 #include "base/json/json_reader.h"
 #include "base/task/single_thread_task_runner.h"
@@ -13,6 +13,7 @@
 #include "content/browser/renderer_host/cross_process_frame_connector.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
+#include "content/browser/site_per_process_browsertest.h"
 #include "content/common/input/actions_parser.h"
 #include "content/common/input/synthetic_pointer_action.h"
 #include "content/common/input/synthetic_touchscreen_pinch_gesture.h"
@@ -26,7 +27,6 @@
 #include "content/test/render_document_feature.h"
 #include "content/test/render_widget_host_visibility_observer.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(USE_AURA)
 #include "ui/aura/window_tree_host.h"
@@ -119,7 +119,7 @@ class UpdateViewportIntersectionMessageFilter
 
   void UpdateViewportIntersection(
       blink::mojom::ViewportIntersectionStatePtr intersection_state,
-      const absl::optional<blink::FrameVisualProperties>& visual_properties)
+      const std::optional<blink::FrameVisualProperties>& visual_properties)
       override {
     intersection_state_ = std::move(intersection_state);
     msg_received_ = true;
@@ -241,8 +241,8 @@ class TextAutosizerPageInfoInterceptor
     return render_frame_host_;
   }
 
-  void WaitForPageInfo(absl::optional<int> target_main_frame_width,
-                       absl::optional<float> target_device_scale_adjustment) {
+  void WaitForPageInfo(std::optional<int> target_main_frame_width,
+                       std::optional<float> target_device_scale_adjustment) {
     if (remote_page_info_seen_)
       return;
     target_main_frame_width_ = target_main_frame_width;
@@ -281,8 +281,8 @@ class TextAutosizerPageInfoInterceptor
                                                /*main_frame_layout_width=*/0,
                                                /*device_scale_adjustment=*/1.f);
   std::unique_ptr<base::RunLoop> run_loop_;
-  absl::optional<int> target_main_frame_width_;
-  absl::optional<float> target_device_scale_adjustment_;
+  std::optional<int> target_main_frame_width_;
+  std::optional<float> target_device_scale_adjustment_;
   mojo::test::ScopedSwapImplForTesting<
       mojo::AssociatedReceiver<blink::mojom::LocalMainFrameHost>>
       swapped_impl_;
@@ -794,7 +794,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // Convert from CSS to physical pixels
   expected.Scale(device_scale_factor);
   gfx::Transform actual = filter->GetIntersectionState()->main_frame_transform;
-  const absl::optional<gfx::PointF> viewport_offset_source_point =
+  const std::optional<gfx::PointF> viewport_offset_source_point =
       actual.InverseMapPoint(gfx::PointF());
   ASSERT_TRUE(viewport_offset_source_point.has_value());
   const gfx::Vector2dF viewport_offset =
@@ -1284,7 +1284,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, TextAutosizerPageInfo) {
   // Change the device scale adjustment to trigger a RemotePageInfo update.
   web_contents()->SetWebPreferences(prefs);
   // Make sure we receive a ViewHostMsg from the main frame's renderer.
-  interceptor->WaitForPageInfo(absl::optional<int>(),
+  interceptor->WaitForPageInfo(std::optional<int>(),
                                prefs.device_scale_adjustment);
   // Make sure the correct page message is sent to the child.
   base::RunLoop().RunUntilIdle();
@@ -1302,7 +1302,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, TextAutosizerPageInfo) {
 
   view->SetBounds(new_bounds);
   // Make sure we receive a ViewHostMsg from the main frame's renderer.
-  interceptor->WaitForPageInfo(new_bounds.width(), absl::optional<float>());
+  interceptor->WaitForPageInfo(new_bounds.width(), std::optional<float>());
   // Make sure the correct page message is sent to the child.
   base::RunLoop().RunUntilIdle();
   received_page_info = interceptor->GetTextAutosizerPageInfo();
@@ -2175,7 +2175,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // which is the scale factor for b.com's iframe element in the main frame.
   while (true) {
     auto* rwh_b = child_b->current_frame_host()->GetRenderWidgetHost();
-    absl::optional<blink::VisualProperties> properties =
+    std::optional<blink::VisualProperties> properties =
         rwh_b->LastComputedVisualProperties();
     if (properties && cc::MathUtil::IsFloatNearlyTheSame(
                           properties->compositing_scale_factor, 0.5f)) {
@@ -2191,7 +2191,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // parent frame b.com (0.5).
   while (true) {
     auto* rwh_c = child_c->current_frame_host()->GetRenderWidgetHost();
-    absl::optional<blink::VisualProperties> properties =
+    std::optional<blink::VisualProperties> properties =
         rwh_c->LastComputedVisualProperties();
     if (properties && cc::MathUtil::IsFloatNearlyTheSame(
                           properties->compositing_scale_factor, 0.5f)) {
@@ -2206,7 +2206,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // scale factor of its parent d.com (0.5).
   while (true) {
     auto* rwh_d = child_d->current_frame_host()->GetRenderWidgetHost();
-    absl::optional<blink::VisualProperties> properties =
+    std::optional<blink::VisualProperties> properties =
         rwh_d->LastComputedVisualProperties();
     if (properties && cc::MathUtil::IsFloatNearlyTheSame(
                           properties->compositing_scale_factor, 0.25f)) {
@@ -2246,7 +2246,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // which is the scale factor for b.com's iframe element in the main frame.
   while (true) {
     auto* rwh_b = child_b->current_frame_host()->GetRenderWidgetHost();
-    absl::optional<blink::VisualProperties> properties =
+    std::optional<blink::VisualProperties> properties =
         rwh_b->LastComputedVisualProperties();
     if (properties && cc::MathUtil::IsFloatNearlyTheSame(
                           properties->compositing_scale_factor, 0.5f)) {
@@ -2265,7 +2265,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // the final value is non-zero.
   while (true) {
     auto* rwh_b = child_b->current_frame_host()->GetRenderWidgetHost();
-    absl::optional<blink::VisualProperties> properties =
+    std::optional<blink::VisualProperties> properties =
         rwh_b->LastComputedVisualProperties();
     if (properties && !cc::MathUtil::IsFloatNearlyTheSame(
                           properties->compositing_scale_factor, 0.5f)) {

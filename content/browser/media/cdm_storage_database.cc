@@ -61,14 +61,14 @@ CdmStorageOpenError CdmStorageDatabase::EnsureOpen() {
   return OpenDatabase();
 }
 
-absl::optional<std::vector<uint8_t>> CdmStorageDatabase::ReadFile(
+std::optional<std::vector<uint8_t>> CdmStorageDatabase::ReadFile(
     const blink::StorageKey& storage_key,
     const media::CdmType& cdm_type,
     const std::string& file_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (OpenDatabase() != CdmStorageOpenError::kOk) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   // clang-format off
@@ -98,7 +98,7 @@ absl::optional<std::vector<uint8_t>> CdmStorageDatabase::ReadFile(
   std::vector<uint8_t> data;
   if (!statement.ColumnBlobAsVector(0, &data)) {
     DVLOG(1) << "Error reading Cdm storage data.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return data;

@@ -114,7 +114,7 @@ class TextInputManagerTester::InternalObserver
       TextInputManager* text_input_manager,
       RenderWidgetHostViewBase* updated_view,
       bool character_bounds_changed,
-      const absl::optional<std::vector<gfx::Rect>>& line_bounds) override {
+      const std::optional<std::vector<gfx::Rect>>& line_bounds) override {
     updated_view_ = updated_view;
     const gfx::Range* range =
         text_input_manager_->GetCompositionRangeForTesting();

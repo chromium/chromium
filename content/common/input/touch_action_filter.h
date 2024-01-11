@@ -5,11 +5,11 @@
 #ifndef CONTENT_COMMON_INPUT_TOUCH_ACTION_FILTER_H_
 #define CONTENT_COMMON_INPUT_TOUCH_ACTION_FILTER_H_
 
+#include <optional>
 #include <string>
 
 #include "cc/input/touch_action.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace blink {
 class WebGestureEvent;
@@ -60,11 +60,11 @@ class CONTENT_EXPORT TouchActionFilter {
   // the renderer for a touch start event that is currently in flight.
   void OnSetCompositorAllowedTouchAction(cc::TouchAction);
 
-  absl::optional<cc::TouchAction> allowed_touch_action() const {
+  std::optional<cc::TouchAction> allowed_touch_action() const {
     return allowed_touch_action_;
   }
 
-  absl::optional<cc::TouchAction> active_touch_action() const {
+  std::optional<cc::TouchAction> active_touch_action() const {
     return active_touch_action_;
   }
 
@@ -147,13 +147,13 @@ class CONTENT_EXPORT TouchActionFilter {
   int num_of_active_touches_ = 0;
 
   // What touch actions are currently permitted.
-  absl::optional<cc::TouchAction> allowed_touch_action_;
+  std::optional<cc::TouchAction> allowed_touch_action_;
 
   // The touch action that is used for the current gesture sequence. At the
   // touch sequence end, the |allowed_touch_action_| is reset while this remains
   // set as the effective touch action, for the still in progress gesture
   // sequence due to fling.
-  absl::optional<cc::TouchAction> active_touch_action_;
+  std::optional<cc::TouchAction> active_touch_action_;
 
   // Allowed touch action received from the compositor.
   cc::TouchAction compositor_allowed_touch_action_;

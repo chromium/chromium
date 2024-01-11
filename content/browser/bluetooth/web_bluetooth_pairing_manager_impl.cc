@@ -24,11 +24,11 @@ void OnPairForReadCharacteristicCallback(
     std::string characteristic_instance_id,
     WebBluetoothPairingManagerDelegate* pairing_manager_delegate,
     WebBluetoothService::RemoteCharacteristicReadValueCallback callback,
-    absl::optional<BluetoothDevice::ConnectErrorCode> error_code) {
+    std::optional<BluetoothDevice::ConnectErrorCode> error_code) {
   if (error_code) {
     std::move(callback).Run(
         WebBluetoothServiceImpl::TranslateConnectErrorAndRecord(*error_code),
-        /*value=*/absl::nullopt);
+        /*value=*/std::nullopt);
     return;
   }
   pairing_manager_delegate->RemoteCharacteristicReadValue(
@@ -41,7 +41,7 @@ void OnPairForWriteCharacteristicCallback(
     std::vector<uint8_t> value,
     blink::mojom::WebBluetoothWriteType write_type,
     WebBluetoothService::RemoteCharacteristicWriteValueCallback callback,
-    absl::optional<BluetoothDevice::ConnectErrorCode> error_code) {
+    std::optional<BluetoothDevice::ConnectErrorCode> error_code) {
   if (error_code) {
     std::move(callback).Run(
         WebBluetoothServiceImpl::TranslateConnectErrorAndRecord(*error_code));
@@ -55,11 +55,11 @@ void OnPairForReadDescriptorCallback(
     const std::string& descriptor_instance_id,
     WebBluetoothPairingManagerDelegate* pairing_manager_delegate,
     WebBluetoothService::RemoteDescriptorReadValueCallback callback,
-    absl::optional<BluetoothDevice::ConnectErrorCode> error_code) {
+    std::optional<BluetoothDevice::ConnectErrorCode> error_code) {
   if (error_code) {
     std::move(callback).Run(
         WebBluetoothServiceImpl::TranslateConnectErrorAndRecord(*error_code),
-        /*value=*/absl::nullopt);
+        /*value=*/std::nullopt);
     return;
   }
   pairing_manager_delegate->RemoteDescriptorReadValue(descriptor_instance_id,
@@ -71,7 +71,7 @@ void OnPairForWriteDescriptorCallback(
     WebBluetoothPairingManagerDelegate* pairing_manager_delegate,
     std::vector<uint8_t> value,
     WebBluetoothService::RemoteDescriptorWriteValueCallback callback,
-    absl::optional<BluetoothDevice::ConnectErrorCode> error_code) {
+    std::optional<BluetoothDevice::ConnectErrorCode> error_code) {
   if (error_code) {
     std::move(callback).Run(
         WebBluetoothServiceImpl::TranslateConnectErrorAndRecord(*error_code));
@@ -88,7 +88,7 @@ void OnPairCharacteristicStartNotifications(
     WebBluetoothPairingManagerDelegate* pairing_manager_delegate,
     WebBluetoothService::RemoteCharacteristicStartNotificationsCallback
         callback,
-    absl::optional<BluetoothDevice::ConnectErrorCode> error_code) {
+    std::optional<BluetoothDevice::ConnectErrorCode> error_code) {
   if (error_code) {
     std::move(callback).Run(
         WebBluetoothServiceImpl::TranslateConnectErrorAndRecord(*error_code));
@@ -129,7 +129,7 @@ void WebBluetoothPairingManagerImpl::PairForCharacteristicReadValue(
     std::move(read_callback)
         .Run(WebBluetoothServiceImpl::TranslateConnectErrorAndRecord(
                  BluetoothDevice::ConnectErrorCode::ERROR_UNKNOWN),
-             /*value=*/absl::nullopt);
+             /*value=*/std::nullopt);
     return;
   }
 
@@ -171,7 +171,7 @@ void WebBluetoothPairingManagerImpl::PairForDescriptorReadValue(
     std::move(read_callback)
         .Run(WebBluetoothServiceImpl::TranslateConnectErrorAndRecord(
                  BluetoothDevice::ConnectErrorCode::ERROR_UNKNOWN),
-             /*value=*/absl::nullopt);
+             /*value=*/std::nullopt);
     return;
   }
 
@@ -245,10 +245,10 @@ void WebBluetoothPairingManagerImpl::OnPairDevice(
     blink::WebBluetoothDeviceId device_id,
     int num_pair_attempts,
     BluetoothDevice::ConnectCallback callback,
-    absl::optional<BluetoothDevice::ConnectErrorCode> error_code) {
+    std::optional<BluetoothDevice::ConnectErrorCode> error_code) {
   pending_pair_device_ids_.erase(device_id);
   if (!error_code) {
-    std::move(callback).Run(/*error_code=*/absl::nullopt);
+    std::move(callback).Run(/*error_code=*/std::nullopt);
     return;
   }
   if (*error_code == BluetoothDevice::ConnectErrorCode::ERROR_AUTH_REJECTED &&
@@ -266,7 +266,7 @@ void WebBluetoothPairingManagerImpl::RequestPinCode(BluetoothDevice* device) {
       device->GetNameForDisplay(),
       base::BindOnce(&WebBluetoothPairingManagerImpl::OnPinCodeResult,
                      weak_ptr_factory_.GetWeakPtr(), device_id),
-      BluetoothDelegate::PairingKind::kProvidePin, absl::nullopt);
+      BluetoothDelegate::PairingKind::kProvidePin, std::nullopt);
 }
 
 void WebBluetoothPairingManagerImpl::OnPinCodeResult(
@@ -343,7 +343,7 @@ void WebBluetoothPairingManagerImpl::AuthorizePairing(BluetoothDevice* device) {
       device->GetNameForDisplay(),
       base::BindOnce(&WebBluetoothPairingManagerImpl::OnPairConfirmResult,
                      weak_ptr_factory_.GetWeakPtr(), device_id),
-      BluetoothDelegate::PairingKind::kConfirmOnly, absl::nullopt);
+      BluetoothDelegate::PairingKind::kConfirmOnly, std::nullopt);
 }
 
 }  // namespace content

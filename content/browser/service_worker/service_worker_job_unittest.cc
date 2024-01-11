@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <tuple>
 
 #include "base/barrier_closure.h"
@@ -49,7 +50,6 @@
 #include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -1715,7 +1715,7 @@ class UpdateJobTestHelper : public EmbeddedWorkerTestHelper,
   bool update_found_ = false;
   bool registration_failed_ = false;
   bool force_start_worker_failure_ = false;
-  absl::optional<bool> will_be_terminated_;
+  std::optional<bool> will_be_terminated_;
 
   FakeNetwork fake_network_;
   std::unique_ptr<URLLoaderInterceptor> interceptor_;

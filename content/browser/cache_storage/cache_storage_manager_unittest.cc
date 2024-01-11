@@ -674,7 +674,7 @@ class CacheStorageManagerTest : public testing::Test {
     auto response = blink::mojom::FetchAPIResponse::New(
         std::vector<GURL>({request->url}), status_code, "OK", response_type,
         padding, network::mojom::FetchResponseSource::kUnspecified,
-        response_headers, /*mime_type=*/absl::nullopt,
+        response_headers, /*mime_type=*/std::nullopt,
         net::HttpRequestHeaders::kGetMethod, std::move(blob),
         blink::mojom::ServiceWorkerResponseError::kUnknown, base::Time(),
         /*cache_storage_cache_name=*/std::string(),
@@ -684,7 +684,7 @@ class CacheStorageManagerTest : public testing::Test {
         network::mojom::ParsedHeaders::New(), net::HttpConnectionInfo::kUNKNOWN,
         /*alpn_negotiated_protocol=*/"unknown",
         /*was_fetched_via_spdy=*/false, /*has_range_requested=*/false,
-        /*auth_challenge_info=*/absl::nullopt,
+        /*auth_challenge_info=*/std::nullopt,
         /*request_include_credentials=*/true);
 
     blink::mojom::BatchOperationPtr operation =
@@ -3384,7 +3384,7 @@ TEST_F(CacheStorageIndexMigrationTest, BucketMigration) {
                EXPECT_TRUE(upgraded_index.has_bucket_id());
                EXPECT_TRUE(upgraded_index.has_bucket_is_default());
 
-               absl::optional<blink::StorageKey> result =
+               std::optional<blink::StorageKey> result =
                    blink::StorageKey::Deserialize(upgraded_index.storage_key());
                ASSERT_TRUE(result.has_value());
                EXPECT_EQ(this->storage_key1_, result.value());
@@ -3412,7 +3412,7 @@ TEST_F(CacheStorageIndexMigrationTest, InvalidBucketId) {
             EXPECT_EQ(original_index.bucket_id(), 999);
             EXPECT_GT(original_index.bucket_id(), upgraded_index.bucket_id());
 
-            absl::optional<blink::StorageKey> result =
+            std::optional<blink::StorageKey> result =
                 blink::StorageKey::Deserialize(upgraded_index.storage_key());
             ASSERT_TRUE(result.has_value());
             EXPECT_EQ(this->storage_key1_, result.value());

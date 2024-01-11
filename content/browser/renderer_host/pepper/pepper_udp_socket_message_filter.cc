@@ -550,7 +550,7 @@ void PepperUDPSocketMessageFilter::DoBindCallback(
     mojo::PendingReceiver<network::mojom::UDPSocketListener> listener_receiver,
     const ppapi::host::ReplyMessageContext& context,
     int result,
-    const absl::optional<net::IPEndPoint>& local_addr_out) {
+    const std::optional<net::IPEndPoint>& local_addr_out) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (result != net::OK) {
@@ -633,8 +633,8 @@ void PepperUDPSocketMessageFilter::Close() {
 
 void PepperUDPSocketMessageFilter::OnReceived(
     int result,
-    const absl::optional<net::IPEndPoint>& src_addr,
-    absl::optional<base::span<const uint8_t>> data) {
+    const std::optional<net::IPEndPoint>& src_addr,
+    std::optional<base::span<const uint8_t>> data) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!closed_);
 

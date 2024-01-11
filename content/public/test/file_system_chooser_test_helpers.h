@@ -5,9 +5,10 @@
 #ifndef CONTENT_PUBLIC_TEST_FILE_SYSTEM_CHOOSER_TEST_HELPERS_H_
 #define CONTENT_PUBLIC_TEST_FILE_SYSTEM_CHOOSER_TEST_HELPERS_H_
 
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
@@ -23,12 +24,12 @@ struct SelectFileDialogParams {
   ~SelectFileDialogParams();
 
   ui::SelectFileDialog::Type type = ui::SelectFileDialog::SELECT_NONE;
-  absl::optional<ui::SelectFileDialog::FileTypeInfo> file_types;
+  std::optional<ui::SelectFileDialog::FileTypeInfo> file_types;
   gfx::NativeWindow owning_window = {};
   int file_type_index = -1;
   base::FilePath default_path;
   std::u16string title;
-  absl::optional<GURL> caller;
+  std::optional<GURL> caller;
 };
 
 // A fake ui::SelectFileDialog, which will cancel the file selection instead of

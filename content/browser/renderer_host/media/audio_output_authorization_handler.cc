@@ -326,7 +326,7 @@ void AudioOutputAuthorizationHandler::DeviceParametersReceived(
     AuthorizationCompletedCallback cb,
     const std::string& id_for_renderer,
     const std::string& raw_device_id,
-    const absl::optional<media::AudioParameters>& params) const {
+    const std::optional<media::AudioParameters>& params) const {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(!raw_device_id.empty());
   DCHECK(!params || params->IsValid());

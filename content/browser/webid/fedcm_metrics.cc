@@ -234,7 +234,7 @@ void FedCmMetrics::RecordSignInStateMatchStatus(
 }
 
 void FedCmMetrics::RecordIdpSigninMatchStatus(
-    absl::optional<bool> idp_signin_status,
+    std::optional<bool> idp_signin_status,
     IdpNetworkRequestManager::ParseStatus accounts_endpoint_status) {
   if (is_disabled_)
     return;
@@ -293,12 +293,12 @@ void FedCmMetrics::RecordWebContentsVisibilityUponReadyToShowDialog(
 }
 
 void FedCmMetrics::RecordAutoReauthnMetrics(
-    absl::optional<bool> has_single_returning_account,
+    std::optional<bool> has_single_returning_account,
     const IdentityRequestAccount* auto_signin_account,
     bool auto_reauthn_success,
     bool is_auto_reauthn_setting_blocked,
     bool is_auto_reauthn_embargoed,
-    absl::optional<base::TimeDelta> time_from_embargo,
+    std::optional<base::TimeDelta> time_from_embargo,
     bool requires_user_mediation) {
   NumAccounts num_returning_accounts = NumAccounts::kZero;
   if (has_single_returning_account.has_value()) {

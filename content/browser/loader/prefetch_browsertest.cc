@@ -197,7 +197,7 @@ IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest,
   EXPECT_EQ(1, GetPrefetchURLLoaderCallCount());
 
   monitor.WaitForUrls();
-  absl::optional<network::ResourceRequest> request =
+  std::optional<network::ResourceRequest> request =
       monitor.GetRequestInfo(cross_origin_target_url);
   ASSERT_TRUE(request);
   ASSERT_TRUE(request->site_for_cookies.IsNull());
@@ -716,7 +716,7 @@ IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest,
   WaitUntilLoaded(cross_origin_preload_url);
 
   monitor.WaitForUrls();
-  absl::optional<network::ResourceRequest> request =
+  std::optional<network::ResourceRequest> request =
       monitor.GetRequestInfo(cross_origin_target_url);
   ASSERT_TRUE(request);
   ASSERT_TRUE(request->site_for_cookies.IsNull());

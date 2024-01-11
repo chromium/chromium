@@ -4,6 +4,7 @@
 
 #include "content/browser/devtools/devtools_video_consumer.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -16,7 +17,6 @@
 #include "media/capture/mojom/video_capture_buffer.mojom.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/renderers/paint_canvas_video_renderer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 

@@ -5,12 +5,12 @@
 #ifndef CONTENT_BROWSER_MEDIA_KEY_SYSTEM_SUPPORT_WIN_H_
 #define CONTENT_BROWSER_MEDIA_KEY_SYSTEM_SUPPORT_WIN_H_
 
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "media/cdm/cdm_capability.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 

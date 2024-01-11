@@ -31,9 +31,10 @@
 #include "v8/include/v8-forward.h"
 
 #if BUILDFLAG(IS_MAC)
+#include <optional>
+
 #include "base/apple/scoped_nsautorelease_pool.h"
 #include "base/memory/stack_allocated.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
 
 namespace blink {
@@ -252,7 +253,7 @@ class RenderViewTest : public testing::Test {
 
 #if BUILDFLAG(IS_MAC)
   STACK_ALLOCATED_IGNORE("https://crbug.com/1424190")
-  absl::optional<base::apple::ScopedNSAutoreleasePool> autorelease_pool_;
+  std::optional<base::apple::ScopedNSAutoreleasePool> autorelease_pool_;
 #endif
 
  private:

@@ -78,7 +78,7 @@ class SystemMediaControlsNotifierTest : public testing::Test {
     metadata.artist = artist;
     metadata.album = album;
     notifier_->MediaSessionMetadataChanged(
-        absl::optional<media_session::MediaMetadata>(metadata));
+        std::optional<media_session::MediaMetadata>(metadata));
   }
 
   void SimulateHidden() {
@@ -88,16 +88,16 @@ class SystemMediaControlsNotifierTest : public testing::Test {
   }
 
   void SimulateEmptyMetadata() {
-    notifier_->MediaSessionMetadataChanged(absl::nullopt);
+    notifier_->MediaSessionMetadataChanged(std::nullopt);
   }
 
   void SimulatePositionChanged(const media_session::MediaPosition& position) {
     notifier_->MediaSessionPositionChanged(
-        absl::optional<media_session::MediaPosition>(position));
+        std::optional<media_session::MediaPosition>(position));
   }
 
   void SimulateEmptyPosition() {
-    notifier_->MediaSessionPositionChanged(absl::nullopt);
+    notifier_->MediaSessionPositionChanged(std::nullopt);
   }
 
   void SimulateImageChanged(int image_size) {
@@ -439,7 +439,7 @@ TEST_F(SystemMediaControlsNotifierTest, ProperlyUpdatesID) {
   // When the request ID is cleared, the system media controls should receive
   // null.
   EXPECT_CALL(mock_system_media_controls(), SetID(nullptr));
-  notifier().MediaSessionChanged(absl::nullopt);
+  notifier().MediaSessionChanged(std::nullopt);
 }
 
 TEST_F(SystemMediaControlsNotifierTest, DontHideMediaMetadataIfNotNeeded) {

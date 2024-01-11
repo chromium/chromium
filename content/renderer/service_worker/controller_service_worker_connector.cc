@@ -22,7 +22,7 @@ ControllerServiceWorkerConnector::ControllerServiceWorkerConnector(
     const std::string& client_id,
     blink::mojom::ServiceWorkerFetchHandlerBypassOption
         fetch_handler_bypass_option,
-    absl::optional<blink::ServiceWorkerRouterRules> router_rules,
+    std::optional<blink::ServiceWorkerRouterRules> router_rules,
     blink::EmbeddedWorkerStatus initial_running_status,
     mojo::PendingReceiver<blink::mojom::ServiceWorkerRunningStatusCallback>
         running_status_receiver)
@@ -152,7 +152,7 @@ void ControllerServiceWorkerConnector::OnStatusChanged(
 }
 
 void ControllerServiceWorkerConnector::CallCacheStorageMatch(
-    absl::optional<std::string> cache_name,
+    std::optional<std::string> cache_name,
     blink::mojom::FetchAPIRequestPtr request,
     blink::mojom::CacheStorage::MatchCallback callback) {
   if (!cache_storage_ || !cache_storage_.is_bound()) {

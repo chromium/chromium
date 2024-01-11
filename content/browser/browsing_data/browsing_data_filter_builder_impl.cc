@@ -111,7 +111,7 @@ base::RepeatingCallback<bool(const T&)> NotReachedFilter() {
 bool StorageKeyInCookiePartitionKeyCollection(
     const blink::StorageKey& storage_key,
     const net::CookiePartitionKeyCollection& cookie_partition_key_collection) {
-  absl::optional<net::CookiePartitionKey> equivalent_cookie_partition_key =
+  std::optional<net::CookiePartitionKey> equivalent_cookie_partition_key =
       storage_key.ToCookiePartitionKey();
   // If cookie partitioning is disabled, this will be nullopt and we can just
   // return true.
@@ -209,7 +209,7 @@ bool BrowsingDataFilterBuilderImpl::IsCrossSiteClearSiteDataForCookies() const {
 }
 
 void BrowsingDataFilterBuilderImpl::SetStorageKey(
-    const absl::optional<blink::StorageKey>& storage_key) {
+    const std::optional<blink::StorageKey>& storage_key) {
   storage_key_ = storage_key;
 }
 
@@ -240,7 +240,7 @@ void BrowsingDataFilterBuilderImpl::SetStoragePartitionConfig(
   storage_partition_config_ = storage_partition_config;
 }
 
-absl::optional<StoragePartitionConfig>
+std::optional<StoragePartitionConfig>
 BrowsingDataFilterBuilderImpl::GetStoragePartitionConfig() {
   return storage_partition_config_;
 }

@@ -571,7 +571,7 @@ TEST_F(NavigatorTest, NoContent) {
   GetLoaderForNavigationRequest(main_request)
       ->CallOnResponseStarted(std::move(response),
                               mojo::ScopedDataPipeConsumerHandle(),
-                              absl::nullopt);
+                              std::nullopt);
 
   // There should be no pending nor speculative RenderFrameHost; the navigation
   // was aborted.
@@ -597,7 +597,7 @@ TEST_F(NavigatorTest, NoContent) {
   GetLoaderForNavigationRequest(main_request)
       ->CallOnResponseStarted(std::move(response),
                               mojo::ScopedDataPipeConsumerHandle(),
-                              absl::nullopt);
+                              std::nullopt);
 
   // There should be no pending nor speculative RenderFrameHost; the navigation
   // was aborted.

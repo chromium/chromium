@@ -80,7 +80,7 @@ class TestWebContentsViewDelegate : public WebContentsViewDelegate {
     if (allow_drop_) {
       drop_callback_ = base::BindOnce(std::move(callback), drop_data);
     } else {
-      drop_callback_ = base::BindOnce(std::move(callback), absl::nullopt);
+      drop_callback_ = base::BindOnce(std::move(callback), std::nullopt);
     }
 
     renderer_told_to_force_default_action_ =

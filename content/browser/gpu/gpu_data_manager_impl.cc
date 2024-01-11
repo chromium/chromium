@@ -158,7 +158,7 @@ void GpuDataManagerImpl::StartUmaTimer() {
 
 void GpuDataManagerImpl::UpdateGpuInfo(
     const gpu::GPUInfo& gpu_info,
-    const absl::optional<gpu::GPUInfo>& gpu_info_for_hardware_gpu) {
+    const std::optional<gpu::GPUInfo>& gpu_info_for_hardware_gpu) {
   base::AutoLock auto_lock(lock_);
   private_->UpdateGpuInfo(gpu_info, gpu_info_for_hardware_gpu);
 }
@@ -240,7 +240,7 @@ void GpuDataManagerImpl::UpdateDawnInfo(
 
 void GpuDataManagerImpl::UpdateGpuFeatureInfo(
     const gpu::GpuFeatureInfo& gpu_feature_info,
-    const absl::optional<gpu::GpuFeatureInfo>&
+    const std::optional<gpu::GpuFeatureInfo>&
         gpu_feature_info_for_hardware_gpu) {
   base::AutoLock auto_lock(lock_);
   private_->UpdateGpuFeatureInfo(gpu_feature_info,

@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -28,7 +29,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace base {
@@ -528,7 +528,7 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   scoped_refptr<network::SharedURLLoaderFactory>
   GetLoaderFactoryForBrowserInitiatedRequest(
       const GURL& scope,
-      absl::optional<int64_t> version_id,
+      std::optional<int64_t> version_id,
       network::mojom::ClientSecurityStatePtr client_security_state);
 
   // Observers of |context_core_| which live within content's implementation

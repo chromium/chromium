@@ -146,7 +146,7 @@ class TestRenderFrameObserver : public RenderFrameObserver {
 
   void DidStartNavigation(
       const GURL& url,
-      absl::optional<blink::WebNavigationType> navigation_type) override {
+      std::optional<blink::WebNavigationType> navigation_type) override {
     if (test_runner_->ShouldDumpFrameLoadCallbacks()) {
       std::string description = frame_proxy()->GetFrameDescriptionForWebTests();
       frame_proxy()->GetWebTestControlHostRemote()->PrintMessage(
@@ -423,7 +423,7 @@ WebFrameTestProxy::GetEffectiveConnectionType() {
 
 void WebFrameTestProxy::UpdateContextMenuDataForTesting(
     const blink::ContextMenuData& context_menu_data,
-    const absl::optional<gfx::Point>& location) {
+    const std::optional<gfx::Point>& location) {
   blink::FrameWidgetTestHelper* frame_widget =
       GetLocalRootFrameWidgetTestHelper();
   frame_widget->GetEventSender()->SetContextMenuData(context_menu_data);
@@ -726,7 +726,7 @@ void WebFrameTestProxy::CheckIfAudioSinkExistsAndIsAuthorized(
     blink::WebSetSinkIdCompleteCallback completion_callback) {
   std::string device_id = sink_id.Utf8();
   if (device_id == "valid" || device_id.empty())
-    std::move(completion_callback).Run(/*error =*/absl::nullopt);
+    std::move(completion_callback).Run(/*error =*/std::nullopt);
   else if (device_id == "unauthorized")
     std::move(completion_callback)
         .Run(blink::WebSetSinkIdError::kNotAuthorized);

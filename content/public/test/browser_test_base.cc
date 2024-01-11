@@ -624,7 +624,7 @@ void BrowserTestBase::SetUp() {
   ASSERT_TRUE(delegate);
   ASSERT_TRUE(GetContentClientForTesting());
 
-  absl::optional<int> startup_error = delegate->BasicStartupComplete();
+  std::optional<int> startup_error = delegate->BasicStartupComplete();
   ASSERT_FALSE(startup_error.has_value());
 
   // We can only setup startup tracing after mojo is initialized above.
@@ -653,7 +653,7 @@ void BrowserTestBase::SetUp() {
     const bool has_thread_pool =
         GetContentClientForTesting()->browser()->CreateThreadPool("Browser");
 
-    absl::optional<int> pre_browser_main_exit_code = delegate->PreBrowserMain();
+    std::optional<int> pre_browser_main_exit_code = delegate->PreBrowserMain();
     ASSERT_FALSE(pre_browser_main_exit_code.has_value());
 
     BrowserTaskExecutor::Create();
@@ -664,7 +664,7 @@ void BrowserTestBase::SetUp() {
           variations::VariationsIdsProvider::Mode::kUseSignedInState);
     }
 
-    absl::optional<int> post_early_initialization_exit_code =
+    std::optional<int> post_early_initialization_exit_code =
         delegate->PostEarlyInitialization(invoked_in_browser);
     ASSERT_FALSE(post_early_initialization_exit_code.has_value());
 
@@ -846,7 +846,7 @@ void BrowserTestBase::ProxyRunTestOnMainThreadLoop() {
   // set a ScopedRunLoopTimeout from their fixture's constructor (which
   // happens as part of setting up the test factory in gtest while
   // ProxyRunTestOnMainThreadLoop() happens later as part of SetUp()).
-  absl::optional<base::test::ScopedRunLoopTimeout> scoped_run_timeout;
+  std::optional<base::test::ScopedRunLoopTimeout> scoped_run_timeout;
   if (!base::test::ScopedRunLoopTimeout::ExistsForCurrentThread()) {
     // TODO(https://crbug.com/918724): determine whether the timeout can be
     // reduced from action_max_timeout() to action_timeout().

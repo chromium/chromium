@@ -5,19 +5,18 @@
 #ifndef CONTENT_COMMON_ANDROID_CPU_TIME_METRICS_INTERNAL_H_
 #define CONTENT_COMMON_ANDROID_CPU_TIME_METRICS_INTERNAL_H_
 
-#include "base/memory/raw_ptr.h"
-#include "content/common/content_export.h"
-
 #include <memory>
+#include <optional>
 
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/process/process_metrics.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_observer.h"
 #include "base/time/time.h"
+#include "content/common/content_export.h"
 #include "content/common/process_visibility_tracker.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 namespace internal {
@@ -104,7 +103,7 @@ class CONTENT_EXPORT ProcessCpuTimeMetrics
   // Accessed on |task_runner_|.
   SEQUENCE_CHECKER(thread_pool_);
   std::unique_ptr<base::ProcessMetrics> process_metrics_;
-  absl::optional<bool> is_visible_;
+  std::optional<bool> is_visible_;
   ProcessTypeForUma process_type_;
   base::TimeDelta reported_cpu_time_;
   base::TimeDelta cpu_time_on_last_load_report_;

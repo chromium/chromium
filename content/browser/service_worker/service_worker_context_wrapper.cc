@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -61,7 +62,6 @@
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/quota/special_storage_policy.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
@@ -785,7 +785,7 @@ void ServiceWorkerContextWrapper::StartServiceWorkerAndDispatchMessage(
 
   // As we don't track tasks between workers and renderers, we can nullify the
   // message's parent task ID.
-  message.parent_task_id = absl::nullopt;
+  message.parent_task_id = std::nullopt;
 
   // TODO(https://crbug.com/1295029): Don't post task to the UI thread. Instead,
   // make all call sites run on the UI thread.
@@ -1463,7 +1463,7 @@ void ServiceWorkerContextWrapper::MaybeProcessPendingWarmUpRequest() {
 
   context_core_->EndProcessingWarmingUp();
 
-  absl::optional<ServiceWorkerContextCore::WarmUpRequest> request =
+  std::optional<ServiceWorkerContextCore::WarmUpRequest> request =
       context_core_->PopNextWarmUpRequest();
 
   if (!request) {
@@ -1816,7 +1816,7 @@ ServiceWorkerContextWrapper::GetLoaderFactoryForUpdateCheck(
   // devtools? It is currently not recorded at all.
   return GetLoaderFactoryForBrowserInitiatedRequest(
       scope,
-      /*version_id=*/absl::nullopt, std::move(client_security_state));
+      /*version_id=*/std::nullopt, std::move(client_security_state));
 }
 
 // static
@@ -1840,7 +1840,7 @@ ServiceWorkerContextWrapper::GetLoaderFactoryForMainScriptFetch(
 scoped_refptr<network::SharedURLLoaderFactory>
 ServiceWorkerContextWrapper::GetLoaderFactoryForBrowserInitiatedRequest(
     const GURL& scope,
-    absl::optional<int64_t> version_id,
+    std::optional<int64_t> version_id,
     network::mojom::ClientSecurityStatePtr client_security_state) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -1868,7 +1868,7 @@ ServiceWorkerContextWrapper::GetLoaderFactoryForBrowserInitiatedRequest(
       storage_partition_->browser_context(), /*frame=*/nullptr,
       ChildProcessHost::kInvalidUniqueID,
       ContentBrowserClient::URLLoaderFactoryType::kServiceWorkerScript,
-      scope_origin, /*navigation_id=*/absl::nullopt, ukm::kInvalidSourceIdObj,
+      scope_origin, /*navigation_id=*/std::nullopt, ukm::kInvalidSourceIdObj,
       &pending_receiver, &header_client, &bypass_redirect_checks,
       /*disable_secure_dns=*/nullptr,
       /*factory_override=*/nullptr,

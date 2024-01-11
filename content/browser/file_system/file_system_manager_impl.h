@@ -126,7 +126,7 @@ class CONTENT_EXPORT FileSystemManagerImpl
   void RegisterBlob(const std::string& content_type,
                     const GURL& url,
                     uint64_t length,
-                    absl::optional<base::Time> expected_modification_time,
+                    std::optional<base::Time> expected_modification_time,
                     RegisterBlobCallback callback) override;
 
  private:
@@ -212,7 +212,7 @@ class CONTENT_EXPORT FileSystemManagerImpl
       const std::string& content_type,
       const GURL& url,
       uint64_t length,
-      absl::optional<base::Time> expected_modification_time,
+      std::optional<base::Time> expected_modification_time,
       RegisterBlobCallback callback,
       storage::FileSystemURL crack_url,
       bool security_check_success);
@@ -282,7 +282,7 @@ class CONTENT_EXPORT FileSystemManagerImpl
       const blink::StorageKey& storage_key,
       GetPlatformPathCallback callback);
   // Returns an error if `url` is invalid.
-  absl::optional<base::File::Error> ValidateFileSystemURL(
+  std::optional<base::File::Error> ValidateFileSystemURL(
       const storage::FileSystemURL& url);
 
   storage::FileSystemOperationRunner* operation_runner() {

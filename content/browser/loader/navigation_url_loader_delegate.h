@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_LOADER_NAVIGATION_URL_LOADER_DELEGATE_H_
 
 #include <memory>
+#include <optional>
 
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -13,7 +14,6 @@
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/navigation/navigation_policy.h"
 #include "url/origin.h"
 
@@ -89,7 +89,7 @@ class CONTENT_EXPORT NavigationURLLoaderDelegate {
       GlobalRequestID request_id,
       bool is_download,
       net::NetworkAnonymizationKey network_anonymization_key,
-      absl::optional<SubresourceLoaderParams> subresource_loader_params,
+      std::optional<SubresourceLoaderParams> subresource_loader_params,
       EarlyHints early_hints) = 0;
 
   // Called if the request fails before receving a response. Specific
@@ -102,8 +102,8 @@ class CONTENT_EXPORT NavigationURLLoaderDelegate {
       const network::URLLoaderCompletionStatus& status) = 0;
 
   // Creates parameters to construct NavigationEarlyHintsManager. Returns
-  // absl::nullopt when this delegate cannot create parameters.
-  virtual absl::optional<NavigationEarlyHintsManagerParams>
+  // std::nullopt when this delegate cannot create parameters.
+  virtual std::optional<NavigationEarlyHintsManagerParams>
   CreateNavigationEarlyHintsManagerParams(
       const network::mojom::EarlyHints& early_hints) = 0;
 

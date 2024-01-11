@@ -467,11 +467,11 @@ blink::mojom::FetchAPIResponsePtr CreateResponse(
           ? metadata.response().alpn_negotiated_protocol()
           : "unknown";
 
-  absl::optional<std::string> mime_type;
+  std::optional<std::string> mime_type;
   if (metadata.response().has_mime_type())
     mime_type = metadata.response().mime_type();
 
-  absl::optional<std::string> request_method;
+  std::optional<std::string> request_method;
   if (metadata.response().has_request_method())
     request_method = metadata.response().request_method();
 
@@ -511,7 +511,7 @@ blink::mojom::FetchAPIResponsePtr CreateResponse(
       static_cast<net::HttpConnectionInfo>(
           metadata.response().connection_info()),
       alpn_negotiated_protocol, metadata.response().was_fetched_via_spdy(),
-      has_range_requested, /*auth_challenge_info=*/absl::nullopt,
+      has_range_requested, /*auth_challenge_info=*/std::nullopt,
       request_include_credentials);
 }
 
@@ -596,7 +596,7 @@ struct CacheStorageCache::QueryCacheContext {
 struct CacheStorageCache::BatchInfo {
   size_t remaining_operations = 0;
   VerboseErrorCallback callback;
-  absl::optional<std::string> message;
+  std::optional<std::string> message;
   const int64_t trace_id = 0;
 };
 
@@ -754,7 +754,7 @@ void CacheStorageCache::BatchOperation(
   // This method may produce a warning message that should be returned in the
   // final VerboseErrorCallback.  A message may be present in both the failure
   // and success paths.
-  absl::optional<std::string> message;
+  std::optional<std::string> message;
 
   if (backend_state_ == BACKEND_CLOSED) {
     scheduler_task_runner_->PostTask(
@@ -844,7 +844,7 @@ void CacheStorageCache::BatchDidGetBucketSpaceRemaining(
     int64_t trace_id,
     VerboseErrorCallback callback,
     BadMessageCallback bad_message_callback,
-    absl::optional<std::string> message,
+    std::optional<std::string> message,
     uint64_t space_required,
     uint64_t side_data_size,
     storage::QuotaErrorOr<int64_t> space_remaining) {

@@ -5,6 +5,7 @@
 #include "content/browser/file_system_access/file_system_access_directory_handle_impl.h"
 
 #include <iterator>
+#include <optional>
 #include <string>
 #include <tuple>
 
@@ -32,7 +33,6 @@
 #include "storage/common/file_system/file_system_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 
@@ -86,8 +86,8 @@ class FileSystemAccessDirectoryHandleImplTest : public testing::Test {
       const base::FilePath& path,
       bool read,
       bool write,
-      const absl::optional<storage::BucketLocator> url_bucket_override =
-          absl::nullopt) {
+      const std::optional<storage::BucketLocator> url_bucket_override =
+          std::nullopt) {
     auto url = manager_->CreateFileSystemURLFromPath(
         FileSystemAccessEntryFactory::PathType::kLocal, path);
     if (url_bucket_override.has_value()) {

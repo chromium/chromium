@@ -54,7 +54,7 @@ class ServiceProcessTracker {
   ~ServiceProcessTracker() = default;
 
   ServiceProcessInfo AddProcess(base::Process process,
-                                const absl::optional<GURL>& site,
+                                const std::optional<GURL>& site,
                                 const std::string& service_interface_name) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     auto id = GenerateNextId();
@@ -132,7 +132,7 @@ class UtilityProcessClient : public UtilityProcessHost::Client {
  public:
   UtilityProcessClient(
       const std::string& service_interface_name,
-      const absl::optional<GURL>& site,
+      const std::optional<GURL>& site,
       base::OnceCallback<void(const base::Process&)> process_callback)
       : service_interface_name_(service_interface_name),
         site_(std::move(site)),
@@ -173,10 +173,10 @@ class UtilityProcessClient : public UtilityProcessHost::Client {
   const std::string service_interface_name_;
 
   // Optional site GURL for per-site utility processes.
-  const absl::optional<GURL> site_;
+  const std::optional<GURL> site_;
 
   base::OnceCallback<void(const base::Process&)> process_callback_;
-  absl::optional<ServiceProcessInfo> process_info_;
+  std::optional<ServiceProcessInfo> process_info_;
 };
 
 // TODO(crbug.com/977637): Once UtilityProcessHost is used only by service
@@ -260,7 +260,7 @@ void LaunchUtilityProcessServiceDeprecated(
       service_name, std::move(service_pipe),
       base::BindOnce(
           [](base::OnceCallback<void(base::ProcessId)> callback,
-             const absl::optional<base::ProcessId> pid) {
+             const std::optional<base::ProcessId> pid) {
             std::move(callback).Run(pid.value_or(base::kNullProcessId));
           },
           std::move(callback)));

@@ -479,7 +479,7 @@ const char* HasDiscreteGpuToString(gpu::HasDiscreteGpu has_discrete_gpu) {
 
 base::Value::List GetDevicePerfInfo() {
   base::Value::List list;
-  const absl::optional<gpu::DevicePerfInfo> device_perf_info =
+  const std::optional<gpu::DevicePerfInfo> device_perf_info =
       gpu::GetDevicePerfInfo();
   if (device_perf_info.has_value()) {
     list.Append(display::BuildGpuInfoEntry(

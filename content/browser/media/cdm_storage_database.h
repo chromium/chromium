@@ -6,6 +6,8 @@
 #define CONTENT_BROWSER_MEDIA_CDM_STORAGE_DATABASE_H_
 
 #include <stdint.h>
+
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -15,7 +17,6 @@
 #include "media/cdm/cdm_type.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
@@ -31,7 +32,7 @@ class CONTENT_EXPORT CdmStorageDatabase {
 
   CdmStorageOpenError EnsureOpen();
 
-  absl::optional<std::vector<uint8_t>> ReadFile(
+  std::optional<std::vector<uint8_t>> ReadFile(
       const blink::StorageKey& storage_key,
       const media::CdmType& cdm_type,
       const std::string& file_name);
@@ -81,7 +82,7 @@ class CONTENT_EXPORT CdmStorageDatabase {
   const base::FilePath path_;
 
   // A descriptor of the last SQL statement that was executed, used for metrics.
-  absl::optional<std::string> last_operation_;
+  std::optional<std::string> last_operation_;
 
   sql::Database db_ GUARDED_BY_CONTEXT(sequence_checker_);
 };

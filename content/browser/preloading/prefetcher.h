@@ -34,7 +34,7 @@ class CONTENT_EXPORT Prefetcher : public SpeculationHostDevToolsObserver {
   void OnStartSinglePrefetch(
       const std::string& request_id,
       const network::ResourceRequest& request,
-      absl::optional<
+      std::optional<
           std::pair<const GURL&,
                     const network::mojom::URLResponseHeadDevToolsInfo&>>
           redirect_info) override;

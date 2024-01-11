@@ -151,7 +151,7 @@ class CONTENT_EXPORT RendererWebMediaPlayerDelegate
 
   // Last page shown/hidden state sent to the player.  Unset if we have not sent
   // any message.  Used to elide duplicates.
-  absl::optional<bool> is_shown_;
+  std::optional<bool> is_shown_;
 };
 
 }  // namespace media

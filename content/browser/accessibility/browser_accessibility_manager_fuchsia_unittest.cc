@@ -42,20 +42,20 @@ class MockBrowserAccessibilityDelegate
     last_request_id_ = opt_request_id;
   }
 
-  const absl::optional<ui::AXActionData>& last_action_data() {
+  const std::optional<ui::AXActionData>& last_action_data() {
     return last_action_data_;
   }
 
-  const absl::optional<int>& last_request_id() { return last_request_id_; }
+  const std::optional<int>& last_request_id() { return last_request_id_; }
 
-  const absl::optional<gfx::Point>& last_hit_test_point() {
+  const std::optional<gfx::Point>& last_hit_test_point() {
     return last_hit_test_point_;
   }
 
  private:
-  absl::optional<ui::AXActionData> last_action_data_;
-  absl::optional<int> last_request_id_;
-  absl::optional<gfx::Point> last_hit_test_point_;
+  std::optional<ui::AXActionData> last_action_data_;
+  std::optional<int> last_request_id_;
+  std::optional<gfx::Point> last_hit_test_point_;
 };
 
 class MockAccessibilityBridge : public ui::AccessibilityBridgeFuchsia {
@@ -73,7 +73,7 @@ class MockAccessibilityBridge : public ui::AccessibilityBridgeFuchsia {
   }
 
   void OnAccessibilityHitTestResult(int hit_test_request_id,
-                                    absl::optional<uint32_t> result) override {
+                                    std::optional<uint32_t> result) override {
     hit_test_results_[hit_test_request_id] = result;
   }
 
@@ -93,15 +93,15 @@ class MockAccessibilityBridge : public ui::AccessibilityBridgeFuchsia {
     return node_updates_;
   }
   const std::vector<uint32_t>& node_deletions() { return node_deletions_; }
-  const std::map<int, absl::optional<uint32_t>>& hit_test_results() {
+  const std::map<int, std::optional<uint32_t>>& hit_test_results() {
     return hit_test_results_;
   }
 
-  const absl::optional<uint32_t>& old_focus() { return old_focus_; }
+  const std::optional<uint32_t>& old_focus() { return old_focus_; }
 
-  const absl::optional<uint32_t>& new_focus() { return new_focus_; }
+  const std::optional<uint32_t>& new_focus() { return new_focus_; }
 
-  const absl::optional<uint32_t>& root_node_id() { return root_node_id_; }
+  const std::optional<uint32_t>& root_node_id() { return root_node_id_; }
 
   void reset() {
     node_updates_.clear();
@@ -114,11 +114,11 @@ class MockAccessibilityBridge : public ui::AccessibilityBridgeFuchsia {
   std::vector<fuchsia_accessibility_semantics::Node> node_updates_;
   std::vector<uint32_t> node_deletions_;
   std::map<int /* hit test request id */,
-           absl::optional<uint32_t> /* hit test result */>
+           std::optional<uint32_t> /* hit test result */>
       hit_test_results_;
-  absl::optional<uint32_t> old_focus_;
-  absl::optional<uint32_t> new_focus_;
-  absl::optional<uint32_t> root_node_id_;
+  std::optional<uint32_t> old_focus_;
+  std::optional<uint32_t> new_focus_;
+  std::optional<uint32_t> root_node_id_;
 };
 
 class BrowserAccessibilityManagerFuchsiaTest : public testing::Test {
@@ -443,13 +443,13 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, HitTest) {
   platform_node->PerformAction(action_data);
 
   {
-    absl::optional<gfx::Point> last_target =
+    std::optional<gfx::Point> last_target =
         mock_browser_accessibility_delegate_->last_hit_test_point();
     ASSERT_TRUE(last_target.has_value());
     EXPECT_EQ(last_target->x(), 1);
     EXPECT_EQ(last_target->y(), 2);
 
-    absl::optional<int> last_request_id =
+    std::optional<int> last_request_id =
         mock_browser_accessibility_delegate_->last_request_id();
     ASSERT_TRUE(last_request_id.has_value());
     EXPECT_EQ(*last_request_id, action_data.request_id);
@@ -460,7 +460,7 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, HitTest) {
                            action_data.request_id);
 
   {
-    const std::map<int, absl::optional<uint32_t>>& hit_test_results =
+    const std::map<int, std::optional<uint32_t>>& hit_test_results =
         mock_accessibility_bridge_->hit_test_results();
     // We should have a hit test result for request id = 3, and the result
     // should be the fuchsia ID of node 2, which is our hit result specified
@@ -505,7 +505,7 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, HitTestFails) {
   platform_node->PerformAction(action_data);
 
   {
-    absl::optional<gfx::Point> last_target =
+    std::optional<gfx::Point> last_target =
         mock_browser_accessibility_delegate_->last_hit_test_point();
     EXPECT_EQ(last_target->x(), 1);
     EXPECT_EQ(last_target->y(), 2);
@@ -515,7 +515,7 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, HitTestFails) {
   manager_->FireBlinkEvent(ax::mojom::Event::kHover, nullptr, 4);
 
   {
-    const std::map<int, absl::optional<uint32_t>>& hit_test_results =
+    const std::map<int, std::optional<uint32_t>>& hit_test_results =
         mock_accessibility_bridge_->hit_test_results();
 
     ASSERT_FALSE(hit_test_results.empty());
@@ -556,7 +556,7 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, PerformAction) {
   platform_node->PerformAction(action_data);
 
   {
-    const absl::optional<ui::AXActionData> last_action_data =
+    const std::optional<ui::AXActionData> last_action_data =
         mock_browser_accessibility_delegate_->last_action_data();
     ASSERT_TRUE(last_action_data);
     EXPECT_EQ(last_action_data->action,

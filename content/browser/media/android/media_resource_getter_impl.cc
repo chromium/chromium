@@ -120,7 +120,7 @@ void MediaResourceGetterImpl::GetAuthCredentials(
   // Non-standard URLs, such as data, will not be found in HTTP auth cache
   // anyway, because they have no valid origin, so don't waste the time.
   if (!url.IsStandard()) {
-    GetAuthCredentialsCallback(std::move(callback), absl::nullopt);
+    GetAuthCredentialsCallback(std::move(callback), std::nullopt);
     return;
   }
 
@@ -129,7 +129,7 @@ void MediaResourceGetterImpl::GetAuthCredentials(
   // Can't get a NetworkAnonymizationKey to get credentials if the
   // RenderFrameHost has already been destroyed.
   if (!render_frame_host) {
-    GetAuthCredentialsCallback(std::move(callback), absl::nullopt);
+    GetAuthCredentialsCallback(std::move(callback), std::nullopt);
     return;
   }
 
@@ -174,7 +174,7 @@ void MediaResourceGetterImpl::GetCookies(
 
 void MediaResourceGetterImpl::GetAuthCredentialsCallback(
     GetAuthCredentialsCB callback,
-    const absl::optional<net::AuthCredentials>& credentials) {
+    const std::optional<net::AuthCredentials>& credentials) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (credentials)
     std::move(callback).Run(credentials->username(), credentials->password());

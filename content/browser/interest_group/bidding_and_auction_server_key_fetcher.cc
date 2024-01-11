@@ -76,7 +76,7 @@ BiddingAndAuctionServerKeyFetcher::BiddingAndAuctionServerKeyFetcher() {
     std::string config =
         blink::features::kFledgeBiddingAndAuctionKeyConfig.Get();
     if (!config.empty()) {
-      absl::optional<base::Value> config_value = base::JSONReader::Read(config);
+      std::optional<base::Value> config_value = base::JSONReader::Read(config);
       if (config_value && config_value->is_dict()) {
         for (const auto kv : config_value->GetDict()) {
           if (!kv.second.is_string()) {
@@ -111,7 +111,7 @@ BiddingAndAuctionServerKeyFetcher::~BiddingAndAuctionServerKeyFetcher() =
 
 void BiddingAndAuctionServerKeyFetcher::GetOrFetchKey(
     network::mojom::URLLoaderFactory* loader_factory,
-    absl::optional<url::Origin> maybe_coordinator,
+    std::optional<url::Origin> maybe_coordinator,
     BiddingAndAuctionServerKeyFetcherCallback callback) {
   url::Origin coordinator = maybe_coordinator.value_or(
       url::Origin::Create(GURL(kDefaultBiddingAndAuctionGCPCoordinatorOrigin)));

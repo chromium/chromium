@@ -4,6 +4,7 @@
 
 #include "content/browser/interest_group/bidding_and_auction_response.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -11,7 +12,6 @@
 #include "base/values.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -154,7 +154,7 @@ MATCHER_P(EqualsBiddingAndAuctionResponse,
   } else {
     matchers.push_back(testing::Field(
         "buyer_reporting", &BiddingAndAuctionResponse::buyer_reporting,
-        testing::Eq(absl::nullopt)));
+        testing::Eq(std::nullopt)));
   }
   if (other.get().seller_reporting) {
     matchers.push_back(testing::Field(
@@ -164,7 +164,7 @@ MATCHER_P(EqualsBiddingAndAuctionResponse,
   } else {
     matchers.push_back(testing::Field(
         "seller_reporting", &BiddingAndAuctionResponse::seller_reporting,
-        testing::Eq(absl::nullopt)));
+        testing::Eq(std::nullopt)));
   }
   if (other.get().top_level_seller) {
     matchers.push_back(testing::Field(
@@ -173,7 +173,7 @@ MATCHER_P(EqualsBiddingAndAuctionResponse,
   } else {
     matchers.push_back(testing::Field(
         "top_level_seller", &BiddingAndAuctionResponse::top_level_seller,
-        testing::Eq(absl::nullopt)));
+        testing::Eq(std::nullopt)));
   }
   return testing::ExplainMatchResult(testing::AllOfArray(matchers),
                                      std::move(arg), result_listener);
@@ -209,7 +209,7 @@ TEST(BiddingAndAuctionResponseTest, ParseFails) {
 
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.DebugString());
-    absl::optional<BiddingAndAuctionResponse> result =
+    std::optional<BiddingAndAuctionResponse> result =
         BiddingAndAuctionResponse::TryParse(test_case.Clone(), GroupNames());
     EXPECT_FALSE(result);
   }
@@ -495,7 +495,7 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
   };
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.input.DebugString());
-    absl::optional<BiddingAndAuctionResponse> result =
+    std::optional<BiddingAndAuctionResponse> result =
         BiddingAndAuctionResponse::TryParse(test_case.input.Clone(),
                                             GroupNames());
     ASSERT_TRUE(result);
@@ -528,7 +528,7 @@ TEST(BiddingAndAuctionResponseTest, RemovingFramingSucceeds) {
   };
 
   for (const auto& test_case : kTestCases) {
-    absl::optional<base::span<const uint8_t>> result =
+    std::optional<base::span<const uint8_t>> result =
         ExtractCompressedBiddingAndAuctionResponse(test_case.input);
     ASSERT_TRUE(result);
     EXPECT_THAT(*result, testing::ElementsAreArray(test_case.expected_output));

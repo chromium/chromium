@@ -32,11 +32,11 @@ int64_t ServiceWorkerScriptCacheMap::LookupResourceId(const GURL& url) {
   return found->second->resource_id;
 }
 
-absl::optional<std::string> ServiceWorkerScriptCacheMap::LookupSha256Checksum(
+std::optional<std::string> ServiceWorkerScriptCacheMap::LookupSha256Checksum(
     const GURL& url) {
   ResourceMap::const_iterator found = resource_map_.find(url);
   if (found == resource_map_.end()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return found->second->sha256_checksum;
 }

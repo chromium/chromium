@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <limits>
+#include <optional>
 #include <ostream>
 #include <string>
 #include <utility>
@@ -34,7 +35,6 @@
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
@@ -71,7 +71,7 @@ struct RateLimitInput {
                  std::string reporting_origin,
                  base::Time time,
                  base::TimeDelta source_expiry = kExpiry,
-                 absl::optional<base::Time> attribution_time = absl::nullopt)
+                 std::optional<base::Time> attribution_time = std::nullopt)
       : scope(scope),
         source_origin(std::move(source_origin)),
         destination_origin(std::move(destination_origin)),
@@ -86,7 +86,7 @@ struct RateLimitInput {
   std::string reporting_origin;
   base::Time time;
   base::TimeDelta source_expiry;
-  absl::optional<base::Time> attribution_time;
+  std::optional<base::Time> attribution_time;
 
   SourceBuilder NewSourceBuilder() const {
     // Ensure that operations involving attributions use the trigger time, not

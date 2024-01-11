@@ -7,13 +7,14 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "base/memory/ref_counted.h"
 #include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/common/referrer.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -49,10 +50,10 @@ class CONTENT_EXPORT FrameNavigationEntry
       scoped_refptr<SiteInstanceImpl> site_instance,
       scoped_refptr<SiteInstanceImpl> source_site_instance,
       const GURL& url,
-      const absl::optional<url::Origin>& origin,
+      const std::optional<url::Origin>& origin,
       const Referrer& referrer,
-      const absl::optional<url::Origin>& initiator_origin,
-      const absl::optional<GURL>& initiator_base_url,
+      const std::optional<url::Origin>& initiator_origin,
+      const std::optional<GURL>& initiator_base_url,
       const std::vector<GURL>& redirect_chain,
       const blink::PageState& page_state,
       const std::string& method,
@@ -77,10 +78,10 @@ class CONTENT_EXPORT FrameNavigationEntry
       SiteInstanceImpl* site_instance,
       scoped_refptr<SiteInstanceImpl> source_site_instance,
       const GURL& url,
-      const absl::optional<url::Origin>& origin,
+      const std::optional<url::Origin>& origin,
       const Referrer& referrer,
-      const absl::optional<url::Origin>& initiator_origin,
-      const absl::optional<GURL>& initiator_base_url,
+      const std::optional<url::Origin>& initiator_origin,
+      const std::optional<GURL>& initiator_base_url,
       const std::vector<GURL>& redirect_chain,
       const blink::PageState& page_state,
       const std::string& method,
@@ -145,16 +146,16 @@ class CONTENT_EXPORT FrameNavigationEntry
   void set_referrer(const Referrer& referrer) { referrer_ = referrer; }
   const Referrer& referrer() const { return referrer_; }
 
-  // The origin that initiated the original navigation.  absl::nullopt means
+  // The origin that initiated the original navigation.  std::nullopt means
   // that the original navigation was browser-initiated (e.g. initiated from a
   // trusted surface like the omnibox or the bookmarks bar).
-  const absl::optional<url::Origin>& initiator_origin() const {
+  const std::optional<url::Origin>& initiator_origin() const {
     return initiator_origin_;
   }
 
   // The base url of the initiator of the navigation. This is only set if the
   // url is about:blank or about:srcdoc.
-  const absl::optional<GURL>& initiator_base_url() const {
+  const std::optional<GURL>& initiator_base_url() const {
     return initiator_base_url_;
   }
 
@@ -164,7 +165,7 @@ class CONTENT_EXPORT FrameNavigationEntry
   void set_committed_origin(const url::Origin& origin) {
     committed_origin_ = origin;
   }
-  const absl::optional<url::Origin>& committed_origin() const {
+  const std::optional<url::Origin>& committed_origin() const {
     return committed_origin_;
   }
 
@@ -259,10 +260,10 @@ class CONTENT_EXPORT FrameNavigationEntry
   // For a committed navigation, holds the origin of the resulting document.
   // TODO(nasko): This should be possible to calculate at ReadyToCommit time
   // and verified when receiving the DidCommit IPC.
-  absl::optional<url::Origin> committed_origin_;
+  std::optional<url::Origin> committed_origin_;
   Referrer referrer_;
-  absl::optional<url::Origin> initiator_origin_;
-  absl::optional<GURL> initiator_base_url_;
+  std::optional<url::Origin> initiator_origin_;
+  std::optional<GURL> initiator_base_url_;
   // This is used when transferring a pending entry from one process to another.
   // We also send the main frame's redirect chain through session sync for
   // offline analysis.

@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -33,7 +34,6 @@
 #include "content/public/common/widget_type.h"
 #include "services/device/public/mojom/screen_orientation_lock_types.mojom.h"
 #include "services/viz/public/mojom/hit_test/hit_test_region_list.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom-forward.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
@@ -106,9 +106,9 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView,
   bool GetIsMouseLockedUnadjustedMovementForTesting() override;
   bool CanBeMouseLocked() override;
   bool AccessibilityHasFocus() override;
-  bool LockKeyboard(absl::optional<base::flat_set<ui::DomCode>> codes) override;
+  bool LockKeyboard(std::optional<base::flat_set<ui::DomCode>> codes) override;
   void SetBackgroundColor(SkColor color) override;
-  absl::optional<SkColor> GetBackgroundColor() override;
+  std::optional<SkColor> GetBackgroundColor() override;
   void CopyBackgroundColorIfPresentFrom(
       const RenderWidgetHostView& other) override;
   void UnlockKeyboard() override;
@@ -434,8 +434,8 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView,
   // line bounds, or both.
   virtual void ImeCompositionRangeChanged(
       const gfx::Range& range,
-      const absl::optional<std::vector<gfx::Rect>>& character_bounds,
-      const absl::optional<std::vector<gfx::Rect>>& line_bounds);
+      const std::optional<std::vector<gfx::Rect>>& character_bounds,
+      const std::optional<std::vector<gfx::Rect>>& line_bounds);
 
   //----------------------------------------------------------------------------
   // The following pure virtual methods are implemented by derived classes.
@@ -541,7 +541,7 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView,
 
   // Gets the DisplayFeature whose offset and mask_length are expressed in DIPs
   // relative to the view. See display_feature.h for more details.
-  virtual absl::optional<DisplayFeature> GetDisplayFeature() = 0;
+  virtual std::optional<DisplayFeature> GetDisplayFeature() = 0;
 
   virtual void SetDisplayFeatureForTesting(
       const DisplayFeature* display_feature) = 0;
@@ -597,7 +597,7 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView,
   // SetContentBackgroundColor is called when the renderer wants to update the
   // view's background color.
   void SetContentBackgroundColor(SkColor color);
-  absl::optional<SkColor> content_background_color() const {
+  std::optional<SkColor> content_background_color() const {
     return content_background_color_;
   }
 
@@ -717,11 +717,11 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView,
   raw_ptr<TextInputManager> text_input_manager_ = nullptr;
 
   // The background color used in the current renderer.
-  absl::optional<SkColor> content_background_color_;
+  std::optional<SkColor> content_background_color_;
 
   // The default background color used before getting the
   // |content_background_color|.
-  absl::optional<SkColor> default_background_color_;
+  std::optional<SkColor> default_background_color_;
 
   bool is_currently_scrolling_viewport_ = false;
 
@@ -780,7 +780,7 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView,
 
   base::ObserverList<RenderWidgetHostViewBaseObserver>::Unchecked observers_;
 
-  absl::optional<blink::WebGestureEvent> pending_touchpad_pinch_begin_;
+  std::optional<blink::WebGestureEvent> pending_touchpad_pinch_begin_;
 
   // True when StopFlingingIfNecessary() calls StopFling().
   bool view_stopped_flinging_for_test_ = false;

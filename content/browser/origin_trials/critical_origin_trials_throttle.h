@@ -5,11 +5,12 @@
 #ifndef CONTENT_BROWSER_ORIGIN_TRIALS_CRITICAL_ORIGIN_TRIALS_THROTTLE_H_
 #define CONTENT_BROWSER_ORIGIN_TRIALS_CRITICAL_ORIGIN_TRIALS_THROTTLE_H_
 
+#include <optional>
+
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ref.h"
 #include "content/common/content_export.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "url/gurl.h"
 
@@ -28,7 +29,7 @@ class CONTENT_EXPORT CriticalOriginTrialsThrottle
   // partitioning.
   CriticalOriginTrialsThrottle(
       OriginTrialsControllerDelegate& origin_trials_delegate,
-      absl::optional<url::Origin> top_frame_origin);
+      std::optional<url::Origin> top_frame_origin);
 
   ~CriticalOriginTrialsThrottle() override;
 
@@ -58,7 +59,7 @@ class CONTENT_EXPORT CriticalOriginTrialsThrottle
   raw_ref<OriginTrialsControllerDelegate, DanglingUntriaged>
       origin_trials_delegate_;
 
-  absl::optional<url::Origin> top_frame_origin_;
+  std::optional<url::Origin> top_frame_origin_;
 
   bool is_navigation_request_ = false;
 

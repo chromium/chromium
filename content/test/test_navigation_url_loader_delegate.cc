@@ -55,7 +55,7 @@ void TestNavigationURLLoaderDelegate::OnResponseStarted(
     GlobalRequestID request_id,
     bool is_download,
     net::NetworkAnonymizationKey network_anonymization_key,
-    absl::optional<SubresourceLoaderParams> subresource_loader_params,
+    std::optional<SubresourceLoaderParams> subresource_loader_params,
     EarlyHints early_hints) {
   on_request_handled_counter_++;
   response_head_ = std::move(response_head);
@@ -76,11 +76,11 @@ void TestNavigationURLLoaderDelegate::OnRequestFailed(
     request_failed_->Quit();
 }
 
-absl::optional<NavigationEarlyHintsManagerParams>
+std::optional<NavigationEarlyHintsManagerParams>
 TestNavigationURLLoaderDelegate::CreateNavigationEarlyHintsManagerParams(
     const network::mojom::EarlyHints& early_hints) {
   NOTREACHED();
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 }  // namespace content

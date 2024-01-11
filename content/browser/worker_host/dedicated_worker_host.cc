@@ -554,7 +554,7 @@ DedicatedWorkerHost::CreateNetworkFactoryForSubresources(
       worker_process_host_->GetBrowserContext(),
       /*frame=*/nullptr, worker_process_host_->GetID(),
       ContentBrowserClient::URLLoaderFactoryType::kWorkerSubResource,
-      GetStorageKey().origin(), /*navigation_id=*/absl::nullopt,
+      GetStorageKey().origin(), /*navigation_id=*/std::nullopt,
       ukm::SourceIdObj::FromInt64(
           ancestor_render_frame_host->GetPageUkmSourceId()),
       &default_factory_receiver, &factory_params->header_client,

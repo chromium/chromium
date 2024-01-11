@@ -74,7 +74,7 @@ FencedFrame::~FencedFrame() {
 void FencedFrame::Navigate(
     const GURL& url,
     base::TimeTicks navigation_start_time,
-    const absl::optional<std::u16string>& embedder_shared_storage_context) {
+    const std::optional<std::u16string>& embedder_shared_storage_context) {
   // We don't need guard against a bad message in the case of prerendering since
   // we wouldn't even establish the mojo connection in that case.
   DCHECK_NE(RenderFrameHost::LifecycleState::kPrerendering,
@@ -140,7 +140,7 @@ void FencedFrame::Navigate(
       inner_root->current_frame_host(), validated_url,
       /*initiator_frame_token=*/nullptr,
       content::ChildProcessHost::kInvalidUniqueID, initiator_origin,
-      /*initiator_base_url=*/absl::nullopt,
+      /*initiator_base_url=*/std::nullopt,
       /*source_site_instance=*/nullptr, content::Referrer(),
       ui::PAGE_TRANSITION_AUTO_SUBFRAME,
       /*should_replace_current_entry=*/true, download_policy, "GET",
@@ -148,7 +148,7 @@ void FencedFrame::Navigate(
       /*blob_url_loader_factory=*/nullptr,
       network::mojom::SourceLocation::New(), /*has_user_gesture=*/false,
       /*is_form_submission=*/false,
-      /*impression=*/absl::nullopt, initiator_activation_and_ad_status,
+      /*impression=*/std::nullopt, initiator_activation_and_ad_status,
       navigation_start_time,
       /*is_embedder_initiated_fenced_frame_navigation=*/true,
       /*is_unfenced_top_navigation=*/false,

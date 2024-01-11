@@ -46,9 +46,9 @@ class PreloadingAttemptUkmEntryBuilder {
       PreloadingTriggeringOutcome triggering_outcome,
       PreloadingFailureReason failure_reason,
       bool accurate,
-      absl::optional<base::TimeDelta> ready_time = absl::nullopt,
-      absl::optional<blink::mojom::SpeculationEagerness> eagerness =
-          absl::nullopt) const;
+      std::optional<base::TimeDelta> ready_time = std::nullopt,
+      std::optional<blink::mojom::SpeculationEagerness> eagerness =
+          std::nullopt) const;
 
  private:
   PreloadingPredictor predictor_;

@@ -218,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
 
     // Wait to see the size sent to the child RenderWidget.
     while (true) {
-      absl::optional<blink::VisualProperties> properties =
+      std::optional<blink::VisualProperties> properties =
           child_rwh->LastComputedVisualProperties();
       if (properties && properties->visible_viewport_size == initial_size)
         break;
@@ -235,7 +235,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
 
     // Wait to see the size sent to the child RenderWidget.
     while (true) {
-      absl::optional<blink::VisualProperties> properties =
+      std::optional<blink::VisualProperties> properties =
           nested_child_rwh->LastComputedVisualProperties();
       if (properties &&
           properties->visible_viewport_size == nested_initial_size)
@@ -265,14 +265,14 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
 
     // Wait to see both RenderWidgets receive the message.
     while (true) {
-      absl::optional<blink::VisualProperties> properties =
+      std::optional<blink::VisualProperties> properties =
           root_rwh->LastComputedVisualProperties();
       if (properties && properties->visible_viewport_size == resize_to)
         break;
       base::RunLoop().RunUntilIdle();
     }
     while (true) {
-      absl::optional<blink::VisualProperties> properties =
+      std::optional<blink::VisualProperties> properties =
           child_rwh->LastComputedVisualProperties();
       if (properties && properties->visible_viewport_size == resize_to)
         break;
@@ -296,14 +296,14 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
 
     // Wait to see both RenderWidgets receive the message.
     while (true) {
-      absl::optional<blink::VisualProperties> properties =
+      std::optional<blink::VisualProperties> properties =
           nested_root_rwh->LastComputedVisualProperties();
       if (properties && properties->visible_viewport_size == resize_to)
         break;
       base::RunLoop().RunUntilIdle();
     }
     while (true) {
-      absl::optional<blink::VisualProperties> properties =
+      std::optional<blink::VisualProperties> properties =
           nested_child_rwh->LastComputedVisualProperties();
       if (properties && properties->visible_viewport_size == resize_to)
         break;
@@ -336,14 +336,14 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
     // Wait for the renderer side to resize itself and the RenderWidget
     // waterfall to pass the new |visible_viewport_size| down.
     while (true) {
-      absl::optional<blink::VisualProperties> properties =
+      std::optional<blink::VisualProperties> properties =
           root_rwh->LastComputedVisualProperties();
       if (properties && properties->visible_viewport_size == auto_resize_to)
         break;
       base::RunLoop().RunUntilIdle();
     }
     while (true) {
-      absl::optional<blink::VisualProperties> properties =
+      std::optional<blink::VisualProperties> properties =
           child_rwh->LastComputedVisualProperties();
       if (properties && properties->visible_viewport_size == auto_resize_to)
         break;
@@ -590,7 +590,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
                                  root_view_size.width() - second_segment_offset,
                                  root_view_size.height());
 
-  absl::optional<blink::VisualProperties> properties =
+  std::optional<blink::VisualProperties> properties =
       oopchild->current_frame_host()
           ->GetRenderWidgetHost()
           ->LastComputedVisualProperties();

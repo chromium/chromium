@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -28,7 +29,6 @@
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/store_source_result.h"
 #include "net/base/schemeful_site.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 
@@ -75,9 +75,9 @@ enum class DebugDataType {
   kMaxValue = kTriggerEventNoMatchingTriggerData,
 };
 
-absl::optional<DebugDataType> DataTypeIfCookieSet(DebugDataType data_type,
-                                                  bool is_debug_cookie_set) {
-  return is_debug_cookie_set ? absl::make_optional(data_type) : absl::nullopt;
+std::optional<DebugDataType> DataTypeIfCookieSet(DebugDataType data_type,
+                                                 bool is_debug_cookie_set) {
+  return is_debug_cookie_set ? std::make_optional(data_type) : std::nullopt;
 }
 
 struct DebugDataTypeAndBody {
@@ -88,14 +88,14 @@ struct DebugDataTypeAndBody {
       : debug_data_type(debug_data_type), limit(limit) {}
 };
 
-absl::optional<DebugDataTypeAndBody> GetReportDataBody(
+std::optional<DebugDataTypeAndBody> GetReportDataBody(
     bool is_debug_cookie_set,
     const StoreSourceResult& result) {
   return absl::visit(
       base::Overloaded{
           [](absl::variant<StoreSourceResult::ProhibitedByBrowserPolicy,
                            StoreSourceResult::ExceedsMaxChannelCapacity>) {
-            return absl::optional<DebugDataTypeAndBody>();
+            return std::optional<DebugDataTypeAndBody>();
           },
           [&](absl::variant<
               StoreSourceResult::Success,
@@ -108,50 +108,50 @@ absl::optional<DebugDataTypeAndBody> GetReportDataBody(
               StoreSourceResult::DestinationGlobalLimitReached,
               StoreSourceResult::ReportingOriginsPerSiteLimitReached>) {
             return is_debug_cookie_set
-                       ? absl::make_optional<DebugDataTypeAndBody>(
+                       ? std::make_optional<DebugDataTypeAndBody>(
                              DebugDataType::kSourceSuccess)
-                       : absl::nullopt;
+                       : std::nullopt;
           },
           [](StoreSourceResult::InsufficientUniqueDestinationCapacity v) {
-            return absl::make_optional<DebugDataTypeAndBody>(
+            return std::make_optional<DebugDataTypeAndBody>(
                 DebugDataType::kSourceDestinationLimit, v.limit);
           },
           [](absl::variant<StoreSourceResult::DestinationReportingLimitReached,
                            StoreSourceResult::DestinationBothLimitsReached> v) {
-            return absl::make_optional<DebugDataTypeAndBody>(
+            return std::make_optional<DebugDataTypeAndBody>(
                 DebugDataType::kSourceDestinationRateLimit,
                 absl::visit([](auto v) { return v.limit; }, v));
           },
           [&](StoreSourceResult::SuccessNoised) {
             return is_debug_cookie_set
-                       ? absl::make_optional<DebugDataTypeAndBody>(
+                       ? std::make_optional<DebugDataTypeAndBody>(
                              DebugDataType::kSourceNoised)
-                       : absl::nullopt;
+                       : std::nullopt;
           },
           [&](StoreSourceResult::InsufficientSourceCapacity v) {
             return is_debug_cookie_set
-                       ? absl::make_optional<DebugDataTypeAndBody>(
+                       ? std::make_optional<DebugDataTypeAndBody>(
                              DebugDataType::kSourceStorageLimit, v.limit)
-                       : absl::nullopt;
+                       : std::nullopt;
           },
           [&](StoreSourceResult::InternalError) {
             return is_debug_cookie_set
-                       ? absl::make_optional<DebugDataTypeAndBody>(
+                       ? std::make_optional<DebugDataTypeAndBody>(
                              DebugDataType::kSourceUnknownError)
-                       : absl::nullopt;
+                       : std::nullopt;
           },
       },
       result.result());
 }
 
-absl::optional<DebugDataType> GetReportDataType(EventLevelResult result,
-                                                bool is_debug_cookie_set) {
+std::optional<DebugDataType> GetReportDataType(EventLevelResult result,
+                                               bool is_debug_cookie_set) {
   switch (result) {
     case EventLevelResult::kSuccess:
     case EventLevelResult::kProhibitedByBrowserPolicy:
     case EventLevelResult::kSuccessDroppedLowerPriority:
     case EventLevelResult::kNotRegistered:
-      return absl::nullopt;
+      return std::nullopt;
     case EventLevelResult::kInternalError:
       return DataTypeIfCookieSet(DebugDataType::kTriggerUnknownError,
                                  is_debug_cookie_set);
@@ -202,13 +202,13 @@ absl::optional<DebugDataType> GetReportDataType(EventLevelResult result,
   }
 }
 
-absl::optional<DebugDataType> GetReportDataType(AggregatableResult result,
-                                                bool is_debug_cookie_set) {
+std::optional<DebugDataType> GetReportDataType(AggregatableResult result,
+                                               bool is_debug_cookie_set) {
   switch (result) {
     case AggregatableResult::kSuccess:
     case AggregatableResult::kNotRegistered:
     case AggregatableResult::kProhibitedByBrowserPolicy:
-      return absl::nullopt;
+      return std::nullopt;
     case AggregatableResult::kInternalError:
       return DataTypeIfCookieSet(DebugDataType::kTriggerUnknownError,
                                  is_debug_cookie_set);
@@ -313,7 +313,7 @@ std::string SerializeReportDataType(DebugDataType data_type) {
 void SetSourceData(base::Value::Dict& data_body,
                    uint64_t source_event_id,
                    const net::SchemefulSite& source_site,
-                   absl::optional<uint64_t> source_debug_key) {
+                   std::optional<uint64_t> source_debug_key) {
   data_body.Set("source_event_id", base::NumberToString(source_event_id));
   data_body.Set("source_site", source_site.Serialize());
   if (source_debug_key) {
@@ -327,7 +327,7 @@ void SetLimit(base::Value::Dict& data_body, T limit) {
 }
 
 template <typename T>
-void SetLimit(base::Value::Dict& data_body, absl::optional<T> limit) {
+void SetLimit(base::Value::Dict& data_body, std::optional<T> limit) {
   DCHECK(limit.has_value());
   SetLimit(data_body, *limit);
 }
@@ -343,11 +343,11 @@ base::Value::Dict GetReportDataBody(DebugDataType data_type,
   base::Value::Dict data_body;
   data_body.Set(kAttributionDestination,
                 net::SchemefulSite(trigger.destination_origin()).Serialize());
-  if (absl::optional<uint64_t> debug_key = trigger.registration().debug_key) {
+  if (std::optional<uint64_t> debug_key = trigger.registration().debug_key) {
     data_body.Set("trigger_debug_key", base::NumberToString(*debug_key));
   }
 
-  if (const absl::optional<StoredSource>& source = result.source()) {
+  if (const std::optional<StoredSource>& source = result.source()) {
     SetSourceData(data_body, source->source_event_id(),
                   source->common_info().source_site(), source->debug_key());
   }
@@ -436,19 +436,19 @@ GURL AttributionDebugReport::ReportUrl() const {
 }
 
 // static
-absl::optional<AttributionDebugReport> AttributionDebugReport::Create(
+std::optional<AttributionDebugReport> AttributionDebugReport::Create(
     const StorableSource& source,
     bool is_debug_cookie_set,
     const StoreSourceResult& result) {
   if (!source.registration().debug_reporting ||
       source.is_within_fenced_frame()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
-  absl::optional<DebugDataTypeAndBody> data =
+  std::optional<DebugDataTypeAndBody> data =
       GetReportDataBody(is_debug_cookie_set, result);
   if (!data) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   RecordVerboseDebugReportType(data->debug_data_type);
@@ -473,13 +473,13 @@ absl::optional<AttributionDebugReport> AttributionDebugReport::Create(
 }
 
 // static
-absl::optional<AttributionDebugReport> AttributionDebugReport::Create(
+std::optional<AttributionDebugReport> AttributionDebugReport::Create(
     const AttributionTrigger& trigger,
     bool is_debug_cookie_set,
     const CreateReportResult& result) {
   if (!trigger.registration().debug_reporting ||
       trigger.is_within_fenced_frame()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   if (is_debug_cookie_set && result.source()) {
@@ -489,7 +489,7 @@ absl::optional<AttributionDebugReport> AttributionDebugReport::Create(
   base::Value::List report_body;
   base::Time original_report_time;
 
-  absl::optional<DebugDataType> event_level_data_type =
+  std::optional<DebugDataType> event_level_data_type =
       GetReportDataType(result.event_level_status(), is_debug_cookie_set);
   if (event_level_data_type) {
     report_body.Append(
@@ -499,7 +499,7 @@ absl::optional<AttributionDebugReport> AttributionDebugReport::Create(
     RecordVerboseDebugReportType(*event_level_data_type);
   }
 
-  if (absl::optional<DebugDataType> aggregatable_data_type =
+  if (std::optional<DebugDataType> aggregatable_data_type =
           GetReportDataType(result.aggregatable_status(), is_debug_cookie_set);
       aggregatable_data_type &&
       aggregatable_data_type != event_level_data_type) {
@@ -511,7 +511,7 @@ absl::optional<AttributionDebugReport> AttributionDebugReport::Create(
   }
 
   if (report_body.empty()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return AttributionDebugReport(
@@ -519,16 +519,16 @@ absl::optional<AttributionDebugReport> AttributionDebugReport::Create(
 }
 
 // static
-absl::optional<AttributionDebugReport> AttributionDebugReport::Create(
+std::optional<AttributionDebugReport> AttributionDebugReport::Create(
     const OsRegistration& registration) {
   if (!registration.debug_reporting || registration.is_within_fenced_frame) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   auto registration_origin = attribution_reporting::SuitableOrigin::Create(
       registration.registration_url);
   if (!registration_origin.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   DebugDataType data_type;

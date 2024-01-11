@@ -85,8 +85,8 @@ class TLSProber {
 
  private:
   void OnTCPConnected(int result,
-                      const absl::optional<net::IPEndPoint>& local_addr,
-                      const absl::optional<net::IPEndPoint>& peer_adder,
+                      const std::optional<net::IPEndPoint>& local_addr,
+                      const std::optional<net::IPEndPoint>& peer_adder,
                       mojo::ScopedDataPipeConsumerHandle receive_stream,
                       mojo::ScopedDataPipeProducerHandle send_stream) {
     if (result != net::OK) {
@@ -109,7 +109,7 @@ class TLSProber {
   void OnUpgradeToTLS(int result,
                       mojo::ScopedDataPipeConsumerHandle receive_stream,
                       mojo::ScopedDataPipeProducerHandle send_stream,
-                      const absl::optional<net::SSLInfo>& ssl_info) {
+                      const std::optional<net::SSLInfo>& ssl_info) {
     std::move(callback_).Run(result == net::OK
                                  ? PrefetchProbeResult::kTLSProbeSuccess
                                  : PrefetchProbeResult::kTLSProbeFailure);
@@ -254,7 +254,7 @@ void PrefetchOriginProber::OnDNSResolved(
     OnProbeResultCallback callback,
     bool also_do_tls_connect,
     int net_error,
-    const absl::optional<net::AddressList>& resolved_addresses) {
+    const std::optional<net::AddressList>& resolved_addresses) {
   bool successful = net_error == net::OK && resolved_addresses &&
                     !resolved_addresses->empty();
 
@@ -284,7 +284,7 @@ void PrefetchOriginProber::DoTLSProbeAfterDNSResolution(
   browser_context_->GetDefaultStoragePartition()
       ->GetNetworkContext()
       ->CreateTCPConnectedSocket(
-          /*local_addr=*/absl::nullopt, addresses,
+          /*local_addr=*/std::nullopt, addresses,
           /*tcp_connected_socket_options=*/nullptr,
           net::MutableNetworkTrafficAnnotationTag(
               GetProbingTrafficAnnotation()),

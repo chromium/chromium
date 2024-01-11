@@ -133,8 +133,8 @@ class BackgroundTracingManager {
   // type perfetto::Trace. |callback| may be invoked either synchronously or
   // on a thread pool task runner.
   virtual void GetTraceToUpload(
-      base::OnceCallback<void(absl::optional<std::string> /*trace_content*/,
-                              absl::optional<std::string> /*system_profile*/)>
+      base::OnceCallback<void(std::optional<std::string> /*trace_content*/,
+                              std::optional<std::string> /*system_profile*/)>
           callback) = 0;
 
   // Returns background tracing configuration for the experiment |trial_name|.

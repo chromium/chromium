@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 
 #include "base/base_paths.h"
 #include "base/json/json_reader.h"
@@ -21,7 +22,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/network_change_notifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/perfetto/protos/perfetto/config/chrome/scenario_config.gen.h"
 
 namespace content {
@@ -65,7 +65,7 @@ class BackgroundTracingConfigTest : public testing::Test {
 
 std::unique_ptr<BackgroundTracingConfigImpl> ReadFromJSONString(
     const std::string& json_text) {
-  absl::optional<base::Value> json_value(base::JSONReader::Read(json_text));
+  std::optional<base::Value> json_value(base::JSONReader::Read(json_text));
 
   if (!json_value || !json_value->is_dict())
     return nullptr;

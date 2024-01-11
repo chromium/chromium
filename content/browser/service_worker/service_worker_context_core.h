@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -31,7 +32,6 @@
 #include "content/public/browser/service_worker_context.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom-forward.h"
 
@@ -420,7 +420,7 @@ class CONTENT_EXPORT ServiceWorkerContextCore
       const blink::StorageKey& key,
       ServiceWorkerContext::WarmUpServiceWorkerCallback callback);
 
-  absl::optional<WarmUpRequest> PopNextWarmUpRequest();
+  std::optional<WarmUpRequest> PopNextWarmUpRequest();
   bool IsWaitingForWarmUp(const blink::StorageKey& key) const;
 
   bool IsProcessingWarmingUp() const { return is_processing_warming_up_; }

@@ -35,8 +35,8 @@ class ScopedPreloadingDeciderObserver
   void OnPointerDown(const GURL& url) override { on_pointer_down_url_ = url; }
   void OnPointerHover(const GURL& url) override { on_pointer_hover_url_ = url; }
 
-  absl::optional<GURL> on_pointer_down_url_;
-  absl::optional<GURL> on_pointer_hover_url_;
+  std::optional<GURL> on_pointer_down_url_;
+  std::optional<GURL> on_pointer_hover_url_;
 
  private:
   raw_ptr<RenderFrameHostImpl> rfh_;

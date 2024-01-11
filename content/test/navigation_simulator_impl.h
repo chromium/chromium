@@ -6,6 +6,7 @@
 #define CONTENT_TEST_NAVIGATION_SIMULATOR_IMPL_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -24,7 +25,6 @@
 #include "net/base/load_flags.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/http/http_connection_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/mojom/loader/mixed_content.mojom.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom-forward.h"
@@ -178,7 +178,7 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   }
 
   void set_initiator_origin(
-      const absl::optional<url::Origin>& initiator_origin) {
+      const std::optional<url::Origin>& initiator_origin) {
     initiator_origin_ = initiator_origin;
   }
 
@@ -383,13 +383,13 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   net::HttpConnectionInfo http_connection_info_ =
       net::HttpConnectionInfo::kUNKNOWN;
   net::ResolveErrorInfo resolve_error_info_ = net::ResolveErrorInfo(net::OK);
-  absl::optional<net::SSLInfo> ssl_info_;
-  absl::optional<blink::PageState> page_state_;
-  absl::optional<url::Origin> origin_;
-  absl::optional<blink::Impression> impression_;
+  std::optional<net::SSLInfo> ssl_info_;
+  std::optional<blink::PageState> page_state_;
+  std::optional<url::Origin> origin_;
+  std::optional<blink::Impression> impression_;
   int64_t post_id_ = -1;
   bool skip_service_worker_ = false;
-  absl::optional<url::Origin> initiator_origin_;
+  std::optional<url::Origin> initiator_origin_;
   std::string headers_;
   int load_flags_ = net::LOAD_NORMAL;
   blink::mojom::MixedContentContextType mixed_content_context_type_ =
@@ -427,7 +427,7 @@ class NavigationSimulatorImpl : public NavigationSimulator,
 
   std::string supports_loading_mode_header_;
 
-  absl::optional<bool> was_prerendered_page_activation_;
+  std::optional<bool> was_prerendered_page_activation_;
 
   // These are used to sanity check the content/public/ API calls emitted as
   // part of the navigation.
@@ -443,7 +443,7 @@ class NavigationSimulatorImpl : public NavigationSimulator,
   // Holds the last ThrottleCheckResult calculated by the navigation's
   // throttles. Will be unset before WillStartRequest is finished. Will be unset
   // while throttles are being run, but before they finish.
-  absl::optional<NavigationThrottle::ThrottleCheckResult>
+  std::optional<NavigationThrottle::ThrottleCheckResult>
       last_throttle_check_result_;
 
   // GlobalRequestID for the associated NavigationHandle. Only valid after

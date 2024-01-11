@@ -346,7 +346,7 @@ class InProcessUtilityThreadHelper : public BrowserChildProcessObserver {
   void BrowserChildProcessHostDisconnected(
       const ChildProcessData& data) override;
 
-  absl::optional<base::RunLoop> run_loop_;
+  std::optional<base::RunLoop> run_loop_;
 };
 
 // This observer keeps tracks of whether a given RenderFrameHost has received

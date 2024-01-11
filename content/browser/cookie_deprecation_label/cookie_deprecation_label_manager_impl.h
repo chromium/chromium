@@ -5,12 +5,12 @@
 #ifndef CONTENT_BROWSER_COOKIE_DEPRECATION_LABEL_COOKIE_DEPRECATION_LABEL_MANAGER_IMPL_H_
 #define CONTENT_BROWSER_COOKIE_DEPRECATION_LABEL_COOKIE_DEPRECATION_LABEL_MANAGER_IMPL_H_
 
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ref.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/cookie_deprecation_label_manager.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace url {
 class Origin;
@@ -35,15 +35,15 @@ class CONTENT_EXPORT CookieDeprecationLabelManagerImpl
       CookieDeprecationLabelManagerImpl&&) = delete;
   ~CookieDeprecationLabelManagerImpl() override;
 
-  absl::optional<std::string> GetValue() override;
+  std::optional<std::string> GetValue() override;
 
-  absl::optional<std::string> GetValue(const url::Origin& top_frame_origin,
-                                       const url::Origin& context_origin);
+  std::optional<std::string> GetValue(const url::Origin& top_frame_origin,
+                                      const url::Origin& context_origin);
 
  private:
-  // Sets label_value_ to the feature param and returns. Returns absl::nullopt
+  // Sets label_value_ to the feature param and returns. Returns std::nullopt
   // if `kSkipCookieDeprecationLabelForStoragePartitions` is true.
-  absl::optional<std::string> GetValueInternal();
+  std::optional<std::string> GetValueInternal();
 
   // `this` is owned by the `StoragePartitionImpl`, which itself is
   // owned by `browser_context_`.
@@ -51,7 +51,7 @@ class CONTENT_EXPORT CookieDeprecationLabelManagerImpl
 
   // The label isn't expected to change, therefore caching the value for future
   // use to improve performance.
-  absl::optional<std::string> label_value_;
+  std::optional<std::string> label_value_;
 };
 
 }  // namespace content

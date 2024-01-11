@@ -35,7 +35,7 @@ std::unique_ptr<CommitDeferringConditionRunner>
 CommitDeferringConditionRunner::Create(
     NavigationRequest& navigation_request,
     CommitDeferringCondition::NavigationType navigation_type,
-    absl::optional<int> candidate_prerender_frame_tree_node_id) {
+    std::optional<int> candidate_prerender_frame_tree_node_id) {
   auto runner = base::WrapUnique(new CommitDeferringConditionRunner(
       navigation_request, navigation_type,
       candidate_prerender_frame_tree_node_id));
@@ -45,7 +45,7 @@ CommitDeferringConditionRunner::Create(
 CommitDeferringConditionRunner::CommitDeferringConditionRunner(
     Delegate& delegate,
     CommitDeferringCondition::NavigationType navigation_type,
-    absl::optional<int> candidate_prerender_frame_tree_node_id)
+    std::optional<int> candidate_prerender_frame_tree_node_id)
     : delegate_(delegate),
       navigation_type_(navigation_type),
       candidate_prerender_frame_tree_node_id_(

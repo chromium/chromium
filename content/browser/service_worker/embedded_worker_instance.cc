@@ -4,6 +4,7 @@
 
 #include "content/browser/service_worker/embedded_worker_instance.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -52,7 +53,6 @@
 #include "net/cookies/site_for_cookies.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
 #include "third_party/blink/public/mojom/loader/url_loader_factory_bundle.mojom.h"
@@ -874,7 +874,7 @@ EmbeddedWorkerInstance::CreateFactoryBundle(
   bool bypass_redirect_checks = false;
   GetContentClient()->browser()->WillCreateURLLoaderFactory(
       rph->GetBrowserContext(), nullptr /* frame_host */, rph->GetID(),
-      factory_type, origin, absl::nullopt /* navigation_id */,
+      factory_type, origin, std::nullopt /* navigation_id */,
       ukm::kInvalidSourceIdObj, &default_factory_receiver,
       &factory_params->header_client, &bypass_redirect_checks,
       nullptr /* disable_secure_dns */, &factory_params->factory_override,
@@ -1036,7 +1036,7 @@ void EmbeddedWorkerInstance::ReleaseProcess() {
   status_ = blink::EmbeddedWorkerStatus::kStopped;
   starting_phase_ = NOT_STARTING;
   thread_id_ = ServiceWorkerConsts::kInvalidEmbeddedWorkerThreadId;
-  token_ = absl::nullopt;
+  token_ = std::nullopt;
 
   DCHECK(!foreground_notified_);
 }

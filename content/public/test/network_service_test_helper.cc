@@ -626,7 +626,7 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
   }
 
   void SetSCTAuditingRetryDelay(
-      absl::optional<base::TimeDelta> delay,
+      std::optional<base::TimeDelta> delay,
       SetSCTAuditingRetryDelayCallback callback) override {
 #if BUILDFLAG(IS_CT_SUPPORTED)
     network::SCTAuditingReporter::SetRetryDelayForTesting(delay);

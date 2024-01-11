@@ -5,6 +5,8 @@
 #ifndef CONTENT_SERVICES_AUCTION_WORKLET_SET_BID_BINDINGS_H_
 #define CONTENT_SERVICES_AUCTION_WORKLET_SET_BID_BINDINGS_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -14,7 +16,6 @@
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/reject_reason.mojom.h"
 #include "content/services/auction_worklet/webidl_compat.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_currencies.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "url/gurl.h"
@@ -38,7 +39,7 @@ class CONTENT_EXPORT SetBidBindings : public Bindings {
       bool has_top_level_seller_origin,
       const mojom::BidderWorkletNonSharedParams*
           bidder_worklet_non_shared_params,
-      const absl::optional<blink::AdCurrency>& per_buyer_currency,
+      const std::optional<blink::AdCurrency>& per_buyer_currency,
       base::RepeatingCallback<bool(const std::string&)> is_ad_excluded,
       base::RepeatingCallback<bool(const std::string&)>
           is_component_ad_excluded);
@@ -69,7 +70,7 @@ class CONTENT_EXPORT SetBidBindings : public Bindings {
   raw_ptr<const mojom::BidderWorkletNonSharedParams>
       bidder_worklet_non_shared_params_ = nullptr;
 
-  absl::optional<blink::AdCurrency> per_buyer_currency_;
+  std::optional<blink::AdCurrency> per_buyer_currency_;
 
   // Callbacks set by ReInitialize and cleared by Reset which tell if an ad URL
   // can be used in a valid bid. Used to check the bid for non-k-anonymous ads.

@@ -6,6 +6,8 @@
 
 #include <string.h>
 
+#include <optional>
+
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/process/process.h"
@@ -17,7 +19,6 @@
 #include "content/public/test/content_browser_test.h"
 #include "services/test/echo/public/mojom/echo.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>

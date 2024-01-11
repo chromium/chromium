@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -30,7 +31,6 @@
 #include "net/base/completion_once_callback.h"
 #include "net/base/io_buffer.h"
 #include "net/disk_cache/disk_cache.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 
@@ -169,7 +169,7 @@ class CONTENT_EXPORT CacheStorageCache {
       int64_t trace_id,
       VerboseErrorCallback callback,
       BadMessageCallback bad_message_callback,
-      absl::optional<std::string> message,
+      std::optional<std::string> message,
       uint64_t space_required,
       uint64_t side_data_size,
       storage::QuotaErrorOr<int64_t> space_remaining);

@@ -341,7 +341,7 @@ void XRRuntimeManagerImpl::MakeXrCompatible() {
 
   if (!IsInitializedOnCompatibleAdapter(runtime)) {
 #if BUILDFLAG(IS_WIN)
-    absl::optional<CHROME_LUID> luid = runtime->GetLuid();
+    std::optional<CHROME_LUID> luid = runtime->GetLuid();
     // IsInitializedOnCompatibleAdapter should have returned true if the
     // runtime doesn't specify a LUID.
     DCHECK(luid && (luid->HighPart != 0 || luid->LowPart != 0));
@@ -387,7 +387,7 @@ void XRRuntimeManagerImpl::MakeXrCompatible() {
 bool XRRuntimeManagerImpl::IsInitializedOnCompatibleAdapter(
     BrowserXRRuntimeImpl* runtime) {
 #if BUILDFLAG(IS_WIN)
-  absl::optional<CHROME_LUID> luid = runtime->GetLuid();
+  std::optional<CHROME_LUID> luid = runtime->GetLuid();
   if (luid && (luid->HighPart != 0 || luid->LowPart != 0)) {
     CHROME_LUID active_luid =
         content::GpuDataManager::GetInstance()->GetGPUInfo().active_gpu().luid;

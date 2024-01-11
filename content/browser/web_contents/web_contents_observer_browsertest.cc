@@ -133,7 +133,7 @@ class ServiceWorkerAccessContentBrowserClient
   AllowServiceWorkerResult AllowServiceWorker(
       const GURL& scope,
       const net::SiteForCookies& site_for_cookies,
-      const absl::optional<url::Origin>& top_frame_origin,
+      const std::optional<url::Origin>& top_frame_origin,
       const GURL& script_url,
       BrowserContext* context) override {
     return AllowServiceWorkerResult::FromPolicy(!javascript_allowed_,
@@ -687,7 +687,7 @@ class ColorSchemeObserver : public WebContentsObserver {
       : WebContentsObserver(web_contents) {}
 
   MOCK_METHOD1(InferredColorSchemeUpdated,
-               void(absl::optional<blink::mojom::PreferredColorScheme>));
+               void(std::optional<blink::mojom::PreferredColorScheme>));
 };
 
 class WebContentsObserverColorSchemeBrowserTest
@@ -720,11 +720,11 @@ IN_PROC_BROWSER_TEST_P(WebContentsObserverColorSchemeBrowserTest,
     base::RunLoop run_loop;
     EXPECT_CALL(observer,
                 InferredColorSchemeUpdated(
-                    absl::optional<blink::mojom::PreferredColorScheme>()));
+                    std::optional<blink::mojom::PreferredColorScheme>()));
     EXPECT_CALL(
         observer,
         InferredColorSchemeUpdated(
-            absl::optional<blink::mojom::PreferredColorScheme>(GetParam())))
+            std::optional<blink::mojom::PreferredColorScheme>(GetParam())))
         .WillOnce([&]() { run_loop.Quit(); });
     GURL url(embedded_test_server()->GetURL("/color-scheme.html"));
     EXPECT_TRUE(NavigateToURL(web_contents(), url));
@@ -737,11 +737,11 @@ IN_PROC_BROWSER_TEST_P(WebContentsObserverColorSchemeBrowserTest,
     base::RunLoop run_loop;
     EXPECT_CALL(observer,
                 InferredColorSchemeUpdated(
-                    absl::optional<blink::mojom::PreferredColorScheme>()));
+                    std::optional<blink::mojom::PreferredColorScheme>()));
     EXPECT_CALL(
         observer,
         InferredColorSchemeUpdated(
-            absl::optional<blink::mojom::PreferredColorScheme>(GetParam())))
+            std::optional<blink::mojom::PreferredColorScheme>(GetParam())))
         .WillOnce([&]() { run_loop.Quit(); });
     GURL url2(embedded_test_server()->GetURL("/color-scheme-2.html"));
     EXPECT_TRUE(NavigateToURL(web_contents(), url2));

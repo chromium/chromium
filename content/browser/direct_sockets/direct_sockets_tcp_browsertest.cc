@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include <stdint.h>
+
+#include <optional>
 #include <string>
 
 #include "base/run_loop.h"
@@ -40,7 +42,6 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "url/gurl.h"
 
@@ -78,7 +79,7 @@ class ReadWriteWaiter {
  private:
   void OnAccept(
       int result,
-      const absl::optional<net::IPEndPoint>& remote_addr,
+      const std::optional<net::IPEndPoint>& remote_addr,
       mojo::PendingRemote<network::mojom::TCPConnectedSocket> accepted_socket,
       mojo::ScopedDataPipeConsumerHandle consumer_handle,
       mojo::ScopedDataPipeProducerHandle producer_handle) {
@@ -230,7 +231,7 @@ class DirectSocketsTcpBrowserTest : public ContentBrowserTest {
 
   // Returns the port listening for TCP connections.
   uint16_t StartTcpServer() {
-    base::test::TestFuture<int32_t, const absl::optional<net::IPEndPoint>&>
+    base::test::TestFuture<int32_t, const std::optional<net::IPEndPoint>&>
         future;
     auto options = network::mojom::TCPServerSocketOptions::New();
     options->backlog = 5;
@@ -240,7 +241,7 @@ class DirectSocketsTcpBrowserTest : public ContentBrowserTest {
         std::move(options),
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
         tcp_server_socket_.BindNewPipeAndPassReceiver(), future.GetCallback());
-    auto local_addr = future.Get<absl::optional<net::IPEndPoint>>();
+    auto local_addr = future.Get<std::optional<net::IPEndPoint>>();
     DCHECK(local_addr);
     return local_addr->port();
   }
@@ -402,7 +403,7 @@ class MockTcpNetworkContext : public content::test::MockNetworkContext {
 
   // network::TestNetworkContext:
   void CreateTCPConnectedSocket(
-      const absl::optional<net::IPEndPoint>& local_addr,
+      const std::optional<net::IPEndPoint>& local_addr,
       const net::AddressList& remote_addr_list,
       network::mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
@@ -742,7 +743,7 @@ class NoCoiPermissionIsolatedWebAppContentBrowserClient
       const url::Origin& isolated_app_origin)
       : IsolatedWebAppContentBrowserClient(isolated_app_origin) {}
 
-  absl::optional<blink::ParsedPermissionsPolicy>
+  std::optional<blink::ParsedPermissionsPolicy>
   GetPermissionsPolicyForIsolatedWebApp(
       content::BrowserContext* browser_context,
       const url::Origin& app_origin) override {

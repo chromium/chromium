@@ -4,13 +4,14 @@
 
 #include "content/browser/devtools/protocol/fedcm_handler.h"
 
+#include <optional>
+
 #include "base/strings/string_number_conversions.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webid/federated_auth_request_impl.h"
 #include "content/browser/webid/federated_auth_request_page_data.h"
 #include "content/public/browser/federated_identity_api_permission_context_delegate.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 namespace FedCm = content::protocol::FedCm;
@@ -108,8 +109,8 @@ void FedCmHandler::DidShowDialog() {
     for (const auto& data : *idp_data) {
       for (const IdentityRequestAccount& account : data.accounts) {
         FedCm::LoginState login_state;
-        absl::optional<std::string> tos_url;
-        absl::optional<std::string> pp_url;
+        std::optional<std::string> tos_url;
+        std::optional<std::string> pp_url;
         switch (*account.login_state) {
           case IdentityRequestAccount::LoginState::kSignUp:
             login_state = FedCm::LoginStateEnum::SignUp;
@@ -149,7 +150,7 @@ void FedCmHandler::DidShowDialog() {
   FedCm::DialogType dialog_type =
       ConvertDialogType(auth_request->GetDialogType());
   Maybe<String> maybe_subtitle;
-  absl::optional<std::string> subtitle = dialog->GetSubtitle();
+  std::optional<std::string> subtitle = dialog->GetSubtitle();
   if (subtitle) {
     maybe_subtitle = *subtitle;
   }

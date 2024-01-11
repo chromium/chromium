@@ -5,6 +5,7 @@
 #include "content/browser/back_forward_cache_browsertest.h"
 
 #include <climits>
+#include <optional>
 #include <unordered_map>
 
 #include "base/command_line.h"
@@ -73,7 +74,6 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/device_memory/approximated_device_memory.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
@@ -446,10 +446,10 @@ void BackForwardCacheBrowserTest::NavigateAndBlock(GURL url,
 
 ReasonsMatcher BackForwardCacheBrowserTest::MatchesNotRestoredReasons(
     const testing::Matcher<blink::mojom::BFCacheBlocked>& blocked,
-    const absl::optional<testing::Matcher<std::string>>& id,
-    const absl::optional<testing::Matcher<std::string>>& name,
-    const absl::optional<testing::Matcher<std::string>>& src,
-    const absl::optional<SameOriginMatcher>& same_origin_details) {
+    const std::optional<testing::Matcher<std::string>>& id,
+    const std::optional<testing::Matcher<std::string>>& name,
+    const std::optional<testing::Matcher<std::string>>& src,
+    const std::optional<SameOriginMatcher>& same_origin_details) {
   return testing::Pointee(testing::AllOf(
       testing::Field("blocked",
                      &blink::mojom::BackForwardCacheNotRestoredReasons::blocked,
@@ -460,21 +460,21 @@ ReasonsMatcher BackForwardCacheBrowserTest::MatchesNotRestoredReasons(
                 testing::Optional(id.value()))
           : testing::Field(
                 "id", &blink::mojom::BackForwardCacheNotRestoredReasons::id,
-                absl::optional<std::string>(absl::nullopt)),
+                std::optional<std::string>(std::nullopt)),
       name.has_value()
           ? testing::Field(
                 "name", &blink::mojom::BackForwardCacheNotRestoredReasons::name,
                 testing::Optional(name.value()))
           : testing::Field(
                 "name", &blink::mojom::BackForwardCacheNotRestoredReasons::name,
-                absl::optional<std::string>(absl::nullopt)),
+                std::optional<std::string>(std::nullopt)),
       src.has_value()
           ? testing::Field(
                 "src", &blink::mojom::BackForwardCacheNotRestoredReasons::src,
                 testing::Optional(src.value()))
           : testing::Field(
                 "src", &blink::mojom::BackForwardCacheNotRestoredReasons::src,
-                absl::optional<std::string>(absl::nullopt)),
+                std::optional<std::string>(std::nullopt)),
       testing::Field(
           "same_origin_details",
           &blink::mojom::BackForwardCacheNotRestoredReasons::
@@ -506,8 +506,8 @@ SameOriginMatcher BackForwardCacheBrowserTest::MatchesSameOriginDetails(
 }
 
 BlockingDetailsMatcher BackForwardCacheBrowserTest::MatchesBlockingDetails(
-    const absl::optional<testing::Matcher<std::string>>& url,
-    const absl::optional<testing::Matcher<std::string>>& function_name,
+    const std::optional<testing::Matcher<std::string>>& url,
+    const std::optional<testing::Matcher<std::string>>& function_name,
     const testing::Matcher<uint64_t>& line_number,
     const testing::Matcher<uint64_t>& column_number) {
   return testing::Pointee(testing::AllOf(
@@ -515,14 +515,14 @@ BlockingDetailsMatcher BackForwardCacheBrowserTest::MatchesBlockingDetails(
           ? testing::Field("url", &blink::mojom::BlockingDetails::url,
                            testing::Optional(url.value()))
           : testing::Field("url", &blink::mojom::BlockingDetails::url,
-                           absl::optional<std::string>(absl::nullopt)),
+                           std::optional<std::string>(std::nullopt)),
       function_name.has_value()
           ? testing::Field("function_name",
                            &blink::mojom::BlockingDetails::function_name,
                            testing::Optional(function_name.value()))
           : testing::Field("function_name",
                            &blink::mojom::BlockingDetails::function_name,
-                           absl::optional<std::string>(absl::nullopt)),
+                           std::optional<std::string>(std::nullopt)),
       testing::Field("line_number", &blink::mojom::BlockingDetails::line_number,
                      line_number),
       testing::Field("column_number",
@@ -1194,7 +1194,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), url_b));
   WaitForFirstVisuallyNonEmptyPaint(web_contents());
   ASSERT_TRUE(rfh_a->IsInBackForwardCache());
-  EXPECT_EQ(web_contents()->GetThemeColor(), absl::nullopt);
+  EXPECT_EQ(web_contents()->GetThemeColor(), std::nullopt);
 
   ThemeColorObserver observer(web_contents());
   ASSERT_TRUE(HistoryGoBack(web_contents()));

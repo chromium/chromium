@@ -8,8 +8,8 @@
 
 namespace content {
 
-absl::optional<base::HistogramSharedMemoryConfig>
-GetHistogramSharedMemoryConfig(int process_type) {
+std::optional<base::HistogramSharedMemoryConfig> GetHistogramSharedMemoryConfig(
+    int process_type) {
   using Config = base::HistogramSharedMemoryConfig;
 
   // Determine the correct parameters based on the process type.
@@ -40,7 +40,7 @@ GetHistogramSharedMemoryConfig(int process_type) {
       return Config{"PpapiBrokerMetrics", 64 << 10};  // 64 KiB
 
     default:
-      return absl::nullopt;
+      return std::nullopt;
   }
 }
 

@@ -71,7 +71,7 @@ class CONTENT_EXPORT ClipboardEndpoint {
   // `ui::DataTransferEndpoint` representation of the endpoint. This is empty in
   // some cases like copying from Chrome's omnibox, or copying from outside the
   // browser on non-CrOS platforms.
-  const absl::optional<ui::DataTransferEndpoint>& data_transfer_endpoint()
+  const std::optional<ui::DataTransferEndpoint>& data_transfer_endpoint()
       const {
     return data_transfer_endpoint_;
   }
@@ -90,7 +90,7 @@ class CONTENT_EXPORT ClipboardEndpoint {
   // The `ui::DataTransferEndpoint` corresponding to the clipboard interaction.
   // An empty value represents a copy from Chrome's omnibox, a copy from a
   // different desktop application (outside of CrOS), etc.
-  absl::optional<ui::DataTransferEndpoint> data_transfer_endpoint_;
+  std::optional<ui::DataTransferEndpoint> data_transfer_endpoint_;
 
   // Fetcher method to provide a `BrowserContext` if the endpoint has one. This
   // is done so code that instantiates this class can bind a function with
@@ -106,7 +106,7 @@ class CONTENT_EXPORT ClipboardEndpoint {
 // to evaluating enterprise policies.
 struct ClipboardMetadata {
   // Size of the clipboard data. null when files are copied.
-  absl::optional<size_t> size;
+  std::optional<size_t> size;
 
   // Format type of clipboard data.
   ui::ClipboardFormatType format_type;

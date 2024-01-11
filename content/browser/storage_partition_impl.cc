@@ -8,6 +8,7 @@
 
 #include <functional>
 #include <memory>
+#include <optional>
 #include <set>
 #include <utility>
 #include <vector>
@@ -149,7 +150,6 @@
 #include "storage/browser/quota/quota_manager.h"
 #include "storage/browser/quota/quota_manager_impl.h"
 #include "storage/browser/quota/quota_settings.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -533,7 +533,7 @@ class LoginHandlerDelegate {
 
   void ContinueAfterInterceptor(
       bool use_fallback,
-      const absl::optional<net::AuthCredentials>& auth_credentials) {
+      const std::optional<net::AuthCredentials>& auth_credentials) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     DCHECK(!(use_fallback && auth_credentials.has_value()));
     if (!use_fallback) {
@@ -543,7 +543,7 @@ class LoginHandlerDelegate {
 
     WebContents* web_contents = web_contents_getter_.Run();
     if (!web_contents) {
-      OnAuthCredentials(absl::nullopt);
+      OnAuthCredentials(std::nullopt);
       return;
     }
 
@@ -557,13 +557,13 @@ class LoginHandlerDelegate {
                        weak_factory_.GetWeakPtr()));
     creating_login_delegate_ = false;
     if (!login_delegate_) {
-      OnAuthCredentials(absl::nullopt);
+      OnAuthCredentials(std::nullopt);
       return;
     }
   }
 
   void OnAuthCredentials(
-      const absl::optional<net::AuthCredentials>& auth_credentials) {
+      const std::optional<net::AuthCredentials>& auth_credentials) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     // CreateLoginDelegate must not call the callback reentrantly. For
     // robustness, detect this mistake.
@@ -600,7 +600,7 @@ void OnAuthRequiredContinuation(
   if (!web_contents_getter || !web_contents_getter.Run()) {
     mojo::Remote<network::mojom::AuthChallengeResponder>
         auth_challenge_responder_remote(std::move(auth_challenge_responder));
-    auth_challenge_responder_remote->OnAuthCredentials(absl::nullopt);
+    auth_challenge_responder_remote->OnAuthCredentials(std::nullopt);
     return;
   }
   new LoginHandlerDelegate(
@@ -945,7 +945,7 @@ class StoragePartitionImpl::QuotaManagedDataDeletionHelper {
   QuotaManagedDataDeletionHelper(
       uint32_t remove_mask,
       uint32_t quota_storage_remove_mask,
-      const absl::optional<blink::StorageKey>& storage_key,
+      const std::optional<blink::StorageKey>& storage_key,
       base::OnceClosure callback)
       : remove_mask_(remove_mask),
         quota_storage_remove_mask_(quota_storage_remove_mask),
@@ -986,7 +986,7 @@ class StoragePartitionImpl::QuotaManagedDataDeletionHelper {
   // All of these data are accessed on IO thread.
   uint32_t remove_mask_;
   uint32_t quota_storage_remove_mask_;
-  absl::optional<blink::StorageKey> storage_key_;
+  std::optional<blink::StorageKey> storage_key_;
   base::OnceClosure callback_;
   int task_count_;
 };
@@ -1102,8 +1102,8 @@ void StoragePartitionImpl::DataDeletionHelper::ClearQuotaManagedDataOnIOThread(
   StoragePartitionImpl::QuotaManagedDataDeletionHelper* helper =
       new StoragePartitionImpl::QuotaManagedDataDeletionHelper(
           remove_mask_, quota_storage_remove_mask_,
-          storage_key.origin().opaque() ? absl::nullopt
-                                        : absl::make_optional(storage_key),
+          storage_key.origin().opaque() ? std::nullopt
+                                        : std::make_optional(storage_key),
           std::move(callback));
   helper->ClearDataOnIOThread(quota_manager, begin, end, special_storage_policy,
                               std::move(storage_key_matcher),
@@ -2045,7 +2045,7 @@ void StoragePartitionImpl::BindSessionStorageArea(
 }
 
 void StoragePartitionImpl::OnAuthRequired(
-    const absl::optional<base::UnguessableToken>& window_id,
+    const std::optional<base::UnguessableToken>& window_id,
     uint32_t request_id,
     const GURL& url,
     bool first_auth_attempt,
@@ -2055,7 +2055,7 @@ void StoragePartitionImpl::OnAuthRequired(
         auth_challenge_responder) {
   URLLoaderNetworkContext context =
       url_loader_network_observers_.current_context();
-  absl::optional<bool> is_primary_main_frame;
+  std::optional<bool> is_primary_main_frame;
 
   if (window_id) {
     // Use `window_id` if it is provided, because this request was sent by a
@@ -2182,8 +2182,8 @@ void StoragePartitionImpl::OnAuthRequired(
 void StoragePartitionImpl::OnPrivateNetworkAccessPermissionRequired(
     const GURL& url,
     const net::IPAddress& ip_address,
-    const absl::optional<std::string>& private_network_device_id,
-    const absl::optional<std::string>& private_network_device_name,
+    const std::optional<std::string>& private_network_device_id,
+    const std::optional<std::string>& private_network_device_name,
     OnPrivateNetworkAccessPermissionRequiredCallback callback) {
   if (!base::FeatureList::IsEnabled(
           network::features::kPrivateNetworkAccessPermissionPrompt)) {
@@ -2225,7 +2225,7 @@ void StoragePartitionImpl::OnPrivateNetworkAccessPermissionRequired(
 }
 
 void StoragePartitionImpl::OnCertificateRequested(
-    const absl::optional<base::UnguessableToken>& window_id,
+    const std::optional<base::UnguessableToken>& window_id,
     const scoped_refptr<net::SSLCertRequestInfo>& cert_info,
     mojo::PendingRemote<network::mojom::ClientCertificateResponder>
         cert_responder) {
@@ -2470,7 +2470,7 @@ void StoragePartitionImpl::OnClearSiteData(
     const GURL& url,
     const std::string& header_value,
     int load_flags,
-    const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
+    const std::optional<net::CookiePartitionKey>& cookie_partition_key,
     bool partitioned_state_allowed_only,
     OnClearSiteDataCallback callback) {
   DCHECK(initialized_);
@@ -2479,7 +2479,7 @@ void StoragePartitionImpl::OnClearSiteData(
   auto web_contents_getter = base::BindRepeating(
       GetWebContents, url_loader_network_observers_.current_context());
 
-  absl::optional<blink::StorageKey> storage_key = CalculateStorageKey(
+  std::optional<blink::StorageKey> storage_key = CalculateStorageKey(
       url::Origin::Create(url),
       cookie_partition_key.has_value()
           ? base::OptionalToPtr(cookie_partition_key.value().nonce())
@@ -3233,7 +3233,7 @@ BrowserContext* StoragePartitionImpl::browser_context() const {
 
 storage::mojom::Partition* StoragePartitionImpl::GetStorageServicePartition() {
   if (!remote_partition_) {
-    absl::optional<base::FilePath> storage_path;
+    std::optional<base::FilePath> storage_path;
     if (!is_in_memory()) {
       storage_path =
           browser_context_->GetPath().Append(relative_partition_path_);
@@ -3526,7 +3526,7 @@ void StoragePartitionImpl::OpenLocalStorageForProcess(
   DCHECK(initialized_);
   auto handle =
       ChildProcessSecurityPolicyImpl::GetInstance()->CreateHandle(process_id);
-  dom_storage_context_->OpenLocalStorage(storage_key, absl::nullopt,
+  dom_storage_context_->OpenLocalStorage(storage_key, std::nullopt,
                                          std::move(receiver), std::move(handle),
                                          base::DoNothing());
 }
@@ -3539,30 +3539,30 @@ void StoragePartitionImpl::BindSessionStorageAreaForProcess(
   DCHECK(initialized_);
   auto handle =
       ChildProcessSecurityPolicyImpl::GetInstance()->CreateHandle(process_id);
-  dom_storage_context_->BindStorageArea(storage_key, absl::nullopt,
-                                        namespace_id, std::move(receiver),
-                                        std::move(handle), base::DoNothing());
+  dom_storage_context_->BindStorageArea(storage_key, std::nullopt, namespace_id,
+                                        std::move(receiver), std::move(handle),
+                                        base::DoNothing());
 }
 
-absl::optional<blink::StorageKey> StoragePartitionImpl::CalculateStorageKey(
+std::optional<blink::StorageKey> StoragePartitionImpl::CalculateStorageKey(
     const url::Origin& origin,
     const base::UnguessableToken* nonce) {
   if (!blink::StorageKey::IsThirdPartyStoragePartitioningEnabled()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   NavigationOrDocumentHandle* handle =
       url_loader_network_observers_.current_context().navigation_or_document();
   if (!handle) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   FrameTreeNode* node = handle->GetFrameTreeNode();
   if (!node) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   RenderFrameHostImpl* frame_host = node->current_frame_host();
   if (!frame_host) {
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   return frame_host->CalculateStorageKey(origin, nonce);

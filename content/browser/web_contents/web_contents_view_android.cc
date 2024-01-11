@@ -5,6 +5,7 @@
 #include "content/browser/web_contents/web_contents_view_android.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/android/build_info.h"
@@ -32,7 +33,6 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/drop_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/android/overscroll_refresh_handler.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_constants.h"
@@ -670,12 +670,12 @@ void WebContentsViewAndroid::OnSizeChanged() {
   if (rwhv) {
     web_contents_->SendScreenRects();
     rwhv->SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
-                                      absl::nullopt);
+                                      std::nullopt);
   }
 }
 
 void WebContentsViewAndroid::OnPhysicalBackingSizeChanged(
-    absl::optional<base::TimeDelta> deadline_override) {
+    std::optional<base::TimeDelta> deadline_override) {
   if (web_contents_->GetRenderWidgetHostView())
     web_contents_->SendScreenRects();
 }
@@ -684,14 +684,14 @@ void WebContentsViewAndroid::OnBrowserControlsHeightChanged() {
   auto* rwhv = GetRenderWidgetHostViewAndroid();
   if (rwhv)
     rwhv->SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
-                                      absl::nullopt);
+                                      std::nullopt);
 }
 
 void WebContentsViewAndroid::OnControlsResizeViewChanged() {
   auto* rwhv = GetRenderWidgetHostViewAndroid();
   if (rwhv)
     rwhv->SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
-                                      absl::nullopt);
+                                      std::nullopt);
 }
 
 void WebContentsViewAndroid::NotifyVirtualKeyboardOverlayRect(

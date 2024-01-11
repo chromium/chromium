@@ -348,7 +348,7 @@ class FuchsiaMediaCodecProviderImplTest : public testing::Test {
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
 
   base::TestComponentContextForProcess component_context_;
-  absl::optional<FuchsiaMediaCodecProviderImpl> media_codec_provider_;
+  std::optional<FuchsiaMediaCodecProviderImpl> media_codec_provider_;
 };
 
 TEST_F(FuchsiaMediaCodecProviderImplTest, MissingCodecFactory_ReportsNoCodecs) {

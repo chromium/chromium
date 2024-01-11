@@ -36,10 +36,10 @@ class CONTENT_EXPORT ServiceWorkerRouterEvaluator {
   };
 
   // Returns an empty list if nothing matched.
-  absl::optional<Result> Evaluate(
+  std::optional<Result> Evaluate(
       const network::ResourceRequest& request,
       blink::EmbeddedWorkerStatus running_status) const;
-  absl::optional<Result> EvaluateWithoutRunningStatus(
+  std::optional<Result> EvaluateWithoutRunningStatus(
       const network::ResourceRequest& request) const;
 
   const blink::ServiceWorkerRouterRules& rules() const { return rules_; }
@@ -51,9 +51,9 @@ class CONTENT_EXPORT ServiceWorkerRouterEvaluator {
  private:
   class RouterRule;
   void Compile();
-  absl::optional<Result> EvaluateInternal(
+  std::optional<Result> EvaluateInternal(
       const network::ResourceRequest& request,
-      absl::optional<blink::EmbeddedWorkerStatus> running_status) const;
+      std::optional<blink::EmbeddedWorkerStatus> running_status) const;
 
   const blink::ServiceWorkerRouterRules rules_;
   std::vector<std::unique_ptr<RouterRule>> compiled_rules_;

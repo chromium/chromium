@@ -6,6 +6,7 @@
 #define CONTENT_SERVICES_AUCTION_WORKLET_WEBIDL_COMPAT_H_
 
 #include <initializer_list>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -15,7 +16,6 @@
 #include "base/strings/strcat.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "v8/include/v8-local-handle.h"
 #include "v8/include/v8-value.h"
@@ -267,7 +267,7 @@ class CONTENT_EXPORT DictConverter {
   }
 
   template <typename T>
-  bool GetOptional(std::string_view field, absl::optional<T>& out) {
+  bool GetOptional(std::string_view field, std::optional<T>& out) {
     if (is_failed()) {
       return false;
     }
@@ -278,7 +278,7 @@ class CONTENT_EXPORT DictConverter {
     }
 
     if (val->IsUndefined()) {
-      out = absl::nullopt;
+      out = std::nullopt;
       return true;
     }
 

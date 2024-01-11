@@ -32,7 +32,7 @@ std::unique_ptr<SignedExchangeCertificateChain> ParseCertChain(
     base::span<const uint8_t> message,
     SignedExchangeDevToolsProxy* devtools_proxy) {
   cbor::Reader::DecoderError error;
-  absl::optional<cbor::Value> value = cbor::Reader::Read(message, &error);
+  std::optional<cbor::Value> value = cbor::Reader::Read(message, &error);
   if (!value.has_value()) {
     signed_exchange_utils::ReportErrorAndTraceEvent(
         devtools_proxy,

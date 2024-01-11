@@ -17,6 +17,7 @@
 #define CONTENT_PUBLIC_TEST_BROWSER_TEST_BASE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -36,7 +37,6 @@
 #include "services/network/public/mojom/network_service_test.mojom.h"
 #include "storage/browser/quota/quota_settings.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/animation/animation_test_api.h"
 
 namespace base {
@@ -259,7 +259,7 @@ class BrowserTestBase : public ::testing::Test {
 
   // DoH configuration used during tests. When it contains a value,
   // `InitializeNetworkProcess` will pass it to the network service.
-  absl::optional<std::pair<net::SecureDnsMode, net::DnsOverHttpsConfig>>
+  std::optional<std::pair<net::SecureDnsMode, net::DnsOverHttpsConfig>>
       test_doh_config_;
 
   // A field trial list that's used to support field trials activated prior to

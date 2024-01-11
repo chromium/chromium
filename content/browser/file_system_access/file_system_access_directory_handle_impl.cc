@@ -4,6 +4,8 @@
 
 #include "content/browser/file_system_access/file_system_access_directory_handle_impl.h"
 
+#include <optional>
+
 #include "base/barrier_callback.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -28,7 +30,6 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_cloud_identifier.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_handle.mojom.h"
@@ -368,7 +369,7 @@ void FileSystemAccessDirectoryHandleImpl::ResolveImpl(
     std::move(callback).Run(
         file_system_access_error::FromStatus(
             blink::mojom::FileSystemAccessStatus::kOperationFailed),
-        absl::nullopt);
+        std::nullopt);
     return;
   }
 
@@ -377,7 +378,7 @@ void FileSystemAccessDirectoryHandleImpl::ResolveImpl(
 
   // If two URLs are of a different type they are definitely not related.
   if (parent_url.type() != child_url.type()) {
-    std::move(callback).Run(file_system_access_error::Ok(), absl::nullopt);
+    std::move(callback).Run(file_system_access_error::Ok(), std::nullopt);
     return;
   }
 
@@ -390,7 +391,7 @@ void FileSystemAccessDirectoryHandleImpl::ResolveImpl(
 
   // Since the types match, either both or neither URL will have bucket info.
   if (parent_url.bucket() != child_url.bucket()) {
-    std::move(callback).Run(file_system_access_error::Ok(), absl::nullopt);
+    std::move(callback).Run(file_system_access_error::Ok(), std::nullopt);
     return;
   }
 
@@ -400,11 +401,10 @@ void FileSystemAccessDirectoryHandleImpl::ResolveImpl(
 
   // Same path, so return empty array if child is also a directory.
   if (parent_path == child_path) {
-    std::move(callback).Run(
-        file_system_access_error::Ok(),
-        possible_child->type() == HandleType::kDirectory
-            ? absl::make_optional(std::vector<std::string>())
-            : absl::nullopt);
+    std::move(callback).Run(file_system_access_error::Ok(),
+                            possible_child->type() == HandleType::kDirectory
+                                ? std::make_optional(std::vector<std::string>())
+                                : std::nullopt);
     return;
   }
 
@@ -415,7 +415,7 @@ void FileSystemAccessDirectoryHandleImpl::ResolveImpl(
     // case the child path is already the relative path.
     relative_path = child_path;
   } else if (!parent_path.AppendRelativePath(child_path, &relative_path)) {
-    std::move(callback).Run(file_system_access_error::Ok(), absl::nullopt);
+    std::move(callback).Run(file_system_access_error::Ok(), std::nullopt);
     return;
   }
 

@@ -55,7 +55,7 @@ class TestNavigationURLLoader
   void CallOnResponseStarted(
       network::mojom::URLResponseHeadPtr response_head,
       mojo::ScopedDataPipeConsumerHandle response_body,
-      absl::optional<mojo_base::BigBuffer> cached_metadata);
+      std::optional<mojo_base::BigBuffer> cached_metadata);
 
   int redirect_count() { return redirect_count_; }
 

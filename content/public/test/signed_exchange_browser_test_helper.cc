@@ -40,7 +40,7 @@ void SignedExchangeBrowserTestHelper::SetUp() {
 void SignedExchangeBrowserTestHelper::TearDownOnMainThread() {
   interceptor_.reset();
   signed_exchange_utils::SetVerificationTimeForTesting(
-      absl::optional<base::Time>());
+      std::optional<base::Time>());
 }
 
 scoped_refptr<net::X509Certificate>
@@ -94,7 +94,7 @@ bool SignedExchangeBrowserTestHelper::OnInterceptCallback(
     return false;
   URLLoaderInterceptor::WriteResponse(
       it->second, params->client.get(), /*headers=*/nullptr,
-      absl::optional<net::SSLInfo>(), params->url_request.url);
+      std::optional<net::SSLInfo>(), params->url_request.url);
   return true;
 }
 

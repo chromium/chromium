@@ -87,7 +87,7 @@ class FakeNavigationClient : public mojom::NavigationClient {
       network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
           subresource_loader_factories,
-      absl::optional<std::vector<blink::mojom::TransferrableURLLoaderPtr>>
+      std::optional<std::vector<blink::mojom::TransferrableURLLoaderPtr>>
           subresource_overrides,
       blink::mojom::ControllerServiceWorkerInfoPtr
           controller_service_worker_info,
@@ -100,7 +100,7 @@ class FakeNavigationClient : public mojom::NavigationClient {
           fetch_later_loader_factory,
       const blink::DocumentToken& document_token,
       const base::UnguessableToken& devtools_navigation_token,
-      const absl::optional<blink::ParsedPermissionsPolicy>& permissions_policy,
+      const std::optional<blink::ParsedPermissionsPolicy>& permissions_policy,
       blink::mojom::PolicyContainerPtr policy_container,
       mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,
       mojo::PendingRemote<blink::mojom::CodeCacheHost>
@@ -118,7 +118,7 @@ class FakeNavigationClient : public mojom::NavigationClient {
       int error_code,
       int extended_error_code,
       const net::ResolveErrorInfo& resolve_error_info,
-      const absl::optional<std::string>& error_page_content,
+      const std::optional<std::string>& error_page_content,
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle> subresource_loaders,
       const blink::DocumentToken& document_token,
       blink::mojom::PolicyContainerPtr policy_container,
@@ -268,7 +268,7 @@ void ServiceWorkerRemoteContainerEndpoint::BindForWindow(
       mojo::ScopedDataPipeConsumerHandle(),
       /*url_loader_client_endpoints=*/nullptr,
       /*subresource_loader_factories=*/nullptr,
-      /*subresource_overrides=*/absl::nullopt,
+      /*subresource_overrides=*/std::nullopt,
       /*controller_service_worker_info=*/nullptr, std::move(info),
       /*subresource_proxying_loader_factory=*/mojo::NullRemote(),
       /*keep_alive_loader_factory=*/mojo::NullRemote(),
@@ -345,11 +345,11 @@ CreateContainerHostAndInfoForWindow(
 }
 
 base::OnceCallback<void(blink::ServiceWorkerStatusCode)>
-ReceiveServiceWorkerStatus(absl::optional<blink::ServiceWorkerStatusCode>* out,
+ReceiveServiceWorkerStatus(std::optional<blink::ServiceWorkerStatusCode>* out,
                            base::OnceClosure quit_closure) {
   return base::BindOnce(
       [](base::OnceClosure quit_closure,
-         absl::optional<blink::ServiceWorkerStatusCode>* out,
+         std::optional<blink::ServiceWorkerStatusCode>* out,
          blink::ServiceWorkerStatusCode result) {
         *out = result;
         std::move(quit_closure).Run();
@@ -641,7 +641,7 @@ void MockServiceWorkerResourceReader::CompletePendingRead() {
     response_head->content_length = expected.len;
     std::move(pending_read_response_head_callback_)
         .Run(expected.result, std::move(response_head),
-             /*metadata=*/absl::nullopt);
+             /*metadata=*/std::nullopt);
   } else {
     if (expected.len == 0) {
       body_.reset();
@@ -891,7 +891,7 @@ bool ServiceWorkerUpdateCheckTestUtils::VerifyStoredResponse(
     base::RunLoop loop;
     reader->ReadResponseHead(base::BindLambdaForTesting(
         [&](int status, network::mojom::URLResponseHeadPtr response_head,
-            absl::optional<mojo_base::BigBuffer> metadata) {
+            std::optional<mojo_base::BigBuffer> metadata) {
           rv = status;
           status_text = response_head->headers->GetStatusText();
           response_data_size = response_head->content_length;

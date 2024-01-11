@@ -101,7 +101,7 @@ class TestBrowserThread;
 //     template <typename... TaskEnvironmentTraits>
 //     explicit FooBase(TaskEnvironmentTraits&&... traits)
 //         : task_environment_(
-//               absl::in_place,
+//               std::in_place,
 //               std::forward<TaskEnvironmentTraits>(traits)...) {}
 //
 //     // Alternatively a subclass may pass this tag to ask this FooBase not to
@@ -113,7 +113,7 @@ class TestBrowserThread;
 //    protected:
 //     // Use this protected member directly from the test body to drive tasks
 //     // posted within a FooBase-based test.
-//     absl::optional<base::test::TaskEnvironment> task_environment_;
+//     std::optional<base::test::TaskEnvironment> task_environment_;
 //   };
 //
 //   class ChromeFooBase : public FooBase {
@@ -184,7 +184,7 @@ class BrowserTaskEnvironment : public base::test::TaskEnvironment {
 
   void Init();
 
-  static constexpr bool UseRealIOThread(absl::optional<Options> options) {
+  static constexpr bool UseRealIOThread(std::optional<Options> options) {
     if (!options)
       return false;
     return *options == Options::REAL_IO_THREAD;

@@ -91,9 +91,9 @@ class CONTENT_EXPORT BatchingMediaLog : public media::MediaLog {
   bool logged_rate_limit_warning_ GUARDED_BY(lock_);
 
   // Limits the number of events we send over IPC to one.
-  absl::optional<media::MediaLogRecord> last_duration_changed_event_
+  std::optional<media::MediaLogRecord> last_duration_changed_event_
       GUARDED_BY(lock_);
-  absl::optional<media::MediaLogRecord> last_buffering_state_event_
+  std::optional<media::MediaLogRecord> last_buffering_state_event_
       GUARDED_BY(lock_);
 
   // Holds the earliest MEDIA_ERROR_LOG_ENTRY event added to this log. This is
@@ -101,10 +101,10 @@ class CONTENT_EXPORT BatchingMediaLog : public media::MediaLog {
   // any eventual fatal error.
   // TODO(wolenetz): Introduce a reset method to clear this in cases like
   // non-fatal error recovery like decoder fallback.
-  absl::optional<media::MediaLogRecord> cached_media_error_for_message_;
+  std::optional<media::MediaLogRecord> cached_media_error_for_message_;
 
   // Holds a copy of the most recent PIPELINE_ERROR, if any.
-  absl::optional<media::MediaLogRecord> last_pipeline_error_;
+  std::optional<media::MediaLogRecord> last_pipeline_error_;
 
   base::WeakPtr<BatchingMediaLog> weak_this_;
   base::WeakPtrFactory<BatchingMediaLog> weak_factory_{this};

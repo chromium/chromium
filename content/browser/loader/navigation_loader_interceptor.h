@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_LOADER_NAVIGATION_LOADER_INTERCEPTOR_H_
 #define CONTENT_BROWSER_LOADER_NAVIGATION_LOADER_INTERCEPTOR_H_
 
+#include <optional>
+
 #include "base/functional/callback_forward.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -15,7 +17,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace blink {
 class ThrottlingURLLoader;
@@ -90,7 +91,7 @@ class CONTENT_EXPORT NavigationLoaderInterceptor {
   // SubresourceLoaderParams here if it does NOT want to handle the specific
   // request given to MaybeCreateLoader() but wants to handle the subsequent
   // resource requests or ensure otherinterceptors are skipped.
-  virtual absl::optional<SubresourceLoaderParams>
+  virtual std::optional<SubresourceLoaderParams>
   MaybeCreateSubresourceLoaderParams();
 
   // Returns true if the interceptor creates a loader for the `response_head`

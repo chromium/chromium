@@ -157,7 +157,7 @@ void FederatedAuthUserInfoRequest::SetCallbackAndStart(
 
   if (!webid::HasSharingPermissionOrIdpHasThirdPartyCookiesAccess(
           *render_frame_host_, idp_config_url_, embedding_origin_,
-          parent_frame_origin_, /*account_id=*/absl::nullopt,
+          parent_frame_origin_, /*account_id=*/std::nullopt,
           permission_delegate_, api_permission_delegate_)) {
     // If there is no sharing permission or the IdP does not have third party
     // cookies access, we can abort before performing any fetch.
@@ -322,7 +322,7 @@ bool FederatedAuthUserInfoRequest::IsReturningAccount(
 
 void FederatedAuthUserInfoRequest::Complete(
     blink::mojom::RequestUserInfoStatus status,
-    absl::optional<std::vector<blink::mojom::IdentityUserInfoPtr>> user_info,
+    std::optional<std::vector<blink::mojom::IdentityUserInfoPtr>> user_info,
     FederatedAuthUserInfoRequestResult request_status) {
   if (!callback_) {
     return;
@@ -343,7 +343,7 @@ void FederatedAuthUserInfoRequest::CompleteWithError(
         GetConsoleErrorMessage(error));
     AddDevToolsIssue(error);
   }
-  Complete(blink::mojom::RequestUserInfoStatus::kError, absl::nullopt, error);
+  Complete(blink::mojom::RequestUserInfoStatus::kError, std::nullopt, error);
 }
 
 void FederatedAuthUserInfoRequest::AddDevToolsIssue(

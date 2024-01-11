@@ -5,12 +5,12 @@
 #ifndef CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_PRIORITY_UTIL_H_
 #define CONTENT_BROWSER_INTEREST_GROUP_INTEREST_GROUP_PRIORITY_UTIL_H_
 
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace blink {
 struct AuctionConfig;
@@ -40,7 +40,7 @@ CONTENT_EXPORT double CalculateInterestGroupPriority(
     const StorageInterestGroup& storage_interest_group,
     const base::Time auction_start_time,
     const base::flat_map<std::string, double>& priority_vector,
-    absl::optional<double> first_dot_product_priority = absl::nullopt);
+    std::optional<double> first_dot_product_priority = std::nullopt);
 
 }  // namespace content
 

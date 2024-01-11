@@ -924,7 +924,7 @@ bool FrameTreeNode::IsInFencedFrameTree() const {
   return fenced_frame_status_ != FencedFrameStatus::kNotNestedInFencedFrame;
 }
 
-absl::optional<FencedFrameProperties>& FrameTreeNode::GetFencedFrameProperties(
+std::optional<FencedFrameProperties>& FrameTreeNode::GetFencedFrameProperties(
     FencedFramePropertiesNodeSource node_source) {
   if (node_source == FencedFramePropertiesNodeSource::kFrameTreeRoot) {
     return frame_tree().root()->fenced_frame_properties_;
@@ -947,8 +947,7 @@ absl::optional<FencedFrameProperties>& FrameTreeNode::GetFencedFrameProperties(
 
 void FrameTreeNode::MaybeResetFencedFrameAutomaticBeaconReportEventData(
     blink::mojom::AutomaticBeaconType event_type) {
-  absl::optional<FencedFrameProperties>& properties =
-      GetFencedFrameProperties();
+  std::optional<FencedFrameProperties>& properties = GetFencedFrameProperties();
   // `properties` will exist for both fenced frames as well as iframes loaded
   // with a urn:uuid.
   if (!properties) {
@@ -963,8 +962,7 @@ void FrameTreeNode::SetFencedFrameAutomaticBeaconReportEventData(
     const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
     bool once,
     bool cross_origin_exposed) {
-  absl::optional<FencedFrameProperties>& properties =
-      GetFencedFrameProperties();
+  std::optional<FencedFrameProperties>& properties = GetFencedFrameProperties();
   // `properties` will exist for both fenced frames as well as iframes loaded
   // with a urn:uuid. This allows URN iframes to call this function without
   // getting bad-messaged.
@@ -1017,13 +1015,13 @@ size_t FrameTreeNode::GetFencedFrameDepth(
   return depth;
 }
 
-absl::optional<base::UnguessableToken> FrameTreeNode::GetFencedFrameNonce() {
+std::optional<base::UnguessableToken> FrameTreeNode::GetFencedFrameNonce() {
   // For partition nonce, all nested frame inside a fenced frame tree should
   // operate on the partition nonce of the frame tree root.
   auto& root_fenced_frame_properties = GetFencedFrameProperties(
       /*node_source=*/FencedFramePropertiesNodeSource::kFrameTreeRoot);
   if (!root_fenced_frame_properties.has_value()) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   if (root_fenced_frame_properties->partition_nonce().has_value()) {
     return root_fenced_frame_properties->partition_nonce()
@@ -1033,7 +1031,7 @@ absl::optional<base::UnguessableToken> FrameTreeNode::GetFencedFrameNonce() {
   // partition nonce in urn iframes (when not nested inside a fenced frame).
   CHECK(blink::features::IsAllowURNsInIframeEnabled());
   CHECK(!IsInFencedFrameTree());
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void FrameTreeNode::SetFencedFramePropertiesIfNeeded() {
@@ -1101,16 +1099,15 @@ FrameTreeNode::FindSharedStorageBudgetMetadata() {
   return result;
 }
 
-absl::optional<std::u16string>
+std::optional<std::u16string>
 FrameTreeNode::GetEmbedderSharedStorageContextIfAllowed() {
-  absl::optional<FencedFrameProperties>& properties =
-      GetFencedFrameProperties();
+  std::optional<FencedFrameProperties>& properties = GetFencedFrameProperties();
   // We only return embedder context for frames that are same origin with the
   // fenced frame root or ancestor URN iframe.
   if (!properties || !properties->mapped_url().has_value() ||
       !current_origin().IsSameOriginWith(url::Origin::Create(
           properties->mapped_url()->GetValueIgnoringVisibility()))) {
-    return absl::nullopt;
+    return std::nullopt;
   }
   return properties->embedder_shared_storage_context();
 }
@@ -1180,7 +1177,7 @@ FrameTreeNode::CreateNavigationRequestForSynchronousRendererCommit(
     bool is_same_document,
     const GURL& url,
     const url::Origin& origin,
-    const absl::optional<GURL>& initiator_base_url,
+    const std::optional<GURL>& initiator_base_url,
     const net::IsolationInfo& isolation_info_for_subresources,
     blink::mojom::ReferrerPtr referrer,
     const ui::PageTransition& transition,

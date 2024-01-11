@@ -83,7 +83,7 @@ class PrefetchTestURLLoaderClient : public network::mojom::URLLoaderClient,
   uint32_t total_bytes_read() { return total_bytes_read_; }
   bool body_finished() { return body_finished_; }
   int32_t total_transfer_size_diff() { return total_transfer_size_diff_; }
-  absl::optional<network::URLLoaderCompletionStatus> completion_status() {
+  std::optional<network::URLLoaderCompletionStatus> completion_status() {
     return completion_status_;
   }
   const std::vector<
@@ -98,7 +98,7 @@ class PrefetchTestURLLoaderClient : public network::mojom::URLLoaderClient,
   void OnReceiveResponse(
       network::mojom::URLResponseHeadPtr head,
       mojo::ScopedDataPipeConsumerHandle body,
-      absl::optional<mojo_base::BigBuffer> cached_metadata) override;
+      std::optional<mojo_base::BigBuffer> cached_metadata) override;
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
                          network::mojom::URLResponseHeadPtr head) override;
   void OnUploadProgress(int64_t current_position,
@@ -124,7 +124,7 @@ class PrefetchTestURLLoaderClient : public network::mojom::URLLoaderClient,
   bool body_finished_{false};
   int32_t total_transfer_size_diff_{0};
 
-  absl::optional<network::URLLoaderCompletionStatus> completion_status_;
+  std::optional<network::URLLoaderCompletionStatus> completion_status_;
 
   std::vector<std::pair<net::RedirectInfo, network::mojom::URLResponseHeadPtr>>
       received_redirects_;

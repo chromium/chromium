@@ -1216,7 +1216,7 @@ TEST_F(RenderFrameHostImplWebAuthnTest,
   EXPECT_CALL(*browser_client_,
               IsSecurityLevelAcceptableForWebAuthn(main_test_rfh(), origin))
       .WillOnce(testing::Return(false));
-  absl::optional<blink::mojom::AuthenticatorStatus> status;
+  std::optional<blink::mojom::AuthenticatorStatus> status;
   main_test_rfh()->PerformGetAssertionWebAuthSecurityChecks(
       "doofenshmirtz.evil", url::Origin::Create(url),
       /*is_payment_credential_get_assertion=*/false,
@@ -1235,7 +1235,7 @@ TEST_F(RenderFrameHostImplWebAuthnTest,
   EXPECT_CALL(*browser_client_,
               IsSecurityLevelAcceptableForWebAuthn(main_test_rfh(), origin))
       .WillOnce(testing::Return(false));
-  absl::optional<blink::mojom::AuthenticatorStatus> status;
+  std::optional<blink::mojom::AuthenticatorStatus> status;
   main_test_rfh()->PerformMakeCredentialWebAuthSecurityChecks(
       "doofenshmirtz.evil", url::Origin::Create(url),
       /*is_payment_credential_creation=*/false,
@@ -1252,7 +1252,7 @@ TEST_F(RenderFrameHostImplWebAuthnTest,
   EXPECT_CALL(*browser_client_,
               IsSecurityLevelAcceptableForWebAuthn(main_test_rfh(), origin))
       .WillOnce(testing::Return(true));
-  absl::optional<blink::mojom::AuthenticatorStatus> status;
+  std::optional<blink::mojom::AuthenticatorStatus> status;
   main_test_rfh()->PerformGetAssertionWebAuthSecurityChecks(
       "owca.org", url::Origin::Create(url),
       /*is_payment_credential_get_assertion=*/false,
@@ -1270,7 +1270,7 @@ TEST_F(RenderFrameHostImplWebAuthnTest,
   EXPECT_CALL(*browser_client_,
               IsSecurityLevelAcceptableForWebAuthn(main_test_rfh(), origin))
       .WillOnce(testing::Return(true));
-  absl::optional<blink::mojom::AuthenticatorStatus> status;
+  std::optional<blink::mojom::AuthenticatorStatus> status;
   main_test_rfh()->PerformMakeCredentialWebAuthSecurityChecks(
       "owca.org", url::Origin::Create(url),
       /*is_payment_credential_creation=*/false,

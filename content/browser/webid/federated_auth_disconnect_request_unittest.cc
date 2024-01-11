@@ -5,6 +5,7 @@
 #include "content/browser/webid/federated_auth_disconnect_request.h"
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -24,7 +25,6 @@
 #include "content/test/test_web_contents.h"
 #include "net/http/http_status_code.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -59,7 +59,7 @@ constexpr char kClientId[] = "client_id_123";
 
 struct AccountConfig {
   std::string id;
-  absl::optional<content::IdentityRequestAccount::LoginState> login_state;
+  std::optional<content::IdentityRequestAccount::LoginState> login_state;
   bool was_granted_sharing_permission;
 };
 
@@ -72,7 +72,7 @@ struct Config {
 
 Config kValidConfig = {
     /*accounts=*/
-    {{"account1", /*login_state=*/absl::nullopt,
+    {{"account1", /*login_state=*/std::nullopt,
       /*was_granted_sharing_permission=*/true}},
     /*config_fetch_status=*/{ParseStatus::kSuccess, net::HTTP_OK},
     /*disconnect_fetch_status=*/{ParseStatus::kSuccess, net::HTTP_OK},
@@ -182,7 +182,7 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
 
 class TestPermissionDelegate : public MockPermissionDelegate {
  public:
-  absl::optional<bool> GetIdpSigninStatus(
+  std::optional<bool> GetIdpSigninStatus(
       const url::Origin& idp_origin) override {
     return true;
   }

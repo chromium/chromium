@@ -100,7 +100,7 @@ void MediaSessionAndroid::MediaSessionInfoChanged(
 }
 
 void MediaSessionAndroid::MediaSessionMetadataChanged(
-    const absl::optional<media_session::MediaMetadata>& metadata) {
+    const std::optional<media_session::MediaMetadata>& metadata) {
   ScopedJavaLocalRef<jobject> j_local_session = GetJavaObject();
   if (j_local_session.is_null())
     return;
@@ -157,7 +157,7 @@ void MediaSessionAndroid::MediaSessionImagesChanged(
 }
 
 void MediaSessionAndroid::MediaSessionPositionChanged(
-    const absl::optional<media_session::MediaPosition>& position) {
+    const std::optional<media_session::MediaPosition>& position) {
   ScopedJavaLocalRef<jobject> j_local_session = GetJavaObject();
   if (j_local_session.is_null())
     return;

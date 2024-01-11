@@ -11,6 +11,7 @@
 #include <functional>
 #include <iterator>
 #include <map>
+#include <optional>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -24,7 +25,6 @@
 #include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/trigger_config.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -499,7 +499,7 @@ RandomizedResponseData DoRandomizedResponseWithCache(
     StateMap& map) {
   const absl::uint128 num_states = GetNumStatesCached(specs, max_reports, map);
   double rate = GetRandomizedResponseRate(num_states, epsilon);
-  absl::optional<std::vector<FakeEventLevelReport>> fake_reports;
+  std::optional<std::vector<FakeEventLevelReport>> fake_reports;
   if (GenerateWithRate(rate)) {
     // TODO(csharrison): Justify the fast path with `single_spec` with
     // profiling.

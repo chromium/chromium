@@ -6,11 +6,12 @@
 #define CONTENT_PUBLIC_BROWSER_NOTIFICATION_DATABASE_DATA_H_
 
 #include <stdint.h>
+
+#include <optional>
 #include <string>
 
 #include "base/time/time.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/notifications/notification_resources.h"
 #include "third_party/blink/public/common/notifications/platform_notification_data.h"
 #include "url/gurl.h"
@@ -62,7 +63,7 @@ struct CONTENT_EXPORT NotificationDatabaseData {
   // Notification resources to allow showing scheduled notifications. This is
   // only used to store resources in the NotificationDatabase and is not
   // deserialized when reading from the database.
-  absl::optional<blink::NotificationResources> notification_resources;
+  std::optional<blink::NotificationResources> notification_resources;
 
   // Boolean for if this current notification is replacing an existing
   // notification.
@@ -81,14 +82,14 @@ struct CONTENT_EXPORT NotificationDatabaseData {
 
   // Amount of time, in ms, between when the notification is shown and the
   // first click.
-  absl::optional<base::TimeDelta> time_until_first_click_millis;
+  std::optional<base::TimeDelta> time_until_first_click_millis;
 
   // Amount of time, in ms, between when the notification is shown and the
   // last click.
-  absl::optional<base::TimeDelta> time_until_last_click_millis;
+  std::optional<base::TimeDelta> time_until_last_click_millis;
 
   // Amount of time, in ms, between when the notification is shown and closed.
-  absl::optional<base::TimeDelta> time_until_close_millis;
+  std::optional<base::TimeDelta> time_until_close_millis;
 
   // Why the notification was closed.
   ClosedReason closed_reason = ClosedReason::UNKNOWN;

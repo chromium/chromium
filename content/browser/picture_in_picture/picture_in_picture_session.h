@@ -57,7 +57,7 @@ class PictureInPictureSession : public blink::mojom::PictureInPictureSession {
   mojo::AssociatedRemote<media::mojom::MediaPlayer>& GetMediaPlayerRemote();
 
   // Returns the player that is currently in Picture-in-Picture.
-  const absl::optional<MediaPlayerId>& player_id() const { return player_id_; }
+  const std::optional<MediaPlayerId>& player_id() const { return player_id_; }
 
   // Stops the session without closing the window. It will prevent the session
   // to later trying to shutdown when the PictureInPictureWindowController is
@@ -101,7 +101,7 @@ class PictureInPictureSession : public blink::mojom::PictureInPictureSession {
 
   mojo::Receiver<blink::mojom::PictureInPictureSession> receiver_;
 
-  absl::optional<MediaPlayerId> player_id_;
+  std::optional<MediaPlayerId> player_id_;
 
   // Whether the session is currently stopping. The final stop of stopping is to
   // be destroyed so once its set to true it will never be set back to false and

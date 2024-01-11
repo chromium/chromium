@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
@@ -51,7 +52,6 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "url/gurl.h"
 
@@ -127,7 +127,7 @@ class ScopedMockContentBrowserClient : public TestContentBrowserClient {
        int render_process_id,
        URLLoaderFactoryType type,
        const url::Origin& request_initiator,
-       absl::optional<int64_t> navigation_id,
+       std::optional<int64_t> navigation_id,
        ukm::SourceIdObj ukm_source_id,
        mojo::PendingReceiver<network::mojom::URLLoaderFactory>*
            factory_receiver,
@@ -305,9 +305,9 @@ class PrefetchURLLoaderInterceptorTestBase : public RenderViewHostTestHarness {
     }
   }
 
-  absl::optional<bool> was_intercepted(const GURL& url) {
+  std::optional<bool> was_intercepted(const GURL& url) {
     if (was_intercepted_.find(url) == was_intercepted_.end()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     return was_intercepted_[url];
   }
@@ -323,8 +323,8 @@ class PrefetchURLLoaderInterceptorTestBase : public RenderViewHostTestHarness {
     base::RunLoop run_loop;
 
     std::unique_ptr<net::CanonicalCookie> cookie(net::CanonicalCookie::Create(
-        url, value, base::Time::Now(), /*server_time=*/absl::nullopt,
-        /*cookie_partition_key=*/absl::nullopt));
+        url, value, base::Time::Now(), /*server_time=*/std::nullopt,
+        /*cookie_partition_key=*/std::nullopt));
     EXPECT_TRUE(cookie.get());
     EXPECT_TRUE(cookie->IsHostCookie());
 
@@ -484,7 +484,7 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
                        /*use_prefetch_proxy=*/true,
                        blink::mojom::SpeculationEagerness::kEager),
           blink::mojom::Referrer(),
-          /*no_vary_search_expected=*/absl::nullopt,
+          /*no_vary_search_expected=*/std::nullopt,
 
           /*prefetch_document_manager=*/nullptr);
   prefetch_container->SimulateAttemptAtInterceptorForTest();
@@ -562,7 +562,7 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
                        /*use_prefetch_proxy=*/true,
                        blink::mojom::SpeculationEagerness::kEager),
           blink::mojom::Referrer(),
-          /*no_vary_search_expected=*/absl::nullopt,
+          /*no_vary_search_expected=*/std::nullopt,
 
           /*prefetch_document_manager=*/nullptr);
   prefetch_container->SimulateAttemptAtInterceptorForTest();
@@ -649,7 +649,7 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
                        /*use_prefetch_proxy=*/false,
                        blink::mojom::SpeculationEagerness::kEager),
           referrer,
-          /*no_vary_search_expected=*/absl::nullopt,
+          /*no_vary_search_expected=*/std::nullopt,
 
           /*prefetch_document_manager=*/nullptr);
   prefetch_container->SimulateAttemptAtInterceptorForTest();
@@ -746,7 +746,7 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
                        /*use_prefetch_proxy=*/true,
                        blink::mojom::SpeculationEagerness::kEager),
           blink::mojom::Referrer(),
-          /*no_vary_search_expected=*/absl::nullopt,
+          /*no_vary_search_expected=*/std::nullopt,
 
           /*prefetch_document_manager=*/nullptr);
   prefetch_container->SimulateAttemptAtInterceptorForTest();
@@ -799,7 +799,7 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
                        /*use_prefetch_proxy=*/true,
                        blink::mojom::SpeculationEagerness::kEager),
           blink::mojom::Referrer(),
-          /*no_vary_search_expected=*/absl::nullopt,
+          /*no_vary_search_expected=*/std::nullopt,
 
           /*prefetch_document_manager=*/nullptr);
   prefetch_container->SimulateAttemptAtInterceptorForTest();
@@ -857,7 +857,7 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
                        /*use_prefetch_proxy=*/true,
                        blink::mojom::SpeculationEagerness::kEager),
           blink::mojom::Referrer(),
-          /*no_vary_search_expected=*/absl::nullopt,
+          /*no_vary_search_expected=*/std::nullopt,
 
           /*prefetch_document_manager=*/nullptr);
   prefetch_container->RegisterCookieListener(cookie_manager());
@@ -932,7 +932,7 @@ TEST_P(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(ProbeSuccess)) {
                        /*use_prefetch_proxy=*/true,
                        blink::mojom::SpeculationEagerness::kEager),
           blink::mojom::Referrer(),
-          /*no_vary_search_expected=*/absl::nullopt,
+          /*no_vary_search_expected=*/std::nullopt,
 
           /*prefetch_document_manager=*/nullptr);
   prefetch_container->SimulateAttemptAtInterceptorForTest();
@@ -988,7 +988,7 @@ TEST_P(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(ProbeFailure)) {
                        /*use_prefetch_proxy=*/true,
                        blink::mojom::SpeculationEagerness::kEager),
           blink::mojom::Referrer(),
-          /*no_vary_search_expected=*/absl::nullopt,
+          /*no_vary_search_expected=*/std::nullopt,
 
           /*prefetch_document_manager=*/nullptr);
   prefetch_container->SimulateAttemptAtInterceptorForTest();
@@ -1071,7 +1071,7 @@ TEST_P(PrefetchURLLoaderInterceptorBecomeNotServableTest, DISABLE_ASAN(Basic)) {
                        /*use_prefetch_proxy=*/true,
                        blink::mojom::SpeculationEagerness::kEager),
           blink::mojom::Referrer(),
-          /*no_vary_search_expected=*/absl::nullopt,
+          /*no_vary_search_expected=*/std::nullopt,
 
           /*prefetch_document_manager=*/nullptr);
   prefetch_container->SimulateAttemptAtInterceptorForTest();
@@ -1092,7 +1092,7 @@ TEST_P(PrefetchURLLoaderInterceptorBecomeNotServableTest, DISABLE_ASAN(Basic)) {
                                         MOJO_WRITE_DATA_FLAG_ALL_OR_NONE));
     pending_request.client->OnReceiveResponse(
         network::mojom::URLResponseHead::New(), std::move(consumer_handle),
-        absl::nullopt);
+        std::nullopt);
   }
 
   // Simulate the cookie copy process starting, but not finishing until after
@@ -1255,7 +1255,7 @@ TEST_P(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(HandleRedirects)) {
                        /*use_prefetch_proxy=*/true,
                        blink::mojom::SpeculationEagerness::kEager),
           blink::mojom::Referrer(),
-          /*no_vary_search_expected=*/absl::nullopt,
+          /*no_vary_search_expected=*/std::nullopt,
 
           /*prefetch_document_manager=*/nullptr);
   prefetch_container->MakeResourceRequest({});
@@ -1373,7 +1373,7 @@ TEST_P(PrefetchURLLoaderInterceptorTest,
                        /*use_prefetch_proxy=*/true,
                        blink::mojom::SpeculationEagerness::kEager),
           referrer,
-          /*no_vary_search_expected=*/absl::nullopt,
+          /*no_vary_search_expected=*/std::nullopt,
 
           /*prefetch_document_manager=*/nullptr);
   prefetch_container->MakeResourceRequest({});

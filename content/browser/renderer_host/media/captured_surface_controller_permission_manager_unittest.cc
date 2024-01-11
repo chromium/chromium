@@ -84,7 +84,7 @@ class PermissionCheckState final {
     check_permission_run_loop.Quit();
   }
 
-  absl::optional<PermissionManager::PermissionResult> result() const {
+  std::optional<PermissionManager::PermissionResult> result() const {
     return result_;
   }
 
@@ -92,7 +92,7 @@ class PermissionCheckState final {
   bool user_prompted_ = false;
   base::RunLoop user_prompt_shown_run_loop;
 
-  absl::optional<PermissionManager::PermissionResult> result_;
+  std::optional<PermissionManager::PermissionResult> result_;
   base::RunLoop check_permission_run_loop;
 
   base::OnceCallback<void(PermissionStatus)> callback_for_pending_prompt_;
@@ -379,7 +379,7 @@ TEST_F(CapturedSurfaceControlPermissionManagerTest,
   std::unique_ptr<PermissionCheckState> state_2 = CheckPermission();
   state_2->WaitForUserPromptToBeShown();
   EXPECT_TRUE(state_2->user_prompted());
-  EXPECT_EQ(state_2->result(), absl::nullopt);
+  EXPECT_EQ(state_2->result(), std::nullopt);
 }
 
 }  // namespace

@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_BROWSING_DATA_CLEAR_SITE_DATA_HANDLER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -15,7 +16,6 @@
 #include "content/public/browser/clear_site_data_utils.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "net/cookies/cookie_partition_key.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "url/gurl.h"
@@ -85,8 +85,8 @@ class CONTENT_EXPORT ClearSiteDataHandler {
       const GURL& url,
       const std::string& header_value,
       int load_flags,
-      const absl::optional<net::CookiePartitionKey> cookie_partition_key,
-      const absl::optional<blink::StorageKey> storage_key,
+      const std::optional<net::CookiePartitionKey> cookie_partition_key,
+      const std::optional<blink::StorageKey> storage_key,
       bool partitioned_state_allowed_only,
       base::OnceClosure callback);
 
@@ -106,8 +106,8 @@ class CONTENT_EXPORT ClearSiteDataHandler {
       const GURL& url,
       const std::string& header_value,
       int load_flags,
-      const absl::optional<net::CookiePartitionKey> cookie_partition_key,
-      const absl::optional<blink::StorageKey> storage_key,
+      const std::optional<net::CookiePartitionKey> cookie_partition_key,
+      const std::optional<blink::StorageKey> storage_key,
       bool partitioned_state_allowed_only,
       base::OnceClosure callback,
       std::unique_ptr<ConsoleMessagesDelegate> delegate);
@@ -159,12 +159,12 @@ class CONTENT_EXPORT ClearSiteDataHandler {
 
   const GURL& GetURLForTesting();
 
-  const absl::optional<net::CookiePartitionKey> CookiePartitionKeyForTesting()
+  const std::optional<net::CookiePartitionKey> CookiePartitionKeyForTesting()
       const {
     return cookie_partition_key_;
   }
 
-  const absl::optional<blink::StorageKey> StorageKeyForTesting() const {
+  const std::optional<blink::StorageKey> StorageKeyForTesting() const {
     return storage_key_;
   }
 
@@ -191,11 +191,11 @@ class CONTENT_EXPORT ClearSiteDataHandler {
 
   // The cookie partition key for which we need to clear partitioned cookies
   // when we receive the Clear-Site-Data header.
-  const absl::optional<net::CookiePartitionKey> cookie_partition_key_;
+  const std::optional<net::CookiePartitionKey> cookie_partition_key_;
 
   // The storage key for which we need to clear partitioned storage when we
   // receive the Clear-Site-Data header.
-  const absl::optional<blink::StorageKey> storage_key_;
+  const std::optional<blink::StorageKey> storage_key_;
 
   // If third-party cookie blocking is enabled and applies to the response that
   // sent Clear-Site-Data.

@@ -75,13 +75,13 @@ class CONTENT_EXPORT CodecFactory {
   // Returns a nullopt if we have not yet gotten the configs.
   // Returns an optional that contains an empty vector if we have gotten the
   // result and there are no supported configs.
-  absl::optional<media::SupportedVideoDecoderConfigs>
+  std::optional<media::SupportedVideoDecoderConfigs>
   GetSupportedVideoDecoderConfigs();
 
   // Returns a nullopt if we have not yet gotten the profiles.
   // Returns an optional that contains an empty vector if we have gotten the
   // result and there are no supported profiles.
-  absl::optional<media::VideoEncodeAccelerator::SupportedProfiles>
+  std::optional<media::VideoEncodeAccelerator::SupportedProfiles>
   GetVideoEncodeAcceleratorSupportedProfiles();
 
   // Returns true if media::SupportedVideoDecoderConfigs are populated.
@@ -151,9 +151,9 @@ class CONTENT_EXPORT CodecFactory {
   // If the Optional is empty, then we have not yet gotten the configs.
   // If the Optional contains an empty vector, then we have gotten the result
   // and there are no supported configs.
-  absl::optional<media::SupportedVideoDecoderConfigs> supported_decoder_configs_
+  std::optional<media::SupportedVideoDecoderConfigs> supported_decoder_configs_
       GUARDED_BY(supported_profiles_lock_);
-  absl::optional<media::VideoEncodeAccelerator::SupportedProfiles>
+  std::optional<media::VideoEncodeAccelerator::SupportedProfiles>
       supported_vea_profiles_ GUARDED_BY(supported_profiles_lock_);
 
   media::VideoDecoderType video_decoder_type_

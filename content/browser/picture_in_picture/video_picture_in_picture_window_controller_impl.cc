@@ -176,13 +176,13 @@ WebContents* VideoPictureInPictureWindowControllerImpl::GetChildWebContents() {
   return nullptr;
 }
 
-absl::optional<url::Origin>
+std::optional<url::Origin>
 VideoPictureInPictureWindowControllerImpl::GetOrigin() {
   return origin_;
 }
 
 void VideoPictureInPictureWindowControllerImpl::SetOrigin(
-    absl::optional<url::Origin> origin) {
+    std::optional<url::Origin> origin) {
   origin_ = origin;
 }
 
@@ -412,7 +412,7 @@ void VideoPictureInPictureWindowControllerImpl::MediaSessionActionsChanged(
 }
 
 void VideoPictureInPictureWindowControllerImpl::MediaSessionPositionChanged(
-    const absl::optional<media_session::MediaPosition>& media_position) {
+    const std::optional<media_session::MediaPosition>& media_position) {
   media_position_ = media_position;
   UpdatePlaybackState();
 }
@@ -485,10 +485,10 @@ const gfx::Rect& VideoPictureInPictureWindowControllerImpl::GetSourceBounds()
   return source_bounds_;
 }
 
-absl::optional<gfx::Rect>
+std::optional<gfx::Rect>
 VideoPictureInPictureWindowControllerImpl::GetWindowBounds() {
   if (!window_)
-    return absl::nullopt;
+    return std::nullopt;
   return window_->GetBounds();
 }
 

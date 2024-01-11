@@ -5,11 +5,12 @@
 #ifndef CONTENT_BROWSER_DEVTOOLS_WEB_CONTENTS_DEVTOOLS_AGENT_HOST_H_
 #define CONTENT_BROWSER_DEVTOOLS_WEB_CONTENTS_DEVTOOLS_AGENT_HOST_H_
 
+#include <optional>
+
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -73,9 +74,9 @@ class CONTENT_EXPORT WebContentsDevToolsAgentHost
   bool Close() override;
   base::TimeTicks GetLastActivityTime() override;
 
-  absl::optional<network::CrossOriginEmbedderPolicy>
+  std::optional<network::CrossOriginEmbedderPolicy>
   cross_origin_embedder_policy(const std::string& id) override;
-  absl::optional<network::CrossOriginOpenerPolicy> cross_origin_opener_policy(
+  std::optional<network::CrossOriginOpenerPolicy> cross_origin_opener_policy(
       const std::string& id) override;
 
   // DevToolsAgentHostImpl overrides.

@@ -4,6 +4,7 @@
 
 #include "content/browser/network_service_client.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/command_line.h"
@@ -36,7 +37,6 @@
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/mojom/network_change_manager.mojom-forward.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -275,7 +275,7 @@ void NetworkServiceClient::OnSSLCertificateError(
 }
 
 void NetworkServiceClient::OnCertificateRequested(
-    const absl::optional<base::UnguessableToken>& window_id,
+    const std::optional<base::UnguessableToken>& window_id,
     const scoped_refptr<net::SSLCertRequestInfo>& cert_info,
     mojo::PendingRemote<network::mojom::ClientCertificateResponder>
         cert_responder_remote) {
@@ -291,7 +291,7 @@ void NetworkServiceClient::OnCertificateRequested(
 }
 
 void NetworkServiceClient::OnAuthRequired(
-    const absl::optional<base::UnguessableToken>& window_id,
+    const std::optional<base::UnguessableToken>& window_id,
     uint32_t request_id,
     const GURL& url,
     bool first_auth_attempt,
@@ -301,14 +301,14 @@ void NetworkServiceClient::OnAuthRequired(
         auth_challenge_responder) {
   mojo::Remote<network::mojom::AuthChallengeResponder>
       auth_challenge_responder_remote(std::move(auth_challenge_responder));
-  auth_challenge_responder_remote->OnAuthCredentials(absl::nullopt);
+  auth_challenge_responder_remote->OnAuthCredentials(std::nullopt);
 }
 
 void NetworkServiceClient::OnPrivateNetworkAccessPermissionRequired(
     const GURL& url,
     const net::IPAddress& ip_address,
-    const absl::optional<std::string>& private_network_device_id,
-    const absl::optional<std::string>& private_network_device_name,
+    const std::optional<std::string>& private_network_device_id,
+    const std::optional<std::string>& private_network_device_name,
     OnPrivateNetworkAccessPermissionRequiredCallback callback) {
   std::move(callback).Run(false);
 }
@@ -317,7 +317,7 @@ void NetworkServiceClient::OnClearSiteData(
     const GURL& url,
     const std::string& header_value,
     int load_flags,
-    const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
+    const std::optional<net::CookiePartitionKey>& cookie_partition_key,
     bool partitioned_state_allowed_only,
     OnClearSiteDataCallback callback) {
   std::move(callback).Run();

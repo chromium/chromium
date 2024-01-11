@@ -397,7 +397,7 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
 
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
-  absl::optional<ui::AXInspectScenario> scenario =
+  std::optional<ui::AXInspectScenario> scenario =
       test_helper_.ParseScenario(file_path, DefaultFilters());
   if (!scenario) {
     ADD_FAILURE()
@@ -407,7 +407,7 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
   }
   scenario_ = std::move(*scenario);
 
-  absl::optional<std::vector<std::string>> expected_lines;
+  std::optional<std::vector<std::string>> expected_lines;
 
   // Get expectation lines from expectation file if any.
   base::FilePath expected_file =

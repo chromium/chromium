@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_set.h"
@@ -19,7 +20,6 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-forward.h"
 #include "third_party/blink/public/mojom/conversions/conversions.mojom.h"
 
@@ -72,12 +72,12 @@ class CONTENT_EXPORT AttributionHost
   // `navigation_id` will be set if this beacon is being sent as the result of a
   // top navigation initiated by a fenced frame. This is used to track
   // attributions that occur on a navigated page after the current page has been
-  // unloaded. Otherwise `absl::nullopt`.
+  // unloaded. Otherwise `std::nullopt`.
   // Returns whether fenced frame reporting beacons can support Attribution
   // Reporting API.
   bool NotifyFencedFrameReportingBeaconStarted(
       BeaconId beacon_id,
-      absl::optional<int64_t> navigation_id,
+      std::optional<int64_t> navigation_id,
       RenderFrameHostImpl* initiator_frame_host,
       std::string devtools_request_id);
 
@@ -105,10 +105,10 @@ class CONTENT_EXPORT AttributionHost
                                         bool is_final_response);
 
   // Returns the top frame origin corresponding to the current target frame.
-  // Returns `absl::nullopt` and reports a bad message if the top frame origin
+  // Returns `std::nullopt` and reports a bad message if the top frame origin
   // is not potentially trustworthy or the current target frame is not a secure
   // context.
-  absl::optional<attribution_reporting::SuitableOrigin>
+  std::optional<attribution_reporting::SuitableOrigin>
   TopFrameOriginForSecureContext();
 
   AttributionInputEvent GetMostRecentNavigationInputEvent() const;

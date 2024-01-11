@@ -255,10 +255,10 @@ bool ContentRendererClient::IsSafeRedirectTarget(const GURL& from_url,
 
 void ContentRendererClient::DidSetUserAgent(const std::string& user_agent) {}
 
-absl::optional<::media::AudioRendererAlgorithmParameters>
+std::optional<::media::AudioRendererAlgorithmParameters>
 ContentRendererClient::GetAudioRendererAlgorithmParameters(
     media::AudioParameters audio_parameters) {
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 void ContentRendererClient::AppendContentSecurityPolicy(

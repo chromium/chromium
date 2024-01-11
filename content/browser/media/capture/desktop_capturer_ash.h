@@ -5,9 +5,10 @@
 #ifndef CONTENT_BROWSER_MEDIA_CAPTURE_DESKTOP_CAPTURER_ASH_H_
 #define CONTENT_BROWSER_MEDIA_CAPTURE_DESKTOP_CAPTURER_ASH_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 
 namespace gfx {
@@ -46,7 +47,7 @@ class DesktopCapturerAsh : public webrtc::DesktopCapturer {
   void OnGrabWindowSnapsot(gfx::Image snapshot);
 
   // Display to capture.
-  absl::optional<SourceId> display_id_;
+  std::optional<SourceId> display_id_;
   raw_ptr<Callback> callback_ = nullptr;
   base::WeakPtrFactory<DesktopCapturerAsh> weak_ptr_factory_{this};
 };

@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_NAVIGATION_REQUEST_INFO_H_
 #define CONTENT_BROWSER_RENDERER_HOST_NAVIGATION_REQUEST_INFO_H_
 
+#include <optional>
+
 #include "base/unguessable_token.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
@@ -15,7 +17,6 @@
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
 #include "url/gurl.h"
@@ -47,11 +48,11 @@ struct CONTENT_EXPORT NavigationRequestInfo {
       const base::UnguessableToken& devtools_frame_token,
       net::HttpRequestHeaders cors_exempt_headers,
       network::mojom::ClientSecurityStatePtr client_security_state,
-      const absl::optional<std::vector<net::SourceStream::SourceType>>&
+      const std::optional<std::vector<net::SourceStream::SourceType>>&
           devtools_accepted_stream_types,
       bool is_pdf,
       int initiator_process_id,
-      absl::optional<blink::DocumentToken> initiator_document_token,
+      std::optional<blink::DocumentToken> initiator_document_token,
       const GlobalRenderFrameHostId& previous_render_frame_host_id,
       base::WeakPtr<PrefetchServingPageMetricsContainer>
           prefetch_serving_page_metrics_container,
@@ -133,7 +134,7 @@ struct CONTENT_EXPORT NavigationRequestInfo {
   // If not null, the network service will not advertise any stream types
   // (via Accept-Encoding) that are not listed. Also, it will not attempt
   // decoding any non-listed stream types.
-  absl::optional<std::vector<net::SourceStream::SourceType>>
+  std::optional<std::vector<net::SourceStream::SourceType>>
       devtools_accepted_stream_types;
 
   // Indicates that this navigation is for PDF content in a renderer.
@@ -141,7 +142,7 @@ struct CONTENT_EXPORT NavigationRequestInfo {
 
   // The initiator document's token and its process ID.
   const int initiator_process_id;
-  const absl::optional<blink::DocumentToken> initiator_document_token;
+  const std::optional<blink::DocumentToken> initiator_document_token;
 
   // The previous document's RenderFrameHostId, used for speculation rules
   // prefetch.

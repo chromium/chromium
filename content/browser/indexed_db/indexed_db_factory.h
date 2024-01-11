@@ -61,7 +61,7 @@ class CONTENT_EXPORT IndexedDBFactory : public blink::mojom::IDBFactory {
   ~IndexedDBFactory() override;
 
   void AddReceiver(
-      absl::optional<storage::BucketInfo> bucket,
+      std::optional<storage::BucketInfo> bucket,
       mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
           client_state_checker_remote,
       mojo::PendingReceiver<blink::mojom::IDBFactory> pending_receiver);
@@ -142,7 +142,7 @@ class CONTENT_EXPORT IndexedDBFactory : public blink::mojom::IDBFactory {
   // be stored together with the receiver in the `mojo::ReceiverSet`.
   struct ReceiverContext {
     ReceiverContext(
-        absl::optional<storage::BucketInfo> bucket,
+        std::optional<storage::BucketInfo> bucket,
         mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
             client_state_checker_remote);
 
@@ -155,7 +155,7 @@ class CONTENT_EXPORT IndexedDBFactory : public blink::mojom::IDBFactory {
 
     // The `bucket` might be null if `QuotaDatabase::GetDatabase()` fails
     // during the IndexedDB binding.
-    absl::optional<storage::BucketInfo> bucket;
+    std::optional<storage::BucketInfo> bucket;
 
     mojo::Remote<storage::mojom::IndexedDBClientStateChecker>
         client_state_checker_remote;

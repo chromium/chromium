@@ -5,6 +5,7 @@
 #include "content/services/auction_worklet/worklet_test_util.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/strings/strcat.h"
@@ -20,7 +21,6 @@
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace auction_worklet {
 
@@ -32,10 +32,10 @@ const char kAllowFledgeHeader[] = "Ad-Auction-Allowed: true";
 
 void AddResponse(network::TestURLLoaderFactory* url_loader_factory,
                  const GURL& url,
-                 absl::optional<std::string> mime_type,
-                 absl::optional<std::string> charset,
+                 std::optional<std::string> mime_type,
+                 std::optional<std::string> charset,
                  const std::string content,
-                 absl::optional<std::string> headers,
+                 std::optional<std::string> headers,
                  net::HttpStatusCode http_status,
                  network::TestURLLoaderFactory::Redirects redirects) {
   auto head = network::mojom::URLResponseHead::New();
@@ -74,14 +74,14 @@ void AddResponse(network::TestURLLoaderFactory* url_loader_factory,
 void AddJavascriptResponse(network::TestURLLoaderFactory* url_loader_factory,
                            const GURL& url,
                            const std::string content) {
-  AddResponse(url_loader_factory, url, kJavascriptMimeType, absl::nullopt,
+  AddResponse(url_loader_factory, url, kJavascriptMimeType, std::nullopt,
               content);
 }
 
 void AddJsonResponse(network::TestURLLoaderFactory* url_loader_factory,
                      const GURL& url,
                      const std::string content) {
-  AddResponse(url_loader_factory, url, kJsonMimeType, absl::nullopt, content);
+  AddResponse(url_loader_factory, url, kJsonMimeType, std::nullopt, content);
 }
 
 void AddVersionedJsonResponse(network::TestURLLoaderFactory* url_loader_factory,
@@ -90,7 +90,7 @@ void AddVersionedJsonResponse(network::TestURLLoaderFactory* url_loader_factory,
                               uint32_t data_version) {
   std::string headers = base::StringPrintf("%s\nData-Version: %u",
                                            kAllowFledgeHeader, data_version);
-  AddResponse(url_loader_factory, url, kJsonMimeType, absl::nullopt, content,
+  AddResponse(url_loader_factory, url, kJsonMimeType, std::nullopt, content,
               headers);
 }
 
@@ -98,8 +98,8 @@ void AddBidderJsonResponse(
     network::TestURLLoaderFactory* url_loader_factory,
     const GURL& url,
     const std::string content,
-    absl::optional<uint32_t> data_version,
-    const absl::optional<std::string>& format_version_string) {
+    std::optional<uint32_t> data_version,
+    const std::optional<std::string>& format_version_string) {
   std::string headers = kAllowFledgeHeader;
   if (data_version) {
     headers.append(base::StringPrintf("\nData-Version: %u", *data_version));
@@ -109,7 +109,7 @@ void AddBidderJsonResponse(
         base::StringPrintf("\nAd-Auction-Bidding-Signals-Format-Version:  %s",
                            format_version_string->c_str()));
   }
-  AddResponse(url_loader_factory, url, kJsonMimeType, absl::nullopt, content,
+  AddResponse(url_loader_factory, url, kJsonMimeType, std::nullopt, content,
               headers);
 }
 

@@ -19,7 +19,7 @@
 namespace content {
 namespace {
 
-absl::optional<bool> g_force_network_service_process_in_or_out;
+std::optional<bool> g_force_network_service_process_in_or_out;
 
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kNetworkServiceOutOfProcessMemoryThreshold,

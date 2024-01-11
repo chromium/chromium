@@ -176,7 +176,7 @@ class CONTENT_EXPORT BackForwardCacheImpl
     }
 
     void SetViewTransitionState(
-        absl::optional<blink::ViewTransitionState> view_transition_state) {
+        std::optional<blink::ViewTransitionState> view_transition_state) {
       stored_page_->SetViewTransitionState(std::move(view_transition_state));
     }
 
@@ -589,7 +589,7 @@ class CONTENT_EXPORT BackForwardCacheImpl
 
     NotRestoredReasonBuilder(RenderFrameHostImpl* root_rfh,
                              RequestedFeatures requested_features,
-                             absl::optional<EvictionInfo> eviction_info);
+                             std::optional<EvictionInfo> eviction_info);
 
     ~NotRestoredReasonBuilder();
 
@@ -647,7 +647,7 @@ class CONTENT_EXPORT BackForwardCacheImpl
     // applicable. If set, the result returned by the builder will only contain
     // the NotRestoredReason for the RenderFrameHost that causes eviction
     // (instead of the reasons for the whole tree).
-    absl::optional<EvictionInfo> eviction_info_;
+    std::optional<EvictionInfo> eviction_info_;
   };
 
   base::WeakPtrFactory<BackForwardCacheImpl> weak_factory_;
@@ -791,9 +791,9 @@ class CONTENT_EXPORT BackForwardCacheCanStoreTreeResult {
   const bool is_root_outermost_main_frame_;
   // The id, name and src attribute of the frame owner of this subtree's root
   // document.
-  const absl::optional<std::string> id_;
-  const absl::optional<std::string> name_;
-  const absl::optional<std::string> src_;
+  const std::optional<std::string> id_;
+  const std::optional<std::string> name_;
+  const std::optional<std::string> src_;
   // See |GetUrl|
   const GURL url_;
 };

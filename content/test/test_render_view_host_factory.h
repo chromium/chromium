@@ -44,7 +44,7 @@ class TestRenderViewHostFactory : public RenderViewHostFactory {
       int32_t widget_routing_id,
       scoped_refptr<BrowsingContextState> main_browsing_context_state,
       CreateRenderViewHostCase create_case,
-      absl::optional<viz::FrameSinkId> frame_sink_id) override;
+      std::optional<viz::FrameSinkId> frame_sink_id) override;
 };
 
 }  // namespace content

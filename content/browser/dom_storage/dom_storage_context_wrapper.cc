@@ -242,7 +242,7 @@ void DOMStorageContextWrapper::Flush() {
 
 void DOMStorageContextWrapper::OpenLocalStorage(
     const blink::StorageKey& storage_key,
-    absl::optional<blink::LocalFrameToken> local_frame_token,
+    std::optional<blink::LocalFrameToken> local_frame_token,
     mojo::PendingReceiver<blink::mojom::StorageArea> receiver,
     ChildProcessSecurityPolicyImpl::Handle security_policy_handle,
     mojo::ReportBadMessageCallback bad_message_callback) {
@@ -271,7 +271,7 @@ void DOMStorageContextWrapper::BindNamespace(
 
 void DOMStorageContextWrapper::BindStorageArea(
     const blink::StorageKey& storage_key,
-    absl::optional<blink::LocalFrameToken> local_frame_token,
+    std::optional<blink::LocalFrameToken> local_frame_token,
     const std::string& namespace_id,
     mojo::PendingReceiver<blink::mojom::StorageArea> receiver,
     ChildProcessSecurityPolicyImpl::Handle security_policy_handle,
@@ -289,7 +289,7 @@ void DOMStorageContextWrapper::BindStorageArea(
 bool DOMStorageContextWrapper::IsRequestValid(
     const StorageType type,
     const blink::StorageKey& storage_key,
-    absl::optional<blink::LocalFrameToken> local_frame_token,
+    std::optional<blink::LocalFrameToken> local_frame_token,
     ChildProcessSecurityPolicyImpl::Handle security_policy_handle,
     mojo::ReportBadMessageCallback bad_message_callback) {
   bool host_storage_key_did_not_match = false;

@@ -4958,10 +4958,10 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   // NavigationRequest and the UrlInfo, where the values are set and used.
   NavigationRequest* data_request =
       contents()->GetPrimaryFrameTree().root()->navigation_request();
-  absl::optional<url::Origin> data_tentative_origin_to_commit =
+  std::optional<url::Origin> data_tentative_origin_to_commit =
       data_request->GetTentativeOriginAtRequestTime();
   EXPECT_TRUE(data_tentative_origin_to_commit.has_value());
-  absl::optional<url::Origin> url_info_origin =
+  std::optional<url::Origin> url_info_origin =
       data_request->GetUrlInfo().origin;
   EXPECT_TRUE(url_info_origin.has_value());
   EXPECT_EQ(data_tentative_origin_to_commit, url_info_origin);

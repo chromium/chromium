@@ -53,8 +53,8 @@ class CONTENT_EXPORT InputRouterImplClient : public InputRouterClient {
   virtual void OnImeCancelComposition() = 0;
   virtual void OnImeCompositionRangeChanged(
       const gfx::Range& range,
-      const absl::optional<std::vector<gfx::Rect>>& character_bounds,
-      const absl::optional<std::vector<gfx::Rect>>& line_bounds) = 0;
+      const std::optional<std::vector<gfx::Rect>>& character_bounds,
+      const std::optional<std::vector<gfx::Rect>>& line_bounds) = 0;
   virtual StylusInterface* GetStylusInterface() = 0;
   virtual void OnStartStylusWriting() = 0;
 };
@@ -93,8 +93,8 @@ class CONTENT_EXPORT InputRouterImpl
   bool HasPendingEvents() const override;
   void SetDeviceScaleFactor(float device_scale_factor) override;
   void SetForceEnableZoom(bool enabled) override;
-  absl::optional<cc::TouchAction> AllowedTouchAction() override;
-  absl::optional<cc::TouchAction> ActiveTouchAction() override;
+  std::optional<cc::TouchAction> AllowedTouchAction() override;
+  std::optional<cc::TouchAction> ActiveTouchAction() override;
   mojo::PendingRemote<blink::mojom::WidgetInputHandlerHost> BindNewHost(
       scoped_refptr<base::SequencedTaskRunner> task_runner) override;
   void StopFling() override;
@@ -108,8 +108,8 @@ class CONTENT_EXPORT InputRouterImpl
   void DidStartScrollingViewport() override;
   void ImeCompositionRangeChanged(
       const gfx::Range& range,
-      const absl::optional<std::vector<gfx::Rect>>& character_bounds,
-      const absl::optional<std::vector<gfx::Rect>>& line_bounds) override;
+      const std::optional<std::vector<gfx::Rect>>& character_bounds,
+      const std::optional<std::vector<gfx::Rect>>& line_bounds) override;
   void SetMouseCapture(bool capture) override;
   void SetAutoscrollSelectionActiveInMainFrame(
       bool autoscroll_selection) override;

@@ -101,7 +101,7 @@ bool RateLimitTable::CreateTable(sql::Database* db) {
 bool RateLimitTable::AddRateLimitForSource(sql::Database* db,
                                            const StoredSource& source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return AddRateLimit(db, source, /*trigger_time=*/absl::nullopt,
+  return AddRateLimit(db, source, /*trigger_time=*/std::nullopt,
                       /*context_origin=*/source.common_info().source_origin());
 }
 
@@ -117,7 +117,7 @@ bool RateLimitTable::AddRateLimitForAttribution(
 bool RateLimitTable::AddRateLimit(
     sql::Database* db,
     const StoredSource& source,
-    absl::optional<base::Time> trigger_time,
+    std::optional<base::Time> trigger_time,
     const attribution_reporting::SuitableOrigin& context_origin) {
   const CommonSourceInfo& common_info = source.common_info();
 

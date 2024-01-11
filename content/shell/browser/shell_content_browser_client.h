@@ -122,7 +122,7 @@ class ShellContentBrowserClient : public ContentBrowserClient {
   base::Value::Dict GetNetLogConstants() override;
   base::FilePath GetSandboxedStorageServiceDataDirectory() override;
   base::FilePath GetFirstPartySetsDirectory() override;
-  absl::optional<base::FilePath> GetLocalTracesDirectory() override;
+  std::optional<base::FilePath> GetLocalTracesDirectory() override;
   std::string GetUserAgent() override;
   blink::UserAgentMetadata GetUserAgentMetadata() override;
   void OverrideURLLoaderFactoryParams(
@@ -156,7 +156,7 @@ class ShellContentBrowserClient : public ContentBrowserClient {
 
   // Turns on features via permissions policy for Isolated App
   // Web Platform Tests.
-  absl::optional<blink::ParsedPermissionsPolicy>
+  std::optional<blink::ParsedPermissionsPolicy>
   GetPermissionsPolicyForIsolatedWebApp(
       content::BrowserContext* browser_context,
       const url::Origin& app_origin) override;

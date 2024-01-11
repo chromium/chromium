@@ -136,7 +136,7 @@ class CONTENT_EXPORT BrowserTaskExecutor : public BaseBrowserTaskExecutor {
   // Called when some part of the browser begins handling input. Must be called
   // from the browser UI thread and the value must be reset once input is
   // finished.
-  static absl::optional<BrowserUIThreadScheduler::UserInputActiveHandle>
+  static std::optional<BrowserUIThreadScheduler::UserInputActiveHandle>
   OnUserInputStart();
 
   // Winds down the BrowserTaskExecutor, after this no tasks can be executed
@@ -180,7 +180,7 @@ class CONTENT_EXPORT BrowserTaskExecutor : public BaseBrowserTaskExecutor {
 
     void BindToCurrentThread();
 
-    absl::optional<BrowserUIThreadScheduler::UserInputActiveHandle>
+    std::optional<BrowserUIThreadScheduler::UserInputActiveHandle>
     OnUserInputStart();
 
     void PostFeatureListSetup();

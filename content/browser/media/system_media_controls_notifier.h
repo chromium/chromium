@@ -45,14 +45,14 @@ class CONTENT_EXPORT SystemMediaControlsNotifier
   void MediaSessionInfoChanged(
       media_session::mojom::MediaSessionInfoPtr session_info) override;
   void MediaSessionMetadataChanged(
-      const absl::optional<media_session::MediaMetadata>& metadata) override;
+      const std::optional<media_session::MediaMetadata>& metadata) override;
   void MediaSessionActionsChanged(
       const std::vector<media_session::mojom::MediaSessionAction>& actions)
       override;
   void MediaSessionChanged(
-      const absl::optional<base::UnguessableToken>& request_id) override;
+      const std::optional<base::UnguessableToken>& request_id) override;
   void MediaSessionPositionChanged(
-      const absl::optional<media_session::MediaPosition>& position) override;
+      const std::optional<media_session::MediaPosition>& position) override;
 
   // media_session::mojom::MediaControllerImageObserver implementation.
   void MediaControllerImageChanged(
@@ -115,16 +115,16 @@ class CONTENT_EXPORT SystemMediaControlsNotifier
   base::OneShotTimer actions_update_timer_;
 
   // Pending metadata to be set once `metadata_update_timer_` fires.
-  absl::optional<media_session::MediaPosition> delayed_position_update_;
-  absl::optional<media_session::MediaMetadata> delayed_metadata_update_;
-  absl::optional<system_media_controls::SystemMediaControls::PlaybackStatus>
+  std::optional<media_session::MediaPosition> delayed_position_update_;
+  std::optional<media_session::MediaMetadata> delayed_metadata_update_;
+  std::optional<system_media_controls::SystemMediaControls::PlaybackStatus>
       delayed_playback_status_;
 
   // Icon to use once `icon_update_timer_` fires.
-  absl::optional<SkBitmap> delayed_icon_update_;
+  std::optional<SkBitmap> delayed_icon_update_;
 
   // Pending action to set once `actions_update_timer_` fires.
-  absl::optional<bool> delayed_is_seek_to_enabled_;
+  std::optional<bool> delayed_is_seek_to_enabled_;
 
   // Tracks current media session state/metadata.
   mojo::Remote<media_session::mojom::MediaController> media_controller_remote_;

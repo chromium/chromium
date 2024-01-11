@@ -30,7 +30,7 @@ AccessibilityNotificationWaiter::AccessibilityNotificationWaiter(
     WebContents* web_contents)
     : WebContentsObserver(web_contents),
       event_to_wait_for_(ax::mojom::Event::kNone),
-      generated_event_to_wait_for_(absl::nullopt),
+      generated_event_to_wait_for_(std::nullopt),
       loop_runner_(std::make_unique<base::RunLoop>()),
       loop_runner_quit_closure_(loop_runner_->QuitClosure()) {
   ListenToAllFrames(web_contents);
@@ -42,7 +42,7 @@ AccessibilityNotificationWaiter::AccessibilityNotificationWaiter(
     ax::mojom::Event event_type)
     : WebContentsObserver(web_contents),
       event_to_wait_for_(event_type),
-      generated_event_to_wait_for_(absl::nullopt),
+      generated_event_to_wait_for_(std::nullopt),
       loop_runner_(std::make_unique<base::RunLoop>()),
       loop_runner_quit_closure_(loop_runner_->QuitClosure()) {
   ListenToAllFrames(web_contents);
@@ -60,7 +60,7 @@ AccessibilityNotificationWaiter::AccessibilityNotificationWaiter(
     ui::AXMode accessibility_mode,
     ui::AXEventGenerator::Event event_type)
     : WebContentsObserver(web_contents),
-      event_to_wait_for_(absl::nullopt),
+      event_to_wait_for_(std::nullopt),
       generated_event_to_wait_for_(event_type),
       loop_runner_(std::make_unique<base::RunLoop>()),
       loop_runner_quit_closure_(loop_runner_->QuitClosure()) {

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/files/file.h"
@@ -29,7 +30,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 
@@ -365,7 +365,7 @@ TEST_P(CdmStorageTest, VerifyMigrationWorks) {
   // the CdmStorageDatabase. Else, we should check that CdmStorageManager is a
   // nullptr since it would not have been created.
   if (base::FeatureList::IsEnabled(features::kCdmStorageDatabase)) {
-    base::test::TestFuture<absl::optional<std::vector<uint8_t>>> read_future;
+    base::test::TestFuture<std::optional<std::vector<uint8_t>>> read_future;
     cdm_storage_manager()->ReadFile(
         blink::StorageKey::CreateFromStringForTesting(kTestOrigin),
         kTestCdmType, kFileName, read_future.GetCallback());
@@ -384,7 +384,7 @@ TEST_P(CdmStorageTest, VerifyMigrationWorks) {
   EXPECT_THAT(data_read, testing::IsEmpty());
 
   if (base::FeatureList::IsEnabled(features::kCdmStorageDatabase)) {
-    base::test::TestFuture<absl::optional<std::vector<uint8_t>>>
+    base::test::TestFuture<std::optional<std::vector<uint8_t>>>
         read_empty_file_future;
     cdm_storage_manager()->ReadFile(
         blink::StorageKey::CreateFromStringForTesting(kTestOrigin),

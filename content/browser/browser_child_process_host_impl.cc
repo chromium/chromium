@@ -703,7 +703,7 @@ void BrowserChildProcessHostImpl::RegisterCoordinatorClient(
                      client_process,
                  memory_instrumentation::mojom::ProcessType process_type,
                  base::ProcessId process_id,
-                 absl::optional<std::string> service_name) {
+                 std::optional<std::string> service_name) {
                 GetMemoryInstrumentationRegistry()->RegisterClientProcess(
                     std::move(receiver), std::move(client_process),
                     process_type, process_id, std::move(service_name));

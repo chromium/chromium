@@ -8,6 +8,7 @@
 #include <iterator>
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -29,7 +30,6 @@
 #include "content/public/common/content_client.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/mojom/optional_bool.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 
 namespace content {
@@ -343,7 +343,7 @@ bool SharedStorageHeaderObserver::Delete(const url::Origin& request_origin,
           &SharedStorageHeaderObserver::OnOperationFinished,
           weak_ptr_factory_.GetWeakPtr(), request_origin,
           network::mojom::SharedStorageOperation::New(
-              OperationType::kDelete, std::move(key), /*value=*/absl::nullopt,
+              OperationType::kDelete, std::move(key), /*value=*/std::nullopt,
               /*ignore_if_present=*/network::mojom::OptionalBool::kUnset)));
   return true;
 }
@@ -359,7 +359,7 @@ bool SharedStorageHeaderObserver::Clear(const url::Origin& request_origin) {
           weak_ptr_factory_.GetWeakPtr(), request_origin,
           network::mojom::SharedStorageOperation::New(
               OperationType::kClear,
-              /*key=*/absl::nullopt, /*value=*/absl::nullopt,
+              /*key=*/std::nullopt, /*value=*/std::nullopt,
               /*ignore_if_present=*/network::mojom::OptionalBool::kUnset)));
   return true;
 }

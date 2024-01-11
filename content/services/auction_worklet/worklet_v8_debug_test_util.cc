@@ -122,7 +122,7 @@ void TestChannel::LogEvent(
   // For TestChannel we always talk JSON.  Make it into a base::Value, to make
   // it easy to look stuff up in it.
   std::string message_str = ToString(message->string());
-  absl::optional<base::Value> val = base::JSONReader::Read(message_str);
+  std::optional<base::Value> val = base::JSONReader::Read(message_str);
   CHECK(val.has_value()) << message_str;
   Event event;
   event.type = type;

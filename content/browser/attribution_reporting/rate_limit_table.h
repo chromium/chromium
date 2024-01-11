@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_RATE_LIMIT_TABLE_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_RATE_LIMIT_TABLE_H_
 
+#include <optional>
 #include <set>
 #include <vector>
 
@@ -17,7 +18,6 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/attribution_data_model.h"
 #include "content/public/browser/storage_partition.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace attribution_reporting {
 class SuitableOrigin;
@@ -140,7 +140,7 @@ class CONTENT_EXPORT RateLimitTable {
   [[nodiscard]] bool AddRateLimit(
       sql::Database* db,
       const StoredSource& source,
-      absl::optional<base::Time> trigger_time,
+      std::optional<base::Time> trigger_time,
       const attribution_reporting::SuitableOrigin& context_origin)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 

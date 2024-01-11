@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_WORKER_HOST_DEDICATED_WORKER_HOST_FACTORY_IMPL_H_
 #define CONTENT_BROWSER_WORKER_HOST_DEDICATED_WORKER_HOST_FACTORY_IMPL_H_
 
+#include <optional>
+
 #include "content/browser/network/cross_origin_embedder_policy_reporter.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/dedicated_worker_creator.h"
@@ -14,7 +16,6 @@
 #include "net/base/isolation_info.h"
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/worker/dedicated_worker_host_factory.mojom.h"
 #include "url/origin.h"

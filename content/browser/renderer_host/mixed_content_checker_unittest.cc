@@ -5,6 +5,7 @@
 #include "content/browser/renderer_host/mixed_content_checker.h"
 
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <tuple>
 #include <vector>
@@ -17,7 +18,6 @@
 #include "services/network/public/mojom/source_location.mojom-forward.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 #include "third_party/blink/public/mojom/loader/mixed_content.mojom.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom.h"
@@ -65,7 +65,7 @@ class LocalFrameInterceptor : public FakeLocalFrame {
     reported_web_features_ = web_features;
   }
 
-  const absl::optional<MixedContentResult>& mixed_content_result() const {
+  const std::optional<MixedContentResult>& mixed_content_result() const {
     return mixed_content_result_;
   }
   const std::vector<blink::mojom::WebFeature>& reported_web_features() const {
@@ -77,7 +77,7 @@ class LocalFrameInterceptor : public FakeLocalFrame {
  private:
   raw_ptr<TestRenderFrameHost> rfh_;
   std::vector<blink::mojom::WebFeature> reported_web_features_;
-  absl::optional<MixedContentResult> mixed_content_result_;
+  std::optional<MixedContentResult> mixed_content_result_;
 };
 
 // Needed by GTest to display errors.
@@ -230,7 +230,7 @@ TEST_P(MixedContentCheckerShouldBlockNavigationTest,
   EXPECT_FALSE(checker.ShouldBlockNavigation(*nav->GetNavigationHandle(),
                                              for_redirect()));
   inspector->FlushLocalFrameMessages();
-  EXPECT_THAT(inspector->mixed_content_result(), Eq(absl::nullopt));
+  EXPECT_THAT(inspector->mixed_content_result(), Eq(std::nullopt));
   EXPECT_THAT(inspector->reported_web_features(), IsEmpty());
 }
 
@@ -245,7 +245,7 @@ TEST_P(MixedContentCheckerShouldBlockNavigationTest,
   EXPECT_FALSE(checker.ShouldBlockNavigation(*nav->GetNavigationHandle(),
                                              for_redirect()));
   inspector->FlushLocalFrameMessages();
-  EXPECT_THAT(inspector->mixed_content_result(), Eq(absl::nullopt));
+  EXPECT_THAT(inspector->mixed_content_result(), Eq(std::nullopt));
   EXPECT_THAT(inspector->reported_web_features(), IsEmpty());
 }
 
@@ -260,7 +260,7 @@ TEST_P(MixedContentCheckerShouldBlockNavigationTest,
   EXPECT_FALSE(checker.ShouldBlockNavigation(*nav->GetNavigationHandle(),
                                              for_redirect()));
   inspector->FlushLocalFrameMessages();
-  EXPECT_THAT(inspector->mixed_content_result(), Eq(absl::nullopt));
+  EXPECT_THAT(inspector->mixed_content_result(), Eq(std::nullopt));
   EXPECT_THAT(inspector->reported_web_features(), IsEmpty());
 }
 
@@ -514,7 +514,7 @@ class MixedContentCheckerShouldBlockFetchKeepAliveTestBase
   // Expects no report to renderer no matter blocking happens or not.
   void ExpectNoReportToRenderer(LocalFrameInterceptor* inspector) {
     inspector->FlushLocalFrameMessages();
-    EXPECT_THAT(inspector->mixed_content_result(), Eq(absl::nullopt));
+    EXPECT_THAT(inspector->mixed_content_result(), Eq(std::nullopt));
     EXPECT_THAT(inspector->reported_web_features(), IsEmpty());
   }
 };

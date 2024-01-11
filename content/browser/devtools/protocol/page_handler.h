@@ -69,7 +69,7 @@ class PageHandler : public DevToolsDomainHandler,
               BrowserHandler* browser_handler,
               bool allow_unsafe_operations,
               bool is_trusted,
-              absl::optional<url::Origin> navigation_initiator_origin,
+              std::optional<url::Origin> navigation_initiator_origin,
               bool may_read_local_files);
 
   PageHandler(const PageHandler&) = delete;
@@ -210,7 +210,7 @@ class PageHandler : public DevToolsDomainHandler,
       const gfx::Size& original_view_size,
       const gfx::Size& requested_image_size,
       const blink::DeviceEmulationParams& original_params,
-      const absl::optional<blink::web_pref::WebPreferences>& original_web_prefs,
+      const std::optional<blink::web_pref::WebPreferences>& original_web_prefs,
       const gfx::Image& image);
 
   void GotManifest(std::unique_ptr<GetAppManifestCallback> callback,
@@ -234,7 +234,7 @@ class PageHandler : public DevToolsDomainHandler,
 
   const bool allow_unsafe_operations_;
   const bool is_trusted_;
-  const absl::optional<url::Origin> navigation_initiator_origin_;
+  const std::optional<url::Origin> navigation_initiator_origin_;
   const bool may_read_local_files_;
 
   bool enabled_;

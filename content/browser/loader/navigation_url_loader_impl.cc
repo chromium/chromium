@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <utility>
 
@@ -98,7 +99,6 @@
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/mime_sniffing_throttle.h"
 #include "third_party/blink/public/common/loader/record_load_histograms.h"
 #include "third_party/blink/public/common/loader/throttling_url_loader.h"
@@ -394,8 +394,8 @@ void CheckParsedHeadersEquals(const network::mojom::ParsedHeadersPtr& lhs,
   if (rhs->client_hints_ignored_due_to_clear_site_data_header) {
     CHECK(!rhs->accept_ch);
     CHECK(!rhs->critical_ch);
-    adjusted_lhs->accept_ch = absl::nullopt;
-    adjusted_lhs->critical_ch = absl::nullopt;
+    adjusted_lhs->accept_ch = std::nullopt;
+    adjusted_lhs->critical_ch = std::nullopt;
     adjusted_lhs->client_hints_ignored_due_to_clear_site_data_header = true;
   }
   if (mojo::Equals(adjusted_lhs, rhs)) {
@@ -728,7 +728,7 @@ NavigationURLLoaderImpl::PrepareForNonInterceptedRequest() {
     if (known_schemes_.find(resource_request_->url.scheme()) ==
         known_schemes_.end()) {
       mojo::PendingRemote<network::mojom::URLLoaderFactory> loader_factory;
-      absl::optional<url::Origin> initiating_origin;
+      std::optional<url::Origin> initiating_origin;
       if (url_chain_.size() > 1) {
         initiating_origin =
             url::Origin::Create(url_chain_[url_chain_.size() - 2]);
@@ -815,7 +815,7 @@ void NavigationURLLoaderImpl::OnReceiveEarlyHints(
     return;
 
   if (!early_hints_manager_) {
-    absl::optional<NavigationEarlyHintsManagerParams> params =
+    std::optional<NavigationEarlyHintsManagerParams> params =
         delegate_->CreateNavigationEarlyHintsManagerParams(*early_hints);
     if (!params)
       return;
@@ -831,7 +831,7 @@ void NavigationURLLoaderImpl::OnReceiveEarlyHints(
 void NavigationURLLoaderImpl::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr head,
     mojo::ScopedDataPipeConsumerHandle response_body,
-    absl::optional<mojo_base::BigBuffer> cached_metadata) {
+    std::optional<mojo_base::BigBuffer> cached_metadata) {
   DCHECK(!cached_metadata);
   LogQueueTimeHistogram("Navigation.QueueTime.OnReceiveResponse",
                         resource_request_->is_outermost_main_frame);
@@ -1203,7 +1203,7 @@ bool NavigationURLLoaderImpl::MaybeCreateLoaderForResponse(
           if (container_host) {
             container_host->SetControllerRegistration(
                 nullptr, /*notify_controllerchange=*/false);
-            container_host->UpdateUrls(GURL(), absl::nullopt,
+            container_host->UpdateUrls(GURL(), std::nullopt,
                                        blink::StorageKey());
           }
         }

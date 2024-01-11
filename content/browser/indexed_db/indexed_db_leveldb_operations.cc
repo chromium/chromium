@@ -103,7 +103,7 @@ base::FilePath ComputeCorruptionFileName(
 }
 
 bool IsPathTooLong(const base::FilePath& leveldb_dir) {
-  absl::optional<int> limit =
+  std::optional<int> limit =
       base::GetMaximumPathComponentLength(leveldb_dir.DirName());
   if (!limit.has_value()) {
     DLOG(WARNING) << "GetMaximumPathComponentLength returned -1";
@@ -154,7 +154,7 @@ std::string ReadCorruptionInfo(const base::FilePath& path_base,
   if (file.IsValid()) {
     std::string input_js(file_info.size, '\0');
     if (file_info.size == file.Read(0, std::data(input_js), file_info.size)) {
-      absl::optional<base::Value> val = base::JSONReader::Read(input_js);
+      std::optional<base::Value> val = base::JSONReader::Read(input_js);
       if (val && val->is_dict()) {
         std::string* s = val->GetDict().FindString("message");
         if (s) {

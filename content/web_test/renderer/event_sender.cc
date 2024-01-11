@@ -1272,7 +1272,7 @@ EventSender::EventSender(blink::WebFrameWidget* web_frame_widget,
 EventSender::~EventSender() {}
 
 void EventSender::Reset() {
-  current_drag_data_ = absl::nullopt;
+  current_drag_data_ = std::nullopt;
   current_drag_effect_ = ui::mojom::DragOperation::kNone;
   current_drag_effects_allowed_ = blink::kDragOperationNone;
   current_pointer_state_.clear();
@@ -2716,7 +2716,7 @@ void EventSender::FinishDragAndDrop(const WebMouseEvent& event,
   } else {
     MainFrameWidget()->DragTargetDragLeave(gfx::PointF(), gfx::PointF());
   }
-  current_drag_data_ = absl::nullopt;
+  current_drag_data_ = std::nullopt;
   MainFrameWidget()->DragSourceEndedAt(event.PositionInWidget(),
                                        event.PositionInScreen(),
                                        current_drag_effect_, base::DoNothing());

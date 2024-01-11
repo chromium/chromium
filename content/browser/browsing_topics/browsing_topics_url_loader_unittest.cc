@@ -184,7 +184,7 @@ class BrowsingTopicsURLLoaderTest : public RenderViewHostTestHarness {
                         url::Origin::Create(GURL("https://foo2.com"))),
                     *blink::OriginWithPossibleWildcards::FromOrigin(
                         url::Origin::Create(GURL("https://foo3.com")))},
-        /*self_if_matches=*/absl::nullopt,
+        /*self_if_matches=*/std::nullopt,
         /*matches_all_origins=*/false,
         /*matches_opaque_src=*/false);
 
@@ -234,7 +234,7 @@ TEST_F(BrowsingTopicsURLLoaderTest, RequestArrivedBeforeCommit) {
   EXPECT_FALSE(has_topics_header);
 
   pending_request->client->OnReceiveResponse(CreateResponseHead(true),
-                                             /*body=*/{}, absl::nullopt);
+                                             /*body=*/{}, std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 0u);
@@ -283,7 +283,7 @@ TEST_F(BrowsingTopicsURLLoaderTest, RequestArrivedAfterCommit) {
   // The true topics response header value will cause an observation to be
   // recorded.
   pending_request->client->OnReceiveResponse(CreateResponseHead(true),
-                                             /*body=*/{}, absl::nullopt);
+                                             /*body=*/{}, std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 2u);
@@ -338,7 +338,7 @@ TEST_F(BrowsingTopicsURLLoaderTest, RequestArrivedAfterDocumentDestroyed) {
   EXPECT_FALSE(has_topics_header);
 
   pending_request->client->OnReceiveResponse(CreateResponseHead(true),
-                                             /*body=*/{}, absl::nullopt);
+                                             /*body=*/{}, std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 0u);
@@ -396,7 +396,7 @@ TEST_F(BrowsingTopicsURLLoaderTest, RequestFromSubframe) {
   // The true topics response header value will cause an observation to be
   // recorded.
   pending_request->client->OnReceiveResponse(CreateResponseHead(true),
-                                             /*body=*/{}, absl::nullopt);
+                                             /*body=*/{}, std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 2u);
@@ -440,7 +440,7 @@ TEST_F(BrowsingTopicsURLLoaderTest, HasFalseValueObserveResponseHeader) {
   // Expect no further handling for topics as the response header value is
   // false.
   pending_request->client->OnReceiveResponse(CreateResponseHead(false),
-                                             /*body=*/{}, absl::nullopt);
+                                             /*body=*/{}, std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 1u);
@@ -484,7 +484,7 @@ TEST_F(BrowsingTopicsURLLoaderTest, EmptyTopics) {
   // The true topics response header value will cause an observation to be
   // recorded.
   pending_request->client->OnReceiveResponse(CreateResponseHead(true),
-                                             /*body=*/{}, absl::nullopt);
+                                             /*body=*/{}, std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 2u);
@@ -537,7 +537,7 @@ TEST_F(BrowsingTopicsURLLoaderTest, TopicsNotEligibleDueToFromFencedFrame) {
   EXPECT_FALSE(has_topics_header);
 
   pending_request->client->OnReceiveResponse(CreateResponseHead(true),
-                                             /*body=*/{}, absl::nullopt);
+                                             /*body=*/{}, std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 0u);
@@ -586,7 +586,7 @@ TEST_F(BrowsingTopicsURLLoaderTest, TopicsNotEligibleDueToInactiveFrame) {
   EXPECT_FALSE(has_topics_header);
 
   pending_request->client->OnReceiveResponse(CreateResponseHead(true),
-                                             /*body=*/{}, absl::nullopt);
+                                             /*body=*/{}, std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 0u);
@@ -629,7 +629,7 @@ TEST_F(BrowsingTopicsURLLoaderTest, OpaqueRequestURL) {
   EXPECT_FALSE(has_topics_header);
 
   pending_request->client->OnReceiveResponse(CreateResponseHead(true),
-                                             /*body=*/{}, absl::nullopt);
+                                             /*body=*/{}, std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 0u);
@@ -673,7 +673,7 @@ TEST_F(BrowsingTopicsURLLoaderTest, TopicsNotEligibleDueToPermissionsPolicy) {
   EXPECT_FALSE(has_topics_header);
 
   pending_request->client->OnReceiveResponse(CreateResponseHead(true),
-                                             /*body=*/{}, absl::nullopt);
+                                             /*body=*/{}, std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 0u);
@@ -726,7 +726,7 @@ TEST_F(BrowsingTopicsURLLoaderTest,
   // because the request wasn't eligible for topics.
   browser_client().set_topics_eligible(true);
   pending_request->client->OnReceiveResponse(CreateResponseHead(true),
-                                             /*body=*/{}, absl::nullopt);
+                                             /*body=*/{}, std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 1u);
@@ -789,7 +789,7 @@ TEST_F(BrowsingTopicsURLLoaderTest, RedirectTopicsUpdated) {
   remote_loader->FollowRedirect(/*removed_headers=*/{},
                                 /*modified_headers=*/{},
                                 /*modified_cors_exempt_headers=*/{},
-                                /*new_url=*/absl::nullopt);
+                                /*new_url=*/std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   const std::vector<FollowRedirectParams>& follow_redirect_params =
@@ -811,7 +811,7 @@ TEST_F(BrowsingTopicsURLLoaderTest, RedirectTopicsUpdated) {
   // The true topics response header value will cause an observation to be
   // recorded.
   pending_request->client->OnReceiveResponse(CreateResponseHead(true),
-                                             /*body=*/{}, absl::nullopt);
+                                             /*body=*/{}, std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 4u);
@@ -873,7 +873,7 @@ TEST_F(BrowsingTopicsURLLoaderTest, RedirectNotEligibleForTopics) {
   remote_loader->FollowRedirect(/*removed_headers=*/{},
                                 /*modified_headers=*/{},
                                 /*modified_cors_exempt_headers=*/{},
-                                /*new_url=*/absl::nullopt);
+                                /*new_url=*/std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   const std::vector<FollowRedirectParams>& follow_redirect_params =
@@ -890,7 +890,7 @@ TEST_F(BrowsingTopicsURLLoaderTest, RedirectNotEligibleForTopics) {
   EXPECT_FALSE(redirect_has_topics_header);
 
   pending_request->client->OnReceiveResponse(CreateResponseHead(true),
-                                             /*body=*/{}, absl::nullopt);
+                                             /*body=*/{}, std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 2u);
@@ -936,7 +936,7 @@ TEST_F(BrowsingTopicsURLLoaderTest, TwoRequests) {
   }
 
   pending_request1->client->OnReceiveResponse(CreateResponseHead(true),
-                                              /*body=*/{}, absl::nullopt);
+                                              /*body=*/{}, std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 2u);
@@ -969,7 +969,7 @@ TEST_F(BrowsingTopicsURLLoaderTest, TwoRequests) {
   }
 
   pending_request2->client->OnReceiveResponse(CreateResponseHead(true),
-                                              /*body=*/{}, absl::nullopt);
+                                              /*body=*/{}, std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 2u);
@@ -1048,7 +1048,7 @@ TEST_F(BrowsingTopicsURLLoaderTest, TwoFactories) {
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 1u);
 
   pending_request1->client->OnReceiveResponse(CreateResponseHead(true),
-                                              /*body=*/{}, absl::nullopt);
+                                              /*body=*/{}, std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 2u);
@@ -1056,7 +1056,7 @@ TEST_F(BrowsingTopicsURLLoaderTest, TwoFactories) {
   EXPECT_TRUE(browser_client().last_observe_param());
 
   pending_request2->client->OnReceiveResponse(CreateResponseHead(true),
-                                              /*body=*/{}, absl::nullopt);
+                                              /*body=*/{}, std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 2u);

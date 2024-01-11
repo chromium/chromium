@@ -58,7 +58,7 @@ class MediaInternalsTestBase {
     std::string utf8_update = base::UTF16ToUTF8(update);
     const std::string::size_type first_brace = utf8_update.find('{');
     const std::string::size_type last_brace = utf8_update.rfind('}');
-    absl::optional<base::Value> output_value = base::JSONReader::Read(
+    std::optional<base::Value> output_value = base::JSONReader::Read(
         utf8_update.substr(first_brace, last_brace - first_brace + 1));
     ASSERT_TRUE(output_value);
     ASSERT_TRUE(output_value->is_dict());
@@ -67,7 +67,7 @@ class MediaInternalsTestBase {
   }
 
   void ExpectInt(const std::string& key, int expected_value) const {
-    absl::optional<int> actual_value = update_data_.FindInt(key);
+    std::optional<int> actual_value = update_data_.FindInt(key);
     ASSERT_TRUE(actual_value);
     EXPECT_EQ(expected_value, *actual_value);
   }

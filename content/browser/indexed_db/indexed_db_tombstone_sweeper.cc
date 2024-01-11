@@ -104,7 +104,7 @@ IndexedDBTombstoneSweeper::SweepState::~SweepState() = default;
 
 void IndexedDBTombstoneSweeper::Stop(StopReason reason) {
   leveldb::Status s;
-  RecordUMAStats(reason, absl::nullopt, s);
+  RecordUMAStats(reason, std::nullopt, s);
 }
 
 bool IndexedDBTombstoneSweeper::RunRound() {
@@ -130,13 +130,13 @@ bool IndexedDBTombstoneSweeper::RunRound() {
   if (status == Status::SWEEPING)
     return false;
 
-  RecordUMAStats(absl::nullopt, status, s);
+  RecordUMAStats(std::nullopt, status, s);
   return true;
 }
 
 void IndexedDBTombstoneSweeper::RecordUMAStats(
-    absl::optional<StopReason> stop_reason,
-    absl::optional<IndexedDBTombstoneSweeper::Status> status,
+    std::optional<StopReason> stop_reason,
+    std::optional<IndexedDBTombstoneSweeper::Status> status,
     const leveldb::Status& leveldb_error) {
   DCHECK(stop_reason || status);
   DCHECK(!stop_reason || !status);
@@ -349,9 +349,9 @@ IndexedDBTombstoneSweeper::Status IndexedDBTombstoneSweeper::DoSweep(
         if (!can_continue)
           return sweep_status;
       }
-      sweep_state_.index_it = absl::nullopt;
+      sweep_state_.index_it = std::nullopt;
     }
-    sweep_state_.object_store_it = absl::nullopt;
+    sweep_state_.object_store_it = std::nullopt;
   }
   return Status::DONE_COMPLETE;
 }
@@ -457,7 +457,7 @@ bool IndexedDBTombstoneSweeper::IterateIndex(
     }
   }
   ++indices_scanned_;
-  sweep_state_.index_it_key = absl::nullopt;
+  sweep_state_.index_it_key = std::nullopt;
   return true;
 }
 

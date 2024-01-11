@@ -46,7 +46,7 @@ class MockDedicatedWorker
         RenderFrameHostImpl::FromID(render_frame_host_id)
             ->GetStoragePartition()
             ->GetWeakPtr(),
-        GURL(), absl::nullopt, absl::nullopt, base::UnguessableToken::Create(),
+        GURL(), std::nullopt, std::nullopt, base::UnguessableToken::Create(),
         net::NetworkAnonymizationKey());
 
     mojo::MakeSelfOwnedReceiver(

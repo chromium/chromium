@@ -452,7 +452,7 @@ std::vector<device::CableDiscoveryData> GetTestCableExtension() {
 
 device::AuthenticatorData AuthDataFromMakeCredentialResponse(
     const MakeCredentialAuthenticatorResponsePtr& response) {
-  absl::optional<Value> attestation_value =
+  std::optional<Value> attestation_value =
       Reader::Read(response->attestation_object);
   CHECK(attestation_value);
   const auto& attestation = attestation_value->GetMap();
@@ -460,7 +460,7 @@ device::AuthenticatorData AuthDataFromMakeCredentialResponse(
   const auto auth_data_it = attestation.find(Value(device::kAuthDataKey));
   CHECK(auth_data_it != attestation.end());
   const std::vector<uint8_t>& auth_data = auth_data_it->second.GetBytestring();
-  absl::optional<device::AuthenticatorData> parsed_auth_data =
+  std::optional<device::AuthenticatorData> parsed_auth_data =
       device::AuthenticatorData::DecodeAuthenticatorData(auth_data);
   return std::move(parsed_auth_data.value());
 }
@@ -471,7 +471,7 @@ bool HasUV(const MakeCredentialAuthenticatorResponsePtr& response) {
 }
 
 bool HasUV(const GetAssertionAuthenticatorResponsePtr& response) {
-  absl::optional<device::AuthenticatorData> auth_data =
+  std::optional<device::AuthenticatorData> auth_data =
       device::AuthenticatorData::DecodeAuthenticatorData(
           response->info->authenticator_data);
   return auth_data->obtained_user_verification();
@@ -495,7 +495,7 @@ device::LargeBlob CompressLargeBlob(base::span<const uint8_t> blob) {
   base::RunLoop run_loop;
   gzipper.Deflate(
       blob, base::BindLambdaForTesting(
-                [&](absl::optional<mojo_base::BigBuffer> result) {
+                [&](std::optional<mojo_base::BigBuffer> result) {
                   compressed = device::fido_parsing_utils::Materialize(*result);
                   run_loop.Quit();
                 }));
@@ -510,7 +510,7 @@ std::vector<uint8_t> UncompressLargeBlob(device::LargeBlob blob) {
   gzipper.Inflate(
       blob.compressed_data, blob.original_size,
       base::BindLambdaForTesting(
-          [&](absl::optional<mojo_base::BigBuffer> result) {
+          [&](std::optional<mojo_base::BigBuffer> result) {
             if (result) {
               uncompressed = device::fido_parsing_utils::Materialize(*result);
             } else {
@@ -943,11 +943,11 @@ TEST_F(AuthenticatorImplTest, MakeCredentialPlatformAuthenticator) {
 // also in the second, and with the same value.
 static void CheckJSONIsSubsetOfJSON(base::StringPiece subset_str,
                                     base::StringPiece test_str) {
-  absl::optional<base::Value> subset = base::JSONReader::Read(subset_str);
+  std::optional<base::Value> subset = base::JSONReader::Read(subset_str);
   ASSERT_TRUE(subset);
   ASSERT_TRUE(subset->is_dict());
   const base::Value::Dict& subset_dict = subset->GetDict();
-  absl::optional<base::Value> test = base::JSONReader::Read(test_str);
+  std::optional<base::Value> test = base::JSONReader::Read(test_str);
   ASSERT_TRUE(test);
   ASSERT_TRUE(test->is_dict());
   const base::Value::Dict& test_dict = test->GetDict();
@@ -1735,7 +1735,7 @@ class TestWebAuthenticationRequestProxy : public WebAuthenticationRequestProxy {
 // WebAuthenticationDelegate embedder interface.
 class TestWebAuthenticationDelegate : public WebAuthenticationDelegate {
  public:
-  absl::optional<bool> IsUserVerifyingPlatformAuthenticatorAvailableOverride(
+  std::optional<bool> IsUserVerifyingPlatformAuthenticatorAvailableOverride(
       RenderFrameHost*) override {
     return is_uvpaa_override;
   }
@@ -1748,13 +1748,13 @@ class TestWebAuthenticationDelegate : public WebAuthenticationDelegate {
            origin.host() == rp_id;
   }
 
-  absl::optional<std::string> MaybeGetRelyingPartyIdOverride(
+  std::optional<std::string> MaybeGetRelyingPartyIdOverride(
       const std::string& claimed_rp_id,
       const url::Origin& caller_origin) override {
     if (permit_extensions && caller_origin.scheme() == kExtensionScheme) {
       return caller_origin.Serialize();
     }
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   bool ShouldPermitIndividualAttestation(
@@ -1777,7 +1777,7 @@ class TestWebAuthenticationDelegate : public WebAuthenticationDelegate {
   bool IsFocused(WebContents* web_contents) override { return is_focused; }
 
 #if BUILDFLAG(IS_MAC)
-  absl::optional<TouchIdAuthenticatorConfig> GetTouchIdAuthenticatorConfig(
+  std::optional<TouchIdAuthenticatorConfig> GetTouchIdAuthenticatorConfig(
       BrowserContext* browser_context) override {
     return touch_id_authenticator_config;
   }
@@ -1799,7 +1799,7 @@ class TestWebAuthenticationDelegate : public WebAuthenticationDelegate {
 
   // If set, the return value of IsUVPAA() will be overridden with this value.
   // Platform-specific implementations will not be invoked.
-  absl::optional<bool> is_uvpaa_override;
+  std::optional<bool> is_uvpaa_override;
 
   // If set, the delegate will permit WebAuthn requests from chrome-extension
   // origins.
@@ -1810,7 +1810,7 @@ class TestWebAuthenticationDelegate : public WebAuthenticationDelegate {
   bool permit_individual_attestation = false;
 
   // A specific RP ID for which individual attestation will be permitted.
-  absl::optional<std::string> permit_individual_attestation_for_rp_id;
+  std::optional<std::string> permit_individual_attestation_for_rp_id;
 
   // Indicates whether resident key operations should be permitted by the
   // delegate.
@@ -1824,14 +1824,14 @@ class TestWebAuthenticationDelegate : public WebAuthenticationDelegate {
 
 #if BUILDFLAG(IS_MAC)
   // Configuration data for the macOS platform authenticator.
-  absl::optional<TouchIdAuthenticatorConfig> touch_id_authenticator_config;
+  std::optional<TouchIdAuthenticatorConfig> touch_id_authenticator_config;
 #endif
 
   // The WebAuthenticationRequestProxy returned by |MaybeGetRequestProxy|.
   std::unique_ptr<TestWebAuthenticationRequestProxy> request_proxy = nullptr;
 
   // The origin permitted to use the RemoteDesktopClientOverride extension.
-  absl::optional<url::Origin> remote_desktop_client_override_origin;
+  std::optional<url::Origin> remote_desktop_client_override_origin;
 };
 
 enum class EnterprisePolicy {
@@ -2145,7 +2145,7 @@ class AuthenticatorContentBrowserClientTest : public AuthenticatorImplTest {
       const device::AuthenticatorData auth_data =
           AuthDataFromMakeCredentialResponse(result.response);
 
-      absl::optional<Value> attestation_value =
+      std::optional<Value> attestation_value =
           Reader::Read(result.response->attestation_object);
       ASSERT_TRUE(attestation_value);
       ASSERT_TRUE(attestation_value->is_map());
@@ -4397,12 +4397,12 @@ TEST_F(AuthenticatorImplTest, GetPublicKey) {
 
   static constexpr struct {
     device::CoseAlgorithmIdentifier algo;
-    absl::optional<int> evp_id;
+    std::optional<int> evp_id;
   } kTests[] = {
       {device::CoseAlgorithmIdentifier::kEs256, EVP_PKEY_EC},
       {device::CoseAlgorithmIdentifier::kRs256, EVP_PKEY_RSA},
       {device::CoseAlgorithmIdentifier::kEdDSA, EVP_PKEY_ED25519},
-      {device::CoseAlgorithmIdentifier::kInvalidForTesting, absl::nullopt},
+      {device::CoseAlgorithmIdentifier::kInvalidForTesting, std::nullopt},
   };
 
   std::vector<device::CoseAlgorithmIdentifier> advertised_algorithms;
@@ -4428,7 +4428,7 @@ TEST_F(AuthenticatorImplTest, GetPublicKey) {
 
     // The value of the parsed authenticator data should match what's in
     // the attestation object.
-    absl::optional<Value> attestation_value =
+    std::optional<Value> attestation_value =
         Reader::Read(response->attestation_object);
     CHECK(attestation_value);
     const auto& attestation = attestation_value->GetMap();
@@ -4966,7 +4966,7 @@ class PINTestAuthenticatorRequestDelegate
   PINTestAuthenticatorRequestDelegate(
       bool supports_pin,
       const std::list<PINExpectation>& pins,
-      absl::optional<InterestingFailureReason>* failure_reason)
+      std::optional<InterestingFailureReason>* failure_reason)
       : supports_pin_(supports_pin),
         expected_(pins),
         failure_reason_(failure_reason) {}
@@ -5014,7 +5014,7 @@ class PINTestAuthenticatorRequestDelegate
  private:
   const bool supports_pin_;
   std::list<PINExpectation> expected_;
-  const raw_ptr<absl::optional<InterestingFailureReason>> failure_reason_;
+  const raw_ptr<std::optional<InterestingFailureReason>> failure_reason_;
 };
 
 class PINTestAuthenticatorContentBrowserClient : public ContentBrowserClient {
@@ -5035,7 +5035,7 @@ class PINTestAuthenticatorContentBrowserClient : public ContentBrowserClient {
 
   bool supports_pin = true;
   std::list<PINExpectation> expected;
-  absl::optional<InterestingFailureReason> failure_reason;
+  std::optional<InterestingFailureReason> failure_reason;
 };
 
 class PINAuthenticatorImplTest : public UVAuthenticatorImplTest {
@@ -6660,15 +6660,15 @@ class ResidentKeyTestAuthenticatorRequestDelegate
 
     // If set, indicates that `DoesBlockRequestOnFailure()` is expected to be
     // called with this value.
-    absl::optional<AuthenticatorRequestClientDelegate::InterestingFailureReason>
+    std::optional<AuthenticatorRequestClientDelegate::InterestingFailureReason>
         expected_failure_reason;
 
     // If set, indicates that the `AccountPreselectCallback` should be invoked
     // with this credential ID at the beginning of the request.
     // `preselected_authenticator_id` contains the authenticator ID to which the
     // request should be dispatched in this case.
-    absl::optional<std::vector<uint8_t>> preselected_credential_id;
-    absl::optional<std::string> preselected_authenticator_id;
+    std::optional<std::vector<uint8_t>> preselected_credential_id;
+    std::optional<std::string> preselected_authenticator_id;
   };
 
   explicit ResidentKeyTestAuthenticatorRequestDelegate(Config config)
@@ -7020,7 +7020,7 @@ TEST_F(ResidentKeyAuthenticatorImplTest, MakeCredentialEmptyFields) {
 TEST_F(ResidentKeyAuthenticatorImplTest, GetAssertionSingleNoPII) {
   ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectResidentKey(
       /*credential_id=*/{{4, 3, 2, 1}}, kTestRelyingPartyId,
-      /*user_id=*/{{1, 2, 3, 4}}, absl::nullopt, absl::nullopt));
+      /*user_id=*/{{1, 2, 3, 4}}, std::nullopt, std::nullopt));
 
   // |SelectAccount| should not be called when there's only a single response
   // with no identifying user info because the UI is bad in that case: we can
@@ -7065,7 +7065,7 @@ TEST_F(ResidentKeyAuthenticatorImplTest, GetAssertionUserSelected) {
 TEST_F(ResidentKeyAuthenticatorImplTest, GetAssertionSingleWithPII) {
   ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectResidentKey(
       /*credential_id=*/{{4, 3, 2, 1}}, kTestRelyingPartyId,
-      /*user_id=*/{{1, 2, 3, 4}}, absl::nullopt, "Test User"));
+      /*user_id=*/{{1, 2, 3, 4}}, std::nullopt, "Test User"));
 
   // |SelectAccount| should be called when PII is available.
   test_client_.delegate_config.expected_accounts = "01020304::Test User";
@@ -7106,7 +7106,7 @@ TEST_F(ResidentKeyAuthenticatorImplTest, GetAssertionUVDiscouraged) {
 
   ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectResidentKey(
       /*credential_id=*/{{4, 3, 2, 1}}, kTestRelyingPartyId,
-      /*user_id=*/{{1, 2, 3, 4}}, absl::nullopt, absl::nullopt));
+      /*user_id=*/{{1, 2, 3, 4}}, std::nullopt, std::nullopt));
 
   // |SelectAccount| should not be called when there's only a single response
   // without identifying information.
@@ -7138,11 +7138,11 @@ TEST_F(ResidentKeyAuthenticatorImplTest, MakeCredentialLargeBlob) {
   constexpr auto BlobRequired = device::LargeBlobSupport::kRequired;
   constexpr auto BlobPreferred = device::LargeBlobSupport::kPreferred;
   constexpr auto BlobNotRequested = device::LargeBlobSupport::kNotRequested;
-  constexpr auto nullopt = absl::nullopt;
+  constexpr auto nullopt = std::nullopt;
 
   constexpr struct {
     bool large_blob_extension;
-    absl::optional<bool> large_blob_support;
+    std::optional<bool> large_blob_support;
     bool rk_required;
     device::LargeBlobSupport large_blob_enable;
     bool request_success;
@@ -7267,7 +7267,7 @@ TEST_F(ResidentKeyAuthenticatorImplTest, GetAssertionLargeBlobRead) {
     virtual_device_factory_->SetCtap2Config(config);
     ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectResidentKey(
         /*credential_id=*/{{4, 3, 2, 1}}, kTestRelyingPartyId,
-        /*user_id=*/{{1, 2, 3, 4}}, absl::nullopt, absl::nullopt));
+        /*user_id=*/{{1, 2, 3, 4}}, std::nullopt, std::nullopt));
 
     if (test.large_blob_set) {
       virtual_device_factory_->mutable_state()->InjectLargeBlob(
@@ -7332,7 +7332,7 @@ TEST_F(ResidentKeyAuthenticatorImplTest, GetAssertionLargeBlobWrite) {
     const std::vector<uint8_t> cred_id = {4, 3, 2, 1};
     ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectResidentKey(
         cred_id, kTestRelyingPartyId,
-        /*user_id=*/{{1, 2, 3, 4}}, absl::nullopt, absl::nullopt));
+        /*user_id=*/{{1, 2, 3, 4}}, std::nullopt, std::nullopt));
 
     if (test.large_blob_set) {
       virtual_device_factory_->mutable_state()->InjectLargeBlob(
@@ -7359,7 +7359,7 @@ TEST_F(ResidentKeyAuthenticatorImplTest, GetAssertionLargeBlobWrite) {
     EXPECT_EQ(test.did_write_large_blob,
               result.response->extensions->large_blob_written);
     if (test.did_write_large_blob) {
-      absl::optional<device::LargeBlob> compressed_blob =
+      std::optional<device::LargeBlob> compressed_blob =
           virtual_device_factory_->mutable_state()->GetLargeBlob(
               virtual_device_factory_->mutable_state()
                   ->registrations.begin()
@@ -7384,7 +7384,7 @@ TEST_F(ResidentKeyAuthenticatorImplTest,
   const std::vector<uint8_t> cred_id = {4, 3, 2, 1};
   ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectResidentKey(
       cred_id, kTestRelyingPartyId,
-      /*user_id=*/{{1, 2, 3, 4}}, absl::nullopt, absl::nullopt));
+      /*user_id=*/{{1, 2, 3, 4}}, std::nullopt, std::nullopt));
 
   // Try to read a large blob that doesn't exist and couldn't exist because the
   // authenticator doesn't support large blobs.
@@ -7413,7 +7413,7 @@ TEST_F(ResidentKeyAuthenticatorImplTest, GetAssertionLargeBlobExtension) {
   const std::vector<uint8_t> cred_id = {4, 3, 2, 1};
   ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectResidentKey(
       cred_id, kTestRelyingPartyId,
-      /*user_id=*/{{1, 2, 3, 4}}, absl::nullopt, absl::nullopt));
+      /*user_id=*/{{1, 2, 3, 4}}, std::nullopt, std::nullopt));
 
   {
     // Try to read a large blob that doesn't exist.
@@ -7679,7 +7679,7 @@ TEST_F(ResidentKeyAuthenticatorImplTest, AuthenticatorSetsCredProtect) {
         EXPECT_EQ(AuthenticatorStatus::SUCCESS, status);
         ASSERT_EQ(
             1u, virtual_device_factory_->mutable_state()->registrations.size());
-        const absl::optional<device::CredProtect> result =
+        const std::optional<device::CredProtect> result =
             virtual_device_factory_->mutable_state()
                 ->registrations.begin()
                 ->second.protection;
@@ -7813,7 +7813,7 @@ TEST_F(ResidentKeyAuthenticatorImplTest, WithAppIDExtension) {
   virtual_device_factory_->SetCtap2Config(config);
   ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectResidentKey(
       /*credential_id=*/{{4, 3, 2, 1}}, kTestRelyingPartyId,
-      /*user_id=*/{{1, 2, 3, 4}}, absl::nullopt, absl::nullopt));
+      /*user_id=*/{{1, 2, 3, 4}}, std::nullopt, std::nullopt));
 
   // |SelectAccount| should not be called when there's only a single response
   // without identifying information.
@@ -7938,7 +7938,7 @@ TEST_F(ResidentKeyAuthenticatorImplTest, PRFNotSupportedWithPinUvAuthToken) {
   options->user_verification = device::UserVerificationRequirement::kRequired;
   ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectResidentKey(
       options->allow_credentials[0].id, options->relying_party_id,
-      std::vector<uint8_t>{1, 2, 3, 4}, absl::nullopt, absl::nullopt));
+      std::vector<uint8_t>{1, 2, 3, 4}, std::nullopt, std::nullopt));
 
   auto prf_value = blink::mojom::PRFValues::New();
   prf_value->first = std::vector<uint8_t>(32, 1);
@@ -7960,7 +7960,7 @@ TEST_F(ResidentKeyAuthenticatorImplTest, PRFExtension) {
       SCOPED_TRACE(use_prf_extension_instead);
       SCOPED_TRACE(static_cast<unsigned>(pin_protocol));
 
-      absl::optional<device::PublicKeyCredentialDescriptor> credential;
+      std::optional<device::PublicKeyCredentialDescriptor> credential;
       for (bool authenticator_support : {false, true}) {
         // Setting the PRF extension on an authenticator that doesn't support it
         // should cause the extension to be echoed, but with enabled=false.
@@ -8244,7 +8244,7 @@ TEST_F(ResidentKeyAuthenticatorImplTest,
       GetTestPublicKeyCredentialRequestOptions();
   ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectResidentKey(
       options->allow_credentials[0].id, kTestRelyingPartyId,
-      /*user_id=*/{{1, 2, 3, 4}}, absl::nullopt, absl::nullopt));
+      /*user_id=*/{{1, 2, 3, 4}}, std::nullopt, std::nullopt));
   device::VirtualFidoDevice::RegistrationData& registration =
       virtual_device_factory_->mutable_state()->registrations.begin()->second;
   const std::array<uint8_t, 32> key1 = {1};
@@ -8276,7 +8276,7 @@ TEST_F(ResidentKeyAuthenticatorImplTest, ConditionalUI) {
 
   ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectResidentKey(
       /*credential_id=*/{{4, 3, 2, 1}}, kTestRelyingPartyId,
-      /*user_id=*/{{1, 2, 3, 4}}, absl::nullopt, absl::nullopt));
+      /*user_id=*/{{1, 2, 3, 4}}, std::nullopt, std::nullopt));
 
   // |SelectAccount| should not be called for conditional UI requests.
   test_client_.delegate_config.expected_accounts = "<invalid>";
@@ -8308,11 +8308,11 @@ TEST_F(ResidentKeyAuthenticatorImplTest, PreselectDiscoverableCredential) {
   std::vector<uint8_t> kSecondUserId{{20, 30, 40, 50}};
 
   ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectResidentKey(
-      kFirstCredentialId, kTestRelyingPartyId, kFirstUserId, absl::nullopt,
-      absl::nullopt));
+      kFirstCredentialId, kTestRelyingPartyId, kFirstUserId, std::nullopt,
+      std::nullopt));
   ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectResidentKey(
-      kSecondCredentialId, kTestRelyingPartyId, kSecondUserId, absl::nullopt,
-      absl::nullopt));
+      kSecondCredentialId, kTestRelyingPartyId, kSecondUserId, std::nullopt,
+      std::nullopt));
 
   // |SelectAccount| should not be called if an account was chosen from
   // pre-select UI.
@@ -8679,7 +8679,7 @@ class ICloudKeychainAuthenticatorImplTest : public AuthenticatorImplTest {
         const std::string& rp_id,
         RequestSource request_source,
         device::FidoRequestType request_type,
-        absl::optional<device::ResidentKeyRequirement> resident_key_requirement,
+        std::optional<device::ResidentKeyRequirement> resident_key_requirement,
         base::span<const device::CableDiscoveryData> pairings_from_extension,
         bool is_enclave_authenticator_available,
         device::FidoDiscoveryFactory* fido_discovery_factory) override {
@@ -9129,7 +9129,7 @@ TEST_F(AuthenticatorCableV2Test, QRBasedWithNoPairing) {
               /*observer=*/nullptr),
           network_context_.get(), root_secret_, "Test Authenticator",
           zero_qr_secret_, peer_identity_x962_,
-          /*contact_id=*/absl::nullopt);
+          /*contact_id=*/std::nullopt);
 
   EXPECT_EQ(AuthenticatorMakeCredential().status, AuthenticatorStatus::SUCCESS);
   EXPECT_EQ(pairings_.size(), 0u);
@@ -9223,7 +9223,7 @@ static std::unique_ptr<device::cablev2::Pairing> DummyPairing() {
 TEST_F(AuthenticatorCableV2Test, ContactIDDisabled) {
   // Passing |nullopt| as the callback here causes all contact IDs to be
   // rejected.
-  auto network_context = device::cablev2::NewMockTunnelServer(absl::nullopt);
+  auto network_context = device::cablev2::NewMockTunnelServer(std::nullopt);
   auto callback_and_event_stream = device::cablev2::Discovery::EventStream<
       std::unique_ptr<device::cablev2::Pairing>>::New();
   auto discovery = std::make_unique<device::cablev2::Discovery>(
@@ -9322,7 +9322,7 @@ TEST_F(AuthenticatorCableV2Test, ServerLink) {
               /*observer=*/nullptr),
           network_context_.get(), root_secret_, "Test Authenticator",
           server_link.secret, server_link.peer_identity,
-          /*contact_id=*/absl::nullopt);
+          /*contact_id=*/std::nullopt);
 
   EXPECT_EQ(AuthenticatorMakeCredential().status, AuthenticatorStatus::SUCCESS);
   EXPECT_EQ(pairings_.size(), 0u);
@@ -9387,14 +9387,14 @@ class AuthenticatorCableV2AuthenticatorTest
             std::move(ble_advert_callback_), &virtual_device_, this),
         network_context_.get(), root_secret_, "Test Authenticator",
         zero_qr_secret_, peer_identity_x962_,
-        /*contact_id=*/absl::nullopt);
+        /*contact_id=*/std::nullopt);
   }
 
  protected:
   // device::cablev2::authenticator::Observer
   void OnStatus(device::cablev2::authenticator::Platform::Status) override {}
   void OnCompleted(
-      absl::optional<device::cablev2::authenticator::Platform::Error> error)
+      std::optional<device::cablev2::authenticator::Platform::Error> error)
       override {
     CHECK(!did_complete_);
     did_complete_ = true;
@@ -9403,7 +9403,7 @@ class AuthenticatorCableV2AuthenticatorTest
 
   std::unique_ptr<device::cablev2::authenticator::Transaction> transaction_;
   bool did_complete_ = false;
-  absl::optional<device::cablev2::authenticator::Platform::Error> error_;
+  std::optional<device::cablev2::authenticator::Platform::Error> error_;
 };
 
 TEST_F(AuthenticatorCableV2AuthenticatorTest, GetAssertion) {
@@ -9591,7 +9591,7 @@ TEST_F(AuthenticatorImplWithRequestProxyTest, IsConditionalMediationAvailable) {
   // Ensure there is no test override set and we're testing the real
   // implementation.
   ASSERT_EQ(test_client_.GetTestWebAuthenticationDelegate()->is_uvpaa_override,
-            absl::nullopt);
+            std::nullopt);
 
   // Proxy says `IsUVPAA()` is true.
   request_proxy().config().is_uvpaa = true;
@@ -9619,7 +9619,7 @@ TEST_F(AuthenticatorImplWithRequestProxyTest,
   // Ensure there is no test override set and we're testing the real
   // implementation.
   ASSERT_EQ(test_client_.GetTestWebAuthenticationDelegate()->is_uvpaa_override,
-            absl::nullopt);
+            std::nullopt);
 
   // Proxy says `IsUVPAA()` is true.
   request_proxy().config().is_uvpaa = true;

@@ -4,6 +4,7 @@
 
 #include "content/browser/content_index/content_index_database.h"
 
+#include <optional>
 #include <set>
 #include <string>
 
@@ -16,7 +17,6 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -104,16 +104,16 @@ blink::mojom::ContentDescriptionPtr DescriptionFromProto(
   return result;
 }
 
-absl::optional<ContentIndexEntry> EntryFromSerializedProto(
+std::optional<ContentIndexEntry> EntryFromSerializedProto(
     int64_t service_worker_registration_id,
     const std::string& serialized_proto) {
   proto::ContentEntry entry_proto;
   if (!entry_proto.ParseFromString(serialized_proto))
-    return absl::nullopt;
+    return std::nullopt;
 
   GURL launch_url(entry_proto.launch_url());
   if (!launch_url.is_valid())
-    return absl::nullopt;
+    return std::nullopt;
 
   auto description = DescriptionFromProto(entry_proto.description());
   base::Time registration_time = base::Time::FromDeltaSinceWindowsEpoch(
@@ -507,7 +507,7 @@ void ContentIndexDatabase::DidGetEntry(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (status != blink::ServiceWorkerStatusCode::kOk) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 

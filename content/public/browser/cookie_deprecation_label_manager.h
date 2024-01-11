@@ -5,9 +5,8 @@
 #ifndef CONTENT_PUBLIC_BROWSER_COOKIE_DEPRECATION_LABEL_MANAGER_H_
 #define CONTENT_PUBLIC_BROWSER_COOKIE_DEPRECATION_LABEL_MANAGER_H_
 
+#include <optional>
 #include <string>
-
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -15,7 +14,7 @@ class CookieDeprecationLabelManager {
  public:
   virtual ~CookieDeprecationLabelManager() = default;
 
-  virtual absl::optional<std::string> GetValue() = 0;
+  virtual std::optional<std::string> GetValue() = 0;
 };
 
 }  // namespace content

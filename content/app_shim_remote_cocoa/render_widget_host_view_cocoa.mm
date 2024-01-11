@@ -252,7 +252,7 @@ void ExtractUnderlines(NSAttributedString* string,
 
   // keyCode value of an NSEvent. This field has a value while we're handling
   // a key down event.
-  absl::optional<unsigned short> _currentKeyDownCode;
+  std::optional<unsigned short> _currentKeyDownCode;
 
   // Indicates if a reconversion (which means a piece of committed text becomes
   // part of the composition again) is triggered in Japanese IME when Live
@@ -343,7 +343,7 @@ void ExtractUnderlines(NSAttributedString* string,
   uint64_t popup_parent_ns_view_id_;
 
   bool _keyboardLockActive;
-  absl::optional<base::flat_set<ui::DomCode>> _lockedKeys;
+  std::optional<base::flat_set<ui::DomCode>> _lockedKeys;
 
   NSCandidateListTouchBarItem* __strong _candidateListTouchBarItem;
   NSInteger _textSuggestionsSequenceNumber;
@@ -1000,7 +1000,7 @@ void ExtractUnderlines(NSAttributedString* string,
   }
 }
 
-- (void)lockKeyboard:(absl::optional<base::flat_set<ui::DomCode>>)keysToLock {
+- (void)lockKeyboard:(std::optional<base::flat_set<ui::DomCode>>)keysToLock {
   // TODO(joedow): Integrate System-level keyboard hook into this method.
   _lockedKeys = std::move(keysToLock);
   _keyboardLockActive = true;

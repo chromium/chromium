@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_RENDERER_HOST_NAVIGATION_REQUEST_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -61,7 +62,6 @@
 #include "services/network/public/mojom/shared_dictionary_access_observer.mojom.h"
 #include "services/network/public/mojom/trust_token_access_observer.mojom-shared.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_context.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom.h"
@@ -218,11 +218,11 @@ class CONTENT_EXPORT NavigationRequest
       NavigationEntryImpl* entry,
       bool is_form_submission,
       std::unique_ptr<NavigationUIData> navigation_ui_data,
-      const absl::optional<blink::Impression>& impression,
+      const std::optional<blink::Impression>& impression,
       bool is_pdf,
       bool is_embedder_initiated_fenced_frame_navigation = false,
-      absl::optional<std::u16string> embedder_shared_storage_context =
-          absl::nullopt);
+      std::optional<std::u16string> embedder_shared_storage_context =
+          std::nullopt);
 
   // Creates a request for either a browser-initiated navigation or a
   // renderer-initiated navigation.  Normally, renderer-initiated navigations
@@ -243,21 +243,21 @@ class CONTENT_EXPORT NavigationRequest
       blink::mojom::CommitNavigationParamsPtr commit_params,
       bool browser_initiated,
       bool was_opener_suppressed,
-      const absl::optional<blink::LocalFrameToken>& initiator_frame_token,
+      const std::optional<blink::LocalFrameToken>& initiator_frame_token,
       int initiator_process_id,
       const std::string& extra_headers,
       FrameNavigationEntry* frame_entry,
       NavigationEntryImpl* entry,
       bool is_form_submission,
       std::unique_ptr<NavigationUIData> navigation_ui_data,
-      const absl::optional<blink::Impression>& impression,
+      const std::optional<blink::Impression>& impression,
       blink::mojom::NavigationInitiatorActivationAndAdStatus
           initiator_activation_and_ad_status,
       bool is_pdf,
       bool is_embedder_initiated_fenced_frame_navigation = false,
       bool is_container_initiated = false,
-      absl::optional<std::u16string> embedder_shared_storage_context =
-          absl::nullopt);
+      std::optional<std::u16string> embedder_shared_storage_context =
+          std::nullopt);
 
   // Creates a request for a renderer-initiated navigation.
   static std::unique_ptr<NavigationRequest> CreateRendererInitiated(
@@ -288,7 +288,7 @@ class CONTENT_EXPORT NavigationRequest
       bool is_same_document,
       const GURL& url,
       const url::Origin& origin,
-      const absl::optional<GURL>& initiator_base_url,
+      const std::optional<GURL>& initiator_base_url,
       const net::IsolationInfo& isolation_info_for_subresources,
       blink::mojom::ReferrerPtr referrer,
       const ui::PageTransition& transition,
@@ -379,8 +379,8 @@ class CONTENT_EXPORT NavigationRequest
   GetLCPPNavigationHint() override;
   const net::HttpResponseHeaders* GetResponseHeaders() override;
   net::HttpConnectionInfo GetConnectionInfo() override;
-  const absl::optional<net::SSLInfo>& GetSSLInfo() override;
-  const absl::optional<net::AuthChallengeInfo>& GetAuthChallengeInfo() override;
+  const std::optional<net::SSLInfo>& GetSSLInfo() override;
+  const std::optional<net::AuthChallengeInfo>& GetAuthChallengeInfo() override;
   net::ResolveErrorInfo GetResolveErrorInfo() override;
   net::IsolationInfo GetIsolationInfo() override;
   void RegisterThrottleForTesting(
@@ -402,12 +402,12 @@ class CONTENT_EXPORT NavigationRequest
   bool HasPrefetchedAlternativeSubresourceSignedExchange() override;
   bool WasResponseCached() override;
   const std::string& GetHrefTranslate() override;
-  const absl::optional<blink::Impression>& GetImpression() override;
-  const absl::optional<blink::LocalFrameToken>& GetInitiatorFrameToken()
+  const std::optional<blink::Impression>& GetImpression() override;
+  const std::optional<blink::LocalFrameToken>& GetInitiatorFrameToken()
       override;
   int GetInitiatorProcessId() override;
-  const absl::optional<url::Origin>& GetInitiatorOrigin() override;
-  const absl::optional<GURL>& GetInitiatorBaseUrl() override;
+  const std::optional<url::Origin>& GetInitiatorOrigin() override;
+  const std::optional<GURL>& GetInitiatorBaseUrl() override;
   const std::vector<std::string>& GetDnsAliases() override;
   bool IsSameProcess() override;
   NavigationEntry* GetNavigationEntry() const override;
@@ -898,14 +898,14 @@ class CONTENT_EXPORT NavigationRequest
   //
   // This method may only be called after a response has been delivered for
   // processing, or after the navigation fails with an error page.
-  absl::optional<url::Origin> GetOriginToCommit();
+  std::optional<url::Origin> GetOriginToCommit();
 
   // Same as `GetOriginToCommit()`, except that includes information about how
   // the origin gets calculated, to help debug if the browser-side calculated
   // origin for this navigation differs from the origin calculated on the
   // renderer side.
   // TODO(https://crbug.com/1220238): Remove this.
-  std::pair<absl::optional<url::Origin>, std::string>
+  std::pair<std::optional<url::Origin>, std::string>
   GetOriginToCommitWithDebugInfo();
 
   // If this navigation fails with net::ERR_BLOCKED_BY_CLIENT, act as if it were
@@ -1068,8 +1068,7 @@ class CONTENT_EXPORT NavigationRequest
     return prerender_frame_tree_node_id_.value();
   }
 
-  const absl::optional<FencedFrameProperties>& GetFencedFrameProperties()
-      const {
+  const std::optional<FencedFrameProperties>& GetFencedFrameProperties() const {
     return fenced_frame_properties_;
   }
 
@@ -1081,11 +1080,11 @@ class CONTENT_EXPORT NavigationRequest
   // frame properties are obtained for different sources.
   // TODO(crbug.com/1355857): Once navigation support for urn::uuid in iframes
   // is deprecated, remove the parameter `node_source`.
-  const absl::optional<FencedFrameProperties>& ComputeFencedFrameProperties(
+  const std::optional<FencedFrameProperties>& ComputeFencedFrameProperties(
       FencedFramePropertiesNodeSource node_source =
           FencedFramePropertiesNodeSource::kClosestAncestor) const;
 
-  const absl::optional<base::UnguessableToken> ComputeFencedFrameNonce() const;
+  const std::optional<base::UnguessableToken> ComputeFencedFrameNonce() const;
 
   void RenderFallbackContentForObjectTag();
 
@@ -1165,7 +1164,7 @@ class CONTENT_EXPORT NavigationRequest
     return navigation_or_document_handle_;
   }
 
-  const std::pair<absl::optional<url::Origin>, std::string>&
+  const std::pair<std::optional<url::Origin>, std::string>&
   browser_side_origin_to_commit_with_debug_info() {
     return browser_side_origin_to_commit_with_debug_info_;
   }
@@ -1193,7 +1192,7 @@ class CONTENT_EXPORT NavigationRequest
   // events and reject promises.
   // This should only be set if this request's frame initiated the navigation,
   // because only the initiating frame has outstanding promises to reject.
-  void set_pending_navigation_api_key(absl::optional<std::string> key) {
+  void set_pending_navigation_api_key(std::optional<std::string> key) {
     pending_navigation_api_key_ = key;
   }
 
@@ -1208,7 +1207,7 @@ class CONTENT_EXPORT NavigationRequest
   // allowed to cancel the navigation.
   // This token will then be provided to the subframe NavigationRequests via
   // set_main_frame_same_document_history_token().
-  absl::optional<base::UnguessableToken>
+  std::optional<base::UnguessableToken>
   GetNavigationTokenForDeferringSubframes();
 
   // For subframe NavigationRequests, these set and return the main frame's
@@ -1218,10 +1217,10 @@ class CONTENT_EXPORT NavigationRequest
   // represented by that token may have already finished and been deleted, so
   // any attempt to lookup based on this token must null-check the request.
   void set_main_frame_same_document_history_token(
-      absl::optional<base::UnguessableToken> token) {
+      std::optional<base::UnguessableToken> token) {
     main_frame_same_document_navigation_token_ = token;
   }
-  absl::optional<base::UnguessableToken>
+  std::optional<base::UnguessableToken>
   main_frame_same_document_history_token() {
     return main_frame_same_document_navigation_token_;
   }
@@ -1346,7 +1345,7 @@ class CONTENT_EXPORT NavigationRequest
       mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client,
       scoped_refptr<PrefetchedSignedExchangeCache>
           prefetched_signed_exchange_cache,
-      absl::optional<base::SafeRef<RenderFrameHostImpl>>
+      std::optional<base::SafeRef<RenderFrameHostImpl>>
           rfh_restored_from_back_forward_cache,
       int initiator_process_id,
       bool was_opener_suppressed,
@@ -1354,8 +1353,8 @@ class CONTENT_EXPORT NavigationRequest
       bool is_embedder_initiated_fenced_frame_navigation = false,
       mojo::PendingReceiver<mojom::NavigationRendererCancellationListener>
           renderer_cancellation_listener = mojo::NullReceiver(),
-      absl::optional<std::u16string> embedder_shared_storage_context =
-          absl::nullopt);
+      std::optional<std::u16string> embedder_shared_storage_context =
+          std::nullopt);
 
   // Checks if this navigation may activate a prerendered page. If it's
   // possible, schedules to start running CommitDeferringConditions for
@@ -1366,7 +1365,7 @@ class CONTENT_EXPORT NavigationRequest
   // activating a prerendered page.
   void OnPrerenderingActivationChecksComplete(
       CommitDeferringCondition::NavigationType navigation_type,
-      absl::optional<int> candidate_prerender_frame_tree_node_id);
+      std::optional<int> candidate_prerender_frame_tree_node_id);
 
   // Get the `FencedFrameURLMapping` associated with the current page.
   FencedFrameURLMapping& GetFencedFrameURLMap();
@@ -1378,7 +1377,7 @@ class CONTENT_EXPORT NavigationRequest
   // Called from `FencedFrameURLMapping` when the mapping decision is made, and
   // resume the deferred navigation.
   void OnFencedFrameURLMappingComplete(
-      const absl::optional<FencedFrameProperties>& properties) override;
+      const std::optional<FencedFrameProperties>& properties) override;
 
   // Called from BeginNavigation(), OnPrerenderingActivationChecksComplete(),
   // or OnFencedFrameURLMappingComplete().
@@ -1429,11 +1428,11 @@ class CONTENT_EXPORT NavigationRequest
       GlobalRequestID request_id,
       bool is_download,
       net::NetworkAnonymizationKey network_anonymization_key,
-      absl::optional<SubresourceLoaderParams> subresource_loader_params,
+      std::optional<SubresourceLoaderParams> subresource_loader_params,
       EarlyHints early_hints) override;
   void OnRequestFailed(
       const network::URLLoaderCompletionStatus& status) override;
-  absl::optional<NavigationEarlyHintsManagerParams>
+  std::optional<NavigationEarlyHintsManagerParams>
   CreateNavigationEarlyHintsManagerParams(
       const network::mojom::EarlyHints& early_hints) override;
 
@@ -1447,11 +1446,11 @@ class CONTENT_EXPORT NavigationRequest
   void SelectFrameHostForOnResponseStarted(
       network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
       bool is_download,
-      absl::optional<SubresourceLoaderParams> subresource_loader_params);
+      std::optional<SubresourceLoaderParams> subresource_loader_params);
   void SelectFrameHostForOnRequestFailedInternal(
       bool exists_in_cache,
       bool skip_throttles,
-      const absl::optional<std::string>& error_page_content);
+      const std::optional<std::string>& error_page_content);
   void SelectFrameHostForCrossDocumentNavigationWithNoUrlLoader();
 
   // To be called whenever a navigation request fails. If |skip_throttles| is
@@ -1463,7 +1462,7 @@ class CONTENT_EXPORT NavigationRequest
   void OnRequestFailedInternal(
       const network::URLLoaderCompletionStatus& status,
       bool skip_throttles,
-      const absl::optional<std::string>& error_page_content,
+      const std::optional<std::string>& error_page_content,
       bool collapse_frame);
 
   // Called when the NavigationThrottles have been checked by the
@@ -1492,12 +1491,12 @@ class CONTENT_EXPORT NavigationRequest
   // navigation can proceed to commit.
   void OnCommitDeferringConditionChecksComplete(
       CommitDeferringCondition::NavigationType navigation_type,
-      absl::optional<int> candidate_prerender_frame_tree_node_id) override;
+      std::optional<int> candidate_prerender_frame_tree_node_id) override;
 
   // Called either by OnFailureChecksComplete() or OnRequestFailed() directly.
   // |error_page_content| contains the content of the error page (i.e. flattened
   // HTML, JS, CSS).
-  void CommitErrorPage(const absl::optional<std::string>& error_page_content);
+  void CommitErrorPage(const std::optional<std::string>& error_page_content);
 
   // Have a RenderFrameHost commit the navigation. The NavigationRequest will
   // be destroyed sometime after this call, typically after the renderer has
@@ -1786,7 +1785,7 @@ class CONTENT_EXPORT NavigationRequest
   // also sends COEP reports if needed.
   bool CheckResponseAdherenceToCoep(const GURL& url);
 
-  absl::optional<network::mojom::BlockedByResponseReason> EnforceCOEP();
+  std::optional<network::mojom::BlockedByResponseReason> EnforceCOEP();
 
   // Check the COOP value of the page is compatible with the COEP value of each
   // of its documents. COOP:kSameOriginPlusCoep is incompatible with COEP:kNone.
@@ -1915,7 +1914,7 @@ class CONTENT_EXPORT NavigationRequest
   // Superset of GetOriginForURLLoaderFactoryBeforeResponse(). Calculates
   // the origin with information from the final frame host. Can be called only
   // after the final response is received or ready.
-  absl::optional<url::Origin> GetOriginForURLLoaderFactoryAfterResponse();
+  std::optional<url::Origin> GetOriginForURLLoaderFactoryAfterResponse();
 
   // These functions are the same as their non-WithDebugInfo counterparts,
   // except that they include information about how the origin gets calculated,
@@ -1925,7 +1924,7 @@ class CONTENT_EXPORT NavigationRequest
   std::pair<url::Origin, std::string>
   GetOriginForURLLoaderFactoryBeforeResponseWithDebugInfo(
       network::mojom::WebSandboxFlags sandbox_flags);
-  std::pair<absl::optional<url::Origin>, std::string>
+  std::pair<std::optional<url::Origin>, std::string>
   GetOriginForURLLoaderFactoryAfterResponseWithDebugInfo();
 
   // Computes the web-exposed isolation information based on `coop_status_` and
@@ -1933,7 +1932,7 @@ class CONTENT_EXPORT NavigationRequest
   // If the return result is nullopt, it means that the WebExposedIsolationInfo
   // is not relevant or unknown. This can happen for example when we do not have
   // a network response yet, or when going to an "about:blank" page.
-  absl::optional<WebExposedIsolationInfo> ComputeWebExposedIsolationInfo();
+  std::optional<WebExposedIsolationInfo> ComputeWebExposedIsolationInfo();
 
   // Computes whether the navigation is for a document that should live in a
   // BrowsingInstance only containing other documents with the same COOP value
@@ -1945,7 +1944,7 @@ class CONTENT_EXPORT NavigationRequest
   // If the return value is nullopt, it indicates that neither COOP: same-origin
   // nor COOP: restrict-properties were used for this document or for its parent
   // in the case of a subframe.
-  absl::optional<url::Origin> ComputeCommonCoopOrigin();
+  std::optional<url::Origin> ComputeCommonCoopOrigin();
 
   // Assign an invalid frame tree node id to `prerender_frame_tree_node_id_`.
   // Called as soon as when we are certain that this navigation won't activate a
@@ -2051,14 +2050,14 @@ class CONTENT_EXPORT NavigationRequest
   // The RenderFrameHost that this navigation intends to commit in. The value
   // will be set when we know the final RenderFrameHost that the navigation will
   // commit in (i.e. when we receive the final network response for most
-  // navigations). Note that currently this can be reset to absl::nullopt for
+  // navigations). Note that currently this can be reset to std::nullopt for
   // cross-document restarts and some failed navigations.
   // TODO(https://crbug.com/1416916): Don't reset this on failed navigations,
   // and ensure the NavigationRequest doesn't outlive the `render_frame_host_`
   // picked for failed Back/Forward Cache restores.
   // Invariant: At least one of |loader_| or |render_frame_host_| is
-  // null/absl::nullopt.
-  absl::optional<
+  // null/std::nullopt.
+  std::optional<
       base::SafeRef<RenderFrameHostImpl, base::SafeRefDanglingUntriaged>>
       render_frame_host_;
 
@@ -2084,7 +2083,7 @@ class CONTENT_EXPORT NavigationRequest
   // This member is calculated at ReadyToCommit time. It is used to compare
   // against renderer calculated origin and browser calculated one at commit
   // time.
-  std::pair<absl::optional<url::Origin>, std::string>
+  std::pair<std::optional<url::Origin>, std::string>
       browser_side_origin_to_commit_with_debug_info_;
 
   // Stores the NavigationUIData for this navigation until the NavigationHandle
@@ -2163,8 +2162,8 @@ class CONTENT_EXPORT NavigationRequest
   network::mojom::URLResponseHeadPtr response_head_;
   mojo::ScopedDataPipeConsumerHandle response_body_;
   network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints_;
-  absl::optional<net::SSLInfo> ssl_info_;
-  absl::optional<net::AuthChallengeInfo> auth_challenge_info_;
+  std::optional<net::SSLInfo> ssl_info_;
+  std::optional<net::AuthChallengeInfo> auth_challenge_info_;
   bool is_download_ = false;
   GlobalRequestID request_id_;
   std::unique_ptr<NavigationEarlyHintsManager> early_hints_manager_;
@@ -2196,20 +2195,20 @@ class CONTENT_EXPORT NavigationRequest
   // Used in the network service world to pass the subressource loader params
   // to the renderer. Used by ServiceWorker and
   // SignedExchangeSubresourcePrefetch.
-  absl::optional<SubresourceLoaderParams> subresource_loader_params_;
+  std::optional<SubresourceLoaderParams> subresource_loader_params_;
 
   // DocumentToken to use for the newly-committed document in a cross-document
   // navigation. Currently set immediately before sending CommitNavigation to
   // the renderer. In the future, this may be populated earlier to allow lookup
   // of a navigation request by the document that it may create, similar to how
   // `NavigationOrDocumentHandle` behaves.
-  absl::optional<blink::DocumentToken> document_token_;
+  std::optional<blink::DocumentToken> document_token_;
 
   // See comment on accessor.
   const base::UnguessableToken devtools_navigation_token_ =
       base::UnguessableToken::Create();
 
-  absl::optional<std::vector<blink::mojom::TransferrableURLLoaderPtr>>
+  std::optional<std::vector<blink::mojom::TransferrableURLLoaderPtr>>
       subresource_overrides_;
 
   // The NavigationClient interface for that requested this navigation in the
@@ -2333,7 +2332,7 @@ class CONTENT_EXPORT NavigationRequest
 
   // The headers used for the request. The value of this comes from
   // |begin_params_->headers|. If not set, it needs to be calculated.
-  absl::optional<net::HttpRequestHeaders> request_headers_;
+  std::optional<net::HttpRequestHeaders> request_headers_;
 
   // Used to update the request's headers. When modified during the navigation
   // start, the headers will be applied to the initial network request. When
@@ -2350,7 +2349,7 @@ class CONTENT_EXPORT NavigationRequest
   // The RenderFrameHost that is being restored from the back/forward cache.
   // This can be null if this navigation is not restoring a page from the
   // back/forward cache.
-  absl::optional<base::SafeRef<RenderFrameHostImpl>>
+  std::optional<base::SafeRef<RenderFrameHostImpl>>
       rfh_restored_from_back_forward_cache_;
 
   // Whether the navigation is for restoring a page from the back/forward cache
@@ -2364,7 +2363,7 @@ class CONTENT_EXPORT NavigationRequest
 
   // If non-empty, it represents the IsolationInfo explicitly asked to be used
   // for this NavigationRequest.
-  absl::optional<net::IsolationInfo> isolation_info_;
+  std::optional<net::IsolationInfo> isolation_info_;
 
   // This is used to store the `RenderFrameHostManager::current_frame_host()` id
   // when the navigation commits and about to potentially change the current
@@ -2388,7 +2387,7 @@ class CONTENT_EXPORT NavigationRequest
   // The frame with the corresponding frame token may have been deleted before
   // the navigation begins. This parameter is defined if and only if
   // |initiator_process_id_| below is.
-  const absl::optional<blink::LocalFrameToken> initiator_frame_token_;
+  const std::optional<blink::LocalFrameToken> initiator_frame_token_;
 
   // ID of the renderer process of the frame host that initiated the navigation.
   // This is defined if and only if |initiator_frame_token_| above is, and it is
@@ -2397,7 +2396,7 @@ class CONTENT_EXPORT NavigationRequest
 
   // The initiator Document's token, if it is present when this
   // NavigationRequest was created.
-  absl::optional<blink::DocumentToken> initiator_document_token_;
+  std::optional<blink::DocumentToken> initiator_document_token_;
 
   // The sandbox flags of the navigation's initiator, if any.
   // WebSandboxFlags::kNone otherwise.
@@ -2428,7 +2427,7 @@ class CONTENT_EXPORT NavigationRequest
   const bool is_credentialless_;
 
   // Non-nullopt from construction until |TakePolicyContainerHost()| is called.
-  absl::optional<NavigationPolicyContainerBuilder> policy_container_builder_;
+  std::optional<NavigationPolicyContainerBuilder> policy_container_builder_;
 
   std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter_;
 
@@ -2517,7 +2516,7 @@ class CONTENT_EXPORT NavigationRequest
   // RenderFrameHost::kNoFrameTreeNodeId. We only know whether this is the case
   // when BeginNavigation is called so the optional will be empty until then
   // and callers must not query its value before it's been computed.
-  absl::optional<int> prerender_frame_tree_node_id_;
+  std::optional<int> prerender_frame_tree_node_id_;
 
   // Contains state pertaining to a prerender activation. This is only used if
   // this navigation is a prerender activation.
@@ -2538,8 +2537,7 @@ class CONTENT_EXPORT NavigationRequest
     blink::mojom::FrameReplicationState prerender_main_frame_replication_state;
   };
 
-  absl::optional<PrerenderActivationNavigationState>
-      prerender_navigation_state_;
+  std::optional<PrerenderActivationNavigationState> prerender_navigation_state_;
 
   // The following fields that constitute the ClientSecurityState. This
   // state is used to take security decisions about the request, and later on
@@ -2607,7 +2605,7 @@ class CONTENT_EXPORT NavigationRequest
   //
   // If the navigation doesn't commit (e.g. an HTTP 204 response), the fenced
   // frame properties will not be stored in the fenced frame root.
-  absl::optional<FencedFrameProperties> fenced_frame_properties_;
+  std::optional<FencedFrameProperties> fenced_frame_properties_;
 
   // For fenced frames, any contextual string that was written by the embedder
   // via `blink::FencedFrameConfig::setSharedStorageContext()` to be later
@@ -2615,12 +2613,12 @@ class CONTENT_EXPORT NavigationRequest
   // frame via `sharedStorage.context`. absl:nullopt if this request is not for
   // a fenced frame or if the context string wasn't set prior to this
   // navigation.
-  absl::optional<std::u16string> embedder_shared_storage_context_;
+  std::optional<std::u16string> embedder_shared_storage_context_;
 
   // Prerender2:
   // The type to trigger prerendering. The value is valid only when Prerender2
   // is enabled.
-  absl::optional<PreloadingTriggerType> prerender_trigger_type_;
+  std::optional<PreloadingTriggerType> prerender_trigger_type_;
   // The suffix of a prerender embedder. This value is valid only when
   // PreloadingTriggerType is kEmbedder. Only used for metrics.
   std::string prerender_embedder_histogram_suffix_;
@@ -2761,7 +2759,7 @@ class CONTENT_EXPORT NavigationRequest
       BrowsingContextGroupSwap::CreateDefault();
 
   // See `set_pending_navigation_api_key()` for context.
-  absl::optional<std::string> pending_navigation_api_key_;
+  std::optional<std::string> pending_navigation_api_key_;
 
   // If this NavigationRequest is for a main-frame same-document back/forward
   // navigation, any subframe NavigationRequests are deferred until the renderer
@@ -2779,7 +2777,7 @@ class CONTENT_EXPORT NavigationRequest
   // used to look up the main frame's NavigationRequest so that it can be passed
   // SubframeHistoryNavigationThrottle can defer this request until the main
   // frame commits.
-  absl::optional<base::UnguessableToken>
+  std::optional<base::UnguessableToken>
       main_frame_same_document_navigation_token_;
 
   // The listener that receives cookie change events and maintains cookie change
@@ -2832,7 +2830,7 @@ class CONTENT_EXPORT NavigationRequest
   // origin. We store the tentative origin to commit value, since we need it
   // before ready to commit time, which is when the regular origin to commit
   // value is available.
-  absl::optional<url::Origin> tentative_data_origin_to_commit_;
+  std::optional<url::Origin> tentative_data_origin_to_commit_;
 
   base::WeakPtrFactory<NavigationRequest> weak_factory_{this};
 };

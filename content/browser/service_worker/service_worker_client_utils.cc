@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <tuple>
 #include <utility>
 
@@ -38,7 +39,6 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/page_visibility_state.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom.h"
 #include "ui/base/window_open_disposition.h"
@@ -530,7 +530,7 @@ void NavigateClient(const GURL& url,
   navigator.RequestOpenURL(
       rfhi, url, nullptr /* initiator_frame_token */,
       ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
-      url::Origin::Create(script_url), /* initiator_base_url= */ absl::nullopt,
+      url::Origin::Create(script_url), /* initiator_base_url= */ std::nullopt,
       nullptr /* post_body */, std::string() /* extra_headers */,
       Referrer::SanitizeForRequest(
           url, Referrer(script_url, network::mojom::ReferrerPolicy::kDefault)),
@@ -538,7 +538,7 @@ void NavigateClient(const GURL& url,
       false /* should_replace_current_entry */, false /* user_gesture */,
       blink::mojom::TriggeringEventInfo::kUnknown,
       std::string() /* href_translate */, nullptr /* blob_url_loader_factory */,
-      absl::nullopt);
+      std::nullopt);
   new OpenURLObserver(web_contents, frame_tree_node_id,
                       base::BindOnce(&DidNavigate, context, script_url, key,
                                      std::move(callback)));

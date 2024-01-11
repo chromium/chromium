@@ -1275,7 +1275,7 @@ void PrerenderHostRegistry::BackNavigationLikely(
 
   WebContentsImpl* contents = static_cast<WebContentsImpl*>(web_contents());
   NavigationControllerImpl& controller = contents->GetController();
-  const absl::optional<int> target_index = controller.GetIndexForGoBack();
+  const std::optional<int> target_index = controller.GetIndexForGoBack();
 
   if (!target_index.has_value()) {
     RecordPrerenderBackNavigationEligibility(
@@ -1685,7 +1685,7 @@ const std::string& PrerenderHostRegistry::GetPrerenderEmbedderHistogramSuffix(
 PrerenderHostRegistry::PrerenderLimitGroup
 PrerenderHostRegistry::GetPrerenderLimitGroup(
     PreloadingTriggerType trigger_type,
-    absl::optional<blink::mojom::SpeculationEagerness> eagerness) {
+    std::optional<blink::mojom::SpeculationEagerness> eagerness) {
   switch (trigger_type) {
     case PreloadingTriggerType::kSpeculationRule:
     case PreloadingTriggerType::kSpeculationRuleFromIsolatedWorld:
@@ -1756,7 +1756,7 @@ int PrerenderHostRegistry::GetHostCountByLimitGroup(
 
 bool PrerenderHostRegistry::IsAllowedToStartPrerenderingForTrigger(
     PreloadingTriggerType trigger_type,
-    absl::optional<blink::mojom::SpeculationEagerness> eagerness) {
+    std::optional<blink::mojom::SpeculationEagerness> eagerness) {
   PrerenderLimitGroup limit_group;
   int host_count;
   if (base::FeatureList::IsEnabled(features::kPrerender2NewLimitAndScheduler)) {

@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/bluetooth/web_bluetooth_pairing_manager_impl.h"
+
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -12,11 +15,9 @@
 #include "base/test/test_future.h"
 #include "content/browser/bluetooth/web_bluetooth_pairing_manager.h"
 #include "content/browser/bluetooth/web_bluetooth_pairing_manager_delegate.h"
-#include "content/browser/bluetooth/web_bluetooth_pairing_manager_impl.h"
 #include "content/public/browser/bluetooth_delegate.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -123,7 +124,7 @@ class BluetoothPairingManagerTest : public testing::Test,
       case AuthBehavior::kSucceedFirst:
         EXPECT_EQ(1, num_pair_attempts_);
         device_paired_ = true;
-        std::move(callback).Run(/*error_code=*/absl::nullopt);
+        std::move(callback).Run(/*error_code=*/std::nullopt);
         break;
       case AuthBehavior::kSucceedSecond:
         switch (num_pair_attempts_) {
@@ -132,7 +133,7 @@ class BluetoothPairingManagerTest : public testing::Test,
             break;
           case 2:
             device_paired_ = true;
-            std::move(callback).Run(/*error_code=*/absl::nullopt);
+            std::move(callback).Run(/*error_code=*/std::nullopt);
             break;
           default:
             NOTREACHED();
@@ -152,7 +153,7 @@ class BluetoothPairingManagerTest : public testing::Test,
           pair_callback_ = std::move(callback);
         } else {
           device_paired_ = true;
-          std::move(callback).Run(/*error_code=*/absl::nullopt);
+          std::move(callback).Run(/*error_code=*/std::nullopt);
         }
         break;
       case AuthBehavior::kUnspecified:
@@ -171,19 +172,19 @@ class BluetoothPairingManagerTest : public testing::Test,
                   const std::string& pincode) override {
     ASSERT_TRUE(device_id.IsValid());
     EXPECT_EQ(device_id, kValidTestData.device_id);
-    std::move(pair_callback_).Run(/*error_code=*/absl::nullopt);
+    std::move(pair_callback_).Run(/*error_code=*/std::nullopt);
   }
 
   void PairConfirmed(const blink::WebBluetoothDeviceId& device_id) override {
     ASSERT_TRUE(device_id.IsValid());
     EXPECT_EQ(device_id, kValidTestData.device_id);
-    std::move(pair_callback_).Run(/*error_code=*/absl::nullopt);
+    std::move(pair_callback_).Run(/*error_code=*/std::nullopt);
   }
 
   void ResumeSuspendedPairingWithSuccess() {
     device_paired_ = true;
     EXPECT_FALSE(pair_callback_.is_null());
-    std::move(pair_callback_).Run(/*error_code=*/absl::nullopt);
+    std::move(pair_callback_).Run(/*error_code=*/std::nullopt);
   }
 
   void RemoteCharacteristicReadValue(
@@ -203,7 +204,7 @@ class BluetoothPairingManagerTest : public testing::Test,
     }
 
     std::move(callback).Run(WebBluetoothResult::CONNECT_AUTH_REJECTED,
-                            absl::nullopt);
+                            std::nullopt);
   }
 
   void RemoteDescriptorReadValue(
@@ -221,7 +222,7 @@ class BluetoothPairingManagerTest : public testing::Test,
     }
 
     std::move(callback).Run(WebBluetoothResult::CONNECT_AUTH_REJECTED,
-                            absl::nullopt);
+                            std::nullopt);
   }
 
   void RemoteCharacteristicWriteValue(
@@ -285,7 +286,7 @@ class BluetoothPairingManagerTest : public testing::Test,
       const std::u16string& device_identifier,
       BluetoothDelegate::PairPromptCallback callback,
       BluetoothDelegate::PairingKind pairing_kind,
-      const absl::optional<std::u16string>& pin) override {
+      const std::optional<std::u16string>& pin) override {
     std::move(callback).Run(prompt_result_);
   }
 
@@ -337,7 +338,7 @@ TEST_F(BluetoothPairingManagerTest, ReadSuccessfulAuthFirstSuccess) {
       base::BindLambdaForTesting(
           [&loop, &expected_value](
               WebBluetoothResult result,
-              const absl::optional<std::vector<uint8_t>>& value) {
+              const std::optional<std::vector<uint8_t>>& value) {
             EXPECT_EQ(WebBluetoothResult::SUCCESS, result);
             EXPECT_EQ(value, expected_value)
                 << "Incorrect characteristic value";
@@ -358,7 +359,7 @@ TEST_F(BluetoothPairingManagerTest, ReadSuccessfulAuthSecondSuccess) {
       base::BindLambdaForTesting(
           [&loop, &expected_value](
               WebBluetoothResult result,
-              const absl::optional<std::vector<uint8_t>>& value) {
+              const std::optional<std::vector<uint8_t>>& value) {
             EXPECT_EQ(WebBluetoothResult::SUCCESS, result);
             EXPECT_EQ(value, expected_value)
                 << "Incorrect characteristic value";
@@ -377,7 +378,7 @@ TEST_F(BluetoothPairingManagerTest, ReadFailAllAuthsFail) {
       kValidTestData.characteristic_instance_id,
       base::BindLambdaForTesting(
           [&loop](WebBluetoothResult result,
-                  const absl::optional<std::vector<uint8_t>>& value) {
+                  const std::optional<std::vector<uint8_t>>& value) {
             EXPECT_EQ(WebBluetoothResult::CONNECT_AUTH_REJECTED, result);
             EXPECT_FALSE(value.has_value());
             loop.Quit();
@@ -396,7 +397,7 @@ TEST_F(BluetoothPairingManagerTest, ReadInvalidCharacteristicId) {
       kValidNonTestData.characteristic_instance_id,
       base::BindLambdaForTesting(
           [&loop](WebBluetoothResult result,
-                  const absl::optional<std::vector<uint8_t>>& value) {
+                  const std::optional<std::vector<uint8_t>>& value) {
             EXPECT_EQ(WebBluetoothResult::CONNECT_UNKNOWN_ERROR, result);
             EXPECT_FALSE(value.has_value());
             loop.Quit();
@@ -414,7 +415,7 @@ TEST_F(BluetoothPairingManagerTest, ReadCharacteristicDeleteDelegate) {
       kValidTestData.characteristic_instance_id,
       base::BindLambdaForTesting(
           [&loop](WebBluetoothResult result,
-                  const absl::optional<std::vector<uint8_t>>& value) {
+                  const std::optional<std::vector<uint8_t>>& value) {
             EXPECT_EQ(WebBluetoothResult::CONNECT_AUTH_CANCELED, result);
             EXPECT_FALSE(value.has_value());
             loop.Quit();
@@ -438,7 +439,7 @@ TEST_F(BluetoothPairingManagerTest, ReadCharacteristicDoublePair) {
       base::BindLambdaForTesting(
           [&loop, &callback_count, &expected_value](
               WebBluetoothResult result,
-              const absl::optional<std::vector<uint8_t>>& value) {
+              const std::optional<std::vector<uint8_t>>& value) {
             EXPECT_EQ(WebBluetoothResult::SUCCESS, result);
             EXPECT_EQ(value, expected_value);
             if (++callback_count == 2)
@@ -452,7 +453,7 @@ TEST_F(BluetoothPairingManagerTest, ReadCharacteristicDoublePair) {
       base::BindLambdaForTesting(
           [&loop, &callback_count](
               WebBluetoothResult result,
-              const absl::optional<std::vector<uint8_t>>& value) {
+              const std::optional<std::vector<uint8_t>>& value) {
             EXPECT_EQ(WebBluetoothResult::CONNECT_AUTH_CANCELED, result);
             if (++callback_count == 2)
               loop.Quit();
@@ -617,7 +618,7 @@ TEST_F(BluetoothPairingManagerTest, DescriptorReadSuccessfulAuthFirstSuccess) {
       base::BindLambdaForTesting(
           [&loop, &expected_value](
               WebBluetoothResult result,
-              const absl::optional<std::vector<uint8_t>>& value) {
+              const std::optional<std::vector<uint8_t>>& value) {
             EXPECT_EQ(WebBluetoothResult::SUCCESS, result);
             EXPECT_EQ(value, expected_value) << "Incorrect descriptor value";
             loop.Quit();
@@ -637,7 +638,7 @@ TEST_F(BluetoothPairingManagerTest, DescriptorReadSuccessfulAuthSecondSuccess) {
       base::BindLambdaForTesting(
           [&loop, &expected_value](
               WebBluetoothResult result,
-              const absl::optional<std::vector<uint8_t>>& value) {
+              const std::optional<std::vector<uint8_t>>& value) {
             EXPECT_EQ(WebBluetoothResult::SUCCESS, result);
             EXPECT_EQ(value, expected_value) << "Incorrect descriptor value";
             loop.Quit();
@@ -655,7 +656,7 @@ TEST_F(BluetoothPairingManagerTest, DescriptorReadFailAllAuthsFail) {
       kValidTestData.descriptor_instance_id,
       base::BindLambdaForTesting(
           [&loop](WebBluetoothResult result,
-                  const absl::optional<std::vector<uint8_t>>& value) {
+                  const std::optional<std::vector<uint8_t>>& value) {
             EXPECT_EQ(WebBluetoothResult::CONNECT_AUTH_REJECTED, result);
             EXPECT_FALSE(value.has_value());
             loop.Quit();
@@ -674,7 +675,7 @@ TEST_F(BluetoothPairingManagerTest, DescriptorReadInvalidDescriptorId) {
       kValidNonTestData.descriptor_instance_id,
       base::BindLambdaForTesting(
           [&loop](WebBluetoothResult result,
-                  const absl::optional<std::vector<uint8_t>>& value) {
+                  const std::optional<std::vector<uint8_t>>& value) {
             EXPECT_EQ(WebBluetoothResult::CONNECT_UNKNOWN_ERROR, result);
             loop.Quit();
           }));
@@ -691,7 +692,7 @@ TEST_F(BluetoothPairingManagerTest, ReadDescriptorDeleteDelegate) {
       kValidTestData.descriptor_instance_id,
       base::BindLambdaForTesting(
           [&loop](WebBluetoothResult result,
-                  const absl::optional<std::vector<uint8_t>>& value) {
+                  const std::optional<std::vector<uint8_t>>& value) {
             EXPECT_EQ(WebBluetoothResult::CONNECT_AUTH_CANCELED, result);
             loop.Quit();
           }));
@@ -714,7 +715,7 @@ TEST_F(BluetoothPairingManagerTest, ReadDescriptorDoublePair) {
       base::BindLambdaForTesting(
           [&loop, &callback_count, &expected_value](
               WebBluetoothResult result,
-              const absl::optional<std::vector<uint8_t>>& value) {
+              const std::optional<std::vector<uint8_t>>& value) {
             EXPECT_EQ(WebBluetoothResult::SUCCESS, result);
             EXPECT_EQ(value, expected_value) << "Incorrect descriptor value";
             if (++callback_count == 2)
@@ -728,7 +729,7 @@ TEST_F(BluetoothPairingManagerTest, ReadDescriptorDoublePair) {
       base::BindLambdaForTesting(
           [&loop, &callback_count](
               WebBluetoothResult result,
-              const absl::optional<std::vector<uint8_t>>& value) {
+              const std::optional<std::vector<uint8_t>>& value) {
             EXPECT_EQ(WebBluetoothResult::CONNECT_AUTH_CANCELED, result);
             EXPECT_FALSE(value.has_value());
             if (++callback_count == 2)
@@ -892,8 +893,7 @@ TEST_F(BluetoothPairingManagerTest, CredentialPromptPINSuccess) {
 
   base::RunLoop run_loop;
   pair_callback_ = base::BindLambdaForTesting(
-      [&run_loop](
-          absl::optional<BluetoothDevice::ConnectErrorCode> error_code) {
+      [&run_loop](std::optional<BluetoothDevice::ConnectErrorCode> error_code) {
         EXPECT_FALSE(error_code);
         run_loop.Quit();
       });
@@ -918,8 +918,7 @@ TEST_F(BluetoothPairingManagerTest, CredentialPromptPINCancelled) {
 
   base::RunLoop run_loop;
   pair_callback_ = base::BindLambdaForTesting(
-      [&run_loop](
-          absl::optional<BluetoothDevice::ConnectErrorCode> error_code) {
+      [&run_loop](std::optional<BluetoothDevice::ConnectErrorCode> error_code) {
         EXPECT_EQ(BluetoothDevice::ERROR_AUTH_CANCELED, *error_code);
         run_loop.Quit();
       });
@@ -956,7 +955,7 @@ TEST_F(BluetoothPairingManagerTest, PairConfirmPromptSuccess) {
   EXPECT_CALL(device, GetAddress());
   EXPECT_CALL(device, GetNameForDisplay());
 
-  TestFuture<absl::optional<BluetoothDevice::ConnectErrorCode>> future;
+  TestFuture<std::optional<BluetoothDevice::ConnectErrorCode>> future;
   pair_callback_ = future.GetCallback();
   pairing_manager()->AuthorizePairing(&device);
   EXPECT_FALSE(future.Get());
@@ -977,7 +976,7 @@ TEST_F(BluetoothPairingManagerTest, PairConfirmPromptCancelled) {
   EXPECT_CALL(device, GetAddress());
   EXPECT_CALL(device, GetNameForDisplay());
 
-  TestFuture<absl::optional<BluetoothDevice::ConnectErrorCode>> future;
+  TestFuture<std::optional<BluetoothDevice::ConnectErrorCode>> future;
   pair_callback_ = future.GetCallback();
   pairing_manager()->AuthorizePairing(&device);
   EXPECT_EQ(BluetoothDevice::ERROR_AUTH_CANCELED, future.Get());
@@ -998,7 +997,7 @@ TEST_F(BluetoothPairingManagerTest, PairConfirmPinPromptSuccess) {
   EXPECT_CALL(device, GetAddress());
   EXPECT_CALL(device, GetNameForDisplay());
 
-  TestFuture<absl::optional<BluetoothDevice::ConnectErrorCode>> future;
+  TestFuture<std::optional<BluetoothDevice::ConnectErrorCode>> future;
   pair_callback_ = future.GetCallback();
   pairing_manager()->ConfirmPasskey(&device, 123456);
   EXPECT_FALSE(future.Get());
@@ -1019,7 +1018,7 @@ TEST_F(BluetoothPairingManagerTest, PairConfirmPinPromptCancelled) {
   EXPECT_CALL(device, GetAddress());
   EXPECT_CALL(device, GetNameForDisplay());
 
-  TestFuture<absl::optional<BluetoothDevice::ConnectErrorCode>> future;
+  TestFuture<std::optional<BluetoothDevice::ConnectErrorCode>> future;
   pair_callback_ = future.GetCallback();
   pairing_manager()->ConfirmPasskey(&device, 123456);
   EXPECT_EQ(BluetoothDevice::ERROR_AUTH_CANCELED, future.Get());

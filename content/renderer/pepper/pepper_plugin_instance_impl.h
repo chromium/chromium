@@ -10,6 +10,7 @@
 
 #include <list>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -53,7 +54,6 @@
 #include "ppapi/shared_impl/tracked_callback.h"
 #include "ppapi/thunk/ppb_gamepad_api.h"
 #include "ppapi/thunk/resource_creation_api.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/public/web/web_associated_url_loader_client.h"
@@ -765,7 +765,7 @@ class CONTENT_EXPORT PepperPluginInstanceImpl
     gfx::Rect caret;
     gfx::Rect caret_bounds;
   };
-  absl::optional<TextInputCaretInfo> text_input_caret_info_;
+  std::optional<TextInputCaretInfo> text_input_caret_info_;
   ui::TextInputType text_input_type_;
 
   // Text selection status.

@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/callback_list.h"
@@ -21,7 +22,6 @@
 #include "content/renderer/media/codec_factory.h"
 #include "media/mojo/buildflags.h"
 #include "media/video/gpu_video_accelerator_factories.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_FUCHSIA)
 #include <fuchsia/mediacodec/cpp/fidl.h>
@@ -94,7 +94,7 @@ class CONTENT_EXPORT GpuVideoAcceleratorFactoriesImpl
   std::unique_ptr<media::VideoDecoder> CreateVideoDecoder(
       media::MediaLog* media_log,
       media::RequestOverlayInfoCB request_overlay_info_cb) override;
-  absl::optional<media::VideoEncodeAccelerator::SupportedProfiles>
+  std::optional<media::VideoEncodeAccelerator::SupportedProfiles>
   GetVideoEncodeAcceleratorSupportedProfiles() override;
   bool IsEncoderSupportKnown() override;
   void NotifyEncoderSupportKnown(base::OnceClosure callback) override;

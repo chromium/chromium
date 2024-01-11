@@ -34,7 +34,7 @@ class FakeScreenOrientationImpl : public device::mojom::ScreenOrientation {
   bool UpdateDeviceOrientation(blink::WebView* web_view,
                                display::mojom::ScreenOrientation orientation);
 
-  absl::optional<display::mojom::ScreenOrientation> CurrentOrientationType()
+  std::optional<display::mojom::ScreenOrientation> CurrentOrientationType()
       const;
   bool IsDisabled() const { return is_disabled_; }
   void SetDisabled(blink::WebView* web_view, bool disabled);

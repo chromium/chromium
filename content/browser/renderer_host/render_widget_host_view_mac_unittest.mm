@@ -746,8 +746,8 @@ TEST_F(RenderWidgetHostViewMacTest, UpdateCompositionSinglelineCase) {
 
   // If the firstRectForCharacterRange is failed in renderer, empty rect vector
   // is sent. Make sure this does not crash.
-  rwhv_mac_->ImeCompositionRangeChanged(
-      gfx::Range(10, 12), std::vector<gfx::Rect>(), absl::nullopt);
+  rwhv_mac_->ImeCompositionRangeChanged(gfx::Range(10, 12),
+                                        std::vector<gfx::Rect>(), std::nullopt);
   EXPECT_FALSE(rwhv_mac_->GetCachedFirstRectForCharacterRange(
       gfx::Range(10, 11), &rect, nullptr));
 
@@ -762,7 +762,7 @@ TEST_F(RenderWidgetHostViewMacTest, UpdateCompositionSinglelineCase) {
                                std::vector<size_t>(),
                                &composition_bounds);
   rwhv_mac_->ImeCompositionRangeChanged(kCompositionRange, composition_bounds,
-                                        absl::nullopt);
+                                        std::nullopt);
 
   // Out of range requests will return caret position.
   EXPECT_FALSE(rwhv_mac_->GetCachedFirstRectForCharacterRange(
@@ -821,7 +821,7 @@ TEST_F(RenderWidgetHostViewMacTest, UpdateCompositionMultilineCase) {
                                break_points,
                                &composition_bounds);
   rwhv_mac_->ImeCompositionRangeChanged(kCompositionRange, composition_bounds,
-                                        absl::nullopt);
+                                        std::nullopt);
 
   // Range doesn't contain line breaking point.
   gfx::Range range;
@@ -906,7 +906,7 @@ TEST_F(RenderWidgetHostViewMacTest, CompositionEventAfterDestroy) {
   const gfx::Rect composition_bounds(0, 0, 30, 40);
   const gfx::Range range(0, 1);
   rwhv_mac_->ImeCompositionRangeChanged(
-      range, std::vector<gfx::Rect>(1, composition_bounds), absl::nullopt);
+      range, std::vector<gfx::Rect>(1, composition_bounds), std::nullopt);
 
   NSRange actual_range = NSMakeRange(0, 0);
 

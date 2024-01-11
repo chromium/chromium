@@ -157,7 +157,7 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   gfx::NativeViewAccessible AccessibilityGetNativeViewAccessible() override;
   gfx::NativeViewAccessible AccessibilityGetNativeViewAccessibleForWindow()
       override;
-  absl::optional<SkColor> GetBackgroundColor() override;
+  std::optional<SkColor> GetBackgroundColor() override;
 
   void TransformPointToRootSurface(gfx::PointF* point) override;
   gfx::Rect GetBoundsInRootWindow() override;
@@ -177,7 +177,7 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   // Returns true when running on a recent enough OS for unaccelerated pointer
   // events.
   static bool IsUnadjustedMouseMovementSupported();
-  bool LockKeyboard(absl::optional<base::flat_set<ui::DomCode>> codes) override;
+  bool LockKeyboard(std::optional<base::flat_set<ui::DomCode>> codes) override;
   void UnlockKeyboard() override;
   bool IsKeyboardLocked() override;
   base::flat_map<std::string, std::string> GetKeyboardLayoutMap() override;
@@ -228,7 +228,7 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
       TextInputManager* text_input_manager,
       RenderWidgetHostViewBase* updated_view,
       bool character_bounds_changed,
-      const absl::optional<std::vector<gfx::Rect>>& line_bounds) override;
+      const std::optional<std::vector<gfx::Rect>>& line_bounds) override;
   void OnSelectionBoundsChanged(
       TextInputManager* text_input_manager,
       RenderWidgetHostViewBase* updated_view) override;
@@ -533,7 +533,7 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   // RenderWidgetHostViewBase:
   void UpdateBackgroundColor() override;
   bool HasFallbackSurface() const override;
-  absl::optional<DisplayFeature> GetDisplayFeature() override;
+  std::optional<DisplayFeature> GetDisplayFeature() override;
   void SetDisplayFeatureForTesting(
       const DisplayFeature* display_feature) override;
   void NotifyHostAndDelegateOnWasShown(
@@ -689,13 +689,13 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   // that.  This is therefore an out-of-band parameter to UpdateScreenInfo.
   // This also allows the screen_infos_ to only be updated outside of resize by
   // holding any updates temporarily in this variable.
-  absl::optional<display::ScreenInfos> new_screen_infos_from_shim_;
+  std::optional<display::ScreenInfos> new_screen_infos_from_shim_;
   display::ScreenInfos original_screen_infos_;
 
   // Represents a feature of the physical display whose offset and mask_length
   // are expressed in DIPs relative to the view. See display_feature.h for more
   // details.
-  absl::optional<DisplayFeature> display_feature_;
+  std::optional<DisplayFeature> display_feature_;
 
   const uint64_t ns_view_id_;
 

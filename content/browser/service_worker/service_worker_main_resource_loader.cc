@@ -4,6 +4,7 @@
 
 #include "content/browser/service_worker/service_worker_main_resource_loader.h"
 
+#include <optional>
 #include <sstream>
 #include <string>
 #include <utility>
@@ -42,7 +43,6 @@
 #include "services/network/public/cpp/timing_allow_origin_parser.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/service_worker_router_info.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/service_worker/service_worker_loader_helpers.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_fetch_handler_bypass_option.mojom-shared.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
@@ -244,7 +244,7 @@ void ServiceWorkerMainResourceLoader::StartRequest(
   resource_request_ = resource_request;
   if (container_host_ && container_host_->fetch_request_window_id()) {
     resource_request_.fetch_window_id =
-        absl::make_optional(container_host_->fetch_request_window_id());
+        std::make_optional(container_host_->fetch_request_window_id());
   }
 
   DCHECK(!receiver_.is_bound());
@@ -652,7 +652,7 @@ void ServiceWorkerMainResourceLoader::CommitResponseHeaders(
 void ServiceWorkerMainResourceLoader::CommitResponseBody(
     const network::mojom::URLResponseHeadPtr& response_head,
     mojo::ScopedDataPipeConsumerHandle response_body,
-    absl::optional<mojo_base::BigBuffer> cached_metadata) {
+    std::optional<mojo_base::BigBuffer> cached_metadata) {
   TransitionToStatus(Status::kSentBody);
   url_loader_client_->OnReceiveResponse(response_head.Clone(),
                                         std::move(response_body),
@@ -670,7 +670,7 @@ void ServiceWorkerMainResourceLoader::CommitEmptyResponseAndComplete() {
   }
 
   producer_handle.reset();  // The data pipe is empty.
-  CommitResponseBody(response_head_, std::move(consumer_handle), absl::nullopt);
+  CommitResponseBody(response_head_, std::move(consumer_handle), std::nullopt);
   CommitCompleted(net::OK, "No body exists.");
 }
 
@@ -952,7 +952,7 @@ void ServiceWorkerMainResourceLoader::StartResponse(
 
   // Handle a redirect response. ComputeRedirectInfo returns non-null redirect
   // info if the given response is a redirect.
-  absl::optional<net::RedirectInfo> redirect_info =
+  std::optional<net::RedirectInfo> redirect_info =
       blink::ServiceWorkerLoaderHelpers::ComputeRedirectInfo(resource_request_,
                                                              *response_head_);
   if (redirect_info) {
@@ -976,7 +976,7 @@ void ServiceWorkerMainResourceLoader::StartResponse(
     stream_waiter_ = std::make_unique<StreamWaiter>(
         this, std::move(body_as_stream->callback_receiver));
     CommitResponseBody(response_head_, std::move(body_as_stream->stream),
-                       absl::nullopt);
+                       std::nullopt);
     // StreamWaiter will call CommitCompleted() when done.
     return;
   }
@@ -1000,7 +1000,7 @@ void ServiceWorkerMainResourceLoader::StartResponse(
         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "result",
         "blob response");
 
-    CommitResponseBody(response_head_, std::move(data_pipe), absl::nullopt);
+    CommitResponseBody(response_head_, std::move(data_pipe), std::nullopt);
     // We continue in OnBlobReadingComplete().
     return;
   }
@@ -1029,7 +1029,7 @@ void ServiceWorkerMainResourceLoader::FollowRedirect(
     const std::vector<std::string>& removed_headers,
     const net::HttpRequestHeaders& modified_headers,
     const net::HttpRequestHeaders& modified_cors_exempt_headers,
-    const absl::optional<GURL>& new_url) {
+    const std::optional<GURL>& new_url) {
   NOTIMPLEMENTED();
 }
 

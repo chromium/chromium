@@ -105,7 +105,7 @@ class ServiceProcessObserver : public ServiceProcessHost::Observer {
   }
 
  private:
-  absl::optional<base::RunLoop> launch_wait_loop_;
+  std::optional<base::RunLoop> launch_wait_loop_;
   int instances_started_ = 0;
 };
 

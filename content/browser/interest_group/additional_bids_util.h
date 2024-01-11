@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <array>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -19,7 +20,6 @@
 #include "content/browser/interest_group/auction_metrics_recorder.h"
 #include "content/browser/interest_group/interest_group_auction.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "url/origin.h"
 
@@ -41,7 +41,7 @@ struct CONTENT_EXPORT AdditionalBidDecodeResult {
   // `negative_target_joining_origin` is required if there is more than one
   // entry in `negative_target_interest_group_names` (and DecodeAdditionalBid
   // ensures it's set in that case).
-  absl::optional<url::Origin> negative_target_joining_origin;
+  std::optional<url::Origin> negative_target_joining_origin;
   std::vector<std::string> negative_target_interest_group_names;
 };
 
@@ -135,7 +135,7 @@ class CONTENT_EXPORT AdAuctionNegativeTargeter {
   // collected into `errors_out`.
   bool ShouldDropDueToNegativeTargeting(
       const url::Origin& buyer,
-      const absl::optional<url::Origin>& negative_target_joining_origin,
+      const std::optional<url::Origin>& negative_target_joining_origin,
       const std::vector<std::string>& negative_target_interest_group_names,
       const std::vector<SignedAdditionalBidSignature>& signatures,
       const std::vector<size_t>& valid_signatures,

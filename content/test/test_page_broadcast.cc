@@ -48,11 +48,11 @@ void TestPageBroadcast::SetHistoryOffsetAndLength(int32_t history_offset,
                                                   int32_t history_length) {}
 
 void TestPageBroadcast::SetPageBaseBackgroundColor(
-    absl::optional<SkColor> color) {}
+    std::optional<SkColor> color) {}
 
 void TestPageBroadcast::CreateRemoteMainFrame(
     const blink::RemoteFrameToken& token,
-    const absl::optional<blink::FrameToken>& opener_frame_token,
+    const std::optional<blink::FrameToken>& opener_frame_token,
     blink::mojom::FrameReplicationStatePtr replication_state,
     bool is_loading,
     const base::UnguessableToken& devtools_frame_token,

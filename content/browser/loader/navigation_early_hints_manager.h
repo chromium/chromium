@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_LOADER_NAVIGATION_EARLY_HINTS_MANAGER_H_
 #define CONTENT_BROWSER_LOADER_NAVIGATION_EARLY_HINTS_MANAGER_H_
 
+#include <optional>
+
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
@@ -19,7 +21,6 @@
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace blink {
@@ -79,9 +80,9 @@ class CONTENT_EXPORT NavigationEarlyHintsManager {
     PreloadedResource& operator=(const PreloadedResource&);
 
     // Completion error code. Set only when network request is completed.
-    absl::optional<int> error_code;
+    std::optional<int> error_code;
     // Optional CORS error details.
-    absl::optional<network::CorsErrorStatus> cors_error_status;
+    std::optional<network::CorsErrorStatus> cors_error_status;
     // True when the preload was canceled. When true, the response was already
     // in the disk cache.
     bool was_canceled = false;
@@ -117,7 +118,7 @@ class CONTENT_EXPORT NavigationEarlyHintsManager {
   // True when there are at least one inflight preloads.
   bool HasInflightPreloads() const;
 
-  absl::optional<base::TimeTicks> first_early_hints_receive_time() const {
+  std::optional<base::TimeTicks> first_early_hints_receive_time() const {
     return first_early_hints_receive_time_;
   }
 
@@ -191,7 +192,7 @@ class CONTENT_EXPORT NavigationEarlyHintsManager {
 
   // Set to true when HandleEarlyHints() is called for the first time. Used to
   // ignore following responses.
-  absl::optional<base::TimeTicks> first_early_hints_receive_time_;
+  std::optional<base::TimeTicks> first_early_hints_receive_time_;
   // Set to true when preload or preconnect Link headers are received. Used for
   // metrics recording.
   bool was_resource_hints_received_ = false;

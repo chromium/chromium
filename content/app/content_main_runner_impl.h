@@ -6,6 +6,7 @@
 #define CONTENT_APP_CONTENT_MAIN_RUNNER_IMPL_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -14,7 +15,6 @@
 #include "content/public/app/content_main_runner.h"
 #include "content/public/common/main_function_params.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class AtExitManager;
@@ -72,7 +72,7 @@ class ContentMainRunnerImpl : public ContentMainRunner {
   std::unique_ptr<base::AtExitManager> exit_manager_;
 
   // Received in Initialize(), handed-off in Run().
-  absl::optional<ContentMainParams> content_main_params_;
+  std::optional<ContentMainParams> content_main_params_;
 };
 
 }  // namespace content

@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_MEDIA_KEY_SYSTEM_SUPPORT_IMPL_H_
 #define CONTENT_BROWSER_MEDIA_KEY_SYSTEM_SUPPORT_IMPL_H_
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -18,7 +19,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -75,7 +75,7 @@ class CONTENT_EXPORT KeySystemSupportImpl final
   bool is_observing_ = false;
   mojo::ReceiverSet<KeySystemSupport> key_system_support_receivers_;
   mojo::RemoteSet<media::mojom::KeySystemSupportObserver> observer_remotes_;
-  absl::optional<KeySystemCapabilities> key_system_capabilities_;
+  std::optional<KeySystemCapabilities> key_system_capabilities_;
 
   base::WeakPtrFactory<KeySystemSupportImpl> weak_ptr_factory_{this};
 };
