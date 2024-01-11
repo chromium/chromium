@@ -78,22 +78,6 @@ BASE_DECLARE_FEATURE(kNonModalDefaultBrowserPromoCooldownRefactor);
 extern const base::FeatureParam<int>
     kNonModalDefaultBrowserPromoCooldownRefactorParam;
 
-// Feature flag to enable the default browser promo generic and tailored train
-// experiment.
-BASE_DECLARE_FEATURE(kDefaultBrowserGenericTailoredPromoTrain);
-
-// Param values for the default browser promo generic and tailored train
-// experiment.
-enum class DefaultBrowserPromoGenericTailoredArm {
-  kOnlyGeneric,
-  kOnlyTailored,
-};
-
-// Feature param for the default browser promo generic and tailored train
-// experiment.
-extern const base::FeatureParam<DefaultBrowserPromoGenericTailoredArm>
-    kDefaultBrowserPromoGenericTailoredParam;
-
 // Feature flag that enables the default browser video promo.
 BASE_DECLARE_FEATURE(kDefaultBrowserVideoPromo);
 

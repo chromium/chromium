@@ -77,22 +77,6 @@ constexpr base::FeatureParam<int>
         &kNonModalDefaultBrowserPromoCooldownRefactor,
         /*name=*/"cooldown-days", /*default_value=*/14};
 
-BASE_FEATURE(kDefaultBrowserGenericTailoredPromoTrain,
-             "DefaultBrowserGenericTailoredPromoTrain",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-constexpr base::FeatureParam<DefaultBrowserPromoGenericTailoredArm>::Option
-    kDefaultBrowserPromoGenericTailoredArmOptions[] = {
-        {DefaultBrowserPromoGenericTailoredArm::kOnlyGeneric, "only-generic"},
-        {DefaultBrowserPromoGenericTailoredArm::kOnlyTailored,
-         "only-tailored"}};
-
-const base::FeatureParam<DefaultBrowserPromoGenericTailoredArm>
-    kDefaultBrowserPromoGenericTailoredParam{
-        &kDefaultBrowserGenericTailoredPromoTrain, "experiment-arm",
-        DefaultBrowserPromoGenericTailoredArm::kOnlyGeneric,
-        &kDefaultBrowserPromoGenericTailoredArmOptions};
-
 BASE_FEATURE(kDefaultBrowserVideoPromo,
              "DefaultBrowserVideoPromo",
              base::FEATURE_DISABLED_BY_DEFAULT);
