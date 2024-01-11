@@ -1606,7 +1606,7 @@
   },
   "android-10-arm64-rel": {
     "additional_compile_targets": [
-      "check_chrome_static_initializers"
+      "monochrome_static_initializers"
     ],
     "gtest_tests": [
       {

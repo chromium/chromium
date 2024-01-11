@@ -8,7 +8,7 @@ import("//components/optimization_guide/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//ui/gl/features.gni")
 
-# The check_chrome_static_initializers target will cause release bots to fail if
+# The monochrome_static_initializers target will cause release bots to fail if
 # the count of static initializers change in either direction. Please try not to
 # increase the numbers. If they come from third-party code, please try to update
 # the code, or apply a local modification to remove them.

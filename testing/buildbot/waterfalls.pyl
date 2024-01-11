@@ -504,7 +504,7 @@
           },
         },
         'additional_compile_targets': [
-          'check_chrome_static_initializers',
+          'monochrome_static_initializers',
         ],
         'test_suites': {
           'gtest_tests': 'android_10_rel_gtests',
