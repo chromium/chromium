@@ -674,6 +674,11 @@ ui::EventDispatchDetails PeripheralCustomizationEventRewriter::RewriteKeyEvent(
     UpdatePressedButtonMap(std::move(button), key_event, rewritten_event);
   }
 
+  if (!rewritten_event && key_event.key_code() >= ui::VKEY_BUTTON_0 &&
+      key_event.key_code() <= ui::VKEY_BUTTON_Z) {
+    return DiscardEvent(continuation);
+  }
+
   if (!rewritten_event) {
     rewritten_event = std::make_unique<ui::KeyEvent>(key_event);
   }

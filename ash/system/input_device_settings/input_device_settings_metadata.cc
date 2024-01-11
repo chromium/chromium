@@ -191,6 +191,7 @@ std::vector<mojom::ButtonRemappingPtr> GetDefaultButtonRemappingList() {
   return {};
 }
 
+// TODO(dpad, b/286930911): Translate button names
 std::vector<mojom::ButtonRemappingPtr> GetFiveKeyButtonRemappingList() {
   std::vector<mojom::ButtonRemappingPtr> array;
   array.push_back(mojom::ButtonRemapping::New(

@@ -218,4 +218,23 @@ enum VKey {
   kEmojiPicker = 0xED,
   kDictate = 0xEE,
   kAllApplications = 0xEF,
+
+  // The following values are used to be able to recognize button events within
+  // ChromeOS. These have no functionality by default.
+  kButton0 = 0xFF00,
+  kButton1 = 0xFF01,
+  kButton2 = 0xFF02,
+  kButton3 = 0xFF03,
+  kButton4 = 0xFF04,
+  kButton5 = 0xFF05,
+  kButton6 = 0xFF06,
+  kButton7 = 0xFF07,
+  kButton8 = 0xFF08,
+  kButton9 = 0xFF09,
+  kButtonA = 0xFF0A,
+  kButtonB = 0xFF0B,
+  kButtonC = 0xFF0C,
+  kButtonX = 0xFF0D,
+  kButtonY = 0xFF0E,
+  kButtonZ = 0xFF0F,
 };
