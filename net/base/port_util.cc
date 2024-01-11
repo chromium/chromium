@@ -23,7 +23,7 @@ namespace {
 // The general list of blocked ports. Will be blocked unless a specific
 // protocol overrides it. (Ex: ftp can use port 21)
 // When adding a port to the list, consider also adding it to kAllowablePorts,
-// below.
+// below. See <https://fetch.spec.whatwg.org/#port-blocking>.
 const int kRestrictedPorts[] = {
     1,      // tcpmux
     7,      // echo
