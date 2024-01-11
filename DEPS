@@ -3761,7 +3761,7 @@ deps = {
   # Dependencies from src_internal
   'src/chromeos/assistant/internal': {
       'url': Var('chrome_git') + '/chrome/assistant.git' + '@' +
-        '610eee397e5729aae646eb66551cd00df2228c6d',
+        'b69615094b3b968cb8c0771a9fb96903e9e74ac1',
       'condition': 'checkout_src_internal and checkout_chromeos',
     },
 
@@ -4079,6 +4079,61 @@ deps = {
       'url': Var('chrome_git') + '/chrome/deps/khronos_glcts.git' + '@' +
         'eedb0baca9e88c53596874901ff5f6136102d20d',
       'condition': 'checkout_src_internal',
+  },
+
+  'src/third_party/libassistant/x64': {
+    'packages': [
+        {
+            'package': 'chromeos_internal/assistant/libassistant/libassistant_cros_device/x64/internal',
+            'version': 'w-9I4ZQe75ope7clwip3vo3wXzm-hDaF9qEDmzi8DNsC',
+        },
+    ],
+    'condition': 'checkout_src_internal and checkout_chromeos',
+    'dep_type': 'cipd',
+  },
+
+ 'src/third_party/libassistant/arm64': {
+    'packages': [
+        {
+            'package': 'chromeos_internal/assistant/libassistant/libassistant_cros_device/arm64/internal',
+            'version': 'L2pNmE15We5ZW21b6dgA3i6mZ_ELXcg_GIZrJQSa5yUC',
+        },
+    ],
+    'condition': 'checkout_src_internal and checkout_chromeos',
+    'dep_type': 'cipd',
+  },
+
+ 'src/third_party/libassistant/arm': {
+    'packages': [
+        {
+            'package': 'chromeos_internal/assistant/libassistant/libassistant_cros_device/arm/internal',
+            'version': 'ZdMISVwM_Me_supqNeYFtIoqPR9ZnD9TWghBQs-EZgQC',
+        },
+    ],
+    'condition': 'checkout_src_internal and checkout_chromeos',
+    'dep_type': 'cipd',
+  },
+
+ 'src/third_party/libassistant/glinux': {
+    'packages': [
+        {
+            'package': 'chromeos_internal/assistant/libassistant/libassistant_cros_glinux/x64/internal',
+            'version': 'ymOO8fysuXlIs5oqwgsZ6jFP1QDPzx4TYnzwgmn77a4C',
+        },
+    ],
+    'condition': 'checkout_src_internal and checkout_chromeos',
+    'dep_type': 'cipd',
+  },
+
+ 'src/third_party/libassistant/fake_s3_server': {
+    'packages': [
+        {
+            'package': 'chromeos_internal/assistant/libassistant/fake_s3_server_cros_glinux/x64/internal',
+            'version': 'oldnb3_NMrgx9lBYJD43rCLL0TAiVBMJMbpFlgXnOfIC',
+        },
+    ],
+    'condition': 'checkout_src_internal and checkout_chromeos',
+    'dep_type': 'cipd',
   },
 
   'src/third_party/screen-ai/linux': {
