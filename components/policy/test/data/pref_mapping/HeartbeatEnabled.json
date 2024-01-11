@@ -1,5 +1,20 @@
 [
   {
-    "reason_for_missing_test": "Maps into CrosSettings"
+    "can_be_recommended": false,
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "HeartbeatEnabled": true
+        },
+        "prefs": {
+          "cros.device_status.heartbeat_enabled": {
+            "location": "local_state"
+          }
+        }
+      }
+    ]
   }
 ]

@@ -187,6 +187,7 @@
 #include "chrome/browser/policy/default_geolocation_policy_handler.h"
 #include "chrome/browser/policy/device_login_screen_geolocation_access_level_policy_handler.h"
 #include "chrome/browser/policy/os_color_mode_policy_handler.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/prefs.h"
 #include "chromeos/components/disks/disks_prefs.h"
@@ -1577,6 +1578,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kUserFeedbackWithLowLevelDebugDataAllowed,
     ash::prefs::kUserFeedbackWithLowLevelDebugDataAllowed,
     base::Value::Type::LIST },
+  { key::kHeartbeatEnabled,
+    ash::kHeartbeatEnabled,
+    base::Value::Type::BOOLEAN },
 #endif // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_LINUX)

@@ -1518,6 +1518,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
       registry);
   ash::login::SecurityTokenSessionController::RegisterLocalStatePrefs(registry);
   ash::reporting::LoginLogoutReporter::RegisterPrefs(registry);
+  ash::reporting::RegisterLocalStatePrefs(registry);
   ash::MultiProfileUserController::RegisterPrefs(registry);
   ash::NetworkMetadataStore::RegisterPrefs(registry);
   ash::NetworkThrottlingObserver::RegisterPrefs(registry);
