@@ -1110,7 +1110,7 @@ bool GpuInit::InitializeVulkan() {
   if (!vulkan_implementation_ ||
       !vulkan_implementation_->InitializeVulkanInstance(
           !gpu_preferences_.disable_vulkan_surface)) {
-    DLOG(ERROR) << "Failed to create and initialize Vulkan implementation.";
+    LOG(ERROR) << "Failed to create and initialize Vulkan implementation.";
     vulkan_implementation_ = nullptr;
     CHECK(!gpu_preferences_.disable_vulkan_fallback_to_gl_for_testing);
   }
