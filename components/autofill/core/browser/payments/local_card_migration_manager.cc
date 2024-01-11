@@ -283,11 +283,9 @@ void LocalCardMigrationManager::OnDidGetUploadDetails(
           autofill_metrics::INTERMEDIATE_BUBBLE_SHOWN);
     }
 
-    // TODO(crbug.com/876895): Clean up the LoadRiskData Bind/BindRepeating
-    // usages
-    client_->GetPaymentsAutofillClient()->LoadRiskData(base::BindRepeating(
-        &LocalCardMigrationManager::OnDidGetMigrationRiskData,
-        weak_ptr_factory_.GetWeakPtr()));
+    client_->GetPaymentsAutofillClient()->LoadRiskData(
+        base::BindOnce(&LocalCardMigrationManager::OnDidGetMigrationRiskData,
+                       weak_ptr_factory_.GetWeakPtr()));
     autofill_metrics::LogLocalCardMigrationDecisionMetric(
         autofill_metrics::LocalCardMigrationDecisionMetric::OFFERED);
   } else {
