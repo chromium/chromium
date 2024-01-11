@@ -4447,6 +4447,11 @@ const char kTabletToolbarReorderingAndroidDescription[] =
     "placing the Home button from 1st to the 4th position after the Refresh"
     "button to match the Desktop toolbar";
 
+const char kTabGroupParityAndroidName[] = "Tab Group Parity Android";
+const char kTabGroupParityAndroidDescription[] =
+    "Enables cross-platform tab group feature parity on Android, which "
+    "includes colors and required titles.";
+
 const char kTabResumptionModuleAndroidName[] = "Tab Resumption Module";
 const char kTabResumptionModuleAndroidDescription[] =
     "Enable showing tab suggestions on Android";

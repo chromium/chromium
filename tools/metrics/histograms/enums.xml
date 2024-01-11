@@ -25122,6 +25122,7 @@ from previous Chrome versions.
   <int value="-2041281386" label="MultiPaste:disabled"/>
   <int value="-2041208747" label="StorageBuckets:enabled"/>
   <int value="-2041091005" label="OmniboxDomainSuggestions:enabled"/>
+  <int value="-2040899483" label="TabGroupParityAndroid:disabled"/>
   <int value="-2040471724" label="CrOSComponent:disabled"/>
   <int value="-2040360427" label="DesktopScreenshots:disabled"/>
   <int value="-2040154722" label="TimeOfDayScreenSaver:enabled"/>
@@ -29874,6 +29875,7 @@ from previous Chrome versions.
   <int value="174759256" label="LockScreenMediaControls:enabled"/>
   <int value="174917935" label="ReengagementNotification:disabled"/>
   <int value="175254474" label="SpectreVariant2Mitigation:enabled"/>
+  <int value="176401620" label="TabGroupParityAndroid:enabled"/>
   <int value="176421334"
       label="OmniboxHistoryQuickProviderSpecificityScoreCountUniqueHosts:enabled"/>
   <int value="176526479" label="AccessibilityPageZoom:enabled"/>

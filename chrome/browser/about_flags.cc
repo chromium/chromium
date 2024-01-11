@@ -9818,6 +9818,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kContextMenuPopupForAllScreenSizesDescription,
      kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kContextMenuPopupForAllScreenSizes)},
+
+    {"tab-group-parity-android", flag_descriptions::kTabGroupParityAndroidName,
+     flag_descriptions::kTabGroupParityAndroidDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kTabGroupParityAndroid)},
 #endif
     {"use-dmsaa-for-tiles", flag_descriptions::kUseDMSAAForTilesName,
      flag_descriptions::kUseDMSAAForTilesDescription, kOsAll,

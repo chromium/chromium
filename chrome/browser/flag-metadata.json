@@ -7656,6 +7656,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "tab-group-parity-android",
+    "owners": [ "bjfong@google.com", "ckitagawa@chromium.org", "fredmello@chromium.org" ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "tab-groups-in-grid",
     "owners": [ "alionadangla@chromium.org", "lpromero@chromium.org", "bling-flags@google.com" ],
     "expiry_milestone": 130

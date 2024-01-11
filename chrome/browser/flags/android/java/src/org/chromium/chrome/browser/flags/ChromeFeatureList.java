@@ -407,6 +407,7 @@ public abstract class ChromeFeatureList {
     public static final String SYNC_ENABLE_CONTACT_INFO_DATA_TYPE_IN_TRANSPORT_MODE =
             "SyncEnableContactInfoDataTypeInTransportMode";
     public static final String TAB_DRAG_DROP_ANDROID = "TabDragDropAndroid";
+    public static final String TAB_GROUP_PARITY_ANDROID = "TabGroupParityAndroid";
     public static final String TAB_LINK_DRAG_DROP_ANDROID = "TabAndLinkDragDropAndroid";
     public static final String TAB_ENGAGEMENT_REPORTING_ANDROID = "TabEngagementReportingAndroid";
     public static final String TAB_RESUMPTION_MODULE_ANDROID = "TabResumptionModuleAndroid";
@@ -560,6 +561,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sSurfacePolish = new CachedFlag(SURFACE_POLISH, false);
     public static final CachedFlag sTabDragDropAsWindowAndroid =
             new CachedFlag(TAB_DRAG_DROP_ANDROID, false);
+    public static final CachedFlag sTabGroupParityAndroid =
+            new CachedFlag(TAB_GROUP_PARITY_ANDROID, false);
     public static final CachedFlag sTabLinkDragDropAndroid =
             new CachedFlag(TAB_LINK_DRAG_DROP_ANDROID, false);
     public static final CachedFlag sTabResumptionModuleAndroid =
@@ -645,6 +648,7 @@ public abstract class ChromeFeatureList {
                     sStartSurfaceWithAccessibility,
                     sSurfacePolish,
                     sTabDragDropAsWindowAndroid,
+                    sTabGroupParityAndroid,
                     sTabLinkDragDropAndroid,
                     sTabResumptionModuleAndroid,
                     sTabStateFlatBuffer,
