@@ -91,6 +91,7 @@
 #include "base/pickle.h"
 #include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
+#include "base/types/expected.h"
 #include "base/types/pass_key.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
@@ -752,14 +753,28 @@ class BASE_EXPORT FieldTrialList {
       const ReadOnlySharedMemoryRegion& shm,
       LaunchOptions* launch_options);
 
+  // Indicates failure modes of deserializing the shared memory handle.
+  enum class SharedMemError {
+    kNoError,
+    kUnexpectedTokensCount,
+    kParseInt0Failed,
+    kParseInt4Failed,
+    kUnexpectedHandleType,
+    kInvalidHandle,
+    kGetFDFailed,
+    kDeserializeGUIDFailed,
+    kDeserializeFailed,
+    kCreateTrialsFailed,
+  };
+
   // Deserialization instantiates the shared memory region for FieldTrials from
   // the serialized information contained in |switch_value|. Returns an invalid
   // ReadOnlySharedMemoryRegion on failure.
   // |fd_key| is used on non-Mac POSIX platforms as the file descriptor passed
   // down to the child process for the shared memory region.
-  static ReadOnlySharedMemoryRegion DeserializeSharedMemoryRegionMetadata(
-      const std::string& switch_value,
-      uint32_t fd_key);
+  static expected<ReadOnlySharedMemoryRegion, SharedMemError>
+  DeserializeSharedMemoryRegionMetadata(const std::string& switch_value,
+                                        uint32_t fd_key);
 
   // Takes in |handle_switch| from the command line which represents the shared
   // memory handle for field trials, parses it, and creates the field trials.
@@ -767,8 +782,9 @@ class BASE_EXPORT FieldTrialList {
   // |switch_value| also contains the serialized GUID.
   // |fd_key| is used on non-Mac POSIX platforms as the file descriptor passed
   // down to the child process for the shared memory region.
-  static bool CreateTrialsFromSwitchValue(const std::string& switch_value,
-                                          uint32_t fd_key);
+  static SharedMemError CreateTrialsFromSwitchValue(
+      const std::string& switch_value,
+      uint32_t fd_key);
 #endif  // BUILDFLAG(USE_BLINK)
 
   // Takes an unmapped ReadOnlySharedMemoryRegion, maps it with the correct size

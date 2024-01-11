@@ -1161,8 +1161,10 @@ MULTIPROCESS_TEST_MAIN(SerializeSharedMemoryRegionMetadata) {
   base::GlobalDescriptors::GetInstance()->Set(kFDKey, kFDKey);
 #endif
 
-  base::ReadOnlySharedMemoryRegion deserialized =
+  auto result =
       FieldTrialList::DeserializeSharedMemoryRegionMetadata(serialized, kFDKey);
+  CHECK(result.has_value());
+  base::ReadOnlySharedMemoryRegion& deserialized = result.value();
   CHECK(deserialized.IsValid());
   CHECK_EQ(deserialized.GetGUID().ToString(), guid_string);
   CHECK(!deserialized.GetGUID().is_empty());
