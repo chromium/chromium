@@ -484,6 +484,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Arc.AppLanguageSwitch.{SettingsPage}.TargetLanguage"
+    enum="LocaleCodeISO639" expires_after="2025-01-12">
+  <owner>nergi@chromium.org</owner>
+  <owner>arc-framework@google.com</owner>
+  <summary>
+    Record the settings page source when users change app language, and which
+    language users changed the language to.
+  </summary>
+  <token key="SettingsPage">
+    <variant name="AppsManagementPage"
+        summary="ChromeOS AppsManagement settings page"/>
+    <variant name="LanguagesPage" summary="ChromeOS Languages settings page"/>
+  </token>
+</histogram>
+
 <histogram name="Arc.AppRequestedInSession" units="count"
     expires_after="2024-09-15">
   <owner>khmel@google.com</owner>
