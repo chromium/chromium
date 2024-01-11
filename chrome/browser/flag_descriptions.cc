@@ -2114,7 +2114,7 @@ const char kIncognitoNtpRevampDescription[] =
 const char kIncognitoScreenshotName[] = "Incognito Screenshot";
 const char kIncognitoScreenshotDescription[] =
     "Enables Incognito screenshots on Android. It will also make Incognito "
-    "thumbnails visible. This flag will be ignored on API version >= 33.";
+    "thumbnails visible.";
 
 const char kIndexedDBCompressValuesWithSnappy[] = "Compress IndexedDB values";
 const char kIndexedDBCompressValuesWithSnappyDescription[] =

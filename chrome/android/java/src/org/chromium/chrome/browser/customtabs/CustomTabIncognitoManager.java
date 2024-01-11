@@ -89,7 +89,7 @@ public class CustomTabIncognitoManager implements NativeInitObserver, DestroyObs
         if (!CommandLine.getInstance()
                 .hasSwitch(ChromeSwitches.ENABLE_INCOGNITO_SNAPSHOTS_IN_ANDROID_RECENTS)) {
             new IncognitoCustomTabSnapshotController(
-                    mActivity, () -> mIntentDataProvider.isIncognito());
+                    mActivity.getWindow(), () -> mIntentDataProvider.isIncognito());
         }
     }
 
