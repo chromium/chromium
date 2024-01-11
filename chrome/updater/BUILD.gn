@@ -843,6 +843,7 @@ if (is_win || is_mac || is_linux) {
         "auto_run_on_os_upgrade_task_unittest.cc",
         "policy/win/group_policy_manager_unittest.cc",
         "test/integration_tests_win.cc",
+        "test/integration_tests_win.h",
         "util/unit_test_util_win.cc",
         "util/unit_test_util_win.h",
         "util/util_win_unittest.cc",

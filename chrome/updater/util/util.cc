@@ -9,9 +9,8 @@
 #include <vector>
 
 #if BUILDFLAG(IS_WIN)
-#include <windows.h>
-
 #include <initguid.h>
+#include <windows.h>
 
 #include "base/logging_win.h"
 #endif  // BUILDFLAG(IS_WIN)

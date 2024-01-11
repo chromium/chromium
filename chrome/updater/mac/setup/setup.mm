@@ -274,8 +274,9 @@ int DoSetup(UpdaterScope scope) {
 
 int Setup(UpdaterScope scope) {
   int error = DoSetup(scope);
-  if (error)
+  if (error) {
     CleanAfterInstallFailure(scope);
+  }
   return error;
 }
 
@@ -306,8 +307,9 @@ int PromoteCandidate(UpdaterScope scope) {
     return kErrorFailedToCreateWakeLaunchdJobPlist;
   }
 
-  if (!InstallKeystone(scope))
+  if (!InstallKeystone(scope)) {
     return kErrorFailedToInstallLegacyUpdater;
+  }
 
   return kErrorOk;
 }

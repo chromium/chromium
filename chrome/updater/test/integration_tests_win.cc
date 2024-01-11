@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/updater/test/integration_tests_win.h"
+
+#include <regstr.h>
 #include <shlobj.h>
 #include <wrl/client.h>
 #include <wrl/implements.h>
-
-#include <regstr.h>
 
 #include <functional>
 #include <iostream>

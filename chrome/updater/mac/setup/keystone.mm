@@ -125,8 +125,9 @@ bool CopyKeystoneBundle(UpdaterScope scope) {
 
   const std::optional<base::FilePath> dest_folder_path =
       GetKeystoneFolderPath(scope);
-  if (!dest_folder_path)
+  if (!dest_folder_path) {
     return false;
+  }
   const base::FilePath dest_path = *dest_folder_path;
 
   // CopyDir() does not remove files in destination.

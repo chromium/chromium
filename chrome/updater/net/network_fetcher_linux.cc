@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/net/network.h"
-
 #include <curl/curl.h>
 #include <curl/system.h>
 #include <dlfcn.h>
@@ -33,6 +31,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_bound.h"
+#include "chrome/updater/net/network.h"
 #include "chrome/updater/policy/service.h"
 #include "chrome/updater/util/util.h"
 #include "components/update_client/network.h"

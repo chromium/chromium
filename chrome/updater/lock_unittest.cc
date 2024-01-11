@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/updater/lock.h"
+
 #include <memory>
 
 #include "base/run_loop.h"
@@ -11,7 +13,6 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "chrome/updater/lock.h"
 #include "chrome/updater/test_scope.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

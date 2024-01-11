@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/updater/prefs.h"
+
 #include <memory>
 
 #include "base/run_loop.h"
@@ -11,7 +13,6 @@
 #include "build/build_config.h"
 #include "chrome/updater/activity.h"
 #include "chrome/updater/persisted_data.h"
-#include "chrome/updater/prefs.h"
 #include "chrome/updater/prefs_impl.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/test_scope.h"

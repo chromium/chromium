@@ -216,15 +216,17 @@ std::optional<base::FilePath> GetExecutableFolderPathForVersion(
     const base::Version& version) {
   std::optional<base::FilePath> path =
       GetVersionedInstallDirectory(scope, version);
-  if (!path)
+  if (!path) {
     return std::nullopt;
+  }
   return path->Append(ExecutableFolderPath());
 }
 
 std::optional<base::FilePath> GetUpdaterAppBundlePath(UpdaterScope scope) {
   std::optional<base::FilePath> path = GetVersionedInstallDirectory(scope);
-  if (!path)
+  if (!path) {
     return std::nullopt;
+  }
   return path->Append(
       base::StrCat({PRODUCT_FULLNAME_STRING, kExecutableSuffix, ".app"}));
 }
@@ -236,8 +238,9 @@ base::FilePath GetExecutableRelativePath() {
 
 std::optional<base::FilePath> GetKeystoneFolderPath(UpdaterScope scope) {
   std::optional<base::FilePath> path = GetLibraryFolderPath(scope);
-  if (!path)
+  if (!path) {
     return std::nullopt;
+  }
   return path->Append(FILE_PATH_LITERAL(COMPANY_SHORTNAME_STRING))
       .Append(FILE_PATH_LITERAL(KEYSTONE_NAME));
 }
@@ -264,8 +267,9 @@ bool ConfirmFilePermissions(const base::FilePath& root_path,
 
     // If file path is real directory and not a link, recurse into it.
     if (file_info.is_directory && !base::IsLink(path)) {
-      if (!ConfirmFilePermissions(path, kPermissionsMask))
+      if (!ConfirmFilePermissions(path, kPermissionsMask)) {
         return false;
+      }
     }
   }
 

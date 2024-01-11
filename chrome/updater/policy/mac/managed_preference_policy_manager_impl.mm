@@ -31,8 +31,9 @@ namespace {
 // Extracts an integer value from a NSString or NSNumber. Returns kPolicyNotSet
 // for all unexpected cases.
 int ReadPolicyInteger(id value) {
-  if (!value)
+  if (!value) {
     return kPolicyNotSet;
+  }
 
   NSInteger result = kPolicyNotSet;
   if ([value isKindOfClass:[NSString class]]) {
@@ -217,8 +218,9 @@ int TranslateUpdatePolicyValue(int update_policy_from_managed_preferences) {
 
     _appPolicies = [[NSMutableDictionary alloc] init];
     for (NSString* __strong appid in policies.allKeys) {
-      if (![policies[appid] isKindOfClass:[CRUAppPolicyDictionary class]])
+      if (![policies[appid] isKindOfClass:[CRUAppPolicyDictionary class]]) {
         continue;
+      }
 
       CRUAppPolicyDictionary* policyDict = policies[appid];
       appid = appid.lowercaseString;
@@ -271,8 +273,9 @@ int TranslateUpdatePolicyValue(int update_policy_from_managed_preferences) {
 
 - (int)appUpdatePolicy:(NSString*)appid {
   appid = appid.lowercaseString;
-  if (![_appPolicies objectForKey:appid])
+  if (![_appPolicies objectForKey:appid]) {
     return updater::kPolicyNotSet;
+  }
   return [_appPolicies objectForKey:appid].updatePolicy;
 }
 
@@ -288,8 +291,9 @@ int TranslateUpdatePolicyValue(int update_policy_from_managed_preferences) {
 
 - (int)rollbackToTargetVersion:(NSString*)appid {
   appid = appid.lowercaseString;
-  if (![_appPolicies objectForKey:appid])
+  if (![_appPolicies objectForKey:appid]) {
     return updater::kPolicyNotSet;
+  }
   return [_appPolicies objectForKey:appid].rollbackToTargetVersion;
 }
 

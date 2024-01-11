@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/scoped_refptr.h"
 #include "chrome/updater/device_management/dm_storage.h"
 
 #include <string>
@@ -11,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
 #include "chrome/updater/updater_branding.h"
 

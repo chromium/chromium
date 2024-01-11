@@ -218,8 +218,9 @@ NSString* const kKSTicketVersionKeyKey = @"versionKey";
                             [NSURL class],
                           ]]
                                          forKey:kKSTicketServerURLKey];
-  if (!serverURL)
+  if (!serverURL) {
     return nil;
+  }
   if ([serverURL isKindOfClass:[NSString class]]) {
     return [NSURL URLWithString:serverURL];  // May throw
   }
@@ -412,8 +413,9 @@ NSString* const kKSTicketVersionKeyKey = @"versionKey";
   // Standardize (expands tilde, symlink resolve, etc.)
   NSString* fullPath = [path stringByStandardizingPath];
 
-  if (!fullPath.length || !key.length)
+  if (!fullPath.length || !key.length) {
     return nil;
+  }
 
   NSData* plistData = [NSData dataWithContentsOfFile:fullPath];
   if (!plistData.length) {
@@ -432,8 +434,9 @@ NSString* const kKSTicketVersionKeyKey = @"versionKey";
   }
 
   id value = [plistContent objectForKey:key];
-  if (![value isKindOfClass:[NSString class]])
+  if (![value isKindOfClass:[NSString class]]) {
     return nil;
+  }
 
   return (NSString*)value;
 }

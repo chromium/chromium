@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/updater/policy/service.h"
+
 #include <memory>
 #include <optional>
 #include <set>
@@ -15,7 +17,6 @@
 #include "chrome/updater/external_constants.h"
 #include "chrome/updater/policy/dm_policy_manager.h"
 #include "chrome/updater/policy/manager.h"
-#include "chrome/updater/policy/service.h"
 #include "chrome/updater/protos/omaha_settings.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

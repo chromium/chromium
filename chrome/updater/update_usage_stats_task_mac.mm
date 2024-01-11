@@ -35,8 +35,9 @@ bool OtherAppUsageStatsAllowedInDir(const base::FilePath& base_dir) {
     if (base::PathExists(crashpad)) {
       std::unique_ptr<crashpad::CrashReportDatabase> app_database =
           crashpad::CrashReportDatabase::Initialize(crashpad);
-      if (!app_database)
+      if (!app_database) {
         continue;
+      }
       crashpad::Settings* app_settings = app_database->GetSettings();
       bool enabled = false;
       if (app_settings->GetUploadsEnabled(&enabled) && enabled) {
