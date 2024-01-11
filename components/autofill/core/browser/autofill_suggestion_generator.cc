@@ -839,11 +839,16 @@ CreateSuggestionLabelsWithGranularFillingDetails(
     std::optional<FieldTypeSet> last_targeted_fields,
     FieldType trigger_field_type,
     const std::string& app_locale) {
-  AutofillFillingMethod filling_method = GetFillingMethodFromTargetedFields(
-      last_targeted_fields.value_or(kAllFieldTypes));
-  // Field-by-field filling suggestions should not have labels because they are
-  // guaranteed to be unique, see `DeduplicatedProfilesForSuggestions()`.
-  if (filling_method == AutofillFillingMethod::kFieldByFieldFilling) {
+  // Suggestions for filling only one field (field-by-field filling, email group
+  // filling, etc.) should not have labels because they are guaranteed to be
+  // unique, see `DeduplicatedProfilesForSuggestions()`.
+  // As an exception, when a user triggers autofill from the context menu on a
+  // field which is not classified as an address, labels should be added because
+  // the first-level suggestion is not clickable. The first-level suggestion
+  // needs to give plenty of info about the profile.
+  if (field_types.size() == 1 && IsAddressType(trigger_field_type) &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillGranularFillingAvailable)) {
     return std::vector<std::vector<Suggestion::Text>>(profiles.size());
   }
 

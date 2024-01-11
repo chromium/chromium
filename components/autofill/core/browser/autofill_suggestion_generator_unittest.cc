@@ -926,7 +926,7 @@ TEST_F(AutofillChildrenSuggestionGeneratorTest,
       /*last_targeted_fields=*/
       GetAddressFieldsForGroupFilling(),
       /*trigger_field_type=*/ADDRESS_HOME_LINE1,
-      /*field_types=*/{ADDRESS_HOME_LINE1});
+      /*field_types=*/{ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2});
 
   ASSERT_EQ(suggestions.size(), 1u);
   EXPECT_EQ(suggestions[0].labels,
@@ -949,7 +949,7 @@ TEST_F(
   // will lead to the necessity of a differentiating label (`NAME_FULL`).
   std::vector<Suggestion> suggestions =
       suggestion_generator()->CreateSuggestionsFromProfiles(
-          {&profile_1, &profile_2}, {ADDRESS_HOME_LINE1},
+          {&profile_1, &profile_2}, {ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2},
           GetAddressFieldsForGroupFilling(), ADDRESS_HOME_LINE1,
           /*trigger_field_max_length=*/0);
 
@@ -977,7 +977,7 @@ TEST_F(
   // (`EMAIL_ADDRESS`).
   std::vector<Suggestion> suggestions =
       suggestion_generator()->CreateSuggestionsFromProfiles(
-          {&profile_1, &profile_2}, {ADDRESS_HOME_ZIP},
+          {&profile_1, &profile_2}, {ADDRESS_HOME_LINE1, ADDRESS_HOME_ZIP},
           GetAddressFieldsForGroupFilling(), ADDRESS_HOME_ZIP,
           /*trigger_field_max_length=*/0);
 
@@ -998,7 +998,9 @@ TEST_F(AutofillChildrenSuggestionGeneratorTest,
   std::vector<Suggestion> suggestions = CreateSuggestionWithChildrenFromProfile(
       profile(),
       /*last_targeted_fields=*/
-      GetFieldTypesOfGroup(FieldTypeGroup::kName), NAME_FIRST);
+      GetFieldTypesOfGroup(FieldTypeGroup::kName),
+      /*trigger_field_type=*/NAME_FIRST,
+      /*field_types=*/{NAME_FIRST, NAME_LAST});
 
   ASSERT_EQ(suggestions.size(), 1u);
   EXPECT_EQ(suggestions[0].labels,
@@ -1021,7 +1023,7 @@ TEST_F(
   // the necessity of a differentiating label (`ADDRESS_HOME_ZIP`).
   std::vector<Suggestion> suggestions =
       suggestion_generator()->CreateSuggestionsFromProfiles(
-          {&profile_1, &profile_2}, {NAME_FIRST},
+          {&profile_1, &profile_2}, {NAME_FIRST, NAME_LAST},
           GetFieldTypesOfGroup(FieldTypeGroup::kName), NAME_FIRST,
           /*trigger_field_max_length=*/0);
 
@@ -1030,6 +1032,23 @@ TEST_F(
       suggestions[0].labels,
       std::vector<std::vector<Suggestion::Text>>(
           {{Suggestion::Text(u"Fill full name - 666 Erebus St., 100100")}}));
+}
+
+// Test that no labels are added when filling targets only one field.
+TEST_F(
+    AutofillChildrenSuggestionGeneratorTest,
+    CreateSuggestionsFromProfiles_GroupFillingLabels_SingleFieldFillingHasNoLabels) {
+  AutofillProfile profile = test::GetFullProfile();
+
+  std::vector<Suggestion> suggestions =
+      suggestion_generator()->CreateSuggestionsFromProfiles(
+          {&profile}, {NAME_FULL}, GetFieldTypesOfGroup(FieldTypeGroup::kName),
+          NAME_FULL,
+          /*trigger_field_max_length=*/0);
+
+  ASSERT_EQ(suggestions.size(), 1u);
+  EXPECT_EQ(suggestions[0].labels,
+            std::vector<std::vector<Suggestion::Text>>({{}}));
 }
 
 TEST_F(AutofillChildrenSuggestionGeneratorTest,
