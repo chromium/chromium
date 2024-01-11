@@ -7759,39 +7759,6 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="1" label="Classic Script"/>
 </enum>
 
-<enum name="DiagnosticsResult">
-  <int value="0" label="Not run (regular startup)"/>
-  <int value="1" label="Success (crash startup)"/>
-  <int value="2" label="Failure (crash startup)"/>
-  <int value="3" label="Skipped (crash startup)"/>
-</enum>
-
-<enum name="DiagnosticsTestName">
-  <int value="0" label="Conflicting DLLs Test"/>
-  <int value="1" label="Disk Space Test"/>
-  <int value="2" label="Install Type Test"/>
-  <int value="3" label="JSON Bookmarks Test"/>
-  <int value="4" label="JSON Local State Test"/>
-  <int value="5" label="JSON Preferences Test"/>
-  <int value="6" label="Operating System Test"/>
-  <int value="7" label="Path Dictionaries Test"/>
-  <int value="8" label="Path Local State Test"/>
-  <int value="9" label="Path Resources Test"/>
-  <int value="10" label="Path User Data Test"/>
-  <int value="11" label="Version Test"/>
-  <int value="12" label="SQLite Integrity App Cache Test"/>
-  <int value="13" label="SQLite Integrity Archived History Test (obsolete)"/>
-  <int value="14" label="SQLite Integrity Cookie Test"/>
-  <int value="15" label="SQLite Integrity Database Tracker Test"/>
-  <int value="16" label="SQLite Integrity History Test"/>
-  <int value="17" label="SQLite Integrity Nss Cert Test"/>
-  <int value="18" label="SQLite Integrity Nss Key Test"/>
-  <int value="19" label="SQLite Integrity Thumbnails Test (obsolete)"/>
-  <int value="20" label="SQLite Integrity Web Data Test"/>
-  <int value="21" label="SQLite Integrity Favicons Test"/>
-  <int value="22" label="SQLite Integrity Top Sites Test"/>
-</enum>
-
 <enum name="DIPSDeletionAction">
   <int value="0" label="Disallowed"/>
   <int value="1" label="ExceptedAs1p"/>

@@ -1416,8 +1416,6 @@ absl::optional<int> ChromeMainDelegate::BasicStartupComplete() {
       // Recovery has failed somehow, so we exit.
       return recovery_exit_code;
     }
-  } else {  // Not running diagnostics or recovery.
-    diagnostics::DiagnosticsController::GetInstance()->RecordRegularStartup();
   }
 #endif
 

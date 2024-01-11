@@ -63,7 +63,6 @@ tools/metrics/histograms/metadata/custom_tabs/enums.xml
 tools/metrics/histograms/metadata/custom_tabs/histograms.xml
 tools/metrics/histograms/metadata/data/histograms.xml
 tools/metrics/histograms/metadata/dev/histograms.xml
-tools/metrics/histograms/metadata/diagnostics/histograms.xml
 tools/metrics/histograms/metadata/disk/histograms.xml
 tools/metrics/histograms/metadata/download/enums.xml
 tools/metrics/histograms/metadata/download/histograms.xml

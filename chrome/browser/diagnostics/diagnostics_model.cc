@@ -65,20 +65,12 @@ class DiagnosticsModelImpl : public DiagnosticsModel {
     size_t test_count = tests_.size();
     bool continue_running = true;
     for (size_t i = 0; i != test_count; ++i) {
-      // If one of the diagnostic steps returns false, we want to
-      // mark the rest of them as "skipped" in the UMA stats.
       if (continue_running) {
         continue_running = RunTest(tests_[i].get(), observer, i);
         ++tests_run_;
       } else {
-#if BUILDFLAG(IS_CHROMEOS_ASH)  // Only collecting UMA stats on ChromeOS
-        RecordUMATestResult(static_cast<DiagnosticsTestId>(tests_[i]->GetId()),
-                            RESULT_SKIPPED);
-#else
-        // On other platforms, we can just bail out if a diagnostic step returns
-        // false.
+        // Just bail out if a recovery step returns false.
         break;
-#endif
       }
     }
     if (observer)
@@ -89,19 +81,11 @@ class DiagnosticsModelImpl : public DiagnosticsModel {
     size_t test_count = tests_.size();
     bool continue_running = true;
     for (size_t i = 0; i != test_count; ++i) {
-      // If one of the recovery steps returns false, we want to
-      // mark the rest of them as "skipped" in the UMA stats.
       if (continue_running) {
         continue_running = RunRecovery(tests_[i].get(), observer, i);
       } else {
-#if BUILDFLAG(IS_CHROMEOS_ASH)  // Only collecting UMA stats on ChromeOS
-        RecordUMARecoveryResult(
-            static_cast<DiagnosticsTestId>(tests_[i]->GetId()), RESULT_SKIPPED);
-#else
-        // On other platforms, we can just bail out if a recovery step returns
-        // false.
+        // Just bail out if a recovery step returns false.
         break;
-#endif
       }
     }
     if (observer)
@@ -113,7 +97,6 @@ class DiagnosticsModelImpl : public DiagnosticsModel {
   }
 
   bool GetTestInfo(int id, const TestInfo** result) const override {
-    DCHECK(id < DIAGNOSTICS_TEST_ID_COUNT);
     DCHECK(id >= 0);
     for (const auto& test : tests_) {
       if (test->GetId() == id) {

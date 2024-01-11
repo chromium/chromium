@@ -39,17 +39,6 @@ bool DiagnosticsController::HasResults() {
 
 void DiagnosticsController::ClearResults() { model_.reset(); }
 
-void DiagnosticsController::RecordRegularStartup() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)  // Only collecting UMA stats on ChromeOS
-  // For each of the test types, record a normal start (no diagnostics run), so
-  // we have a common denominator.
-  for (int i = 0; i < DIAGNOSTICS_TEST_ID_COUNT; ++i) {
-    RecordUMARecoveryResult(static_cast<DiagnosticsTestId>(i), RESULT_NOT_RUN);
-    RecordUMATestResult(static_cast<DiagnosticsTestId>(i), RESULT_NOT_RUN);
-  }
-#endif
-}
-
 // This entry point is called from early in startup when very few things have
 // been initialized, so be careful what you use.
 int DiagnosticsController::Run(const base::CommandLine& command_line,

@@ -3703,8 +3703,6 @@ static_library("browser") {
       "device_notifications/device_system_tray_icon_renderer.h",
       "diagnostics/diagnostics_controller.cc",
       "diagnostics/diagnostics_controller.h",
-      "diagnostics/diagnostics_metrics.cc",
-      "diagnostics/diagnostics_metrics.h",
       "diagnostics/diagnostics_model.cc",
       "diagnostics/diagnostics_model.h",
       "diagnostics/diagnostics_test.cc",

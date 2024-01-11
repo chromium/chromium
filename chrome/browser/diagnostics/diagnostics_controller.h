@@ -46,11 +46,6 @@ class DiagnosticsController {
   // GetResults until after Run is called again.
   void ClearResults();
 
-  // Records UMA statistics indicating that a regular Chrome startup happened,
-  // with no diagnostics or recovery being run.  This is necessary to provide a
-  // denominator for the diagnostics metrics.
-  void RecordRegularStartup();
-
  private:
   friend struct base::DefaultSingletonTraits<DiagnosticsController>;
 
