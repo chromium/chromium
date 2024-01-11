@@ -310,6 +310,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/prerender/model:test_support",
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/search_engines/model",
+    "//ios/chrome/browser/segmentation_platform/model",
     "//ios/chrome/browser/sessions",
     "//ios/chrome/browser/sessions:fake",
     "//ios/chrome/browser/shared/coordinator/layout_guide",
