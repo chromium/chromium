@@ -14,7 +14,7 @@ Badge::Badge(const std::u16string& text) : text_(text) {}
 
 Badge::~Badge() = default;
 
-std::u16string Badge::GetText() const {
+const std::u16string& Badge::GetText() const {
   return text_;
 }
 
