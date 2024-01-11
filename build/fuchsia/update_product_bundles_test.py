@@ -146,6 +146,7 @@ class TestUpdateProductBundles(unittest.TestCase):
   @mock.patch('common.get_hash_from_sdk', return_value='2.2.2')
   @mock.patch('update_product_bundles.get_current_signature',
               return_value='2.2.2')
+  @mock.patch('update_sdk.GetSDKOverrideGCSPath', return_value=None)
   def testIgnoreDownloadImagesWithSameHash(self, *_):
     try:
       common.get_host_os()
@@ -160,6 +161,7 @@ class TestUpdateProductBundles(unittest.TestCase):
   @mock.patch('common.get_hash_from_sdk', return_value='2.2.2')
   @mock.patch('update_product_bundles.get_current_signature',
               return_value='0.0')
+  @mock.patch('update_sdk.GetSDKOverrideGCSPath', return_value=None)
   def testDownloadImagesWithDifferentHash(self, *_):
     try:
       common.get_host_os()
