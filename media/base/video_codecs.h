@@ -6,15 +6,16 @@
 #define MEDIA_BASE_VIDEO_CODECS_H_
 
 #include <stdint.h>
-#include <string>
 
-#include "base/strings/string_piece.h"
+#include <string>
+#include <string_view>
+
 #include "media/base/media_export.h"
+#include "media/base/video_color_space.h"
 #include "media/media_buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
-
-class VideoColorSpace;
 
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.media
 enum class VideoCodec {
@@ -133,6 +134,15 @@ struct CodecProfileLevel {
   VideoCodecLevel level;
 };
 
+// TODO(crbug.com/1116617): Replace this with VideoType after moving parsing
+// functions out of this file.
+struct VideoCodecParseResult {
+  VideoCodec codec;
+  VideoCodecProfile profile;
+  VideoCodecLevel level;
+  VideoColorSpace color_space;
+};
+
 // Returns a name for `codec` for logging and display purposes.
 std::string MEDIA_EXPORT GetCodecName(VideoCodec codec);
 
@@ -149,61 +159,39 @@ std::string MEDIA_EXPORT BuildH264MimeSuffix(VideoCodecProfile profile,
 // ParseLegacyVp9CodecID handles parsing of legacy VP9 codec strings defined
 // for WebM.
 // TODO(kqyang): Consolidate the two functions once we address crbug.com/667834
-MEDIA_EXPORT bool ParseNewStyleVp9CodecID(base::StringPiece codec_id,
-                                          VideoCodecProfile* profile,
-                                          uint8_t* level_idc,
-                                          VideoColorSpace* color_space);
+MEDIA_EXPORT absl::optional<VideoCodecParseResult> ParseNewStyleVp9CodecID(
+    std::string_view codec_id);
 
-MEDIA_EXPORT bool ParseLegacyVp9CodecID(base::StringPiece codec_id,
-                                        VideoCodecProfile* profile,
-                                        uint8_t* level_idc);
+MEDIA_EXPORT absl::optional<VideoCodecParseResult> ParseLegacyVp9CodecID(
+    std::string_view codec_id);
 
-#if BUILDFLAG(ENABLE_AV1_DECODER)
-MEDIA_EXPORT bool ParseAv1CodecId(base::StringPiece codec_id,
-                                  VideoCodecProfile* profile,
-                                  uint8_t* level_idc,
-                                  VideoColorSpace* color_space);
-#endif
+MEDIA_EXPORT absl::optional<VideoCodecParseResult> ParseAv1CodecId(
+    std::string_view codec_id);
 
 // Handle parsing AVC/H.264 codec ids as outlined in RFC 6381 and ISO-14496-10.
-MEDIA_EXPORT bool ParseAVCCodecId(base::StringPiece codec_id,
-                                  VideoCodecProfile* profile,
-                                  uint8_t* level_idc);
+MEDIA_EXPORT absl::optional<VideoCodecParseResult> ParseAVCCodecId(
+    std::string_view codec_id);
 
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-MEDIA_EXPORT bool ParseHEVCCodecId(base::StringPiece codec_id,
-                                   VideoCodecProfile* profile,
-                                   uint8_t* level_idc);
-#endif
+MEDIA_EXPORT absl::optional<VideoCodecParseResult> ParseHEVCCodecId(
+    std::string_view codec_id);
 
-#if BUILDFLAG(ENABLE_PLATFORM_VVC)
-MEDIA_EXPORT bool ParseVVCCodecId(base::StringPiece codec_id,
-                                  VideoCodecProfile* profile,
-                                  uint8_t* level_idc);
-#endif
+MEDIA_EXPORT absl::optional<VideoCodecParseResult> ParseVVCCodecId(
+    std::string_view codec_id);
 
-#if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
-MEDIA_EXPORT bool ParseDolbyVisionCodecId(base::StringPiece codec_id,
-                                          VideoCodecProfile* profile,
-                                          uint8_t* level_id);
-#endif
+MEDIA_EXPORT absl::optional<VideoCodecParseResult> ParseDolbyVisionCodecId(
+    std::string_view codec_id);
 
-MEDIA_EXPORT void ParseCodec(base::StringPiece codec_id,
-                             VideoCodec& codec,
-                             VideoCodecProfile& profile,
-                             uint8_t& level,
-                             VideoColorSpace& color_space);
-MEDIA_EXPORT VideoCodec StringToVideoCodec(base::StringPiece codec_id);
+MEDIA_EXPORT absl::optional<VideoCodecParseResult> ParseCodec(
+    std::string_view codec_id);
+MEDIA_EXPORT VideoCodec StringToVideoCodec(std::string_view codec_id);
 
 MEDIA_EXPORT VideoCodec
 VideoCodecProfileToVideoCodec(VideoCodecProfile profile);
 
-#if BUILDFLAG(ENABLE_MSE_MPEG2TS_STREAM_PARSER)
 // Translate legacy avc1 codec ids (like avc1.66.30 or avc1.77.31) into a new
 // style standard avc1 codec ids like avc1.4D002F. If the input codec is not
 // recognized as a legacy codec id, then returns the input string unchanged.
-std::string TranslateLegacyAvc1CodecIds(base::StringPiece codec_id);
-#endif
+std::string TranslateLegacyAvc1CodecIds(std::string_view codec_id);
 
 MEDIA_EXPORT std::ostream& operator<<(std::ostream& os,
                                       const VideoCodec& codec);

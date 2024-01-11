@@ -76,14 +76,11 @@ hls::RenditionManager::CodecSupportType GetSupportedTypes(
   for (const std::string& codec : codecs) {
     // Try parsing it as a video codec first, which will set `video.codec`
     // to unknown if it fails.
-    VideoType video;
-    uint8_t video_level;
-    video.hdr_metadata_type = gfx::HdrMetadataType::kNone;
-    ParseCodec(codec, video.codec, video.profile, video_level,
-               video.color_space);
-    if (video.codec != VideoCodec::kUnknown) {
-      video.level = video_level;
-      video_formats.push_back(video);
+    if (auto result = ParseCodec(codec)) {
+      video_formats.push_back({result->codec, result->profile, result->level,
+                               result->color_space,
+                               gfx::HdrMetadataType::kNone});
+
       continue;
     }
 

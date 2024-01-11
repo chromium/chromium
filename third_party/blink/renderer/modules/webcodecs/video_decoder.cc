@@ -99,23 +99,19 @@ bool ParseCodecString(const String& codec_string,
     return false;
   }
 
-  bool is_codec_ambiguous = true;
-  media::VideoCodec codec = media::VideoCodec::kUnknown;
-  media::VideoCodecProfile profile = media::VIDEO_CODEC_PROFILE_UNKNOWN;
-  media::VideoColorSpace color_space = media::VideoColorSpace::REC709();
-  uint8_t level = 0;
-  bool parse_succeeded =
-      media::ParseVideoCodecString("", codec_string.Utf8(), &is_codec_ambiguous,
-                                   &codec, &profile, &level, &color_space);
+  auto result = media::ParseVideoCodecString("", codec_string.Utf8(),
+                                             /*allow_ambiguous_matches=*/false);
 
-  if (!parse_succeeded || is_codec_ambiguous) {
+  if (!result) {
     js_error_message = "Unknown or ambiguous codec name.";
     out_video_type = {media::VideoCodec::kUnknown,
-                      media::VIDEO_CODEC_PROFILE_UNKNOWN, level, color_space};
+                      media::VIDEO_CODEC_PROFILE_UNKNOWN,
+                      media::kNoVideoCodecLevel, media::VideoColorSpace()};
     return true;
   }
 
-  out_video_type = {codec, profile, level, color_space};
+  out_video_type = {result->codec, result->profile, result->level,
+                    result->color_space};
   return true;
 }
 

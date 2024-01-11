@@ -31,7 +31,7 @@ struct MEDIA_EXPORT VideoType {
 
   VideoCodec codec;
   VideoCodecProfile profile;
-  int level;
+  VideoCodecLevel level;
   VideoColorSpace color_space;
   gfx::HdrMetadataType hdr_metadata_type;
 };

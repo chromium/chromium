@@ -147,10 +147,9 @@ VideoTrackRecorder::CodecProfile VideoStringToCodecProfile(
         codecs_str
             .Substring(avc1_start, avc1_end == kNotFound ? UINT_MAX : avc1_end)
             .StripWhiteSpace();
-    media::VideoCodecProfile profile;
-    uint8_t level;
-    if (media::ParseAVCCodecId(avc1_str.Ascii(), &profile, &level))
-      return {codec_id, profile, level};
+    if (auto result = media::ParseAVCCodecId(avc1_str.Ascii())) {
+      return {codec_id, result->profile, result->level};
+    }
   }
 #endif
   // TODO(crbug.com/1465734): Remove the wrong AV1 codecs string, "av1", once

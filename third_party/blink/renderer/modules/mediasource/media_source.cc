@@ -67,24 +67,17 @@ namespace {
 #if BUILDFLAG(ENABLE_MSE_MPEG2TS_STREAM_PARSER)
 
 bool IsMp2tCodecSupported(std::string_view codec_id) {
-  bool is_codec_ambiguous = true;
-  media::VideoCodec video_codec = media::VideoCodec::kUnknown;
-  media::AudioCodec audio_codec = media::AudioCodec::kUnknown;
-  media::VideoCodecProfile profile;
-  uint8_t level = 0;
-  media::VideoColorSpace color_space;
-  if (media::ParseVideoCodecString("", codec_id, &is_codec_ambiguous,
-                                   &video_codec, &profile, &level,
-                                   &color_space)) {
-    if (is_codec_ambiguous) {
-      return false;
-    }
-    if (video_codec != media::VideoCodec::kH264) {
+  if (auto result =
+          media::ParseVideoCodecString("", codec_id,
+                                       /*allow_ambiguous_matches=*/false)) {
+    if (result->codec != media::VideoCodec::kH264) {
       return false;
     }
     return true;
   }
 
+  auto audio_codec = media::AudioCodec::kUnknown;
+  bool is_codec_ambiguous = false;
   if (media::ParseAudioCodecString("", codec_id, &is_codec_ambiguous,
                                    &audio_codec)) {
     if (is_codec_ambiguous) {
@@ -617,17 +610,12 @@ bool MediaSource::IsTypeSupportedInternal(ExecutionContext* context,
     media::SplitCodecs(codecs.Ascii(), &parsed_codec_ids);
     bool first = true;
     for (const auto& codec_id : parsed_codec_ids) {
-      bool is_codec_ambiguous;
-      media::VideoCodec video_codec = media::VideoCodec::kUnknown;
-      media::VideoCodecProfile profile;
-      uint8_t level = 0;
-      media::VideoColorSpace color_space;
-      if (media::ParseVideoCodecString(mime_type.Ascii(), codec_id,
-                                       &is_codec_ambiguous, &video_codec,
-                                       &profile, &level, &color_space) &&
-          !is_codec_ambiguous &&
-          video_codec == media::VideoCodec::kDolbyVision) {
-        continue;
+      if (auto result =
+              media::ParseVideoCodecString(mime_type.Ascii(), codec_id,
+                                           /*allow_ambiguous_matches=*/false)) {
+        if (result->codec == media::VideoCodec::kDolbyVision) {
+          continue;
+        }
       }
       if (first)
         first = false;

@@ -14,7 +14,6 @@
 #include "base/android/jni_string.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "media/base/android/media_codec_bridge.h"
 #include "media/base/android/media_jni_headers/CodecProfileLevelList_jni.h"
@@ -288,7 +287,7 @@ bool MediaCodecUtil::IsPassthroughAudioFormat(AudioCodec codec) {
 
 // static
 absl::optional<gfx::Size> MediaCodecUtil::LookupCodedSizeAlignment(
-    base::StringPiece name,
+    std::string_view name,
     absl::optional<int> host_sdk_int) {
   // Below we build a map of codec names to coded size alignments. We do this on
   // a best effort basis to avoid glitches during a coded size change.

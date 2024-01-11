@@ -74,9 +74,7 @@ class MEDIA_EXPORT MimeUtil {
   struct ParsedCodecResult {
     Codec codec;
     bool is_ambiguous;
-    VideoCodecProfile video_profile;
-    uint8_t video_level;
-    VideoColorSpace video_color_space;
+    absl::optional<VideoCodecParseResult> video;
   };
 
   // See mime_util.h for more information on these methods.
@@ -84,14 +82,10 @@ class MEDIA_EXPORT MimeUtil {
   void SplitCodecs(base::StringPiece codecs,
                    std::vector<std::string>* codecs_out) const;
   void StripCodecs(std::vector<std::string>* codecs) const;
-  bool ParseVideoCodecString(
-      base::StringPiece mime_type,  // fixme, make optional
-      base::StringPiece codec_id,
-      bool* out_is_ambiguous,
-      VideoCodec* out_codec,
-      VideoCodecProfile* out_profile,
-      uint8_t* out_level,
-      VideoColorSpace* out_color_space) const;
+  absl::optional<VideoCodecParseResult> ParseVideoCodecString(
+      std::string_view mime_type,
+      std::string_view codec_id,
+      bool allow_ambiguous_matches) const;
   bool ParseAudioCodecString(base::StringPiece mime_type,
                              base::StringPiece codec_id,
                              bool* out_is_ambiguous,
@@ -182,7 +176,7 @@ class MEDIA_EXPORT MimeUtil {
   SupportsType IsCodecSupported(base::StringPiece mime_type_lower_case,
                                 Codec codec,
                                 VideoCodecProfile video_profile,
-                                uint8_t video_level,
+                                VideoCodecLevel video_level,
                                 const VideoColorSpace& eotf,
                                 bool is_encrypted) const;
 
