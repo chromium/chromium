@@ -26,6 +26,14 @@ const CGFloat kSubtitleBottomMargin = 17;
 
 }  // namespace
 
+@interface OmniboxPositionChoiceViewController ()
+
+/// Haptic feedback generator for selection change.
+@property(nonatomic, readonly, strong)
+    UISelectionFeedbackGenerator* feedbackGenerator;
+
+@end
+
 @implementation OmniboxPositionChoiceViewController {
   /// The view for the top address bar preference option.
   AddressBarOptionView* _topAddressBar;
@@ -34,6 +42,8 @@ const CGFloat kSubtitleBottomMargin = 17;
   /// Whether the screen is being shown in the FRE.
   BOOL _isFirstRun;
 }
+
+@synthesize feedbackGenerator = _feedbackGenerator;
 
 #pragma mark - UIViewController
 
@@ -92,10 +102,16 @@ const CGFloat kSubtitleBottomMargin = 17;
   [_topAddressBar addTarget:self
                      action:@selector(didTapTopAddressBarView)
            forControlEvents:UIControlEventTouchUpInside];
+  [_topAddressBar addTarget:self
+                     action:@selector(didTouchDownAddressBarOption)
+           forControlEvents:UIControlEventTouchDown];
 
   [_bottomAddressBar addTarget:self
                         action:@selector(didTapBottomAddressBarView)
               forControlEvents:UIControlEventTouchUpInside];
+  [_bottomAddressBar addTarget:self
+                        action:@selector(didTouchDownAddressBarOption)
+              forControlEvents:UIControlEventTouchDown];
 
   NSArray* addressBarOptions = @[ _topAddressBar, _bottomAddressBar ];
   if (DefaultSelectedOmniboxPosition() == ToolbarType::kSecondary) {
@@ -122,6 +138,13 @@ const CGFloat kSubtitleBottomMargin = 17;
   [super viewDidLoad];
 }
 
+- (UISelectionFeedbackGenerator*)feedbackGenerator {
+  if (!_feedbackGenerator) {
+    _feedbackGenerator = [[UISelectionFeedbackGenerator alloc] init];
+  }
+  return _feedbackGenerator;
+}
+
 #pragma mark - OmniboxPositionChoiceConsumer
 
 - (void)setSelectedToolbarForOmnibox:(ToolbarType)position {
@@ -136,6 +159,7 @@ const CGFloat kSubtitleBottomMargin = 17;
   if (_topAddressBar.selected) {
     return;
   }
+  [self.feedbackGenerator selectionChanged];
   [self.mutator selectTopOmnibox];
 }
 
@@ -144,7 +168,12 @@ const CGFloat kSubtitleBottomMargin = 17;
   if (_bottomAddressBar.selected) {
     return;
   }
+  [self.feedbackGenerator selectionChanged];
   [self.mutator selectBottomOmnibox];
+}
+
+- (void)didTouchDownAddressBarOption {
+  [self.feedbackGenerator prepare];
 }
 
 @end
