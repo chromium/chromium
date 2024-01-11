@@ -74,8 +74,7 @@ FieldTrialTest::~FieldTrialTest() {}
 void FieldTrialTest::SetFeatureParams(
     bool enable,
     float query_probability,
-    NetworkTimeTracker::FetchBehavior fetch_behavior,
-    NetworkTimeTracker::ClockDriftSamples clock_drift_samples) {
+    NetworkTimeTracker::FetchBehavior fetch_behavior) {
   scoped_feature_list_.Reset();
   if (!enable) {
     scoped_feature_list_.InitAndDisableFeature(kNetworkTimeServiceQuerying);
@@ -86,7 +85,6 @@ void FieldTrialTest::SetFeatureParams(
   params["RandomQueryProbability"] = base::NumberToString(query_probability);
   // See string format defined by `base::TimeDeltaFromString`.
   params["CheckTimeInterval"] = "360s";
-  params["ClockDriftSampleDistance"] = "2s";
   std::string fetch_behavior_param;
   switch (fetch_behavior) {
     case NetworkTimeTracker::FETCH_BEHAVIOR_UNKNOWN:
@@ -104,17 +102,6 @@ void FieldTrialTest::SetFeatureParams(
       break;
   }
   params["FetchBehavior"] = fetch_behavior_param;
-
-  std::string num_clock_drift_samples;
-  switch (clock_drift_samples) {
-    case NetworkTimeTracker::ClockDriftSamples::NO_SAMPLES:
-      num_clock_drift_samples = "0";
-      break;
-    case NetworkTimeTracker::ClockDriftSamples::TWO_SAMPLES:
-      num_clock_drift_samples = "2";
-      break;
-  }
-  params["ClockDriftSamples"] = num_clock_drift_samples;
 
   scoped_feature_list_.InitAndEnableFeatureWithParameters(
       kNetworkTimeServiceQuerying, params);

@@ -441,8 +441,7 @@ TEST_F(MetricsLogTest,
   std::unique_ptr<network_time::FieldTrialTest> field_trial_test(
       new network_time::FieldTrialTest());
   field_trial_test->SetFeatureParams(
-      true, 0.0, network_time::NetworkTimeTracker::FETCHES_ON_DEMAND_ONLY,
-      network_time::NetworkTimeTracker::ClockDriftSamples::NO_SAMPLES);
+      true, 0.0, network_time::NetworkTimeTracker::FETCHES_ON_DEMAND_ONLY);
   scoped_refptr<network::TestSharedURLLoaderFactory> shared_url_loader_factory =
       base::MakeRefCounted<network::TestSharedURLLoaderFactory>();
   TestingPrefServiceSimple pref_service;
@@ -494,8 +493,7 @@ TEST_F(
   std::unique_ptr<network_time::FieldTrialTest> field_trial_test(
       new network_time::FieldTrialTest());
   field_trial_test->SetFeatureParams(
-      true, 0.0, network_time::NetworkTimeTracker::FETCHES_ON_DEMAND_ONLY,
-      network_time::NetworkTimeTracker::ClockDriftSamples::NO_SAMPLES);
+      true, 0.0, network_time::NetworkTimeTracker::FETCHES_ON_DEMAND_ONLY);
   scoped_refptr<network::TestSharedURLLoaderFactory> shared_url_loader_factory =
       base::MakeRefCounted<network::TestSharedURLLoaderFactory>();
   TestingPrefServiceSimple pref_service;
@@ -552,8 +550,7 @@ TEST_F(MetricsLogTest,
   std::unique_ptr<network_time::FieldTrialTest> field_trial_test(
       new network_time::FieldTrialTest());
   field_trial_test->SetFeatureParams(
-      true, 0.0, network_time::NetworkTimeTracker::FETCHES_ON_DEMAND_ONLY,
-      network_time::NetworkTimeTracker::ClockDriftSamples::NO_SAMPLES);
+      true, 0.0, network_time::NetworkTimeTracker::FETCHES_ON_DEMAND_ONLY);
   scoped_refptr<network::TestSharedURLLoaderFactory> shared_url_loader_factory =
       base::MakeRefCounted<network::TestSharedURLLoaderFactory>();
   TestingPrefServiceSimple pref_service;

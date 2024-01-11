@@ -13941,31 +13941,6 @@
             ]
         }
     ],
-    "PrivacyBudgetClockSkewMetrics": [
-        {
-            "platforms": [
-                "android",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "ClockDriftSampleDistance": "300s",
-                        "ClockDriftSamples": "2",
-                        "FetchBehavior": "background-and-on-demand",
-                        "RandomQueryProbability": "0.0394"
-                    },
-                    "enable_features": [
-                        "NetworkTimeServiceQuerying"
-                    ]
-                }
-            ]
-        }
-    ],
     "PrivacyGuide3": [
         {
             "platforms": [
