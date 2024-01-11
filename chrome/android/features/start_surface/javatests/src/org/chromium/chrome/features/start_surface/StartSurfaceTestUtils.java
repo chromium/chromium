@@ -79,6 +79,7 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.url.GURL;
@@ -557,9 +558,12 @@ public class StartSurfaceTestUtils {
 
         // Check the toolbar's background color.
         ToolbarPhone toolbar = cta.findViewById(R.id.toolbar);
-        Assert.assertEquals(
-                toolbar.getToolbarDataProvider().getPrimaryColor(),
-                toolbar.getBackgroundDrawable().getColor());
+        int expectedToolbarColor =
+                ChromeFeatureList.sSurfacePolish.isEnabled()
+                        ? ChromeColors.getSurfaceColor(
+                                cta, R.dimen.home_surface_background_color_elevation)
+                        : toolbar.getToolbarDataProvider().getPrimaryColor();
+        Assert.assertEquals(expectedToolbarColor, toolbar.getBackgroundDrawable().getColor());
     }
 
     /**

@@ -78,7 +78,6 @@ import org.chromium.chrome.browser.logo.LogoBridgeJni;
 import org.chromium.chrome.browser.logo.LogoCoordinator;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
-import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -91,6 +90,7 @@ import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
+import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -211,8 +211,14 @@ public class NewTabPageTest {
         FeatureList.TestValues testValuesOverride = new FeatureList.TestValues();
         testValuesOverride.addFeatureFlagOverride(
                 ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID, isScrollableMVTEnabled);
-        testValuesOverride.addFeatureFlagOverride(
-                ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_PHONE_ANDROID, isScrollableMVTEnabled);
+        if (!ChromeFeatureList.sSurfacePolish.isEnabled()) {
+            testValuesOverride.addFeatureFlagOverride(
+                    ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_PHONE_ANDROID,
+                    isScrollableMVTEnabled);
+        } else {
+            StartSurfaceConfiguration.SURFACE_POLISH_SCROLLABLE_MVT.setForTesting(
+                    isScrollableMVTEnabled);
+        }
         FeatureList.setTestValues(testValuesOverride);
     }
 
@@ -330,7 +336,6 @@ public class NewTabPageTest {
     public void testSearchFromFakebox() {
         TouchCommon.singleClickView(mFakebox);
         waitForFakeboxFocusAnimationComplete(mNtp);
-        final UrlBar urlBar = (UrlBar) mActivityTestRule.getActivity().findViewById(R.id.url_bar);
         mOmnibox.requestFocus();
         mOmnibox.typeText(UrlConstants.VERSION_URL, false);
         mOmnibox.checkSuggestionsShown();
@@ -971,7 +976,11 @@ public class NewTabPageTest {
     @Test
     @MediumTest
     @Feature({"NewTabPage"})
-    @EnableFeatures({ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_PHONE_ANDROID})
+    @EnableFeatures({ChromeFeatureList.SURFACE_POLISH + "<Study,"})
+    @CommandLineFlags.Add({
+        "force-fieldtrials=Study/Group",
+        SURFACE_POLISH_PARAMS + "scrollable_mvt/true"
+    })
     public void testSingleTabCardShowAndClick() {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         mActivityTestRule.loadUrl(TEST_URL);

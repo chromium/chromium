@@ -1307,6 +1307,7 @@ public class StartSurfaceMediatorUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.SURFACE_POLISH)
     public void testStartSurfaceTopMarginsWithSingleTabCardVisibility() {
         doReturn(TabSwitcherType.SINGLE)
                 .when(mSingleTabSwitcherModuleController)

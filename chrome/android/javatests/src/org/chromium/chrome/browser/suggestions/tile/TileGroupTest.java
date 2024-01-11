@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -104,8 +105,14 @@ public class TileGroupTest {
         FeatureList.TestValues testValuesOverride = new FeatureList.TestValues();
         testValuesOverride.addFeatureFlagOverride(
                 ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID, mEnableScrollableMVT);
-        testValuesOverride.addFeatureFlagOverride(
-                ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_PHONE_ANDROID, mEnableScrollableMVT);
+        if (!ChromeFeatureList.sSurfacePolish.isEnabled()) {
+            testValuesOverride.addFeatureFlagOverride(
+                    ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_PHONE_ANDROID,
+                    mEnableScrollableMVT);
+        } else {
+            StartSurfaceConfiguration.SURFACE_POLISH_SCROLLABLE_MVT.setForTesting(
+                    mEnableScrollableMVT);
+        }
         FeatureList.setTestValues(testValuesOverride);
 
         mTestServer =
@@ -160,8 +167,6 @@ public class TileGroupTest {
     public void testDismissTileUndo() throws Exception {
         initializeTab();
         GURL url0 = new GURL(mSiteSuggestionUrls[0]);
-        GURL url1 = new GURL(mSiteSuggestionUrls[1]);
-        GURL url2 = new GURL(mSiteSuggestionUrls[2]);
         SiteSuggestion siteToDismiss = mMostVisitedSites.getCurrentSites().get(0);
         final ViewGroup tileContainer = getTileLayout();
         final View tileView = getNonNullTileViewFor(siteToDismiss);

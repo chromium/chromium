@@ -82,6 +82,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
+import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -216,8 +217,14 @@ public class FeedV2NewTabPageTest {
         FeatureList.TestValues testValuesOverride = new FeatureList.TestValues();
         testValuesOverride.addFeatureFlagOverride(
                 ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_ANDROID, mEnableScrollableMVT);
-        testValuesOverride.addFeatureFlagOverride(
-                ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_PHONE_ANDROID, mEnableScrollableMVT);
+        if (!ChromeFeatureList.sSurfacePolish.isEnabled()) {
+            testValuesOverride.addFeatureFlagOverride(
+                    ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_PHONE_ANDROID,
+                    mEnableScrollableMVT);
+        } else {
+            StartSurfaceConfiguration.SURFACE_POLISH_SCROLLABLE_MVT.setForTesting(
+                    mEnableScrollableMVT);
+        }
         FeatureList.setTestValues(testValuesOverride);
 
         mActivityTestRule.startMainActivityWithURL("about:blank");

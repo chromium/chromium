@@ -61,6 +61,7 @@ import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegateImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
+import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -162,10 +163,16 @@ public class MostVisitedTilesLayoutTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        FeatureList.TestValues testValuesOverride = new FeatureList.TestValues();
-        testValuesOverride.addFeatureFlagOverride(
-                ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_PHONE_ANDROID, mEnableScrollableMVT);
-        FeatureList.setTestValues(testValuesOverride);
+        if (!ChromeFeatureList.sSurfacePolish.isEnabled()) {
+            FeatureList.TestValues testValuesOverride = new FeatureList.TestValues();
+            testValuesOverride.addFeatureFlagOverride(
+                    ChromeFeatureList.SHOW_SCROLLABLE_MVT_ON_NTP_PHONE_ANDROID,
+                    mEnableScrollableMVT);
+            FeatureList.setTestValues(testValuesOverride);
+        } else {
+            StartSurfaceConfiguration.SURFACE_POLISH_SCROLLABLE_MVT.setForTesting(
+                    mEnableScrollableMVT);
+        }
     }
 
     @Test
