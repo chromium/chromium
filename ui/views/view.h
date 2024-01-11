@@ -1009,9 +1009,8 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Returns the NativeTheme to use for this View. This calls through to
   // GetNativeTheme() on the Widget this View is in, or provides a default
-  // theme if there's no widget, or returns |native_theme_| if that's
-  // set. Warning: the default theme might not be correct; you should probably
-  // override OnThemeChanged().
+  // theme if there's no widget. Warning: the default theme might not be
+  // correct; you should probably override OnThemeChanged().
   ui::NativeTheme* GetNativeTheme() {
     return const_cast<ui::NativeTheme*>(std::as_const(*this).GetNativeTheme());
   }
@@ -2304,14 +2303,6 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Whether SchedulePaintInRect() was invoked on this View.
   bool needs_paint_ = false;
-
-  // Native theme --------------------------------------------------------------
-
-  // A native theme for this view and its descendants. Typically null, in which
-  // case the native theme is drawn from the parent view (eventually the
-  // widget).
-  raw_ptr<ui::NativeTheme, AcrossTasksDanglingUntriaged> native_theme_ =
-      nullptr;
 
   // RTL painting --------------------------------------------------------------
 
