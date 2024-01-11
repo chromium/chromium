@@ -127,6 +127,22 @@ class IdleTimeoutServiceTest : public PlatformTest {
   AuthenticationService* authentication_service_;
 };
 
+// Test that the observer methods are not called when the policy is not set, and
+// that the idle check return false.
+TEST_F(IdleTimeoutServiceTest, IdleTimeoutPolicyNotSet) {
+  InitIdleService();
+  // The pref value should not be positive if the policy is not set.
+  ASSERT_FALSE(browser_state_->GetPrefs()
+                   ->GetTimeDelta(enterprise_idle::prefs::kIdleTimeout)
+                   .is_positive());
+  EXPECT_CALL(*action_runner_, Run(_)).Times(0);
+  EXPECT_CALL(mock_observer_, OnIdleTimeoutOnStartup()).Times(0);
+  idle_service_->OnApplicationWillEnterForeground();
+  EXPECT_CALL(mock_observer_, OnApplicationWillEnterBackground()).Times(0);
+  idle_service_->OnApplicationWillEnterBackground();
+  EXPECT_FALSE(idle_service_->IsIdleAfterPreviouslyBeingActive());
+}
+
 // When policy timeout is set after being unset.
 TEST_F(IdleTimeoutServiceTest, IdleTimeoutPrefsSet_OnPolicySet) {
   InitIdleService();

@@ -81,6 +81,10 @@ void IdleService::OnApplicationWillEnterForeground() {
 }
 
 void IdleService::OnApplicationWillEnterBackground() {
+  if (!IsIdleTimeoutPolicySet()) {
+    // Do nothing if the policy is not set.
+    return;
+  }
   // Relying on `OnApplicationWillEnterForeground` to reset the callback
   // is not reliable. The old tasks remain leading to unpredictable scheduling
   // behaviour.
@@ -106,6 +110,9 @@ base::TimeDelta IdleService::GetPossibleTimeToIdle() {
 }
 
 void IdleService::PostCheckIdleTask(base::TimeDelta time_from_now) {
+  // No tasks should be scheduled when the policy is not set.
+  CHECK(GetTimeout().is_positive());
+
   cancelable_actions_callback_.Reset(
       base::BindOnce(&IdleService::CheckIfIdle, weak_factory_.GetWeakPtr()));
   // Post task to check idle state when it can potentially happen.
@@ -130,6 +137,11 @@ bool IdleService::IsIdleAfterPreviouslyBeingActive() {
   base::Time last_idle_time = browser_state_->GetPrefs()->GetTime(
       enterprise_idle::prefs::kLastIdleTimestamp);
 
+  // Return false when the policy is not set.
+  if (!idle_threshold.is_positive()) {
+    return false;
+  }
+
   // There are  two cases we want to run  the actions:
   // 1. If the browser has never been idle, the last idle timestamp will be
   // empty, so just check the last active time.
@@ -150,6 +162,10 @@ bool IdleService::IsIdleAfterPreviouslyBeingActive() {
   return is_idle_for_first_time || is_idle_after_being_active;
 }
 
+bool IdleService::IsIdleTimeoutPolicySet() {
+  return GetTimeout().is_positive();
+}
+
 void IdleService::RunActionsForStateForTesting(LastState last_state) {
   CHECK_IS_TEST();
   MaybeRunActionsForState(last_state);
@@ -165,7 +181,7 @@ void IdleService::MaybeRunActionsForState(LastState last_state) {
   if (last_state == LastState::kIdleOnBackground) {
     // TODO: check if data will be cleared.
     for (auto& observer : observer_list_) {
-      // Show loading UI on re-foreground right away if data will be clared.
+      // Show loading UI on re-foreground right away if data will be cleared.
       observer.OnIdleTimeoutOnStartup();
     }
     RunActions();
