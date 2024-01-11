@@ -5233,7 +5233,6 @@ static_library("browser") {
       "//chrome/browser/ash/system_extensions/api/window_management",
       "//chrome/browser/ash/system_web_apps",
       "//chrome/browser/ash/system_web_apps/types",
-      "//chrome/browser/ash/video_conference",
       "//chrome/browser/enterprise/connectors/device_trust/attestation/ash",
       "//chrome/browser/metrics/structured",
       "//chrome/browser/nearby_sharing:share_target",

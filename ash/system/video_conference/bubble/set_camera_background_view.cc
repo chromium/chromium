@@ -10,6 +10,7 @@
 #include "ash/system/camera/camera_effects_controller.h"
 #include "ash/system/video_conference/bubble/bubble_view.h"
 #include "ash/system/video_conference/bubble/bubble_view_ids.h"
+#include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "skia/ext/image_operations.h"
@@ -202,12 +203,13 @@ class CreateImageButton : public views::LabelButton {
   METADATA_HEADER(CreateImageButton, views::LabelButton)
 
  public:
-  CreateImageButton()
+  CreateImageButton(VideoConferenceTrayController* controller)
       : views::LabelButton(
             base::BindRepeating(&CreateImageButton::OnButtonClicked,
                                 base::Unretained(this)),
             l10n_util::GetStringUTF16(
-                IDS_ASH_VIDEO_CONFERENCE_CREAT_WITH_AI_NAME)) {
+                IDS_ASH_VIDEO_CONFERENCE_CREAT_WITH_AI_NAME)),
+        controller_(controller) {
     SetBorder(views::CreateEmptyBorder(kCreateImageButtonBorderInsets));
     SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
     SetImageLabelSpacing(kCreateImageButtonBetweenChildSpacing);
@@ -223,7 +225,12 @@ class CreateImageButton : public views::LabelButton {
   ~CreateImageButton() override = default;
 
  private:
-  void OnButtonClicked(const ui::Event& event) {}
+  void OnButtonClicked(const ui::Event& event) {
+    controller_->CreateBackgroundImage();
+  }
+
+  // Unowned by `CreateImageButton`.
+  const raw_ptr<VideoConferenceTrayController> controller_;
 };
 
 BEGIN_METADATA(CreateImageButton)
@@ -231,7 +238,9 @@ END_METADATA
 
 }  // namespace
 
-SetCameraBackgroundView::SetCameraBackgroundView(BubbleView* bubble_view) {
+SetCameraBackgroundView::SetCameraBackgroundView(
+    BubbleView* bubble_view,
+    VideoConferenceTrayController* controller) {
   SetID(BubbleViewID::kSetCameraBackgroundView);
 
   // `SetCameraBackgroundView` has 2+ children, we want to stack them
@@ -244,7 +253,7 @@ SetCameraBackgroundView::SetCameraBackgroundView(BubbleView* bubble_view) {
       views::BoxLayout::CrossAxisAlignment::kStretch);
 
   AddChildView(std::make_unique<RecentlyUsedBackgroundView>(bubble_view));
-  AddChildView(std::make_unique<CreateImageButton>());
+  AddChildView(std::make_unique<CreateImageButton>(controller));
 }
 
 BEGIN_METADATA(SetCameraBackgroundView)

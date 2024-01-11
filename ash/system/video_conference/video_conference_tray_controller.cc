@@ -673,6 +673,11 @@ VideoConferenceTrayController::GetEffectsManager() {
   return effects_manager_;
 }
 
+void VideoConferenceTrayController::CreateBackgroundImage() {
+  CHECK(video_conference_manager_);
+  video_conference_manager_->CreateBackgroundImage();
+}
+
 void VideoConferenceTrayController::UpdateWithMediaState(
     VideoConferenceMediaState state) {
   auto old_state = state_;

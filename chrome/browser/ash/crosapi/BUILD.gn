@@ -321,7 +321,6 @@ source_set("crosapi") {
     "//chrome/browser/ash/telemetry_extension/management",
     "//chrome/browser/ash/telemetry_extension/routines",
     "//chrome/browser/ash/telemetry_extension/telemetry",
-    "//chrome/browser/ash/video_conference",
     "//chrome/browser/image_decoder:image_decoder",
     "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
     "//chrome/browser/profiles:profile",
