@@ -119,7 +119,7 @@
       },
       "WINDOW_ID_CURRENT": {
         "value": -2,
-        "description": "The windowId value that represents the <a href='windows#current-window'>current window</a>."
+        "description": "The windowId value that represents the <a href='#the_current_window'>current window</a>."
       }
     },
     "functions": [
