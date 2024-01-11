@@ -400,11 +400,10 @@ crbug.com/1468826 [ ventura angle-opengl amd-0x67ef asan ] Pixel_WebGPUToDataURL
 crbug.com/1469875 [ mac graphite-enabled amd release no-asan ] Pixel_SVGHuge [ Failure ]
 crbug.com/1469875 [ apple-angle-metal-renderer:-apple-m2 graphite-enabled mac ] Pixel_SVGHuge [ Failure ]
 crbug.com/1469875 [ mac graphite-enabled intel release no-asan ] Pixel_SVGHuge [ Failure ]
-crbug.com/1469875 [ mac graphite-enabled intel release asan ] Pixel_CSSFilterEffects [ Failure ]
 crbug.com/1469875 [ mac graphite-enabled intel release asan ] Pixel_CSSFilterEffects_NoOverlays [ Failure ]
 
 # Flaky, but if it fails, retries also always fail.
-crbug.com/1494227 [ mac graphite-enabled intel release no-asan ] Pixel_CSSFilterEffects [ Failure ]
+crbug.com/1494227 [ mac graphite-enabled intel ] Pixel_CSSFilterEffects [ Failure ]
 
 crbug.com/1474611 [ mac nvidia angle-opengl graphite-disabled ] Pixel_WebGLGreenTriangle_NonChromiumImage_NoAA_NoAlpha [ Failure ]
 crbug.com/1477318 [ mac ] Pixel_WebGLPreservedAfterTabSwitch [ RetryOnFailure ]
