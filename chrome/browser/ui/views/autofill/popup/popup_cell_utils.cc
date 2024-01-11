@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/ui/autofill_resource_utils.h"
-#include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -491,14 +490,15 @@ void AddSuggestionContentToView(
 
 void FormatLabel(views::Label& label,
                  const Suggestion::Text& text,
-                 PopupType popup_type,
+                 FillingProduct main_filling_product,
                  int maximum_width_single_line) {
-  switch (popup_type) {
-    case PopupType::kAddresses:
-    case PopupType::kAutocomplete:
+  switch (main_filling_product) {
+    case FillingProduct::kAddress:
+    case FillingProduct::kAutocomplete:
+    case FillingProduct::kPlusAddresses:
       label.SetMaximumWidthSingleLine(maximum_width_single_line);
       break;
-    case PopupType::kCreditCards:
+    case FillingProduct::kCreditCard:
       if (text.should_truncate.value()) {
         // should_truncate should only be set to true iff the experiments are
         // enabled.
@@ -509,9 +509,11 @@ void FormatLabel(views::Label& label,
         label.SetMaximumWidthSingleLine(maximum_width_single_line);
       }
       break;
-    case PopupType::kIbans:
-    case PopupType::kPasswords:
-    case PopupType::kUnspecified:
+    case FillingProduct::kCompose:
+    case FillingProduct::kIban:
+    case FillingProduct::kMerchantPromoCode:
+    case FillingProduct::kPassword:
+    case FillingProduct::kNone:
       break;
   }
 }
@@ -546,7 +548,7 @@ int GetMaxPopupAddressProfileWidth() {
 std::vector<std::unique_ptr<views::View>> CreateAndTrackSubtextViews(
     PopupRowContentView& content_view,
     const Suggestion& suggestion,
-    PopupType popup_type,
+    FillingProduct main_filling_product,
     int text_style) {
   std::vector<std::unique_ptr<views::View>> result;
   const int kHorizontalSpacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -577,12 +579,12 @@ std::vector<std::unique_ptr<views::View>> CreateAndTrackSubtextViews(
       // TODO(crbug.com/1459990): Remove feature check as part of the clean up.
       if (!base::FeatureList::IsEnabled(
               features::kAutofillGranularFillingAvailable)) {
-        FormatLabel(*label, label_text, popup_type,
+        FormatLabel(*label, label_text, main_filling_product,
                     GetMaxPopupAddressProfileWidth());
       } else {
         // To make sure the popup width will not exceed its maximum value,
         // divide the maximum label width by the number of labels.
-        FormatLabel(*label, label_text, popup_type,
+        FormatLabel(*label, label_text, main_filling_product,
                     GetMaxPopupAddressProfileWidth() / label_row.size());
       }
     }
