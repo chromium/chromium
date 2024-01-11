@@ -6827,6 +6827,7 @@ if (!is_fuchsia) {
       "//components/commerce/core:shopping_service",
       "//components/commerce/core:shopping_service_test_support",
       "//components/component_updater:test_support",
+      "//components/component_updater/installer_policies:installer_policies_no_content_deps",
       "//components/content_settings/browser",
       "//components/content_settings/browser:test_support",
       "//components/content_settings/browser/ui",

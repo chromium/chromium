@@ -123,6 +123,8 @@ source_set("browser") {
     "component_updater/origin_trials_component_loader.h",
     "component_updater/registration.cc",
     "component_updater/registration.h",
+    "component_updater/tpcd_metadata_component_loader.cc",
+    "component_updater/tpcd_metadata_component_loader.h",
     "component_updater/trust_token_key_commitments_component_loader.cc",
     "component_updater/trust_token_key_commitments_component_loader.h",
     "cookie_manager.cc",
@@ -242,6 +244,7 @@ source_set("browser") {
     "//components/optimization_guide/core:bloomfilter",
     "//components/profile_metrics",
     "//components/strings:components_strings_grit",
+    "//components/tpcd/metadata",
     "//components/translate/core/common",
     "//components/url_matcher",
 

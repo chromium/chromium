@@ -81,4 +81,8 @@ const char kWebViewEnableAppRecovery[] = "webview-enable-app-recovery";
 const char kWebViewEnableTrustTokensComponent[] =
     "webview-enable-trust-tokens-component";
 
+// Enables downloading TpcdMetadataComponentInstallerPolicy by the component
+// updater downloading service in nonembedded WebView.
+const char kWebViewTpcdMetadaComponent[] = "webview-tpcd-metadata-component";
+
 }  // namespace switches

@@ -1,10 +1,13 @@
 include_rules = [
   "+components/autofill/core/browser",
   "+components/autofill/core/common",
+  "+components/content_settings/core",
+  "+components/lookalikes/core",
   "+components/omnibox/browser",
   "+components/omnibox/common",
   "+components/optimization_guide/core",
   "+components/prefs",
-  "+components/lookalikes/core",
+  "+components/tpcd",
+  "+net/base",
   "+services/network/public",
 ]
