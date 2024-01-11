@@ -261,6 +261,14 @@ NSString* const kSharingStatusFooterId = @"SharingStatusViewFooter";
   CGFloat width = containerView.bounds.size.width;
   CGSize fittingSize = CGSizeMake(width, UILayoutFittingCompressedSize.height);
   CGFloat height = [self.view systemLayoutSizeFittingSize:fittingSize].height;
+
+  // Measure height without the safeAreaInsets.bottom in portrait orientation on
+  // iPhone (as it is added anyway to the result in edge-attached sheets).
+  UITraitCollection* traitCollection = context.containerTraitCollection;
+  if (traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact &&
+      traitCollection.verticalSizeClass == UIUserInterfaceSizeClassRegular) {
+    height -= containerView.safeAreaInsets.bottom;
+  }
   return height;
 }
 
