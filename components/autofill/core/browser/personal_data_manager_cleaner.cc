@@ -118,9 +118,6 @@ void PersonalDataManagerCleaner::ApplyAddressFixesAndCleanups() {
   // Ran once on browser startup.
   DeleteDisusedAddresses();
 
-  // Ran once on browser startup.
-  RemoveInaccessibleProfileValues();
-
   is_profile_cleanup_pending_ = false;
 }
 
@@ -136,28 +133,6 @@ void PersonalDataManagerCleaner::ApplyCardFixesAndCleanups() {
   ClearCreditCardNonSettingsOrigins();
 
   is_credit_card_cleanup_pending_ = true;
-}
-
-void PersonalDataManagerCleaner::RemoveInaccessibleProfileValues() {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillRemoveInaccessibleProfileValuesOnStartup)) {
-    return;
-  }
-
-  for (const AutofillProfile* profile :
-       personal_data_manager_->GetProfilesFromSource(
-           AutofillProfile::Source::kLocalOrSyncable)) {
-    const FieldTypeSet inaccessible_fields =
-        profile->FindInaccessibleProfileValues();
-    if (!inaccessible_fields.empty()) {
-      // We need to create a copy, because otherwise the internally stored
-      // profile in |personal_data_manager_| is modified, which should only
-      // happen via UpdateProfile().
-      AutofillProfile updated_profile = *profile;
-      updated_profile.ClearFields(inaccessible_fields);
-      personal_data_manager_->UpdateProfile(updated_profile);
-    }
-  }
 }
 
 bool PersonalDataManagerCleaner::ApplyDedupingRoutine() {

@@ -112,10 +112,6 @@ class PersonalDataManagerCleanerTest : public PersonalDataManagerTestBase,
     return personal_data_manager_cleaner_->ApplyDedupingRoutine();
   }
 
-  void RemoveInaccessibleProfileValues() {
-    personal_data_manager_cleaner_->RemoveInaccessibleProfileValues();
-  }
-
   void DedupeProfiles(
       std::vector<std::unique_ptr<AutofillProfile>>* existing_profiles,
       std::unordered_set<std::string>* profile_guids_to_delete) const {
@@ -442,36 +438,6 @@ TEST_F(PersonalDataManagerCleanerTest, Deduplicate_kAccountSubset) {
   AutofillProfile local_profile = test::StandardProfile();
   EXPECT_THAT(DeduplicateProfiles({account_profile, local_profile}),
               testing::UnorderedElementsAre(account_profile, local_profile));
-}
-
-// Tests that settings-inaccessible profile values are removed from every stored
-// profile on startup.
-TEST_F(PersonalDataManagerCleanerTest,
-       RemoveInaccessibleProfileValuesOnStartup) {
-  base::test::ScopedFeatureList features(
-      features::kAutofillRemoveInaccessibleProfileValuesOnStartup);
-
-  // Add a German and a US profile.
-  AutofillProfile profile0(i18n_model_definition::kLegacyHierarchyCountryCode);
-  test::SetProfileInfo(&profile0, "Marion", "Mitchell", "Morrison",
-                       "johnwayne@me.xyz", "Fox", "123 Zoo St.", "unit 5",
-                       "Hollywood", "CA", "91601", "DE", "12345678910");
-  AutofillProfile profile1(i18n_model_definition::kLegacyHierarchyCountryCode);
-  test::SetProfileInfo(&profile1, "Josephine", "Alicia", "Saenz",
-                       "joewayne@me.xyz", "Fox", "903 Apple Ct.", nullptr,
-                       "Orlando", "FL", "32801", "US", "19482937549");
-  AddProfileToPersonalDataManager(profile0);
-  AddProfileToPersonalDataManager(profile1);
-
-  RemoveInaccessibleProfileValues();
-  PersonalDataProfileTaskWaiter(personal_data()).Wait();
-
-  // profile0 should have it's state removed, while the US profile should remain
-  // unchanged.
-  profile0.SetRawInfo(ADDRESS_HOME_STATE, u"");
-  std::vector<AutofillProfile*> expected_profiles = {&profile0, &profile1};
-  EXPECT_THAT(personal_data().GetProfiles(),
-              HasSameElements(expected_profiles));
 }
 
 // Tests that DeleteDisusedAddresses only deletes the addresses that are

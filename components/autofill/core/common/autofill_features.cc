@@ -531,12 +531,6 @@ BASE_FEATURE(kAutofillProbableFormSubmissionInBrowser,
              "AutofillProbableFormSubmissionInBrowser",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Removes setting-inaccessible field types from existing profiles on startup.
-// TODO(crbug.com/1300548): Cleanup when launched.
-BASE_FEATURE(kAutofillRemoveInaccessibleProfileValuesOnStartup,
-             "AutofillRemoveInaccessibleProfileValuesOnStartup",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls non-default Autofill API predictions. See crbug.com/1331322.
 BASE_FEATURE(kAutofillServerBehaviors,
              "AutofillServerBehaviors",

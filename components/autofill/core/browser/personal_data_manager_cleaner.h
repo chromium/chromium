@@ -61,10 +61,6 @@ class PersonalDataManagerCleaner {
   // Applies various fixes and cleanups on autofill credit cards.
   void ApplyCardFixesAndCleanups();
 
-  // Removes settings-inaccessible profiles values from all profiles stored in
-  // the |personal_data_manager_|.
-  void RemoveInaccessibleProfileValues();
-
   // Applies the deduping routine once per major version if the feature is
   // enabled. Calls DedupeProfiles with the content of
   // |PersonalDataManager::GetProfiles()| as a parameter. Removes the profiles
