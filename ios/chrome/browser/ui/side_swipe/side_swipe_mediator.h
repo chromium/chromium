@@ -7,8 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/snapshots/model/snapshot_generator_delegate.h"
-
 class FullscreenController;
 @protocol SideSwipeToolbarInteracting;
 @protocol SideSwipeToolbarSnapshotProviding;
@@ -59,7 +57,6 @@ extern NSString* const kSideSwipeDidStopNotification;
 @property(nonatomic, weak) id<SideSwipeToolbarSnapshotProviding>
     toolbarSnapshotProvider;
 
-@property(nonatomic, weak) id<SnapshotGeneratorDelegate> snapshotDelegate;
 @property(nonatomic, weak) id<TabStripHighlighting> tabStripDelegate;
 
 @property(nonatomic, assign) FullscreenController* fullscreenController;

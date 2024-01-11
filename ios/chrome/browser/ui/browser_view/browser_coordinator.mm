@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/browser_view/browser_coordinator.h"
-#import "ios/chrome/browser/ui/browser_view/browser_coordinator+Testing.h"
 
 #import <StoreKit/StoreKit.h>
 
@@ -113,6 +112,7 @@
 #import "ios/chrome/browser/signin/model/account_consistency_browser_agent.h"
 #import "ios/chrome/browser/signin/model/account_consistency_service_factory.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_generator_delegate.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/store_kit/model/store_kit_coordinator.h"
 #import "ios/chrome/browser/store_kit/model/store_kit_coordinator_delegate.h"
@@ -130,6 +130,7 @@
 #import "ios/chrome/browser/ui/bookmarks/home/bookmarks_coordinator.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_coordinator.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
+#import "ios/chrome/browser/ui/browser_view/browser_coordinator+Testing.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller+private.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"
 #import "ios/chrome/browser/ui/browser_view/key_commands_provider.h"
@@ -954,7 +955,6 @@ enum class ToolbarKind {
       initWithFullscreenController:_fullscreenController
               snapshotBrowserAgent:snapshotBrowserAgent
                       webStateList:self.browser->GetWebStateList()];
-  [_sideSwipeMediator setSnapshotDelegate:self];
   _sideSwipeMediator.toolbarInteractionHandler = _toolbarCoordinator;
   _sideSwipeMediator.toolbarSnapshotProvider = _toolbarCoordinator;
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET &&

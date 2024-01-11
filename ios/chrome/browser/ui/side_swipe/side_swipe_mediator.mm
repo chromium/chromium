@@ -142,7 +142,6 @@ const NSUInteger kIpadGreySwipeTabCount = 8;
 @synthesize inSwipe = _inSwipe;
 @synthesize swipeDelegate = _swipeDelegate;
 @synthesize toolbarInteractionHandler = _toolbarInteractionHandler;
-@synthesize snapshotDelegate = _snapshotDelegate;
 @synthesize tabStripDelegate = _tabStripDelegate;
 
 - (instancetype)
