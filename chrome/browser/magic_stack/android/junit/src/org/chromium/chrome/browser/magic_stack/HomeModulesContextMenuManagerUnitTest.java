@@ -1,0 +1,111 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.magic_stack;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
+
+import android.content.Context;
+import android.graphics.Point;
+import android.view.ContextMenu;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+
+import androidx.test.filters.SmallTest;
+
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
+
+import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.magic_stack.HomeModulesContextMenuManager.ContextMenuItemId;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
+
+/** Unit tests for {@link HomeModulesContextMenuManager}. */
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE)
+public class HomeModulesContextMenuManagerUnitTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private ModuleDelegate mModuleDelegate;
+    @Mock private ModuleProvider mModuleProvider;
+    @Mock private MenuItem mMenuItem;
+    @Mock private ContextMenu mContextMenu;
+    @Mock private View mView;
+    @Mock private Context mContext;
+
+    private @ModuleType int mModuleType;
+    private Point mPoint = new Point(0, 0);
+    private HomeModulesContextMenuManager mManager;
+
+    @Before
+    public void setUp() {
+        mModuleType = 0;
+        doReturn(mContext).when(mView).getContext();
+        doReturn(mModuleType).when(mModuleProvider).getModuleType();
+        mManager = new HomeModulesContextMenuManager(mModuleDelegate, mPoint);
+    }
+
+    @Test
+    @SmallTest
+    public void testOnMenuItemClick() {
+        doReturn(ContextMenuItemId.HIDE_MODULE).when(mMenuItem).getItemId();
+        mManager.onMenuItemClickImpl(mMenuItem, mModuleProvider);
+        verify(mModuleDelegate).onHideModuleFromContextMenu(eq(mModuleType));
+
+        doReturn(ContextMenuItemId.SHOW_CUSTOMIZE_SETTINGS).when(mMenuItem).getItemId();
+        mManager.onMenuItemClickImpl(mMenuItem, mModuleProvider);
+        verify(mModuleDelegate).customizeSettings();
+    }
+
+    @Test
+    @SmallTest
+    public void testShouldShowItem() {
+        // Verifies that two default items are shown.
+        assertTrue(mManager.shouldShowItem(ContextMenuItemId.HIDE_MODULE, mModuleProvider));
+        assertTrue(
+                mManager.shouldShowItem(
+                        ContextMenuItemId.SHOW_CUSTOMIZE_SETTINGS, mModuleProvider));
+
+        // Cases for a customized menu item.
+        doReturn(false).when(mModuleProvider).isContextMenuItemSupported(2);
+        assertFalse(mManager.shouldShowItem(2, mModuleProvider));
+
+        doReturn(true).when(mModuleProvider).isContextMenuItemSupported(2);
+        assertTrue(mManager.shouldShowItem(2, mModuleProvider));
+    }
+
+    @Test
+    @SmallTest
+    public void testCreateContextMenu() {
+        MenuItem menuItem1 = Mockito.mock(MenuItem.class);
+        MenuItem menuItem2 = Mockito.mock(MenuItem.class);
+        doReturn(menuItem1)
+                .when(mContextMenu)
+                .add(
+                        eq(Menu.NONE),
+                        eq(ContextMenuItemId.SHOW_CUSTOMIZE_SETTINGS),
+                        eq(Menu.NONE),
+                        anyInt());
+        doReturn(menuItem2).when(mContextMenu).add(any());
+
+        mManager.createContextMenu(mContextMenu, mView, mModuleProvider);
+        verify(menuItem1).setOnMenuItemClickListener(any());
+        verify(menuItem2).setOnMenuItemClickListener(any());
+        verify(mModuleProvider).onContextMenuCreated();
+    }
+}

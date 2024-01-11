@@ -226,6 +226,7 @@ template("generate_expired_histograms_array") {
       "//tools/metrics/histograms/metadata/stability/enums.xml",
       "//tools/metrics/histograms/metadata/stability/histograms.xml",
       "//tools/metrics/histograms/metadata/start_surface/histograms.xml",
+      "//tools/metrics/histograms/metadata/magic_stack/histograms.xml",
       "//tools/metrics/histograms/metadata/startup/histograms.xml",
       "//tools/metrics/histograms/metadata/storage/enums.xml",
       "//tools/metrics/histograms/metadata/storage/histograms.xml",

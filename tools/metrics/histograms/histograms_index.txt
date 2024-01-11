@@ -109,6 +109,7 @@ tools/metrics/histograms/metadata/language/histograms.xml
 tools/metrics/histograms/metadata/leveldb_proto/histograms.xml
 tools/metrics/histograms/metadata/local/histograms.xml
 tools/metrics/histograms/metadata/login/histograms.xml
+tools/metrics/histograms/metadata/magic_stack/histograms.xml
 tools/metrics/histograms/metadata/media/enums.xml
 tools/metrics/histograms/metadata/media/histograms.xml
 tools/metrics/histograms/metadata/memory/enums.xml
