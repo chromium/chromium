@@ -1269,7 +1269,10 @@ class _Generator(object):
     enum_as_string = '%s_as_string' % type_.unix_name
     cpp_type_namespace = ''
     if type_.namespace != self._namespace:
-      cpp_type_namespace = '%s::' % type_.namespace.unix_name
+      namespace = cpp_util.GetCppNamespace(
+        type_.namespace.environment.namespace_pattern,
+        type_.namespace.unix_name)
+      cpp_type_namespace = '%s::' % namespace
     (c.Append('const std::string* %s = %s.GetIfString();' % (enum_as_string,
                                                             src_var))
       .Sblock('if (!%s) {' % enum_as_string)

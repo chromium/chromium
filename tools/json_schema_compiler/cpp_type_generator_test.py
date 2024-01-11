@@ -67,7 +67,7 @@ class CppTypeGeneratorTest(unittest.TestCase):
         self.simple_api_json[0], 'path/to/simple_api.json')
 
     self.crossref_enums_json = CachedLoad('test/crossref_enums.json')
-    self.models['crossref_enums'].AddNamespace(
+    self.crossref_enums = self.models['crossref_enums'].AddNamespace(
         self.crossref_enums_json[0], 'path/to/crossref_enums.json')
 
     self.crossref_enums_array_json = CachedLoad(
@@ -254,6 +254,27 @@ class CppTypeGeneratorTest(unittest.TestCase):
 
     self.assertEqual('#include "path/to/simple_api.h"',
                       manager.GenerateIncludes().Render())
+
+  def testCrossNamespaceGetEnumDefaultValue(self):
+    m = model.Model()
+    m.AddNamespace(
+        self.simple_api_json[0],
+        'path/to/simple_api.json',
+        environment=CppNamespaceEnvironment('namespace1::api::%(namespace)s'))
+    m.AddNamespace(
+        self.crossref_enums_json[0],
+        'path/to/crossref_enum.json',
+        environment=CppNamespaceEnvironment('namespace2::api::%(namespace)s'))
+
+    manager = CppTypeGenerator(self.models.get('crossref_enums'),
+                               _FakeSchemaLoader(m))
+
+    self.assertEqual(
+        'namespace1::api::simple_api::TestEnum()',
+        manager.GetEnumDefaultValue(
+            self.crossref_enums.types['CrossrefType']
+            .properties['testEnumOptional'].type_,
+            self.crossref_enums))
 
 if __name__ == '__main__':
   unittest.main()

@@ -7,7 +7,8 @@ var contextMenusHandlers = require('contextMenusHandlers');
 apiBridge.registerCustomHook(function(bindingsAPI) {
   var apiFunctions = bindingsAPI.apiFunctions;
 
-  var handlers = contextMenusHandlers.create(true /* isWebview */);
+  var handlers =
+      contextMenusHandlers.create(/*webViewNamespace=*/'chromeWebViewInternal');
 
   apiFunctions.setHandleRequest(
       'contextMenusCreate', handlers.requestHandlers.create);

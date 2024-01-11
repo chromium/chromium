@@ -1,0 +1,27 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/controlled_frame/api/api_sources.gni")
+import("//extensions/buildflags/buildflags.gni")
+import("//tools/json_schema_compiler/json_schema_api.gni")
+
+assert(enable_extensions,
+       "Cannot depend on controlled frame because enable_extensions=false.")
+
+function_registration("api_registration") {
+  sources = controlled_frame_api_schema_sources
+  impl_dir = "//chrome/browser/controlled_frame/api"
+  configs = [ "//build/config:precompiled_headers" ]
+  bundle_name = "ControlledFrame"
+  root_namespace = controlled_frame_api_root_namespace
+  schema_include_rules = controlled_frame_api_schema_include_rules
+
+  deps = [
+    "//chrome/browser/extensions/api",
+    "//chrome/common",
+    "//chrome/common/controlled_frame/api",
+    "//content/public/browser",
+    "//extensions/browser",
+  ]
+}

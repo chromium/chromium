@@ -2702,6 +2702,7 @@ Called by update_extension_histograms.py.-->
   <int value="1862" label="ACCESSIBILITY_PRIVATE_SETSELECTTOSPEAKFOCUS"/>
   <int value="1863"
       label="DEVELOPERPRIVATE_DISMISSSAFETYHUBEXTENSIONSMENUNOTIFICATION"/>
+  <int value="1864" label="CONTROLLEDFRAMEINTERNAL_CONTEXTMENUSCREATE"/>
 </enum>
 
 <enum name="ExtensionInstallationCrxInstallError">

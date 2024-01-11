@@ -156,7 +156,7 @@ void ContextMenuMatcher::AppendExtensionItems(
                                       selection_text, submenu, index,
                                       false);  // is_action_menu_top_level
     }
-    if (!is_action_menu && !extension_key.extension_id.empty()) {
+    if (!is_action_menu && !extension_key.empty()) {
       SetExtensionIcon(extension_key);
     }
   }

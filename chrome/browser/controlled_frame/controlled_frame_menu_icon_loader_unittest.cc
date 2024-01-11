@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,8 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "cc/test/pixel_comparator.h"
+#include "cc/test/pixel_test_utils.h"
 #include "chrome/browser/extensions/context_menu_matcher.h"
 #include "chrome/browser/extensions/menu_manager.h"
 #include "chrome/browser/extensions/menu_manager_factory.h"
@@ -75,9 +77,7 @@ class ControlledFrameMenuIconLoaderTest : public WebAppTest {
     return *url_info;
   }
 
-  std::pair<web_app::FakeWebContentsManager::FakePageState&,
-            web_app::FakeWebContentsManager::FakeIconState&>
-  SetUpPageAndIconStates(const web_app::IsolatedWebAppUrlInfo& url_info) {
+  void SetUpPageAndIconStates(const web_app::IsolatedWebAppUrlInfo& url_info) {
     GURL application_url = url_info.origin().GetURL();
     auto& page_state = web_contents_manager().GetOrCreatePageState(
         application_url.Resolve(kManifestPath));
@@ -92,8 +92,6 @@ class ControlledFrameMenuIconLoaderTest : public WebAppTest {
         application_url.Resolve(kIconPath));
     icon_state.bitmaps = {
         web_app::CreateSquareIcon(gfx::kFaviconSize, SK_ColorRED)};
-
-    return {page_state, icon_state};
   }
 
   // Creates and returns a menu manager.
@@ -150,12 +148,13 @@ class ControlledFrameMenuIconLoaderTest : public WebAppTest {
         fake_provider().web_contents_manager());
   }
 
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
+ protected:
   const GURL kDevAppOriginUrl = GURL(
       "isolated-app://"
       "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaac");
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ControlledFrameMenuIconLoaderTest, LoadGetAndRemoveIcon) {
@@ -184,6 +183,83 @@ TEST_F(ControlledFrameMenuIconLoaderTest, LoadGetAndRemoveIcon) {
   menu_icon_loader.RemoveIcon(extension_key);
   EXPECT_EQ(0u, menu_icon_loader.pending_icons_.size());
   EXPECT_EQ(0u, menu_icon_loader.icons_.size());
+}
+
+TEST_F(ControlledFrameMenuIconLoaderTest, MenuManager) {
+  extensions::MenuManager* menu_manager = CreateMenuManager();
+
+  // Check that adding a context item starts the icon loading and that the icon
+  // is able to be accessed through GetIcon. Also check that the icon is removed
+  // when the context item is removed.
+  std::unique_ptr<extensions::MenuItem> item = CreateTestItem(
+      main_rfh()->GetProcess()->GetID(), main_rfh()->GetRoutingID(),
+      /*webview_instance_id=*/kTestWebViewInstanceId, /*string_id=*/"test",
+      /*visible=*/true);
+  const extensions::MenuItem::Id& item_id = item->id();
+  auto menu_icon_loader = std::make_unique<ControlledFrameMenuIconLoader>();
+  ControlledFrameMenuIconLoader* menu_icon_loader_ptr = menu_icon_loader.get();
+
+  menu_manager->SetMenuIconLoader(item_id.extension_key,
+                                  std::move(menu_icon_loader));
+  base::test::TestFuture<void> future;
+  menu_icon_loader_ptr->SetNotifyOnLoadedCallbackForTesting(
+      future.GetRepeatingCallback());
+  menu_manager->AddContextItem(/*extension=*/nullptr, std::move(item));
+  ASSERT_TRUE(future.Wait());
+
+  // Ensure that grabbing the icon through the MenuManager returns the
+  // expected icon.
+  EXPECT_EQ(1u, menu_icon_loader_ptr->icons_.size());
+  gfx::Image loader_icon = menu_icon_loader_ptr->GetIcon(item_id.extension_key);
+  gfx::Image menu_manager_icon =
+      menu_manager->GetIconForExtensionKey(item_id.extension_key);
+  EXPECT_EQ(loader_icon, menu_manager_icon);
+
+  menu_manager->RemoveContextMenuItem(item_id);
+  EXPECT_EQ(0u, menu_icon_loader_ptr->pending_icons_.size());
+  EXPECT_EQ(0u, menu_icon_loader_ptr->icons_.size());
+}
+
+TEST_F(ControlledFrameMenuIconLoaderTest, ContextMenuMatcher) {
+  extensions::MenuManager* menu_manager = CreateMenuManager();
+
+  std::unique_ptr<extensions::MenuItem> item = CreateTestItem(
+      main_rfh()->GetProcess()->GetID(), main_rfh()->GetRoutingID(),
+      /*webview_instance_id=*/kTestWebViewInstanceId, /*string_id=*/"test",
+      /*visible=*/true);
+  const extensions::MenuItem::Id& item_id = item->id();
+  auto menu_icon_loader = std::make_unique<ControlledFrameMenuIconLoader>();
+  ControlledFrameMenuIconLoader* menu_icon_loader_ptr = menu_icon_loader.get();
+
+  menu_manager->SetMenuIconLoader(item_id.extension_key,
+                                  std::move(menu_icon_loader));
+  base::test::TestFuture<void> future;
+  menu_icon_loader_ptr->SetNotifyOnLoadedCallbackForTesting(
+      future.GetRepeatingCallback());
+  menu_manager->AddContextItem(/*extension=*/nullptr, std::move(item));
+  ASSERT_TRUE(future.Wait());
+
+  ui::SimpleMenuModel menu_model(/*delegate=*/nullptr);
+  auto extension_items = std::make_unique<extensions::ContextMenuMatcher>(
+      profile(),
+      /*delegate=*/nullptr, &menu_model,
+      base::BindLambdaForTesting(
+          [](const extensions::MenuItem* item) { return true; }));
+
+  int index = 0;
+  extension_items->AppendExtensionItems(item_id.extension_key, std::u16string(),
+                                        &index,
+                                        /*is_action_menu=*/false);
+  gfx::Image icon = menu_model.GetIconAt(/*index=*/0).GetImage();
+  EXPECT_EQ(gfx::kFaviconSize, icon.Height());
+  EXPECT_EQ(gfx::kFaviconSize, icon.Width());
+
+  web_app::FakeWebContentsManager::FakeIconState& icon_state =
+      web_contents_manager().GetOrCreateIconState(
+          kDevAppOriginUrl.Resolve(kIconPath));
+  ASSERT_EQ(1u, icon_state.bitmaps.size());
+  EXPECT_TRUE(cc::MatchesBitmap(icon_state.bitmaps[0], icon.AsBitmap(),
+                                cc::ExactPixelComparator()));
 }
 
 }  // namespace controlled_frame

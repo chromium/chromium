@@ -4,6 +4,11 @@
 
 #include "chrome/browser/extensions/test_extension_menu_icon_loader.h"
 
+#include "chrome/browser/extensions/menu_manager.h"
+#include "extensions/common/extension.h"
+#include "ui/gfx/favicon_size.h"
+#include "ui/gfx/image/image_unittest_util.h"
+
 namespace extensions {
 
 void TestExtensionMenuIconLoader::LoadIcon(
@@ -11,19 +16,26 @@ void TestExtensionMenuIconLoader::LoadIcon(
     const Extension* extension,
     const MenuItem::ExtensionKey& extension_key) {
   load_icon_calls_++;
-  ExtensionMenuIconLoader::LoadIcon(context, extension, extension_key);
+  if (extension) {
+    ExtensionMenuIconLoader::LoadIcon(context, extension, extension_key);
+  }
 }
 
 gfx::Image TestExtensionMenuIconLoader::GetIcon(
     const MenuItem::ExtensionKey& extension_key) {
   get_icon_calls_++;
+  if (extension_key.extension_id.empty()) {
+    return gfx::test::CreateImage(gfx::kFaviconSize);
+  }
   return ExtensionMenuIconLoader::GetIcon(extension_key);
 }
 
 void TestExtensionMenuIconLoader::RemoveIcon(
     const MenuItem::ExtensionKey& extension_key) {
   remove_icon_calls_++;
-  return ExtensionMenuIconLoader::RemoveIcon(extension_key);
+  if (!extension_key.extension_id.empty()) {
+    ExtensionMenuIconLoader::RemoveIcon(extension_key);
+  }
 }
 
 void TestExtensionMenuIconLoader::Reset() {

@@ -199,6 +199,13 @@ TEST_F(MenuManagerTest, AddGetRemoveItemsNoExtension) {
       /*string_id=*/"");
   ASSERT_TRUE(item1 != nullptr);
   MenuItem* item1_ptr = item1.get();
+
+  // Without an extension, the default icon loader will try to dereference a
+  // null Extension*. Therefore, set the TestExtensionMenuIconLoader here to
+  // avoid this since it will do nothing if Extension* is null.
+  manager_.SetMenuIconLoader(item1_ptr->id().extension_key,
+                             std::make_unique<TestExtensionMenuIconLoader>());
+
   ASSERT_TRUE(manager_.AddContextItem(/*extension=*/nullptr, std::move(item1)));
   ASSERT_EQ(item1_ptr, manager_.GetItemById(item1_ptr->id()));
   const MenuItem::OwnedList* items =
@@ -257,6 +264,10 @@ TEST_F(MenuManagerTest, AddGetRemoveItemsNoExtension) {
       /*extension=*/nullptr, kFakeWebViewEmbedderPid2,
       kFakeWebViewEmbedderFrameId, kFakeWebViewInstanceId,
       /*string_id=*/"id2");
+
+  // Use TestExtensionMenuIconLoader to avoid a null Extension* dereference.
+  manager_.SetMenuIconLoader(item2other->id().extension_key,
+                             std::make_unique<TestExtensionMenuIconLoader>());
   ASSERT_TRUE(
       manager_.AddContextItem(/*extension=*/nullptr, std::move(item2other)));
   item1_ptr = nullptr;

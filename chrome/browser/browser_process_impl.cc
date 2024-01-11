@@ -43,6 +43,7 @@
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/component_updater/chrome_component_updater_configurator.h"
+#include "chrome/browser/controlled_frame/controlled_frame_extensions_browser_api_provider.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/devtools/remote_debugging_server.h"
 #include "chrome/browser/download/download_request_limiter.h"
@@ -312,6 +313,9 @@ void BrowserProcessImpl::Init() {
       std::make_unique<extensions::ChromeExtensionsBrowserClient>();
   extensions_browser_client_->AddAPIProvider(
       std::make_unique<chrome_apps::ChromeAppsBrowserAPIProvider>());
+  extensions_browser_client_->AddAPIProvider(
+      std::make_unique<
+          controlled_frame::ControlledFrameExtensionsBrowserAPIProvider>());
   extensions::ExtensionsBrowserClient::Set(extensions_browser_client_.get());
 
 #if BUILDFLAG(IS_CHROMEOS)
