@@ -49,15 +49,6 @@ void FormGroup::GetNonEmptyTypes(const std::string& app_locale,
   }
 }
 
-void FormGroup::GetNonEmptyRawTypes(FieldTypeSet* non_empty_types) const {
-  FieldTypeSet types;
-  GetSupportedTypes(&types);
-  for (auto type : types) {
-    if (!GetRawInfo(type).empty())
-      non_empty_types->insert(type);
-  }
-}
-
 int FormGroup::GetRawInfoAsInt(FieldType type) const {
   NOTREACHED();
   return 0;
