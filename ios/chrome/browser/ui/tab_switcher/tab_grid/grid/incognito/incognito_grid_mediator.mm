@@ -178,11 +178,7 @@ bool ShouldFilterWebSitesForSupervisedUsers() {
       _incognitoDisabled = isDisabled;
       [self.incognitoDelegate shouldDisableIncognito:_incognitoDisabled];
     }
-    if (isDisabled) {
-      // Close all incognito tabs for supervised users. If the user was on an
-      // incognito tab, the disabled tab grid will be displayed.
-      [self closeAllItems];
-    }
+
     [self configureToolbarsButtons];
   }
 }
