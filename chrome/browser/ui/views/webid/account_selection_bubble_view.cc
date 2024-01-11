@@ -1029,15 +1029,13 @@ AccountSelectionBubbleView::CreateMultipleAccountChooser(
       content->AddChildView(
           CreateAccountRow(account, idp_display_data, /*should_hover=*/true));
     }
+    const content::IdentityProviderMetadata& idp_metadata =
+        idp_display_data.idp_metadata;
+    if (idp_metadata.supports_add_account) {
+      content->AddChildView(std::make_unique<views::Separator>());
+      content->AddChildView(CreateUseOtherAccountButton(idp_metadata));
+    }
     num_rows += idp_display_data.accounts.size();
-  }
-
-  // TODO(crbug.com/1502635): Make "Add Account" work reasonably for multi-IDP
-  const content::IdentityProviderMetadata& idp_metadata =
-      idp_display_data_list[0].idp_metadata;
-  if (idp_metadata.supports_add_account) {
-    content->AddChildView(std::make_unique<views::Separator>());
-    content->AddChildView(CreateUseOtherAccountButton(idp_metadata));
   }
 
   // The maximum height that the multi-account-picker can have. This value was
