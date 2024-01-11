@@ -83,7 +83,8 @@ class ProcessingAudioFifo {
   class StatsReporter;
   struct CaptureData;
 
-  void StartInternal(base::WaitableEvent* new_data_captured);
+  void StartInternal(base::WaitableEvent* new_data_captured,
+                     base::Thread::Options options);
   void StopProcessingLoop();
 
   void ProcessAudioLoop(base::WaitableEvent* new_data_captured);

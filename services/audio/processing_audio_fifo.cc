@@ -126,23 +126,26 @@ ProcessingAudioFifo::CaptureData* ProcessingAudioFifo::GetDataAtIndex(int idx) {
 }
 
 void ProcessingAudioFifo::Start() {
-  StartInternal(&new_data_captured_);
+  StartInternal(&new_data_captured_,
+                base::Thread::Options(base::ThreadType::kRealtimeAudio));
 }
 
 void ProcessingAudioFifo::StartForTesting(
     base::WaitableEvent* fake_new_data_captured) {
-  StartInternal(fake_new_data_captured);
+  // Only use kDefault thread type instead of kRealtimeAudio because Linux has
+  // flakiness issue when setting realtime priority.
+  StartInternal(fake_new_data_captured,
+                base::Thread::Options(base::ThreadType::kDefault));
 }
 
-void ProcessingAudioFifo::StartInternal(
-    base::WaitableEvent* new_data_captured) {
+void ProcessingAudioFifo::StartInternal(base::WaitableEvent* new_data_captured,
+                                        base::Thread::Options options) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_checker_);
 
   // Start should only be called once.
   DCHECK(!audio_processing_thread_.IsRunning());
 
-  audio_processing_thread_.StartWithOptions(
-      base::Thread::Options(base::ThreadType::kRealtimeAudio));
+  audio_processing_thread_.StartWithOptions(std::move(options));
 
   audio_processing_thread_.task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&ProcessingAudioFifo::ProcessAudioLoop,
