@@ -3,13 +3,6 @@ module auth_token.mojom;
 // Interface to passing updated token around
 interface RecordReplayAuthTokenStore {
   SetToken(string token);
-  ClearToken();
-
-  SetUser (string user);
-  ClearUser();
-
-  // Opens an external browser to log the user in
-  Login();
 
   AddObserver(pending_remote<RecordReplayAuthTokenStoreObserver> observer);
   // how do we remove?

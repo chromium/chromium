@@ -3318,30 +3318,8 @@ bool LocalFrame::HasBlockingReasonsHelper(
   return false;
 }
 
-// delegate all the recordreplay calls to the mojo handler
-void LocalFrame::RecordReplayRegisterAuthTokenObserver() {
-  mojo_handler_->RecordReplayRegisterAuthTokenObserver();
-}
-
-void LocalFrame::RecordReplayLogin() {
-  mojo_handler_->RecordReplayLogin();
-
-}
-
-void LocalFrame::RecordReplaySetToken(const WTF::String& token) {
-  mojo_handler_->RecordReplaySetToken(token);
-}
-
-void LocalFrame::RecordReplayClearToken() {
-  mojo_handler_->RecordReplayClearToken();
-}
-
-void LocalFrame::RecordReplaySetUser(const WTF::String& user) {
-  mojo_handler_->RecordReplaySetUser(user);
-}
-
-void LocalFrame::RecordReplayClearUser() {
-  mojo_handler_->RecordReplayClearUser();
+void LocalFrame::RegisterRecordReplayAuthTokenObserver() {
+  mojo_handler_->RegisterRecordReplayAuthTokenObserver();
 }
 
 }  // namespace blink

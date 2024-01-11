@@ -46,7 +46,7 @@ namespace blink {
 class HTMLDocument;
 class ScriptState;
 class SecurityOrigin;
-class RecordReplayDevtoolsEventListener;
+class RecordReplayEventListener;
 
 // Subclass of WindowProxy that only handles LocalFrame.
 class LocalWindowProxy final : public WindowProxy {
@@ -73,7 +73,7 @@ class LocalWindowProxy final : public WindowProxy {
       v8::Context::AbortScriptExecutionCallback callback);
 
  private:
-  void SetupRecordReplayDevtoolsEventListener();
+  void SetupRecordReplayEventListener();
 
   // LocalWindowProxy overrides:
   bool IsLocal() const override { return true; }
@@ -116,7 +116,7 @@ class LocalWindowProxy final : public WindowProxy {
 
   mojo::Remote<auth_token::mojom::RecordReplayAuthTokenStore> auth_token_store_;
   
-  Member<RecordReplayDevtoolsEventListener> record_replay_listener_;
+  Member<RecordReplayEventListener> record_replay_listener_;
   Member<ScriptState> script_state_;
   bool context_was_created_from_snapshot_ = false;
 };

@@ -18,24 +18,7 @@ void RecordReplayAuthTokenService::BindAuthTokenStore(
 
 void RecordReplayAuthTokenService::SetToken(const std::string& token) {
   token_ = token;
-  // TODO persist the token to browser prefs
   NotifyObservers();
-}
-
-void RecordReplayAuthTokenService::ClearToken() {
-  token_.clear(); // not sure about this..  should we be sending a null?
-  NotifyObservers();
-}
-
-void RecordReplayAuthTokenService::SetUser(const std::string& user) {
-  // TODO persist the user to browser prefs
-}
-
-void RecordReplayAuthTokenService::ClearUser() {
-  // TODO clear the user from browser prefs
-}
-
-void RecordReplayAuthTokenService::Login() {
 }
 
 void RecordReplayAuthTokenService::AddObserver(mojo::PendingRemote<mojom::RecordReplayAuthTokenStoreObserver> observer) {

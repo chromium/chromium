@@ -27,13 +27,6 @@ class RecordReplayAuthTokenService : public KeyedService, public mojom::RecordRe
 
   // mojom::RecordReplayAuthTokenStore:
   void SetToken(const std::string& token) override;
-  void ClearToken() override;
-
-  void SetUser(const std::string& user) override;
-  void ClearUser() override;
-
-  void Login() override;
-
   void AddObserver(mojo::PendingRemote<mojom::RecordReplayAuthTokenStoreObserver> observer) override;
 
 private:

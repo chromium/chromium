@@ -75,14 +75,7 @@ class LocalFrameMojoHandler
 
   device::mojom::blink::DevicePostureType GetDevicePosture();
 
-  void RecordReplayEnsureAuthTokenStore();
-  void RecordReplayRegisterAuthTokenObserver();
-  void RecordReplayLogin();
-  void RecordReplaySetToken(const WTF::String& token);
-  void RecordReplayClearToken();
-  void RecordReplaySetUser(const WTF::String& user);
-  void RecordReplayClearUser();
-
+  void RegisterRecordReplayAuthTokenObserver();
  private:
   Page* GetPage() const;
   LocalDOMWindow* DomWindow() const;
@@ -278,7 +271,7 @@ class LocalFrameMojoHandler
       local_frame_host_remote_{nullptr};
 
   HeapMojoRemote<auth_token::mojom::blink::RecordReplayAuthTokenStore>
-      record_replay_auth_token_store_{nullptr};
+      auth_token_store_{nullptr};
 
   // LocalFrameMojoHandler can be reused by multiple ExecutionContext.
   HeapMojoAssociatedReceiver<mojom::blink::LocalFrame, LocalFrameMojoHandler>
@@ -297,7 +290,7 @@ class LocalFrameMojoHandler
   // LocalFrameMojoHandler can be reused by multiple ExecutionContext.
   HeapMojoReceiver<auth_token::mojom::blink::RecordReplayAuthTokenStoreObserver,
                    LocalFrameMojoHandler>
-      record_replay_observer_receiver_{this, nullptr};
+      auth_token_store_observer_receiver_{this, nullptr};
 
 
   // LocalFrameMojoHandler can be reused by multiple ExecutionContext.
