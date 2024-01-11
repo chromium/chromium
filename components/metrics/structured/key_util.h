@@ -5,7 +5,11 @@
 #ifndef COMPONENTS_METRICS_STRUCTURED_KEY_UTIL_H_
 #define COMPONENTS_METRICS_STRUCTURED_KEY_UTIL_H_
 
+#include <optional>
 #include <string>
+
+#include "base/values.h"
+#include "components/metrics/structured/lib/proto/key.pb.h"
 
 namespace metrics::structured {
 
@@ -17,6 +21,10 @@ namespace util {
 // Generates a new key to be used for hashing. This function should be used to
 // create new keys or to replace a key that needs to be rotated.
 std::string GenerateNewKey();
+
+// Helper conversion function between Value and KeyProto.
+base::Value CreateValueFromKeyProto(const KeyProto& proto);
+std::optional<KeyProto> CreateKeyProtoFromValue(const base::Value::Dict& value);
 
 }  // namespace util
 }  // namespace metrics::structured

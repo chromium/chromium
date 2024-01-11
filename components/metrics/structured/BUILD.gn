@@ -16,6 +16,8 @@ static_library("structured") {
     "key_data.h",
     "key_data_file_delegate.cc",
     "key_data_file_delegate.h",
+    "key_data_prefs_delegate.cc",
+    "key_data_prefs_delegate.h",
     "key_data_provider.cc",
     "key_data_provider.h",
     "key_data_provider_file.cc",
@@ -244,6 +246,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "key_data_file_delegate_unittest.cc",
+    "key_data_prefs_delegate_unittest.cc",
     "persistent_proto_unittest.cc",
     "structured_metrics_provider_unittest.cc",
     "structured_metrics_recorder_unittest.cc",
