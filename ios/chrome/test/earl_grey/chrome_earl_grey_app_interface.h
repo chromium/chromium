@@ -86,6 +86,14 @@
 // Programmatically dismisses settings screen.
 + (void)dismissSettings;
 
+// Stops primes performance metrics logging by calling into the
+// internal framework (should only be used by performance tests)
++ (void)primesStopLogging;
+
+// Takes a snapshot of memory usage by calling into the internal
+// framework (should only be used by performance tests)
++ (void)primesTakeMemorySnapshot:(NSString*)eventName;
+
 #pragma mark - Tab Utilities (EG2)
 
 // Selects tab with given index in current mode (incognito or main

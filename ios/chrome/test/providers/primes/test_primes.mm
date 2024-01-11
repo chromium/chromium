@@ -28,5 +28,10 @@ void PrimesAppReady() {
   NOTREACHED();
 }
 
+void PrimesTakeMemorySnapshot(NSString* eventName) {
+  // Primes is not used by Chromium
+  NOTREACHED();
+}
+
 }  // namespace provider
 }  // namespace ios

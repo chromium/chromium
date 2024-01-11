@@ -159,6 +159,14 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
          traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassRegular;
 }
 
+- (void)primesStopLogging {
+  [ChromeEarlGreyAppInterface primesStopLogging];
+}
+
+- (void)primesTakeMemorySnapshot:(NSString*)eventName {
+  [ChromeEarlGreyAppInterface primesTakeMemorySnapshot:eventName];
+}
+
 #pragma mark - History Utilities (EG2)
 
 - (void)clearBrowsingHistory {

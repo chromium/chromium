@@ -36,6 +36,15 @@ bool DisableContentSuggestions() {
 }
 
 bool DisableDiscoverFeed() {
+  // Performance tests may disable the discover feed by setting the
+  // DISABLE_DISCOVER_FEED environment variable. Possible values
+  // the variable may be set to are described in the apple documentation for
+  // boolValue:
+  // https://developer.apple.com/documentation/foundation/nsstring/1409420-boolvalue
+  if ([[NSProcessInfo.processInfo.environment
+          objectForKey:@"DISABLE_DISCOVER_FEED"] boolValue]) {
+    return true;
+  }
   return !base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kEnableDiscoverFeed);
 }

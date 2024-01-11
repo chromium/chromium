@@ -70,6 +70,7 @@
 #import "ios/chrome/test/app/window_test_util.h"
 #import "ios/chrome/test/earl_grey/accessibility_util.h"
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
+#import "ios/public/provider/chrome/browser/primes/primes_api.h"
 #import "ios/public/provider/chrome/browser/signin/choice_api.h"
 #import "ios/testing/hardware_keyboard_util.h"
 #import "ios/testing/nserror_util.h"
@@ -272,6 +273,15 @@ base::RepeatingClosure ExpectNCall(uint32_t n, base::RepeatingClosure closure) {
 
 + (void)dismissSettings {
   [chrome_test_util::HandlerForActiveBrowser() closeSettingsUI];
+}
+
++ (void)primesStopLogging {
+  ios::provider::PrimesStopLogging();
+}
+
++ (void)primesTakeMemorySnapshot:(NSString*)eventName {
+  // TODO: return this call after https://crrev.com/i/6376711 has landed
+  // ios::provider::PrimesTakeMemorySnapshot(eventName);
 }
 
 #pragma mark - Tab Utilities (EG2)
