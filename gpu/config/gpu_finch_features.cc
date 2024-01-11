@@ -563,6 +563,12 @@ bool IsDrDcEnabled() {
     return false;
   }
 
+  // DrDc is not supported with Graphite-Dawn yet.
+  // TODO(crbug.com/1505023): Add DrDc support with Graphite
+  if (IsSkiaGraphiteEnabled(base::CommandLine::ForCurrentProcess())) {
+    return false;
+  }
+
   // DrDc is supported on android MediaPlayer and MCVD path only when
   // AImageReader is enabled. Also DrDc requires AImageReader max size to be
   // at least 2 for each gpu thread. Hence DrDc is disabled on devices which has
