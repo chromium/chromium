@@ -188,8 +188,7 @@ suite('WallpaperSearchTest', () => {
           'true');
     });
 
-    // TODO(crbug.com/1514888, b/319445205): Re-enable this test.
-    test.skip('unselects hue', async () => {
+    test('unselects hue', async () => {
       createWallpaperSearchElementWithDescriptors();
       await flushTasks();
       assertTrue(wallpaperSearchElement.$.deleteSelectedHueButton.hidden);
@@ -216,7 +215,8 @@ suite('WallpaperSearchTest', () => {
       wallpaperSearchElement.$.submitButton.click();
       await flushTasks();
       assertEquals(1, handler.getCallCount('getWallpaperSearchResults'));
-      assertEquals(null, handler.getArgs('getWallpaperSearchResults')[0][3]);
+      assertEquals(
+          undefined, handler.getArgs('getWallpaperSearchResults')[0].color);
     });
   });
 
