@@ -166,15 +166,10 @@ class TabStripLayout: UICollectionViewFlowLayout {
     let isNextCellSelected = (indexPath.item + 1) == selectedIndexPath?.item
     cell.trailingSeparatorHidden = isNextCellSelected
 
-    let isRTL: Bool = collectionView.effectiveUserInterfaceLayoutDirection == .rightToLeft
-
     // Recalculate the cell width and origin when it intersects with the left
     // collection view's bounds. The cell should collapse within the collection
     // view's bounds until its width reaches 0.
     if frame.minX < contentOffset.x && contentOffset.x < frame.maxX {
-      if !isRTL {
-        cell.leadingSeparatorHidden = false
-      }
       frame.origin.x = max(contentOffset.x, frame.origin.x)
       let offsetLeft: CGFloat = abs(frame.origin.x - layoutAttributes.frame.origin.x)
       frame.size.width = min(frame.width - offsetLeft, frame.width)
@@ -186,10 +181,23 @@ class TabStripLayout: UICollectionViewFlowLayout {
     // view's bounds. The cell should collapse within the collection view's
     // bounds until its width reaches 0.
     if frame.minX < offsetRight && offsetRight < frame.maxX {
-      if isRTL {
-        cell.leadingSeparatorHidden = false
-      }
       frame.size.width = min(offsetRight - frame.origin.x, frame.size.width)
+    }
+
+    /// Show the `leadingSeparator` before the cell intersects with the
+    /// collection view's bounds.
+    if collectionView.contentSize.width > collectionView.frame.width {
+      let isRTL: Bool = collectionView.effectiveUserInterfaceLayoutDirection == .rightToLeft
+      if (frame.minX - TabStripConstants.TabItem.leadingSeparatorMinInset) <= contentOffset.x {
+        if !isRTL {
+          cell.leadingSeparatorHidden = false
+        }
+      }
+      if offsetRight <= (frame.maxX + TabStripConstants.TabItem.leadingSeparatorMinInset) {
+        if isRTL {
+          cell.leadingSeparatorHidden = false
+        }
+      }
     }
 
     layoutAttributes.frame = frame
