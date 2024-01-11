@@ -4074,12 +4074,6 @@ deps = {
       'condition': 'checkout_src_internal',
   },
 
-  'src/third_party/googlemac': {
-      'url': Var('chrome_git') + '/chrome/deps/googlemac.git' + '@' +
-        '6ae4175fcf9e37655c5d7c3a7482dfc7436281d2',
-      'condition': 'checkout_mac and checkout_src_internal',
-  },
-
   # OpenGL ES 3.X Conformance tests.
   'src/third_party/khronos_glcts': {
       'url': Var('chrome_git') + '/chrome/deps/khronos_glcts.git' + '@' +

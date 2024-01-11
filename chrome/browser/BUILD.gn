@@ -6258,7 +6258,6 @@ static_library("browser") {
       "ScreenCaptureKit.framework",  # Available in macOS 12.3, stable in 13.2.
       "UniformTypeIdentifiers.framework",  # macOS 11
     ]
-    public_deps += [ "//chrome/browser/mac:keystone_glue" ]
   }
 
   if (is_win || is_linux || is_android || is_chromeos) {

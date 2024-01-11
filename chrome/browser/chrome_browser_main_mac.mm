@@ -10,7 +10,6 @@
 #import "base/apple/foundation_util.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/mac/mac_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -25,12 +24,10 @@
 #import "chrome/browser/chrome_browser_application_mac.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/mac/install_from_dmg.h"
-#import "chrome/browser/mac/keystone_glue.h"
 #include "chrome/browser/ui/cocoa/main_menu_builder.h"
 #include "chrome/browser/updater/browser_updater_client_util.h"
 #include "chrome/browser/updater/scheduler.h"
 #include "chrome/common/channel_info.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -41,7 +38,6 @@
 #include "content/public/common/main_function_params.h"
 #include "content/public/common/result_codes.h"
 #include "net/cert/internal/system_trust_store.h"
-#include "services/network/public/cpp/features.h"
 #include "ui/base/cocoa/permissions_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -77,13 +73,7 @@ void ChromeBrowserMainPartsMac::PreCreateMainMessageLoop() {
   CHECK(ui::ResourceBundle::HasSharedInstance());
 
 #if BUILDFLAG(ENABLE_UPDATER)
-  if (base::FeatureList::IsEnabled(features::kUseChromiumUpdater)) {
-    EnsureUpdater(base::DoNothing(), base::DoNothing());
-  } else {
-    // This is a no-op if the KeystoneRegistration framework is not present.
-    // The framework is only distributed with branded Google Chrome builds.
-    [[KeystoneGlue defaultKeystoneGlue] registerWithKeystone];
-  }
+  EnsureUpdater(base::DoNothing(), base::DoNothing());
   updater::SchedulePeriodicTasks();
 #endif  // BUILDFLAG(ENABLE_UPDATER)
 
@@ -152,18 +142,6 @@ void ChromeBrowserMainPartsMac::PreProfileInit() {
 void ChromeBrowserMainPartsMac::PostProfileInit(Profile* profile,
                                                 bool is_initial_profile) {
   ChromeBrowserMainPartsPosix::PostProfileInit(profile, is_initial_profile);
-
-  if (!is_initial_profile)
-    return;
-
-  // Activation of Keystone is not automatic but done in response to the
-  // counting and reporting of profiles.
-  KeystoneGlue* glue = [KeystoneGlue defaultKeystoneGlue];
-  if (glue && ![glue isRegisteredAndActive]) {
-    // If profile loading has failed, we still need to handle other tasks
-    // like marking of the product as active.
-    [glue setRegistrationActive];
-  }
 }
 
 void ChromeBrowserMainPartsMac::DidEndMainMessageLoop() {

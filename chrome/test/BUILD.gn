@@ -7272,7 +7272,6 @@ if (!is_fuchsia) {
         "../browser/global_keyboard_shortcuts_mac_unittest.mm",
         "../browser/mac/auth_session_request_unittest.mm",
         "../browser/mac/exception_processor_unittest.mm",
-        "../browser/mac/keystone_glue_unittest.mm",
         "../browser/metrics/power/coalition_resource_usage_provider_mac_unittest.mm",
         "../browser/metrics/power/coalition_resource_usage_provider_test_util_mac.cc",
         "../browser/metrics/power/coalition_resource_usage_provider_test_util_mac.h",

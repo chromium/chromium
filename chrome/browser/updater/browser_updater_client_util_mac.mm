@@ -7,7 +7,6 @@
 #include <Foundation/Foundation.h>
 #import <OpenDirectory/OpenDirectory.h>
 #import <ServiceManagement/ServiceManagement.h>
-
 #include <string.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -31,6 +30,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
 #include "build/buildflag.h"
 #include "chrome/browser/updater/browser_updater_client.h"
@@ -220,6 +220,7 @@ void SetActive() {
 }  // namespace
 
 std::string CurrentlyInstalledVersion() {
+  base::ScopedBlockingCall blocks(FROM_HERE, base::BlockingType::WILL_BLOCK);
   base::FilePath outer_bundle = base::apple::OuterBundlePath();
   base::FilePath plist_path =
       outer_bundle.Append("Contents").Append("Info.plist");

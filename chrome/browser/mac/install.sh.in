@@ -17,10 +17,17 @@
 # used on the first line to prevent bash from setting the effective user ID to
 # the real user ID (dropping root privileges).
 
-set -e
+set -eu
 
 # This script may run as root, so be paranoid about things like ${PATH}.
 export PATH="/usr/bin:/usr/sbin:/bin:/sbin"
+
+# Uses "defaults read" to obtain the value of a key in a property list.
+#
+# See chrome/installer/mac/keystone_install.sh for more details.
+infoplist_read() {
+  __CFPREFERENCES_AVOID_DAEMON=1 defaults read "${@}"
+}
 
 # If running as root, output the pid to stdout before doing anything else.
 # See chrome/browser/mac/authorization_util.h.
@@ -108,6 +115,57 @@ find "${DEST}" -type l -exec chmod -h "${CHMOD_MODE}" {} + >& /dev/null
 # xattr to drop the quarantine attribute.
 QUARANTINE_ATTR=com.apple.quarantine
 xattr -d -r "${QUARANTINE_ATTR}" "${DEST}" >& /dev/null
+
+# Install the updater at system level when running as root.
+# (At user level, Chrome will install it and register as needed when run).
+if [ ${EUID} -eq 0 ] ; then
+  readonly CHROME_APP_INFO_PLIST="${DEST}/Contents/Info.plist"
+
+  # Create the brand file, if specified.
+  brand_file_written="false"
+  brand="$(infoplist_read "${CHROME_APP_INFO_PLIST}" "KSBrandID")"
+  if [[ -n "${brand}" ]]; then
+    readonly BRAND_PLIST="/Library/Google/@BROWSER_PRODUCT_NAME@ Brand.plist"
+    defaults write "${BRAND_PLIST}" "KSBrandID" \
+                   -string "${brand}" \
+      && chmod 644 "${BRAND_PLIST}" \
+      && brand_file_written="true"
+  fi
+
+  set -e
+  "${DEST}/Contents/Frameworks/@BROWSER_PRODUCT_NAME@ Framework.framework/Helpers/@UPDATER_PRODUCT_NAME@.app/Contents/MacOS/@UPDATER_PRODUCT_NAME@" "--install" "--system"
+  readonly KS_ADMIN="/Library/@UPDATER_COMPANY_SHORT_NAME@/@KEYSTONE_APP_NAME@/@KEYSTONE_APP_NAME@.bundle/Contents/MacOS/ksadmin"
+
+  product="$(infoplist_read "${CHROME_APP_INFO_PLIST}" "KSProductID")"
+  version="$(infoplist_read "${CHROME_APP_INFO_PLIST}" "KSVersion")"
+  ksadmin_args=(
+    --register
+    --productid "${product}"
+    --version "${version}"
+    --xcpath "${DEST}"
+    --tag-path "${CHROME_APP_INFO_PLIST}"
+    --tag-key "KSChannelID"
+    --version-path "${CHROME_APP_INFO_PLIST}"
+    --version-key "KSVersion"
+  )
+
+  # Tag to use if the app info plist is gone (i.e. the program is uninstalled).
+  if channel="$(infoplist_read "${CHROME_APP_INFO_PLIST}" "KSChannelID")"; then
+    ksadmin_args+=(
+      --tag "${channel}"
+    )
+  fi
+
+  if [[ "${brand_file_written}" == "true" ]]; then
+    ksadmin_args+=(
+      --brand-path "${BRAND_PLIST}"
+      --brand-key "KSBrandID"
+    )
+  fi
+
+  "${KS_ADMIN}" "${ksadmin_args[@]}"
+  set +e
+fi
 
 # Great success!
 exit 0

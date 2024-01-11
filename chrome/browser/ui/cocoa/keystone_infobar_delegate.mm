@@ -13,9 +13,10 @@
 #include "base/functional/bind.h"
 #import "base/task/single_thread_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "build/branding_buildflags.h"
+#include "chrome/browser/buildflags.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
-#import "chrome/browser/mac/keystone_glue.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/cocoa/last_active_browser_cocoa.h"
@@ -88,11 +89,7 @@ std::u16string KeystonePromotionInfoBarDelegate::GetButtonLabel(
 }
 
 bool KeystonePromotionInfoBarDelegate::Accept() {
-  if (base::FeatureList::IsEnabled(features::kUseChromiumUpdater)) {
-    SetupSystemUpdater();
-  } else {
-    [[KeystoneGlue defaultKeystoneGlue] promoteTicket];
-  }
+  SetupSystemUpdater();
   return true;
 }
 
@@ -101,23 +98,8 @@ bool KeystonePromotionInfoBarDelegate::Cancel() {
   return true;
 }
 
-// KeystonePromotionInfoBar ---------------------------------------------------
-
-@interface KeystonePromotionInfoBar : NSObject
-- (void)checkAndShowInfoBarForProfile:(Profile*)profile;
-- (void)updateStatus:(NSNotification*)notification;
-- (void)removeObserver;
-@end  // @interface KeystonePromotionInfoBar
-
-KeystonePromotionInfoBar* g_currentPromotionInfoBar;
-
-@implementation KeystonePromotionInfoBar
-
-- (void)dealloc {
-  [self removeObserver];
-}
-
-- (void)checkAndShowInfoBarForProfile:(Profile*)profile {
+// static
+void KeystoneInfoBar::PromotionInfoBar(Profile* profile) {
   // If this is the first run, the user clicked the "don't ask again" button
   // at some point in the past, or if the "don't ask about the default
   // browser" command-line switch is present, bail out.  That command-line
@@ -132,78 +114,15 @@ KeystonePromotionInfoBar* g_currentPromotionInfoBar;
     return;
   }
 
-  // If there is no Keystone glue (maybe because this application isn't
-  // Keystone-enabled) or the application is on a read-only filesystem,
-  // doing anything related to auto-update is pointless.  Bail out.
-  KeystoneGlue* keystoneGlue = [KeystoneGlue defaultKeystoneGlue];
-  if (!keystoneGlue || [keystoneGlue isOnReadOnlyFilesystem]) {
-    return;
-  }
-
-  if (base::FeatureList::IsEnabled(features::kUseChromiumUpdater)) {
-    EnsureUpdater(base::BindOnce([]() {
-                    Browser* browser = chrome::GetLastActiveBrowser();
-                    if (browser) {
-                      content::WebContents* webContents =
-                          browser->tab_strip_model()->GetActiveWebContents();
-                      if (webContents)
-                        KeystonePromotionInfoBarDelegate::Create(webContents);
+  EnsureUpdater(base::BindOnce([]() {
+                  Browser* browser = chrome::GetLastActiveBrowser();
+                  if (browser) {
+                    content::WebContents* webContents =
+                        browser->tab_strip_model()->GetActiveWebContents();
+                    if (webContents) {
+                      KeystonePromotionInfoBarDelegate::Create(webContents);
                     }
-                  }),
-                  base::DoNothing());
-  } else {
-    // Stay alive as long as needed.  This is balanced in -updateStatus:.
-    g_currentPromotionInfoBar = self;
-
-    AutoupdateStatus recentStatus = [keystoneGlue recentStatus];
-    if (recentStatus == kAutoupdateNone ||
-        recentStatus == kAutoupdateRegistering) {
-      [NSNotificationCenter.defaultCenter
-          addObserver:self
-             selector:@selector(updateStatus:)
-                 name:kAutoupdateStatusNotification
-               object:nil];
-    } else {
-      [self updateStatus:[keystoneGlue recentNotification]];
-    }
-  }
-}
-
-- (void)updateStatus:(NSNotification*)notification {
-  NSDictionary* dictionary = [notification userInfo];
-  AutoupdateStatus status = static_cast<AutoupdateStatus>(
-      [dictionary[kAutoupdateStatusStatus] intValue]);
-
-  if (status == kAutoupdateNone || status == kAutoupdateRegistering) {
-    return;
-  }
-
-  [self removeObserver];
-
-  if (status != kAutoupdateRegisterFailed &&
-      [[KeystoneGlue defaultKeystoneGlue] needsPromotion]) {
-    Browser* browser = chrome::GetLastActiveBrowser();
-    if (browser) {
-      content::WebContents* webContents =
-          browser->tab_strip_model()->GetActiveWebContents();
-      if (webContents)
-        KeystonePromotionInfoBarDelegate::Create(webContents);
-    }
-  }
-
-  g_currentPromotionInfoBar = nil;
-}
-
-- (void)removeObserver {
-  [NSNotificationCenter.defaultCenter removeObserver:self];
-}
-
-@end  // @implementation KeystonePromotionInfoBar
-
-// static
-void KeystoneInfoBar::PromotionInfoBar(Profile* profile) {
-  KeystonePromotionInfoBar* promotionInfoBar =
-      [[KeystonePromotionInfoBar alloc] init];
-
-  [promotionInfoBar checkAndShowInfoBarForProfile:profile];
+                  }
+                }),
+                base::DoNothing());
 }
