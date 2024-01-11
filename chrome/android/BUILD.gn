@@ -2638,9 +2638,12 @@ if (current_toolchain == default_toolchain) {
 
   if (android_64bit_target_cpu) {
     _main_monochrome_public_bundle_target = "monochrome_32_64_public_bundle"
-    _main_monochrome_public_apk_target = "monochrome_32_64_public_apk"
     _main_trichrome_chrome_bundle_target = "trichrome_chrome_32_64_bundle"
     _main_trichrome_library_apk_target = "trichrome_library_32_64_apk"
+
+    # monochrome_apk is only 64-bit primary, we have no 32-bit primary version,
+    # as we don't ship it to users.
+    _main_monochrome_public_apk_target = "monochrome_64_32_public_apk"
   } else {
     _main_monochrome_public_bundle_target = "monochrome_public_bundle"
     _main_monochrome_public_apk_target = "monochrome_public_apk"
@@ -2661,7 +2664,7 @@ if (current_toolchain == default_toolchain) {
         alias_target = ":trichrome_library_32_64_apk"
       }
       alias_with_wrapper_script("monochrome_public_apk") {
-        alias_target = ":monochrome_32_64_public_apk"
+        alias_target = ":monochrome_64_32_public_apk"
       }
     }
     chrome_public_apk_or_module_tmpl(_main_monochrome_public_apk_target) {
@@ -2669,8 +2672,8 @@ if (current_toolchain == default_toolchain) {
       apk_name = "MonochromePublic"
       target_type = "android_apk"
       if (android_64bit_target_cpu) {
-        is_64_bit_browser = false
-        include_64_bit_webview = true
+        is_64_bit_browser = true
+        include_32_bit_webview = true
       }
     }
 
