@@ -13,6 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
@@ -48,17 +49,33 @@ RunOnOsLoginCommand::RunOnOsLoginCommand(
     absl::optional<RunOnOsLoginMode> login_mode,
     RunOnOsLoginAction set_or_sync_mode,
     base::OnceClosure callback)
-    : WebAppCommandTemplate<AppLock>("RunOnOsLoginCommand"),
-      lock_description_(std::make_unique<AppLockDescription>(app_id)),
+    : WebAppCommand<AppLock>("RunOnOsLoginCommand",
+                             AppLockDescription(app_id),
+                             std::move(callback)),
       app_id_(app_id),
       login_mode_(login_mode),
-      set_or_sync_mode_(set_or_sync_mode),
-      callback_(std::move(callback)) {}
+      set_or_sync_mode_(set_or_sync_mode) {
+  GetMutableDebugValue().Set("app_id: ", app_id_);
+  switch (set_or_sync_mode_) {
+    case RunOnOsLoginAction::kSetModeInDBAndOS:
+      GetMutableDebugValue().Set("type_of_action", "set_db_os_value");
+      break;
+    case RunOnOsLoginAction::kSyncModeFromDBToOS:
+      GetMutableDebugValue().Set("Type of Action: ", "sync_db_os_value");
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
+}
 
 RunOnOsLoginCommand::~RunOnOsLoginCommand() = default;
 
-const LockDescription& RunOnOsLoginCommand::lock_description() const {
-  return *lock_description_;
+void RunOnOsLoginCommand::OnShutdown(
+    base::PassKey<WebAppCommandManager>) const {
+  base::UmaHistogramEnumeration(
+      "WebApp.RunOnOsLogin.CommandCompletionState",
+      RunOnOsLoginCommandCompletionState::kCommandSystemShutDown);
 }
 
 void RunOnOsLoginCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
@@ -77,39 +94,12 @@ void RunOnOsLoginCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
   }
 }
 
-void RunOnOsLoginCommand::OnShutdown() {
-  Abort(RunOnOsLoginCommandCompletionState::kCommandSystemShutDown);
-  return;
-}
-
-base::Value RunOnOsLoginCommand::ToDebugValue() const {
-  base::Value::Dict rool_info;
-  rool_info.Set("app_id: ", app_id_);
-  switch (set_or_sync_mode_) {
-    case RunOnOsLoginAction::kSetModeInDBAndOS:
-      rool_info.Set("Type of Action: ", "Setting value in DB & OS");
-      break;
-    case RunOnOsLoginAction::kSyncModeFromDBToOS:
-      rool_info.Set("Type of Action: ", "Syncing value in OS from DB");
-      break;
-    default:
-      NOTREACHED();
-      break;
-  }
-  if (!stop_reason_.empty())
-    rool_info.Set("Command Stop Reason: ", stop_reason_);
-  return base::Value(std::move(rool_info));
-}
-
 void RunOnOsLoginCommand::Abort(
     RunOnOsLoginCommandCompletionState aborted_state) {
-  if (!callback_)
-    return;
   RecordCompletionState(aborted_state);
   switch (aborted_state) {
     case RunOnOsLoginCommandCompletionState::kCommandSystemShutDown:
-      stop_reason_ = "Commands System was shut down";
-      break;
+      NOTREACHED_NORETURN();
     case RunOnOsLoginCommandCompletionState::kNotAllowedByPolicy:
       stop_reason_ = "Setting of run on OS login mode not allowed by policy";
       break;
@@ -120,10 +110,10 @@ void RunOnOsLoginCommand::Abort(
       stop_reason_ = "OS Hooks were not properly set";
       break;
     default:
-      NOTREACHED();
+      NOTREACHED_NORETURN();
   }
-  SignalCompletionAndSelfDestruct(CommandResult::kFailure,
-                                  std::move(callback_));
+  GetMutableDebugValue().Set("Command Stop Reason: ", stop_reason_);
+  CompleteAndSelfDestruct(CommandResult::kFailure);
 }
 
 void RunOnOsLoginCommand::SetRunOnOsLoginMode() {
@@ -249,8 +239,7 @@ void RunOnOsLoginCommand::OnOsHooksSet(OsHooksErrors errors) {
                                                 : RunOnOsLoginMode::kNotRun);
   }
 
-  SignalCompletionAndSelfDestruct(CommandResult::kSuccess,
-                                  std::move(callback_));
+  CompleteAndSelfDestruct(CommandResult::kSuccess);
 }
 
 void RunOnOsLoginCommand::RecordCompletionState(

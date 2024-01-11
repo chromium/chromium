@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 
 class Profile;
 
@@ -35,7 +36,7 @@ class WebAppRunOnOsLoginManager {
   void RunAppsOnOsLoginForTesting();
 
  private:
-  void RunAppsOnOsLogin(AllAppsLock& lock);
+  void RunAppsOnOsLogin(AllAppsLock& lock, base::Value::Dict& debug_value);
 
   raw_ptr<WebAppProvider> provider_ = nullptr;
   const raw_ptr<Profile> profile_;

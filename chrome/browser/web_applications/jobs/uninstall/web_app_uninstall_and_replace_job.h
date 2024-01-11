@@ -32,6 +32,7 @@ class WebAppUninstallAndReplaceJob {
  public:
   WebAppUninstallAndReplaceJob(
       Profile* profile,
+      base::Value::Dict& debug_value,
       WithAppResources& to_app_lock,
       const std::vector<webapps::AppId>& from_apps_or_extensions,
       const webapps::AppId& to_app,
@@ -40,7 +41,6 @@ class WebAppUninstallAndReplaceJob {
 
   // Note: This can synchronously call `on_complete`.
   void Start();
-  base::Value ToDebugValue() const;
 
  private:
   void MigrateUiAndUninstallApp(const webapps::AppId& from_app,
@@ -62,13 +62,12 @@ class WebAppUninstallAndReplaceJob {
   void OnInstallOsHooksCompleted(base::OnceClosure on_complete, OsHooksErrors);
 
   const raw_ref<Profile> profile_;
+  const raw_ref<base::Value::Dict> debug_value_;
   // `this` must exist within the scope of a WebAppCommand's WithAppResources.
   const raw_ref<WithAppResources> to_app_lock_;
   std::vector<webapps::AppId> from_apps_or_extensions_;
   const webapps::AppId to_app_;
   base::OnceCallback<void(bool uninstall_triggered)> on_complete_;
-
-  base::Value::Dict debug_value_;
 
   base::WeakPtrFactory<WebAppUninstallAndReplaceJob> weak_ptr_factory_{this};
 };

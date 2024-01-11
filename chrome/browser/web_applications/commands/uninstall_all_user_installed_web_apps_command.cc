@@ -13,18 +13,32 @@
 #include "components/webapps/browser/uninstall_result_code.h"
 
 namespace web_app {
+namespace {
+absl::optional<std::string> ConstructErrorMessage(
+    const std::vector<std::string>& errors) {
+  absl::optional<std::string> error_message = absl::nullopt;
+  if (!errors.empty()) {
+    error_message = base::JoinString(errors, "\n");
+  }
+  return error_message;
+}
+}  // namespace
 
 UninstallAllUserInstalledWebAppsCommand::
     UninstallAllUserInstalledWebAppsCommand(
         webapps::WebappUninstallSource uninstall_source,
         Profile& profile,
         Callback callback)
-    : WebAppCommandTemplate<AllAppsLock>(
-          "UninstallAllUserInstalledWebAppsCommand"),
-      lock_description_(std::make_unique<AllAppsLockDescription>()),
+    : WebAppCommand<AllAppsLock, const absl::optional<std::string>&>(
+          "UninstallAllUserInstalledWebAppsCommand",
+          AllAppsLockDescription(),
+          std::move(callback),
+          /*args_for_shutdown=*/"System shutdown"),
       uninstall_source_(uninstall_source),
-      profile_(profile),
-      callback_(std::move(callback)) {}
+      profile_(profile) {
+  GetMutableDebugValue().Set("uninstall_source",
+                             base::ToString(uninstall_source));
+}
 
 UninstallAllUserInstalledWebAppsCommand::
     ~UninstallAllUserInstalledWebAppsCommand() = default;
@@ -39,6 +53,14 @@ void UninstallAllUserInstalledWebAppsCommand::StartWithLock(
     }
   }
   ProcessNextUninstallOrComplete();
+}
+
+base::Value::Dict&
+UninstallAllUserInstalledWebAppsCommand::GetDebugDictForAppAndSource(
+    const webapps::AppId& app_id,
+    WebAppManagement::Type type) {
+  return *GetMutableDebugValue().EnsureDict(
+      base::StrCat({app_id, base::ToString(type)}));
 }
 
 void UninstallAllUserInstalledWebAppsCommand::ProcessNextUninstallOrComplete() {
@@ -57,8 +79,9 @@ void UninstallAllUserInstalledWebAppsCommand::ProcessNextUninstallOrComplete() {
 
   // All pending jobs and app IDs are finished.
   if (ids_to_uninstall_.empty()) {
-    CompleteAndSelfDestruct(errors_.empty() ? CommandResult::kSuccess
-                                            : CommandResult::kFailure);
+    CompleteAndSelfDestruct(
+        errors_.empty() ? CommandResult::kSuccess : CommandResult::kFailure,
+        ConstructErrorMessage(errors_));
     return;
   }
 
@@ -68,8 +91,10 @@ void UninstallAllUserInstalledWebAppsCommand::ProcessNextUninstallOrComplete() {
 
   for (auto install_source : kUserDrivenInstallSources) {
     pending_jobs_.emplace_back(
-        std::make_unique<RemoveInstallSourceJob>(uninstall_source_, *profile_,
-                                                 app_id, install_source),
+        std::make_unique<RemoveInstallSourceJob>(
+            uninstall_source_, *profile_,
+            GetDebugDictForAppAndSource(app_id, install_source), app_id,
+            install_source),
         install_source);
   }
 
@@ -81,10 +106,6 @@ void UninstallAllUserInstalledWebAppsCommand::JobComplete(
     webapps::UninstallResultCode code) {
   CHECK(active_job_);
 
-  debug_info_.EnsureDict(active_job_->app_id())
-      ->Set(base::ToString(install_source),
-            ConvertUninstallResultCodeToString(code));
-
   if (code != webapps::UninstallResultCode::kSuccess &&
       code != webapps::UninstallResultCode::kNoAppToUninstall) {
     errors_.push_back(base::StrCat(
@@ -94,30 +115,6 @@ void UninstallAllUserInstalledWebAppsCommand::JobComplete(
 
   active_job_.reset();
   ProcessNextUninstallOrComplete();
-}
-
-void UninstallAllUserInstalledWebAppsCommand::OnShutdown() {
-  CompleteAndSelfDestruct(CommandResult::kShutdown);
-}
-
-const LockDescription&
-UninstallAllUserInstalledWebAppsCommand::lock_description() const {
-  return *lock_description_;
-}
-
-base::Value UninstallAllUserInstalledWebAppsCommand::ToDebugValue() const {
-  return base::Value(debug_info_.Clone());
-}
-
-void UninstallAllUserInstalledWebAppsCommand::CompleteAndSelfDestruct(
-    CommandResult result) {
-  CHECK(callback_);
-  absl::optional<std::string> error_message = absl::nullopt;
-  if (!errors_.empty()) {
-    error_message = base::JoinString(errors_, "\n");
-  }
-  SignalCompletionAndSelfDestruct(
-      result, base::BindOnce(std::move(callback_), error_message));
 }
 
 }  // namespace web_app

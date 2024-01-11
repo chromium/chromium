@@ -31,6 +31,7 @@ class RemoveInstallUrlJob : public UninstallJob {
  public:
   RemoveInstallUrlJob(webapps::WebappUninstallSource uninstall_source,
                       Profile& profile,
+                      base::Value::Dict& debug_value,
                       absl::optional<webapps::AppId> app_id,
                       WebAppManagement::Type install_source,
                       GURL install_url);
@@ -38,18 +39,18 @@ class RemoveInstallUrlJob : public UninstallJob {
 
   // UninstallJob:
   void Start(AllAppsLock& lock, Callback callback) override;
-  base::Value ToDebugValue() const override;
   webapps::WebappUninstallSource uninstall_source() const override;
 
  private:
   void CompleteAndSelfDestruct(webapps::UninstallResultCode code);
 
-  webapps::WebappUninstallSource uninstall_source_;
+  const webapps::WebappUninstallSource uninstall_source_;
   // `this` must be owned by `profile_`.
-  raw_ref<Profile> profile_;
-  absl::optional<webapps::AppId> app_id_;
-  WebAppManagement::Type install_source_;
-  GURL install_url_;
+  const raw_ref<Profile> profile_;
+  const raw_ref<base::Value::Dict> debug_value_;
+  const absl::optional<webapps::AppId> app_id_;
+  const WebAppManagement::Type install_source_;
+  const GURL install_url_;
 
   // `this` must be started and run within the scope of a WebAppCommand's
   // AllAppsLock.
@@ -57,7 +58,6 @@ class RemoveInstallUrlJob : public UninstallJob {
   Callback callback_;
 
   std::unique_ptr<RemoveInstallSourceJob> sub_job_;
-  base::Value completed_sub_job_debug_value_;
 
   base::WeakPtrFactory<RemoveInstallUrlJob> weak_ptr_factory_{this};
 };

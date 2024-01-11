@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/apps/app_dialog/app_uninstall_dialog_view.h"
 
 #include <string>
+#include <vector>
 
 #include "base/barrier_callback.h"
 #include "base/feature_list.h"
@@ -15,6 +16,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -461,17 +463,18 @@ void AppUninstallDialogView::LoadSubAppIds(const std::string& short_app_name,
                                            const std::string& parent_app_id) {
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
   if (provider) {
-    provider->scheduler().ScheduleCallbackWithLock<web_app::AppLock>(
+    provider->scheduler().ScheduleCallbackWithResult(
         "AppUninstallDialogView::LoadSubAppIds",
-        std::make_unique<web_app::AppLockDescription>(parent_app_id),
+        web_app::AppLockDescription(parent_app_id),
         base::BindOnce(
-            [](const std::string& parent_app_id, web_app::AppLock& lock) {
+            [](const std::string& parent_app_id, web_app::AppLock& lock,
+               base::Value::Dict& debug_value) {
               return lock.registrar().GetAllSubAppIds(parent_app_id);
             },
-            parent_app_id)
-            .Then(base::BindOnce(&AppUninstallDialogView::GetSubAppsInfo,
-                                 weak_ptr_factory_.GetWeakPtr(),
-                                 short_app_name)));
+            parent_app_id),
+        base::BindOnce(&AppUninstallDialogView::GetSubAppsInfo,
+                       weak_ptr_factory_.GetWeakPtr(), short_app_name),
+        /*arg_for_shutdown=*/std::vector<std::string>());
     return;
   }
 

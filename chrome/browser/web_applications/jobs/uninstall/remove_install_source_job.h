@@ -22,6 +22,7 @@ class RemoveInstallSourceJob : public UninstallJob {
  public:
   RemoveInstallSourceJob(webapps::WebappUninstallSource uninstall_source,
                          Profile& profile,
+                         base::Value::Dict& debug_value,
                          webapps::AppId app_id,
                          WebAppManagement::Type install_source);
   ~RemoveInstallSourceJob() override;
@@ -30,18 +31,18 @@ class RemoveInstallSourceJob : public UninstallJob {
 
   // UninstallJob:
   void Start(AllAppsLock& lock, Callback callback) override;
-  base::Value ToDebugValue() const override;
   webapps::WebappUninstallSource uninstall_source() const override;
 
  private:
   void RemoveInstallSourceFromDatabase(OsHooksErrors os_hooks_errors);
   void CompleteAndSelfDestruct(webapps::UninstallResultCode code);
 
-  webapps::WebappUninstallSource uninstall_source_;
+  const webapps::WebappUninstallSource uninstall_source_;
   // `this` must be owned by `profile_`.
-  raw_ref<Profile> profile_;
-  webapps::AppId app_id_;
-  WebAppManagement::Type install_source_;
+  const raw_ref<Profile> profile_;
+  const raw_ref<base::Value::Dict> debug_value_;
+  const webapps::AppId app_id_;
+  const WebAppManagement::Type install_source_;
 
   // `this` must be started and run within the scope of a WebAppCommand's
   // AllAppsLock.
@@ -49,7 +50,6 @@ class RemoveInstallSourceJob : public UninstallJob {
   Callback callback_;
 
   std::unique_ptr<RemoveWebAppJob> sub_job_;
-  base::Value completed_sub_job_debug_value_;
 
   base::WeakPtrFactory<RemoveInstallSourceJob> weak_ptr_factory_{this};
 };

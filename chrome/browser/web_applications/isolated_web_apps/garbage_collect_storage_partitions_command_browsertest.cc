@@ -9,6 +9,7 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/location.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/test/test_future.h"
@@ -32,6 +33,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/test/browser_test.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 constexpr base::StringPiece kIwa1UrlString(
@@ -117,15 +119,17 @@ class GarbageCollectStoragePartitionsCommandBrowserTest
 
   content::StoragePartitionConfig AddPersistentStoragePartitonToIwa(
       const IsolatedWebAppUrlInfo& url_info,
-      const std::string& partition_name) {
+      const std::string& partition_name,
+      const base::Location location = FROM_HERE) {
     base::test::TestFuture<absl::optional<content::StoragePartitionConfig>>
         future;
-    provider().scheduler().ScheduleCallbackWithLock(
-        "GetControlledFramePartition",
-        std::make_unique<AppLockDescription>(url_info.app_id()),
+    provider().scheduler().ScheduleCallbackWithResult(
+        "GetControlledFramePartition", AppLockDescription(url_info.app_id()),
         base::BindOnce(&GetControlledFramePartitionWithLock, profile(),
-                       url_info, partition_name, false, future.GetCallback()),
-        FROM_HERE);
+                       url_info, partition_name, /*in_memory=*/false),
+        future.GetCallback(), /*arg_for_shutdown=*/
+        absl::optional<content::StoragePartitionConfig>(absl::nullopt),
+        location);
     return future.Get().value();
   }
 };
@@ -176,12 +180,9 @@ IN_PROC_BROWSER_TEST_F(GarbageCollectStoragePartitionsCommandBrowserTest,
 
   // Uninstall one of the IWAs.
   base::test::TestFuture<webapps::UninstallResultCode> future;
-  auto job = std::make_unique<RemoveWebAppJob>(
-      webapps::WebappUninstallSource::kAppsPage, *profile(),
-      url_info_2.app_id());
-  provider().command_manager().ScheduleCommand(
-      std::make_unique<WebAppUninstallCommand>(std::move(job),
-                                               future.GetCallback()));
+  provider().scheduler().UninstallWebApp(
+      url_info_2.app_id(), webapps::WebappUninstallSource::kAppsPage,
+      future.GetCallback());
   auto code = future.Get();
   ASSERT_TRUE(code == webapps::UninstallResultCode::kSuccess);
 

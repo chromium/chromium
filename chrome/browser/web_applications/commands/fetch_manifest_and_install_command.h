@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
+#include "chrome/browser/web_applications/locks/noop_lock.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
@@ -31,20 +32,19 @@
 namespace content {
 class WebContents;
 class NavigationHandle;
-}
+}  // namespace content
 
 namespace web_app {
 
 class AppLock;
-class AppLockDescription;
-class LockDescription;
-class NoopLock;
-class NoopLockDescription;
 class WebAppDataRetriever;
 
 // Install web app from manifest for current `WebContents`.
-class FetchManifestAndInstallCommand : public WebAppCommandTemplate<NoopLock>,
-                                       public content::WebContentsObserver {
+class FetchManifestAndInstallCommand
+    : public WebAppCommand<NoopLock,
+                           const webapps::AppId&,
+                           webapps::InstallResultCode>,
+      public content::WebContentsObserver {
  public:
   // `use_fallback` allows getting fallback information from current document
   // to enable installing a non-promotable site.
@@ -59,12 +59,14 @@ class FetchManifestAndInstallCommand : public WebAppCommandTemplate<NoopLock>,
 
   ~FetchManifestAndInstallCommand() override;
 
-  // WebAppCommandTemplate<NoopLock>:
-  const LockDescription& lock_description() const override;
+  // WebAppCommand:
+  void OnShutdown(base::PassKey<WebAppCommandManager>) const override;
+  content::WebContents* GetInstallingWebContents(
+      base::PassKey<WebAppCommandManager>) override;
+
+ protected:
+  // WebAppCommand:
   void StartWithLock(std::unique_ptr<NoopLock> lock) override;
-  void OnShutdown() override;
-  content::WebContents* GetInstallingWebContents() override;
-  base::Value ToDebugValue() const override;
 
  private:
   // content::WebContentsObserver:
@@ -126,16 +128,12 @@ class FetchManifestAndInstallCommand : public WebAppCommandTemplate<NoopLock>,
 
   void LogInstallInfo();
 
-  std::unique_ptr<NoopLockDescription> noop_lock_description_;
-  std::unique_ptr<AppLockDescription> app_lock_description_;
-
   std::unique_ptr<AppLock> app_lock_;
   std::unique_ptr<NoopLock> noop_lock_;
 
   webapps::WebappInstallSource install_surface_;
   base::WeakPtr<content::WebContents> web_contents_;
   WebAppInstallDialogCallback dialog_callback_;
-  OnceInstallCallback install_callback_;
   // Whether using fallback installation data from the document.
   bool use_fallback_ = false;
 
@@ -149,7 +147,6 @@ class FetchManifestAndInstallCommand : public WebAppCommandTemplate<NoopLock>,
   webapps::AppId app_id_;
   std::unique_ptr<WebAppInstallInfo> web_app_info_;
   blink::mojom::ManifestPtr opt_manifest_;
-  base::Value::Dict debug_log_;
 
   base::WeakPtrFactory<FetchManifestAndInstallCommand> weak_ptr_factory_{this};
 };

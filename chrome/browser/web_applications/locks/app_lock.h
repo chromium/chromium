@@ -28,6 +28,7 @@ class AppLockDescription : public LockDescription {
  public:
   explicit AppLockDescription(const webapps::AppId& app_id);
   explicit AppLockDescription(base::flat_set<webapps::AppId> app_ids);
+  AppLockDescription(AppLockDescription&&);
   ~AppLockDescription();
 };
 

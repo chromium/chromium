@@ -40,15 +40,9 @@ std::ostream& operator<<(std::ostream& os, FetchInstallInfoResult result) {
       return os << "kNoValidManifest";
     case FetchInstallInfoResult::kWrongManifestId:
       return os << "kWrongManifestId";
-    case FetchInstallInfoResult::kSystemShutdown:
-      return os << "kSystemShutdown";
     case FetchInstallInfoResult::kFailure:
       return os << "kFailure";
   }
-}
-
-base::Value FetchInstallInfoFromInstallUrlCommand::ToDebugValue() const {
-  return base::Value(debug_log_.Clone());
 }
 
 bool FetchInstallInfoFromInstallUrlCommand::
@@ -56,23 +50,19 @@ bool FetchInstallInfoFromInstallUrlCommand::
   return lock_->shared_web_contents().IsBeingDestroyed();
 }
 
-const LockDescription& FetchInstallInfoFromInstallUrlCommand::lock_description()
-    const {
-  return *lock_description_;
-}
-
 FetchInstallInfoFromInstallUrlCommand::FetchInstallInfoFromInstallUrlCommand(
     webapps::ManifestId manifest_id,
     GURL install_url,
     absl::optional<webapps::ManifestId> parent_manifest_id,
     base::OnceCallback<void(std::unique_ptr<WebAppInstallInfo>)> callback)
-    : WebAppCommandTemplate<SharedWebContentsLock>(
-          "FetchInstallInfoFromInstallUrlCommand"),
-      lock_description_(std::make_unique<SharedWebContentsLockDescription>()),
+    : WebAppCommand<SharedWebContentsLock, std::unique_ptr<WebAppInstallInfo>>(
+          "FetchInstallInfoFromInstallUrlCommand",
+          SharedWebContentsLockDescription(),
+          std::move(callback),
+          /*args_for_shutdown=*/nullptr),
       manifest_id_(manifest_id),
       install_url_(install_url),
       parent_manifest_id_(parent_manifest_id),
-      web_app_install_info_callback_(std::move(callback)),
       install_error_log_entry_(/*background_installation=*/true,
                                webapps::WebappInstallSource::SUB_APP) {
   CHECK(manifest_id_.is_valid());
@@ -86,10 +76,10 @@ FetchInstallInfoFromInstallUrlCommand::FetchInstallInfoFromInstallUrlCommand(
     CHECK_NE(parent_manifest_id_.value(), manifest_id_);
   }
 
-  debug_log_.Set("manifest_id", manifest_id_.spec());
-  debug_log_.Set("parent_manifest_id",
-                 parent_manifest_id_.value_or(GURL("")).spec());
-  debug_log_.Set("install_url", install_url_.spec());
+  GetMutableDebugValue().Set("manifest_id", manifest_id_.spec());
+  GetMutableDebugValue().Set("parent_manifest_id",
+                             parent_manifest_id_.value_or(GURL("")).spec());
+  GetMutableDebugValue().Set("install_url", install_url_.spec());
 }
 
 FetchInstallInfoFromInstallUrlCommand::
@@ -128,14 +118,10 @@ void FetchInstallInfoFromInstallUrlCommand::StartWithLock(
                                       weak_ptr_factory_.GetWeakPtr()));
 }
 
-void FetchInstallInfoFromInstallUrlCommand::OnShutdown() {
-  CompleteCommandAndSelfDestruct(FetchInstallInfoResult::kSystemShutdown,
-                                 /*install_info=*/nullptr);
-}
-
 void FetchInstallInfoFromInstallUrlCommand::
     OnWebAppUrlLoadedGetWebAppInstallInfo(WebAppUrlLoader::Result result) {
-  debug_log_.Set("url_loading_result", ConvertUrlLoaderResultToString(result));
+  GetMutableDebugValue().Set("url_loading_result",
+                             ConvertUrlLoaderResultToString(result));
 
   if (result != WebAppUrlLoader::Result::kUrlLoaded) {
     install_error_log_entry_.LogUrlLoaderError(
@@ -231,14 +217,12 @@ void FetchInstallInfoFromInstallUrlCommand::OnIconsRetrieved(
 void FetchInstallInfoFromInstallUrlCommand::CompleteCommandAndSelfDestruct(
     FetchInstallInfoResult result,
     std::unique_ptr<WebAppInstallInfo> install_info) {
-  debug_log_.Set("command_result", base::ToString(result));
+  GetMutableDebugValue().Set("command_result", base::ToString(result));
 
   CommandResult command_result = [&] {
     switch (result) {
       case FetchInstallInfoResult::kAppInfoObtained:
         return CommandResult::kSuccess;
-      case FetchInstallInfoResult::kSystemShutdown:
-        return CommandResult::kShutdown;
       default:
         return CommandResult::kFailure;
     }
@@ -250,9 +234,7 @@ void FetchInstallInfoFromInstallUrlCommand::CompleteCommandAndSelfDestruct(
         install_error_log_entry_.TakeErrorDict());
   }
 
-  SignalCompletionAndSelfDestruct(
-      command_result, base::BindOnce(std::move(web_app_install_info_callback_),
-                                     std::move(install_info)));
+  CompleteAndSelfDestruct(command_result, std::move(install_info));
 }
 
 }  // namespace web_app

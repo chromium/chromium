@@ -65,11 +65,13 @@ mojom::UserDisplayMode GetExtensionUserDisplayMode(
 
 WebAppUninstallAndReplaceJob::WebAppUninstallAndReplaceJob(
     Profile* profile,
+    base::Value::Dict& debug_value,
     WithAppResources& to_app_lock,
     const std::vector<webapps::AppId>& from_apps_or_extensions,
     const webapps::AppId& to_app,
     base::OnceCallback<void(bool uninstall_triggered)> on_complete)
     : profile_(*profile),
+      debug_value_(debug_value),
       to_app_lock_(to_app_lock),
       from_apps_or_extensions_(from_apps_or_extensions),
       to_app_(to_app),
@@ -87,12 +89,12 @@ void WebAppUninstallAndReplaceJob::Start() {
   }
 
   if (apps_to_replace.empty()) {
-    debug_value_.Set("did_uninstall_and_replace", false);
+    debug_value_->Set("did_uninstall_and_replace", false);
     std::move(on_complete_).Run(/*uninstall_triggered=*/false);
     return;
   }
 
-  debug_value_.Set("did_uninstall_and_replace", true);
+  debug_value_->Set("did_uninstall_and_replace", true);
   MigrateUiAndUninstallApp(
       apps_to_replace.front(),
       base::BindOnce(std::move(on_complete_), /*uninstall_triggered=*/true));
@@ -102,10 +104,6 @@ void WebAppUninstallAndReplaceJob::Start() {
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(&profile_.get());
     proxy->UninstallSilently(app, apps::UninstallSource::kMigration);
   }
-}
-
-base::Value WebAppUninstallAndReplaceJob::ToDebugValue() const {
-  return base::Value(debug_value_.Clone());
 }
 
 void WebAppUninstallAndReplaceJob::MigrateUiAndUninstallApp(
@@ -258,7 +256,8 @@ void WebAppUninstallAndReplaceJob::InstallOsHooksForReplacementApp(
 
 void WebAppUninstallAndReplaceJob::OnInstallOsHooksCompleted(
     base::OnceClosure on_complete,
-    OsHooksErrors) {
+    OsHooksErrors errors) {
+  debug_value_->Set("complete_errors", errors.any());
   std::move(on_complete).Run();
 }
 

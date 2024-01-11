@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/commands/install_from_sync_command.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -135,6 +136,12 @@ IN_PROC_BROWSER_TEST_F(InstallFromSyncCommandTest, TwoInstalls) {
   }
 }
 
+// Note: This test may become flaky if the posted task to shutdown the command
+// manager happens after the installation is complete. If this is the case, then
+// something must be added to stop the install from sync command from
+// completing, perhaps by swapping out a system dependency like the
+// WebContentsManager to have the load start but never report 'finished' to the
+// command.
 IN_PROC_BROWSER_TEST_F(InstallFromSyncCommandTest, AbortInstall) {
   GURL test_url = https_server()->GetURL(
       "/banners/"
@@ -156,13 +163,16 @@ IN_PROC_BROWSER_TEST_F(InstallFromSyncCommandTest, AbortInstall) {
             code,
             webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown);
       }));
-  auto* command_ptr = command.get();
   provider->command_manager().ScheduleCommand(std::move(command));
   content::NavigationStartObserver navigation_started_observer(
       provider->command_manager().web_contents_for_testing(),
       base::BindLambdaForTesting([&](content::NavigationHandle* handle) {
         if (handle && handle->GetURL() == test_url) {
-          command_ptr->OnShutdown();
+          // This must be posted as a task because web contents cannot be
+          // destroyed inside of a observation method.
+          base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+              FROM_HERE,
+              base::BindOnce(&WebAppProvider::Shutdown, provider->AsWeakPtr()));
         }
       }));
   content::WebContentsDestroyedWatcher web_contents_destroyed_observer(

@@ -36,7 +36,6 @@ class LockDescription {
   };
 
   LockDescription(LockDescription&&);
-  LockDescription& operator=(LockDescription&&);
 
   LockDescription(const LockDescription&) = delete;
   LockDescription& operator=(const LockDescription&) = delete;
@@ -65,8 +64,6 @@ class LockDescription {
 
   const base::flat_set<webapps::AppId> app_ids_{};
   const Type type_;
-
-  base::WeakPtrFactory<LockDescription> weak_factory_{this};
 };
 
 std::ostream& operator<<(std::ostream& os,

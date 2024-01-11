@@ -72,8 +72,7 @@ class InstallabilityChecker {
       base::expected<SignedWebBundleMetadata, std::string> metadata);
   void OnInstallabilityChecked(
       SignedWebBundleMetadata metadata,
-      CheckIsolatedWebAppBundleInstallabilityCommand::InstallabilityCheckResult
-          installability_check_result,
+      IsolatedInstallabilityCheckResult installability_check_result,
       std::optional<base::Version> installed_version);
 
   raw_ptr<Profile> profile_;

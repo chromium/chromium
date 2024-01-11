@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
+#include "chrome/browser/web_applications/locks/noop_lock.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/common/web_app_id.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
@@ -25,10 +26,6 @@ class WebContents;
 namespace web_app {
 
 class AppLock;
-class AppLockDescription;
-class LockDescription;
-class NoopLock;
-class NoopLockDescription;
 class WebAppDataRetriever;
 class WebAppUrlLoader;
 class WebAppUiManager;
@@ -38,6 +35,7 @@ enum class NavigateAndTriggerInstallDialogCommandResult {
   kFailure,
   kAlreadyInstalled,
   kDialogShown,
+  kShutdown
 };
 // The navigation will always succeed. The `result` indicates whether the
 // command was able to trigger the install dialog.
@@ -48,7 +46,8 @@ using NavigateAndTriggerInstallDialogCommandCallback = base::OnceCallback<void(
 // manifest to load. If there is an installable web app that the user has not
 // installed, the command will automatically trigger the install dialog.
 class NavigateAndTriggerInstallDialogCommand
-    : public WebAppCommandTemplate<NoopLock> {
+    : public WebAppCommand<NoopLock,
+                           NavigateAndTriggerInstallDialogCommandResult> {
  public:
   NavigateAndTriggerInstallDialogCommand(
       const GURL& install_url,
@@ -61,11 +60,9 @@ class NavigateAndTriggerInstallDialogCommand
       Profile* profile);
   ~NavigateAndTriggerInstallDialogCommand() override;
 
-  // WebAppCommandTemplate<NoopLock>:
-  const LockDescription& lock_description() const override;
+ protected:
+  // WebAppCommand:
   void StartWithLock(std::unique_ptr<NoopLock>) override;
-  void OnShutdown() override;
-  base::Value ToDebugValue() const override;
 
  private:
   bool IsWebContentsDestroyed();
@@ -76,10 +73,6 @@ class NavigateAndTriggerInstallDialogCommand
                                bool valid_manifest_for_web_app,
                                webapps::InstallableStatusCode error_code);
   void OnAppLockGranted(std::unique_ptr<AppLock> app_lock);
-  void Abort(NavigateAndTriggerInstallDialogCommandResult result);
-
-  std::unique_ptr<NoopLockDescription> noop_lock_description_;
-  std::unique_ptr<AppLockDescription> app_lock_description_;
 
   std::unique_ptr<AppLock> app_lock_;
   std::unique_ptr<NoopLock> noop_lock_;
@@ -87,7 +80,6 @@ class NavigateAndTriggerInstallDialogCommand
   const GURL install_url_;
   const GURL origin_url_;
   const bool is_renderer_initiated_;
-  NavigateAndTriggerInstallDialogCommandCallback callback_;
 
   base::WeakPtr<WebAppUiManager> ui_manager_;
   const std::unique_ptr<WebAppUrlLoader> url_loader_;
@@ -96,7 +88,6 @@ class NavigateAndTriggerInstallDialogCommand
 
   webapps::AppId app_id_;
   base::WeakPtr<content::WebContents> web_contents_;
-  base::Value::List error_log_;
 
   base::WeakPtrFactory<NavigateAndTriggerInstallDialogCommand> weak_factory_{
       this};

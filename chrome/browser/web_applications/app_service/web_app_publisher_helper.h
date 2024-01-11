@@ -95,6 +95,7 @@ namespace web_app {
 class WebApp;
 class WebAppProvider;
 enum class RunOnOsLoginMode;
+struct ComputedAppSize;
 
 namespace mojom {
 enum class UserDisplayMode : int32_t;
@@ -419,7 +420,7 @@ class WebAppPublisherHelper : public WebAppRegistrarObserver,
       apps::LaunchContainer container);
 
   void OnGetWebAppSize(webapps::AppId app_id,
-                       absl::optional<ComputeAppSizeCommand::Size> size);
+                       absl::optional<ComputedAppSize> size);
 
   const raw_ptr<Profile, DanglingUntriaged> profile_;
 

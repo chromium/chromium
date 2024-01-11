@@ -20,15 +20,13 @@
 
 namespace web_app {
 
-base::Value GetControlledFramePartitionWithLock(
-    Profile* profile,
-    const IsolatedWebAppUrlInfo& url_info,
-    const std::string& partition_name,
-    bool in_memory,
-    base::OnceCallback<void(absl::optional<content::StoragePartitionConfig>)>
-        callback,
-    AppLock& lock) {
-  base::Value::Dict debug_info;
+absl::optional<content::StoragePartitionConfig>
+GetControlledFramePartitionWithLock(Profile* profile,
+                                    const IsolatedWebAppUrlInfo& url_info,
+                                    const std::string& partition_name,
+                                    bool in_memory,
+                                    AppLock& lock,
+                                    base::Value::Dict& debug_info) {
   debug_info.Set("app_id", url_info.app_id());
   debug_info.Set("partition_name", partition_name);
   debug_info.Set("in_memory", in_memory);
@@ -37,11 +35,7 @@ base::Value GetControlledFramePartitionWithLock(
     absl::optional<content::StoragePartitionConfig> config =
         lock.registrar().SaveAndGetInMemoryControlledFramePartitionConfig(
             url_info, partition_name);
-
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), config));
-
-    return base::Value(std::move(debug_info));
+    return config;
   }
 
   content::StoragePartitionConfig storage_partition_config =
@@ -58,10 +52,7 @@ base::Value GetControlledFramePartitionWithLock(
     isolation_data.controlled_frame_partitions.insert(partition_name);
     iwa->SetIsolationData(isolation_data);
   }
-
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), storage_partition_config));
-  return base::Value(std::move(debug_info));
+  return storage_partition_config;
 }
 
 }  // namespace web_app

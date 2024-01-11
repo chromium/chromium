@@ -6,7 +6,9 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -27,20 +29,19 @@ class WebAppCommandSchedulerTest : public WebAppTest {
   FakeWebAppProvider* provider() { return provider_; }
 
   bool IsCommandQueued(std::string_view command_name) {
+    // Note: Accessing & using the debug value for tests is poor practice and
+    // should not be done, given how easily the format can be changed.
+    // TODO(b/318858671): Update logic to not read command errors from debug
+    // log.
     base::Value::Dict log =
         provider()->command_manager().ToDebugValue().TakeDict();
     for (const base::Value& command : *log.FindList("command_queue")) {
-      if (*command.GetDict().FindString("name") == command_name) {
+      if (*command.GetDict().FindDict("!metadata")->FindString("name") ==
+          command_name) {
         return true;
       }
     }
     return false;
-  }
-
-  void WaitForProviderReady() {
-    base::RunLoop run_loop;
-    provider()->on_registry_ready().Post(FROM_HERE, run_loop.QuitClosure());
-    run_loop.Run();
   }
 
  private:
@@ -55,9 +56,9 @@ TEST_F(WebAppCommandSchedulerTest, FetchManifestAndInstall) {
       /*use_fallback=*/true);
 
   provider()->StartWithSubsystems();
-  EXPECT_EQ(provider()->command_manager().GetCommandCountForTesting(), 0u);
-
-  WaitForProviderReady();
+  EXPECT_EQ(provider()->command_manager().GetStartedCommandCountForTesting(),
+            0);
+  EXPECT_EQ(provider()->command_manager().GetCommandCountForTesting(), 1u);
 
   EXPECT_TRUE(IsCommandQueued("FetchManifestAndInstallCommand"));
 }
@@ -68,19 +69,22 @@ TEST_F(WebAppCommandSchedulerTest, PersistFileHandlersUserChoice) {
       "app id", /*allowed=*/true, base::DoNothing());
 
   provider()->StartWithSubsystems();
-  EXPECT_EQ(provider()->command_manager().GetCommandCountForTesting(), 0u);
-
-  WaitForProviderReady();
+  EXPECT_EQ(provider()->command_manager().GetStartedCommandCountForTesting(),
+            0);
+  EXPECT_EQ(provider()->command_manager().GetCommandCountForTesting(), 1u);
 
   EXPECT_TRUE(IsCommandQueued("UpdateFileHandlerCommand"));
 
+  test::WaitUntilReady(provider());
   provider()->command_manager().AwaitAllCommandsCompleteForTesting();
+  EXPECT_FALSE(IsCommandQueued("UpdateFileHandlerCommand"));
 
   provider()->Shutdown();
-  // commands don't get scheduled after shutdown.
+  base::test::TestFuture<void> after_shutdown;
   provider()->scheduler().PersistFileHandlersUserChoice(
-      "app id", /*allowed=*/true, base::DoNothing());
+      "app id", /*allowed=*/true, after_shutdown.GetCallback());
   EXPECT_EQ(provider()->command_manager().GetCommandCountForTesting(), 0u);
+  ASSERT_TRUE(after_shutdown.Wait());
 }
 
 }  // namespace

@@ -21,11 +21,6 @@
 
 namespace web_app {
 
-namespace {
-using InstallabilityCheckResult =
-    CheckIsolatedWebAppBundleInstallabilityCommand::InstallabilityCheckResult;
-}  // namespace
-
 // static
 std::unique_ptr<InstallabilityChecker> InstallabilityChecker::CreateAndStart(
     Profile* profile,
@@ -86,23 +81,23 @@ void InstallabilityChecker::OnLoadedMetadata(
 
 void InstallabilityChecker::OnInstallabilityChecked(
     SignedWebBundleMetadata metadata,
-    InstallabilityCheckResult installability_check_result,
+    IsolatedInstallabilityCheckResult installability_check_result,
     std::optional<base::Version> installed_version) {
   switch (installability_check_result) {
-    case InstallabilityCheckResult::kInstallable:
+    case IsolatedInstallabilityCheckResult::kInstallable:
       std::move(callback_).Run(BundleInstallable{metadata});
       return;
-    case InstallabilityCheckResult::kUpdatable:
+    case IsolatedInstallabilityCheckResult::kUpdatable:
       CHECK(installed_version.has_value());
       std::move(callback_).Run(
           BundleUpdatable{metadata, installed_version.value()});
       return;
-    case InstallabilityCheckResult::kOutdated:
+    case IsolatedInstallabilityCheckResult::kOutdated:
       CHECK(installed_version.has_value());
       std::move(callback_).Run(
           BundleOutdated{metadata, installed_version.value()});
       return;
-    case InstallabilityCheckResult::kShutdown:
+    case IsolatedInstallabilityCheckResult::kShutdown:
       std::move(callback_).Run(ProfileShutdown{});
       return;
   }

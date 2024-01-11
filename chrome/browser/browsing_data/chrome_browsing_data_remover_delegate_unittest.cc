@@ -1654,13 +1654,14 @@ class IsolatedWebAppChromeBrowsingDataRemoverDelegateTest
     CHECK(provider);
     base::test::TestFuture<absl::optional<content::StoragePartitionConfig>>
         future;
-    provider->scheduler().ScheduleCallbackWithLock(
+    provider->scheduler().ScheduleCallbackWithResult(
         "GetControlledFramePartition",
-        std::make_unique<web_app::AppLockDescription>(iwa_url_info.app_id()),
+        web_app::AppLockDescription(iwa_url_info.app_id()),
         base::BindOnce(&web_app::GetControlledFramePartitionWithLock,
                        GetProfile(), iwa_url_info, partition_name,
-                       /*in_memory=*/false, future.GetCallback()),
-        FROM_HERE);
+                       /*in_memory=*/false),
+        future.GetCallback(), /*arg_for_shutdown=*/
+        absl::optional<content::StoragePartitionConfig>(absl::nullopt));
     return future.Get().value();
   }
 

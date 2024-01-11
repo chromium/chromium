@@ -269,10 +269,6 @@ class IsolatedWebAppBrowsingDataClearingTest
         }));
 
     base::test::TestFuture<webapps::UninstallResultCode> future;
-    auto job = std::make_unique<RemoveWebAppJob>(
-        webapps::WebappUninstallSource::kAppsPage, *profile(),
-        url_info.app_id());
-
     provider().scheduler().UninstallWebApp(
         url_info.app_id(), webapps::WebappUninstallSource::kAppsPage,
         future.GetCallback());

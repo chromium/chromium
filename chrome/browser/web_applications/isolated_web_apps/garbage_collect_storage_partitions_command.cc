@@ -32,11 +32,10 @@ namespace web_app {
 GarbageCollectStoragePartitionsCommand::GarbageCollectStoragePartitionsCommand(
     Profile* profile,
     base::OnceClosure done)
-    : WebAppCommandTemplate<AllAppsLock>(
-          "GarbageCollectStoragePartitionsCommand"),
-      lock_description_(std::make_unique<AllAppsLockDescription>()),
-      profile_(profile),
-      done_closure_(std::move(done)) {
+    : WebAppCommand<AllAppsLock>("GarbageCollectStoragePartitionsCommand",
+                                 AllAppsLockDescription(),
+                                 std::move(done)),
+      profile_(profile) {
   DCHECK(profile);
 }
 
@@ -46,7 +45,6 @@ GarbageCollectStoragePartitionsCommand::
 void GarbageCollectStoragePartitionsCommand::StartWithLock(
     std::unique_ptr<AllAppsLock> lock) {
   lock_ = std::move(lock);
-
   ResetStorageGarbageCollectPref();
 }
 
@@ -74,15 +72,6 @@ void GarbageCollectStoragePartitionsCommand::OnPrefReset() {
       base::BindOnce(
           &GarbageCollectStoragePartitionsCommand::DoGarbageCollection,
           weak_factory_.GetWeakPtr()));
-}
-
-const LockDescription&
-GarbageCollectStoragePartitionsCommand::lock_description() const {
-  return *lock_description_;
-}
-
-base::Value GarbageCollectStoragePartitionsCommand::ToDebugValue() const {
-  return base::Value(debug_info_.Clone());
 }
 
 void GarbageCollectStoragePartitionsCommand::DoGarbageCollection() {
@@ -115,7 +104,8 @@ void GarbageCollectStoragePartitionsCommand::DoGarbageCollection() {
     }
   }
 
-  base::Value::List* debug_paths = debug_info_.EnsureList("allow_list_paths");
+  base::Value::List* debug_paths =
+      GetMutableDebugValue().EnsureList("allow_list_paths");
   for (const auto& path : allowlist) {
     debug_paths->Append(path.LossyDisplayName());
   }
@@ -126,17 +116,8 @@ void GarbageCollectStoragePartitionsCommand::DoGarbageCollection() {
                      weak_factory_.GetWeakPtr()));
 }
 
-void GarbageCollectStoragePartitionsCommand::OnShutdown() {
-  SignalCompletionAndSelfDestruct(CommandResult::kShutdown, base::DoNothing());
-}
-
 void GarbageCollectStoragePartitionsCommand::OnSuccess() {
-  lock_->isolated_web_app_installation_manager()
-      .on_garbage_collect_storage_partitions_done_for_testing()  // IN-TEST
-      .Signal();
-
-  SignalCompletionAndSelfDestruct(CommandResult::kSuccess,
-                                  std::move(done_closure_));
+  CompleteAndSelfDestruct(CommandResult::kSuccess);
 }
 
 }  // namespace web_app

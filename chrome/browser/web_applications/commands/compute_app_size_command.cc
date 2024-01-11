@@ -35,12 +35,17 @@ namespace web_app {
 ComputeAppSizeCommand::ComputeAppSizeCommand(
     const webapps::AppId& app_id,
     Profile* profile,
-    base::OnceCallback<void(absl::optional<Size>)> callback)
-    : WebAppCommandTemplate<AppLock>("ComputeAppSizeCommand"),
-      lock_description_(AppLockDescription(app_id)),
+    base::OnceCallback<void(absl::optional<ComputedAppSize>)> callback)
+    : WebAppCommand<AppLock, absl::optional<ComputedAppSize>>(
+          "ComputeAppSizeCommand",
+          AppLockDescription(app_id),
+          std::move(callback),
+          /*args_for_shutdown=*/
+          ComputedAppSize()),
       app_id_(app_id),
-      profile_(profile),
-      callback_(std::move(callback)) {}
+      profile_(profile) {
+  GetMutableDebugValue().Set("app_id", app_id);
+}
 
 ComputeAppSizeCommand::~ComputeAppSizeCommand() = default;
 
@@ -57,25 +62,9 @@ void ComputeAppSizeCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
                               weak_factory_.GetWeakPtr()));
 }
 
-const LockDescription& ComputeAppSizeCommand::lock_description() const {
-  return lock_description_;
-}
-
-base::Value ComputeAppSizeCommand::ToDebugValue() const {
-  base::Value::Dict debug_info;
-  debug_info.Set("app_size_in_bytes", base::ToString(size_.app_size_in_bytes));
-  debug_info.Set("data_size_in_bytes",
-                 base::ToString(size_.data_size_in_bytes));
-  return base::Value(debug_info.Clone());
-}
-
-void ComputeAppSizeCommand::OnShutdown() {
-  ReportResultAndDestroy(CommandResult::kShutdown);
-}
-
 void ComputeAppSizeCommand::OnGetIconSize(uint64_t icon_size) {
   size_.app_size_in_bytes = icon_size;
-
+  GetMutableDebugValue().Set("app_size_in_bytes", base::ToString(icon_size));
   GetDataSize();
 }
 
@@ -122,6 +111,8 @@ void ComputeAppSizeCommand::OnQuotaModelInfoLoaded(
           quota_info.temporary_usage + quota_info.syncable_usage;
     }
   }
+  GetMutableDebugValue().Set("data_size_in_bytes",
+                             base::ToString(size_.data_size_in_bytes));
 
   GetSessionUsage();
 }
@@ -153,13 +144,9 @@ void ComputeAppSizeCommand::OnLocalStorageModelInfoLoaded(
 }
 
 void ComputeAppSizeCommand::ReportResultAndDestroy(CommandResult result) {
-  DCHECK(!callback_.is_null());
-
-  SignalCompletionAndSelfDestruct(
-      result, base::BindOnce(std::move(callback_),
-                             result == CommandResult::kSuccess
-                                 ? std::move(size_)
-                                 : ComputeAppSizeCommand::Size()));
+  CompleteAndSelfDestruct(result, result == CommandResult::kSuccess
+                                      ? std::move(size_)
+                                      : ComputedAppSize());
 }
 
 }  // namespace web_app

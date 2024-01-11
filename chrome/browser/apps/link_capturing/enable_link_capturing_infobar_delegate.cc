@@ -34,42 +34,40 @@
 
 namespace apps {
 namespace {
-base::Value IncrementIgnoreCount(webapps::AppId app_id,
-                                 web_app::AppLock& app_lock) {
+void IncrementIgnoreCount(webapps::AppId app_id,
+                          web_app::AppLock& app_lock,
+                          base::Value::Dict& debug_result) {
   web_app::ScopedRegistryUpdate update = app_lock.sync_bridge().BeginUpdate();
   web_app::WebApp* app = update->UpdateApp(app_id);
 
-  base::Value::Dict debug_result;
   debug_result.Set("app_id", app_id);
   if (!app) {
     debug_result.Set("error", "AppId does not exist.");
-    return base::Value(std::move(debug_result));
+    return;
   }
   int new_count =
       base::ClampedNumeric(app->supported_links_offer_ignore_count()) + 1;
   app->SetSupportedLinksOfferIgnoreCount(new_count);
 
   debug_result.Set("supported_links_offer_ignore_count", new_count);
-  return base::Value(std::move(debug_result));
 }
 
-base::Value IncrementDismissCount(webapps::AppId app_id,
-                                  web_app::AppLock& app_lock) {
+void IncrementDismissCount(webapps::AppId app_id,
+                           web_app::AppLock& app_lock,
+                           base::Value::Dict& debug_result) {
   web_app::ScopedRegistryUpdate update = app_lock.sync_bridge().BeginUpdate();
   web_app::WebApp* app = update->UpdateApp(app_id);
 
-  base::Value::Dict debug_result;
   debug_result.Set("app_id", app_id);
   if (!app) {
     debug_result.Set("error", "AppId does not exist.");
-    return base::Value(std::move(debug_result));
+    return;
   }
   int new_count =
       base::ClampedNumeric(app->supported_links_offer_dismiss_count()) + 1;
   app->SetSupportedLinksOfferDismissCount(new_count);
 
   debug_result.Set("supported_links_offer_dismiss_count", new_count);
-  return base::Value(std::move(debug_result));
 }
 }  // namespace
 
@@ -162,10 +160,11 @@ EnableLinkCapturingInfoBarDelegate::~EnableLinkCapturingInfoBarDelegate() {
   }
   base::RecordAction(
       base::UserMetricsAction("LinkCapturingIgnoredFromInfoBar"));
-  provider_->scheduler().ScheduleCallbackWithLock(
+  provider_->scheduler().ScheduleCallback(
       "IncrementSupportedLinksOfferIgnoreCount",
-      std::make_unique<web_app::AppLockDescription>(app_id_),
-      base::BindOnce(&IncrementIgnoreCount, app_id_));
+      web_app::AppLockDescription(app_id_),
+      base::BindOnce(&IncrementIgnoreCount, app_id_),
+      /*on_complete=*/base::DoNothing());
 }
 
 infobars::InfoBarDelegate::InfoBarIdentifier
@@ -211,10 +210,11 @@ bool EnableLinkCapturingInfoBarDelegate::Cancel() {
   action_taken_ = true;
   base::RecordAction(
       base::UserMetricsAction("LinkCapturingCancelledFromInfoBar"));
-  provider_->scheduler().ScheduleCallbackWithLock(
+  provider_->scheduler().ScheduleCallback(
       "IncrementSupportedLinksOfferDismissCount",
-      std::make_unique<web_app::AppLockDescription>(app_id_),
-      base::BindOnce(&IncrementDismissCount, app_id_));
+      web_app::AppLockDescription(app_id_),
+      base::BindOnce(&IncrementDismissCount, app_id_),
+      /*on_complete*/ base::DoNothing());
   return true;
 }
 

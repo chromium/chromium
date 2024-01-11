@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
@@ -40,18 +41,20 @@ OsIntegrationSynchronizeCommand::OsIntegrationSynchronizeCommand(
     const webapps::AppId& app_id,
     absl::optional<SynchronizeOsOptions> synchronize_options,
     base::OnceClosure synchronize_callback)
-    : WebAppCommandTemplate<AppLock>("OsIntegrationSynchronizeCommand"),
-      app_lock_description_(std::make_unique<AppLockDescription>(app_id)),
+    : WebAppCommand<AppLock>("OsIntegrationSynchronizeCommand",
+                             AppLockDescription(app_id),
+                             std::move(synchronize_callback)),
       app_id_(app_id),
-      synchronize_options_(synchronize_options),
-      synchronize_callback_(std::move(synchronize_callback)) {}
+      synchronize_options_(synchronize_options) {
+  GetMutableDebugValue().Set("app_id", app_id_);
+  if (synchronize_options_.has_value()) {
+    GetMutableDebugValue().Set(
+        "synchronize_options",
+        SynchronizeOptionsDebugValue(synchronize_options_.value()));
+  }
+}
 
 OsIntegrationSynchronizeCommand::~OsIntegrationSynchronizeCommand() = default;
-
-const LockDescription& OsIntegrationSynchronizeCommand::lock_description()
-    const {
-  return *app_lock_description_;
-}
 
 void OsIntegrationSynchronizeCommand::StartWithLock(
     std::unique_ptr<AppLock> app_lock) {
@@ -65,25 +68,7 @@ void OsIntegrationSynchronizeCommand::StartWithLock(
 }
 
 void OsIntegrationSynchronizeCommand::OnSynchronizeComplete() {
-  DCHECK(!synchronize_callback_.is_null());
-  SignalCompletionAndSelfDestruct(CommandResult::kSuccess,
-                                  std::move(synchronize_callback_));
-}
-
-void OsIntegrationSynchronizeCommand::OnShutdown() {
-  DCHECK(!synchronize_callback_.is_null());
-  SignalCompletionAndSelfDestruct(CommandResult::kShutdown,
-                                  std::move(synchronize_callback_));
-}
-
-base::Value OsIntegrationSynchronizeCommand::ToDebugValue() const {
-  base::Value::Dict value;
-  value.Set("app_id", app_id_);
-  if (synchronize_options_.has_value()) {
-    value.Set("synchronize_options",
-              SynchronizeOptionsDebugValue(synchronize_options_.value()));
-  }
-  return base::Value(std::move(value));
+  CompleteAndSelfDestruct(CommandResult::kSuccess);
 }
 
 }  // namespace web_app

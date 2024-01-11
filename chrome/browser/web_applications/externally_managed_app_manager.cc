@@ -187,27 +187,15 @@ void ExternallyManagedAppManager::SynchronizeInstalledApps(
   // Only one concurrent SynchronizeInstalledApps() expected per
   // ExternalInstallSource.
   CHECK(!base::Contains(synchronize_requests_, install_source));
-  provider_->scheduler().ScheduleCallbackWithLock<AllAppsLock>(
+  provider_->scheduler().ScheduleCallback<AllAppsLock>(
       "ExternallyManagedAppManager::SynchronizeInstalledApps",
-      std::make_unique<AllAppsLockDescription>(),
+      AllAppsLockDescription(),
       base::BindOnce(
-          [](base::WeakPtr<ExternallyManagedAppManager> weak_this,
-             std::vector<ExternalInstallOptions> desired_apps_install_options,
-             ExternalInstallSource install_source, SynchronizeCallback callback,
-             AllAppsLock& lock) {
-            // To support the `base::Value` return value, this has to be a
-            // lambda instead of directly binding. This is because return values
-            // are not allowed when binding to a WeakPtr.
-            if (!weak_this) {
-              return base::Value();
-            }
-            return weak_this->SynchronizeInstalledAppsOnLockAcquired(
-                std::move(desired_apps_install_options), install_source,
-                std::move(callback), lock);
-          },
+          &ExternallyManagedAppManager::SynchronizeInstalledAppsOnLockAcquired,
           weak_ptr_factory_.GetWeakPtr(),
           std::move(desired_apps_install_options), install_source,
-          std::move(callback)));
+          std::move(callback)),
+      /*on_complete=*/base::DoNothing());
 }
 
 void ExternallyManagedAppManager::Shutdown() {
@@ -293,15 +281,16 @@ void ExternallyManagedAppManager::MaybeStartNext() {
   if (current_install_ || IsShuttingDown()) {
     return;
   }
-  provider_->scheduler().ScheduleCallbackWithLock<AllAppsLock>(
-      "ExternallyManagedAppManager::MaybeStartNext",
-      std::make_unique<AllAppsLockDescription>(),
+  provider_->scheduler().ScheduleCallback(
+      "ExternallyManagedAppManager::MaybeStartNext", AllAppsLockDescription(),
       base::BindOnce(&ExternallyManagedAppManager::MaybeStartNextOnLockAcquired,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr()),
+      /*on_complete=*/base::DoNothing());
 }
 
 void ExternallyManagedAppManager::MaybeStartNextOnLockAcquired(
-    AllAppsLock& lock) {
+    AllAppsLock& lock,
+    base::Value::Dict& debug_value) {
   if (current_install_ || IsShuttingDown()) {
     return;
   }
@@ -316,12 +305,15 @@ void ExternallyManagedAppManager::MaybeStartNextOnLockAcquired(
 
     absl::optional<webapps::AppId> app_id =
         lock.registrar().LookupExternalAppId(install_options.install_url);
+    debug_value.Set("app_id_from_install_url", app_id.value_or("<none>"));
+
     const bool is_placeholder_installed =
         app_id.has_value()
             ? lock.registrar().IsPlaceholderApp(
                   app_id.value(), ConvertExternalInstallSourceToSource(
                                       install_options.install_source))
             : false;
+    debug_value.Set("is_placeholder_installed", is_placeholder_installed);
 
     if (install_options.force_reinstall) {
       StartInstallationTask(
@@ -344,6 +336,7 @@ void ExternallyManagedAppManager::MaybeStartNextOnLockAcquired(
       if (install_options.placeholder_resolution_behavior ==
               PlaceholderResolutionBehavior::kWaitForAppWindowsClosed &&
           lock.ui_manager().GetNumWindowsForApp(app_id.value()) != 0) {
+        debug_value.Set("waiting_for_windows_closed", true);
         lock.ui_manager().NotifyOnAllAppWindowsClosed(
             app_id.value(),
             base::BindOnce(&ExternallyManagedAppManager::Install,
@@ -355,6 +348,7 @@ void ExternallyManagedAppManager::MaybeStartNextOnLockAcquired(
       // If the app is already installed, only reinstall it if the app is a
       // placeholder app and the client asked for it to be reinstalled.
       if (is_placeholder_installed) {
+        debug_value.Set("retrying_install_because_placeholder", true);
         StartInstallationTask(std::move(front), std::move(app_id));
         return;
       }
@@ -366,10 +360,12 @@ void ExternallyManagedAppManager::MaybeStartNextOnLockAcquired(
           (!lock.registrar()
                 .GetAppById(app_id.value())
                 ->IsPolicyInstalledApp())) {
+        debug_value.Set("reinstalling_policy_app", true);
         StartInstallationTask(std::move(front),
                               /*installed_placeholder_app_id=*/absl::nullopt);
         return;
       } else {
+        debug_value.Set("simple_source_addition", true);
         // Add install source before returning the result.
         ScopedRegistryUpdate update = lock.sync_bridge().BeginUpdate();
         WebApp* app_to_update = update->UpdateApp(app_id.value());
@@ -523,13 +519,13 @@ bool ExternallyManagedAppManager::IsShuttingDown() {
   return is_in_shutdown_ || profile()->ShutdownStarted();
 }
 
-base::Value ExternallyManagedAppManager::SynchronizeInstalledAppsOnLockAcquired(
+void ExternallyManagedAppManager::SynchronizeInstalledAppsOnLockAcquired(
     std::vector<ExternalInstallOptions> desired_apps_install_options,
     ExternalInstallSource install_source,
     SynchronizeCallback callback,
-    AllAppsLock& lock) {
+    AllAppsLock& lock,
+    base::Value::Dict& debug_info) {
   CHECK(callback);
-  base::Value::Dict debug_info;
   debug_info.Set("install_source", base::ToString(install_source));
   base::Value::List* desired_installs =
       debug_info.EnsureList("desired_apps_install_options");
@@ -588,7 +584,7 @@ base::Value ExternallyManagedAppManager::SynchronizeInstalledAppsOnLockAcquired(
         FROM_HERE,
         base::BindOnce(std::move(callback), std::map<GURL, InstallResult>(),
                        std::map<GURL, bool>()));
-    return base::Value(std::move(debug_info));
+    return;
   }
 
   // Add the callback to a map and call once all installs/uninstalls finish.
@@ -608,7 +604,6 @@ base::Value ExternallyManagedAppManager::SynchronizeInstalledAppsOnLockAcquired(
             &ExternallyManagedAppManager::UninstallForSynchronizeCallback,
             weak_ptr_factory_.GetWeakPtr(), install_source));
   }
-  return base::Value(std::move(debug_info));
 }
 
 void ExternallyManagedAppManager::SetRegistrationCallbackForTesting(
@@ -666,8 +661,9 @@ void ExternallyManagedAppManager::ContinueSynchronization(
 
   SynchronizeRequest& request = source_and_request->second;
 
-  if (request.remaining_uninstall_requests > 0)
+  if (request.remaining_uninstall_requests > 0) {
     return;
+  }
 
   // Installs only take place after all uninstalls.
   if (!request.pending_installs.empty()) {
@@ -681,8 +677,9 @@ void ExternallyManagedAppManager::ContinueSynchronization(
     return;
   }
 
-  if (request.remaining_install_requests > 0)
+  if (request.remaining_install_requests > 0) {
     return;
+  }
 
   if (base::FeatureList::IsEnabled(features::kWebAppDedupeInstallUrls)) {
     provider_->scheduler().ScheduleDedupeInstallUrls(

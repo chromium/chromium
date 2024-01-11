@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/commands/fetch_install_info_from_install_url_command.h"
 
+#include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/web_applications/test/fake_data_retriever.h"
@@ -78,6 +79,10 @@ class FetchInstallInfoFromInstallUrlCommandTest : public WebAppTest {
   }
 
   std::string GetCommandErrorFromLog() {
+    // Note: Accessing & using the debug value for tests is poor practice and
+    // should not be done, given how easily the format can be changed.
+    // TODO(b/318858671): Update logic to not read command errors from debug
+    // log.
     auto command_manager_logs =
         provider().command_manager().ToDebugValue().TakeDict();
 
@@ -88,16 +93,15 @@ class FetchInstallInfoFromInstallUrlCommandTest : public WebAppTest {
     auto command_log_info =
         base::ranges::find_if(*command_logs, [](const base::Value& value) {
           const base::Value::Dict* dict = value.GetIfDict();
-          return dict && dict->FindString("name") &&
-                 !dict->FindString("name")->compare(
-                     "FetchInstallInfoFromInstallUrlCommand");
+          return dict && dict->FindDict("!metadata") &&
+                 dict->FindDict("!metadata")->FindString("name") &&
+                 *dict->FindDict("!metadata")->FindString("name") ==
+                     "FetchInstallInfoFromInstallUrlCommand";
         });
     EXPECT_NE(command_log_info, command_logs->end());
 
-    auto* command_log = command_log_info->GetDict().FindDict("value");
-    EXPECT_NE(command_log, nullptr);
-
-    std::string* command_error = command_log->FindString("command_result");
+    std::string* command_error =
+        command_log_info->GetDict().FindString("command_result");
     EXPECT_NE(command_error, nullptr);
 
     return *command_error;

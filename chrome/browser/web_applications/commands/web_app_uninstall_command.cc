@@ -9,7 +9,13 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
+#include "chrome/browser/web_applications/commands/web_app_command.h"
+#include "chrome/browser/web_applications/jobs/uninstall/remove_install_source_job.h"
+#include "chrome/browser/web_applications/jobs/uninstall/remove_install_url_job.h"
+#include "chrome/browser/web_applications/jobs/uninstall/remove_web_app_job.h"
 #include "chrome/browser/web_applications/jobs/uninstall/uninstall_job.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -17,43 +23,114 @@
 
 namespace web_app {
 
-WebAppUninstallCommand::WebAppUninstallCommand(
-    std::unique_ptr<UninstallJob> job,
-    UninstallJob::Callback callback)
-    : WebAppCommandTemplate<AllAppsLock>("WebAppUninstallCommand"),
-      lock_description_(std::make_unique<AllAppsLockDescription>()),
-      job_(std::move(job)),
-      callback_(std::move(callback)) {
-  webapps::InstallableMetrics::TrackUninstallEvent(job_->uninstall_source());
+// static
+std::unique_ptr<WebAppUninstallCommand>
+WebAppUninstallCommand::CreateForRemoveInstallUrl(
+    webapps::WebappUninstallSource uninstall_source,
+    Profile& profile,
+    absl::optional<webapps::AppId> app_id,
+    WebAppManagement::Type install_source,
+    GURL install_url,
+    UninstallJob::Callback callback) {
+  return base::WrapUnique(new WebAppUninstallCommand(
+      uninstall_source, profile, app_id, install_source, install_url,
+      std::move(callback)));
 }
+
+// static
+std::unique_ptr<WebAppUninstallCommand>
+WebAppUninstallCommand::CreateForRemoveInstallSource(
+    webapps::WebappUninstallSource uninstall_source,
+    Profile& profile,
+    webapps::AppId app_id,
+    WebAppManagement::Type install_source,
+    UninstallJob::Callback callback) {
+  return base::WrapUnique(new WebAppUninstallCommand(
+      uninstall_source, profile, app_id, install_source, std::move(callback)));
+}
+
+// static
+std::unique_ptr<WebAppUninstallCommand>
+WebAppUninstallCommand::CreateForRemoveWebApp(
+    webapps::WebappUninstallSource uninstall_source,
+    Profile& profile,
+    webapps::AppId app_id,
+    UninstallJob::Callback callback) {
+  return base::WrapUnique(new WebAppUninstallCommand(
+      uninstall_source, profile, app_id, std::move(callback)));
+}
+
+WebAppUninstallCommand::WebAppUninstallCommand(
+    webapps::WebappUninstallSource uninstall_source,
+    Profile& profile,
+    absl::optional<webapps::AppId> app_id,
+    WebAppManagement::Type install_source,
+    GURL install_url,
+    UninstallJob::Callback callback)
+    : WebAppCommand<AllAppsLock, webapps::UninstallResultCode>(
+          "WebAppUninstallCommand",
+          AllAppsLockDescription(),
+          std::move(callback),
+          /*args_for_shutdown=*/webapps::UninstallResultCode::kShutdown),
+      job_(std::make_unique<RemoveInstallUrlJob>(
+          uninstall_source,
+          profile,
+          *GetMutableDebugValue().EnsureDict("remove_install_url_job"),
+          app_id,
+          install_source,
+          install_url)) {}
+
+WebAppUninstallCommand::WebAppUninstallCommand(
+    webapps::WebappUninstallSource uninstall_source,
+    Profile& profile,
+    webapps::AppId app_id,
+    WebAppManagement::Type install_source,
+    UninstallJob::Callback callback)
+    : WebAppCommand<AllAppsLock, webapps::UninstallResultCode>(
+          "WebAppUninstallCommand",
+          AllAppsLockDescription(),
+          std::move(callback),
+          /*args_for_shutdown=*/webapps::UninstallResultCode::kShutdown),
+      job_(std::make_unique<RemoveInstallSourceJob>(
+          uninstall_source,
+          profile,
+          *GetMutableDebugValue().EnsureDict("remove_install_source_job"),
+          app_id,
+          install_source)) {}
+
+WebAppUninstallCommand::WebAppUninstallCommand(
+    webapps::WebappUninstallSource uninstall_source,
+    Profile& profile,
+    webapps::AppId app_id,
+    UninstallJob::Callback callback)
+    : WebAppCommand<AllAppsLock, webapps::UninstallResultCode>(
+          "WebAppUninstallCommand",
+          AllAppsLockDescription(),
+          std::move(callback),
+          /*args_for_shutdown=*/webapps::UninstallResultCode::kShutdown),
+      job_(std::make_unique<RemoveWebAppJob>(
+          uninstall_source,
+          profile,
+          *GetMutableDebugValue().EnsureDict("remove_web_app_job"),
+          app_id)) {}
 
 WebAppUninstallCommand::~WebAppUninstallCommand() = default;
 
+void WebAppUninstallCommand::OnShutdown(
+    base::PassKey<WebAppCommandManager>) const {
+  base::UmaHistogramBoolean("WebApp.Uninstall.Result", false);
+}
+
 void WebAppUninstallCommand::StartWithLock(std::unique_ptr<AllAppsLock> lock) {
   lock_ = std::move(lock);
-  job_->Start(*lock_,
-              base::BindOnce(&WebAppUninstallCommand::CompleteAndSelfDestruct,
-                             weak_factory_.GetWeakPtr()));
+  job_->Start(*lock_, base::BindOnce(&WebAppUninstallCommand::OnCompletion,
+                                     weak_factory_.GetWeakPtr()));
 }
 
-void WebAppUninstallCommand::OnShutdown() {
-  CompleteAndSelfDestruct(webapps::UninstallResultCode::kShutdown);
-}
-
-const LockDescription& WebAppUninstallCommand::lock_description() const {
-  return *lock_description_;
-}
-
-base::Value WebAppUninstallCommand::ToDebugValue() const {
-  return job_->ToDebugValue();
-}
-
-void WebAppUninstallCommand::CompleteAndSelfDestruct(
-    webapps::UninstallResultCode code) {
-  CHECK(callback_);
+void WebAppUninstallCommand::OnCompletion(webapps::UninstallResultCode code) {
   base::UmaHistogramBoolean("WebApp.Uninstall.Result",
                             UninstallSucceeded(code));
-  SignalCompletionAndSelfDestruct(
+  CompleteAndSelfDestruct(
       [code]() {
         switch (code) {
           case webapps::UninstallResultCode::kSuccess:
@@ -63,10 +140,10 @@ void WebAppUninstallCommand::CompleteAndSelfDestruct(
           case webapps::UninstallResultCode::kError:
             return CommandResult::kFailure;
           case webapps::UninstallResultCode::kShutdown:
-            return CommandResult::kShutdown;
+            NOTREACHED_NORETURN();
         }
       }(),
-      base::BindOnce(std::move(callback_), code));
+      code);
 }
 
 }  // namespace web_app

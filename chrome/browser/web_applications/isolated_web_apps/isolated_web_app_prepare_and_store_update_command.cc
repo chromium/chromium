@@ -84,16 +84,17 @@ IsolatedWebAppUpdatePrepareAndStoreCommand::
         base::OnceCallback<
             void(IsolatedWebAppUpdatePrepareAndStoreCommandResult)> callback,
         std::unique_ptr<IsolatedWebAppInstallCommandHelper> command_helper)
-    : WebAppCommandTemplate<AppLock>(
-          "IsolatedWebAppUpdatePrepareAndStoreCommand"),
-      lock_description_(
-          std::make_unique<AppLockDescription>(url_info.app_id())),
+    : WebAppCommand<AppLock, IsolatedWebAppUpdatePrepareAndStoreCommandResult>(
+          "IsolatedWebAppUpdatePrepareAndStoreCommand",
+          AppLockDescription(url_info.app_id()),
+          std::move(callback), /*args_for_shutdown=*/
+          base::unexpected(IsolatedWebAppUpdatePrepareAndStoreCommandError{
+              .message = "System is shutting down."})),
       source_update_info_(std::move(update_info)),
       url_info_(std::move(url_info)),
       web_contents_(std::move(web_contents)),
       optional_keep_alive_(std::move(optional_keep_alive)),
       optional_profile_keep_alive_(std::move(optional_profile_keep_alive)),
-      callback_(std::move(callback)),
       command_helper_(std::move(command_helper)) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 
@@ -101,26 +102,22 @@ IsolatedWebAppUpdatePrepareAndStoreCommand::
   CHECK(optional_profile_keep_alive_ == nullptr ||
         &profile() == optional_profile_keep_alive_->profile());
 
-  debug_log_ =
-      base::Value::Dict()
-          .Set("app_id", url_info_.app_id())
-          .Set("origin", url_info_.origin().Serialize())
-          .Set("bundle_id", url_info_.web_bundle_id().id())
-          .Set("bundle_type",
-               static_cast<int>(url_info_.web_bundle_id().type()))
-          .Set("source_update_info", source_update_info_.AsDebugValue());
+  GetMutableDebugValue().Set("app_id", url_info_.app_id());
+  GetMutableDebugValue().Set("origin", url_info_.origin().Serialize());
+  GetMutableDebugValue().Set("bundle_id", url_info_.web_bundle_id().id());
+  GetMutableDebugValue().Set(
+      "bundle_type", static_cast<int>(url_info_.web_bundle_id().type()));
+  GetMutableDebugValue().Set("source_update_info",
+                             source_update_info_.AsDebugValue());
 }
 
 IsolatedWebAppUpdatePrepareAndStoreCommand::
-    ~IsolatedWebAppUpdatePrepareAndStoreCommand() = default;
-
-const LockDescription&
-IsolatedWebAppUpdatePrepareAndStoreCommand::lock_description() const {
-  return *lock_description_;
-}
-
-base::Value IsolatedWebAppUpdatePrepareAndStoreCommand::ToDebugValue() const {
-  return base::Value(debug_log_.Clone());
+    ~IsolatedWebAppUpdatePrepareAndStoreCommand() {
+  if (lazy_destination_update_info_.has_value()) {
+    CleanupLocationIfOwned(profile().GetPath(),
+                           lazy_destination_update_info_->location(),
+                           base::DoNothing());
+  }
 }
 
 void IsolatedWebAppUpdatePrepareAndStoreCommand::StartWithLock(
@@ -177,7 +174,8 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::CheckIfUpdateIsStillApplicable(
   }
 
   installed_version_ = installed_app->isolation_data()->version;
-  debug_log_.Set("installed_version", installed_version_.GetString());
+  GetMutableDebugValue().Set("installed_version",
+                             installed_version_.GetString());
   if (source_update_info_.expected_version().has_value() &&
       *source_update_info_.expected_version() <= installed_version_) {
     ReportFailure(base::StrCat(
@@ -215,8 +213,9 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::UpdateLocation(
                   this);
   lazy_destination_update_info_ = source_update_info_;
   lazy_destination_update_info_->set_location(std::move(*new_location));
-  debug_log_.Set("lazy_destination_update_info",
-                 lazy_destination_update_info_.value().AsDebugValue());
+  GetMutableDebugValue().Set(
+      "lazy_destination_update_info",
+      lazy_destination_update_info_.value().AsDebugValue());
   std::move(next_step_callback).Run();
 }
 
@@ -300,7 +299,7 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::
     return;
   }
 
-  debug_log_.Set("app_title", install_info.title);
+  GetMutableDebugValue().Set("app_title", install_info.title);
 
   command_helper_->RetrieveIconsAndPopulateInstallInfo(
       std::move(install_info), *web_contents_.get(),
@@ -339,46 +338,27 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::OnFinalized(
   }
 }
 
-void IsolatedWebAppUpdatePrepareAndStoreCommand::OnShutdown() {
-  // Stop any potential ongoing operations by destroying the `command_helper_`.
-  command_helper_.reset();
-
-  // TODO(cmfcmf): Test cancellation of pending update during system
-  // shutdown.
-  ReportFailure("System is shutting down.");
-}
-
 void IsolatedWebAppUpdatePrepareAndStoreCommand::ReportFailure(
     base::StringPiece message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(!callback_.is_null());
-
-  if (lazy_destination_update_info_.has_value()) {
-    CleanupLocationIfOwned(profile().GetPath(),
-                           lazy_destination_update_info_->location(),
-                           base::DoNothing());
-  }
-
   IsolatedWebAppUpdatePrepareAndStoreCommandError error{
       .message = std::string(message)};
-  debug_log_.Set("result", "error: " + error.message);
-  SignalCompletionAndSelfDestruct(
-      CommandResult::kFailure,
-      base::BindOnce(std::move(callback_), base::unexpected(std::move(error))));
+  GetMutableDebugValue().Set("result", "error: " + error.message);
+  CompleteAndSelfDestruct(CommandResult::kFailure,
+                          base::unexpected(std::move(error)));
 }
 
 void IsolatedWebAppUpdatePrepareAndStoreCommand::ReportSuccess(
     const base::Version& update_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(!callback_.is_null());
-
-  debug_log_.Set("result", "success");
-  SignalCompletionAndSelfDestruct(
-      CommandResult::kSuccess,
-      base::BindOnce(std::move(callback_),
-                     IsolatedWebAppUpdatePrepareAndStoreCommandSuccess(
-                         update_version,
-                         lazy_destination_update_info_.value().location())));
+  IsolatedWebAppLocation location =
+      lazy_destination_update_info_.value().location();
+  // Reset the lazy_destination_update_info_ to prevent cleanup in the
+  // destructor.
+  lazy_destination_update_info_ = absl::nullopt;
+  CompleteAndSelfDestruct(CommandResult::kSuccess,
+                          IsolatedWebAppUpdatePrepareAndStoreCommandSuccess(
+                              update_version, location));
 }
 
 Profile& IsolatedWebAppUpdatePrepareAndStoreCommand::profile() {

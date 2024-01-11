@@ -214,11 +214,12 @@ class ExternallyManagedAppManager {
     std::map<GURL, bool> uninstall_results;
   };
 
-  base::Value SynchronizeInstalledAppsOnLockAcquired(
+  void SynchronizeInstalledAppsOnLockAcquired(
       std::vector<ExternalInstallOptions> desired_apps_install_options,
       ExternalInstallSource install_source,
       SynchronizeCallback callback,
-      AllAppsLock& lock);
+      AllAppsLock& lock,
+      base::Value::Dict& debug_value);
 
   void InstallForSynchronizeCallback(
       ExternalInstallSource source,
@@ -233,7 +234,8 @@ class ExternallyManagedAppManager {
   void PostMaybeStartNext();
 
   void MaybeStartNext();
-  void MaybeStartNextOnLockAcquired(AllAppsLock& lock);
+  void MaybeStartNextOnLockAcquired(AllAppsLock& lock,
+                                    base::Value::Dict& debug_value);
 
   void StartInstallationTask(
       std::unique_ptr<TaskAndCallback> task,

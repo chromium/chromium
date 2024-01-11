@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/app_service/web_app_publisher_helper.h"
 
 #include <stddef.h>
+
 #include <iterator>
 #include <memory>
 #include <ostream>
@@ -54,6 +55,7 @@
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/app_service/publisher_helper.h"
+#include "chrome/browser/web_applications/commands/compute_app_size_command.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
@@ -1208,16 +1210,18 @@ void WebAppPublisherHelper::SetWindowMode(const std::string& app_id,
       user_display_mode = mojom::UserDisplayMode::kTabbed;
       break;
   }
-  provider_->scheduler().ScheduleCallbackWithLock(
-      "WebAppPublisherHelper::SetWindowMode",
-      std::make_unique<AppLockDescription>(app_id),
+  provider_->scheduler().ScheduleCallback(
+      "WebAppPublisherHelper::SetWindowMode", AppLockDescription(app_id),
       base::BindOnce(
           [](webapps::AppId app_id, mojom::UserDisplayMode user_display_mode,
-             AppLock& lock) {
+             AppLock& lock, base::Value::Dict& debug_value) {
+            debug_value.Set("user_display_mode",
+                            base::ToString(user_display_mode));
             lock.sync_bridge().SetAppUserDisplayMode(app_id, user_display_mode,
                                                      /*is_user_action=*/true);
           },
-          app_id, std::move(user_display_mode)));
+          app_id, std::move(user_display_mode)),
+      /*on_complete=*/base::DoNothing());
 }
 
 void WebAppPublisherHelper::SetRunOnOsLoginMode(
@@ -2016,7 +2020,7 @@ void WebAppPublisherHelper::OnLaunchCompleted(
 
 void WebAppPublisherHelper::OnGetWebAppSize(
     webapps::AppId app_id,
-    absl::optional<ComputeAppSizeCommand::Size> size) {
+    absl::optional<ComputedAppSize> size) {
   auto app = std::make_unique<apps::App>(app_type(), app_id);
   if (!size.has_value()) {
     return;

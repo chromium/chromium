@@ -13,6 +13,7 @@ AppLockDescription::AppLockDescription(const webapps::AppId& app_id)
     : LockDescription({app_id}, LockDescription::Type::kApp) {}
 AppLockDescription::AppLockDescription(base::flat_set<webapps::AppId> app_ids)
     : LockDescription(std::move(app_ids), LockDescription::Type::kApp) {}
+AppLockDescription::AppLockDescription(AppLockDescription&&) = default;
 AppLockDescription::~AppLockDescription() = default;
 
 AppLock::AppLock(base::WeakPtr<WebAppLockManager> lock_manager,

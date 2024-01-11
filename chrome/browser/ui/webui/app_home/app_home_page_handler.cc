@@ -14,6 +14,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_source.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -82,18 +83,6 @@ const char kForceInstallDialogQueryString[] = "showForceInstallDialog";
 // TODO(crbug.com/1065748): Remove this hack once the youtube app is fixed.
 bool IsYoutubeExtension(const std::string& extension_id) {
   return extension_id == extension_misc::kYoutubeAppId;
-}
-
-void AcquireAppLockAndScheduleCallback(
-    const std::string& operation_name,
-    web_app::WebAppProvider& provider,
-    const webapps::AppId& app_id,
-    base::OnceCallback<void(web_app::AppLock& lock)> callback) {
-  provider.scheduler().ScheduleCallbackWithLock<web_app::AppLock>(
-      operation_name,
-      std::make_unique<web_app::AppLockDescription,
-                       base::flat_set<webapps::AppId>>({app_id}),
-      std::move(callback));
 }
 
 }  // namespace
@@ -301,19 +290,23 @@ void AppHomePageHandler::LaunchAppInternal(
 void AppHomePageHandler::SetUserDisplayMode(
     const std::string& app_id,
     web_app::mojom::UserDisplayMode user_display_mode) {
-  AcquireAppLockAndScheduleCallback(
-      "AppHomePageHandler::SetWebAppDisplayMode", *web_app_provider_, app_id,
+  web_app_provider_->scheduler().ScheduleCallback(
+      "AppHomePageHandler::SetWebAppDisplayMode",
+      web_app::AppLockDescription(app_id),
       base::BindOnce(
           [](const webapps::AppId& app_id,
              web_app::mojom::UserDisplayMode user_display_mode,
-             web_app::AppLock& lock) {
+             web_app::AppLock& lock, base::Value::Dict& debug_value) {
             if (lock.registrar().IsLocallyInstalled(app_id)) {
+              debug_value.Set("user_display_mode",
+                              base::ToString(user_display_mode));
               lock.sync_bridge().SetAppUserDisplayMode(app_id,
                                                        user_display_mode,
                                                        /*is_user_action=*/true);
             }
           },
-          app_id, user_display_mode));
+          app_id, user_display_mode),
+      /*on_complete=*/base::DoNothing());
 }
 
 app_home::mojom::AppInfoPtr AppHomePageHandler::GetApp(
@@ -458,8 +451,9 @@ void AppHomePageHandler::FillWebAppInfoList(
   web_app::WebAppRegistrar& registrar = web_app_provider_->registrar_unsafe();
 
   for (const webapps::AppId& web_app_id : registrar.GetAppIds()) {
-    if (IsYoutubeExtension(web_app_id))
+    if (IsYoutubeExtension(web_app_id)) {
       continue;
+    }
     result->emplace_back(CreateAppInfoPtrFromWebApp(web_app_id));
   }
 }
@@ -559,12 +553,14 @@ void AppHomePageHandler::UninstallExtensionApp(const Extension* extension) {
 }
 
 void AppHomePageHandler::ExtensionRemoved(const Extension* extension) {
-  if (deprecated_app_ids_.find(extension->id()) != deprecated_app_ids_.end())
+  if (deprecated_app_ids_.find(extension->id()) != deprecated_app_ids_.end()) {
     deprecated_app_ids_.erase(extension->id());
+  }
 
   if (!extension->is_app() ||
-      !extensions::ui_util::ShouldDisplayInNewTabPage(extension, profile_))
+      !extensions::ui_util::ShouldDisplayInNewTabPage(extension, profile_)) {
     return;
+  }
 
   auto app_info = app_home::mojom::AppInfo::New();
   app_info->id = extension->id();
@@ -608,8 +604,9 @@ void AppHomePageHandler::OnExtensionUninstalled(
 
 void AppHomePageHandler::PromptToEnableExtensionApp(
     const std::string& extension_app_id) {
-  if (extension_dialog_prompting_)
+  if (extension_dialog_prompting_) {
     return;  // Only one prompt at a time.
+  }
 
   extension_dialog_prompting_ = true;
   extension_enable_flow_ =
@@ -683,8 +680,9 @@ void AppHomePageHandler::OnAppRegistrarDestroyed() {
 }
 
 void AppHomePageHandler::UninstallApp(const std::string& app_id) {
-  if (extension_dialog_prompting_)
+  if (extension_dialog_prompting_) {
     return;
+  }
 
   if (web_app_provider_->registrar_unsafe().IsInstalled(app_id) &&
       !IsYoutubeExtension(app_id)) {
@@ -731,8 +729,9 @@ void AppHomePageHandler::CreateAppShortcut(const std::string& app_id,
           app_id, extensions::ExtensionRegistry::ENABLED |
                       extensions::ExtensionRegistry::DISABLED |
                       extensions::ExtensionRegistry::TERMINATED);
-  if (extension)
+  if (extension) {
     CreateExtensionAppShortcut(extension, std::move(callback));
+  }
 }
 
 void AppHomePageHandler::LaunchApp(const std::string& app_id,
@@ -744,8 +743,9 @@ void AppHomePageHandler::LaunchApp(const std::string& app_id,
 void AppHomePageHandler::SetRunOnOsLoginMode(
     const std::string& app_id,
     web_app::RunOnOsLoginMode run_on_os_login_mode) {
-  if (!base::FeatureList::IsEnabled(features::kDesktopPWAsRunOnOsLogin))
+  if (!base::FeatureList::IsEnabled(features::kDesktopPWAsRunOnOsLogin)) {
     return;
+  }
 
   if (run_on_os_login_mode != web_app::RunOnOsLoginMode::kNotRun &&
       run_on_os_login_mode != web_app::RunOnOsLoginMode::kWindowed) {

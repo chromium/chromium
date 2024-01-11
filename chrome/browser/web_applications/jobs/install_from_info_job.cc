@@ -23,12 +23,14 @@ namespace web_app {
 
 InstallFromInfoJob::InstallFromInfoJob(
     Profile* profile,
+    base::Value::Dict& debug_value,
     std::unique_ptr<WebAppInstallInfo> install_info,
     bool overwrite_existing_manifest_fields,
     webapps::WebappInstallSource install_surface,
     absl::optional<WebAppInstallParams> install_params,
     ResultCallback install_callback)
     : profile_(*profile),
+      debug_value_(debug_value),
       manifest_id_(
           install_info->manifest_id.is_empty()
               ? GenerateManifestIdFromStartUrlOnly(install_info->start_url)
@@ -56,12 +58,12 @@ InstallFromInfoJob::InstallFromInfoJob(
   }
   CHECK(install_info_->start_url.is_valid());
 
-  debug_value_.Set("app_id", app_id_);
-  debug_value_.Set("start_url", install_info_->start_url.spec());
-  debug_value_.Set("overwrite_existing_manifest_fields",
-                   overwrite_existing_manifest_fields_);
-  debug_value_.Set("install_surface", static_cast<int>(install_surface_));
-  debug_value_.Set("has_install_params", install_params_ ? true : false);
+  debug_value_->Set("app_id", app_id_);
+  debug_value_->Set("start_url", install_info_->start_url.spec());
+  debug_value_->Set("overwrite_existing_manifest_fields",
+                    overwrite_existing_manifest_fields_);
+  debug_value_->Set("install_surface", static_cast<int>(install_surface_));
+  debug_value_->Set("has_install_params", install_params_ ? true : false);
 }
 
 InstallFromInfoJob::~InstallFromInfoJob() = default;
@@ -100,20 +102,10 @@ void InstallFromInfoJob::Start(WithAppResources* lock_with_app_resources) {
                      weak_factory_.GetWeakPtr()));
 }
 
-base::Value InstallFromInfoJob::ToDebugValue() const {
-  return base::Value(debug_value_.Clone());
-}
-
 void InstallFromInfoJob::OnInstallCompleted(const webapps::AppId& app_id,
                                             webapps::InstallResultCode code,
                                             OsHooksErrors os_hook_errors) {
-  debug_value_.Set("result_code", base::ToString(code));
-  SignalCompletionAndSelfDestruct(code, os_hook_errors);
-}
-
-void InstallFromInfoJob::SignalCompletionAndSelfDestruct(
-    webapps::InstallResultCode code,
-    OsHooksErrors os_hook_errors) {
+  debug_value_->Set("result_code", base::ToString(code));
   CHECK(callback_);
   std::move(callback_).Run(app_id_, code, os_hook_errors);
 }

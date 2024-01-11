@@ -50,18 +50,26 @@ Action GetAction(const WebAppManagementTypes& sources,
 RemoveInstallSourceJob::RemoveInstallSourceJob(
     webapps::WebappUninstallSource uninstall_source,
     Profile& profile,
+    base::Value::Dict& debug_value,
     webapps::AppId app_id,
     WebAppManagement::Type install_source)
     : uninstall_source_(uninstall_source),
       profile_(profile),
+      debug_value_(debug_value),
       app_id_(app_id),
-      install_source_(install_source) {}
+      install_source_(install_source) {
+  debug_value_->Set("!job", "RemoveInstallSourceJob");
+  debug_value_->Set("app_id", app_id_);
+  debug_value_->Set("uninstall_source", base::ToString(uninstall_source_));
+  debug_value_->Set("install_source", base::ToString(install_source_));
+}
 
 RemoveInstallSourceJob::~RemoveInstallSourceJob() = default;
 
 void RemoveInstallSourceJob::Start(AllAppsLock& lock, Callback callback) {
   lock_ = &lock;
   callback_ = std::move(callback);
+  debug_value_->Set("has_callback", !callback_.is_null());
 
   const WebApp* app = lock_->registrar().GetAppById(app_id_);
   if (!app) {
@@ -91,7 +99,8 @@ void RemoveInstallSourceJob::Start(AllAppsLock& lock, Callback callback) {
 
     case Action::kRemoveApp:
       sub_job_ = std::make_unique<RemoveWebAppJob>(
-          uninstall_source_, profile_.get(), app_id_,
+          uninstall_source_, profile_.get(),
+          *debug_value_->EnsureDict("sub_job"), app_id_,
           /*is_initial_request=*/false);
       sub_job_->Start(
           *lock_,
@@ -99,18 +108,6 @@ void RemoveInstallSourceJob::Start(AllAppsLock& lock, Callback callback) {
                          weak_ptr_factory_.GetWeakPtr()));
       return;
   }
-}
-
-base::Value RemoveInstallSourceJob::ToDebugValue() const {
-  base::Value::Dict dict;
-  dict.Set("!job", "RemoveInstallSourceJob");
-  dict.Set("app_id", app_id_);
-  dict.Set("install_source", base::ToString(install_source_));
-  dict.Set("callback", callback_.is_null());
-  dict.Set("active_sub_job",
-           sub_job_ ? sub_job_->ToDebugValue() : base::Value());
-  dict.Set("completed_sub_job", completed_sub_job_debug_value_.Clone());
-  return base::Value(std::move(dict));
 }
 
 webapps::WebappUninstallSource RemoveInstallSourceJob::uninstall_source()
@@ -140,12 +137,7 @@ void RemoveInstallSourceJob::RemoveInstallSourceFromDatabase(
 void RemoveInstallSourceJob::CompleteAndSelfDestruct(
     webapps::UninstallResultCode code) {
   CHECK(callback_);
-
-  if (sub_job_) {
-    completed_sub_job_debug_value_ = sub_job_->ToDebugValue();
-    sub_job_.reset();
-  }
-
+  debug_value_->Set("result", base::ToString(code));
   std::move(callback_).Run(code);
 }
 

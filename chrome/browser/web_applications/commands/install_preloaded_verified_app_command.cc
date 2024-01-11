@@ -69,30 +69,29 @@ InstallPreloadedVerifiedAppCommand::InstallPreloadedVerifiedAppCommand(
     std::string manifest_contents,
     webapps::AppId expected_id,
     OnceInstallCallback callback)
-    : WebAppCommandTemplate<SharedWebContentsLock>(
-          "InstallPreloadedVerifiedAppCommand"),
+    : WebAppCommand<SharedWebContentsLock,
+                    const webapps::AppId&,
+                    webapps::InstallResultCode>(
+          "InstallPreloadedVerifiedAppCommand",
+          SharedWebContentsLockDescription(),
+          std::move(callback),
+          /*args_for_shutdown=*/
+          std::make_tuple(webapps::AppId(),
+                          webapps::InstallResultCode::
+                              kCancelledOnWebAppProviderShuttingDown)),
       install_source_(install_source),
       document_url_(std::move(document_url)),
       manifest_url_(std::move(manifest_url)),
       manifest_contents_(std::move(manifest_contents)),
-      expected_id_(std::move(expected_id)),
-      install_callback_(std::move(callback)),
-      web_contents_lock_description_(
-          std::make_unique<SharedWebContentsLockDescription>()) {}
+      expected_id_(std::move(expected_id)) {
+  GetMutableDebugValue().Set("document_url", document_url_.spec());
+  GetMutableDebugValue().Set("manifest_url", manifest_url_.spec());
+  GetMutableDebugValue().Set("expected_id", expected_id_);
+  GetMutableDebugValue().Set("manifest_contents", manifest_contents_);
+}
 
 InstallPreloadedVerifiedAppCommand::~InstallPreloadedVerifiedAppCommand() =
     default;
-
-const LockDescription& InstallPreloadedVerifiedAppCommand::lock_description()
-    const {
-  DCHECK(web_contents_lock_description_ || app_lock_description_);
-
-  if (app_lock_description_) {
-    return *app_lock_description_;
-  }
-
-  return *web_contents_lock_description_;
-}
 
 void InstallPreloadedVerifiedAppCommand::StartWithLock(
     std::unique_ptr<SharedWebContentsLock> lock) {
@@ -106,20 +105,6 @@ void InstallPreloadedVerifiedAppCommand::StartWithLock(
       WebAppUrlLoader::UrlComparison::kExact,
       base::BindOnce(&InstallPreloadedVerifiedAppCommand::OnAboutBlankLoaded,
                      weak_ptr_factory_.GetWeakPtr()));
-}
-
-base::Value InstallPreloadedVerifiedAppCommand::ToDebugValue() const {
-  base::Value::Dict debug_value = debug_value_.Clone();
-  debug_value.Set("document_url", document_url_.spec());
-  debug_value.Set("manifest_url", manifest_url_.spec());
-  debug_value.Set("expected_id", expected_id_);
-  debug_value.Set("manifest_contents", manifest_contents_);
-  return base::Value(std::move(debug_value));
-}
-
-void InstallPreloadedVerifiedAppCommand::OnShutdown() {
-  Abort(CommandResult::kShutdown,
-        webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown);
 }
 
 void InstallPreloadedVerifiedAppCommand::OnAboutBlankLoaded(
@@ -156,7 +141,7 @@ void InstallPreloadedVerifiedAppCommand::OnManifestParsed(
     return;
   }
 
-  debug_value_.Set("manifest_parsed", true);
+  GetMutableDebugValue().Set("manifest_parsed", true);
   web_app_info_ = std::make_unique<WebAppInstallInfo>(manifest->id);
   web_app_info_->user_display_mode = mojom::UserDisplayMode::kStandalone;
 
@@ -217,11 +202,10 @@ void InstallPreloadedVerifiedAppCommand::OnIconsRetrieved(
     return;
   }
 
-  app_lock_description_ =
-      command_manager()->lock_manager().UpgradeAndAcquireLock(
-          std::move(web_contents_lock_), {app_id},
-          base::BindOnce(&InstallPreloadedVerifiedAppCommand::OnAppLockAcquired,
-                         weak_ptr_factory_.GetWeakPtr()));
+  command_manager()->lock_manager().UpgradeAndAcquireLock(
+      std::move(web_contents_lock_), {app_id},
+      base::BindOnce(&InstallPreloadedVerifiedAppCommand::OnAppLockAcquired,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void InstallPreloadedVerifiedAppCommand::OnAppLockAcquired(
@@ -244,19 +228,16 @@ void InstallPreloadedVerifiedAppCommand::OnInstallFinalized(
     const webapps::AppId& app_id,
     webapps::InstallResultCode code,
     OsHooksErrors os_hooks_errors) {
-  SignalCompletionAndSelfDestruct(
-      webapps::IsSuccess(code) ? CommandResult::kSuccess
-                               : CommandResult::kFailure,
-      base::BindOnce(std::move(install_callback_), app_id, code));
+  CompleteAndSelfDestruct(webapps::IsSuccess(code) ? CommandResult::kSuccess
+                                                   : CommandResult::kFailure,
+                          app_id, code);
 }
 
 void InstallPreloadedVerifiedAppCommand::Abort(
     CommandResult result,
     webapps::InstallResultCode code) {
-  debug_value_.Set("error_code", base::ToString(code));
-  SignalCompletionAndSelfDestruct(
-      result,
-      base::BindOnce(std::move(install_callback_), webapps::AppId(), code));
+  GetMutableDebugValue().Set("error_code", base::ToString(code));
+  CompleteAndSelfDestruct(result, webapps::AppId(), code);
 }
 
 }  // namespace web_app

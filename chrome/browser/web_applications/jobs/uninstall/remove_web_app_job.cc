@@ -57,12 +57,18 @@ bool CanUninstallAllManagementSources(
 RemoveWebAppJob::RemoveWebAppJob(
     webapps::WebappUninstallSource uninstall_source,
     Profile& profile,
+    base::Value::Dict& debug_value,
     webapps::AppId app_id,
     bool is_initial_request)
     : uninstall_source_(uninstall_source),
       profile_(profile),
+      debug_value_(debug_value),
       app_id_(app_id),
       is_initial_request_(is_initial_request) {
+  base::Value::Dict dict;
+  debug_value_->Set("!job", "RemoveWebAppJob");
+  debug_value_->Set("app_id", app_id_);
+  debug_value_->Set("is_initial_request", is_initial_request_);
   if (is_initial_request_) {
     CHECK(CanUninstallAllManagementSources(uninstall_source_));
   }
@@ -73,6 +79,7 @@ RemoveWebAppJob::~RemoveWebAppJob() = default;
 void RemoveWebAppJob::Start(AllAppsLock& lock, Callback callback) {
   lock_ = &lock;
   callback_ = std::move(callback);
+  debug_value_->Set("has_callback", !callback_.is_null());
 
   const WebApp* app = lock_->registrar().GetAppById(app_id_);
   if (!app) {
@@ -116,6 +123,10 @@ void RemoveWebAppJob::Start(AllAppsLock& lock, Callback callback) {
   }
 
   sub_apps_pending_removal_ = lock_->registrar().GetAllSubAppIds(app_id_);
+  base::Value::List* list = debug_value_->EnsureList("sub_apps_found");
+  for (const webapps::AppId& sub_app_id : sub_apps_pending_removal_) {
+    list->Append(sub_app_id);
+  }
 
   lock_->install_manager().NotifyWebAppWillBeUninstalled(app_id_);
 
@@ -167,33 +178,6 @@ void RemoveWebAppJob::Start(AllAppsLock& lock, Callback callback) {
 
 }
 
-base::Value RemoveWebAppJob::ToDebugValue() const {
-  base::Value::Dict dict;
-  dict.Set("!job", "RemoveWebAppJob");
-  dict.Set("app_id", app_id_);
-  dict.Set("is_initial_request", is_initial_request_);
-  dict.Set("callback", callback_.is_null());
-  dict.Set("app_data_deleted", app_data_deleted_);
-  dict.Set("translation_data_deleted", translation_data_deleted_);
-  dict.Set("hooks_uninstalled", hooks_uninstalled_);
-  dict.Set("errors", errors_);
-  dict.Set("primary_removal_result",
-           primary_removal_result_
-               ? base::Value(base::ToString(primary_removal_result_.value()))
-               : base::Value());
-  {
-    base::Value::List list;
-    for (const webapps::AppId& sub_app_id : sub_apps_pending_removal_) {
-      list.Append(sub_app_id);
-    }
-    dict.Set("sub_apps_pending_removal", std::move(list));
-  }
-  dict.Set("active_sub_job",
-           sub_job_ ? sub_job_->ToDebugValue() : base::Value());
-  dict.Set("completed_sub_jobs", completed_sub_job_debug_dict_.Clone());
-  return base::Value(std::move(dict));
-}
-
 webapps::WebappUninstallSource RemoveWebAppJob::uninstall_source() const {
   return uninstall_source_;
 }
@@ -202,6 +186,7 @@ void RemoveWebAppJob::OnOsHooksUninstalled(OsHooksErrors errors) {
   CHECK(!primary_removal_result_.has_value());
   CHECK(!hooks_uninstalled_);
   hooks_uninstalled_ = true;
+  debug_value_->Set("hooks_uninstalled_success", errors.any());
   errors_ = errors_ || errors.any();
   MaybeFinishPrimaryRemoval();
 }
@@ -210,6 +195,7 @@ void RemoveWebAppJob::OnIconDataDeleted(bool success) {
   CHECK(!primary_removal_result_.has_value());
   CHECK(!app_data_deleted_);
   app_data_deleted_ = true;
+  debug_value_->Set("app_data_deleted_success", success);
   errors_ = errors_ || !success;
   MaybeFinishPrimaryRemoval();
 }
@@ -218,6 +204,7 @@ void RemoveWebAppJob::OnTranslationDataDeleted(bool success) {
   CHECK(!primary_removal_result_.has_value());
   CHECK(!translation_data_deleted_);
   translation_data_deleted_ = true;
+  debug_value_->Set("translation_data_deleted_success", success);
   errors_ = errors_ || !success;
   MaybeFinishPrimaryRemoval();
 }
@@ -229,6 +216,7 @@ void RemoveWebAppJob::OnIsolatedWebAppBrowsingDataCleared() {
   CHECK(has_isolated_storage_);
   CHECK(location_.has_value());
   isolated_web_app_browsing_data_cleared_ = true;
+  debug_value_->Set("isolated_web_app_browsing_data_cleared_success", true);
 
   web_app::CloseAndDeleteBundle(
       &profile_.get(), location_.value(),
@@ -262,6 +250,8 @@ void RemoveWebAppJob::MaybeFinishPrimaryRemoval() {
 
   primary_removal_result_ = errors_ ? webapps::UninstallResultCode::kError
                                     : webapps::UninstallResultCode::kSuccess;
+  debug_value_->Set("primary_removal_result",
+                    base::ToString(primary_removal_result_.value()));
   base::UmaHistogramBoolean("WebApp.Uninstall.Result", !errors_);
 
   lock_->install_manager().NotifyWebAppUninstalled(app_id_, uninstall_source_);
@@ -273,8 +263,6 @@ void RemoveWebAppJob::ProcessSubAppsPendingRemovalOrComplete() {
   CHECK(primary_removal_result_.has_value());
 
   if (sub_job_) {
-    completed_sub_job_debug_dict_.Set(sub_job_->app_id(),
-                                      sub_job_->ToDebugValue());
     sub_job_.reset();
   }
 
@@ -287,8 +275,9 @@ void RemoveWebAppJob::ProcessSubAppsPendingRemovalOrComplete() {
   sub_apps_pending_removal_.pop_back();
 
   sub_job_ = std::make_unique<RemoveInstallSourceJob>(
-      uninstall_source_, profile_.get(), sub_app_id,
-      WebAppManagement::Type::kSubApp);
+      uninstall_source_, profile_.get(),
+      *debug_value_->EnsureDict("sub_app_jobs")->EnsureDict(sub_app_id),
+      sub_app_id, WebAppManagement::Type::kSubApp);
   sub_job_->Start(*lock_,
                   base::IgnoreArgs<webapps::UninstallResultCode>(base::BindOnce(
                       &RemoveWebAppJob::ProcessSubAppsPendingRemovalOrComplete,
@@ -298,6 +287,7 @@ void RemoveWebAppJob::ProcessSubAppsPendingRemovalOrComplete() {
 void RemoveWebAppJob::CompleteAndSelfDestruct(
     webapps::UninstallResultCode code) {
   CHECK(callback_);
+  debug_value_->Set("result", base::ToString(code));
   std::move(callback_).Run(code);
 }
 

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/containers/flat_set.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/test_future.h"
@@ -39,24 +40,31 @@ namespace web_app {
 namespace {
 
 class InstallPlaceholderJobWrapperCommand
-    : public WebAppCommandTemplate<SharedWebContentsWithAppLock> {
+    : public WebAppCommand<SharedWebContentsWithAppLock,
+                           webapps::InstallResultCode,
+                           webapps::AppId> {
  public:
   InstallPlaceholderJobWrapperCommand(
       Profile* profile,
       const ExternalInstallOptions& install_options,
       InstallPlaceholderJob::InstallAndReplaceCallback callback,
       std::unique_ptr<WebAppDataRetriever> data_retriever = nullptr)
-      : WebAppCommandTemplate<SharedWebContentsWithAppLock>(
-            "InstallPlaceholderJobWrapperCommand"),
-        profile_(*profile),
-        install_options_(install_options),
-        callback_(std::move(callback)),
-        data_retriever_(std::move(data_retriever)),
-        lock_description_(
-            std::make_unique<SharedWebContentsWithAppLockDescription>(
+      : WebAppCommand<SharedWebContentsWithAppLock,
+                      webapps::InstallResultCode,
+                      webapps::AppId>(
+            "InstallPlaceholderJobWrapperCommand",
+            SharedWebContentsWithAppLockDescription(
                 base::flat_set<webapps::AppId>{
                     GenerateAppId(/*manifest_id_path=*/absl::nullopt,
-                                  install_options.install_url)})) {}
+                                  install_options.install_url)}),
+            std::move(callback),
+            /*args_for_shutdown=*/
+            std::make_tuple(webapps::InstallResultCode::
+                                kCancelledOnWebAppProviderShuttingDown,
+                            webapps::AppId())),
+        profile_(*profile),
+        install_options_(install_options),
+        data_retriever_(std::move(data_retriever)) {}
 
   ~InstallPlaceholderJobWrapperCommand() override = default;
 
@@ -64,7 +72,7 @@ class InstallPlaceholderJobWrapperCommand
       std::unique_ptr<SharedWebContentsWithAppLock> lock) override {
     lock_ = std::move(lock);
     install_placeholder_job_ = std::make_unique<InstallPlaceholderJob>(
-        &*profile_, install_options_,
+        &*profile_, *GetMutableDebugValue().EnsureDict("job"), install_options_,
         base::BindOnce(
             &InstallPlaceholderJobWrapperCommand::OnPlaceholderInstalled,
             weak_factory_.GetWeakPtr()),
@@ -78,27 +86,16 @@ class InstallPlaceholderJobWrapperCommand
 
   void OnPlaceholderInstalled(webapps::InstallResultCode code,
                               webapps::AppId app_id) {
-    SignalCompletionAndSelfDestruct(
-        webapps::IsSuccess(code) ? CommandResult::kSuccess
-                                 : CommandResult::kFailure,
-        base::BindOnce(std::move(callback_), code, std::move(app_id)));
+    CompleteAndSelfDestruct(webapps::IsSuccess(code) ? CommandResult::kSuccess
+                                                     : CommandResult::kFailure,
+                            code, app_id);
   }
-
-  const LockDescription& lock_description() const override {
-    return *lock_description_;
-  }
-
-  base::Value ToDebugValue() const override { return base::Value(); }
-
-  void OnShutdown() override {}
 
  private:
   raw_ref<Profile> profile_;
   ExternalInstallOptions install_options_;
-  InstallPlaceholderJob::InstallAndReplaceCallback callback_;
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
 
-  std::unique_ptr<SharedWebContentsWithAppLockDescription> lock_description_;
   std::unique_ptr<SharedWebContentsWithAppLock> lock_;
 
   std::unique_ptr<InstallPlaceholderJob> install_placeholder_job_;

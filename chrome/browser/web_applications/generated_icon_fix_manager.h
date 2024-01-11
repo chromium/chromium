@@ -11,15 +11,18 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
+#include "base/values.h"
 #include "chrome/browser/web_applications/commands/generated_icon_fix_command.h"
-#include "chrome/browser/web_applications/locks/with_app_resources.h"
 #include "components/webapps/common/web_app_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
 
-class WebAppProvider;
+class AllAppsLock;
+class AppLock;
 class WebApp;
+class WebAppProvider;
+class WithAppResources;
 
 // Used by metrics.
 enum class GeneratedIconFixScheduleDecision {
@@ -64,9 +67,19 @@ class GeneratedIconFixManager {
   }
 
  private:
+  void ScheduleFixes(AllAppsLock& all_apps_lock,
+                     base::Value::Dict& debug_value);
+
   // Returns whether a fix was newly scheduled for `app_id`.
-  bool MaybeScheduleFix(WithAppResources& resources,
-                        const webapps::AppId& app_id);
+  bool MaybeScheduleFix(const webapps::AppId& app_id,
+                        WithAppResources& resources,
+                        base::Value::Dict& debug_value);
+  // Separate method that simply calls the above one, required due to
+  // templating.
+  void MaybeScheduleFixAppLock(const webapps::AppId& app_id,
+                               AppLock& app_lock,
+                               base::Value::Dict& debug_value);
+
   GeneratedIconFixScheduleDecision MakeScheduleDecision(const WebApp* app);
   void StartFix(const webapps::AppId& app_id);
   void FixCompleted(const webapps::AppId& app_id,

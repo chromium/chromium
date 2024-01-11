@@ -145,8 +145,9 @@ WebAppBrowserController::WebAppBrowserController(
 WebAppBrowserController::~WebAppBrowserController() = default;
 
 bool WebAppBrowserController::HasMinimalUiButtons() const {
-  if (has_tab_strip())
+  if (has_tab_strip()) {
     return false;
+  }
   return manifest_display_mode_ == DisplayMode::kBrowser ||
          manifest_display_mode_ == DisplayMode::kMinimalUi;
 }
@@ -178,18 +179,18 @@ void WebAppBrowserController::ToggleWindowControlsOverlayEnabled(
     base::OnceClosure on_complete) {
   DCHECK(AppUsesWindowControlsOverlay());
 
-  provider_->scheduler().ScheduleCallbackWithLock<AppLock>(
+  provider_->scheduler().ScheduleCallback(
       "WebAppBrowserController::ToggleWindowControlsOverlayEnabled",
-      std::make_unique<AppLockDescription>(app_id()),
+      AppLockDescription(app_id()),
       base::BindOnce(
-          [](base::OnceClosure on_complete, const webapps::AppId& app_id,
-             AppLock& lock) {
+          [](const webapps::AppId& app_id, AppLock& lock,
+             base::Value::Dict& debug_value) {
             lock.sync_bridge().SetAppWindowControlsOverlayEnabled(
                 app_id,
                 !lock.registrar().GetWindowControlsOverlayEnabled(app_id));
-            std::move(on_complete).Run();
           },
-          std::move(on_complete), app_id()));
+          app_id()),
+      /*on_complete=*/std::move(on_complete));
 }
 
 bool WebAppBrowserController::AppUsesBorderlessMode() const {
@@ -223,8 +224,9 @@ gfx::Rect WebAppBrowserController::GetDefaultBounds() const {
 
 bool WebAppBrowserController::HasReloadButton() const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (system_app_)
+  if (system_app_) {
     return system_app_->ShouldHaveReloadButtonInMinimalUi();
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   return true;
 }
@@ -250,23 +252,26 @@ bool WebAppBrowserController::AlwaysShowToolbarInFullscreen() const {
 }
 
 void WebAppBrowserController::ToggleAlwaysShowToolbarInFullscreen() {
-  provider_->scheduler().ScheduleCallbackWithLock<AppLock>(
+  provider_->scheduler().ScheduleCallback(
       "WebAppBrowserController::ToggleAlwaysShowToolbarInFullscreen",
-      std::make_unique<AppLockDescription>(app_id()),
+      AppLockDescription(app_id()),
       base::BindOnce(
-          [](const webapps::AppId& app_id, AppLock& lock) {
+          [](const webapps::AppId& app_id, AppLock& lock,
+             base::Value::Dict& debug_value) {
             lock.sync_bridge().SetAlwaysShowToolbarInFullscreen(
                 app_id,
                 !lock.registrar().AlwaysShowToolbarInFullscreen(app_id));
           },
-          app_id()));
+          app_id()),
+      /*on_complete=*/base::DoNothing());
 }
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 bool WebAppBrowserController::ShouldShowCustomTabBar() const {
-  if (AppBrowserController::ShouldShowCustomTabBar())
+  if (AppBrowserController::ShouldShowCustomTabBar()) {
     return true;
+  }
 
   return is_verified_.value_or(false);
 }
@@ -319,8 +324,9 @@ void WebAppBrowserController::OnGetAssociatedAndroidPackage(
 void WebAppBrowserController::OnWebAppUninstalled(
     const webapps::AppId& uninstalled_app_id,
     webapps::WebappUninstallSource uninstall_source) {
-  if (uninstalled_app_id == app_id())
+  if (uninstalled_app_id == app_id()) {
     chrome::CloseWindow(browser());
+  }
 }
 
 void WebAppBrowserController::OnWebAppManifestUpdated(
@@ -341,8 +347,9 @@ void WebAppBrowserController::OnWebAppInstallManagerDestroyed() {
 }
 
 ui::ImageModel WebAppBrowserController::GetWindowAppIcon() const {
-  if (app_icon_)
+  if (app_icon_) {
     return *app_icon_;
+  }
   app_icon_ = GetFallbackAppIcon();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -379,14 +386,16 @@ ui::ImageModel WebAppBrowserController::GetWindowIcon() const {
 std::optional<SkColor> WebAppBrowserController::GetThemeColor() const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // System App popups (settings pages) always use default theme.
-  if (system_app() && browser()->is_type_app_popup())
+  if (system_app() && browser()->is_type_app_popup()) {
     return std::nullopt;
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   std::optional<SkColor> web_theme_color =
       AppBrowserController::GetThemeColor();
-  if (web_theme_color)
+  if (web_theme_color) {
     return web_theme_color;
+  }
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (chromeos::features::IsUploadOfficeToCloudEnabled() &&
@@ -518,16 +527,18 @@ bool WebAppBrowserController::ShouldShowAppIconOnTab(int index) const {
 
 bool WebAppBrowserController::IsUrlInAppScope(const GURL& url) const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (system_app() && system_app()->IsUrlInSystemAppScope(url))
+  if (system_app() && system_app()->IsUrlInSystemAppScope(url)) {
     return true;
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (chromeos::features::IsUploadOfficeToCloudEnabled()) {
     size_t extended_scope_score =
         ChromeOsWebAppExperiments::GetExtendedScopeScore(app_id(), url.spec());
-    if (extended_scope_score > 0)
+    if (extended_scope_score > 0) {
       return true;
+    }
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -538,23 +549,26 @@ bool WebAppBrowserController::IsUrlInAppScope(const GURL& url) const {
   }
 
   GURL app_scope = registrar().GetAppScope(app_id());
-  if (!app_scope.is_valid())
+  if (!app_scope.is_valid()) {
     return false;
+  }
 
   // https://w3c.github.io/manifest/#navigation-scope
   // If url is same origin as scope and url path starts with scope path, return
   // true. Otherwise, return false.
   if (app_scope.DeprecatedGetOriginAsURL() != url.DeprecatedGetOriginAsURL()) {
     // We allow an upgrade from http |app_scope| to https |url|.
-    if (app_scope.scheme() != url::kHttpScheme)
+    if (app_scope.scheme() != url::kHttpScheme) {
       return false;
+    }
 
     GURL::Replacements rep;
     rep.SetSchemeStr(url::kHttpsScheme);
     GURL secure_app_scope = app_scope.ReplaceComponents(rep);
     if (secure_app_scope.DeprecatedGetOriginAsURL() !=
-        url.DeprecatedGetOriginAsURL())
+        url.DeprecatedGetOriginAsURL()) {
       return false;
+    }
   }
 
   std::string scope_path = app_scope.path();
@@ -688,16 +702,19 @@ void WebAppBrowserController::LoadAppIcon(bool allow_placeholder_icon) const {
 }
 
 void WebAppBrowserController::OnLoadIcon(apps::IconValuePtr icon_value) {
-  if (!icon_value || icon_value->icon_type != apps::IconType::kStandard)
+  if (!icon_value || icon_value->icon_type != apps::IconType::kStandard) {
     return;
+  }
 
   app_icon_ = ui::ImageModel::FromImageSkia(icon_value->uncompressed);
 
-  if (icon_value->is_placeholder_icon)
+  if (icon_value->is_placeholder_icon) {
     LoadAppIcon(false /* allow_placeholder_icon */);
+  }
 
-  if (auto* contents = web_contents())
+  if (auto* contents = web_contents()) {
     contents->NotifyNavigationStateChanged(content::INVALIDATE_TYPE_TAB);
+  }
   if (IconLoadCallbackForTesting()) {
     std::move(IconLoadCallbackForTesting()).Run();
   }
@@ -714,8 +731,9 @@ void WebAppBrowserController::OnReadIcon(IconPurpose purpose, SkBitmap bitmap) {
 
   app_icon_ =
       ui::ImageModel::FromImageSkia(gfx::ImageSkia::CreateFrom1xBitmap(bitmap));
-  if (auto* contents = web_contents())
+  if (auto* contents = web_contents()) {
     contents->NotifyNavigationStateChanged(content::INVALIDATE_TYPE_TAB);
+  }
   if (IconLoadCallbackForTesting()) {
     std::move(IconLoadCallbackForTesting()).Run();
   }
@@ -733,8 +751,9 @@ void WebAppBrowserController::PerformDigitalAssetLinkVerification(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::ApkWebAppService* apk_web_app_service =
       ash::ApkWebAppService::Get(browser->profile());
-  if (!apk_web_app_service || !apk_web_app_service->IsWebOnlyTwa(app_id()))
+  if (!apk_web_app_service || !apk_web_app_service->IsWebOnlyTwa(app_id())) {
     return;
+  }
 
   const std::optional<std::string> package_name =
       apk_web_app_service->GetPackageNameForWebApp(app_id());
@@ -769,8 +788,9 @@ std::optional<SkColor>
 WebAppBrowserController::GetResolvedManifestBackgroundColor() const {
   if (ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()) {
     auto dark_mode_color = registrar().GetAppDarkModeBackgroundColor(app_id());
-    if (dark_mode_color)
+    if (dark_mode_color) {
       return dark_mode_color;
+    }
   }
   return registrar().GetAppBackgroundColor(app_id());
 }

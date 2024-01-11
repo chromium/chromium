@@ -27,6 +27,7 @@ class WebAppLockManager;
 class AllAppsLockDescription : public LockDescription {
  public:
   AllAppsLockDescription();
+  AllAppsLockDescription(AllAppsLockDescription&&);
   ~AllAppsLockDescription();
 };
 

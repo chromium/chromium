@@ -14,6 +14,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/message_formatter.h"
 #include "base/logging.h"
@@ -371,12 +372,15 @@ void AppManagementPageHandlerBase::GetSubAppToParentMap(
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
   if (provider) {
     // Web apps are managed in the current process (Ash or Lacros).
-    provider->scheduler().ScheduleCallbackWithLock<web_app::AllAppsLock>(
+    provider->scheduler().ScheduleCallbackWithResult(
         "AppManagementPageHandlerBase::GetSubAppToParentMap",
-        std::make_unique<web_app::AllAppsLockDescription>(),
-        base::BindOnce([](web_app::AllAppsLock& lock) {
-          return lock.registrar().GetSubAppToParentMap();
-        }).Then(std::move(callback)));
+        web_app::AllAppsLockDescription(),
+        base::BindOnce(
+            [](web_app::AllAppsLock& lock, base::Value::Dict& debug_value) {
+              return lock.registrar().GetSubAppToParentMap();
+            }),
+        /*on_complete=*/std::move(callback),
+        /*arg_for_shutdown=*/base::flat_map<std::string, std::string>());
     return;
   }
 
@@ -499,18 +503,17 @@ void AppManagementPageHandlerBase::GetOverlappingPreferredApps(
 #else
   web_app::WebAppProvider* provider =
       web_app::WebAppProvider::GetForWebApps(profile_);
-  provider->scheduler().ScheduleCallbackWithLock<web_app::AllAppsLock>(
+  provider->scheduler().ScheduleCallbackWithResult(
       "AppManagementPageHandlerBase::GetOverlappingPreferredApps",
-      std::make_unique<web_app::AllAppsLockDescription>(),
+      web_app::AllAppsLockDescription(),
       base::BindOnce(
-          [](const webapps::AppId& app_id,
-             GetOverlappingPreferredAppsCallback callback,
-             web_app::AllAppsLock& all_apps_lock) {
-            std::move(callback).Run(
-                all_apps_lock.registrar().GetOverlappingAppsMatchingScope(
-                    app_id));
+          [](const webapps::AppId& app_id, web_app::AllAppsLock& all_apps_lock,
+             base::Value::Dict& debug_value) {
+            return all_apps_lock.registrar().GetOverlappingAppsMatchingScope(
+                app_id);
           },
-          app_id, std::move(callback)));
+          app_id),
+      std::move(callback), /*arg_for_shutdown=*/std::vector<std::string>());
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
