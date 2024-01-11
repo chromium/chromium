@@ -106,7 +106,7 @@ bool GrabWindowSnapshot(gfx::NativeWindow window_handle,
 
 void GrabWindowSnapshotAsync(gfx::NativeWindow window,
                              const gfx::Rect& source_rect,
-                             GrabWindowSnapshotAsyncCallback callback) {
+                             GrabSnapshotImageCallback callback) {
   gfx::Image image;
   GrabWindowSnapshot(window, source_rect, &image);
   std::move(callback).Run(image);
@@ -114,17 +114,10 @@ void GrabWindowSnapshotAsync(gfx::NativeWindow window,
 
 void GrabViewSnapshotAsync(gfx::NativeView view,
                            const gfx::Rect& source_rect,
-                           GrabWindowSnapshotAsyncCallback callback) {
-  NOTIMPLEMENTED();
-  std::move(callback).Run(gfx::Image());
-}
-
-void GrabWindowSnapshotAndScaleAsync(gfx::NativeWindow window,
-                                     const gfx::Rect& source_rect,
-                                     const gfx::Size& target_size,
-                                     GrabWindowSnapshotAsyncCallback callback) {
-  NOTIMPLEMENTED();
-  std::move(callback).Run(gfx::Image());
+                           GrabSnapshotImageCallback callback) {
+  gfx::Image image;
+  GrabViewSnapshot(view, source_rect, &image);
+  std::move(callback).Run(image);
 }
 
 }  // namespace ui

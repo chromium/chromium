@@ -69,7 +69,7 @@ class StubDeviceCommandScreenshotJobDelegate
   bool IsScreenshotAllowed() override { return false; }
   void TakeSnapshot(gfx::NativeWindow,
                     const gfx::Rect&,
-                    ui::GrabWindowSnapshotAsyncPNGCallback) override {}
+                    ui::GrabSnapshotDataCallback) override {}
   std::unique_ptr<UploadJob> CreateUploadJob(const GURL&,
                                              UploadJob::Delegate*) override {
     return nullptr;

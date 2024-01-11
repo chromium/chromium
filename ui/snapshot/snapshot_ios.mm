@@ -14,6 +14,7 @@
 namespace ui {
 
 namespace {
+
 UIImage* GetViewSnapshot(UIView* view, CGRect bounds) {
   UIGraphicsImageRendererFormat* format =
       [UIGraphicsImageRendererFormat preferredFormat];
@@ -27,6 +28,7 @@ UIImage* GetViewSnapshot(UIView* view, CGRect bounds) {
       }];
   return snapshot;
 }
+
 }  // namespace
 
 bool GrabViewSnapshot(gfx::NativeView view,
@@ -62,23 +64,9 @@ bool GrabWindowSnapshot(gfx::NativeWindow window,
   return false;
 }
 
-void GrabWindowSnapshotAndScaleAsync(
-    gfx::NativeWindow window,
-    const gfx::Rect& snapshot_bounds,
-    const gfx::Size& target_size,
-    GrabWindowSnapshotAsyncCallback callback) {
-  gfx::Image image;
-  if (GrabWindowSnapshot(window, snapshot_bounds, &image)) {
-    gfx::Image resized_image = gfx::ResizedImage(image, target_size);
-    std::move(callback).Run(resized_image);
-    return;
-  }
-  std::move(callback).Run(image);
-}
-
 void GrabViewSnapshotAsync(gfx::NativeView view,
                            const gfx::Rect& source_rect,
-                           GrabWindowSnapshotAsyncCallback callback) {
+                           GrabSnapshotImageCallback callback) {
   gfx::Image image;
   GrabViewSnapshot(view, source_rect, &image);
   std::move(callback).Run(image);
@@ -86,7 +74,7 @@ void GrabViewSnapshotAsync(gfx::NativeView view,
 
 void GrabWindowSnapshotAsync(gfx::NativeWindow window,
                              const gfx::Rect& source_rect,
-                             GrabWindowSnapshotAsyncCallback callback) {
+                             GrabSnapshotImageCallback callback) {
   gfx::Image image;
   GrabWindowSnapshot(window, source_rect, &image);
   std::move(callback).Run(image);

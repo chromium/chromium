@@ -25,12 +25,12 @@ class SnapshotAsync {
   SnapshotAsync& operator=(const SnapshotAsync&) = delete;
 
   static void ScaleCopyOutputResult(
-      GrabWindowSnapshotAsyncCallback callback,
+      GrabSnapshotImageCallback callback,
       const gfx::Size& target_size,
       std::unique_ptr<viz::CopyOutputResult> result);
 
   static void RunCallbackWithCopyOutputResult(
-      GrabWindowSnapshotAsyncCallback callback,
+      GrabSnapshotImageCallback callback,
       std::unique_ptr<viz::CopyOutputResult> result);
 };
 
