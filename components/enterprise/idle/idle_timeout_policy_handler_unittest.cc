@@ -40,9 +40,10 @@ class IdleTimeoutPolicyHandlerTest : public testing::Test {
     SetPolicyValue(policy::key::kSyncDisabled, base::Value(true));
   }
 
-  void SetPolicyValue(const std::string& policy,
-                      base::Value value,
-                      policy::PolicyScope scope = policy::POLICY_SCOPE_USER) {
+  void SetPolicyValue(
+      const std::string& policy,
+      base::Value value,
+      policy::PolicyScope scope = policy::POLICY_SCOPE_MACHINE) {
     policies_.Set(policy, policy::POLICY_LEVEL_MANDATORY, scope,
                   policy::POLICY_SOURCE_PLATFORM, std::move(value), nullptr);
   }
@@ -460,9 +461,8 @@ TEST_F(IdleTimeoutPolicyHandlerTest, SyncTypesDisabledForClearActions) {
   EXPECT_FALSE(enabled);
 }
 
-#if BUILDFLAG(IS_IOS)
 TEST_F(IdleTimeoutPolicyHandlerTest,
-       IdleTimeoutPolicyAppliesToUserOnlyPrefSetCorrectly) {
+       IdleTimeoutPolicyAppliesCorrectlyAsUserPolicy) {
   // Initialize the pref to false to detect the pref changes when the policy is
   // set.
   prefs().SetBoolean(syncer::prefs::internal::kSyncAutofill, true);
@@ -472,26 +472,41 @@ TEST_F(IdleTimeoutPolicyHandlerTest,
   list.Append("clear_cookies_and_other_site_data");
 
   // Set the policy scope to user and check that
-  // `kIdleTimeoutPolicyAppliesToUserOnly` is set to true.
-  SetPolicyValue(policy::key::kIdleTimeout, base::Value(15));
-  SetPolicyValue(policy::key::kIdleTimeoutActions,
-                 base::Value(std::move(list)));
-  CheckAndApplyPolicySettings();
-  bool enabled;
-  ASSERT_TRUE(
-      prefs().GetBoolean(prefs::kIdleTimeoutPolicyAppliesToUserOnly, &enabled));
-  EXPECT_TRUE(enabled);
-
-  // Reset the policy scope to machine and check that
-  // `kIdleTimeoutPolicyAppliesToUserOnly` is reset to false.
+  // the policy is not set on iOS and set on other platforms.
+  SetPolicyValue(policy::key::kIdleTimeout, base::Value(15),
+                 policy::POLICY_SCOPE_USER);
   SetPolicyValue(policy::key::kIdleTimeoutActions, base::Value(std::move(list)),
-                 policy::POLICY_SCOPE_MACHINE);
+                 policy::POLICY_SCOPE_USER);
   CheckAndApplyPolicySettings();
-  ASSERT_TRUE(
-      prefs().GetBoolean(prefs::kIdleTimeoutPolicyAppliesToUserOnly, &enabled));
-  EXPECT_FALSE(enabled);
-}
 
+#if BUILDFLAG(IS_IOS)
+  // Should have an error.
+  auto expected_error =
+      l10n_util::GetStringUTF16(IDS_POLICY_NOT_SUPPORTED_AS_USER_POLICY_ON_IOS);
+  EXPECT_THAT(errors(), UnorderedElementsAre(expected_error, expected_error));
+
+  // Prefs should not be set.
+  const base::Value* pref_value;
+  EXPECT_FALSE(prefs().GetValue(prefs::kIdleTimeout, &pref_value));
+  EXPECT_FALSE(prefs().GetValue(prefs::kIdleTimeoutActions, &pref_value));
+#else
+  // Should not have an error.
+  EXPECT_THAT(errors(), IsEmpty());
+
+  // Prefs should be set.
+  const base::Value* pref_value;
+  EXPECT_TRUE(prefs().GetValue(prefs::kIdleTimeout, &pref_value));
+  ASSERT_THAT(pref_value, testing::NotNull());
+  EXPECT_EQ(base::TimeDeltaToValue(base::Minutes(15)), *pref_value);
+
+  EXPECT_TRUE(prefs().GetValue(prefs::kIdleTimeoutActions, &pref_value));
+  ASSERT_THAT(pref_value, testing::NotNull());
+  EXPECT_TRUE(pref_value->is_list());
+  EXPECT_THAT(pref_value->GetList(),
+              testing::ElementsAre(
+                  static_cast<int>(ActionType::kClearBrowsingHistory),
+                  static_cast<int>(ActionType::kClearCookiesAndOtherSiteData)));
 #endif  // BUILDFLAG(IS_IOS)
+}
 
 }  // namespace enterprise_idle
