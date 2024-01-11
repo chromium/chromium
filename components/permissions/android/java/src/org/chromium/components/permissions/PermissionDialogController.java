@@ -47,7 +47,9 @@ public class PermissionDialogController
         State.PROMPT_OPEN,
         State.PROMPT_ACCEPTED,
         State.PROMPT_DENIED,
-        State.REQUEST_ANDROID_PERMISSIONS
+        State.REQUEST_ANDROID_PERMISSIONS_FOR_PERSISTENT_GRANT,
+        State.REQUEST_ANDROID_PERMISSIONS_FOR_EPHEMERAL_GRANT,
+        State.PROMPT_ACCEPTED_THIS_TIME
     })
     @Retention(RetentionPolicy.SOURCE)
     private @interface State {
@@ -57,7 +59,9 @@ public class PermissionDialogController
         int PROMPT_OPEN = 2;
         int PROMPT_ACCEPTED = 3;
         int PROMPT_DENIED = 4;
-        int REQUEST_ANDROID_PERMISSIONS = 5;
+        int REQUEST_ANDROID_PERMISSIONS_FOR_PERSISTENT_GRANT = 5;
+        int REQUEST_ANDROID_PERMISSIONS_FOR_EPHEMERAL_GRANT = 6;
+        int PROMPT_ACCEPTED_THIS_TIME = 7;
     }
 
     /** Interface for a class that wants to receive updates from this controller. */
@@ -151,21 +155,29 @@ public class PermissionDialogController
 
     @Override
     public void onAndroidPermissionAccepted() {
-        assert mState == State.REQUEST_ANDROID_PERMISSIONS;
+        assert mState == State.REQUEST_ANDROID_PERMISSIONS_FOR_PERSISTENT_GRANT
+                || mState == State.REQUEST_ANDROID_PERMISSIONS_FOR_EPHEMERAL_GRANT;
 
         // The tab may have navigated or been closed behind the Android permission prompt.
         if (mDialogDelegate == null) {
             mState = State.NOT_SHOWING;
         } else {
-            mDialogDelegate.onAccept();
-            destroyDelegate(ContentSettingValues.ALLOW);
+            if (mState == State.REQUEST_ANDROID_PERMISSIONS_FOR_PERSISTENT_GRANT) {
+                mDialogDelegate.onAccept();
+                destroyDelegate(ContentSettingValues.ALLOW);
+            } else {
+                // State.REQUEST_ANDROID_PERMISSIONS_FOR_EPHEMERAL_GRANT
+                mDialogDelegate.onAcceptThisTime();
+                destroyDelegate(ContentSettingValues.ALLOW);
+            }
         }
         scheduleDisplay();
     }
 
     @Override
     public void onAndroidPermissionCanceled() {
-        assert mState == State.REQUEST_ANDROID_PERMISSIONS;
+        assert mState == State.REQUEST_ANDROID_PERMISSIONS_FOR_PERSISTENT_GRANT
+                || mState == State.REQUEST_ANDROID_PERMISSIONS_FOR_EPHEMERAL_GRANT;
 
         // The tab may have navigated or been closed behind the Android permission prompt.
         if (mDialogDelegate == null) {
@@ -208,12 +220,22 @@ public class PermissionDialogController
             return;
         }
 
-        // Setting up the MVC model for the dialog's custom view.
-        View customView = LayoutInflaterUtils.inflate(context, R.layout.permission_dialog, null);
+        // Setting up the MVC model for the dialog's custom view. One time prompts don't share the
+        // same layout.
+        View customView =
+                mDialogDelegate.canShowEphemeralOption()
+                        ? LayoutInflaterUtils.inflate(
+                                context, R.layout.permission_dialog_one_time_permission, null)
+                        : LayoutInflaterUtils.inflate(context, R.layout.permission_dialog, null);
+
         mCustomViewModel = PermissionDialogCustomViewModelFactory.getModel(mDialogDelegate);
         mCustomViewModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
-                        mCustomViewModel, customView, PermissionDialogCustomViewBinder::bind);
+                        mCustomViewModel,
+                        customView,
+                        mDialogDelegate.canShowEphemeralOption()
+                                ? PermissionOneTimeDialogCustomViewBinder::bind
+                                : PermissionDialogCustomViewBinder::bind);
 
         // Setting up the Permission's dialog.
         mDialogModel =
@@ -283,7 +305,8 @@ public class PermissionDialogController
                 mModalDialogManager.dismissDialog(
                         mDialogModel, DialogDismissalCause.DISMISSED_BY_NATIVE);
             } else {
-                assert mState == State.REQUEST_ANDROID_PERMISSIONS
+                assert mState == State.REQUEST_ANDROID_PERMISSIONS_FOR_PERSISTENT_GRANT
+                        || mState == State.REQUEST_ANDROID_PERMISSIONS_FOR_EPHEMERAL_GRANT
                         || mState == State.PROMPT_DENIED
                         || mState == State.PROMPT_ACCEPTED;
             }
@@ -318,8 +341,8 @@ public class PermissionDialogController
 
     @Override
     public void onDismiss(PropertyModel model, @DialogDismissalCause int dismissalCause) {
-        // Called when the dialog is dismissed. Interacting with either button in the dialog will
-        // call this handler after the primary/secondary handler.
+        // Called when the dialog is dismissed. Interacting with any button in the dialog will
+        // call this handler after its own handler.
         // When the dialog is dismissed, the delegate's native pointers are
         // freed, and the next queued dialog (if any) is displayed.
         mDialogModel = null;
@@ -331,13 +354,18 @@ public class PermissionDialogController
             mState = State.NOT_SHOWING;
             return;
         }
-        if (mState == State.PROMPT_ACCEPTED) {
+        if (mState == State.PROMPT_ACCEPTED || mState == State.PROMPT_ACCEPTED_THIS_TIME) {
+            if (mState == State.PROMPT_ACCEPTED) {
+                mState = State.REQUEST_ANDROID_PERMISSIONS_FOR_PERSISTENT_GRANT;
+            } else {
+                mState = State.REQUEST_ANDROID_PERMISSIONS_FOR_EPHEMERAL_GRANT;
+            }
+
             // Request Android permissions if necessary. This will call back into
             // either onAndroidPermissionAccepted or onAndroidPermissionCanceled,
             // which will schedule the next permission dialog. If it returns false,
             // no system level permissions need to be requested, so just run the
             // accept callback.
-            mState = State.REQUEST_ANDROID_PERMISSIONS;
             if (!AndroidPermissionRequester.requestAndroidPermissions(
                     mDialogDelegate.getWindow(),
                     mDialogDelegate.getContentSettingsTypes(),
@@ -363,18 +391,24 @@ public class PermissionDialogController
     public void onClick(PropertyModel model, @ModalDialogProperties.ButtonType int buttonType) {
         assert mState == State.PROMPT_OPEN;
         switch (buttonType) {
-            case ModalDialogProperties.ButtonType.POSITIVE:
+            case ModalDialogProperties.ButtonType.POSITIVE -> {
                 mState = State.PROMPT_ACCEPTED;
                 mModalDialogManager.dismissDialog(
                         model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
-                break;
-            case ModalDialogProperties.ButtonType.NEGATIVE:
+            }
+            case ModalDialogProperties.ButtonType.POSITIVE_EPHEMERAL -> {
+                mState = State.PROMPT_ACCEPTED_THIS_TIME;
+                mModalDialogManager.dismissDialog(
+                        model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+            }
+            case ModalDialogProperties.ButtonType.NEGATIVE -> {
                 mState = State.PROMPT_DENIED;
                 mModalDialogManager.dismissDialog(
                         model, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
-                break;
-            default:
+            }
+            default -> {
                 assert false : "Unexpected button pressed in dialog: " + buttonType;
+            }
         }
     }
 

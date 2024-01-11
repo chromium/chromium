@@ -6,6 +6,7 @@ found in the LICENSE file.
 -->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
+
     <!-- The dim amount should match the alpha of modal_dialog_scrim_color. -->
     <style name="ThemeOverlay.BrowserUI.ModalDialog" parent="ThemeOverlay.BrowserUI.AlertDialog">
         <item name="android:windowFrame">@null</item>
@@ -13,6 +14,43 @@ found in the LICENSE file.
         <item name="android:windowSoftInputMode">adjustResize|stateHidden</item>
         <item name="dualControlLayoutVerticalPadding">@dimen/modal_dialog_control_vertical_padding_filled</item>
         <item name="dualControlLayoutHorizontalPadding">@dimen/modal_dialog_control_horizontal_padding_filled</item>
+    </style>
+
+    <style name="FilledButton.Flat.Tonal">
+      <item name="buttonColor">?attr/colorPrimaryContainer</item>
+      <item name="buttonTextColor">@macro/default_text_color_on_accent1_container</item>
+      <item name="verticalInset">@dimen/button_group_button_inset</item>
+      <item name="buttonRaised">false</item>
+      <item name="android:textAppearance">@style/TextAppearance.TextAccentMediumThick.Secondary</item>
+      <item name="textAllCaps">false</item>
+    </style>
+
+    <style name="FilledButton.Flat.Tonal.SingleButton">
+        <item name="rippleCornerRadiusTopStart">@dimen/button_group_large_radius</item>
+        <item name="rippleCornerRadiusTopEnd">@dimen/button_group_large_radius</item>
+        <item name="rippleCornerRadiusBottomEnd">@dimen/button_group_large_radius</item>
+        <item name="rippleCornerRadiusBottomStart">@dimen/button_group_large_radius</item>
+    </style>
+
+    <style name="FilledButton.Flat.Tonal.TopButton">
+        <item name="rippleCornerRadiusTopStart">@dimen/button_group_large_radius</item>
+        <item name="rippleCornerRadiusTopEnd">@dimen/button_group_large_radius</item>
+        <item name="rippleCornerRadiusBottomEnd">@dimen/button_group_small_radius</item>
+        <item name="rippleCornerRadiusBottomStart">@dimen/button_group_small_radius</item>
+    </style>
+
+    <style name="FilledButton.Flat.Tonal.MiddleButton">
+        <item name="rippleCornerRadiusTopStart">@dimen/button_group_small_radius</item>
+        <item name="rippleCornerRadiusTopEnd">@dimen/button_group_small_radius</item>
+        <item name="rippleCornerRadiusBottomEnd">@dimen/button_group_small_radius</item>
+        <item name="rippleCornerRadiusBottomStart">@dimen/button_group_small_radius</item>
+    </style>
+
+    <style name="FilledButton.Flat.Tonal.BottomButton">
+        <item name="rippleCornerRadiusTopStart">@dimen/button_group_small_radius</item>
+        <item name="rippleCornerRadiusTopEnd">@dimen/button_group_small_radius</item>
+        <item name="rippleCornerRadiusBottomEnd">@dimen/button_group_large_radius</item>
+        <item name="rippleCornerRadiusBottomStart">@dimen/button_group_large_radius</item>
     </style>
 
     <style name="ThemeOverlay.BrowserUI.ModalDialog.TextPrimaryButton" parent="ThemeOverlay.BrowserUI.ModalDialog">

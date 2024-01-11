@@ -71,12 +71,15 @@ android_resources("java_resources") {
     "res/drawable/ic_signal_cellular_3_bar.xml",
     "res/drawable/ic_signal_cellular_4_bar.xml",
     "res/drawable/ic_storage_access_24.xml",
+    "res/drawable/permission_icon_background.xml",
     "res/drawable/tenancy.xml",
     "res/layout/bluetooth_scanning_permission_dialog.xml",
     "res/layout/bluetooth_scanning_permission_dialog_row.xml",
     "res/layout/device_item_list.xml",
     "res/layout/item_chooser_dialog.xml",
     "res/layout/item_chooser_dialog_row.xml",
+    "res/layout/permission_dialog.xml",
+    "res/layout/permission_dialog_one_time_permission.xml",
     "res/layout/update_permissions_dialog.xml",
     "res/values/dimens.xml",
     "res/values/styles.xml",
@@ -116,6 +119,7 @@ android_library("java") {
     "java/src/org/chromium/components/permissions/PermissionDialogCustomViewProperties.java",
     "java/src/org/chromium/components/permissions/PermissionDialogDelegate.java",
     "java/src/org/chromium/components/permissions/PermissionDialogModelFactory.java",
+    "java/src/org/chromium/components/permissions/PermissionOneTimeDialogCustomViewBinder.java",
     "java/src/org/chromium/components/permissions/nfc/NfcSystemLevelPrompt.java",
     "java/src/org/chromium/components/permissions/nfc/NfcSystemLevelSetting.java",
   ]
@@ -170,6 +174,7 @@ android_library("core_java") {
 robolectric_library("components_permissions_junit_tests") {
   sources = [
     "junit/src/org/chromium/components/permissions/PermissionDialogCustomViewBinderTest.java",
+    "junit/src/org/chromium/components/permissions/PermissionOneTimeDialogCustomViewBinderTest.java",
     "junit/src/org/chromium/components/permissions/nfc/NfcSystemLevelPromptTest.java",
   ]
   deps = [
@@ -185,6 +190,7 @@ robolectric_library("components_permissions_junit_tests") {
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java",
+    "//ui/android:ui_java_test_support",
   ]
   resources_package = "org.chromium.components.permissions.test"
 }

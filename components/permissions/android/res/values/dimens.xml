@@ -8,4 +8,5 @@ found in the LICENSE file.
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Permissions dialog. -->
     <dimen name="large_favicon_size">24dp</dimen>
+    <dimen name="one_time_permission_prompt_padding">24dp</dimen>
 </resources>

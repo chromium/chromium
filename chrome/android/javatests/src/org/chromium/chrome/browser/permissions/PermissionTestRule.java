@@ -6,11 +6,13 @@ package org.chromium.chrome.browser.permissions;
 
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withTagValue;
 
 import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.CoreMatchers.is;
 
 import androidx.annotation.IdRes;
+import androidx.annotation.IntDef;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -24,7 +26,6 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.InfoBarTestAnimationListener;
 import org.chromium.chrome.test.util.InfoBarUtil;
@@ -35,6 +36,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.test.util.ViewUtils;
 
 /**
@@ -56,6 +58,19 @@ import org.chromium.ui.test.util.ViewUtils;
  */
 public class PermissionTestRule extends ChromeTabbedActivityTestRule {
     private InfoBarTestAnimationListener mListener;
+
+    @IntDef({
+        PromptDecision.ALLOW,
+        PromptDecision.ALLOW_ONCE,
+        PromptDecision.DENY,
+        PromptDecision.NONE
+    })
+    public @interface PromptDecision {
+        int ALLOW = 0;
+        int ALLOW_ONCE = 1;
+        int DENY = 2;
+        int NONE = 3;
+    }
 
     /**
      * Waits till a JavaScript callback which updates the page title is called the specified number
@@ -163,7 +178,7 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
      * @param javascript The JS function to run in the current tab to execute the test and update
      *     the page title.
      * @param nUpdates How many updates of the page title to wait for.
-     * @param withGeature True if we require a user gesture to trigger the prompt.
+     * @param withGesture True if we require a user gesture to trigger the prompt.
      * @param isDialog True if we are expecting a permission dialog, false for an infobar.
      * @throws Exception
      */
@@ -181,7 +196,7 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
         } else {
             runJavaScriptCodeInCurrentTab(javascript);
         }
-        replyToPromptAndWaitForUpdates(updateWaiter, true, nUpdates, isDialog);
+        replyToPromptAndWaitForUpdates(updateWaiter, PromptDecision.ALLOW, nUpdates, isDialog);
     }
 
     /**
@@ -211,7 +226,7 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
         } else {
             runJavaScriptCodeInCurrentTab(javascript);
         }
-        replyToPromptAndWaitForUpdates(updateWaiter, false, nUpdates, isDialog);
+        replyToPromptAndWaitForUpdates(updateWaiter, PromptDecision.DENY, nUpdates, isDialog);
     }
 
     /**
@@ -245,13 +260,16 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
     }
 
     private void replyToPromptAndWaitForUpdates(
-            PermissionUpdateWaiter updateWaiter, boolean allow, int nUpdates, boolean isDialog)
+            PermissionUpdateWaiter updateWaiter,
+            @PromptDecision int decision,
+            int nUpdates,
+            boolean isDialog)
             throws Exception {
         if (isDialog) {
             waitForDialogShownState(true);
-            replyToDialogAndWaitForUpdates(updateWaiter, nUpdates, allow);
+            replyToDialogAndWaitForUpdates(updateWaiter, nUpdates, decision);
         } else {
-            replyToInfoBarAndWaitForUpdates(updateWaiter, nUpdates, allow);
+            replyToInfoBarAndWaitForUpdates(updateWaiter, nUpdates, decision);
         }
     }
 
@@ -280,15 +298,18 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
      * page title in response.
      */
     private void replyToInfoBarAndWaitForUpdates(
-            PermissionUpdateWaiter updateWaiter, int nUpdates, boolean allow) throws Exception {
+            PermissionUpdateWaiter updateWaiter, int nUpdates, @PromptDecision int decison)
+            throws Exception {
         mListener.addInfoBarAnimationFinished("InfoBar not added.");
         InfoBar infobar = getInfoBars().get(0);
         Assert.assertNotNull(infobar);
 
-        if (allow) {
-            Assert.assertTrue("Allow button wasn't found", InfoBarUtil.clickPrimaryButton(infobar));
-        } else {
-            Assert.assertTrue(
+        switch (decison) {
+            case PromptDecision.ALLOW -> Assert.assertTrue(
+                    "Allow button wasn't found", InfoBarUtil.clickPrimaryButton(infobar));
+            case PromptDecision.ALLOW_ONCE -> throw new AssertionError(
+                    "Allowing once is not supported on infobars.");
+            case PromptDecision.DENY -> Assert.assertTrue(
                     "Block button wasn't found", InfoBarUtil.clickSecondaryButton(infobar));
         }
         updateWaiter.waitForNumUpdates(nUpdates);
@@ -299,8 +320,11 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
      * title in response.
      */
     private void replyToDialogAndWaitForUpdates(
-            PermissionUpdateWaiter updateWaiter, int nUpdates, boolean allow) throws Exception {
-        replyToDialog(allow, getActivity());
+            PermissionUpdateWaiter updateWaiter,
+            int nUpdates,
+            final @PermissionTestRule.PromptDecision int decison)
+            throws Exception {
+        replyToDialog(decison, getActivity());
         updateWaiter.waitForNumUpdates(nUpdates);
     }
 
@@ -310,12 +334,22 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
     }
 
     /** Utility functions to support permissions testing in other contexts. */
-    public static void replyToDialog(boolean allow, ChromeActivity activity) {
+    public static void replyToDialog(
+            final @PermissionTestRule.PromptDecision int decision, ChromeActivity activity) {
         // Wait for button view to appear in view hierarchy. If the browser controls are not visible
         // then ModalDialogPresenter will first trigger animation for showing browser controls and
         // only then add modal dialog view into the container.
-        @IdRes int buttonId = allow ? R.id.positive_button : R.id.negative_button;
-        ViewUtils.onViewWaiting(allOf(withId(buttonId), isDisplayed())).perform(click());
+        @IdRes
+        int buttonId =
+                switch (decision) {
+                    case PromptDecision.ALLOW -> ModalDialogProperties.ButtonType.POSITIVE;
+                    case PromptDecision.ALLOW_ONCE -> ModalDialogProperties.ButtonType
+                            .POSITIVE_EPHEMERAL;
+                    case PromptDecision.DENY -> ModalDialogProperties.ButtonType.NEGATIVE;
+                    default -> throw new IllegalStateException("Unexpected value: " + decision);
+                };
+
+        ViewUtils.onViewWaiting(allOf(withTagValue(is(buttonId)), isDisplayed())).perform(click());
     }
 
     /** Wait for the permission dialog to be in the expected shown state. */

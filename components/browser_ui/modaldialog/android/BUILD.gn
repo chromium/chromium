@@ -21,6 +21,7 @@ android_library("java") {
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_activity_activity_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_interpolator_interpolator_java",
     "//third_party/jni_zero:jni_zero_java",
@@ -34,9 +35,9 @@ android_resources("java_resources") {
     "java/res/layout/modal_dialog_container.xml",
     "java/res/layout/modal_dialog_title.xml",
     "java/res/layout/modal_dialog_view.xml",
-    "java/res/layout/permission_dialog.xml",
     "java/res/values-large/themes.xml",
     "java/res/values/dimens.xml",
+    "java/res/values/ids.xml",
     "java/res/values/styles.xml",
     "java/res/values/themes.xml",
   ]
