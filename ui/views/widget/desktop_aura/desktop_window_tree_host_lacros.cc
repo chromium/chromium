@@ -329,7 +329,7 @@ void DesktopWindowTreeHostLacros::UpdateWindowHints() {
   // If the window is rounded, we hint the platform to match the drop shadow's
   // radii to the window's radii. Otherwise, we allow the platform to
   // determine the drop shadow's radii.
-  if (should_have_rounded_window) {
+  if (should_have_rounded_window && wayland_extension) {
     wayland_extension->SetShadowCornersRadii(window_radii);
   }
 }
