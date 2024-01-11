@@ -147,14 +147,17 @@ void PushableMediaStreamAudioSource::DeliverData(
       params.format() != media::AudioParameters::AUDIO_PCM_LOW_LATENCY ||
       last_channels_ != channel_count || last_sample_rate_ != sample_rate ||
       last_frames_ != frame_count) {
-    SetFormat(
+    params =
         media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
                                media::ChannelLayoutConfig::Guess(channel_count),
-                               sample_rate, frame_count));
+                               sample_rate, frame_count);
+    SetFormat(params);
     last_channels_ = channel_count;
     last_sample_rate_ = sample_rate;
     last_frames_ = frame_count;
   }
+
+  CHECK(params.IsValid());
 
   // If |data|'s sample format has the same memory layout as a media::AudioBus,
   // |audio_bus| will simply wrap it. Otherwise, |data| will be copied and
