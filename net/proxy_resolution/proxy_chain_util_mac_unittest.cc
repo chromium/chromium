@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/proxy_resolution/proxy_server_util_mac.h"
+#include "net/proxy_resolution/proxy_chain_util_mac.h"
 
+#include <CFNetwork/CFProxySupport.h>
 #include <CoreFoundation/CoreFoundation.h>
 #include <SystemConfiguration/SystemConfiguration.h>
 
@@ -13,9 +14,9 @@
 
 namespace net {
 
-// Test convert ProxyDictionary To ProxyServer with invalid inputs.
+// Test convert ProxyDictionary To ProxyChain with invalid inputs.
 // https://crbug.com/1478580
-TEST(ProxyServerUtilMacTest, InvalidProxyDictionaryToProxyServer) {
+TEST(ProxyChainUtilMacTest, InvalidProxyDictionaryToProxyChain) {
   CFStringRef host_key = CFSTR("HttpHost");
   CFStringRef port_key = CFSTR("HttpPort");
   CFStringRef value = CFSTR("127.1110.0.1");
@@ -25,9 +26,9 @@ TEST(ProxyServerUtilMacTest, InvalidProxyDictionaryToProxyServer) {
       CFDictionaryCreate(kCFAllocatorDefault, keys, values, 1,
                          &kCFTypeDictionaryKeyCallBacks,
                          &kCFTypeDictionaryValueCallBacks));
-  ProxyServer proxy_server = ProxyDictionaryToProxyServer(
-      ProxyServer::SCHEME_HTTP, invalid_ip_dict.get(), host_key, port_key);
-  EXPECT_FALSE(proxy_server.is_valid());
+  ProxyChain proxy_chain = ProxyDictionaryToProxyChain(
+      kCFProxyTypeHTTP, invalid_ip_dict.get(), host_key, port_key);
+  EXPECT_FALSE(proxy_chain.IsValid());
 }
 
 }  // namespace net

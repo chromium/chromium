@@ -217,15 +217,15 @@ class NET_EXPORT_PRIVATE ProxyConfigServiceLinux : public ProxyConfigService {
 
     ~Delegate();
 
-    // Obtains an environment variable's value. Parses a proxy server
+    // Obtains an environment variable's value. Parses a proxy chain
     // specification from it and puts it in result. Returns true if the
     // requested variable is defined and the value valid.
     bool GetProxyFromEnvVarForScheme(base::StringPiece variable,
                                      ProxyServer::Scheme scheme,
-                                     ProxyServer* result_server);
+                                     ProxyChain* result_chain);
     // As above but with scheme set to HTTP, for convenience.
     bool GetProxyFromEnvVar(base::StringPiece variable,
-                            ProxyServer* result_server);
+                            ProxyChain* result_chain);
     // Returns a proxy config based on the environment variables, or empty value
     // on failure.
     absl::optional<ProxyConfigWithAnnotation> GetConfigFromEnv();

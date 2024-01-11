@@ -355,8 +355,7 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyDoesNotMergeDirect) {
   net::ProxyList expected_proxy_list;
   expected_proxy_list.AddProxyServer(
       net::PacResultElementToProxyServer("PROXY bar"));
-  expected_proxy_list.AddProxyServer(
-      net::PacResultElementToProxyServer("DIRECT"));
+  expected_proxy_list.AddProxyChain(net::ProxyChain::Direct());
   EXPECT_TRUE(result.proxy_list().Equals(expected_proxy_list));
   EXPECT_FALSE(result.is_for_ip_protection());
 }
@@ -508,7 +507,7 @@ TEST_F(NetworkServiceProxyDelegateTest, MergeProxyRules) {
       net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
                                               "proxy2b.com", 80),
   });
-  net::ProxyChain chain2(net::ProxyServer::Direct());
+  net::ProxyChain chain2(net::ProxyChain::Direct());
   net::ProxyChain chain3({
       net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
                                               "proxy1.com", 80),
@@ -526,7 +525,7 @@ TEST_F(NetworkServiceProxyDelegateTest, MergeProxyRules) {
       net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
                                               "custom-c.com", 80),
   });
-  net::ProxyChain custom2(net::ProxyServer::Direct());
+  net::ProxyChain custom2(net::ProxyChain::Direct());
   net::ProxyList custom_proxy_list;
   custom_proxy_list.AddProxyChain(custom1);
   custom_proxy_list.AddProxyChain(custom2);

@@ -35,8 +35,6 @@ ProxyServer::Scheme GetSchemeFromPacTypeInternal(std::string_view type) {
     return ProxyServer::SCHEME_SOCKS4;
   if (base::EqualsCaseInsensitiveASCII(type, "socks5"))
     return ProxyServer::SCHEME_SOCKS5;
-  if (base::EqualsCaseInsensitiveASCII(type, "direct"))
-    return ProxyServer::SCHEME_DIRECT;
   if (base::EqualsCaseInsensitiveASCII(type, "https"))
     return ProxyServer::SCHEME_HTTPS;
   if (base::EqualsCaseInsensitiveASCII(type, "quic"))
@@ -53,20 +51,13 @@ std::string ConstructHostPortString(std::string_view hostname, uint16_t port) {
   return base::StrCat({hostname, ":", base::NumberToString(port)});
 }
 
-}  // namespace
-
-ProxyChain PacResultElementToProxyChain(std::string_view pac_result_element) {
-  // Proxy chains are not supported in PAC strings, so this is just parsed
-  // as a single server.
-  return ProxyChain(PacResultElementToProxyServer(pac_result_element));
-}
-
-ProxyServer PacResultElementToProxyServer(std::string_view pac_result_element) {
+std::tuple<std::string_view, std::string_view>
+PacResultElementToSchemeAndHostPort(std::string_view pac_result_element) {
   // Trim the leading/trailing whitespace.
   pac_result_element = HttpUtil::TrimLWS(pac_result_element);
 
   // Input should match:
-  // "DIRECT" | ( <type> 1*(LWS) <host-and-port> )
+  // ( <type> 1*(LWS) <host-and-port> )
 
   // Start by finding the first space (if any).
   size_t space = 0;
@@ -75,21 +66,38 @@ ProxyServer PacResultElementToProxyServer(std::string_view pac_result_element) {
       break;
     }
   }
-
   // Everything to the left of the space is the scheme.
-  ProxyServer::Scheme scheme =
-      GetSchemeFromPacTypeInternal(pac_result_element.substr(0, space));
+  std::string_view scheme = pac_result_element.substr(0, space);
 
   // And everything to the right of the space is the
   // <host>[":" <port>].
-  return ProxySchemeHostAndPortToProxyServer(scheme,
-                                             pac_result_element.substr(space));
+  std::string_view host_and_port = pac_result_element.substr(space);
+  return std::make_tuple(std::move(scheme), std::move(host_and_port));
+}
+
+}  // namespace
+
+ProxyChain PacResultElementToProxyChain(std::string_view pac_result_element) {
+  // Proxy chains are not supported in PAC strings, so this is just parsed
+  // as a single server.
+  auto [type, host_and_port] =
+      PacResultElementToSchemeAndHostPort(pac_result_element);
+  if (base::EqualsCaseInsensitiveASCII(type, "direct") &&
+      host_and_port.empty()) {
+    return ProxyChain::Direct();
+  }
+  return ProxyChain(PacResultElementToProxyServer(pac_result_element));
+}
+
+ProxyServer PacResultElementToProxyServer(std::string_view pac_result_element) {
+  auto [type, host_and_port] =
+      PacResultElementToSchemeAndHostPort(pac_result_element);
+  ProxyServer::Scheme scheme = GetSchemeFromPacTypeInternal(type);
+  return ProxySchemeHostAndPortToProxyServer(scheme, host_and_port);
 }
 
 std::string ProxyServerToPacResultElement(const ProxyServer& proxy_server) {
   switch (proxy_server.scheme()) {
-    case ProxyServer::SCHEME_DIRECT:
-      return "DIRECT";
     case ProxyServer::SCHEME_HTTP:
       return std::string("PROXY ") +
              ConstructHostPortString(proxy_server.GetHost(),
@@ -120,6 +128,16 @@ std::string ProxyServerToPacResultElement(const ProxyServer& proxy_server) {
 
 ProxyChain ProxyUriToProxyChain(std::string_view uri,
                                 ProxyServer::Scheme default_scheme) {
+  // If uri is direct, return direct proxy chain.
+  uri = HttpUtil::TrimLWS(uri);
+  size_t colon = uri.find("://");
+  if (colon != std::string_view::npos &&
+      base::EqualsCaseInsensitiveASCII(uri.substr(0, colon), "direct")) {
+    if (!uri.substr(colon + 3).empty()) {
+      return ProxyChain();  // Invalid -- Direct chain cannot have a host/port.
+    }
+    return ProxyChain::Direct();
+  }
   return ProxyChain(ProxyUriToProxyServer(uri, default_scheme));
 }
 
@@ -145,8 +163,6 @@ ProxyServer ProxyUriToProxyServer(std::string_view uri,
 
 std::string ProxyServerToProxyUri(const ProxyServer& proxy_server) {
   switch (proxy_server.scheme()) {
-    case ProxyServer::SCHEME_DIRECT:
-      return "direct://";
     case ProxyServer::SCHEME_HTTP:
       // Leave off "http://" since it is our default scheme.
       return ConstructHostPortString(proxy_server.GetHost(),
@@ -182,13 +198,6 @@ ProxyServer ProxySchemeHostAndPortToProxyServer(
 
   if (scheme == ProxyServer::SCHEME_INVALID) {
     return ProxyServer();
-  }
-
-  if (scheme == ProxyServer::SCHEME_DIRECT) {
-    if (!host_and_port.empty()) {
-      return ProxyServer();  // Invalid -- DIRECT cannot have a host/port.
-    }
-    return ProxyServer::Direct();
   }
 
   url::Component username_component;
@@ -230,8 +239,6 @@ ProxyServer::Scheme GetSchemeFromUriScheme(std::string_view scheme) {
     return ProxyServer::SCHEME_SOCKS5;
   if (base::EqualsCaseInsensitiveASCII(scheme, "socks5"))
     return ProxyServer::SCHEME_SOCKS5;
-  if (base::EqualsCaseInsensitiveASCII(scheme, "direct"))
-    return ProxyServer::SCHEME_DIRECT;
   if (base::EqualsCaseInsensitiveASCII(scheme, "https"))
     return ProxyServer::SCHEME_HTTPS;
   if (base::EqualsCaseInsensitiveASCII(scheme, "quic"))

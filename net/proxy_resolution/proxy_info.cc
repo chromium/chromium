@@ -24,7 +24,7 @@ void ProxyInfo::Use(const ProxyInfo& other) {
 
 void ProxyInfo::UseDirect() {
   Reset();
-  proxy_list_.SetSingleProxyServer(ProxyServer::Direct());
+  proxy_list_.SetSingleProxyChain(ProxyChain::Direct());
 }
 
 void ProxyInfo::UseDirectWithBypassedProxy() {

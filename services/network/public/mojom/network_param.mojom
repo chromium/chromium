@@ -47,7 +47,6 @@ struct HostPortPair {
 // Mirror of net::ProxyServer::Scheme.
 enum ProxyScheme {
   kInvalid,
-  kDirect,
   kHttp,
   kSocks4,
   kSocks5,

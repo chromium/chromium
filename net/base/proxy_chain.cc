@@ -36,12 +36,8 @@ ProxyChain& ProxyChain::operator=(ProxyChain&& other) noexcept {
 }
 ProxyChain::~ProxyChain() = default;
 
-// TODO(crbug.com/1491092): Remove is_direct() check when
-// ProxyServer::SCHEME_DIRECT is deprecated.
 ProxyChain::ProxyChain(ProxyServer proxy_server)
-    : ProxyChain(!proxy_server.is_direct()
-                     ? std::vector<ProxyServer>{std::move(proxy_server)}
-                     : std::vector<ProxyServer>()) {}
+    : ProxyChain(std::vector<ProxyServer>{std::move(proxy_server)}) {}
 
 ProxyChain::ProxyChain(ProxyServer::Scheme scheme,
                        const HostPortPair& host_port_pair)
@@ -90,23 +86,17 @@ std::string ProxyChain::ToDebugString() const {
   return debug_string;
 }
 
-// TODO(crbug.com/1491092): Remove is_direct() checks when
-// ProxyServer::SCHEME_DIRECT is deprecated.
 bool ProxyChain::IsValidInternal() const {
   if (!proxy_server_list_.has_value()) {
     return false;
   }
   if (is_single_proxy()) {
-    return proxy_server_list_.value().at(0).is_valid() &&
-           !proxy_server_list_.value().at(0).is_direct();
+    return proxy_server_list_.value().at(0).is_valid();
   }
-  for (const auto& proxy_server : proxy_server_list_.value()) {
-    if (!proxy_server.is_valid() || !proxy_server.is_https() ||
-        proxy_server.is_direct()) {
-      return false;
-    }
-  }
-  return true;
+  return base::ranges::all_of(
+      proxy_server_list_.value(), [](const auto& proxy_server) {
+        return proxy_server.is_valid() && proxy_server.is_https();
+      });
 }
 
 std::ostream& operator<<(std::ostream& os, const ProxyChain& proxy_chain) {

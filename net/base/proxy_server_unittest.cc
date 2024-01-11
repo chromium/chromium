@@ -223,16 +223,6 @@ TEST(ProxyServerTest, Properties) {
     EXPECT_FALSE(proxy.is_http_like());
     EXPECT_FALSE(proxy.is_secure_http_like());
   }
-
-  // DIRECT
-  {
-    auto proxy = PacResultElementToProxyServer("DIRECT");
-    ASSERT_TRUE(proxy.is_valid());
-    EXPECT_FALSE(proxy.is_http());
-    EXPECT_FALSE(proxy.is_https());
-    EXPECT_FALSE(proxy.is_http_like());
-    EXPECT_FALSE(proxy.is_secure_http_like());
-  }
 }
 
 }  // namespace

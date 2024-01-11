@@ -140,10 +140,10 @@ void ProxyList::SetFromPacString(const std::string& pac_string) {
   Clear();
   base::StringTokenizer entry_tok(pac_string, ";");
   while (entry_tok.GetNext()) {
-    ProxyServer proxy_server =
-        PacResultElementToProxyServer(entry_tok.token_piece());
-    if (proxy_server.is_valid()) {
-      proxy_chains_.emplace_back(proxy_server);
+    ProxyChain proxy_chain =
+        PacResultElementToProxyChain(entry_tok.token_piece());
+    if (proxy_chain.IsValid()) {
+      proxy_chains_.emplace_back(proxy_chain);
     }
   }
 
@@ -161,10 +161,10 @@ std::string ProxyList::ToPacString() const {
       proxy_list += ";";
     }
     CHECK(!proxy_chain.is_multi_proxy());
-    proxy_list += ProxyServerToPacResultElement(
-        proxy_chain.is_direct()
-            ? ProxyServer::Direct()
-            : proxy_chain.GetProxyServer(/*chain_index=*/0));
+    proxy_list += proxy_chain.is_direct()
+                      ? "DIRECT"
+                      : ProxyServerToPacResultElement(
+                            proxy_chain.GetProxyServer(/*chain_index=*/0));
   }
   return proxy_list.empty() ? std::string() : proxy_list;
 }
@@ -179,10 +179,10 @@ std::string ProxyList::ToDebugString() const {
     if (proxy_chain.is_multi_proxy()) {
       proxy_list += proxy_chain.ToDebugString();
     } else {
-      proxy_list += ProxyServerToPacResultElement(
-          proxy_chain.is_direct()
-              ? ProxyServer::Direct()
-              : proxy_chain.GetProxyServer(/*chain_index=*/0));
+      proxy_list += proxy_chain.is_direct()
+                        ? "DIRECT"
+                        : ProxyServerToPacResultElement(
+                              proxy_chain.GetProxyServer(/*chain_index=*/0));
     }
   }
   return proxy_list;
@@ -192,7 +192,7 @@ base::Value ProxyList::ToValue() const {
   base::Value::List list;
   for (const auto& proxy_chain : proxy_chains_) {
     if (proxy_chain.is_direct()) {
-      list.Append(ProxyServerToProxyUri(ProxyServer::Direct()));
+      list.Append("direct://");
     } else {
       list.Append(proxy_chain.ToDebugString());
     }

@@ -1951,10 +1951,11 @@ chromium-metrics-reviews@google.com.
   <owner>djmitche@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
-    Scheme of the proxy server used by an HTTP job that failed, or SCHEME_DIRECT
-    if no proxy was used. A value is emitted for each failed HTTP stream.
-    Warning: this histogram was expired from 2022-11-13 to 2023-12-01; data may
-    be missing.
+    Scheme of the proxy server used by an HTTP job that failed, or
+    SCHEME_INVALID if no proxy was used. A value is emitted for each failed HTTP
+    stream. Note: Although SCHEME_DIRECT is deprecated, value 1 corresponds to a
+    direct proxy. Warning: this histogram was expired from 2022-11-13 to
+    2023-12-01; data may be missing.
   </summary>
 </histogram>
 
@@ -1965,8 +1966,9 @@ chromium-metrics-reviews@google.com.
   <owner>src/net/OWNERS</owner>
   <summary>
     Scheme of the proxy server used by an HTTP job that succeeded, or
-    SCHEME_DIRECT if no proxy was used. A value is emitted for each successful
-    HTTP stream. Warning: this histogram was expired from 2023-03-19 to
+    SCHEME_INVALID if no proxy was used. A value is emitted for each successful
+    HTTP stream. Note: Although SCHEME_DIRECT is deprecated, value 1 corresponds
+    to a direct proxy. Warning: this histogram was expired from 2023-03-19 to
     2023-12-01; data may be missing.
   </summary>
 </histogram>

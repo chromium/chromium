@@ -21,8 +21,6 @@ crosapi::mojom::ProxyLocation::Scheme NetSchemeToCrosapiScheme(
   switch (in) {
     case net::ProxyServer::Scheme::SCHEME_INVALID:
       return crosapi::mojom::ProxyLocation::Scheme::kInvalid;
-    case net::ProxyServer::Scheme::SCHEME_DIRECT:
-      return crosapi::mojom::ProxyLocation::Scheme::kDirect;
     case net::ProxyServer::Scheme::SCHEME_HTTP:
       return crosapi::mojom::ProxyLocation::Scheme::kHttp;
     case net::ProxyServer::Scheme::SCHEME_SOCKS4:

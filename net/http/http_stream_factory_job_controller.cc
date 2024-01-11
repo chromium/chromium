@@ -78,7 +78,7 @@ void ConvertWsToHttp(url::SchemeHostPort& input) {
 
 void HistogramProxyUsed(const ProxyInfo& proxy_info, bool success) {
   const ProxyServer::Scheme max_scheme = ProxyServer::Scheme::SCHEME_QUIC;
-  ProxyServer::Scheme proxy_scheme = ProxyServer::Scheme::SCHEME_DIRECT;
+  ProxyServer::Scheme proxy_scheme = ProxyServer::Scheme::SCHEME_INVALID;
   if (!proxy_info.is_empty() && !proxy_info.is_direct()) {
     if (proxy_info.proxy_chain().is_multi_proxy()) {
       // TODO(https://crbug.com/1491092): Update this histogram to have a new
@@ -87,8 +87,11 @@ void HistogramProxyUsed(const ProxyInfo& proxy_info, bool success) {
       // proxies.
       return;
     }
-    proxy_scheme =
-        proxy_info.proxy_chain().GetProxyServer(/*chain_index=*/0).scheme();
+    proxy_scheme = proxy_info.proxy_chain().is_direct()
+                       ? static_cast<ProxyServer::Scheme>(1)
+                       : proxy_info.proxy_chain()
+                             .GetProxyServer(/*chain_index=*/0)
+                             .scheme();
   }
   if (success) {
     UMA_HISTOGRAM_ENUMERATION("Net.HttpJob.ProxyTypeSuccess", proxy_scheme,
@@ -761,8 +764,7 @@ int HttpStreamFactory::JobController::DoResolveProxyComplete(int rv) {
   if (rv != OK)
     return rv;
   // Remove unsupported proxies from the list.
-  int supported_proxies = ProxyServer::SCHEME_DIRECT |
-                          ProxyServer::SCHEME_HTTP | ProxyServer::SCHEME_HTTPS |
+  int supported_proxies = ProxyServer::SCHEME_HTTP | ProxyServer::SCHEME_HTTPS |
                           ProxyServer::SCHEME_SOCKS4 |
                           ProxyServer::SCHEME_SOCKS5;
   // WebSockets is not supported over QUIC.

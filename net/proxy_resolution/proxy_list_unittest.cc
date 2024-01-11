@@ -79,16 +79,19 @@ TEST(ProxyListTest, RemoveProxiesWithoutScheme) {
     int filter;
     const char* filtered_debug_output;
   } tests[] = {
-    {  "PROXY foopy:10 ; SOCKS5 foopy2 ; SOCKS foopy11 ; PROXY foopy3 ; DIRECT",
-       // Remove anything that isn't HTTP or DIRECT.
-       ProxyServer::SCHEME_DIRECT | ProxyServer::SCHEME_HTTP,
-       "PROXY foopy:10;PROXY foopy3:80;DIRECT",
-    },
-    {  "PROXY foopy:10 ; SOCKS5 foopy2",
-       // Remove anything that isn't HTTP or SOCKS5.
-       ProxyServer::SCHEME_DIRECT | ProxyServer::SCHEME_SOCKS4,
-       "",
-    },
+      {
+          "PROXY foopy:10 ; SOCKS5 foopy2 ; SOCKS foopy11 ; PROXY foopy3 ; "
+          "DIRECT",
+          // Remove anything that isn't HTTP.
+          ProxyServer::SCHEME_HTTP,
+          "PROXY foopy:10;PROXY foopy3:80;DIRECT",
+      },
+      {
+          "PROXY foopy:10 ; SOCKS5 foopy2",
+          // Remove anything that isn't HTTP or SOCKS5.
+          ProxyServer::SCHEME_SOCKS4,
+          "",
+      },
   };
 
   for (const auto& test : tests) {
@@ -121,9 +124,8 @@ TEST(ProxyListTest, RemoveProxiesWithoutSchemeWithProxyChains) {
   list.AddProxyChain(kProxyChainGraultSocks);
   list.AddProxyChain(ProxyChain::Direct());
 
-  // Remove anything that isn't entirely HTTPS or DIRECT.
-  list.RemoveProxiesWithoutScheme(ProxyServer::SCHEME_DIRECT |
-                                  ProxyServer::SCHEME_HTTPS);
+  // Remove anything that isn't entirely HTTPS.
+  list.RemoveProxiesWithoutScheme(ProxyServer::SCHEME_HTTPS);
 
   std::vector<net::ProxyChain> expected = {
       kProxyChainFooHttps,

@@ -256,9 +256,8 @@ int ProxyResolvingClientSocket::DoProxyResolveComplete(int result) {
     // TODO(crbug.com/876885): Allow QUIC proxy once net::QuicProxyClientSocket
     // supports ReadIfReady() and CancelReadIfReady().
     proxy_info_.RemoveProxiesWithoutScheme(
-        net::ProxyServer::SCHEME_DIRECT | net::ProxyServer::SCHEME_HTTP |
-        net::ProxyServer::SCHEME_HTTPS | net::ProxyServer::SCHEME_SOCKS4 |
-        net::ProxyServer::SCHEME_SOCKS5);
+        net::ProxyServer::SCHEME_HTTP | net::ProxyServer::SCHEME_HTTPS |
+        net::ProxyServer::SCHEME_SOCKS4 | net::ProxyServer::SCHEME_SOCKS5);
 
     if (proxy_info_.is_empty()) {
       // No proxies/direct to choose from. This happens when we don't support

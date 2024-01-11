@@ -66,8 +66,6 @@ EnumTraits<network::mojom::ProxyScheme, net::ProxyServer::Scheme>::ToMojom(
   switch (scheme) {
     case ProxyServer::SCHEME_INVALID:
       return network::mojom::ProxyScheme::kInvalid;
-    case ProxyServer::SCHEME_DIRECT:
-      return network::mojom::ProxyScheme::kDirect;
     case ProxyServer::SCHEME_HTTP:
       return network::mojom::ProxyScheme::kHttp;
     case ProxyServer::SCHEME_SOCKS4:
@@ -89,9 +87,6 @@ bool EnumTraits<network::mojom::ProxyScheme, net::ProxyServer::Scheme>::
   switch (scheme) {
     case network::mojom::ProxyScheme::kInvalid:
       *out = ProxyServer::SCHEME_INVALID;
-      return true;
-    case network::mojom::ProxyScheme::kDirect:
-      *out = ProxyServer::SCHEME_DIRECT;
       return true;
     case network::mojom::ProxyScheme::kHttp:
       *out = ProxyServer::SCHEME_HTTP;
@@ -115,8 +110,7 @@ bool EnumTraits<network::mojom::ProxyScheme, net::ProxyServer::Scheme>::
 absl::optional<net::HostPortPair>
 StructTraits<network::mojom::ProxyServerDataView,
              net::ProxyServer>::host_and_port(const net::ProxyServer& s) {
-  if (s.scheme() == net::ProxyServer::SCHEME_DIRECT ||
-      s.scheme() == net::ProxyServer::SCHEME_INVALID) {
+  if (s.scheme() == net::ProxyServer::SCHEME_INVALID) {
     return absl::nullopt;
   }
   return s.host_port_pair();
@@ -135,8 +129,7 @@ bool StructTraits<network::mojom::ProxyServerDataView, net::ProxyServer>::Read(
     return false;
   }
 
-  if (scheme == net::ProxyServer::SCHEME_INVALID ||
-      scheme == net::ProxyServer::SCHEME_DIRECT) {
+  if (scheme == net::ProxyServer::SCHEME_INVALID) {
     if (host_and_port) {
       return false;
     }

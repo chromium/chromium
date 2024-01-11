@@ -5631,14 +5631,14 @@ TEST_F(NetworkContextTest, EnsureProperProxyChainIsUsed) {
   struct ProxyConfigSet {
     net::ProxyConfig proxy_config;
     GURL url;
-    net::ProxyServer::Scheme expected_proxy_config_scheme;
+    net::ProxyChain expected_proxy_chain;
   } proxy_config_set[2];
 
   proxy_config_set[0].proxy_config.proxy_rules().ParseFromString(
       "http=" + test_server.host_port_pair().ToString());
   proxy_config_set[0].url = GURL("http://does.not.matter/echo");
-  proxy_config_set[0].expected_proxy_config_scheme =
-      net::ProxyServer::SCHEME_HTTP;
+  proxy_config_set[0].expected_proxy_chain = net::ProxyChain(
+      net::ProxyServer::SCHEME_HTTP, test_server.host_port_pair());
 
   proxy_config_set[1].proxy_config.proxy_rules().ParseFromString(
       "http=direct://");
@@ -5646,8 +5646,7 @@ TEST_F(NetworkContextTest, EnsureProperProxyChainIsUsed) {
       .proxy_config.proxy_rules()
       .bypass_rules.AddRulesToSubtractImplicit();
   proxy_config_set[1].url = test_server.GetURL("/echo");
-  proxy_config_set[1].expected_proxy_config_scheme =
-      net::ProxyServer::SCHEME_DIRECT;
+  proxy_config_set[1].expected_proxy_chain = net::ProxyChain::Direct();
 
   // TODO(https://crbug.com/1491092): Add a test case for a proxy chain with
   // more than one hop.
@@ -5685,18 +5684,10 @@ TEST_F(NetworkContextTest, EnsureProperProxyChainIsUsed) {
     EXPECT_TRUE(client.has_received_completion());
 
     ASSERT_TRUE(client.response_head()->proxy_chain.IsValid());
-    if (proxy_data.expected_proxy_config_scheme ==
-        net::ProxyServer::SCHEME_DIRECT) {
-      EXPECT_TRUE(client.response_head()->proxy_chain.is_direct());
-    } else {
-      const auto& proxy_chain = client.response_head()->proxy_chain;
-      for (size_t proxy_index = 0; proxy_index < proxy_chain.length();
-           ++proxy_index) {
-        // For simplicity the test assumes each proxy in the list has the same
-        // scheme, although this isn't necessarily the case.
-        EXPECT_EQ(proxy_chain.GetProxyServer(proxy_index).scheme(),
-                  proxy_data.expected_proxy_config_scheme);
-      }
+    const auto& proxy_chain = client.response_head()->proxy_chain;
+    for (size_t proxy_index = 0; proxy_index < proxy_chain.length();
+         ++proxy_index) {
+      EXPECT_EQ(proxy_chain, proxy_data.expected_proxy_chain);
     }
   }
 }

@@ -43,11 +43,7 @@ TEST(ProxyChainTest, ConstructorsAndAssignmentOperators) {
 
 TEST(ProxyChainTest, DirectProxy) {
   ProxyChain proxy_chain1 = ProxyChain::Direct();
-  ProxyChain proxy_chain2 = ProxyChain(ProxyServer::Direct());
-  ProxyChain proxy_chain3 =
-      ProxyChain(std::vector<ProxyServer>{ProxyServer::Direct()});
-  ProxyChain proxy_chain4 = ProxyChain(
-      std::vector<ProxyServer>{ProxyServer::Direct(), ProxyServer::Direct()});
+  ProxyChain proxy_chain2 = ProxyChain(std::vector<ProxyServer>());
   std::vector<ProxyServer> proxy_servers = {};
 
   // Equal and valid proxy chains.
@@ -60,19 +56,6 @@ TEST(ProxyChainTest, DirectProxy) {
   EXPECT_FALSE(proxy_chain1.is_multi_proxy());
   ASSERT_EQ(proxy_chain1.length(), 0u);
   ASSERT_EQ(proxy_chain1.proxy_servers(), proxy_servers);
-
-  // Not equal proxy chains.
-  ASSERT_NE(proxy_chain2, proxy_chain3);
-
-  EXPECT_FALSE(proxy_chain3.is_direct());
-  EXPECT_FALSE(proxy_chain3.is_single_proxy());
-  EXPECT_FALSE(proxy_chain3.is_multi_proxy());
-  ASSERT_EQ(proxy_chain3.length(), 0u);
-
-  // Equal and not valid proxy chains.
-  ASSERT_EQ(proxy_chain3, proxy_chain4);
-  EXPECT_FALSE(proxy_chain3.IsValid());
-  EXPECT_FALSE(proxy_chain4.IsValid());
 }
 
 TEST(ProxyChainTest, Ostream) {
@@ -322,15 +305,14 @@ TEST(ProxyChainTest, IsGetToProxyAllowed) {
 }
 
 TEST(ProxyChainTest, IsValid) {
-  ProxyServer direct_proxy =
-      ProxyUriToProxyServer("", ProxyServer::SCHEME_DIRECT);
+  ProxyChain direct_chain = ProxyChain::Direct();
   ProxyServer http_proxy1 =
       ProxyUriToProxyServer("foo:444", ProxyServer::SCHEME_HTTPS);
   ProxyServer http_proxy2 =
       ProxyUriToProxyServer("foo:555", ProxyServer::SCHEME_HTTPS);
 
   // Single hop proxy of type Direct is valid.
-  EXPECT_TRUE(ProxyChain(direct_proxy).IsValid());
+  EXPECT_TRUE(direct_chain.IsValid());
 
   // Multi hop proxy with same type is valid.
   EXPECT_TRUE(ProxyChain({http_proxy1, http_proxy2}).IsValid());
@@ -339,7 +321,7 @@ TEST(ProxyChainTest, IsValid) {
 TEST(ProxyChainTest, Unequal) {
   // Ordered proxy chains.
   std::vector<ProxyChain> proxy_chain_list = {
-      ProxyUriToProxyChain("", ProxyServer::SCHEME_DIRECT),
+      ProxyChain::Direct(),
       ProxyUriToProxyChain("foo:333", ProxyServer::SCHEME_HTTP),
       ProxyUriToProxyChain("foo:444", ProxyServer::SCHEME_HTTP),
       ProxyChain({ProxyUriToProxyServer("foo:555", ProxyServer::SCHEME_HTTPS),

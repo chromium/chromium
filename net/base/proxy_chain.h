@@ -68,7 +68,7 @@ class NET_EXPORT ProxyChain {
     return ProxyChain(ProxyServer::FromSchemeHostAndPort(scheme, host, port));
   }
   // Create a "direct" proxy chain, which includes no proxy servers.
-  static ProxyChain Direct() { return ProxyChain(ProxyServer::Direct()); }
+  static ProxyChain Direct() { return ProxyChain(std::vector<ProxyServer>()); }
 
   // Get ProxyServer at index in chain. This is not valid for direct or invalid
   // proxy chains.
