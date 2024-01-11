@@ -79,11 +79,7 @@ class MockPageContextCanvas : public SkCanvas {
   }
 
   MOCK_METHOD2(onDrawRect, void(const SkRect&, const SkPaint&));
-  MOCK_METHOD1(DrawPicture, void(const SkPicture*));
-  MOCK_METHOD1(OnDrawPicture, void(const SkPicture*));
-  MOCK_METHOD3(OnDrawPicture,
-               void(const SkPicture*, const SkMatrix*, const SkPaint*));
-  MOCK_METHOD3(DrawPicture,
+  MOCK_METHOD3(onDrawPicture,
                void(const SkPicture*, const SkMatrix*, const SkPaint*));
   MOCK_METHOD5(onDrawImage2,
                void(const SkImage*,
