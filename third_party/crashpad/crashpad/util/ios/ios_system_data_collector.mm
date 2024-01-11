@@ -26,6 +26,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "build/build_config.h"
+#include "util/misc/clock.h"
 
 namespace {
 
@@ -86,7 +87,8 @@ IOSSystemDataCollector::IOSSystemDataCollector()
       standard_offset_seconds_(0),
       daylight_offset_seconds_(0),
       standard_name_(),
-      daylight_name_() {
+      daylight_name_(),
+      initialization_time_ns_(ClockMonotonicNanoseconds()) {
   NSOperatingSystemVersion version =
       [[NSProcessInfo processInfo] operatingSystemVersion];
   major_version_ = base::saturated_cast<int>(version.majorVersion);

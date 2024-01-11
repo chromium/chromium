@@ -33,12 +33,6 @@ if (crashpad_is_apple) {
       "mach/mig_gen.py",
     ]
 
-    if (crashpad_is_in_fuchsia) {
-      # TODO(https://fxbug.dev/68780): Remove suppression when fixed.
-      hermetic_deps = false
-      all_outputs_fresh = false
-    }
-
     if (crashpad_is_mac) {
       sources = [
         "$sysroot/usr/include/mach/exc.defs",

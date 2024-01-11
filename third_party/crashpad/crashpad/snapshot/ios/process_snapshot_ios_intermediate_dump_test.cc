@@ -160,6 +160,10 @@ class ProcessSnapshotIOSIntermediateDumpTest : public testing::Test {
       EXPECT_TRUE(writer->AddProperty(Key::kWired, &count));
       EXPECT_TRUE(writer->AddProperty(Key::kFree, &count));
     }
+
+    uint64_t crashpad_report_time_nanos = 1234567890;
+    EXPECT_TRUE(
+        writer->AddProperty(Key::kCrashpadUptime, &crashpad_report_time_nanos));
   }
 
   void WriteAnnotations(IOSIntermediateDumpWriter* writer,
@@ -491,6 +495,9 @@ class ProcessSnapshotIOSIntermediateDumpTest : public testing::Test {
     ExpectModules(
         snapshot.Modules(), expect_module_path, expect_long_annotations);
     ExpectMachException(*snapshot.Exception());
+
+    auto map = snapshot.AnnotationsSimpleMap();
+    EXPECT_EQ(map["crashpad_uptime_ns"], "1234567890");
   }
 
   void CloseWriter() { EXPECT_TRUE(writer_->Close()); }
