@@ -128,7 +128,8 @@ export class SearchEngineChoiceAppElement extends
         searchEngine.iconPath =
             getFaviconForPageURL(searchEngine?.url!, false, '', 24);
       } else {
-        searchEngine.iconPath = 'url(' + searchEngine.iconPath + ')';
+        searchEngine.iconPath = 'image-set(url(' + searchEngine.iconPath +
+            ') 1x, url(' + searchEngine.iconPath + '@2x) 2x)';
       }
     });
 

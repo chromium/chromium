@@ -8,9 +8,12 @@
 #include <utility>
 
 #include "base/check_deref.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/user_metrics.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -24,6 +27,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/country_codes/country_codes.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/search_engine_choice_utils.h"
 #include "components/search_engines/search_engines_pref_names.h"
@@ -237,9 +241,26 @@ base::Value::Dict SearchEnginesHandler::CreateDictionaryForEngine(
       search_engines::GetSearchEngineChoiceCountryId(profile_->GetPrefs()));
   if (is_search_engine_choice_settings_ui && is_eea_region &&
       template_url->prepopulate_id() != 0) {
-    const std::u16string icon_path = GetGeneratedIconPath(
-        template_url->keyword(), /*parent_directory_path=*/u"images/");
-    dict.Set("iconPath", icon_path);
+    std::string_view icon_path =
+        GetSearchEngineGeneratedIconPath(template_url->keyword());
+    if (icon_path.empty()) {
+      SCOPED_CRASH_KEY_NUMBER("SearchEnginesHandler", "engine_id",
+                              template_url->prepopulate_id());
+      SCOPED_CRASH_KEY_STRING64("SearchEnginesHandler", "engine_keyword",
+                                base::UTF16ToUTF8(template_url->keyword()));
+      SCOPED_CRASH_KEY_STRING32(
+          "SearchEnginesHandler", "user_country",
+          country_codes::CountryIDToCountryString(
+              search_engines::GetSearchEngineChoiceCountryId(
+                  profile_->GetPrefs())));
+      base::debug::DumpWithoutCrashing();
+    } else {
+      // The search engine icon path are 24px, but displayed at 16px, or 32px on
+      // HiDPI screens. Use the 2x version (48px) for a large enough icon.
+      // Note that this icon path is used in `site-favicon` which does not
+      // support `image-set`.
+      dict.Set("iconPath", base::StrCat({icon_path, "@2x"}));
+    }
   }
 
   dict.Set("modelIndex", base::checked_cast<int>(index));

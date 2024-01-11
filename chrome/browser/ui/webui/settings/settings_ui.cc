@@ -329,9 +329,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   const bool is_eea_country = search_engines::IsEeaChoiceCountry(
       search_engines::GetSearchEngineChoiceCountryId(profile->GetPrefs()));
   html_source->AddBoolean("useLargeSearchEngineIcons", is_eea_country);
-  if (is_search_engine_choice_settings_ui) {
-    AddGeneratedIconResources(html_source, /*directory=*/"images/");
-  }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   html_source->AddBoolean(
