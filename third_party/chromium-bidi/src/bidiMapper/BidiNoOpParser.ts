@@ -22,6 +22,7 @@ import type {
   Network,
   Script,
   Session,
+  Storage,
 } from '../protocol/protocol.js';
 
 import type {BidiCommandParameterParser} from './BidiParser.js';
@@ -157,6 +158,19 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
   // keep-sorted start block=yes
   parseSubscribeParams(params: unknown): Session.SubscriptionRequest {
     return params as Session.SubscriptionRequest;
+  }
+  // keep-sorted end
+
+  // Storage domain
+  // keep-sorted start block=yes
+  parseDeleteCookiesParams(params: unknown): Storage.DeleteCookiesParameters {
+    return params as Storage.DeleteCookiesParameters;
+  }
+  parseGetCookiesParams(params: unknown): Storage.GetCookiesParameters {
+    return params as Storage.GetCookiesParameters;
+  }
+  parseSetCookieParams(params: unknown): Storage.SetCookieParameters {
+    return params as Storage.SetCookieParameters;
   }
   // keep-sorted end
 }

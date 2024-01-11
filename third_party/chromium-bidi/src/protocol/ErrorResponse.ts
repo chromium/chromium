@@ -142,3 +142,21 @@ export class UnsupportedOperationException extends Exception {
     super(ErrorCode.UnsupportedOperation, message, stacktrace);
   }
 }
+
+export class NoSuchStoragePartitionException extends Exception {
+  constructor(message: string, stacktrace?: string) {
+    super(ErrorCode.NoSuchStoragePartition, message, stacktrace);
+  }
+}
+
+export class UnableToSetCookieException extends Exception {
+  constructor(message: string, stacktrace?: string) {
+    super(ErrorCode.UnableToSetCookie, message, stacktrace);
+  }
+}
+
+export class UnderspecifiedStoragePartitionException extends Exception {
+  constructor(message: string, stacktrace?: string) {
+    super(ErrorCode.UnderspecifiedStoragePartition, message, stacktrace);
+  }
+}

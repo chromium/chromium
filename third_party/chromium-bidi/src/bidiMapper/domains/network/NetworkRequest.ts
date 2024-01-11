@@ -712,11 +712,11 @@ export class NetworkRequest {
   ): Network.Cookie['sameSite'] {
     switch (cdpSameSiteValue) {
       case 'Strict':
-        return 'strict';
+        return Network.SameSite.Strict;
       case 'Lax':
-        return 'lax';
+        return Network.SameSite.Lax;
       default:
-        return 'none';
+        return Network.SameSite.None;
     }
   }
 }

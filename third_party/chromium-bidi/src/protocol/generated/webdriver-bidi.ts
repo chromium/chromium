@@ -44,13 +44,15 @@ export type CommandData =
   | InputCommand
   | NetworkCommand
   | ScriptCommand
-  | SessionCommand;
+  | SessionCommand
+  | StorageCommand;
 export type ResultData =
   | BrowsingContextResult
   | EmptyResult
   | NetworkResult
   | ScriptResult
-  | SessionResult;
+  | SessionResult
+  | StorageResult;
 export type EmptyParams = Extensible;
 export type Message = CommandResponse | ErrorResponse | Event;
 export type ErrorResponse = {
@@ -87,9 +89,12 @@ export const enum ErrorCode {
   NoSuchNode = 'no such node',
   NoSuchRequest = 'no such request',
   NoSuchScript = 'no such script',
+  NoSuchStoragePartition = 'no such storage partition',
   SessionNotCreated = 'session not created',
   UnableToCaptureScreen = 'unable to capture screen',
   UnableToCloseBrowser = 'unable to close browser',
+  UnableToSetCookie = 'unable to set cookie',
+  UnderspecifiedStoragePartition = 'underspecified storage partition',
   UnknownCommand = 'unknown command',
   UnknownError = 'unknown error',
   UnsupportedOperation = 'unsupported operation',
@@ -771,6 +776,13 @@ export namespace Network {
   };
 }
 export namespace Network {
+  export const enum SameSite {
+    Strict = 'strict',
+    Lax = 'lax',
+    None = 'none',
+  }
+}
+export namespace Network {
   export type Cookie = {
     name: string;
     value: Network.BytesValue;
@@ -779,7 +791,7 @@ export namespace Network {
     size: JsUint;
     httpOnly: boolean;
     secure: boolean;
-    sameSite: 'strict' | 'lax' | 'none';
+    sameSite: Network.SameSite;
     expiry?: JsUint;
   };
 }
@@ -869,7 +881,7 @@ export namespace Network {
     expiry?: string;
     maxAge?: JsInt;
     path?: string;
-    sameSite?: 'strict' | 'lax' | 'none';
+    sameSite?: Network.SameSite;
     secure?: boolean;
   };
 }
@@ -1730,6 +1742,115 @@ export namespace Script {
 export namespace Script {
   export type RealmDestroyedParameters = {
     realm: Script.Realm;
+  };
+}
+export type StorageCommand =
+  | Storage.DeleteCookies
+  | Storage.GetCookies
+  | Storage.SetCookie;
+export type StorageResult =
+  | Storage.DeleteCookiesResult
+  | Storage.GetCookiesResult
+  | Storage.SetCookieResult;
+export namespace Storage {
+  export type PartitionKey = {
+    userContext?: string;
+    sourceOrigin?: string;
+  } & Extensible;
+}
+export namespace Storage {
+  export type GetCookies = {
+    method: 'storage.getCookies';
+    params: Storage.GetCookiesParameters;
+  };
+}
+export namespace Storage {
+  export type CookieFilter = {
+    name?: string;
+    value?: Network.BytesValue;
+    domain?: string;
+    path?: string;
+    size?: JsUint;
+    httpOnly?: boolean;
+    secure?: boolean;
+    sameSite?: Network.SameSite;
+    expiry?: JsUint;
+  } & Extensible;
+}
+export namespace Storage {
+  export type BrowsingContextPartitionDescriptor = {
+    type: 'context';
+    context: BrowsingContext.BrowsingContext;
+  };
+}
+export namespace Storage {
+  export type StorageKeyPartitionDescriptor = {
+    type: 'storageKey';
+    userContext?: string;
+    sourceOrigin?: string;
+  } & Extensible;
+}
+export namespace Storage {
+  export type PartitionDescriptor =
+    | Storage.BrowsingContextPartitionDescriptor
+    | Storage.StorageKeyPartitionDescriptor;
+}
+export namespace Storage {
+  export type GetCookiesParameters = {
+    filter?: Storage.CookieFilter;
+    partition?: Storage.PartitionDescriptor;
+  };
+}
+export namespace Storage {
+  export type GetCookiesResult = {
+    cookies: [...Network.Cookie[]];
+    partitionKey: Storage.PartitionKey;
+  };
+}
+export namespace Storage {
+  export type SetCookie = {
+    method: 'storage.setCookie';
+    params: Storage.SetCookieParameters;
+  };
+}
+export namespace Storage {
+  export type PartialCookie = {
+    name: string;
+    value: Network.BytesValue;
+    domain: string;
+    path?: string;
+    httpOnly?: boolean;
+    secure?: boolean;
+    sameSite?: Network.SameSite;
+    expiry?: JsUint;
+  } & Extensible;
+}
+export namespace Storage {
+  export type SetCookieParameters = {
+    cookie: Storage.PartialCookie;
+    partition?: Storage.PartitionDescriptor;
+  };
+}
+export namespace Storage {
+  export type SetCookieResult = {
+    partitionKey: Storage.PartitionKey;
+  };
+}
+export namespace Storage {
+  export type DeleteCookies = {
+    method: 'storage.deleteCookies';
+    params: Storage.DeleteCookiesParameters;
+  };
+}
+export namespace Storage {
+  export type DeleteCookiesParameters = {
+    filter?: Storage.CookieFilter;
+    partition?: Storage.PartitionDescriptor;
+  };
+}
+export namespace Storage {
+  export type DeleteCookiesResult = {
+    partitionKey: Storage.PartitionKey;
   };
 }
 export type LogEvent = Log.EntryAdded;

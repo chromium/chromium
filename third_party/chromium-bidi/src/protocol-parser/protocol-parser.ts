@@ -62,10 +62,15 @@ export namespace Network {
   }
 
   export function parseContinueResponseParameters(params: unknown) {
+    // Work around of `cddlconv` https://github.com/google/cddlconv/issues/19.
+    // The generated schema `SameSiteSchema` in `src/protocol-parser/webdriver-bidi.ts` is
+    // of type `"none" | "strict" | "lax"` which is not assignable to generated enum
+    // `SameSite` in `src/protocol/webdriver-bidi.ts`.
+    // TODO: remove cast after https://github.com/google/cddlconv/issues/19 is fixed.
     return parseObject(
       params,
       WebDriverBidi.Network.ContinueResponseParametersSchema
-    );
+    ) as Protocol.Network.ContinueResponseParameters;
   }
 
   export function parseContinueWithAuthParameters(params: unknown) {
@@ -83,10 +88,15 @@ export namespace Network {
   }
 
   export function parseProvideResponseParameters(params: unknown) {
+    // Work around of `cddlconv` https://github.com/google/cddlconv/issues/19.
+    // The generated schema `SameSiteSchema` in `src/protocol-parser/webdriver-bidi.ts` is
+    // of type `"none" | "strict" | "lax"` which is not assignable to generated enum
+    // `SameSite` in `src/protocol/webdriver-bidi.ts`.
+    // TODO: remove cast after https://github.com/google/cddlconv/issues/19 is fixed.
     return parseObject(
       params,
       WebDriverBidi.Network.ProvideResponseParametersSchema
-    );
+    ) as Protocol.Network.ProvideResponseParameters;
   }
 
   export function parseRemoveInterceptParameters(params: unknown) {
@@ -258,6 +268,44 @@ export namespace Input {
       params,
       WebDriverBidi.Input.ReleaseActionsParametersSchema
     );
+  }
+}
+
+export namespace Storage {
+  export function parseGetCookiesParams(params: unknown) {
+    // Work around of `cddlconv` https://github.com/google/cddlconv/issues/19.
+    // The generated schema `SameSiteSchema` in `src/protocol-parser/webdriver-bidi.ts` is
+    // of type `"none" | "strict" | "lax"` which is not assignable to generated enum
+    // `SameSite` in `src/protocol/webdriver-bidi.ts`.
+    // TODO: remove cast after https://github.com/google/cddlconv/issues/19 is fixed.
+    return parseObject(
+      params,
+      WebDriverBidi.Storage.GetCookiesParametersSchema
+    ) as Protocol.Storage.GetCookiesParameters;
+  }
+
+  export function parseSetCookieParams(params: unknown) {
+    // Work around of `cddlconv` https://github.com/google/cddlconv/issues/19.
+    // The generated schema `SameSiteSchema` in `src/protocol-parser/webdriver-bidi.ts` is
+    // of type `"none" | "strict" | "lax"` which is not assignable to generated enum
+    // `SameSite` in `src/protocol/webdriver-bidi.ts`.
+    // TODO: remove cast after https://github.com/google/cddlconv/issues/19 is fixed.
+    return parseObject(
+      params,
+      WebDriverBidi.Storage.SetCookieParametersSchema
+    ) as Protocol.Storage.SetCookieParameters;
+  }
+
+  export function parseDeleteCookiesParams(params: unknown) {
+    // Work around of `cddlconv` https://github.com/google/cddlconv/issues/19.
+    // The generated schema `SameSiteSchema` in `src/protocol-parser/webdriver-bidi.ts` is
+    // of type `"none" | "strict" | "lax"` which is not assignable to generated enum
+    // `SameSite` in `src/protocol/webdriver-bidi.ts`.
+    // TODO: remove cast after https://github.com/google/cddlconv/issues/19 is fixed.
+    return parseObject(
+      params,
+      WebDriverBidi.Storage.DeleteCookiesParametersSchema
+    ) as Protocol.Storage.DeleteCookiesParameters;
   }
 }
 

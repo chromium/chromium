@@ -22,6 +22,7 @@ import type {
   Network,
   Script,
   Session,
+  Storage,
 } from '../protocol/protocol.js';
 
 export interface BidiCommandParameterParser {
@@ -98,5 +99,12 @@ export interface BidiCommandParameterParser {
   // Session domain
   // keep-sorted start block=yes
   parseSubscribeParams(params: unknown): Session.SubscriptionRequest;
+  // keep-sorted end
+
+  // Storage domain
+  // keep-sorted start block=yes
+  parseDeleteCookiesParams(params: unknown): Storage.DeleteCookiesParameters;
+  parseGetCookiesParams(params: unknown): Storage.GetCookiesParameters;
+  parseSetCookieParams(params: unknown): Storage.SetCookieParameters;
   // keep-sorted end
 }

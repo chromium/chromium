@@ -289,9 +289,19 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
           command.channel
         );
       // keep-sorted end
+
+      // Storage domain
+      // keep-sorted start block=yes
+      case 'storage.deleteCookies':
+      case 'storage.getCookies':
+      case 'storage.setCookie':
+        throw new UnsupportedOperationException(
+          `${command.method} is not supported yet`
+        );
+      // keep-sorted end
     }
 
-    // Intentionally kept outside of the switch statement to ensure that
+    // Intentionally kept outside the switch statement to ensure that
     // ESLint @typescript-eslint/switch-exhaustiveness-check triggers if a new
     // command is added.
     throw new UnknownCommandException(`Unknown command '${command.method}'.`);

@@ -36,12 +36,16 @@ describe('Exception', () => {
     [ErrorCode.NoSuchNode]: undefined,
     [ErrorCode.NoSuchRequest]: undefined,
     [ErrorCode.NoSuchScript]: undefined,
+    [ErrorCode.NoSuchStoragePartition]: undefined,
     [ErrorCode.SessionNotCreated]: undefined,
     [ErrorCode.UnableToCaptureScreen]: undefined,
     [ErrorCode.UnableToCloseBrowser]: undefined,
+    [ErrorCode.UnableToSetCookie]: undefined,
+    [ErrorCode.UnderspecifiedStoragePartition]: undefined,
     [ErrorCode.UnknownCommand]: undefined,
     [ErrorCode.UnknownError]: undefined,
     [ErrorCode.UnsupportedOperation]: undefined,
+
     // keep-sorted end
   };
 

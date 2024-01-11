@@ -66,6 +66,7 @@ export const CommandDataSchema = z.lazy(() =>
     NetworkCommandSchema,
     ScriptCommandSchema,
     SessionCommandSchema,
+    StorageCommandSchema,
   ])
 );
 export const ResultDataSchema = z.lazy(() =>
@@ -75,6 +76,7 @@ export const ResultDataSchema = z.lazy(() =>
     NetworkResultSchema,
     ScriptResultSchema,
     SessionResultSchema,
+    StorageResultSchema,
   ])
 );
 export const EmptyParamsSchema = z.lazy(() => ExtensibleSchema);
@@ -114,9 +116,12 @@ export const ErrorCodeSchema = z.lazy(() =>
     'no such node',
     'no such request',
     'no such script',
+    'no such storage partition',
     'session not created',
     'unable to capture screen',
     'unable to close browser',
+    'unable to set cookie',
+    'underspecified storage partition',
     'unknown command',
     'unknown error',
     'unsupported operation',
@@ -941,6 +946,9 @@ export namespace Network {
   );
 }
 export namespace Network {
+  export const SameSiteSchema = z.lazy(() => z.enum(['strict', 'lax', 'none']));
+}
+export namespace Network {
   export const CookieSchema = z.lazy(() =>
     z.object({
       name: z.string(),
@@ -950,7 +958,7 @@ export namespace Network {
       size: JsUintSchema,
       httpOnly: z.boolean(),
       secure: z.boolean(),
-      sameSite: z.enum(['strict', 'lax', 'none']),
+      sameSite: Network.SameSiteSchema,
       expiry: JsUintSchema.optional(),
     })
   );
@@ -1056,7 +1064,7 @@ export namespace Network {
       expiry: z.string().optional(),
       maxAge: JsIntSchema.optional(),
       path: z.string().optional(),
-      sameSite: z.enum(['strict', 'lax', 'none']).optional(),
+      sameSite: Network.SameSiteSchema.optional(),
       secure: z.boolean().optional(),
     })
   );
@@ -2195,6 +2203,160 @@ export namespace Script {
   export const RealmDestroyedParametersSchema = z.lazy(() =>
     z.object({
       realm: Script.RealmSchema,
+    })
+  );
+}
+export const StorageCommandSchema = z.lazy(() =>
+  z.union([
+    Storage.DeleteCookiesSchema,
+    Storage.GetCookiesSchema,
+    Storage.SetCookieSchema,
+  ])
+);
+export const StorageResultSchema = z.lazy(() =>
+  z.union([
+    Storage.DeleteCookiesResultSchema,
+    Storage.GetCookiesResultSchema,
+    Storage.SetCookieResultSchema,
+  ])
+);
+export namespace Storage {
+  export const PartitionKeySchema = z.lazy(() =>
+    z
+      .object({
+        userContext: z.string().optional(),
+        sourceOrigin: z.string().optional(),
+      })
+      .and(ExtensibleSchema)
+  );
+}
+export namespace Storage {
+  export const GetCookiesSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('storage.getCookies'),
+      params: Storage.GetCookiesParametersSchema,
+    })
+  );
+}
+export namespace Storage {
+  export const CookieFilterSchema = z.lazy(() =>
+    z
+      .object({
+        name: z.string().optional(),
+        value: Network.BytesValueSchema.optional(),
+        domain: z.string().optional(),
+        path: z.string().optional(),
+        size: JsUintSchema.optional(),
+        httpOnly: z.boolean().optional(),
+        secure: z.boolean().optional(),
+        sameSite: Network.SameSiteSchema.optional(),
+        expiry: JsUintSchema.optional(),
+      })
+      .and(ExtensibleSchema)
+  );
+}
+export namespace Storage {
+  export const BrowsingContextPartitionDescriptorSchema = z.lazy(() =>
+    z.object({
+      type: z.literal('context'),
+      context: BrowsingContext.BrowsingContextSchema,
+    })
+  );
+}
+export namespace Storage {
+  export const StorageKeyPartitionDescriptorSchema = z.lazy(() =>
+    z
+      .object({
+        type: z.literal('storageKey'),
+        userContext: z.string().optional(),
+        sourceOrigin: z.string().optional(),
+      })
+      .and(ExtensibleSchema)
+  );
+}
+export namespace Storage {
+  export const PartitionDescriptorSchema = z.lazy(() =>
+    z.union([
+      Storage.BrowsingContextPartitionDescriptorSchema,
+      Storage.StorageKeyPartitionDescriptorSchema,
+    ])
+  );
+}
+export namespace Storage {
+  export const GetCookiesParametersSchema = z.lazy(() =>
+    z.object({
+      filter: Storage.CookieFilterSchema.optional(),
+      partition: Storage.PartitionDescriptorSchema.optional(),
+    })
+  );
+}
+export namespace Storage {
+  export const GetCookiesResultSchema = z.lazy(() =>
+    z.object({
+      cookies: z.array(Network.CookieSchema),
+      partitionKey: Storage.PartitionKeySchema,
+    })
+  );
+}
+export namespace Storage {
+  export const SetCookieSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('storage.setCookie'),
+      params: Storage.SetCookieParametersSchema,
+    })
+  );
+}
+export namespace Storage {
+  export const PartialCookieSchema = z.lazy(() =>
+    z
+      .object({
+        name: z.string(),
+        value: Network.BytesValueSchema,
+        domain: z.string(),
+        path: z.string().optional(),
+        httpOnly: z.boolean().optional(),
+        secure: z.boolean().optional(),
+        sameSite: Network.SameSiteSchema.optional(),
+        expiry: JsUintSchema.optional(),
+      })
+      .and(ExtensibleSchema)
+  );
+}
+export namespace Storage {
+  export const SetCookieParametersSchema = z.lazy(() =>
+    z.object({
+      cookie: Storage.PartialCookieSchema,
+      partition: Storage.PartitionDescriptorSchema.optional(),
+    })
+  );
+}
+export namespace Storage {
+  export const SetCookieResultSchema = z.lazy(() =>
+    z.object({
+      partitionKey: Storage.PartitionKeySchema,
+    })
+  );
+}
+export namespace Storage {
+  export const DeleteCookiesSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('storage.deleteCookies'),
+      params: Storage.DeleteCookiesParametersSchema,
+    })
+  );
+}
+export namespace Storage {
+  export const DeleteCookiesParametersSchema = z.lazy(() =>
+    z.object({
+      filter: Storage.CookieFilterSchema.optional(),
+      partition: Storage.PartitionDescriptorSchema.optional(),
+    })
+  );
+}
+export namespace Storage {
+  export const DeleteCookiesResultSchema = z.lazy(() =>
+    z.object({
+      partitionKey: Storage.PartitionKeySchema,
     })
   );
 }
