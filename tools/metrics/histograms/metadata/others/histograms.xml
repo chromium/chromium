@@ -3078,8 +3078,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.Corrupt{Types}DeletedOnMigration"
-    enum="ConversionCorruptReportStatus" expires_after="2024-05-05">
+<histogram name="Conversions.Corrupt{Types}DeletedOnMigration" units="count"
+    expires_after="2024-07-07">
   <owner>tquintanilla@chromium.org</owner>
   <owner>apaseltiner@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
