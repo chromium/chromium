@@ -2141,7 +2141,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.RT.Request.HadCookie.{RequestType}{UserType}"
-    units="BooleanPresent" expires_after="2024-06-30">
+    enum="BooleanPresent" expires_after="2024-06-30">
   <owner>chlily@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
