@@ -65,6 +65,38 @@ export function appendParam(url: string, key: string, value: string): string {
 }
 
 /**
+ * transitionend does not always fire (e.g. when animation is aborted
+ * or when no paint happens during the animation). This function sets up
+ * a timer and emulate the event if it is not fired when the timer expires.
+ * @param el The element to watch for transitionend.
+ * @param timeOut The maximum wait time in milliseconds for the transitionend
+ *     to happen. If not specified, it is fetched from |el| using the
+ *     transitionDuration style value.
+ */
+export function ensureTransitionEndEvent(
+    el: HTMLElement, timeOut: number): void {
+  if (timeOut === undefined) {
+    const style = getComputedStyle(el);
+    timeOut = parseFloat(style.transitionDuration) * 1000;
+
+    // Give an additional 50ms buffer for the animation to complete.
+    timeOut += 50;
+  }
+
+  let fired = false;
+  el.addEventListener('transitionend', function f() {
+    el.removeEventListener('transitionend', f);
+    fired = true;
+  });
+  window.setTimeout(function() {
+    if (!fired) {
+      el.dispatchEvent(
+          new CustomEvent('transitionend', {bubbles: true, composed: true}));
+    }
+  }, timeOut);
+}
+
+/**
  * Replaces '&', '<', '>', '"', and ''' characters with their HTML encoding.
  * @param original The original string.
  * @return The string with all the characters mentioned above replaced.

@@ -27,7 +27,6 @@ js_type_check("closure_compile_local") {
       ]
   deps = [
     ":app_downloading",
-    ":app_launch_splash",
 
     #":assistant_optin",
     ":consolidated_consent",
@@ -66,15 +65,6 @@ js_library("app_downloading") {
     "../../components/behaviors:oobe_dialog_host_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/dialogs:oobe_adaptive_dialog",
-  ]
-  extra_deps = [ ":web_components" ]
-}
-
-js_library("app_launch_splash") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/app_launch_splash.js" ]
-  deps = [
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
   ]
   extra_deps = [ ":web_components" ]
 }
