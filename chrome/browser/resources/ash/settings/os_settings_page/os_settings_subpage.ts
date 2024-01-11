@@ -37,7 +37,7 @@ import {getTemplate} from './os_settings_subpage.html.js';
 
 export interface OsSettingsSubpageElement {
   $: {
-    closeButton: HTMLElement,
+    backButton: HTMLButtonElement,
   };
 }
 
@@ -91,9 +91,10 @@ export class OsSettingsSubpageElement extends OsSettingsSubpageElementBase {
       },
 
       /**
-       * Whether we should hide the "close" button to get to the previous page.
+       * Whether the back button, which goes to the previous page, should be
+       * hidden.
        */
-      hideCloseButton: {
+      hideBackButton: {
         type: Boolean,
         value: false,
       },
@@ -139,7 +140,7 @@ export class OsSettingsSubpageElement extends OsSettingsSubpageElementBase {
   searchTerm: string;
   showSpinner: boolean;
   spinnerTitle: string;
-  hideCloseButton: boolean;
+  hideBackButton: boolean;
   associatedControl: HTMLElement|null;
   preserveSearchTerm: boolean;
   private active_: boolean;
@@ -210,10 +211,10 @@ export class OsSettingsSubpageElement extends OsSettingsSubpageElementBase {
 
   /** Focuses the back button when page is loaded. */
   focusBackButton(): void {
-    if (this.hideCloseButton) {
+    if (this.hideBackButton) {
       return;
     }
-    afterNextRender(this, () => focusWithoutInk(this.$.closeButton));
+    afterNextRender(this, () => focusWithoutInk(this.$.backButton));
   }
 
   override currentRouteChanged(newRoute: Route, oldRoute?: Route): void {

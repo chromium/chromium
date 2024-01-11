@@ -37,9 +37,13 @@
     padding-bottom: 16px;
   }
 
-  #subpageHeader > h1 {
+  #subpageTitle {
     flex: 1;  /* Push other items to the end. */
     font: var(--cros-button-1-font);
+  }
+
+  :host-context(body.revamp-wayfinding-enabled) #subpageTitle {
+    color: var(--cros-sys-primary);
   }
 
   #titleIcon {
@@ -49,10 +53,14 @@
     width: 36px;
   }
 
-  #closeButton {
+  #backButton {
     /* Centers the ripple on the icon with appropriate margin on right. */
     margin-inline-end: 10px;
     margin-inline-start: -10px;
+  }
+
+  :host-context(body.revamp-wayfinding-enabled) #backButton {
+    --cr-icon-button-fill-color: var(--cros-sys-primary);
   }
 
   #cardBody {
@@ -78,8 +86,8 @@
   }
 </style>
 <div id="subpageHeader" class="cr-row first">
-  <cr-icon-button id="closeButton" class="icon-arrow-back"
-      hidden="[[hideCloseButton]]" on-click="onBackClick_"
+  <cr-icon-button id="backButton" class="icon-arrow-back"
+      hidden="[[hideBackButton]]" on-click="onBackClick_"
       aria-label$="[[getBackButtonAriaLabel_(pageTitle)]]"
       aria-roledescription$=
           "[[getBackButtonAriaRoleDescription_(pageTitle)]]">
@@ -87,7 +95,7 @@
   <template is="dom-if" if="[[titleIcon]]">
     <img id="titleIcon" src="[[titleIcon]]" aria-hidden="true">
   </template>
-  <h1 class="cr-title-text">[[pageTitle]]</h1>
+  <h1 id="subpageTitle">[[pageTitle]]</h1>
   <template is="dom-if" if="[[learnMoreUrl]]">
     <cr-icon-button iron-icon="cr:help-outline" dir="ltr"
         aria-label="[[getLearnMoreAriaLabel_(pageTitle)]]" on-click="onHelpClick_">
