@@ -786,6 +786,10 @@ Shell::~Shell() {
   // `shortcut_input_handler_` must be cleaned up before
   // `event_rewriter_controller_`.
   shortcut_input_handler_.reset();
+  // `AccessibilityEventRewriter` references objects owned by
+  // EventRewriterController directly, so it must be reset first to avoid
+  // accessing invalid memory (see b/315127220).
+  AccessibilityController::Get()->SetAccessibilityEventRewriter(nullptr);
   event_rewriter_controller_.reset();
   keyboard_modifier_metrics_recorder_.reset();
   input_device_settings_dispatcher_.reset();
