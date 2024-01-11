@@ -269,9 +269,9 @@ void AppShimController::PreInitFeatureState(
   // FeatureList was set yet at all (i.e. check-fail).
   base::FeatureList::SetEarlyAccessInstance(
       std::move(feature_list),
-      {"AppShimNotificationAttribution", "DcheckIsFatal",
-       "MojoBindingsInlineSLS", "MojoInlineMessagePayloads", "MojoIpcz",
-       "MojoTaskPerMessage", "StandardCompliantHostCharacters",
+      {"AppShimLaunchChromeSilently", "AppShimNotificationAttribution",
+       "DcheckIsFatal", "MojoBindingsInlineSLS", "MojoInlineMessagePayloads",
+       "MojoIpcz", "MojoTaskPerMessage", "StandardCompliantHostCharacters",
        "UseAdHocSigningForWebAppShims"});
 }
 
@@ -394,9 +394,16 @@ bool AppShimController::FindOrLaunchChrome() {
     }
   }
 
+  const bool silent_chrome_launch =
+      base::FeatureList::IsEnabled(features::kAppShimLaunchChromeSilently);
+  if (silent_chrome_launch) {
+    browser_command_line.AppendSwitch(switches::kNoStartupWindow);
+  }
+
   base::mac::LaunchApplication(
       chrome_bundle_path, browser_command_line, /*url_specs=*/{},
-      {.create_new_instance = true},
+      {.create_new_instance = true,
+       .hidden_in_background = silent_chrome_launch},
       base::BindOnce(
           [](AppShimController* shim_controller, NSRunningApplication* app,
              NSError* error) {

@@ -243,6 +243,15 @@ class TabRestorer : public sessions::TabRestoreServiceObserver {
   SessionID session_id_;
 };
 
+// If the current chrome instance is running as a hidden application (with
+// activation policy set to NSApplicationActivationPolicyProhibited), after this
+// method is called the browser process will no longer keep itself alive as long
+// as that is the case.
+// This method should be called after chrome is launched as hidden application
+// as soon as any other keep-alives have been created to keep the browser
+// process alive.
+void ResetKeepAliveWhileHidden();
+
 }  // namespace app_controller_mac
 
 #endif  // CHROME_BROWSER_APP_CONTROLLER_MAC_H_

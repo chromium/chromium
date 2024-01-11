@@ -251,6 +251,9 @@ class AppShimManager
     app_shim_observer_ = observer;
   }
 
+  // Simulates a launch as triggered by an app shim for the specific `app_id`.
+  void LoadAndLaunchAppForTesting(const webapps::AppId& app_id);
+
  protected:
   typedef std::set<Browser*> BrowserSet;
 

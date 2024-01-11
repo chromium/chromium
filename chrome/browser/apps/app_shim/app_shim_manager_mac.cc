@@ -30,6 +30,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/app_controller_mac.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_bootstrap_mac.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_mac.h"
 #include "chrome/browser/apps/app_shim/app_shim_listener.h"
@@ -803,6 +804,13 @@ void AppShimManager::OnShimProcessConnectedForRegisterOnly(
           : chrome::mojom::AppShimLaunchResult::kSuccessAndDisconnect);
 }
 
+void AppShimManager::LoadAndLaunchAppForTesting(const webapps::AppId& app_id) {
+  LoadAndLaunchAppParams params;
+  params.app_id = app_id;
+  LoadAndLaunchApp(/*profile_path=*/base::FilePath(), params,
+                   base::DoNothing());
+}
+
 void AppShimManager::LoadAndLaunchApp(
     const base::FilePath& profile_path,
     const LoadAndLaunchAppParams& params,
@@ -1029,6 +1037,18 @@ void AppShimManager::OnShimProcessConnectedAndAllLaunchesDone(
     app_shim_observer_->OnShimProcessConnectedAndAllLaunchesDone(
         bootstrap->GetAppShimPid(), result);
   }
+
+  // If the browser process was launched by the App Shim in hidden mode, the
+  // browser process should not stay alive indefinitely after all Browser
+  // instances have been closed. Calling ResetKeepAliveWhileHidden() lets
+  // the browser process terminate itself when no more Browsers or other
+  // ScopedKeepAlives exist.
+  //
+  // At this point, if chrome was launched by an App Shim we would have finished
+  // creating any browser windows or other ScopedKeepAlive instances that
+  // resulted from the app shim launch, so now is a good time to stop the
+  // browser process from keeping itself alive indefinitely.
+  app_controller_mac::ResetKeepAliveWhileHidden();
 
   // If we failed because the profile was locked, launch the profile manager.
   if (result == chrome::mojom::AppShimLaunchResult::kProfileLocked) {

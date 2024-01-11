@@ -64,6 +64,14 @@ BASE_FEATURE(kAppShimNewCloseBehavior,
              "AppShimNewCloseBehavior",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, app shims try to launch chrome silently if chrome isn't already
+// running, rather than have chrome launch visibly with a new tab/profile
+// selector.
+// https://crbug.com/1205537
+BASE_FEATURE(kAppShimLaunchChromeSilently,
+             "AppShimLaunchChromeSilently",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // When enabled, notifications coming from PWAs will be displayed via their app
 // shim processes, rather than directly by chrome.
 // https://crbug.com/938661
