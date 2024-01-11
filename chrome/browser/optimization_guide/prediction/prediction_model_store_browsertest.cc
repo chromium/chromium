@@ -280,7 +280,14 @@ IN_PROC_BROWSER_TEST_F(PredictionModelStoreBrowserTest, TestRegularProfile) {
       kSuccessfulModelVersion, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(PredictionModelStoreBrowserTest, TestIncognitoProfile) {
+// TODO(crbug.com/1517460): Re-enable this test
+#if BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER)
+#define MAYBE_TestIncognitoProfile DISABLED_TestIncognitoProfile
+#else
+#define MAYBE_TestIncognitoProfile TestIncognitoProfile
+#endif
+IN_PROC_BROWSER_TEST_F(PredictionModelStoreBrowserTest,
+                       MAYBE_TestIncognitoProfile) {
   ModelFileObserver model_file_observer;
   RegisterAndWaitForModelUpdate(&model_file_observer);
   histogram_tester_.ExpectUniqueSample(
