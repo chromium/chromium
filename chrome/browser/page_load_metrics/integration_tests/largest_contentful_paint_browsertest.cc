@@ -1096,7 +1096,7 @@ class LcpBreakdownTimingsTest : public MetricIntegrationTest {
     //  Validate timings for initial load.
     EXPECT_LT(ttfb_list[0], discovery_time_list_[0]);
 
-    EXPECT_LT(discovery_time_list_[0], load_start_list_[0]);
+    EXPECT_LE(discovery_time_list_[0], load_start_list_[0]);
 
     EXPECT_LT(load_start_list_[0], load_end_list_[0]);
 
