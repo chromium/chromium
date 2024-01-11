@@ -59,6 +59,7 @@ class SystemGeolocationSourceLacros : public device::SystemGeolocationSource,
       PermissionUpdateCallback callback) override;
   void TrackGeolocationAttempted() override;
   void TrackGeolocationRelinquished() override;
+  void OpenSystemPermissionSetting() override;
 
   // crosapi::mojom::PrefObserver
   // This is called from the receiver and all calls are scheduled under the

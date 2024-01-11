@@ -11,6 +11,7 @@
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "chrome/grit/branded_strings.h"
+#include "chromeos/crosapi/mojom/url_handler.mojom.h"
 #include "chromeos/lacros/crosapi_pref_observer.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "services/device/public/cpp/geolocation/geolocation_manager.h"
@@ -108,6 +109,25 @@ void SystemGeolocationSourceLacros::TrackGeolocationRelinquished() {
     // Use the default name for the browser.
     service->TrackGeolocationRelinquished(
         l10n_util::GetStringUTF8(IDS_SHORT_PRODUCT_NAME));
+  }
+}
+
+void SystemGeolocationSourceLacros::OpenSystemPermissionSetting() {
+  auto* lacros_service = chromeos::LacrosService::Get();
+  CHECK(lacros_service);
+
+  if (!lacros_service->IsRegistered<crosapi::mojom::UrlHandler>()) {
+    return;
+  }
+  if (!lacros_service->IsAvailable<crosapi::mojom::UrlHandler>()) {
+    return;
+  }
+  mojo::Remote<crosapi::mojom::UrlHandler>& service =
+      lacros_service->GetRemote<crosapi::mojom::UrlHandler>();
+  if (service.is_connected()) {
+    // Open the appropriate CrOS system settings page.
+    service->OpenUrl(
+        GURL("chrome://os-settings/osPrivacy/privacyHub/geolocation"));
   }
 }
 
