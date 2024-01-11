@@ -683,6 +683,7 @@ class TestDialogController
     if (!state_) {
       return;
     }
+    state_->displayed_accounts.clear();
 
     state_->sign_in_mode = sign_in_mode;
     state_->rp_context = identity_provider_data[0].rp_context;
@@ -986,7 +987,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     federated_auth_request_impl_->SetDialogControllerForTests(
         std::move(custom_dialog_controller_));
 
-    test_network_request_manager_->SetTestConfig(configuration);
+    SetConfig(configuration);
 
     // If multiple IdPs are received, add them to a single get call. Unittests
     // for multiple get calls can be added later as needed.
@@ -1059,6 +1060,10 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     }
     CheckConsoleMessages(expectation.devtools_issue_status,
                          expectation.standalone_console_message);
+  }
+
+  void SetConfig(const MockConfiguration& config) {
+    test_network_request_manager_->SetTestConfig(config);
   }
 
   void CheckConsoleMessages(
@@ -4267,6 +4272,48 @@ TEST_F(FederatedAuthRequestImplTest, MultiIdpWithOneIdpSignedOut) {
   EXPECT_FALSE(did_show_idp_signin_status_mismatch_dialog());
 }
 
+// Test that API only shows accounts from the signed in IDP if the user logs in
+// to the IDP with the mismatch UI.
+TEST_F(FederatedAuthRequestImplTest, MultiIdpLoginToOneIdp) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmMultipleIdentityProviders);
+
+  url::Origin providerOrigin = OriginFromString(kProviderUrlFull);
+  test_permission_delegate_->idp_signin_statuses_[providerOrigin] = true;
+
+  MockConfiguration config = kConfigurationMultiIdpValid;
+  // Second IDP has invalid accounts response.
+  config.idp_info[kProviderUrlFull].accounts_response.parse_status =
+      ParseStatus::kInvalidResponseError;
+  config.accounts_dialog_action = AccountsDialogAction::kNone;
+
+  RunAuthDontWaitForCallback(kDefaultMultiIdpRequestParameters, config);
+
+  EXPECT_EQ(NumFetched(FetchedEndpoint::ACCOUNTS), 2u);
+  EXPECT_TRUE(did_show_accounts_dialog());
+  // The second IDP has 3 accounts, so those should be showing up.
+  EXPECT_EQ(displayed_accounts().size(), 3u);
+
+  // Simulate user signing into IdP by updating the IdP signin status and
+  // calling the observer.
+  test_permission_delegate_->idp_signin_statuses_[providerOrigin] = true;
+  // Second IDP will now correctly return its account.
+  config.idp_info[kProviderUrlFull].accounts_response.parse_status =
+      ParseStatus::kSuccess;
+  SetConfig(config);
+
+  federated_auth_request_impl_->OnIdpSigninStatusReceived(
+      providerOrigin, /*idp_signin_status=*/true);
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(NumFetched(FetchedEndpoint::ACCOUNTS), 3u);
+  EXPECT_TRUE(did_show_accounts_dialog());
+  // // The first IDP only has a single account, so that is the one which should
+  // show up.
+  EXPECT_EQ(displayed_accounts().size(), 1u);
+}
+
 // Test that API can succeed with multiple IdPs, if all IDPs have login status
 // mismatch.
 TEST_F(FederatedAuthRequestImplTest, MultiIdpWithAllIdpsMismatch) {
@@ -4278,7 +4325,6 @@ TEST_F(FederatedAuthRequestImplTest, MultiIdpWithAllIdpsMismatch) {
   test_permission_delegate_
       ->idp_signin_statuses_[OriginFromString(kProviderTwoUrlFull)] = true;
 
-  // RequestParameters parameters = kDefaultMultiIdpRequestParameters;
   // Set the config so that both accounts fetches result in failure.
   MockConfiguration config = kConfigurationMultiIdpValid;
   config.idp_info[kProviderUrlFull].accounts_response.parse_status =

@@ -1153,9 +1153,13 @@ void FederatedAuthRequestImpl::OnIdpSigninStatusReceived(
     return;
   }
 
+  // Since the user has gone through the IDP login flow with this IDP, the next
+  // accounts dialog will only include this IDP.
+  idp_order_.clear();
   for (const auto& [get_idp_config_url, get_info] : token_request_get_infos_) {
     if (url::Origin::Create(get_idp_config_url) == idp_config_origin) {
       permission_delegate_->RemoveIdpSigninStatusObserver(this);
+      idp_order_.push_back(get_idp_config_url);
       FetchEndpointsForIdps({get_idp_config_url}, /*for_idp_signin=*/true);
       break;
     }
