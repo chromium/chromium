@@ -163,7 +163,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             // TODO(crbug/1418690): Consider inlining these behaviors in their respective
             // constructors if possible.
             mMediator.initWithNative(this::getTabListEditorController, tabGroupTitleEditor);
-            mTabListCoordinator.initWithNative(null);
+            mTabListCoordinator.initWithNative(mRegularTabModelSupplier.get().getProfile(), null);
         }
     }
 

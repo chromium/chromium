@@ -35,6 +35,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -466,13 +467,15 @@ public class TabListCoordinator
         mRecyclerView.setRecyclerViewPosition(recyclerViewPosition);
     }
 
-    void initWithNative(DynamicResourceLoader dynamicResourceLoader) {
+    void initWithNative(
+            @NonNull Profile profile, @Nullable DynamicResourceLoader dynamicResourceLoader) {
         if (mIsInitialized) return;
 
         try (TraceEvent e = TraceEvent.scoped("TabListCoordinator.initWithNative")) {
             mIsInitialized = true;
 
-            mMediator.initWithNative();
+            assert !profile.isOffTheRecord() : "Expecting a non-incognito profile.";
+            mMediator.initWithNative(profile);
             if (dynamicResourceLoader != null) {
                 mRecyclerView.createDynamicView(dynamicResourceLoader);
             }

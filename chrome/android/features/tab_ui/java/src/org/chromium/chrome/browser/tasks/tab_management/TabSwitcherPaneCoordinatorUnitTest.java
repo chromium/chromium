@@ -130,7 +130,6 @@ public class TabSwitcherPaneCoordinatorUnitTest {
 
         when(mProfile.isOffTheRecord()).thenReturn(false);
         when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
-        Profile.setLastUsedProfileForTesting(mProfile);
 
         PriceTrackingFeatures.setPriceTrackingEnabledForTesting(true);
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);

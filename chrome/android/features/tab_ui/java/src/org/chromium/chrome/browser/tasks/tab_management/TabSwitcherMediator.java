@@ -600,10 +600,10 @@ class TabSwitcherMediator
                         "MobileTabSwitched." + TabSwitcherCoordinator.COMPONENT_NAME);
             }
         }
+        Profile profile = mTabModelSelector.getCurrentModel().getProfile();
         if (mMode == TabListCoordinator.TabListMode.GRID
-                && !mTabModelSelector.getCurrentModel().getProfile().isOffTheRecord()
-                && PriceTrackingUtilities.isTrackPricesOnTabsEnabled(
-                        Profile.getLastUsedRegularProfile())) {
+                && !profile.isOffTheRecord()
+                && PriceTrackingUtilities.isTrackPricesOnTabsEnabled(profile)) {
             RecordUserAction.record(
                     "Commerce.TabGridSwitched."
                             + (ShoppingPersistedTabData.hasPriceDrop(tab)

@@ -40,7 +40,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.GridCard
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
-import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -258,11 +257,11 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
 
     /** Post native initialization. */
     public void initWithNative() {
-        mTabListCoordinator.initWithNative(/* dynamicResourceLoader= */ null);
-
         ProfileProvider profileProvider = mProfileProviderSupplier.get();
         assert profileProvider != null;
         Profile originalProfile = profileProvider.getOriginalProfile();
+
+        mTabListCoordinator.initWithNative(originalProfile, /* dynamicResourceLoader= */ null);
 
         mMessageManager.initWithNative(originalProfile);
 

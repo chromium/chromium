@@ -367,6 +367,7 @@ public class TabSwitcherCoordinator
             Profile profile = mTabModelSelector.getModel(false).getProfile();
             assert profile != null;
             mTabListCoordinator.initWithNative(
+                    profile,
                     shouldUseDynamicResource ? mDynamicResourceLoaderSupplier.get() : null);
 
             mMessageManager.initWithNative(profile);
