@@ -864,9 +864,8 @@ EntryResult SimpleBackendImpl::OpenEntryFromHash(uint64_t entry_hash,
     simple_entry->SetActiveEntryProxy(
         ActiveEntryProxy::Create(entry_hash, this));
     post_open_by_hash_waiting_->OnOperationStart(entry_hash);
-    callback =
-        base::BindOnce(&SimpleBackendImpl::OnEntryOpenedFromHash, AsWeakPtr(),
-                       entry_hash, simple_entry, std::move(callback));
+    callback = base::BindOnce(&SimpleBackendImpl::OnEntryOpenedFromHash,
+                              AsWeakPtr(), entry_hash, std::move(callback));
   }
 
   // Note: the !did_insert case includes when another OpenEntryFromHash is
@@ -904,7 +903,6 @@ net::Error SimpleBackendImpl::DoomEntryFromHash(
 
 void SimpleBackendImpl::OnEntryOpenedFromHash(
     uint64_t hash,
-    const scoped_refptr<SimpleEntryImpl>& simple_entry,
     EntryResultCallback callback,
     EntryResult result) {
   post_open_by_hash_waiting_->OnOperationComplete(hash);
