@@ -70,6 +70,10 @@ class TestSaveCardBubbleControllerImpl : public SaveCardBubbleControllerImpl {
     DidFinishNavigation(&handle);
   }
 
+  void set_autofill_bubble_view(AutofillBubbleBase* bubble_view) {
+    set_bubble_view(bubble_view);
+  }
+
  protected:
   security_state::SecurityLevel GetSecurityLevel() const override {
     return security_level_;
@@ -94,9 +98,7 @@ class SaveCardBubbleControllerImplTest : public BrowserWithTestWindowTest {
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
     AddTab(browser(), GURL("about:blank"));
-    content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
-    TestSaveCardBubbleControllerImpl::CreateForTesting(web_contents);
+    TestSaveCardBubbleControllerImpl::CreateForTesting(active_web_contents());
     test_clock_.SetNow(kArbitraryTime);
     mock_sentiment_service_ = static_cast<MockTrustSafetySentimentService*>(
         TrustSafetySentimentServiceFactory::GetInstance()
@@ -157,7 +159,7 @@ class SaveCardBubbleControllerImplTest : public BrowserWithTestWindowTest {
 
   void CloseAndReshowBubble() {
     CloseBubble();
-    controller()->ReshowBubble();
+    controller()->ReshowBubble(/*is_user_gesture=*/true);
   }
 
   void ClickSaveButton() {
@@ -172,7 +174,11 @@ class SaveCardBubbleControllerImplTest : public BrowserWithTestWindowTest {
   TestSaveCardBubbleControllerImpl* controller() {
     return static_cast<TestSaveCardBubbleControllerImpl*>(
         TestSaveCardBubbleControllerImpl::FromWebContents(
-            browser()->tab_strip_model()->GetActiveWebContents()));
+            active_web_contents()));
+  }
+
+  content::WebContents* active_web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
   TestAutofillClock test_clock_;
@@ -897,12 +903,31 @@ TEST_F(SaveCardBubbleControllerImplTest, Metrics_Upload_FirstShow_ManageCards) {
   histogram_tester.ExpectTotalCount("Autofill.ManageCardsPrompt.Upload", 1);
 }
 
+class MockAutofillBubbleBase final : public AutofillBubbleBase {
+ public:
+  MOCK_METHOD(void, Hide, (), (override));
+};
+
 class SaveCardBubbleControllerImplTestWithLoadingAndConfirmation
     : public SaveCardBubbleControllerImplTest {
  public:
   SaveCardBubbleControllerImplTestWithLoadingAndConfirmation() {
     scoped_feature_list_.InitAndEnableFeature(
         features::kAutofillEnableSaveCardLoadingAndConfirmation);
+  }
+
+  void SetUp() override {
+    SaveCardBubbleControllerImplTest::SetUp();
+
+    // Set the visibility to VISIBLE as the web contents are initially hidden.
+    active_web_contents()->UpdateWebContentsVisibility(
+        content::Visibility::VISIBLE);
+  }
+
+ protected:
+  TabHandle tab_handle() {
+    return browser()->tab_strip_model()->GetTabHandleAt(
+        browser()->tab_strip_model()->active_index());
   }
 };
 
@@ -946,6 +971,152 @@ TEST_F(SaveCardBubbleControllerImplTestWithLoadingAndConfirmation,
 
   histogram_tester.ExpectTotalCount(
       "Autofill.SaveCreditCardPromptResult.Upload.FirstShow", 0);
+}
+
+// Test that after changing tabs, when returning to the tab with the save card,
+// the bubble view is no longer showing but can be accessed through the icon.
+TEST_F(SaveCardBubbleControllerImplTestWithLoadingAndConfirmation,
+       VisibilityChange_Upload_HideBubble) {
+  base::HistogramTester histogram_tester;
+
+  ShowUploadBubble();
+  EXPECT_NE(controller()->GetPaymentBubbleView(), nullptr);
+
+  MockAutofillBubbleBase save_card_bubble_view;
+  controller()->set_autofill_bubble_view(&save_card_bubble_view);
+  EXPECT_CALL(save_card_bubble_view, Hide);
+
+  // Simulate switching to a different tab.
+  active_web_contents()->UpdateWebContentsVisibility(
+      content::Visibility::HIDDEN);
+  controller()->OnBubbleClosed(PaymentsBubbleClosedReason::kUnknown);
+
+  histogram_tester.ExpectTotalCount(
+      "Autofill.SaveCreditCardPromptResult.Upload.FirstShow", 1);
+
+  // Simulate returning to tab where bubble was previously shown.
+  active_web_contents()->UpdateWebContentsVisibility(
+      content::Visibility::VISIBLE);
+
+  EXPECT_EQ(controller()->GetPaymentBubbleView(), nullptr);
+  EXPECT_TRUE(controller()->IsIconVisible());
+}
+
+// Test that after a link is clicked in the save card bubble view; and one
+// returns to the tab with the save card, the bubble view is automatically
+// re-shown without user prompt.
+TEST_F(SaveCardBubbleControllerImplTestWithLoadingAndConfirmation,
+       VisibilityChange_Upload_ReshowAfterLinkClick) {
+  TabHandle tab = tab_handle();
+
+  ShowUploadBubble();
+
+  MockAutofillBubbleBase save_card_bubble_view;
+  testing::MockFunction<void(std::string check_point_name)> check_hide;
+  {
+    testing::InSequence s;
+
+    EXPECT_CALL(save_card_bubble_view, Hide);
+    EXPECT_CALL(check_hide, Call("1"));
+    EXPECT_CALL(save_card_bubble_view, Hide);
+    EXPECT_CALL(check_hide, Call("2"));
+  }
+
+  controller()->set_autofill_bubble_view(&save_card_bubble_view);
+
+  controller()->OnLegalMessageLinkClicked(GURL("about:blank"));
+  // Change active web contents back to previous tab so that
+  // active_web_contents() and controller() return the correct object.
+  browser()->tab_strip_model()->ActivateTabAt(
+      browser()->tab_strip_model()->GetIndexOfTab(tab));
+
+  // Usually, the visibility changes when changing tabs but it doesn't in the
+  // test so it needs to be simulated.
+  active_web_contents()->UpdateWebContentsVisibility(
+      content::Visibility::HIDDEN);
+  // Simulate AutofillBubbleBase::Hide() by calling
+  // SaveCardBubbleControllerImpl::OnBubbleClosed().
+  controller()->OnBubbleClosed(PaymentsBubbleClosedReason::kUnknown);
+  check_hide.Call("1");
+
+  // Check that the bubble is shown when returning to the tab which previously
+  // showed the bubble.
+  active_web_contents()->UpdateWebContentsVisibility(
+      content::Visibility::VISIBLE);
+  controller()->set_autofill_bubble_view(&save_card_bubble_view);
+
+  EXPECT_NE(controller()->GetPaymentBubbleView(), nullptr);
+  EXPECT_TRUE(controller()->IsIconVisible());
+
+  // Check that the WebContents showing a subsequent time does not show the
+  // bubble view.
+  active_web_contents()->UpdateWebContentsVisibility(
+      content::Visibility::HIDDEN);
+  controller()->OnBubbleClosed(PaymentsBubbleClosedReason::kUnknown);
+  check_hide.Call("2");
+
+  active_web_contents()->UpdateWebContentsVisibility(
+      content::Visibility::VISIBLE);
+
+  EXPECT_EQ(controller()->GetPaymentBubbleView(), nullptr);
+  EXPECT_TRUE(controller()->IsIconVisible());
+}
+
+// Test the metrics for reshowing the bubble view after a link is clicked.
+TEST_F(SaveCardBubbleControllerImplTestWithLoadingAndConfirmation,
+       VisibilityChange_Metric_Upload_ReshowAfterLinkClick) {
+  base::HistogramTester histogram_tester;
+  TabHandle tab = tab_handle();
+
+  ShowUploadBubble();
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveCreditCardPromptOffer.Upload.FirstShow",
+      autofill_metrics::SaveCardPromptOffer::kShown, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveCreditCardPromptOffer.Upload.Reshows",
+      autofill_metrics::SaveCardPromptOffer::kShown, 0);
+
+  controller()->OnLegalMessageLinkClicked(GURL("about:blank"));
+  browser()->tab_strip_model()->ActivateTabAt(
+      browser()->tab_strip_model()->GetIndexOfTab(tab));
+
+  // Usually, the visibility changes when changing tabs but it doesn't in the
+  // test so it needs to be simulated.
+  active_web_contents()->UpdateWebContentsVisibility(
+      content::Visibility::HIDDEN);
+  controller()->OnBubbleClosed(PaymentsBubbleClosedReason::kUnknown);
+
+  // Ensure that closing the bubble through clicking a link does not get logged
+  // to the metrics.
+  histogram_tester.ExpectTotalCount(
+      "Autofill.SaveCreditCardPromptResult.Upload.FirstShow", 0);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.SaveCreditCardPromptResult.Upload.Reshows", 0);
+
+  // Reshow bubble view.
+  active_web_contents()->UpdateWebContentsVisibility(
+      content::Visibility::VISIBLE);
+
+  // Expect the prompt metric not to change from the initial bubble showing
+  // because this is a reshowing after returning to the original tab after a
+  // link click.
+  // TODO(b/316391673): Determine if a different metric (or the re-show metric)
+  // should be tracking this re-show.
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveCreditCardPromptOffer.Upload.FirstShow",
+      autofill_metrics::SaveCardPromptOffer::kShown, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveCreditCardPromptOffer.Upload.Reshows",
+      autofill_metrics::SaveCardPromptOffer::kShown, 0);
+
+  // Ensure that metrics are recorded on a subsequent bubble close.
+  active_web_contents()->UpdateWebContentsVisibility(
+      content::Visibility::HIDDEN);
+  controller()->OnBubbleClosed(PaymentsBubbleClosedReason::kUnknown);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.SaveCreditCardPromptResult.Upload.FirstShow", 0);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.SaveCreditCardPromptResult.Upload.Reshows", 1);
 }
 
 }  // namespace autofill

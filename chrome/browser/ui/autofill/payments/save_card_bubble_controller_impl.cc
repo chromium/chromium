@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
 
 #include <stddef.h>
+
 #include <string>
 #include <utility>
 
@@ -16,6 +17,7 @@
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
+#include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
 #include "chrome/browser/ui/autofill/payments/payments_ui_constants.h"
 #include "chrome/browser/ui/autofill/payments/save_card_ui.h"
@@ -97,6 +99,7 @@ void SaveCardBubbleControllerImpl::OfferLocalSave(
 
   is_upload_save_ = false;
   is_reshow_ = false;
+  is_triggered_by_user_gesture_ = false;
   options_ = options;
   card_ = card;
   local_save_card_prompt_callback_ = std::move(save_card_prompt_callback);
@@ -123,6 +126,7 @@ void SaveCardBubbleControllerImpl::OfferUploadSave(
 
   is_upload_save_ = true;
   is_reshow_ = false;
+  is_triggered_by_user_gesture_ = false;
   options_ = options;
   card_ = card;
   upload_save_card_prompt_callback_ = std::move(save_card_prompt_callback);
@@ -155,12 +159,14 @@ void SaveCardBubbleControllerImpl::ShowBubbleForManageCardsForTesting(
   ShowBubble();
 }
 
-void SaveCardBubbleControllerImpl::ReshowBubble() {
+void SaveCardBubbleControllerImpl::ReshowBubble(
+    bool is_triggered_by_user_gesture) {
   // Don't show the bubble if it's already visible.
   if (bubble_view())
     return;
 
   is_reshow_ = true;
+  is_triggered_by_user_gesture_ = is_triggered_by_user_gesture;
   ShowBubble();
 }
 
@@ -428,6 +434,14 @@ void SaveCardBubbleControllerImpl::OnBubbleClosed(
     PaymentsBubbleClosedReason closed_reason) {
   set_bubble_view(nullptr);
 
+  // If the dialog should be re-shown, do not change the bubble type or log
+  // metrics.
+  // TODO(b/316391673): Determine if we should track metrics on the usage of
+  // this member.
+  if (was_url_opened_) {
+    return;
+  }
+
   auto get_metric = [](PaymentsBubbleClosedReason reason) {
     switch (reason) {
       case PaymentsBubbleClosedReason::kAccepted:
@@ -594,6 +608,22 @@ int SaveCardBubbleControllerImpl::GetSaveSuccessAnimationStringId() const {
              : IDS_AUTOFILL_CARD_SAVED;
 }
 
+void SaveCardBubbleControllerImpl::OnVisibilityChanged(
+    content::Visibility visibility) {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSaveCardLoadingAndConfirmation)) {
+    if (visibility == content::Visibility::VISIBLE && !bubble_view() &&
+        was_url_opened_) {
+      ReshowBubble(/*is_user_gesture=*/false);
+    } else if (visibility == content::Visibility::HIDDEN) {
+      HideBubble();
+    }
+    return;
+  }
+
+  AutofillBubbleControllerBase::OnVisibilityChanged(visibility);
+}
+
 PageActionIconType SaveCardBubbleControllerImpl::GetPageActionIconType() {
   return PageActionIconType::kSaveCard;
 }
@@ -602,8 +632,16 @@ void SaveCardBubbleControllerImpl::DoShowBubble() {
   Browser* browser = chrome::FindBrowserWithTab(web_contents());
   set_bubble_view(
       browser->window()->GetAutofillBubbleHandler()->ShowSaveCreditCardBubble(
-          web_contents(), this, is_reshow_));
+          web_contents(), this, is_triggered_by_user_gesture_));
   CHECK(bubble_view());
+
+  // Do not log metrics for re-shows triggered by link clicks.
+  // TODO(issuetracker.google.com/316391673): Determine whether we should log
+  // metrics when using `was_url_opened_`.
+  if (was_url_opened_) {
+    was_url_opened_ = false;
+    return;
+  }
 
   switch (current_bubble_type_) {
     case BubbleType::UPLOAD_SAVE:
@@ -690,6 +728,11 @@ void SaveCardBubbleControllerImpl::ShowIconOnly() {
 }
 
 void SaveCardBubbleControllerImpl::OpenUrl(const GURL& url) {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSaveCardLoadingAndConfirmation)) {
+    was_url_opened_ = true;
+  }
+
   web_contents()->OpenURL(content::OpenURLParams(
       url, content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui::PAGE_TRANSITION_LINK, false));
