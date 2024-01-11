@@ -19,7 +19,7 @@ import("//ui/gl/features.gni")
 if ((target_cpu == "arm" || target_cpu == "arm64") &&
     (!using_sanitizer && proprietary_codecs &&
      # Optimizations can remove static initializers (https://crbug.com/1434325)
-     !is_debug && !is_high_end_android)) {
+     !is_debug && !is_high_end_android && !is_component_build)) {
   # Comments show static_initializers according to
   # tools/linux/dump-static-initializers.py.
   _chrome_common_count = 0
