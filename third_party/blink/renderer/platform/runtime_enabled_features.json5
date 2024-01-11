@@ -3826,6 +3826,13 @@
       origin_trial_allows_third_party: true,
       public: true,
     },
+    {
+      name: "TopLevelTpcd",
+      origin_trial_feature_name: "TopLevelTpcd",
+      origin_trial_type: "deprecation",
+      status: "experimental",
+      base_feature: "none",
+    },
     // This feature allows touch dragging and a context menu to occur
     // simultaneously, with the assumption that the menu is non-modal.  Without
     // this feature, a long-press touch gesture can start either a drag or a
@@ -3865,13 +3872,6 @@
       name: "Tpcd",
       origin_trial_feature_name: "Tpcd",
       origin_trial_allows_third_party: true,
-      origin_trial_type: "deprecation",
-      status: "experimental",
-      base_feature: "none",
-    },
-    {
-      name: "Tpcd1p",
-      origin_trial_feature_name: "Tpcd1p",
       origin_trial_type: "deprecation",
       status: "experimental",
       base_feature: "none",
