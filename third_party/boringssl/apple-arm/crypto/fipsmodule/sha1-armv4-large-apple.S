@@ -14,27 +14,14 @@
 .code	32
 #endif
 
-.globl	_sha1_block_data_order
-.private_extern	_sha1_block_data_order
+.globl	_sha1_block_data_order_nohw
+.private_extern	_sha1_block_data_order_nohw
 #ifdef __thumb2__
-.thumb_func	_sha1_block_data_order
+.thumb_func	_sha1_block_data_order_nohw
 #endif
 
 .align	5
-_sha1_block_data_order:
-#if __ARM_MAX_ARCH__>=7
-Lsha1_block:
-	adr	r3,Lsha1_block
-	ldr	r12,LOPENSSL_armcap
-	ldr	r12,[r3,r12]		@ OPENSSL_armcap_P
-#ifdef	__APPLE__
-	ldr	r12,[r12]
-#endif
-	tst	r12,#ARMV8_SHA1
-	bne	LARMv8
-	tst	r12,#ARMV7_NEON
-	bne	LNEON
-#endif
+_sha1_block_data_order_nohw:
 	stmdb	sp!,{r4,r5,r6,r7,r8,r9,r10,r11,r12,lr}
 	add	r2,r1,r2,lsl#6	@ r2 to point at the end of r1
 	ldmia	r0,{r3,r4,r5,r6,r7}
@@ -492,10 +479,6 @@ LK_00_19:.word	0x5a827999
 LK_20_39:.word	0x6ed9eba1
 LK_40_59:.word	0x8f1bbcdc
 LK_60_79:.word	0xca62c1d6
-#if __ARM_MAX_ARCH__>=7
-LOPENSSL_armcap:
-.word	OPENSSL_armcap_P-Lsha1_block
-#endif
 .byte	83,72,65,49,32,98,108,111,99,107,32,116,114,97,110,115,102,111,114,109,32,102,111,114,32,65,82,77,118,52,47,78,69,79,78,47,65,82,77,118,56,44,32,67,82,89,80,84,79,71,65,77,83,32,98,121,32,60,97,112,112,114,111,64,111,112,101,110,115,115,108,46,111,114,103,62,0
 .align	2
 .align	5
@@ -503,12 +486,13 @@ LOPENSSL_armcap:
 
 
 
+.globl	_sha1_block_data_order_neon
+.private_extern	_sha1_block_data_order_neon
 #ifdef __thumb2__
-.thumb_func	sha1_block_data_order_neon
+.thumb_func	_sha1_block_data_order_neon
 #endif
 .align	4
-sha1_block_data_order_neon:
-LNEON:
+_sha1_block_data_order_neon:
 	stmdb	sp!,{r4,r5,r6,r7,r8,r9,r10,r11,r12,lr}
 	add	r2,r1,r2,lsl#6	@ r2 to point at the end of r1
 	@ dmb				@ errata #451034 on early Cortex A8
@@ -1364,12 +1348,13 @@ Loop_neon:
 #  define INST(a,b,c,d)	.byte	a,b,c,d|0x10
 # endif
 
+.globl	_sha1_block_data_order_hw
+.private_extern	_sha1_block_data_order_hw
 #ifdef __thumb2__
-.thumb_func	sha1_block_data_order_armv8
+.thumb_func	_sha1_block_data_order_hw
 #endif
 .align	5
-sha1_block_data_order_armv8:
-LARMv8:
+_sha1_block_data_order_hw:
 	vstmdb	sp!,{d8,d9,d10,d11,d12,d13,d14,d15}		@ ABI specification says so
 
 	veor	q1,q1,q1
@@ -1498,13 +1483,5 @@ Loop_v8:
 	vldmia	sp!,{d8,d9,d10,d11,d12,d13,d14,d15}
 	bx	lr					@ bx lr
 
-#endif
-#if __ARM_MAX_ARCH__>=7
-.comm	_OPENSSL_armcap_P,4
-.non_lazy_symbol_pointer
-OPENSSL_armcap_P:
-.indirect_symbol	_OPENSSL_armcap_P
-.long	0
-.private_extern	_OPENSSL_armcap_P
 #endif
 #endif  // !OPENSSL_NO_ASM && defined(OPENSSL_ARM) && defined(__APPLE__)

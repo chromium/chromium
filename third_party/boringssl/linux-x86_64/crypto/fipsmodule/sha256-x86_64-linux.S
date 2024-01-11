@@ -6,28 +6,13 @@
 #if !defined(OPENSSL_NO_ASM) && defined(OPENSSL_X86_64) && defined(__ELF__)
 .text	
 
-.extern	OPENSSL_ia32cap_P
-.hidden OPENSSL_ia32cap_P
-.globl	sha256_block_data_order
-.hidden sha256_block_data_order
-.type	sha256_block_data_order,@function
+.globl	sha256_block_data_order_nohw
+.hidden sha256_block_data_order_nohw
+.type	sha256_block_data_order_nohw,@function
 .align	16
-sha256_block_data_order:
+sha256_block_data_order_nohw:
 .cfi_startproc	
 _CET_ENDBR
-	leaq	OPENSSL_ia32cap_P(%rip),%r11
-	movl	0(%r11),%r9d
-	movl	4(%r11),%r10d
-	movl	8(%r11),%r11d
-	testl	$536870912,%r11d
-	jnz	.Lshaext_shortcut
-	andl	$1073741824,%r9d
-	andl	$268435968,%r10d
-	orl	%r9d,%r10d
-	cmpl	$1342177792,%r10d
-	je	.Lavx_shortcut
-	testl	$512,%r10d
-	jnz	.Lssse3_shortcut
 	movq	%rsp,%rax
 .cfi_def_cfa_register	%rax
 	pushq	%rbx
@@ -1733,7 +1718,7 @@ _CET_ENDBR
 .Lepilogue:
 	ret
 .cfi_endproc	
-.size	sha256_block_data_order,.-sha256_block_data_order
+.size	sha256_block_data_order_nohw,.-sha256_block_data_order_nohw
 .section	.rodata
 .align	64
 .type	K256,@object
@@ -1779,11 +1764,13 @@ K256:
 .long	0xffffffff,0xffffffff,0x03020100,0x0b0a0908
 .byte	83,72,65,50,53,54,32,98,108,111,99,107,32,116,114,97,110,115,102,111,114,109,32,102,111,114,32,120,56,54,95,54,52,44,32,67,82,89,80,84,79,71,65,77,83,32,98,121,32,60,97,112,112,114,111,64,111,112,101,110,115,115,108,46,111,114,103,62,0
 .text	
-.type	sha256_block_data_order_shaext,@function
+.globl	sha256_block_data_order_hw
+.hidden sha256_block_data_order_hw
+.type	sha256_block_data_order_hw,@function
 .align	64
-sha256_block_data_order_shaext:
+sha256_block_data_order_hw:
 .cfi_startproc	
-.Lshaext_shortcut:
+_CET_ENDBR
 	leaq	K256+128(%rip),%rcx
 	movdqu	(%rdi),%xmm1
 	movdqu	16(%rdi),%xmm2
@@ -1987,12 +1974,14 @@ sha256_block_data_order_shaext:
 	movdqu	%xmm2,16(%rdi)
 	ret
 .cfi_endproc	
-.size	sha256_block_data_order_shaext,.-sha256_block_data_order_shaext
+.size	sha256_block_data_order_hw,.-sha256_block_data_order_hw
+.globl	sha256_block_data_order_ssse3
+.hidden sha256_block_data_order_ssse3
 .type	sha256_block_data_order_ssse3,@function
 .align	64
 sha256_block_data_order_ssse3:
 .cfi_startproc	
-.Lssse3_shortcut:
+_CET_ENDBR
 	movq	%rsp,%rax
 .cfi_def_cfa_register	%rax
 	pushq	%rbx
@@ -3101,11 +3090,13 @@ sha256_block_data_order_ssse3:
 	ret
 .cfi_endproc	
 .size	sha256_block_data_order_ssse3,.-sha256_block_data_order_ssse3
+.globl	sha256_block_data_order_avx
+.hidden sha256_block_data_order_avx
 .type	sha256_block_data_order_avx,@function
 .align	64
 sha256_block_data_order_avx:
 .cfi_startproc	
-.Lavx_shortcut:
+_CET_ENDBR
 	movq	%rsp,%rax
 .cfi_def_cfa_register	%rax
 	pushq	%rbx

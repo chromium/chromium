@@ -8,23 +8,13 @@
 
 .text
 
-
-.hidden	OPENSSL_armcap_P
-.globl	sha1_block_data_order
-.hidden	sha1_block_data_order
-.type	sha1_block_data_order,%function
+.globl	sha1_block_data_order_nohw
+.hidden	sha1_block_data_order_nohw
+.type	sha1_block_data_order_nohw,%function
 .align	6
-sha1_block_data_order:
+sha1_block_data_order_nohw:
 	// Armv8.3-A PAuth: even though x30 is pushed to stack it is not popped later.
 	AARCH64_VALID_CALL_TARGET
-#if defined(OPENSSL_HWASAN) && __clang_major__ >= 10
-	adrp	x16,:pg_hi21_nc:OPENSSL_armcap_P
-#else
-	adrp	x16,OPENSSL_armcap_P
-#endif
-	ldr	w16,[x16,:lo12:OPENSSL_armcap_P]
-	tst	w16,#ARMV8_SHA1
-	b.ne	.Lv8_entry
 
 	stp	x29,x30,[sp,#-96]!
 	add	x29,sp,#0
@@ -1080,13 +1070,14 @@ sha1_block_data_order:
 	ldp	x27,x28,[sp,#80]
 	ldr	x29,[sp],#96
 	ret
-.size	sha1_block_data_order,.-sha1_block_data_order
-.type	sha1_block_armv8,%function
+.size	sha1_block_data_order_nohw,.-sha1_block_data_order_nohw
+.globl	sha1_block_data_order_hw
+.hidden	sha1_block_data_order_hw
+.type	sha1_block_data_order_hw,%function
 .align	6
-sha1_block_armv8:
+sha1_block_data_order_hw:
 	// Armv8.3-A PAuth: even though x30 is pushed to stack it is not popped later.
 	AARCH64_VALID_CALL_TARGET
-.Lv8_entry:
 	stp	x29,x30,[sp,#-16]!
 	add	x29,sp,#0
 
@@ -1213,7 +1204,7 @@ sha1_block_armv8:
 
 	ldr	x29,[sp],#16
 	ret
-.size	sha1_block_armv8,.-sha1_block_armv8
+.size	sha1_block_data_order_hw,.-sha1_block_data_order_hw
 .section	.rodata
 .align	6
 .Lconst:

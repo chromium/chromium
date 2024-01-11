@@ -6,34 +6,13 @@
 #if !defined(OPENSSL_NO_ASM) && defined(OPENSSL_X86_64) && defined(__APPLE__)
 .text	
 
-
-.globl	_sha1_block_data_order
-.private_extern _sha1_block_data_order
+.globl	_sha1_block_data_order_nohw
+.private_extern _sha1_block_data_order_nohw
 
 .p2align	4
-_sha1_block_data_order:
+_sha1_block_data_order_nohw:
 
 _CET_ENDBR
-	leaq	_OPENSSL_ia32cap_P(%rip),%r10
-	movl	0(%r10),%r9d
-	movl	4(%r10),%r8d
-	movl	8(%r10),%r10d
-	testl	$512,%r8d
-	jz	L$ialu
-	testl	$536870912,%r10d
-	jnz	_shaext_shortcut
-	andl	$296,%r10d
-	cmpl	$296,%r10d
-	je	_avx2_shortcut
-	andl	$268435456,%r8d
-	andl	$1073741824,%r9d
-	orl	%r9d,%r8d
-	cmpl	$1342177280,%r8d
-	je	_avx_shortcut
-	jmp	_ssse3_shortcut
-
-.p2align	4
-L$ialu:
 	movq	%rsp,%rax
 
 	pushq	%rbx
@@ -1264,11 +1243,13 @@ L$epilogue:
 	ret
 
 
+.globl	_sha1_block_data_order_hw
+.private_extern _sha1_block_data_order_hw
 
 .p2align	5
-sha1_block_data_order_shaext:
-_shaext_shortcut:
+_sha1_block_data_order_hw:
 
+_CET_ENDBR
 	movdqu	(%rdi),%xmm0
 	movd	16(%rdi),%xmm1
 	movdqa	K_XX_XX+160(%rip),%xmm3
@@ -1434,11 +1415,13 @@ L$oop_shaext:
 	ret
 
 
+.globl	_sha1_block_data_order_ssse3
+.private_extern _sha1_block_data_order_ssse3
 
 .p2align	4
-sha1_block_data_order_ssse3:
-_ssse3_shortcut:
+_sha1_block_data_order_ssse3:
 
+_CET_ENDBR
 	movq	%rsp,%r11
 
 	pushq	%rbx
@@ -2622,11 +2605,13 @@ L$epilogue_ssse3:
 	ret
 
 
+.globl	_sha1_block_data_order_avx
+.private_extern _sha1_block_data_order_avx
 
 .p2align	4
-sha1_block_data_order_avx:
-_avx_shortcut:
+_sha1_block_data_order_avx:
 
+_CET_ENDBR
 	movq	%rsp,%r11
 
 	pushq	%rbx
@@ -3750,11 +3735,13 @@ L$epilogue_avx:
 	ret
 
 
+.globl	_sha1_block_data_order_avx2
+.private_extern _sha1_block_data_order_avx2
 
 .p2align	4
-sha1_block_data_order_avx2:
-_avx2_shortcut:
+_sha1_block_data_order_avx2:
 
+_CET_ENDBR
 	movq	%rsp,%r11
 
 	pushq	%rbx
