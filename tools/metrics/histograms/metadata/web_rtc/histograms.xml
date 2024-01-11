@@ -1616,6 +1616,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.Screenshare.ZeroHz.QueueOverload" units="boolean"
+    expires_after="2024-03-30">
+  <owner>henrika@chromium.org</owner>
+  <owner>handellm@google.com</owner>
+  <summary>
+    This histogram logs whether a queue overload was detected or not when
+    delivering a captured frame to the Video Stream Encoder for encoding.
+    Recorded for each captured frame when 0Hz screen share is enabled.
+  </summary>
+</histogram>
+
 <histogram name="WebRTC.Screenshare.ZeroHz.TimeUntilFirstFrameMs" units="ms"
     expires_after="2024-06-30">
   <owner>handellm@google.com</owner>
