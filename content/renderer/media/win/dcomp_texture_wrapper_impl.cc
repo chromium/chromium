@@ -170,10 +170,13 @@ void DCOMPTextureWrapperImpl::CreateVideoFrame(
     DVLOG_FUNC(1) << "AddMailbox";
     mailbox_added_ = true;
     gpu::SharedImageInterface* sii = factory_->SharedImageInterface();
+
+    // The SI backing this VideoFrame will be read by the display compositor and
+    // raster. The latter will be over GL if not using OOP-R. NOTE: GL usage can
+    // be eliminated once OOP-R ships definitively.
     shared_image = sii->NotifyMailboxAdded(
         mailbox_, gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                       gpu::SHARED_IMAGE_USAGE_GLES2_READ |
-                      gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
                       gpu::SHARED_IMAGE_USAGE_RASTER);
   }
 
