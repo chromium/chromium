@@ -68,9 +68,9 @@ public class VoiceMenuSheetContentUnitTest {
                         .with(
                                 PlayerProperties.VOICES_LIST,
                                 List.of(
-                                        createVoice("en", "a", "voice a"),
-                                        createVoice("en", "b", "voice b"),
-                                        createVoice("en", "c", "voice c")))
+                                        new PlaybackVoice("en", "a", "description a"),
+                                        new PlaybackVoice("en", "b", "description b"),
+                                        new PlaybackVoice("en", "c", "description c")))
                         .with(PlayerProperties.SELECTED_VOICE_ID, "a")
                         .build();
         mContent = new VoiceMenuSheetContent(mActivity, mParent, mBottomSheetController, mModel);
@@ -86,23 +86,25 @@ public class VoiceMenuSheetContentUnitTest {
     public void testSetVoices() {
         // First check the voices from setUp().
         MenuItem item0 = mMenu.getItem(0);
-        assertEquals("voice a", getText(item0, R.id.item_label));
+        assertEquals("description a", getText(item0, R.id.item_label));
         assertNotNull(item0.findViewById(R.id.readaloud_radio_button));
 
         MenuItem item1 = mMenu.getItem(1);
-        assertEquals("voice b", getText(item1, R.id.item_label));
+        assertEquals("description b", getText(item1, R.id.item_label));
         assertNotNull(item1.findViewById(R.id.readaloud_radio_button));
 
         MenuItem item2 = mMenu.getItem(2);
-        assertEquals("voice c", getText(item2, R.id.item_label));
+        assertEquals("description c", getText(item2, R.id.item_label));
         assertNotNull(item2.findViewById(R.id.readaloud_radio_button));
         assertNull(mMenu.getItem(3));
 
         mContent.setVoices(
-                List.of(createVoice("en", "d", "voice d"), createVoice("en", "e", "voice e")));
+                List.of(
+                        new PlaybackVoice("en", "d", "description d"),
+                        new PlaybackVoice("en", "e", "description e")));
 
-        assertEquals("voice d", getText(mMenu.getItem(0), R.id.item_label));
-        assertEquals("voice e", getText(mMenu.getItem(1), R.id.item_label));
+        assertEquals("description d", getText(mMenu.getItem(0), R.id.item_label));
+        assertEquals("description e", getText(mMenu.getItem(1), R.id.item_label));
         assertNull(mMenu.getItem(2));
     }
 
@@ -132,7 +134,7 @@ public class VoiceMenuSheetContentUnitTest {
         assertNotNull(voice);
         assertEquals("en", voice.getLanguage());
         assertEquals("b", voice.getVoiceId());
-        assertEquals("voice b", voice.getDisplayName());
+        assertEquals("description b", voice.getDescription());
     }
 
     @Test
@@ -175,15 +177,5 @@ public class VoiceMenuSheetContentUnitTest {
 
     private static RadioButton getRadioButton(MenuItem item) {
         return (RadioButton) item.findViewById(R.id.readaloud_radio_button);
-    }
-
-    private static PlaybackVoice createVoice(String language, String id, String displayName) {
-        return new PlaybackVoice(
-                language,
-                /* accentRegionCode= */ null,
-                id,
-                displayName,
-                PlaybackVoice.Pitch.NONE,
-                PlaybackVoice.Tone.NONE);
     }
 }

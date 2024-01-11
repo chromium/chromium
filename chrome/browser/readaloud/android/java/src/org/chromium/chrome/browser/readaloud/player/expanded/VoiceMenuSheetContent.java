@@ -57,7 +57,7 @@ class VoiceMenuSheetContent extends MenuSheetContent {
         for (PlaybackVoice voice : voices) {
             MenuItem item =
                     mMenu.addItem(
-                            id, /* iconId= */ 0, voice.getDisplayName(), MenuItem.Action.RADIO);
+                            id, /* iconId= */ 0, voice.getDescription(), MenuItem.Action.RADIO);
             item.addPlayButton();
             mVoices[id] = voice;
             mVoiceIdToMenuItemId.put(voice.getVoiceId(), id);

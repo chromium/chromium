@@ -67,7 +67,7 @@ public class OptionsMenuSheetContentUnitTest {
 
     @Test
     public void testClickVoiceMenu() {
-        doReturn(List.of(new PlaybackVoice("en", "a")))
+        doReturn(List.of(new PlaybackVoice("en", "a", "description")))
                 .when(mModel)
                 .get(eq(PlayerProperties.VOICES_LIST));
         doReturn("a").when(mModel).get(eq(PlayerProperties.SELECTED_VOICE_ID));
