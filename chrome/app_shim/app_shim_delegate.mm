@@ -21,7 +21,9 @@
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification*)notification {
-  _appShimController->OnAppFinishedLaunching();
+  id user_notification = [notification.userInfo
+      objectForKey:NSApplicationLaunchUserNotificationKey];
+  _appShimController->OnAppFinishedLaunching(user_notification != nil);
 }
 
 - (BOOL)application:(NSApplication*)app openFile:(NSString*)filename {
