@@ -61,10 +61,7 @@ class SpotlightBookmarkModelBridge;
   // Bridge to register for account bookmark model changes.
   std::unique_ptr<BookmarkModelBridge> _accountBookmarkModelBridge;
 
-  // Keep a reference to detach before deallocing. Life cycle of
-  // `_localOrSyncalbeBookmarkModel` and `_accountBookmarkModel` is longer than
-  // life cycle of a SpotlightManager as `BookmarkModelBeingDeleted` will cause
-  // deletion of SpotlightManager.
+  // Keep a reference to detach before deallocing.
   bookmarks::BookmarkModel* _localOrSyncableBookmarkModel;  // weak
   // `_accountBookmarkModel` can be `nullptr`.
   bookmarks::BookmarkModel* _accountBookmarkModel;  // weak
@@ -387,7 +384,8 @@ class SpotlightBookmarkModelBridge;
   // shutdown, so the reindex can't happen until next app start. In the former
   // case, unset _initialIndexDone flag. This makes sure indexing will happen
   // once the model loads.
-  if (!_localOrSyncableBookmarkModel->loaded()) {
+  if (_localOrSyncableBookmarkModel &&
+      !_localOrSyncableBookmarkModel->loaded()) {
     _initialIndexDone = NO;
   }
   if (_accountBookmarkModel && !_accountBookmarkModel->loaded()) {
@@ -396,7 +394,9 @@ class SpotlightBookmarkModelBridge;
 
   _nodesIndexed = 0;
   _pendingLargeIconTasksCount = 0;
-  _indexingStack.push(_localOrSyncableBookmarkModel->root_node());
+  if (_localOrSyncableBookmarkModel) {
+    _indexingStack.push(_localOrSyncableBookmarkModel->root_node());
+  }
   if (_accountBookmarkModel) {
     _indexingStack.push(_accountBookmarkModel->root_node());
   }
@@ -467,6 +467,16 @@ class SpotlightBookmarkModelBridge;
 
 - (void)bookmarkModelLoaded:(bookmarks::BookmarkModel*)model {
   [self reindexBookmarksIfNeeded];
+}
+
+- (void)bookmarkModelBeingDeleted:(bookmarks::BookmarkModel*)model {
+  if (_accountBookmarkModel == model) {
+    _accountBookmarkModel = nullptr;
+  }
+
+  if (_localOrSyncableBookmarkModel == model) {
+    _localOrSyncableBookmarkModel = nullptr;
+  }
 }
 
 - (void)bookmarkModel:(bookmarks::BookmarkModel*)model
