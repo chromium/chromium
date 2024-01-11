@@ -69,7 +69,7 @@ export class AutomationTreeWalker {
   private initialNode_: AutomationNode;
   // TODO(b/314204374): Convert from null to undefined.
   private backwardAncestor_: AutomationNode|null;
-  private visitPred_: (node: any) => any;
+  private visitPred_: AutomationPredicate.Unary;
   private skipInitialAncestry_: boolean;
   private skipInitialSubtree_: boolean;
   private leafPred_: any;
@@ -89,7 +89,16 @@ export class AutomationTreeWalker {
      */
     this.backwardAncestor_ = node.parent ?? null;
 
-    this.visitPred_ = function(node) {
+    this.visitPred_ = this.makeVisitPred_(restrictions);
+    this.leafPred_ = restrictions.leaf ?? falsePredicate;
+    this.rootPred_ = restrictions.root ?? falsePredicate;
+    this.skipInitialAncestry_ = restrictions.skipInitialAncestry ?? false;
+    this.skipInitialSubtree_ = restrictions.skipInitialSubtree ?? false;
+  }
+
+  private makeVisitPred_(restrictions: AutomationTreeWalkerRestriction):
+      AutomationPredicate.Unary {
+    return node => {
       if (this.skipInitialAncestry_ &&
           this.phase_ === AutomationTreeWalkerPhase.ANCESTOR) {
         return false;
@@ -107,14 +116,6 @@ export class AutomationTreeWalker {
 
       return true;
     };
-    this.leafPred_ = restrictions.leaf ?? AutomationTreeWalker.falsePredicate_;
-    this.rootPred_ = restrictions.root ?? AutomationTreeWalker.falsePredicate_;
-    this.skipInitialAncestry_ = restrictions.skipInitialAncestry ?? false;
-    this.skipInitialSubtree_ = restrictions.skipInitialSubtree ?? false;
-  }
-
-  private static falsePredicate_(_node: AutomationNode): boolean {
-    return false;
   }
 
   get node(): AutomationNode|null {
@@ -209,4 +210,10 @@ export class AutomationTreeWalker {
     }
     this.node_ = node.parent || null;
   }
+}
+
+// Local to module.
+
+function falsePredicate(_node: AutomationNode): boolean {
+  return false;
 }
