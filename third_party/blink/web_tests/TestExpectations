@@ -5070,13 +5070,6 @@ crbug.com/1274458 external/wpt/audio-output/selectAudioOutput-permissions-policy
 crbug.com/1275658 http/tests/misc/script-after-slow-stylesheet-removed.html [ Failure Pass ]
 crbug.com/1275716 [ Mac ] fast/forms/text-control-intrinsic-widths.html [ Failure Pass ]
 
-# Temporarily disabled to unblock https://crrev.com/c/5185234
-crbug.com/1467464 http/tests/devtools/security/origin-view-ct-compliance.js [ Failure Pass ]
-crbug.com/1467464 http/tests/devtools/security/origin-view-noncryptographic-secure-origin.js [ Failure Pass ]
-crbug.com/1467464 http/tests/devtools/security/origin-view-then-interstitial.js [ Failure Pass ]
-crbug.com/1467464 http/tests/devtools/security/security-details-updated-with-security-state.js [ Failure Pass ]
-crbug.com/1467464 http/tests/devtools/security/security-explanation-ordering.js [ Failure Pass ]
-
 # Sheriff 2021-12-02
 crbug.com/1276201 [ Mac ] external/wpt/html/browsers/the-window-object/open-close/open-features-tokenization-top-left.html [ Crash Failure Pass Timeout ]
 crbug.com/1275967 [ Debug Linux ] external/wpt/permissions-policy/permissions-policy-frame-policy-timing.https.sub.html [ Failure Pass ]

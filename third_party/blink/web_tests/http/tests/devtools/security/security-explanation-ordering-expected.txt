@@ -15,7 +15,7 @@ valid and trusted
         <DIV >
 The connection to this site is using a valid, trusted server certificate issued by Issuer.
         </DIV>
-        <BUTTON class=origin-button text-button type=button role=button >
+        <BUTTON class=origin-button text-button jslog=Action; track: click; context: security.view-certificate type=button role=button >
 View certificate
         </BUTTON>
     </DIV>
