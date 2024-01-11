@@ -36,9 +36,11 @@ PluginVmInstallerFactory::PluginVmInstallerFactory()
 
 PluginVmInstallerFactory::~PluginVmInstallerFactory() = default;
 
-KeyedService* PluginVmInstallerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+PluginVmInstallerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new PluginVmInstaller(Profile::FromBrowserContext(context));
+  return std::make_unique<PluginVmInstaller>(
+      Profile::FromBrowserContext(context));
 }
 
 }  // namespace plugin_vm

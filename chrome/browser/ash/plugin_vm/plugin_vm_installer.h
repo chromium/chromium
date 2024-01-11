@@ -124,9 +124,9 @@ class PluginVmInstaller : public KeyedService,
   };
 
   explicit PluginVmInstaller(Profile* profile);
-
   PluginVmInstaller(const PluginVmInstaller&) = delete;
   PluginVmInstaller& operator=(const PluginVmInstaller&) = delete;
+  ~PluginVmInstaller() override;
 
   // Start the installation. Progress updates will be sent to the observer.
   // Returns a FailureReason if the installation couldn't be started.
@@ -182,8 +182,6 @@ class PluginVmInstaller : public KeyedService,
     kInstalling,
     kCancelling,
   };
-
-  ~PluginVmInstaller() override;
 
   // The entire installation flow!
 
