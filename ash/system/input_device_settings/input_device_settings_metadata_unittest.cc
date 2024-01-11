@@ -119,10 +119,10 @@ TEST_F(MetadataTest, GetButtonRemappingListForConfig) {
   EXPECT_EQ(0u, GetButtonRemappingListForConfig(
                     GetMouseMetadata(kDefaultMouse)->mouse_button_config)
                     .size());
-  EXPECT_EQ(5u, GetButtonRemappingListForConfig(
+  EXPECT_EQ(3u, GetButtonRemappingListForConfig(
                     GetMouseMetadata(kFiveKeyMouse)->mouse_button_config)
                     .size());
-  EXPECT_EQ(6u, GetButtonRemappingListForConfig(
+  EXPECT_EQ(4u, GetButtonRemappingListForConfig(
                     GetMouseMetadata(kLogitechSixKeyMouse)->mouse_button_config)
                     .size());
 }

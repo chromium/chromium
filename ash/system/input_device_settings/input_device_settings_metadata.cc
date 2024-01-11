@@ -39,6 +39,14 @@ const base::flat_map<VendorProductId, MouseMetadata>& GetMouseMetadataList() {
            {mojom::CustomizationRestriction::
                 kAllowAlphabetOrNumberKeyEventRewrites,
             mojom::MouseButtonConfig::kFiveKey}},
+          // Logitech MX Master 3S (Bluetooth)
+          {{0x046d, 0xb034},
+           {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
+            mojom::MouseButtonConfig::kLogitechSixKey}},
+          // Logitech MX Anywhere 3S (Bluetooth)
+          {{0x046d, 0xb037},
+           {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
+            mojom::MouseButtonConfig::kFiveKey}},
       });
   return *mouse_metadata_list;
 }
@@ -191,30 +199,19 @@ std::vector<mojom::ButtonRemappingPtr> GetFiveKeyButtonRemappingList() {
       mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kMiddle),
       /*remapping_action=*/nullptr));
   array.push_back(mojom::ButtonRemapping::New(
-      /*name=*/"Back button",
-      /*button=*/
-      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kBack),
-      /*remapping_action=*/nullptr));
-  array.push_back(mojom::ButtonRemapping::New(
       /*name=*/"Forward button",
       /*button=*/
-      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kForward),
+      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kExtra),
       /*remapping_action=*/nullptr));
   array.push_back(mojom::ButtonRemapping::New(
-      /*name=*/"Left button",
+      /*name=*/"Back button",
       /*button=*/
-      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kLeft),
+      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kSide),
       /*remapping_action=*/nullptr));
-  array.push_back(mojom::ButtonRemapping::New(
-      /*name=*/"Right button",
-      /*button=*/
-      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kRight),
-      /*remapping_action=*/nullptr));
-
   return array;
 }
 
-std::vector<mojom::ButtonRemappingPtr> GetLogicTechSixKeyButtonRemappingList() {
+std::vector<mojom::ButtonRemappingPtr> GetLogitechSixKeyButtonRemappingList() {
   std::vector<mojom::ButtonRemappingPtr> array;
   array.push_back(mojom::ButtonRemapping::New(
       /*name=*/"Middle button",
@@ -222,31 +219,20 @@ std::vector<mojom::ButtonRemappingPtr> GetLogicTechSixKeyButtonRemappingList() {
       mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kMiddle),
       /*remapping_action=*/nullptr));
   array.push_back(mojom::ButtonRemapping::New(
-      /*name=*/"Back button",
-      /*button=*/
-      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kBack),
-      /*remapping_action=*/nullptr));
-  array.push_back(mojom::ButtonRemapping::New(
       /*name=*/"Forward button",
       /*button=*/
-      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kForward),
+      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kExtra),
       /*remapping_action=*/nullptr));
   array.push_back(mojom::ButtonRemapping::New(
-      /*name=*/"Left button",
+      /*name=*/"Back button",
       /*button=*/
-      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kLeft),
-      /*remapping_action=*/nullptr));
-  array.push_back(mojom::ButtonRemapping::New(
-      /*name=*/"Right button",
-      /*button=*/
-      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kRight),
+      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kSide),
       /*remapping_action=*/nullptr));
   array.push_back(mojom::ButtonRemapping::New(
       /*name=*/"Side button",
       /*button=*/
-      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kSide),
+      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kForward),
       /*remapping_action=*/nullptr));
-
   return array;
 }
 
@@ -258,7 +244,7 @@ std::vector<mojom::ButtonRemappingPtr> GetButtonRemappingListForConfig(
     case mojom::MouseButtonConfig::kFiveKey:
       return GetFiveKeyButtonRemappingList();
     case mojom::MouseButtonConfig::kLogitechSixKey:
-      return GetLogicTechSixKeyButtonRemappingList();
+      return GetLogitechSixKeyButtonRemappingList();
   }
 }
 
