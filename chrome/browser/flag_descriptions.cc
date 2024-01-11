@@ -7846,6 +7846,13 @@ const char kTheoraVideoCodecDescription[] =
     "Controls support for the Theora video codec.";
 #endif
 
+const char kForceSigninFlowInProfilePickerName[] =
+    "Force Signin Flows in Profile Picker";
+const char kForceSigninFlowInProfilePickerDescription[] =
+    "Migrates Force Signin flows from the old popup dialog on top of the "
+    "Profile Picker, to the regular sign in flow within the Profile Picker "
+    "with adaptation to the policy settings";
+
 // ============================================================================
 // Don't just add flags to the end, put them in the right section in
 // alphabetical order just like the header file.

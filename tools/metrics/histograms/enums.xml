@@ -32693,6 +32693,7 @@ from previous Chrome versions.
   <int value="1499163193" label="PostScriptPrinting:disabled"/>
   <int value="1500390299" label="NtpCustomizationMenuV2:disabled"/>
   <int value="1502417134" label="BulkTabRestore:disabled"/>
+  <int value="1503291145" label="ForceSigninFlowInProfilePicker:enabled"/>
   <int value="1504223335" label="PipPinchToResize:disabled"/>
   <int value="1504393761" label="AutofillEnableCardProductName:enabled"/>
   <int value="1505194447" label="disable-transition-compositing"/>
@@ -33545,6 +33546,7 @@ from previous Chrome versions.
   <int value="1889076955" label="disable-app-link"/>
   <int value="1889198874" label="TabSwitcherOnReturn:disabled"/>
   <int value="1889735222" label="NtpChromeCartInHistoryClusterModule:disabled"/>
+  <int value="1889840958" label="ForceSigninFlowInProfilePicker:disabled"/>
   <int value="1889885696" label="ZeroSuggestPrefetching:disabled"/>
   <int value="1890329937"
       label="SafeBrowsingEnhancedProtectionMessageInInterstitials:disabled"/>

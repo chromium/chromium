@@ -10969,6 +10969,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPasswordManagerShadowDomSupportDescription, kOsAll,
      FEATURE_VALUE_TYPE(password_manager::features::kShadowDomSupport)},
 
+    {"force-signin-flows-profile-picker",
+     flag_descriptions::kForceSigninFlowInProfilePickerName,
+     flag_descriptions::kForceSigninFlowInProfilePickerDescription,
+     kOsMac | kOsWin, FEATURE_VALUE_TYPE(kForceSigninFlowInProfilePicker)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

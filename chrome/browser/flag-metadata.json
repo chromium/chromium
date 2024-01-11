@@ -4387,6 +4387,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "force-signin-flows-profile-picker",
+    "owners": ["rsult@chromium.org", "chrome-signin-team@google.com"],
+    "expiry_milestone": 126
+  },
+  {
     "name": "force-spectre-v2-mitigation",
     "owners": [ "chromeos-security@google.com" ],
     "expiry_milestone": 100

@@ -4547,6 +4547,9 @@ extern const char kTheoraVideoCodecName[];
 extern const char kTheoraVideoCodecDescription[];
 #endif
 
+extern const char kForceSigninFlowInProfilePickerName[];
+extern const char kForceSigninFlowInProfilePickerDescription[];
+
 // ============================================================================
 // Don't just add flags to the end, put them in the right section in
 // alphabetical order. See top instructions for more.
