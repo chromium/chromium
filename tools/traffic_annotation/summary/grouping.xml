@@ -302,6 +302,7 @@ after discussions on the right group.
       <annotation id="chromeos_picker_gif_fetcher"/>
       <annotation id="prewarm_http_disk_cache"/>
       <annotation id="admin_specified_ppd_fetch"/>
+      <annotation id="shopping_list_ui_image_fetcher"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">

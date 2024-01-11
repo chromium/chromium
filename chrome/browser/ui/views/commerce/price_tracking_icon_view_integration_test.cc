@@ -112,10 +112,10 @@ class PriceTrackingIconViewIntegrationTest : public TestWithBrowserView {
 
   void SimulateSubscriptionChangeEvent(bool is_subscribed) {
     if (is_subscribed) {
-      GetTabHelper()->OnSubscribe(
+      GetTabHelper()->GetPriceTrackingControllerForTesting()->OnSubscribe(
           commerce::BuildUserSubscriptionForClusterId(0L), true);
     } else {
-      GetTabHelper()->OnUnsubscribe(
+      GetTabHelper()->GetPriceTrackingControllerForTesting()->OnUnsubscribe(
           commerce::BuildUserSubscriptionForClusterId(0L), true);
     }
   }

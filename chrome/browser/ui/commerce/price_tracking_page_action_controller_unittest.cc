@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/commerce/price_tracking_page_action_controller.h"
+
 #include <memory>
+#include <optional>
 
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -10,7 +13,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/ui/commerce/price_tracking_page_action_controller.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/mock_shopping_service.h"
@@ -158,7 +160,7 @@ TEST_F(PriceTrackingPageActionControllerUnittest, IconNotShown_NoProductInfo) {
   ASSERT_FALSE(controller.ShouldShowForNavigation().has_value());
   ASSERT_FALSE(controller.WantsExpandedUi());
 
-  EXPECT_CALL(notify_host_callback_, Run()).Times(1);
+  EXPECT_CALL(notify_host_callback_, Run()).Times(testing::AtLeast(1));
   EXPECT_CALL(*shopping_service_, IsSubscribed(testing::_, testing::_))
       .Times(0);
   shopping_service_->SetResponseForGetProductInfoForUrl(std::nullopt);

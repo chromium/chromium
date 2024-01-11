@@ -45,11 +45,6 @@ class BaseBookmarkBubbleViewBrowserTest : public DialogBrowserTest {
     mock_shopping_service_ = static_cast<commerce::MockShoppingService*>(
         commerce::ShoppingServiceFactory::GetForBrowserContext(
             browser()->profile()));
-
-    auto* helper = commerce::CommerceUiTabHelper::FromWebContents(
-        browser()->tab_strip_model()->GetActiveWebContents());
-
-    helper->SetShoppingServiceForTesting(mock_shopping_service_);
   }
 
   void SetUpInProcessBrowserTestFixture() override {
