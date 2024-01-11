@@ -13,6 +13,7 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/views/action_view_interface.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/button/label_button_image_container.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/style/typography.h"
 
@@ -27,10 +28,13 @@ class VIEWS_EXPORT MdTextButton : public LabelButton {
   METADATA_HEADER(MdTextButton, LabelButton)
 
  public:
-  explicit MdTextButton(PressedCallback callback = PressedCallback(),
-                        const std::u16string& text = std::u16string(),
-                        int button_context = style::CONTEXT_BUTTON_MD,
-                        bool use_text_color_for_icon = true);
+  explicit MdTextButton(
+      PressedCallback callback = PressedCallback(),
+      const std::u16string& text = std::u16string(),
+      int button_context = style::CONTEXT_BUTTON_MD,
+      bool use_text_color_for_icon = true,
+      std::unique_ptr<LabelButtonImageContainer> image_container =
+          std::make_unique<SingleImageContainer>());
 
   MdTextButton(const MdTextButton&) = delete;
   MdTextButton& operator=(const MdTextButton&) = delete;

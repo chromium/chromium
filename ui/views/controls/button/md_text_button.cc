@@ -41,11 +41,16 @@
 
 namespace views {
 
-MdTextButton::MdTextButton(PressedCallback callback,
-                           const std::u16string& text,
-                           int button_context,
-                           bool use_text_color_for_icon)
-    : LabelButton(std::move(callback), text, button_context),
+MdTextButton::MdTextButton(
+    PressedCallback callback,
+    const std::u16string& text,
+    int button_context,
+    bool use_text_color_for_icon,
+    std::unique_ptr<LabelButtonImageContainer> image_container)
+    : LabelButton(std::move(callback),
+                  text,
+                  button_context,
+                  std::move(image_container)),
       use_text_color_for_icon_(use_text_color_for_icon) {
   InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
   SetHasInkDropActionOnClick(true);
