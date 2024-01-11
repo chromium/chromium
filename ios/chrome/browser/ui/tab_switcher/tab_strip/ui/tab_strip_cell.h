@@ -31,6 +31,12 @@
 // Whether the cell trailing separator is hidden.
 @property(nonatomic, assign) BOOL trailingSeparatorHidden;
 
+// Whether the cell leading separator gradient view is hidden.
+@property(nonatomic, assign) BOOL leadingSeparatorGradientViewHidden;
+
+// Whether the cell trailing separator gradient view is hidden.
+@property(nonatomic, assign) BOOL trailingSeparatorGradientViewHidden;
+
 // Preview parameters of the cell when dragged.
 @property(nonatomic, readonly) UIDragPreviewParameters* dragPreviewParameters;
 

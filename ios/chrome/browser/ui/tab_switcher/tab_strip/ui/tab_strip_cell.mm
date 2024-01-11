@@ -70,7 +70,8 @@ UIImage* DefaultFavicon() {
   // Cell separator.
   UIView* _leadingSeparatorView;
   UIView* _trailingSeparatorView;
-  UIView* _trailingGradientView;
+  UIView* _leadingSeparatorGradientView;
+  UIView* _trailingSeparatorGradientView;
 
   // Wether the decoration layers have been updated.
   BOOL _decorationLayersUpdated;
@@ -125,8 +126,11 @@ UIImage* DefaultFavicon() {
     _trailingSeparatorView = [self createSeparatorView];
     [self addSubview:_trailingSeparatorView];
 
-    _trailingGradientView = [self createGradientView];
-    [self addSubview:_trailingGradientView];
+    _leadingSeparatorGradientView = [self createGradientView];
+    [self addSubview:_leadingSeparatorGradientView];
+
+    _trailingSeparatorGradientView = [self createGradientView];
+    [self addSubview:_trailingSeparatorGradientView];
 
     [self setupConstraints];
     [self setupDecorationLayers];
@@ -190,8 +194,29 @@ UIImage* DefaultFavicon() {
   _trailingSeparatorView.hidden = trailingSeparatorHidden;
 }
 
+- (void)setLeadingSeparatorGradientViewHidden:
+    (BOOL)leadingSeparatorGradientViewHidden {
+  _leadingSeparatorGradientViewHidden = leadingSeparatorGradientViewHidden;
+  _leadingSeparatorGradientView.hidden = leadingSeparatorGradientViewHidden;
+}
+
+- (void)setTrailingSeparatorGradientViewHidden:
+    (BOOL)trailingSeparatorGradientViewHidden {
+  _trailingSeparatorGradientViewHidden = trailingSeparatorGradientViewHidden;
+  _trailingSeparatorGradientView.hidden = trailingSeparatorGradientViewHidden;
+}
+
 - (void)setSelected:(BOOL)selected {
   [super setSelected:selected];
+
+  if (selected) {
+    /// The cell attributes is updated just after the cell selection.
+    /// Hide separtors to avoid an animation glitch when selecting/inserting.
+    _leadingSeparatorView.hidden = YES;
+    _trailingSeparatorView.hidden = YES;
+    _leadingSeparatorGradientView.hidden = YES;
+    _trailingSeparatorGradientView.hidden = YES;
+  }
 
   UIColor* backgroundColor = selected
                                  ? [UIColor colorNamed:kPrimaryBackgroundColor]
@@ -208,7 +233,6 @@ UIImage* DefaultFavicon() {
   self.layer.zPosition = selected ? kSelectedZIndex : 0;
 
   // Update decoration views visibility.
-  _trailingGradientView.hidden = selected;
   _leftTailView.hidden = !selected;
   _rightTailView.hidden = !selected;
   _topLeftCornerView.hidden = !selected;
@@ -232,8 +256,6 @@ UIImage* DefaultFavicon() {
   self.selected = NO;
   [self setFaviconImage:nil];
 }
-
-
 
 #pragma mark - Private
 
@@ -259,19 +281,30 @@ UIImage* DefaultFavicon() {
   CAShapeLayer* rightTailMaskLayer = [CAShapeLayer layer];
   rightTailMaskLayer.path = cornerPath.CGPath;
   _rightTailView.layer.mask = rightTailMaskLayer;
-  _rightTailView.layer.transform = CATransform3DMakeScale(-1, 1, 1);
+  _rightTailView.transform = CGAffineTransformMakeScale(-1, 1);
 
   // Round the top left corner.
   CAShapeLayer* topLeftCornerLayer = [CAShapeLayer layer];
   topLeftCornerLayer.path = cornerPath.CGPath;
   _topLeftCornerView.layer.mask = topLeftCornerLayer;
-  _topLeftCornerView.layer.transform = CATransform3DMakeScale(-1, -1, 1);
+  _topLeftCornerView.transform = CGAffineTransformMakeScale(-1, -1);
 
   // Round the top right corner.
   CAShapeLayer* topRightCornerLayer = [CAShapeLayer layer];
   topRightCornerLayer.path = cornerPath.CGPath;
   _topRightCornerView.layer.mask = topRightCornerLayer;
-  _topRightCornerView.layer.transform = CATransform3DMakeScale(1, -1, 1);
+  _topRightCornerView.transform = CGAffineTransformMakeScale(1, -1);
+
+  // Setup and mirror separator gradient views if needed.
+  _leadingSeparatorGradientView.hidden = YES;
+  _trailingSeparatorGradientView.hidden = YES;
+  if (UseRTLLayout()) {
+    _trailingSeparatorGradientView.transform =
+        CGAffineTransformMakeScale(-1, 1);
+
+  } else {
+    _leadingSeparatorGradientView.transform = CGAffineTransformMakeScale(-1, 1);
+  }
 
   _decorationLayersUpdated = YES;
 }
@@ -455,15 +488,27 @@ UIImage* DefaultFavicon() {
         constraintEqualToAnchor:contentView.centerYAnchor],
   ]];
 
-  /// `_trailingGradientView` constraints.
+  /// `_leadingSeparatorGradientView` constraints.
   [NSLayoutConstraint activateConstraints:@[
-    [_trailingGradientView.trailingAnchor
-        constraintEqualToAnchor:_trailingSeparatorView.leadingAnchor],
-    [_trailingGradientView.widthAnchor
+    [_leadingSeparatorGradientView.leadingAnchor
+        constraintEqualToAnchor:_leadingSeparatorView.trailingAnchor],
+    [_leadingSeparatorGradientView.widthAnchor
         constraintEqualToConstant:kGradientWidth],
-    [_trailingGradientView.heightAnchor
+    [_leadingSeparatorGradientView.heightAnchor
         constraintEqualToAnchor:contentView.heightAnchor],
-    [_trailingGradientView.centerYAnchor
+    [_leadingSeparatorGradientView.centerYAnchor
+        constraintEqualToAnchor:contentView.centerYAnchor],
+  ]];
+
+  /// `_trailingSeparatorGradientView` constraints.
+  [NSLayoutConstraint activateConstraints:@[
+    [_trailingSeparatorGradientView.trailingAnchor
+        constraintEqualToAnchor:_trailingSeparatorView.leadingAnchor],
+    [_trailingSeparatorGradientView.widthAnchor
+        constraintEqualToConstant:kGradientWidth],
+    [_trailingSeparatorGradientView.heightAnchor
+        constraintEqualToAnchor:contentView.heightAnchor],
+    [_trailingSeparatorGradientView.centerYAnchor
         constraintEqualToAnchor:contentView.centerYAnchor],
   ]];
 }

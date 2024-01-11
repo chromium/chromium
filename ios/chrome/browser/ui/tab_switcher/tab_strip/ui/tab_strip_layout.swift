@@ -145,6 +145,8 @@ class TabStripLayout: UICollectionViewFlowLayout {
       // Update cell separators.
       cell.leadingSeparatorHidden = true
       cell.trailingSeparatorHidden = true
+      cell.leadingSeparatorGradientViewHidden = true
+      cell.trailingSeparatorGradientViewHidden = true
 
       var origin = layoutAttributes.frame.origin
 
@@ -184,18 +186,35 @@ class TabStripLayout: UICollectionViewFlowLayout {
       frame.size.width = min(offsetRight - frame.origin.x, frame.size.width)
     }
 
-    /// Show the `leadingSeparator` before the cell intersects with the
-    /// collection view's bounds.
+    cell.leadingSeparatorGradientViewHidden = true
+    cell.trailingSeparatorGradientViewHidden = true
+
+    /// Show the `leadingSeparator` and the approriaite `separatorGradientView`
+    /// before the cell intersects with the collection view's bounds.
     if collectionView.contentSize.width > collectionView.frame.width {
       let isRTL: Bool = collectionView.effectiveUserInterfaceLayoutDirection == .rightToLeft
       if (frame.minX - TabStripConstants.TabItem.leadingSeparatorMinInset) <= contentOffset.x {
         if !isRTL {
           cell.leadingSeparatorHidden = false
+          cell.trailingSeparatorGradientViewHidden = false
+        } else {
+          cell.leadingSeparatorGradientViewHidden = false
+          /// Hide the `trailingSeparatorGradientView` before it intersects with
+          /// the `leadingSeparatorGradientView`.
+          cell.trailingSeparatorGradientViewHidden =
+            (frame.maxX - TabStripConstants.TabItem.leadingSeparatorMinInset) <= contentOffset.x
         }
       }
       if offsetRight <= (frame.maxX + TabStripConstants.TabItem.leadingSeparatorMinInset) {
-        if isRTL {
+        if !isRTL {
+          cell.leadingSeparatorGradientViewHidden = false
+          /// Hide the `trailingSeparatorGradientView` before it intersects with
+          /// the `leadingSeparatorGradientView`.
+          cell.trailingSeparatorGradientViewHidden =
+            (frame.minX + TabStripConstants.TabItem.leadingSeparatorMinInset) >= offsetRight
+        } else {
           cell.leadingSeparatorHidden = false
+          cell.trailingSeparatorGradientViewHidden = false
         }
       }
     }
