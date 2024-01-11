@@ -133,9 +133,17 @@ IN_PROC_BROWSER_TEST_F(ClosedTabCacheBrowserTest, StoreEntryWhenFull) {
   EXPECT_EQ(closed_tab_cache().EntriesCount(), 1U);
 }
 
+// TODO(crbug.com/1517451): Re-enable this test
+#if BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER)
+#define MAYBE_StoreEntryWithoutBeforeunloadListener \
+  DISABLED_StoreEntryWithoutBeforeunloadListener
+#else
+#define MAYBE_StoreEntryWithoutBeforeunloadListener \
+  StoreEntryWithoutBeforeunloadListener
+#endif
 // Only add an entry to the cache when no beforeunload listeners are running.
 IN_PROC_BROWSER_TEST_F(ClosedTabCacheBrowserTest,
-                       StoreEntryWithoutBeforeunloadListener) {
+                       MAYBE_StoreEntryWithoutBeforeunloadListener) {
   ASSERT_TRUE(embedded_test_server()->Start());
   EXPECT_TRUE(closed_tab_cache().IsEmpty())
       << "Expected cache to be empty at the start of the test.";
