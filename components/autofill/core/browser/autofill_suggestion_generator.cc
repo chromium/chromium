@@ -1227,9 +1227,16 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
   FieldTypeGroup trigger_field_type_group =
       GroupTypeOfFieldType(trigger_field_type);
   for (const AutofillProfile* profile : profiles) {
+    // Name fields should have `NAME_FULL` as main text.
+    FieldType main_text_field_type =
+        GroupTypeOfFieldType(trigger_field_type) == FieldTypeGroup::kName &&
+                base::FeatureList::IsEnabled(
+                    features::kAutofillGranularFillingAvailable)
+            ? NAME_FULL
+            : trigger_field_type;
     // Compute the main text to be displayed in the suggestion bubble.
-    std::u16string main_text =
-        GetProfileSuggestionMainText(*profile, app_locale, trigger_field_type);
+    std::u16string main_text = GetProfileSuggestionMainText(
+        *profile, app_locale, main_text_field_type);
     if (trigger_field_type_group == FieldTypeGroup::kPhone) {
       main_text = GetPhoneNumberValueForInput(
           trigger_field_max_length, main_text,
