@@ -2981,6 +2981,11 @@ message RemoteCommand {
   // valid `ash::cros_healthd::mojom::DiagnosticRoutineCommandEnum`.
   // |DEVICE_REBOOT|: {"user_session_delay_s": delay_integer}, where delay value
   // represents seconds until reboot in user session.
+  // |FETCH_SUPPORT_PACKET|:
+  // {"supportPacketDetails":{ "issueCaseId": optional_support_case_id_string,
+  // "issueDescription": optional_issue_description_string,
+  // "requestedDataCollectors": [<list of `support_tool::DataCollectorType`
+  // enums>], "requestedPiiTypes": [<list of `support_tool::PiiType` enums>]}}
   optional string payload = 4;
 
   // An identifier for the target this command is for. This is the same as
