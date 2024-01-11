@@ -271,7 +271,7 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   void ShowDevToolsInfoBar(const std::u16string& message,
                            DevToolsInfoBarDelegate::Callback callback);
   bool MaybeStartLogging();
-  base::TimeDelta GetTimeSinceLastAction();
+  base::TimeDelta GetTimeSinceSessionStart();
 
   // Extensions support.
   void AddDevToolsExtensionsToClient();
@@ -315,7 +315,7 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   std::string initial_target_id_;
 
   DevToolsSettings settings_;
-  base::TimeTicks last_action_time_;
+  base::TimeTicks session_start_time_;
 
   std::unique_ptr<AidaClient> aida_client_;
   base::UnguessableToken session_id_for_logging_;
