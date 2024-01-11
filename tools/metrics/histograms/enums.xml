@@ -44943,6 +44943,11 @@ Called by update_net_error_codes.py.-->
              on the server."/>
 </enum>
 
+<enum name="ShortcutLaunchSource">
+  <int value="0" label="Launcher"/>
+  <int value="1" label="Shelf"/>
+</enum>
+
 <enum name="ShortProcessType">
   <int value="0" label="Unspecified"/>
   <int value="1" label="Browser"/>

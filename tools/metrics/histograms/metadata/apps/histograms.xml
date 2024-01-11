@@ -2582,6 +2582,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Apps.Shortcut.LaunchSource" enum="ShortcutLaunchSource"
+    expires_after="2024-12-01">
+  <owner>mxcai@chromium.org</owner>
+  <owner>vpao@google.com</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <summary>
+    Records whether a shortcut is launched from the Launcher or Shelf. Emitted
+    when the user activates the shortcut by clicking on the shortcut item in the
+    Launcher or Shelf. Activating a shortcut will launch its linked parent app
+    to land on a specific page or screen.
+  </summary>
+</histogram>
+
 <histogram name="Apps.StateTransition.AnimationSmoothness" units="%"
     expires_after="2024-06-30">
   <owner>tbarzic@chromium.org</owner>

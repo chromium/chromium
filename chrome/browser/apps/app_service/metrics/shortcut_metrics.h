@@ -1,0 +1,24 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_APPS_APP_SERVICE_METRICS_SHORTCUT_METRICS_H_
+#define CHROME_BROWSER_APPS_APP_SERVICE_METRICS_SHORTCUT_METRICS_H_
+
+namespace apps {
+
+extern const char kShortcutLaunchSourceHistogram[];
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class ShortcutLaunchSource {
+  kLauncher = 0,
+  kShelf = 1,
+  kMaxValue = kShelf
+};
+
+void RecordShortcutLaunchSource(const ShortcutLaunchSource launch_source);
+
+}  // namespace apps
+
+#endif  // CHROME_BROWSER_APPS_APP_SERVICE_METRICS_SHORTCUT_METRICS_H_
