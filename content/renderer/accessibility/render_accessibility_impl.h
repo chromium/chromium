@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
@@ -243,10 +244,11 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   // Manages the automatic image annotations, if enabled.
   std::unique_ptr<AXImageAnnotator> ax_image_annotator_;
 
-  using PluginAXTreeSerializer = ui::AXTreeSerializer<
-      const ui::AXNode*,
-      std::vector<raw_ptr<const ui::AXNode, VectorExperimental>>>;
-  std::unique_ptr<PluginAXTreeSerializer> plugin_serializer_;
+  using PluginAXTreeSerializer =
+      ui::AXTreeSerializer<const ui::AXNode*, std::vector<const ui::AXNode*>>;
+  // AXTreeSerializer's AXSourceNodeVectorType is not a vector<raw_ptr> due to
+  // performance regressions detected in blink_perf.accessibility tests.
+  RAW_PTR_EXCLUSION std::unique_ptr<PluginAXTreeSerializer> plugin_serializer_;
   raw_ptr<PluginAXTreeSource, ExperimentalRenderer> plugin_tree_source_;
 
   // Token to return this token in the next IPC, so that RenderFrameHostImpl
