@@ -1531,8 +1531,7 @@ CSSValue* ComputedStyleUtils::ValueForFont(const ComputedStyle& style) {
       optical_sizing != kAutoOpticalSizing ||
       (RuntimeEnabledFeatures::CSSFontSizeAdjustEnabled() &&
        style.GetFontDescription().HasSizeAdjust()) ||
-      (RuntimeEnabledFeatures::FontVariantPositionEnabled() &&
-       variant_position != FontDescription::kNormalVariantPosition)) {
+      variant_position != FontDescription::kNormalVariantPosition) {
     return nullptr;
   }
 

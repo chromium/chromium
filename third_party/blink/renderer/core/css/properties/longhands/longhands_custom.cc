@@ -3747,7 +3747,6 @@ const CSSValue* FontVariantPosition::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
-  DCHECK(RuntimeEnabledFeatures::FontVariantPositionEnabled());
   return ComputedStyleUtils::ValueForFontVariantPosition(style);
 }
 

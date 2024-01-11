@@ -1548,7 +1548,6 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kAntialiased ||
              value_id == CSSValueID::kSubpixelAntialiased;
     case CSSPropertyID::kFontVariantPosition:
-      DCHECK(RuntimeEnabledFeatures::FontVariantPositionEnabled());
       return value_id == CSSValueID::kNormal || value_id == CSSValueID::kSub ||
              value_id == CSSValueID::kSuper;
     case CSSPropertyID::kLineBreak:

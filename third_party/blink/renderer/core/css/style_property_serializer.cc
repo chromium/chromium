@@ -1207,16 +1207,14 @@ String StylePropertySerializer::FontValue() const {
     return g_empty_string;
   }
 
-  if (RuntimeEnabledFeatures::FontVariantPositionEnabled()) {
-    int font_variant_position_property_index =
-        property_set_.FindPropertyIndex(GetCSSPropertyFontVariantPosition());
-    DCHECK_NE(font_variant_position_property_index, -1);
-    PropertyValueForSerializer font_variant_position_property =
-        property_set_.PropertyAt(font_variant_position_property_index);
-    if (IsPropertyNonInitial(*font_variant_position_property.Value(),
-                             CSSValueID::kNormal)) {
-      return g_empty_string;
-    }
+  int font_variant_position_property_index =
+      property_set_.FindPropertyIndex(GetCSSPropertyFontVariantPosition());
+  DCHECK_NE(font_variant_position_property_index, -1);
+  PropertyValueForSerializer font_variant_position_property =
+      property_set_.PropertyAt(font_variant_position_property_index);
+  if (IsPropertyNonInitial(*font_variant_position_property.Value(),
+                           CSSValueID::kNormal)) {
+    return g_empty_string;
   }
 
   if (RuntimeEnabledFeatures::CSSFontSizeAdjustEnabled()) {
@@ -1302,10 +1300,8 @@ String StylePropertySerializer::FontVariantValue() const {
                                      result);
   AppendFontLonghandValueIfNotNormal(GetCSSPropertyFontVariantEastAsian(),
                                      result);
-  if (RuntimeEnabledFeatures::FontVariantPositionEnabled()) {
-    AppendFontLonghandValueIfNotNormal(GetCSSPropertyFontVariantPosition(),
-                                       result);
-  }
+  AppendFontLonghandValueIfNotNormal(GetCSSPropertyFontVariantPosition(),
+                                     result);
 
   // The font-variant shorthand should return an empty string where
   // it cannot represent "font-variant-ligatures: none" along

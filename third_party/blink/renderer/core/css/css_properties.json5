@@ -1494,7 +1494,6 @@
       name: "font-variant-position",
       property_methods: ["CSSValueFromComputedStyleInternal"],
       inherited: true,
-      runtime_flag: "FontVariantPosition",
       font: true,
       name_for_methods: "VariantPosition",
       type_name: "FontDescription::FontVariantPosition",

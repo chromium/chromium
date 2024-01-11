@@ -1877,10 +1877,6 @@
       // a Chromium level feature.
     },
     {
-      name: "FontVariantPosition",
-      status: "stable",
-    },
-    {
       // TODO(crbug.com/1231644): This flag is being kept (even though the
       // feature has shipped) until there are settings to allow users to
       // customize the feature.
