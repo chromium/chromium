@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/autofill_profile_sync_util.h"
+#include "components/autofill/core/browser/webdata/addresses/autofill_profile_sync_util.h"
 
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"

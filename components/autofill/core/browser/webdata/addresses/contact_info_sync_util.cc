@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/contact_info_sync_util.h"
+#include "components/autofill/core/browser/webdata/addresses/contact_info_sync_util.h"
 
 #include "base/hash/hash.h"
 #include "base/memory/raw_ref.h"
