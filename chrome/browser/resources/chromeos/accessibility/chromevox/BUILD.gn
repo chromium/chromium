@@ -30,6 +30,7 @@ ts_modules = [
   "background/input/background_keyboard_handler.ts",
   "background/logging/log_manager.ts",
   "common/msgs.ts",
+  "common/tts_types.ts",
   "panel/panel.ts",
   "panel/panel_captions.ts",
 ]
@@ -150,7 +151,6 @@ chromevox_es6_modules = [
   "common/spannable.js",
   "common/settings_manager.js",
   "common/tree_dumper.js",
-  "common/tts_types.js",
   "learn_mode/learn_mode.js",
   "log_page/log.js",
   "log_page/log_loader.js",

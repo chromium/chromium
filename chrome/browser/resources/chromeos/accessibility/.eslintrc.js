@@ -59,6 +59,13 @@ module.exports = {
                 selector: 'classMethod',
                 format: ['strictCamelCase'],
                 modifiers: ['public'],
+                filter: {
+                  regex: '^(' +
+                      // Exclude initialism JSON
+                      'toJSON' +
+                      ')$',
+                  match: false,
+                },
               },
               {
                 selector: 'classMethod',
