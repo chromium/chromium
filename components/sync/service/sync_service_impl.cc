@@ -1180,11 +1180,6 @@ void SyncServiceImpl::OnConfigureDone(
   DCHECK(!user_settings_->IsPassphraseRequiredForPreferredDataTypes() ||
          user_settings_->IsEncryptedDatatypeEnabled());
 
-  // Notify listeners that configuration is done.
-  for (SyncServiceObserver& observer : *observers_) {
-    observer.OnSyncConfigurationCompleted(this);
-  }
-
   DVLOG(2) << "Notify observers OnConfigureDone";
   NotifyObservers();
 

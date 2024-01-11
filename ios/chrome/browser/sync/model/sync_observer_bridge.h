@@ -13,8 +13,6 @@
 
 @protocol SyncObserverModelBridge <NSObject>
 - (void)onSyncStateChanged;
-@optional
-- (void)onSyncConfigurationCompleted;
 @end
 
 // C++ class to monitor profile sync status in Objective-C type.
@@ -31,7 +29,6 @@ class SyncObserverBridge : public syncer::SyncServiceObserver {
 
   // syncer::SyncServiceObserver implementation:
   void OnStateChanged(syncer::SyncService* sync) override;
-  void OnSyncConfigurationCompleted(syncer::SyncService* sync) override;
   void OnSyncShutdown(syncer::SyncService* sync) override;
 
  private:
