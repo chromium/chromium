@@ -48,7 +48,6 @@ class DriveTabHelperTest : public PlatformTest {
 // `DownloadTask` destructor is called, since neglecting to remove itself as
 // observer would lead to a crash.
 TEST_F(DriveTabHelperTest, StopsObservingDestroyedDownloadTask) {
-  EXPECT_EQ(std::nullopt, helper_->GetDownloadTaskSaveToDriveData());
   FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
   helper_->AddDownloadToSaveToDrive(download_task_.get(), identity);
   UploadTask* upload_task =

@@ -6,7 +6,6 @@
 #define IOS_CHROME_BROWSER_DRIVE_MODEL_DRIVE_TAB_HELPER_H_
 
 #import "base/scoped_observation.h"
-#import "ios/chrome/browser/drive/model/download_task_save_to_drive_data.h"
 #import "ios/web/public/download/download_task.h"
 #import "ios/web/public/download/download_task_observer.h"
 #import "ios/web/public/web_state_observer.h"
@@ -33,10 +32,6 @@ class DriveTabHelper : public web::WebStateUserData<DriveTabHelper>,
   // and the downloaded file will be uploaded to Drive.
   void AddDownloadToSaveToDrive(web::DownloadTask* task,
                                 id<SystemIdentity> identity);
-  // Returns Save to Drive data associated with the current download task.
-  // TODO(crbug.com/1495354): Remove `GetDownloadTaskSaveToDriveData()` and use
-  // `GetUploadTaskForDownload()` and `GetUploadIdentityForDownload()` instead.
-  std::optional<DownloadTaskSaveToDriveData> GetDownloadTaskSaveToDriveData();
   // Returns the upload task associated with `download_task`, if any.
   UploadTask* GetUploadTaskForDownload(web::DownloadTask* task);
 

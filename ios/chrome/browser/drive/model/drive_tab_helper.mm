@@ -24,18 +24,6 @@ void DriveTabHelper::AddDownloadToSaveToDrive(web::DownloadTask* task,
   ResetSaveToDriveData(task, identity);
 }
 
-// TODO(crbug.com/1495354): Remove `GetDownloadTaskSaveToDriveData()` and use
-// `GetUploadTaskForDownload()` and `GetUploadIdentityForDownload()` instead.
-std::optional<DownloadTaskSaveToDriveData>
-DriveTabHelper::GetDownloadTaskSaveToDriveData() {
-  web::DownloadTask* download_task = download_task_obs_.GetSource();
-  if (!download_task) {
-    return std::nullopt;
-  }
-  return DownloadTaskSaveToDriveData{.task = download_task,
-                                     .identity = upload_task_->GetIdentity()};
-}
-
 UploadTask* DriveTabHelper::GetUploadTaskForDownload(
     web::DownloadTask* download_task) {
   if (!download_task || download_task_obs_.GetSource() != download_task) {
