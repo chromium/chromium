@@ -4,11 +4,16 @@
 
 import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/closure_compiler/js_unit_tests.gni")
+import("//tools/typescript/ts_definitions.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/file_manager/base/gn/js_test_type_check.gni")
 import("//ui/file_manager/file_names.gni")
 import("//ui/webui/resources/tools/optimize_webui.gni")
 import("//ui/webui/webui_features.gni")
+
+ts_definitions("generate_definitions") {
+  js_files = [ "piex_loader.js" ]
+}
 
 js_type_check("closure_compile_jsmodules") {
   closure_flags = default_closure_args + [

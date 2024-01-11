@@ -18,7 +18,7 @@ stage_folder = "$root_gen_dir/ash/webui/media_app_ui/stage_rollup"
 # JS bundling with rollup.
 # This is for files direct from the src/:  input_folder="./".
 copy("stage_static") {
-  sources = media_app_static_js_sources + media_app_unconverted_js_sources + [
+  sources = media_app_unconverted_js_sources + [
               "//ash/webui/system_apps/public/js/sandboxed_load_time_data.js",
               "//ui/file_manager/image_loader/piex_loader.js",
             ]
@@ -57,7 +57,8 @@ copy("stage_for_tsc") {
   # to engage logic in ts_library.py that handles clearing out old build
   # dependencies.
   sources = media_app_converted_ts_sources + media_app_static_defs +
-            media_app_unconverted_js_sources + media_app_static_js_sources
+            media_app_unconverted_js_sources +
+            [ "//ui/file_manager/image_loader/piex_loader.js" ]
   outputs = [ ts_root_dir + "/{{source_file_part}}" ]
 }
 
@@ -101,6 +102,7 @@ optimize_webui("piex_rollup") {
   js_module_in_files = [ "piex_module.js" ]
   input = rebase_path(stage_folder, root_build_dir)
   deps = [
+    ":stage_compiled_ts",
     ":stage_generated",
     ":stage_static",
   ]
@@ -121,20 +123,12 @@ media_closure_flags = system_app_closure_flags_strict + [
                       ]
 
 group("closure_compile") {
-  deps = [
-    ":closure_compile_index",
-    ":closure_compile_piex_module",
-  ]
+  deps = [ ":closure_compile_index" ]
 }
 
 js_type_check("closure_compile_index") {
   closure_flags = media_closure_flags
   deps = [ ":launch" ]
-}
-
-js_type_check("closure_compile_piex_module") {
-  closure_flags = media_closure_flags
-  deps = [ ":piex_module" ]
 }
 
 js_library("app_context_test_support") {
@@ -165,13 +159,6 @@ js_library("message_types") {
 
 js_library("error_reporter") {
   externs_list = [ "$externs_path/crash_report_private.js" ]
-}
-
-js_library("piex_module_loader") {
-}
-
-js_library("piex_module") {
-  deps = [ "//ui/file_manager/image_loader:piex_loader" ]
 }
 
 js_library("mojo_api_bootstrap") {

@@ -15,7 +15,7 @@
  *  image: function(number, number):!PiexWasmImageResult
  * }}
  */
-let PiexWasmModule;
+export let PiexWasmModule;
 
 /**
  * Subset of the Emscripten Module API required for initialization. See

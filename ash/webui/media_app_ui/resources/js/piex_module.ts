@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PIEX_LOADER_TEST_ONLY, PiexLoader} from './piex_loader.js';
+import {PIEX_LOADER_TEST_ONLY, PiexLoader, PiexWasmModule} from './piex_loader.js';
 
 /**
  * Set when PiexLoader has an unrecoverable error to disable future attempts.
- * @type {boolean}
  */
 let piexEnabled = true;
 
@@ -103,10 +102,8 @@ const TIFF_HEADER = new Uint8Array([
  * This is a number [1, 8]. The Exif spec requests a 16-bit unsigned int to be
  * written.
  * Reference: https://www.exif.org/Exif2-2.PDF#page=19.
- * @param {number} value orientation value.
- * @return {!ArrayBuffer}
  */
-function makeOrientationIfdFrame(value) {
+function makeOrientationIfdFrame(value: number) {
   const LITTLE_ENDIAN = true;
   const TAG_ORIENTATION = 0x0112;
   const TYPE_UINT16 = 3;   // 1=BYTE, 2=ASCII, 3=SHORT, 4=LONG, etc.
@@ -131,10 +128,8 @@ function makeOrientationIfdFrame(value) {
 
 /**
  * Extracts a JPEG from a RAW Image ArrayBuffer.
- * @param {!ArrayBuffer} buffer
- * @return {!Promise<!File>}
  */
-async function extractFromRawImageBuffer(buffer) {
+async function extractFromRawImageBuffer(buffer: ArrayBuffer) {
   /** Application Segment Marker. */
   const APP1_MARKER = 0xffe1;
 
@@ -150,13 +145,8 @@ async function extractFromRawImageBuffer(buffer) {
   const response = await PiexLoader.load(buffer, onPiexModuleFailed);
   // Note the "thumbnail" is usually the full-sized image "preview", but may
   // fall back to a thumbnail when that is unavailable.
-  /** @type {!ArrayBuffer} */
   const jpegData = response.thumbnail;
 
-  /**
-   * @param {string=} warning
-   * @return {!File}
-   */
   function original(warning = '') {
     if (warning) {
       console.warn(`Returning unrotated image: ${warning}.`);
@@ -190,12 +180,19 @@ async function extractFromRawImageBuffer(buffer) {
       {type: response.mimeType});
 }
 
+declare global {
+  interface Window {
+    getPiexModuleForTesting: () => PiexWasmModule;
+    extractFromRawImageBuffer: (buffer: ArrayBuffer) => Promise<File>;
+  }
+}
+
 // Export to `window` manually until the toolchain has better support for
 // dynamic module loading. Dynamic modules require ES2020, but asking chromium's
 // closure typechecking toolchain for ES2020 input and output still complains
 // that dynamic imports can't be transpiled.
-window['extractFromRawImageBuffer'] = extractFromRawImageBuffer;
+window.extractFromRawImageBuffer = extractFromRawImageBuffer;
 
 // Expose the module on `window` for MediaAppIntegrationTest.HandleRawFiles.
 // TODO(b/185957537): Convert the test case to a JS module.
-window['getPiexModuleForTesting'] = PIEX_LOADER_TEST_ONLY.getModule;
+window.getPiexModuleForTesting = PIEX_LOADER_TEST_ONLY.getModule;
