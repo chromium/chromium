@@ -1170,20 +1170,6 @@ targets.legacy_matrix_compound_suite(
 )
 
 targets.legacy_matrix_compound_suite(
-    name = "linux_lacros_version_skew_tests",
-    basic_suites = {
-        "linux_lacros_chrome_interactive_ui_tests_version_skew": targets.legacy_matrix_config(
-            variants = [
-                "LACROS_VERSION_SKEW_CANARY",
-                "LACROS_VERSION_SKEW_DEV",
-                "LACROS_VERSION_SKEW_BETA",
-                "LACROS_VERSION_SKEW_STABLE",
-            ],
-        ),
-    },
-)
-
-targets.legacy_matrix_compound_suite(
     name = "linux_optional_gpu_tests_rel_gpu_telemetry_tests",
     basic_suites = {
         "gpu_common_and_optional_telemetry_tests": targets.legacy_matrix_config(

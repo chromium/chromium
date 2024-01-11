@@ -3608,17 +3608,6 @@
           'gtest_tests': 'linux_lacros_gtests',
         },
       },
-      'linux-lacros-version-skew-fyi': {
-        'additional_compile_targets': [
-          'chrome',
-        ],
-        'mixins': [
-          'linux-jammy',
-        ],
-        'test_suites': {
-          'gtest_tests': 'linux_lacros_version_skew_tests',
-        },
-      },
       'linux-network-sandbox-rel': {
         'mixins': [
           'linux-jammy',

@@ -240,12 +240,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "linux-lacros-version-skew-fyi",
-    mirrors = ["ci/linux-lacros-version-skew-fyi"],
-    gn_args = "ci/linux-lacros-version-skew-fyi",
-)
-
-try_.builder(
     name = "linux-layout-tests-edit-ng",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(config = "chromium"),
