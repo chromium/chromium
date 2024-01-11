@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/group_bottom_trailing_view.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/group_grid_configurable_view.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/group_tab_view.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -31,13 +32,13 @@ NSInteger kIconSymbolPointSize = 13;
 // Size of activity indicator replacing fav icon when active.
 const CGFloat kIndicatorSize = 16.0;
 
-// Offsets and dimension ratio constraints of the top and bottom snapshot views.
-const CGFloat kSnapshotDimensionRatio = 0.5;
-const CGFloat kSnapshotViewWidthOffset = 6;
-const CGFloat kSnapshotViewHeightOffset = 4;
+// Offsets the top and bottom snapshot views.
 const CGFloat kSnapshotViewLeadingOffset = 4;
 const CGFloat kSnapshotViewTrailingOffset = 4;
 const CGFloat kSnapShotViewBottomOffset = 4;
+
+// The vertical/horizontal spacing to apply between the snapshot views.
+const CGFloat kSpacing = 4;
 
 }  // namespace
 
@@ -58,7 +59,7 @@ const CGFloat kSnapShotViewBottomOffset = 4;
 // Visual components of the cell.
 @property(nonatomic, weak) UIView* topBar;
 @property(nonatomic, weak) UIImageView* iconView;
-@property(nonatomic, weak) UIView* groupSnapshotsView;
+@property(nonatomic, weak) GroupGridConfigurableView* groupSnapshotsView;
 @property(nonatomic, weak) GroupTabView* topLeadingSnapshotView;
 @property(nonatomic, weak) GroupTabView* topTrailingSnapshotView;
 @property(nonatomic, weak) GroupTabView* bottomLeadingSnapshotView;
@@ -98,7 +99,8 @@ const CGFloat kSnapShotViewBottomOffset = 4;
     contentView.layer.cornerRadius = kGridCellCornerRadius;
     contentView.layer.masksToBounds = YES;
     UIView* topBar = [self setupTopBar];
-    UIView* groupSnapshotsView = [[UIView alloc] init];
+    GroupGridConfigurableView* groupSnapshotsView =
+        [[GroupGridConfigurableView alloc] initWithSpacing:kSpacing];
     GroupTabView* topLeadingSnapshotView = [[GroupTabView alloc] init];
     GroupTabView* topTrailingSnapshotView = [[GroupTabView alloc] init];
     GroupTabView* bottomLeadingSnapshotView = [[GroupTabView alloc] init];
@@ -117,10 +119,11 @@ const CGFloat kSnapShotViewBottomOffset = 4;
                    forControlEvents:UIControlEventTouchUpInside];
     closeTapTargetButton.accessibilityIdentifier =
         kGridCellCloseButtonIdentifier;
-    [groupSnapshotsView addSubview:topLeadingSnapshotView];
-    [groupSnapshotsView addSubview:topTrailingSnapshotView];
-    [groupSnapshotsView addSubview:bottomLeadingSnapshotView];
-    [groupSnapshotsView addSubview:bottomTrailingSnapshotView];
+    [groupSnapshotsView updateTopLeadingWithView:topLeadingSnapshotView];
+    [groupSnapshotsView updateTopTrailingWithView:topTrailingSnapshotView];
+    [groupSnapshotsView updateBottomLeadingWithView:bottomLeadingSnapshotView];
+    [groupSnapshotsView
+        updateBottomTrailingWithView:bottomTrailingSnapshotView];
 
     [contentView addSubview:topBar];
     [contentView addSubview:groupSnapshotsView];
@@ -185,11 +188,14 @@ const CGFloat kSnapShotViewBottomOffset = 4;
       [groupSnapshotsView.topAnchor
           constraintEqualToAnchor:topBar.bottomAnchor],
       [groupSnapshotsView.leadingAnchor
-          constraintEqualToAnchor:contentView.leadingAnchor],
+          constraintEqualToAnchor:contentView.leadingAnchor
+                         constant:kSnapshotViewLeadingOffset],
       [groupSnapshotsView.trailingAnchor
-          constraintEqualToAnchor:contentView.trailingAnchor],
+          constraintEqualToAnchor:contentView.trailingAnchor
+                         constant:-kSnapshotViewTrailingOffset],
       [groupSnapshotsView.bottomAnchor
-          constraintEqualToAnchor:contentView.bottomAnchor],
+          constraintEqualToAnchor:contentView.bottomAnchor
+                         constant:-kSnapShotViewBottomOffset],
       [closeTapTargetButton.topAnchor
           constraintEqualToAnchor:contentView.topAnchor],
       [closeTapTargetButton.trailingAnchor
@@ -198,76 +204,6 @@ const CGFloat kSnapShotViewBottomOffset = 4;
           constraintEqualToConstant:kGridCellCloseTapTargetWidthHeight],
       [closeTapTargetButton.heightAnchor
           constraintEqualToConstant:kGridCellCloseTapTargetWidthHeight],
-
-      [topLeadingSnapshotView.heightAnchor
-          constraintEqualToAnchor:groupSnapshotsView.heightAnchor
-                       multiplier:kSnapshotDimensionRatio
-                         constant:-kSnapshotViewHeightOffset],
-      [topLeadingSnapshotView.widthAnchor
-          constraintEqualToAnchor:groupSnapshotsView.widthAnchor
-                       multiplier:kSnapshotDimensionRatio
-                         constant:-kSnapshotViewWidthOffset],
-      [topLeadingSnapshotView.leadingAnchor
-          constraintEqualToAnchor:groupSnapshotsView.leadingAnchor
-                         constant:kSnapshotViewLeadingOffset],
-      [topLeadingSnapshotView.topAnchor
-          constraintEqualToAnchor:groupSnapshotsView.topAnchor],
-
-      [topTrailingSnapshotView.heightAnchor
-          constraintEqualToAnchor:groupSnapshotsView.heightAnchor
-                       multiplier:kSnapshotDimensionRatio
-                         constant:-kSnapshotViewHeightOffset],
-      [topTrailingSnapshotView.widthAnchor
-          constraintEqualToAnchor:groupSnapshotsView.widthAnchor
-                       multiplier:kSnapshotDimensionRatio
-                         constant:-kSnapshotViewWidthOffset],
-      [topTrailingSnapshotView.trailingAnchor
-          constraintEqualToAnchor:groupSnapshotsView.trailingAnchor
-                         constant:-kSnapshotViewTrailingOffset],
-      [topTrailingSnapshotView.topAnchor
-          constraintEqualToAnchor:groupSnapshotsView.topAnchor],
-      [bottomLeadingSnapshotView.heightAnchor
-          constraintEqualToAnchor:groupSnapshotsView.heightAnchor
-                       multiplier:kSnapshotDimensionRatio
-                         constant:-kSnapshotViewHeightOffset],
-      [bottomLeadingSnapshotView.widthAnchor
-          constraintEqualToAnchor:groupSnapshotsView.widthAnchor
-                       multiplier:kSnapshotDimensionRatio
-                         constant:-kSnapshotViewWidthOffset],
-      [bottomLeadingSnapshotView.leadingAnchor
-          constraintEqualToAnchor:groupSnapshotsView.leadingAnchor
-                         constant:kSnapshotViewLeadingOffset],
-      [bottomLeadingSnapshotView.bottomAnchor
-          constraintEqualToAnchor:groupSnapshotsView.bottomAnchor
-                         constant:-kSnapShotViewBottomOffset],
-
-      [bottomTrailingSnapshotView.heightAnchor
-          constraintEqualToAnchor:groupSnapshotsView.heightAnchor
-                       multiplier:kSnapshotDimensionRatio
-                         constant:-kSnapshotViewHeightOffset],
-      [bottomTrailingSnapshotView.widthAnchor
-          constraintEqualToAnchor:groupSnapshotsView.widthAnchor
-                       multiplier:kSnapshotDimensionRatio
-                         constant:-kSnapshotViewWidthOffset],
-      [bottomTrailingSnapshotView.trailingAnchor
-          constraintEqualToAnchor:groupSnapshotsView.trailingAnchor
-                         constant:-kSnapshotViewTrailingOffset],
-      [bottomTrailingSnapshotView.bottomAnchor
-          constraintEqualToAnchor:groupSnapshotsView.bottomAnchor
-                         constant:-kSnapShotViewBottomOffset],
-
-      [topLeadingSnapshotView.trailingAnchor
-          constraintLessThanOrEqualToAnchor:topTrailingSnapshotView
-                                                .leadingAnchor],
-      [bottomLeadingSnapshotView.trailingAnchor
-          constraintLessThanOrEqualToAnchor:bottomTrailingSnapshotView
-                                                .leadingAnchor],
-      [topLeadingSnapshotView.bottomAnchor
-          constraintLessThanOrEqualToAnchor:bottomLeadingSnapshotView
-                                                .topAnchor],
-      [topTrailingSnapshotView.bottomAnchor
-          constraintLessThanOrEqualToAnchor:bottomTrailingSnapshotView
-                                                .topAnchor],
     ];
     [NSLayoutConstraint activateConstraints:constraints];
   }

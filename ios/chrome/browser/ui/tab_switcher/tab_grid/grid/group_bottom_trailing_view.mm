@@ -11,10 +11,8 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 namespace {
-// Offsets and dimension ratio constraints of the top and bottom subviews.
-const CGFloat kSubviewsDimensionRatio = 0.5;
-const CGFloat kSubviewsWidthOffset = 1;
-const CGFloat kSubviewsHeightOffset = 1;
+// The vertical/horizontal spacing to apply between the `GroupTabView` views.
+const CGFloat kSpacing = 2;
 }  // namespace
 
 @implementation GroupGridBottomTrailingView {
@@ -28,8 +26,9 @@ const CGFloat kSubviewsHeightOffset = 1;
 }
 
 - (instancetype)init {
-  self = [super initWithFrame:CGRectZero];
+  self = [super initWithSpacing:kSpacing];
   if (self) {
+    self.applicableCornerRadius = kGroupGridBottomTrailingCellCornerRadius;
     _mainSubview = [[GroupTabView alloc] init];
     _mainSubview.hidden = YES;
     _mainSubview.layer.masksToBounds = YES;
@@ -46,75 +45,14 @@ const CGFloat kSubviewsHeightOffset = 1;
     _bottomTrailingView.translatesAutoresizingMaskIntoConstraints = NO;
 
     [self addSubview:_mainSubview];
-    [self addSubview:_topLeadingView];
-    [self addSubview:_topTrailingView];
-    [self addSubview:_bottomLeadingView];
-    [self addSubview:_bottomTrailingView];
+    [self updateTopLeadingWithView:_topLeadingView];
+    [self updateTopTrailingWithView:_topTrailingView];
+    [self updateBottomLeadingWithView:_bottomLeadingView];
+    [self updateBottomTrailingWithView:_bottomTrailingView];
 
     self.backgroundColor = [UIColor colorNamed:kBackgroundColor];
     AddSameConstraints(self, _mainSubview);
 
-    NSArray* constraints = @[
-      [_topLeadingView.widthAnchor
-          constraintEqualToAnchor:self.widthAnchor
-                       multiplier:kSubviewsDimensionRatio
-                         constant:-kSubviewsWidthOffset],
-      [_topLeadingView.heightAnchor
-          constraintEqualToAnchor:self.heightAnchor
-                       multiplier:kSubviewsDimensionRatio
-                         constant:-kSubviewsHeightOffset],
-      [_topLeadingView.topAnchor constraintEqualToAnchor:self.topAnchor],
-      [_topLeadingView.leadingAnchor
-          constraintEqualToAnchor:self.leadingAnchor],
-
-      [_topTrailingView.widthAnchor
-          constraintEqualToAnchor:self.widthAnchor
-                       multiplier:kSubviewsDimensionRatio
-                         constant:-kSubviewsWidthOffset],
-      [_topTrailingView.heightAnchor
-          constraintEqualToAnchor:self.heightAnchor
-                       multiplier:kSubviewsDimensionRatio
-                         constant:-kSubviewsHeightOffset],
-      [_topTrailingView.topAnchor constraintEqualToAnchor:self.topAnchor],
-      [_topTrailingView.trailingAnchor
-          constraintEqualToAnchor:self.trailingAnchor],
-
-      [_bottomLeadingView.widthAnchor
-          constraintEqualToAnchor:self.widthAnchor
-                       multiplier:kSubviewsDimensionRatio
-                         constant:-kSubviewsWidthOffset],
-      [_bottomLeadingView.heightAnchor
-          constraintEqualToAnchor:self.heightAnchor
-                       multiplier:kSubviewsDimensionRatio
-                         constant:-kSubviewsHeightOffset],
-      [_bottomLeadingView.bottomAnchor
-          constraintEqualToAnchor:self.bottomAnchor],
-      [_bottomLeadingView.leadingAnchor
-          constraintEqualToAnchor:self.leadingAnchor],
-
-      [_bottomTrailingView.widthAnchor
-          constraintEqualToAnchor:self.widthAnchor
-                       multiplier:kSubviewsDimensionRatio
-                         constant:-kSubviewsWidthOffset],
-      [_bottomTrailingView.heightAnchor
-          constraintEqualToAnchor:self.heightAnchor
-                       multiplier:kSubviewsDimensionRatio
-                         constant:-kSubviewsHeightOffset],
-      [_bottomTrailingView.bottomAnchor
-          constraintEqualToAnchor:self.bottomAnchor],
-      [_bottomTrailingView.trailingAnchor
-          constraintEqualToAnchor:self.trailingAnchor],
-
-      [_topLeadingView.trailingAnchor
-          constraintLessThanOrEqualToAnchor:_topTrailingView.leadingAnchor],
-      [_topLeadingView.bottomAnchor
-          constraintLessThanOrEqualToAnchor:_bottomLeadingView.topAnchor],
-      [_topTrailingView.bottomAnchor
-          constraintLessThanOrEqualToAnchor:_bottomTrailingView.topAnchor],
-      [_bottomLeadingView.trailingAnchor
-          constraintLessThanOrEqualToAnchor:_bottomTrailingView.leadingAnchor],
-    ];
-    [NSLayoutConstraint activateConstraints:constraints];
   }
 
   return self;

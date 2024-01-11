@@ -36,7 +36,7 @@
 // Configures the `GroupTabView` with a greater than 0 `remainingTabsNumber`.
 - (void)configureWithRemainingTabsNumber:(NSInteger)remainingTabsNumber;
 
-// Hides all the views/label and clearing their contents (image/attributedText).
+// Hides all the views/label and clears their contents (image/attributedText).
 - (void)hideAllAttributes;
 
 @end

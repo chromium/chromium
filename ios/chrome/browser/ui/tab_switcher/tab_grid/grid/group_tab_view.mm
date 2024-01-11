@@ -44,7 +44,9 @@ const NSInteger kTabGridButtonFontSize = 14;
 
     _faviconImageView = [[UIImageView alloc] init];
     _faviconImageView.translatesAutoresizingMaskIntoConstraints = NO;
+    _faviconImageView.layer.masksToBounds = YES;
     _faviconImageView.backgroundColor = [UIColor clearColor];
+    _faviconImageView.layer.cornerRadius = kGroupGridFaviconViewCornerRadius;
     _faviconImageView.contentMode = UIViewContentModeScaleAspectFill;
 
     _remainingTabsView = [[UIView alloc] init];
