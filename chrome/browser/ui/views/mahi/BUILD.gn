@@ -16,6 +16,7 @@ source_set("mahi") {
     "//base",
     "//chrome/browser/ui/views/editor_menu:utils",
     "//chromeos/components/editor_menu/public/cpp",
+    "//ui/chromeos/styles:cros_tokens_color_mappings_generator",
     "//ui/gfx",
     "//ui/views",
   ]

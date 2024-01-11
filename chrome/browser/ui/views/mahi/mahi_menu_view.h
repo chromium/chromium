@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_MAHI_MAHI_MENU_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_MAHI_MAHI_MENU_VIEW_H_
 
+#include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/views/view.h"
 
 namespace views {
 class UniqueWidgetPtr;
@@ -15,7 +16,7 @@ class UniqueWidgetPtr;
 namespace chromeos::mahi {
 
 // A bubble style view to show Mahi Menu.
-class MahiMenuView : public views::View {
+class MahiMenuView : public chromeos::editor_menu::PreTargetHandlerView {
  public:
   METADATA_HEADER(MahiMenuView);
 
@@ -33,6 +34,12 @@ class MahiMenuView : public views::View {
 
   // Updates the bounds of the view according to the given `anchor_view_bounds`.
   void UpdateBounds(const gfx::Rect& anchor_view_bounds);
+
+ private:
+  // Button callback.
+  void OnSummaryButtonPressed();
+
+  base::WeakPtrFactory<MahiMenuView> weak_ptr_factory_{this};
 };
 
 }  // namespace chromeos::mahi

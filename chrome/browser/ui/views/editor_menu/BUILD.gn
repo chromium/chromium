@@ -12,6 +12,8 @@ source_set("utils") {
     "utils/focus_search.h",
     "utils/pre_target_handler.cc",
     "utils/pre_target_handler.h",
+    "utils/pre_target_handler_view.cc",
+    "utils/pre_target_handler_view.h",
     "utils/preset_text_query.cc",
     "utils/preset_text_query.h",
     "utils/utils.cc",
