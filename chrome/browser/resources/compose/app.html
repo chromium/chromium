@@ -24,6 +24,14 @@
     padding: var(--padding_) 0;
   }
 
+  .close-button {
+    position: fixed;
+    --close-button-distance-from-edge: calc(20px -
+        ((var(--cr-icon-button-size) - var(--cr-icon-button-icon-size)) / 2));
+    inset-block-start: var(--close-button-distance-from-edge);
+    inset-inline-end: var(--close-button-distance-from-edge);
+  }
+
   #firstRunHeading {
     display: flex;
     height: 48px;
@@ -107,6 +115,7 @@
     line-height: 20px;
     margin: 0;
     margin-inline-end: auto;
+    padding-inline-end: 36px; /* From --cr-icon-button-size */
   }
 
   :host-context([chrome-refresh-2023]) h1 {
@@ -114,12 +123,12 @@
     font-size: 16px;
     font-weight: 500;
     line-height: 24px;
+    padding-inline-end: 32px; /* From --cr-icon-button-size */
   }
 
   cr-icon-button {
     --cr-icon-button-fill-color: var(--cr-secondary-text-color);
     margin: 0;
-    margin-inline-end: -6px;
   }
 
   :host-context([chrome-refresh-2023]) cr-icon-button {
@@ -376,8 +385,8 @@
       <iron-icon icon="compose:compose"></iron-icon>
     </div>
     <h1>$i18n{firstRunTitle}</h1>
-    <cr-icon-button id="firstRunCloseButton" iron-icon="cr:close"
-        on-click="onClose_" aria-label="$i18n{close}">
+    <cr-icon-button id="firstRunCloseButton" class="close-button"
+      iron-icon="cr:close" on-click="onClose_" aria-label="$i18n{close}">
     </cr-icon-button>
   </div>
 
@@ -401,8 +410,8 @@
 <div id="freMsbbDialog" class="dialog" hidden="[[!showMSBBDialog_]]">
   <div id="freMsbbHeading">
     <h1>$i18n{freMsbbTitle}</h1>
-    <cr-icon-button id="closeButtonMSBB" iron-icon="cr:close"
-      on-click="onClose_">
+    <cr-icon-button id="closeButtonMSBB" class="close-button"
+      iron-icon="cr:close" on-click="onClose_">
     </cr-icon-button>
   </div>
 
@@ -424,8 +433,8 @@
 <div id="appDialog" class="dialog" hidden="[[!showMainAppDialog_]]">
   <div id="heading">
     <h1>$i18n{dialogTitle}</h1>
-    <cr-icon-button id="closeButton" iron-icon="cr:close" on-click="onClose_"
-        aria-label="$i18n{close}">
+    <cr-icon-button id="closeButton" class="close-button" iron-icon="cr:close"
+      on-click="onClose_" aria-label="$i18n{close}">
     </cr-icon-button>
   </div>
 
