@@ -8,13 +8,11 @@
 
 #include "base/win/windows_version.h"
 #include "gpu/command_buffer/service/feature_info.h"
-#include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/ipc/service/image_transport_surface_delegate.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gl/dcomp_presenter.h"
 #include "ui/gl/direct_composition_support.h"
-#include "ui/gl/direct_composition_surface_win.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_surface_egl.h"
@@ -25,10 +23,9 @@
 
 namespace gpu {
 namespace {
-gl::DirectCompositionSurfaceWin::Settings
-CreateDirectCompositionSurfaceSettings(
+gl::DCompPresenter::Settings CreatDCompPresenterSettings(
     const GpuDriverBugWorkarounds& workarounds) {
-  gl::DirectCompositionSurfaceWin::Settings settings;
+  gl::DCompPresenter::Settings settings;
   settings.no_downscaled_overlay_promotion =
       workarounds.no_downscaled_overlay_promotion;
   settings.disable_nv12_dynamic_textures =
@@ -49,11 +46,10 @@ scoped_refptr<gl::Presenter> ImageTransportSurface::CreatePresenter(
     gl::GLDisplay* display,
     base::WeakPtr<ImageTransportSurfaceDelegate> delegate,
     SurfaceHandle surface_handle) {
-  if (gl::DirectCompositionSupported() &&
-      base::FeatureList::IsEnabled(features::kDCompPresenter)) {
+  if (gl::DirectCompositionSupported()) {
     auto vsync_callback = delegate->GetGpuVSyncCallback();
-    auto settings = CreateDirectCompositionSurfaceSettings(
-        delegate->GetFeatureInfo()->workarounds());
+    auto settings =
+        CreatDCompPresenterSettings(delegate->GetFeatureInfo()->workarounds());
     auto presenter = base::MakeRefCounted<gl::DCompPresenter>(
         display->GetAs<gl::GLDisplayEGL>(), std::move(vsync_callback),
         settings);
@@ -78,25 +74,13 @@ scoped_refptr<gl::GLSurface> ImageTransportSurface::CreateNativeGLSurface(
   scoped_refptr<gl::GLSurface> surface;
 
   if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE) {
-    if (gl::DirectCompositionSupported()) {
-      auto vsync_callback = delegate->GetGpuVSyncCallback();
-      auto settings = CreateDirectCompositionSurfaceSettings(
-          delegate->GetFeatureInfo()->workarounds());
-      auto dc_surface = base::MakeRefCounted<gl::DirectCompositionSurfaceWin>(
-          display->GetAs<gl::GLDisplayEGL>(), std::move(vsync_callback),
-          settings);
-      if (!dc_surface->Initialize(gl::GLSurfaceFormat()))
-        return nullptr;
-
-      delegate->AddChildWindowToBrowser(dc_surface->window());
-      surface = std::move(dc_surface);
-    } else {
-      surface = gl::InitializeGLSurface(
-          base::MakeRefCounted<gl::NativeViewGLSurfaceEGL>(
-              display->GetAs<gl::GLDisplayEGL>(), surface_handle,
-              std::make_unique<gl::VSyncProviderWin>(surface_handle)));
-      if (!surface)
-        return nullptr;
+    CHECK(!gl::DirectCompositionSupported());
+    surface = gl::InitializeGLSurface(
+        base::MakeRefCounted<gl::NativeViewGLSurfaceEGL>(
+            display->GetAs<gl::GLDisplayEGL>(), surface_handle,
+            std::make_unique<gl::VSyncProviderWin>(surface_handle)));
+    if (!surface) {
+      return nullptr;
     }
   } else {
     surface = gl::init::CreateViewGLSurface(display, surface_handle);

@@ -204,16 +204,7 @@ SkM44 GetIdentityColorMatrix() {
   return SkM44();
 }
 
-class DCLayerOverlayTest : public testing::Test,
-                           public testing::WithParamInterface<bool> {
- public:
-  bool IsUsingDCompPresenter() const { return GetParam(); }
-
-  static const char* GetParamName(
-      const testing::TestParamInfo<ParamType>& info) {
-    return info.param ? "DCompPresenter" : "DirectCompositionChildSurfaceWin";
-  }
-
+class DCLayerOverlayTest : public testing::Test {
  protected:
   DCLayerOverlayTest() {
     std::vector<base::test::FeatureRef> enabled_features;
@@ -224,12 +215,6 @@ class DCLayerOverlayTest : public testing::Test,
     // complicates tests since it adds behavior dependent on the number of times
     // |Process| is called.
     disabled_features.push_back(features::kDisableVideoOverlayIfMoving);
-
-    if (IsUsingDCompPresenter()) {
-      enabled_features.push_back(features::kDCompPresenter);
-    } else {
-      disabled_features.push_back(features::kDCompPresenter);
-    }
 
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
@@ -256,10 +241,8 @@ class DCLayerOverlayTest : public testing::Test,
     child_provider_->BindToCurrentSequence();
     child_resource_provider_ = std::make_unique<ClientResourceProvider>();
 
-    if (IsUsingDCompPresenter()) {
-      output_surface_plane_ =
-          OverlayProcessorInterface::OutputSurfaceOverlayPlane();
-    }
+    output_surface_plane_ =
+        OverlayProcessorInterface::OutputSurfaceOverlayPlane();
   }
 
   void TearDown() override {
@@ -274,13 +257,8 @@ class DCLayerOverlayTest : public testing::Test,
 
   OverlayProcessorInterface::OutputSurfaceOverlayPlane*
   GetOutputSurfacePlane() {
-    if (IsUsingDCompPresenter()) {
-      EXPECT_TRUE(output_surface_plane_.has_value());
-      return &output_surface_plane_.value();
-    } else {
-      EXPECT_FALSE(output_surface_plane_.has_value());
-      return nullptr;
-    }
+    EXPECT_TRUE(output_surface_plane_.has_value());
+    return &output_surface_plane_.value();
   }
 
   void TestRenderPassRootTransform(bool is_overlay);
@@ -300,7 +278,7 @@ class DCLayerOverlayTest : public testing::Test,
   std::vector<gfx::Rect> content_bounds_;
 };
 
-TEST_P(DCLayerOverlayTest, DisableVideoOverlayIfMovingFeature) {
+TEST_F(DCLayerOverlayTest, DisableVideoOverlayIfMovingFeature) {
   InitializeOverlayProcessor();
   auto ProcessForOverlaysSingleVideoRectWithOffset =
       [&](gfx::Vector2d video_rect_offset, bool is_hdr = false) {
@@ -411,7 +389,7 @@ TEST_P(DCLayerOverlayTest, DisableVideoOverlayIfMovingFeature) {
 // Check that we don't accidentally end up in a case where we try to read back a
 // DComp surface, which can happen if one issues a copy request while we're in
 // the hysteresis when switching from a DComp surface back to a swap chain.
-TEST_P(DCLayerOverlayTest, ForceSwapChainForCapture) {
+TEST_F(DCLayerOverlayTest, ForceSwapChainForCapture) {
   InitializeOverlayProcessor();
 
   // Frame with no overlays, but we expect to still be in DComp surface mode,
@@ -422,10 +400,6 @@ TEST_P(DCLayerOverlayTest, ForceSwapChainForCapture) {
 
     damage_rect_ = pass_list.back()->output_rect;
 
-    if (!IsUsingDCompPresenter()) {
-      EXPECT_CALL(*output_surface_.get(), SetEnableDCLayers(true)).Times(1);
-    }
-
     OverlayCandidateList dc_layer_list;
     OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
     OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
@@ -435,9 +409,7 @@ TEST_P(DCLayerOverlayTest, ForceSwapChainForCapture) {
         SurfaceDamageRectList(), GetOutputSurfacePlane(), &dc_layer_list,
         &damage_rect_, &content_bounds_);
 
-    if (IsUsingDCompPresenter()) {
-      EXPECT_TRUE(pass_list.back()->needs_synchronous_dcomp_commit);
-    }
+    EXPECT_TRUE(pass_list.back()->needs_synchronous_dcomp_commit);
   }
 
   // Frame with a copy request. Even though we're still in the hysteresis, we
@@ -452,10 +424,6 @@ TEST_P(DCLayerOverlayTest, ForceSwapChainForCapture) {
 
     damage_rect_ = pass_list.back()->output_rect;
 
-    if (!IsUsingDCompPresenter()) {
-      EXPECT_CALL(*output_surface_.get(), SetEnableDCLayers(false)).Times(1);
-    }
-
     OverlayCandidateList dc_layer_list;
     OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
     OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
@@ -465,13 +433,11 @@ TEST_P(DCLayerOverlayTest, ForceSwapChainForCapture) {
         SurfaceDamageRectList(), GetOutputSurfacePlane(), &dc_layer_list,
         &damage_rect_, &content_bounds_);
 
-    if (IsUsingDCompPresenter()) {
-      EXPECT_FALSE(pass_list.back()->needs_synchronous_dcomp_commit);
-    }
+    EXPECT_FALSE(pass_list.back()->needs_synchronous_dcomp_commit);
   }
 }
 
-TEST_P(DCLayerOverlayTest, Occluded) {
+TEST_F(DCLayerOverlayTest, Occluded) {
   InitializeOverlayProcessor();
   {
     auto pass = CreateRenderPass();
@@ -579,7 +545,7 @@ TEST_P(DCLayerOverlayTest, Occluded) {
   }
 }
 
-TEST_P(DCLayerOverlayTest, DamageRectWithoutVideoDamage) {
+TEST_F(DCLayerOverlayTest, DamageRectWithoutVideoDamage) {
   InitializeOverlayProcessor();
   {
     auto pass = CreateRenderPass();
@@ -669,7 +635,7 @@ TEST_P(DCLayerOverlayTest, DamageRectWithoutVideoDamage) {
   }
 }
 
-TEST_P(DCLayerOverlayTest, DamageRect) {
+TEST_F(DCLayerOverlayTest, DamageRect) {
   InitializeOverlayProcessor();
   for (int i = 0; i < 2; i++) {
     SCOPED_TRACE(base::StringPrintf("Frame %d", i));
@@ -705,7 +671,7 @@ TEST_P(DCLayerOverlayTest, DamageRect) {
   }
 }
 
-TEST_P(DCLayerOverlayTest, ClipRect) {
+TEST_F(DCLayerOverlayTest, ClipRect) {
   InitializeOverlayProcessor();
   // Process twice. The second time through the overlay list shouldn't change,
   // which will allow the damage rect to reflect just the changes in that
@@ -754,7 +720,7 @@ TEST_P(DCLayerOverlayTest, ClipRect) {
   }
 }
 
-TEST_P(DCLayerOverlayTest, TransparentOnTop) {
+TEST_F(DCLayerOverlayTest, TransparentOnTop) {
   InitializeOverlayProcessor();
   // Process twice. The second time through the overlay list shouldn't change,
   // which will allow the damage rect to reflect just the changes in that
@@ -787,7 +753,7 @@ TEST_P(DCLayerOverlayTest, TransparentOnTop) {
   }
 }
 
-TEST_P(DCLayerOverlayTest, UnderlayDamageRectWithQuadOnTopUnchanged) {
+TEST_F(DCLayerOverlayTest, UnderlayDamageRectWithQuadOnTopUnchanged) {
   InitializeOverlayProcessor();
   for (int i = 0; i < 3; i++) {
     auto pass = CreateRenderPass();
@@ -836,7 +802,7 @@ TEST_P(DCLayerOverlayTest, UnderlayDamageRectWithQuadOnTopUnchanged) {
 }
 
 // Test whether quads with rounded corners are supported.
-TEST_P(DCLayerOverlayTest, RoundedCorners) {
+TEST_F(DCLayerOverlayTest, RoundedCorners) {
   InitializeOverlayProcessor();
   // Frame #0
   {
@@ -1011,7 +977,7 @@ TEST_P(DCLayerOverlayTest, RoundedCorners) {
 
 // If there are multiple yuv overlay quad candidates, no overlay will be
 // promoted to save power.
-TEST_P(DCLayerOverlayTest, MultipleYUVOverlays) {
+TEST_F(DCLayerOverlayTest, MultipleYUVOverlays) {
   InitializeOverlayProcessor();
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
@@ -1067,7 +1033,7 @@ TEST_P(DCLayerOverlayTest, MultipleYUVOverlays) {
   }
 }
 
-TEST_P(DCLayerOverlayTest, SetEnableDCLayers) {
+TEST_F(DCLayerOverlayTest, SetEnableDCLayers) {
   InitializeOverlayProcessor();
   overlay_processor_->SetUsingDCLayersForTesting(kDefaultRootPassId, false);
   // Draw 60 frames with overlay video quads.
@@ -1096,11 +1062,7 @@ TEST_P(DCLayerOverlayTest, SetEnableDCLayers) {
     const gfx::Rect expected_damage =
         (i == 0) ? pass_list.back()->output_rect : gfx::Rect();
 
-    if (IsUsingDCompPresenter()) {
-      EXPECT_CALL(*output_surface_.get(), SetEnableDCLayers(_)).Times(0);
-    } else {
-      EXPECT_CALL(*output_surface_.get(), SetEnableDCLayers(true)).Times(1);
-    }
+    EXPECT_CALL(*output_surface_.get(), SetEnableDCLayers(_)).Times(0);
 
     overlay_processor_->ProcessForOverlays(
         resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
@@ -1108,12 +1070,10 @@ TEST_P(DCLayerOverlayTest, SetEnableDCLayers) {
         std::move(surface_damage_rect_list), GetOutputSurfacePlane(),
         &dc_layer_list, &damage_rect_, &content_bounds_);
 
-    if (IsUsingDCompPresenter()) {
-      EXPECT_TRUE(pass_list.back()->needs_synchronous_dcomp_commit);
-      EXPECT_TRUE(pass_list.back()->has_transparent_background);
-      ASSERT_TRUE(output_surface_plane_.has_value());
-      EXPECT_TRUE(output_surface_plane_->enable_blending);
-    }
+    EXPECT_TRUE(pass_list.back()->needs_synchronous_dcomp_commit);
+    EXPECT_TRUE(pass_list.back()->has_transparent_background);
+    ASSERT_TRUE(output_surface_plane_.has_value());
+    EXPECT_TRUE(output_surface_plane_->enable_blending);
 
     EXPECT_EQ(1U, dc_layer_list.size());
     EXPECT_EQ(1, dc_layer_list.back().plane_z_order);
@@ -1152,13 +1112,7 @@ TEST_P(DCLayerOverlayTest, SetEnableDCLayers) {
 
     const bool in_dc_layer_hysteresis = i + 1 < 60;
 
-    if (IsUsingDCompPresenter()) {
-      EXPECT_CALL(*output_surface_.get(), SetEnableDCLayers(_)).Times(0);
-    } else {
-      EXPECT_CALL(*output_surface_.get(),
-                  SetEnableDCLayers(in_dc_layer_hysteresis))
-          .Times(1);
-    }
+    EXPECT_CALL(*output_surface_.get(), SetEnableDCLayers(_)).Times(0);
 
     overlay_processor_->ProcessForOverlays(
         resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
@@ -1166,14 +1120,12 @@ TEST_P(DCLayerOverlayTest, SetEnableDCLayers) {
         std::move(surface_damage_rect_list), GetOutputSurfacePlane(),
         &dc_layer_list, &damage_rect_, &content_bounds_);
 
-    if (IsUsingDCompPresenter()) {
-      EXPECT_EQ(pass_list.back()->needs_synchronous_dcomp_commit,
-                in_dc_layer_hysteresis);
-      EXPECT_EQ(pass_list.back()->has_transparent_background,
-                in_dc_layer_hysteresis);
-      ASSERT_TRUE(output_surface_plane_.has_value());
-      EXPECT_EQ(output_surface_plane_->enable_blending, in_dc_layer_hysteresis);
-    }
+    EXPECT_EQ(pass_list.back()->needs_synchronous_dcomp_commit,
+              in_dc_layer_hysteresis);
+    EXPECT_EQ(pass_list.back()->has_transparent_background,
+              in_dc_layer_hysteresis);
+    ASSERT_TRUE(output_surface_plane_.has_value());
+    EXPECT_EQ(output_surface_plane_->enable_blending, in_dc_layer_hysteresis);
 
     EXPECT_EQ(0u, dc_layer_list.size());
     EXPECT_EQ(damage_rect_, expected_damage);
@@ -1184,7 +1136,7 @@ TEST_P(DCLayerOverlayTest, SetEnableDCLayers) {
 
 // Test that the video is forced to underlay if the expanded quad of pixel
 // moving foreground filter is on top.
-TEST_P(DCLayerOverlayTest, PixelMovingForegroundFilter) {
+TEST_F(DCLayerOverlayTest, PixelMovingForegroundFilter) {
   InitializeOverlayProcessor();
   AggregatedRenderPassList pass_list;
 
@@ -1255,7 +1207,7 @@ TEST_P(DCLayerOverlayTest, PixelMovingForegroundFilter) {
 }
 
 // Test that the video is not promoted if a quad on top has backdrop filters.
-TEST_P(DCLayerOverlayTest, BackdropFilter) {
+TEST_F(DCLayerOverlayTest, BackdropFilter) {
   InitializeOverlayProcessor();
   AggregatedRenderPassList pass_list;
 
@@ -1327,7 +1279,7 @@ TEST_P(DCLayerOverlayTest, BackdropFilter) {
 }
 
 // Test if overlay is not used when video capture is on.
-TEST_P(DCLayerOverlayTest, VideoCapture) {
+TEST_F(DCLayerOverlayTest, VideoCapture) {
   InitializeOverlayProcessor();
   // Frame #0
   {
@@ -1414,7 +1366,7 @@ TEST_P(DCLayerOverlayTest, VideoCapture) {
 
 // Check that video capture on a non-root pass does not affect overlay promotion
 // on the root pass itself.
-TEST_P(DCLayerOverlayTest, VideoCaptureOnIsolatedRenderPass) {
+TEST_F(DCLayerOverlayTest, VideoCaptureOnIsolatedRenderPass) {
   InitializeOverlayProcessor();
 
   AggregatedRenderPassList pass_list;
@@ -1467,12 +1419,12 @@ TEST_P(DCLayerOverlayTest, VideoCaptureOnIsolatedRenderPass) {
   EXPECT_EQ(1U, dc_layer_list.size());
 }
 
-TEST_P(DCLayerOverlayTest, RenderPassRootTransformOverlay) {
+TEST_F(DCLayerOverlayTest, RenderPassRootTransformOverlay) {
   InitializeOverlayProcessor();
   TestRenderPassRootTransform(/*is_overlay*/ true);
 }
 
-TEST_P(DCLayerOverlayTest, RenderPassRootTransformUnderlay) {
+TEST_F(DCLayerOverlayTest, RenderPassRootTransformUnderlay) {
   InitializeOverlayProcessor();
   TestRenderPassRootTransform(/*is_overlay*/ false);
 }
@@ -1562,7 +1514,7 @@ void DCLayerOverlayTest::TestRenderPassRootTransform(bool is_overlay) {
 
 // Tests processing overlays/underlays on multiple render passes per frame,
 // where only one render pass has an overlay.
-TEST_P(DCLayerOverlayTest, MultipleRenderPassesOneOverlay) {
+TEST_F(DCLayerOverlayTest, MultipleRenderPassesOneOverlay) {
   InitializeOverlayProcessor(/*allowed_yuv_overlay_count*/ 1);
   const gfx::Rect output_rect = {0, 0, 256, 256};
   const size_t num_render_passes = 3;
@@ -1666,7 +1618,7 @@ TEST_P(DCLayerOverlayTest, MultipleRenderPassesOneOverlay) {
 // Tests processing overlays/underlays on multiple render passes per frame, with
 // each render pass having an overlay. This exceeds the maximum allowed number
 // of overlays, so all overlays should be rejected.
-TEST_P(DCLayerOverlayTest, MultipleRenderPassesExceedsOverlayAllowance) {
+TEST_F(DCLayerOverlayTest, MultipleRenderPassesExceedsOverlayAllowance) {
   const gfx::Rect output_rect = {0, 0, 256, 256};
   const size_t num_render_passes = 3;
   InitializeOverlayProcessor(num_render_passes - 1);
@@ -1745,7 +1697,7 @@ TEST_P(DCLayerOverlayTest, MultipleRenderPassesExceedsOverlayAllowance) {
 
 // When there are multiple videos intersected with each other, only the topmost
 // of them should be considered as "overlay".
-TEST_P(DCLayerOverlayTest, MultipleYUVOverlaysIntersected) {
+TEST_F(DCLayerOverlayTest, MultipleYUVOverlaysIntersected) {
   InitializeOverlayProcessor(/*allowed_yuv_overlay_count=*/2);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
@@ -1808,7 +1760,7 @@ TEST_P(DCLayerOverlayTest, MultipleYUVOverlaysIntersected) {
   }
 }
 
-TEST_P(DCLayerOverlayTest, HDR10VideoOverlay) {
+TEST_F(DCLayerOverlayTest, HDR10VideoOverlay) {
   InitializeOverlayProcessor();
   // Prepare a valid hdr metadata.
   gfx::HDRMetadata valid_hdr_metadata;
@@ -2204,11 +2156,6 @@ TEST_P(DCLayerOverlayTest, HDR10VideoOverlay) {
     gl::SetDirectCompositionScaledOverlaysSupportedForTesting(true);
   }
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         DCLayerOverlayTest,
-                         testing::Bool(),
-                         &DCLayerOverlayTest::GetParamName);
 
 }  // namespace
 }  // namespace viz

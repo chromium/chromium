@@ -35,9 +35,7 @@
 #include "ui/gfx/test/sk_color_eq.h"
 #include "ui/gl/dc_layer_overlay_params.h"
 #include "ui/gl/dc_layer_tree.h"
-#include "ui/gl/direct_composition_child_surface_win.h"
 #include "ui/gl/direct_composition_support.h"
-#include "ui/gl/direct_composition_surface_win.h"
 #include "ui/gl/gl_angle_util_win.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
@@ -242,7 +240,7 @@ class DCompPresenterTest : public testing::Test {
   }
 
   scoped_refptr<DCompPresenter> CreateDCompPresenter() {
-    DirectCompositionSurfaceWin::Settings settings;
+    DCompPresenter::Settings settings;
     scoped_refptr<DCompPresenter> presenter =
         base::MakeRefCounted<DCompPresenter>(
             gl::GLSurfaceEGL::GetGLDisplayEGL(),
