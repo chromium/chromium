@@ -679,7 +679,7 @@
         "name": "onConnectExternal",
         "type": "function",
         "nocompile": true,
-        "description": "Fired when a connection is made from another extension (by $(ref:runtime.connect)).",
+        "description": "Fired when a connection is made from another extension (by $(ref:runtime.connect)), or from an externally connectable web site.",
         "parameters": [
           {"$ref": "Port", "name": "port"}
         ]
