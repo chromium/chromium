@@ -5,9 +5,8 @@
 #ifndef COMPONENTS_WINHTTP_NETWORK_FETCHER_H_
 #define COMPONENTS_WINHTTP_NETWORK_FETCHER_H_
 
-#include <windows.h>
-
 #include <stdint.h>
+#include <windows.h>
 
 #include <memory>
 #include <string>

@@ -49,14 +49,18 @@ void CrackUrl(const GURL& url,
               std::string* host,
               int* port,
               std::string* path_for_request) {
-  if (is_https)
+  if (is_https) {
     *is_https = url.SchemeIs(url::kHttpsScheme);
-  if (host)
+  }
+  if (host) {
     *host = url.host();
-  if (port)
+  }
+  if (port) {
     *port = url.EffectiveIntPort();
-  if (path_for_request)
+  }
+  if (path_for_request) {
     *path_for_request = url.PathForRequest();
+  }
 }
 
 }  // namespace
@@ -161,8 +165,9 @@ void NetworkFetcher::PostRequest(
 
   net_error_ = BeginFetch(post_data, post_additional_headers);
 
-  if (FAILED(net_error_))
+  if (FAILED(net_error_)) {
     CompleteFetch();
+  }
 }
 
 base::OnceClosure NetworkFetcher::DownloadToFile(
@@ -187,8 +192,9 @@ base::OnceClosure NetworkFetcher::DownloadToFile(
 
   net_error_ = BeginFetch({}, {});
 
-  if (FAILED(net_error_))
+  if (FAILED(net_error_)) {
     CompleteFetch();
+  }
 
   return base::BindOnce(&NetworkFetcher::Close, this);
 }
@@ -198,32 +204,37 @@ HRESULT NetworkFetcher::BeginFetch(
     base::flat_map<std::string, std::string> additional_headers) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!url_.SchemeIsHTTPOrHTTPS())
+  if (!url_.SchemeIsHTTPOrHTTPS()) {
     return E_INVALIDARG;
+  }
 
   connect_handle_ = Connect();
-  if (!connect_handle_.get())
+  if (!connect_handle_.get()) {
     return HRESULTFromLastError();
+  }
 
   absl::optional<ScopedWinHttpProxyInfo> winhttp_proxy_info =
       proxy_configuration_->GetProxyForUrl(*session_handle_, url_);
 
   request_handle_ = OpenRequest();
-  if (!request_handle_.get())
+  if (!request_handle_.get()) {
     return HRESULTFromLastError();
+  }
 
   SetProxyForRequest(request_handle_.get(), winhttp_proxy_info);
 
   const auto winhttp_callback = ::WinHttpSetStatusCallback(
       request_handle_.get(), &NetworkFetcher::WinHttpStatusCallback,
       WINHTTP_CALLBACK_FLAG_ALL_NOTIFICATIONS, 0);
-  if (winhttp_callback == WINHTTP_INVALID_STATUS_CALLBACK)
+  if (winhttp_callback == WINHTTP_INVALID_STATUS_CALLBACK) {
     return HRESULTFromLastError();
+  }
 
   auto hr =
       SetOption(request_handle_.get(), WINHTTP_OPTION_CONTEXT_VALUE, context());
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return hr;
+  }
 
   // The reference is released when the request handle is closed.
   self_ = this;
@@ -231,11 +242,13 @@ HRESULT NetworkFetcher::BeginFetch(
   // Disables both saving and sending cookies.
   hr = SetOption(request_handle_.get(), WINHTTP_OPTION_DISABLE_FEATURE,
                  WINHTTP_DISABLE_COOKIES);
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return hr;
+  }
 
-  if (!content_type_.empty())
+  if (!content_type_.empty()) {
     additional_headers.insert({"Content-Type", content_type_});
+  }
 
   for (const auto& header : additional_headers) {
     const auto raw_header = base::SysUTF8ToWide(
@@ -248,8 +261,9 @@ HRESULT NetworkFetcher::BeginFetch(
   }
 
   hr = SendRequest(data);
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return hr;
+  }
 
   return S_OK;
 }
@@ -263,8 +277,9 @@ ScopedHInternet NetworkFetcher::Connect() {
 ScopedHInternet NetworkFetcher::OpenRequest() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   uint32_t flags = WINHTTP_FLAG_REFRESH;
-  if (is_https_)
+  if (is_https_) {
     flags |= WINHTTP_FLAG_SECURE;
+  }
   return ScopedHInternet(::WinHttpOpenRequest(
       connect_handle_.get(), verb_.data(),
       base::SysUTF8ToWide(path_for_request_).c_str(), nullptr,
@@ -296,8 +311,9 @@ HRESULT NetworkFetcher::SendRequest(const std::string& data) {
 void NetworkFetcher::SendRequestComplete() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   net_error_ = ReceiveResponse();
-  if (FAILED(net_error_))
+  if (FAILED(net_error_)) {
     CompleteFetch();
+  }
 }
 
 HRESULT NetworkFetcher::ReceiveResponse() {
@@ -305,8 +321,9 @@ HRESULT NetworkFetcher::ReceiveResponse() {
   if (!request_handle_.is_valid()) {
     return HRESULT_FROM_WIN32(ERROR_CANCELLED);
   }
-  if (!::WinHttpReceiveResponse(request_handle_.get(), nullptr))
+  if (!::WinHttpReceiveResponse(request_handle_.get(), nullptr)) {
     return HRESULTFromLastError();
+  }
   return S_OK;
 }
 
@@ -345,8 +362,9 @@ void NetworkFetcher::HeadersAvailable() {
 
   // Start reading the body of response.
   net_error_ = ReadData();
-  if (FAILED(net_error_))
+  if (FAILED(net_error_)) {
     CompleteFetch();
+  }
 }
 
 HRESULT NetworkFetcher::ReadData() {
@@ -437,8 +455,9 @@ void NetworkFetcher::WriteDataToFileComplete(bool is_eof) {
   }
 
   net_error_ = ReadData();
-  if (FAILED(net_error_))
+  if (FAILED(net_error_)) {
     CompleteFetch();
+  }
 }
 
 void NetworkFetcher::WriteDataToMemory() {
@@ -456,8 +475,9 @@ void NetworkFetcher::WriteDataToMemory() {
   fetch_progress_callback_.Run(base::saturated_cast<int64_t>(content_size_));
 
   net_error_ = ReadData();
-  if (FAILED(net_error_))
+  if (FAILED(net_error_)) {
     CompleteFetch();
+  }
 }
 
 void __stdcall NetworkFetcher::WinHttpStatusCallback(HINTERNET handle,
@@ -547,16 +567,16 @@ void __stdcall NetworkFetcher::WinHttpStatusCallback(HINTERNET handle,
   }
 
   std::string msg;
-  if (!status_string.empty())
+  if (!status_string.empty()) {
     base::StringAppendF(&msg, "status=%s", status_string.data());
-  else
+  } else {
     base::StringAppendF(&msg, "status=%#lx", status);
+  }
   if (!info_string.empty()) {
     base::StringAppendF(&msg, ", info=%s",
                         base::SysWideToUTF8(info_string).c_str());
   }
-  VLOG(3) << "WinHttp status callback:"
-          << " handle=" << handle << ", " << msg;
+  VLOG(3) << "WinHttp status callback:" << " handle=" << handle << ", " << msg;
 
   NetworkFetcher* network_fetcher = reinterpret_cast<NetworkFetcher*>(context);
   base::OnceClosure callback;

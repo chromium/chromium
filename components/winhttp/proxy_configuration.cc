@@ -87,8 +87,9 @@ absl::optional<ScopedWinHttpProxyInfo> ProxyConfiguration::DoGetProxyForUrl(
     winhttp_proxy_info.set_proxy_bypass(proxy_info_.proxy_bypass);
   }
 
-  if (!winhttp_proxy_info.IsValid())
+  if (!winhttp_proxy_info.IsValid()) {
     return {};
+  }
 
   return winhttp_proxy_info;
 }
