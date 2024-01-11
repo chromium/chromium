@@ -179,7 +179,7 @@ bool User::is_active() const {
 }
 
 bool User::has_gaia_account() const {
-  static_assert(user_manager::UserType::kMaxValue == 9,
+  static_assert(static_cast<int>(user_manager::UserType::kMaxValue) == 9,
                 "kMaxValue should equal 9");
   switch (GetType()) {
     case user_manager::USER_TYPE_REGULAR:

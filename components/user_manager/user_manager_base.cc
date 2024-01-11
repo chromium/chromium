@@ -98,7 +98,8 @@ UserType GetStoredUserType(const base::Value::Dict& prefs_user_types,
     return USER_TYPE_REGULAR;
 
   int int_user_type = stored_user_type->GetInt();
-  if (int_user_type < 0 || int_user_type > UserType::kMaxValue ||
+  if (int_user_type < 0 ||
+      int_user_type > static_cast<int>(UserType::kMaxValue) ||
       int_user_type == 2) {
     LOG(ERROR) << "Bad user type " << int_user_type;
     return USER_TYPE_REGULAR;
