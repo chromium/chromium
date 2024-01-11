@@ -108264,6 +108264,32 @@
        {}
       ]
      ],
+     "contain-paint-dynamic-002.html": [
+      "0096e83d5bfc18d31503c2ae3cef432918f4bb9a",
+      [
+       null,
+       [
+        [
+         "/css/css-contain/contain-paint-dynamic-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "contain-paint-dynamic-003.html": [
+      "e7fcbac0e6ac45ee15a49aa2bb68a5800696648b",
+      [
+       null,
+       [
+        [
+         "/css/css-contain/contain-paint-dynamic-003-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "contain-paint-formatting-context-float-001.html": [
       "95242072b100ca3f27203f2f9c6748e4dd7c89b4",
       [
@@ -111244,6 +111270,45 @@
         [
          [
           "/css/css-contain/content-visibility/content-visibility-on-root-svg-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "content-visibility-paint-containment-001.html": [
+       "b18a9cb1e92eb81706473d4b09b3368ea1efa09b",
+       [
+        null,
+        [
+         [
+          "/css/css-contain/content-visibility/content-visibility-paint-containment-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "content-visibility-paint-containment-002.html": [
+       "bfe6d13b39492f8a971662bab452cbfc8fc0e232",
+       [
+        null,
+        [
+         [
+          "/css/css-contain/content-visibility/content-visibility-paint-containment-002-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "content-visibility-paint-containment-003.html": [
+       "0a4de9c4e55cb85241b3aff06e6929d165426f72",
+       [
+        null,
+        [
+         [
+          "/css/css-contain/content-visibility/content-visibility-paint-containment-003-ref.html",
           "=="
          ]
         ],
@@ -196624,86 +196689,123 @@
         {}
        ]
       ],
-      "text-spacing-trim-space-first-wrap-001.html": [
-       "ebbea0e52b09c21be870ffd2dea48d2b70d4cb88",
+      "text-spacing-trim-start-001.html": [
+       "3d481df1da2f6bcf7c56abbfc05c0f218f1d48d4",
        [
-        "css/css-text/text-spacing-trim/text-spacing-trim-space-first-wrap-001.html?class=chws,htb",
+        "css/css-text/text-spacing-trim/text-spacing-trim-start-001.html?class=chws,htb",
         [
          [
-          "/css/css-text/text-spacing-trim/text-spacing-trim-space-first-wrap-001-ref.html?class=chws,htb",
+          "/css/css-text/text-spacing-trim/text-spacing-trim-start-001-ref.html?class=chws,htb",
           "=="
          ]
         ],
         {}
        ],
        [
-        "css/css-text/text-spacing-trim/text-spacing-trim-space-first-wrap-001.html?class=chws,vrl",
+        "css/css-text/text-spacing-trim/text-spacing-trim-start-001.html?class=chws,vrl",
         [
          [
-          "/css/css-text/text-spacing-trim/text-spacing-trim-space-first-wrap-001-ref.html?class=chws,vrl",
+          "/css/css-text/text-spacing-trim/text-spacing-trim-start-001-ref.html?class=chws,vrl",
           "=="
          ]
         ],
         {}
        ],
        [
-        "css/css-text/text-spacing-trim/text-spacing-trim-space-first-wrap-001.html?class=halt,htb",
+        "css/css-text/text-spacing-trim/text-spacing-trim-start-001.html?class=halt,htb",
         [
          [
-          "/css/css-text/text-spacing-trim/text-spacing-trim-space-first-wrap-001-ref.html?class=halt,htb",
+          "/css/css-text/text-spacing-trim/text-spacing-trim-start-001-ref.html?class=halt,htb",
           "=="
          ]
         ],
         {}
        ],
        [
-        "css/css-text/text-spacing-trim/text-spacing-trim-space-first-wrap-001.html?class=halt,vrl",
+        "css/css-text/text-spacing-trim/text-spacing-trim-start-001.html?class=halt,vrl",
         [
          [
-          "/css/css-text/text-spacing-trim/text-spacing-trim-space-first-wrap-001-ref.html?class=halt,vrl",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "text-spacing-trim-space-first-wrap-br-001.html": [
-       "acbfaa3ddcba0a1029676eb39dc9e8d45e2ad495",
-       [
-        "css/css-text/text-spacing-trim/text-spacing-trim-space-first-wrap-br-001.html?class=chws,htb",
-        [
-         [
-          "/css/css-text/text-spacing-trim/text-spacing-trim-wrap-001-ref.html?class=chws,htb",
+          "/css/css-text/text-spacing-trim/text-spacing-trim-start-001-ref.html?class=halt,vrl",
           "=="
          ]
         ],
         {}
        ],
        [
-        "css/css-text/text-spacing-trim/text-spacing-trim-space-first-wrap-br-001.html?class=chws,vrl",
+        "css/css-text/text-spacing-trim/text-spacing-trim-start-001.html?class=space-first,chws,htb",
         [
          [
-          "/css/css-text/text-spacing-trim/text-spacing-trim-wrap-001-ref.html?class=chws,vrl",
+          "/css/css-text/text-spacing-trim/text-spacing-trim-start-001-ref.html?class=space-first,chws,htb",
           "=="
          ]
         ],
         {}
        ],
        [
-        "css/css-text/text-spacing-trim/text-spacing-trim-space-first-wrap-br-001.html?class=halt,htb",
+        "css/css-text/text-spacing-trim/text-spacing-trim-start-001.html?class=space-first,chws,vrl",
         [
          [
-          "/css/css-text/text-spacing-trim/text-spacing-trim-wrap-001-ref.html?class=halt,htb",
+          "/css/css-text/text-spacing-trim/text-spacing-trim-start-001-ref.html?class=space-first,chws,vrl",
           "=="
          ]
         ],
         {}
        ],
        [
-        "css/css-text/text-spacing-trim/text-spacing-trim-space-first-wrap-br-001.html?class=halt,vrl",
+        "css/css-text/text-spacing-trim/text-spacing-trim-start-001.html?class=space-first,halt,htb",
         [
          [
-          "/css/css-text/text-spacing-trim/text-spacing-trim-wrap-001-ref.html?class=halt,vrl",
+          "/css/css-text/text-spacing-trim/text-spacing-trim-start-001-ref.html?class=space-first,halt,htb",
+          "=="
+         ]
+        ],
+        {}
+       ],
+       [
+        "css/css-text/text-spacing-trim/text-spacing-trim-start-001.html?class=space-first,halt,vrl",
+        [
+         [
+          "/css/css-text/text-spacing-trim/text-spacing-trim-start-001-ref.html?class=space-first,halt,vrl",
+          "=="
+         ]
+        ],
+        {}
+       ],
+       [
+        "css/css-text/text-spacing-trim/text-spacing-trim-start-001.html?class=trim-start,chws,htb",
+        [
+         [
+          "/css/css-text/text-spacing-trim/text-spacing-trim-start-001-ref.html?class=trim-start,chws,htb",
+          "=="
+         ]
+        ],
+        {}
+       ],
+       [
+        "css/css-text/text-spacing-trim/text-spacing-trim-start-001.html?class=trim-start,chws,vrl",
+        [
+         [
+          "/css/css-text/text-spacing-trim/text-spacing-trim-start-001-ref.html?class=trim-start,chws,vrl",
+          "=="
+         ]
+        ],
+        {}
+       ],
+       [
+        "css/css-text/text-spacing-trim/text-spacing-trim-start-001.html?class=trim-start,halt,htb",
+        [
+         [
+          "/css/css-text/text-spacing-trim/text-spacing-trim-start-001-ref.html?class=trim-start,halt,htb",
+          "=="
+         ]
+        ],
+        {}
+       ],
+       [
+        "css/css-text/text-spacing-trim/text-spacing-trim-start-001.html?class=trim-start,halt,vrl",
+        [
+         [
+          "/css/css-text/text-spacing-trim/text-spacing-trim-start-001-ref.html?class=trim-start,halt,vrl",
           "=="
          ]
         ],
@@ -196747,92 +196849,6 @@
         [
          [
           "/css/css-text/text-spacing-trim/text-spacing-trim-trim-all-001-ref.html?class=halt,vrl",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "text-spacing-trim-wrap-001.html": [
-       "76af819d79cd53831be4670b401d16158ff6efb5",
-       [
-        "css/css-text/text-spacing-trim/text-spacing-trim-wrap-001.html?class=chws,htb",
-        [
-         [
-          "/css/css-text/text-spacing-trim/text-spacing-trim-wrap-001-ref.html?class=chws,htb",
-          "=="
-         ]
-        ],
-        {}
-       ],
-       [
-        "css/css-text/text-spacing-trim/text-spacing-trim-wrap-001.html?class=chws,vrl",
-        [
-         [
-          "/css/css-text/text-spacing-trim/text-spacing-trim-wrap-001-ref.html?class=chws,vrl",
-          "=="
-         ]
-        ],
-        {}
-       ],
-       [
-        "css/css-text/text-spacing-trim/text-spacing-trim-wrap-001.html?class=halt,htb",
-        [
-         [
-          "/css/css-text/text-spacing-trim/text-spacing-trim-wrap-001-ref.html?class=halt,htb",
-          "=="
-         ]
-        ],
-        {}
-       ],
-       [
-        "css/css-text/text-spacing-trim/text-spacing-trim-wrap-001.html?class=halt,vrl",
-        [
-         [
-          "/css/css-text/text-spacing-trim/text-spacing-trim-wrap-001-ref.html?class=halt,vrl",
-          "=="
-         ]
-        ],
-        {}
-       ]
-      ],
-      "text-spacing-trim-wrap-br-001.html": [
-       "017443976f876546bd58d9c98c039bb3f6168874",
-       [
-        "css/css-text/text-spacing-trim/text-spacing-trim-wrap-br-001.html?class=chws,htb",
-        [
-         [
-          "/css/css-text/text-spacing-trim/text-spacing-trim-wrap-001-ref.html?class=chws,htb",
-          "=="
-         ]
-        ],
-        {}
-       ],
-       [
-        "css/css-text/text-spacing-trim/text-spacing-trim-wrap-br-001.html?class=chws,vrl",
-        [
-         [
-          "/css/css-text/text-spacing-trim/text-spacing-trim-wrap-001-ref.html?class=chws,vrl",
-          "=="
-         ]
-        ],
-        {}
-       ],
-       [
-        "css/css-text/text-spacing-trim/text-spacing-trim-wrap-br-001.html?class=halt,htb",
-        [
-         [
-          "/css/css-text/text-spacing-trim/text-spacing-trim-wrap-001-ref.html?class=halt,htb",
-          "=="
-         ]
-        ],
-        {}
-       ],
-       [
-        "css/css-text/text-spacing-trim/text-spacing-trim-wrap-br-001.html?class=halt,vrl",
-        [
-         [
-          "/css/css-text/text-spacing-trim/text-spacing-trim-wrap-001-ref.html?class=halt,vrl",
           "=="
          ]
         ],
@@ -296322,6 +296338,12 @@
      ]
     }
    },
+   "core-aam": {
+    "DIR_METADATA": [
+     "803582c48bb6a7ce275ce6dffaef5f172d12cfc6",
+     []
+    ]
+   },
    "cors": {
     "DIR_METADATA": [
      "6f7db9f1903cf820990d8c18a0bc673b6bbdad40",
@@ -308376,6 +308398,14 @@
       "8861d19f888aa155ffdb6c3bbdd8a81e04ccaf8b",
       []
      ],
+     "contain-paint-dynamic-002-ref.html": [
+      "58473c86492bf4ce0c53b46f03c989a96a9e5b49",
+      []
+     ],
+     "contain-paint-dynamic-003-ref.html": [
+      "b30f32d9c3d4a1ab037e6ca5cea92c958f340637",
+      []
+     ],
      "contain-paint-formatting-context-float-001-ref.html": [
       "ceff7f4569e1a7e6b0b36b9f9b3f50317b320bad",
       []
@@ -308514,6 +308544,10 @@
      ],
      "contain-style-counters-ref.html": [
       "feef9209f5c19f51233a2025108b66c63b58f34c",
+      []
+     ],
+     "contain-style-dynamic-001-expected.txt": [
+      "dd5fb66706b01010354a3d27b73e966c7eb81a00",
       []
      ],
      "container-queries": {
@@ -308769,8 +308803,28 @@
        "258cdfacab67cd5cc0bc4a468474f8b039517b10",
        []
       ],
+      "content-visibility-paint-containment-001-ref.html": [
+       "1e8e96df13f8525bd964538d9f453adf3ff80cb0",
+       []
+      ],
+      "content-visibility-paint-containment-002-ref.html": [
+       "e71e9c0c9f8d321699710d2bf65eb00f38de404c",
+       []
+      ],
+      "content-visibility-paint-containment-003-ref.html": [
+       "43f3a2ed480b61e0eda0f3c60709acd4e4a720d1",
+       []
+      ],
       "content-visibility-resize-observer-no-error-ref.html": [
        "228eebfaa6b6018dc60db090971f2f8176614a27",
+       []
+      ],
+      "content-visibility-size-containment-001-expected.txt": [
+       "c4a2f2085ce4648d848d4ddeeba51f88a8f190c9",
+       []
+      ],
+      "content-visibility-style-containment-001-expected.txt": [
+       "b4fd02ab0bf1df5d621f9f72b9f75dd2efe1ba45",
        []
       ],
       "content-visibility-svg-path-expected.txt": [
@@ -334403,16 +334457,12 @@
        "d33e3b62edd31029751ac32bcbdb6178df90d563",
        []
       ],
-      "text-spacing-trim-space-first-wrap-001-ref.html": [
-       "d043b213ca594ebdc057bc57a28fd50f38e7ec21",
+      "text-spacing-trim-start-001-ref.html": [
+       "aef81fbbc0d3d0be562bd2cd4388c4be16bbf128",
        []
       ],
       "text-spacing-trim-trim-all-001-ref.html": [
        "d541fcc5f810629f4eb8d0d97bc6f0b6db8adba3",
-       []
-      ],
-      "text-spacing-trim-wrap-001-ref.html": [
-       "b03890c59ca77ffcb4a20bc749c92221b234951e",
        []
       ]
      },
@@ -348563,6 +348613,10 @@
     ]
    },
    "dpub-aam": {
+    "DIR_METADATA": [
+     "803582c48bb6a7ce275ce6dffaef5f172d12cfc6",
+     []
+    ],
     "META.yml": [
      "98228f6717ece81d2939d9d25571071b6f0ef4f0",
      []
@@ -348575,6 +348629,10 @@
     }
    },
    "dpub-aria": {
+    "DIR_METADATA": [
+     "803582c48bb6a7ce275ce6dffaef5f172d12cfc6",
+     []
+    ],
     "META.yml": [
      "b27081355ab093155d397b5bd1facdf54a690fa2",
      []
@@ -391685,6 +391743,10 @@
     }
    },
    "svg-aam": {
+    "DIR_METADATA": [
+     "803582c48bb6a7ce275ce6dffaef5f172d12cfc6",
+     []
+    ],
     "META.yml": [
      "b0a59c18030bd44644bde1df16b0c08e74ff6abd",
      []
@@ -392891,6 +392953,10 @@
     ]
    },
    "wai-aria": {
+    "DIR_METADATA": [
+     "803582c48bb6a7ce275ce6dffaef5f172d12cfc6",
+     []
+    ],
     "META.yml": [
      "17068230e58323c5151dab2bd93f170b757ed316",
      []
@@ -443457,8 +443523,29 @@
        {}
       ]
      ],
+     "contain-layout-dynamic-001.html": [
+      "428d2b9d4d9c4866891288f6caef1f7962cb0d80",
+      [
+       null,
+       {}
+      ]
+     ],
      "contain-paint-049.html": [
       "49cdc9beca09c9dbf66607342ba8936c6a817225",
+      [
+       null,
+       {}
+      ]
+     ],
+     "contain-paint-dynamic-001.html": [
+      "899b5643c1a00358ee4b908b0e1ba813f4407783",
+      [
+       null,
+       {}
+      ]
+     ],
+     "contain-size-dynamic-001.html": [
+      "f670d301c563e9317a0558a66609159c65b474eb",
       [
        null,
        {}
@@ -443487,6 +443574,13 @@
      ],
      "contain-size-multicol-as-flex-item.html": [
       "19aa12262f9a7dc35f3682b1f7baa3c12949a906",
+      [
+       null,
+       {}
+      ]
+     ],
+     "contain-style-dynamic-001.html": [
+      "dfd4032ac55729bff8b781a86ad17a2d1168ac02",
       [
        null,
        {}
@@ -444280,7 +444374,7 @@
      },
      "content-visibility": {
       "animation-display-lock.html": [
-       "0a03768fc358dfc8169f1c91e6ac4935ea5cd6cb",
+       "279ffd002ed21a90b2525978e9c0b328375b69a1",
        [
         null,
         {}
@@ -444621,6 +444715,34 @@
       ],
       "content-visibility-interpolation.html": [
        "55f8c7e5af8e6e9a808835dc374c964a958d819b",
+       [
+        null,
+        {}
+       ]
+      ],
+      "content-visibility-layout-containment-001.html": [
+       "852e064a5e33be71538508f098787f331d68cd35",
+       [
+        null,
+        {}
+       ]
+      ],
+      "content-visibility-layout-paint-containment-001.html": [
+       "788139e17eb04e036c562cd3e55298cdc8da5c30",
+       [
+        null,
+        {}
+       ]
+      ],
+      "content-visibility-size-containment-001.html": [
+       "3b4a7c55a43e8ca4c6caea6e66b6e936a6c52f00",
+       [
+        null,
+        {}
+       ]
+      ],
+      "content-visibility-style-containment-001.html": [
+       "d976d89b73362713695f0321adaea8b8b8f21cda",
        [
         null,
         {}
@@ -518747,7 +518869,7 @@
       ]
      ],
      "interest-group-passed-to-generate-bid.https.window.js": [
-      "6e7ac3d35aa62bbf99c1d33e2a16495706406324",
+      "11a63c1aa59bda716a0ab8caf05bc870f5d13bf5",
       [
        "fledge/tentative/interest-group-passed-to-generate-bid.https.window.html?1-5",
        {
