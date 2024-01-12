@@ -153,11 +153,6 @@ bool User::HasDefaultImage() const {
   return UserManager::Get()->IsValidDefaultUserImageId(image_index_);
 }
 
-bool User::CanSyncImage() const {
-  return type_ == user_manager::USER_TYPE_REGULAR ||
-         type_ == user_manager::USER_TYPE_CHILD;
-}
-
 std::string User::display_email() const {
   return display_email_;
 }
