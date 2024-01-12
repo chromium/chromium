@@ -62,8 +62,7 @@ class AppShimManager
       public AvatarMenuObserver,
       public ProfileManagerObserver,
       public ProfileObserver,
-      public mac_notifications::mojom::MacNotificationProvider,
-      public mac_notifications::mojom::MacNotificationActionHandler {
+      public mac_notifications::mojom::MacNotificationProvider {
  public:
   class Delegate {
    public:
@@ -434,10 +433,6 @@ class AppShimManager
           mac_notifications::mojom::MacNotificationActionHandler> handler)
       override;
 
-  // mac_notifications::mojom::MacNotificationActionHandler:
-  void OnNotificationAction(
-      mac_notifications::mojom::NotificationActionInfoPtr info) override;
-
   std::unique_ptr<Delegate> delegate_;
 
   // Weak, reset during OnProfileManagerDestroying.
@@ -455,13 +450,6 @@ class AppShimManager
   // always expects to get a connected MacNotificationProvider remote.
   mojo::ReceiverSet<mac_notifications::mojom::MacNotificationProvider>
       dummy_notification_provider_receivers_;
-
-  // Notification actions from all app shims are routed through these receivers
-  // and this class to make sure notification actions can be handled even if the
-  // browser process has never tried to connect to the notification service
-  // in an app shim.
-  mojo::ReceiverSet<mac_notifications::mojom::MacNotificationActionHandler>
-      notification_action_handler_receivers_;
 
   raw_ptr<AppShimObserver> app_shim_observer_ = nullptr;
 

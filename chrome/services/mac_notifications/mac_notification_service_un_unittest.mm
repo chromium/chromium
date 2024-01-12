@@ -91,10 +91,9 @@ class MacNotificationServiceUNTest : public testing::Test {
             ([OCMArg invokeBlockWithArgs:@[], nil])]);
 
     service_ = std::make_unique<MacNotificationServiceUN>(
+        service_remote_.BindNewPipeAndPassReceiver(),
         handler_receiver_.BindNewPipeAndPassRemote(),
         mock_notification_center_);
-    service_->Bind(service_remote_.BindNewPipeAndPassReceiver());
-    service_->RequestPermission();
     OCMStub([mock_notification_center_
         setNotificationCategories:[OCMArg checkWithBlock:^BOOL(
                                               NSSet<UNNotificationCategory*>*
@@ -300,9 +299,8 @@ class MacNotificationServiceUNTest : public testing::Test {
         .ignoringNonObjectArgs();
 
     auto service = std::make_unique<MacNotificationServiceUN>(
+        service_remote.BindNewPipeAndPassReceiver(),
         handler_receiver.BindNewPipeAndPassRemote(), mock_notification_center);
-    service->Bind(service_remote.BindNewPipeAndPassReceiver());
-    service->RequestPermission();
     if (on_create)
       std::move(on_create).Run(service.get());
 
@@ -474,27 +472,6 @@ TEST_F(MacNotificationServiceUNTest, RedisplayNotification) {
     run_loop.Run();
     EXPECT_OCMOCK_VERIFY(mock_notification_center_);
   }
-}
-
-TEST_F(MacNotificationServiceUNTest, Rebind) {
-  base::RunLoop run_loop;
-
-  // Reconnnect to the same MacNotificationServiceUNTest instance.
-  service_remote_.reset();
-  service_->Bind(service_remote_.BindNewPipeAndPassReceiver());
-
-  // Verify notification is created..
-  OCMExpect([mock_notification_center_ addNotificationRequest:[OCMArg any]
-                                        withCompletionHandler:[OCMArg any]])
-      .andDo(invokeClosure(run_loop.QuitClosure()));
-
-  // Create and display a new notification.
-  auto notification = CreateMojoNotification("notificationId", "profileId",
-                                             /*incognito=*/true);
-  service_remote_->DisplayNotification(std::move(notification));
-
-  run_loop.Run();
-  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
 }
 
 TEST_F(MacNotificationServiceUNTest, GetDisplayedNotificationsForProfile) {
