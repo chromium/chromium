@@ -26,6 +26,7 @@ class BrowserImpl final : public Browser, public BrowserWebStateListDelegate {
   // `activation_policy` are passed to BrowserWebStateListDelegate constructor.
   BrowserImpl(ChromeBrowserState* browser_state,
               SceneState* scene_state,
+              CommandDispatcher* command_dispatcher,
               BrowserImpl* active_browser,
               InsertionPolicy insertion_policy,
               ActivationPolicy activation_policy);
