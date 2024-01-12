@@ -15,6 +15,9 @@
 #include "device/vr/openxr/openxr_scene_understanding_manager.h"
 #include "device/vr/openxr/openxr_stage_bounds_provider_basic.h"
 #include "device/vr/public/mojom/xr_session.mojom.h"
+// Included on all platforms so that we can check the extension names, even
+// if they may not be supported there.
+#include "third_party/openxr/dev/xr_android.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "device/vr/openxr/android/openxr_hand_tracker_android.h"
@@ -181,7 +184,8 @@ bool OpenXrExtensionHelper::IsFeatureSupported(
       return IsExtensionSupported(XR_EXT_HAND_TRACKING_EXTENSION_NAME) &&
              (IsExtensionSupported(XR_EXT_HAND_INTERACTION_EXTENSION_NAME) ||
               IsExtensionSupported(XR_MSFT_HAND_INTERACTION_EXTENSION_NAME) ||
-              IsExtensionSupported(XR_FB_HAND_TRACKING_AIM_EXTENSION_NAME));
+              IsExtensionSupported(XR_FB_HAND_TRACKING_AIM_EXTENSION_NAME) ||
+              IsExtensionSupported(XR_ANDROID_HAND_GESTURE_EXTENSION_NAME));
     case device::mojom::XRSessionFeature::HIT_TEST:
       return IsExtensionSupported(XR_MSFT_SCENE_UNDERSTANDING_EXTENSION_NAME);
     case device::mojom::XRSessionFeature::SECONDARY_VIEWS:
