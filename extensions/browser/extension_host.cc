@@ -222,7 +222,10 @@ void ExtensionHost::OnBackgroundEventDispatched(
     int event_id,
     EventDispatchSource dispatch_source,
     bool lazy_background_active_on_dispatch) {
+  // TODO(crbug.com/1441221): Make IsBackgroundPage() a real CHECK. It's
+  // effectively a DCHECK right now.
   CHECK(IsBackgroundPage());
+  CHECK(BackgroundInfo::HasBackgroundPage(extension()));
   // See ExtensionHost::OnEventAck() for an explanation on the restriction to
   // this event flow.
   if (dispatch_source == EventDispatchSource::kDispatchEventToProcess) {
@@ -242,28 +245,6 @@ void ExtensionHost::OnBackgroundEventDispatched(
                        lazy_background_active_on_dispatch};
   for (auto& observer : observer_list_)
     observer.OnBackgroundEventDispatched(this, event_name, event_id);
-}
-
-// TODO(crbug.com/1441221): Condense with
-// ExtensionHost::OnBackgroundEventDispatched() once stale events metric is
-// added for persistent background pages.
-void ExtensionHost::OnPersistentBackgroundEventDispatched(
-    const std::string& event_name,
-    base::TimeTicks dispatch_start_time,
-    int event_id,
-    EventDispatchSource dispatch_source) {
-  CHECK(IsBackgroundPage());
-
-  // We don't expect unacked_messages to be written more than once per event_id
-  // since event_ids are supposed to be unique per event dispatch to each
-  // extension.
-  CHECK(unacked_messages_.count(event_id) == 0);
-  unacked_messages_[event_id] =
-      UnackedEventData{event_name, dispatch_start_time, dispatch_source};
-
-  for (auto& observer : observer_list_) {
-    observer.OnBackgroundEventDispatched(this, event_name, event_id);
-  }
 }
 
 void ExtensionHost::OnNetworkRequestStarted(uint64_t request_id) {
@@ -402,11 +383,16 @@ void ExtensionHost::EmitLateAckedEventTask(int event_id) {
   // If the event is still present then we haven't received the ack yet in
   // `ExtensionHost::OnEventAck()`.
   if (unacked_messages_.contains(event_id)) {
-    // TODO(crbug.com/1470045): Update this histogram once we have a way to ack
-    // only for lazy background page events. Until then this could be slightly
-    // inaccurate and not perfectly comparable to the service worker version.
-    base::UmaHistogramBoolean(
-        "Extensions.Events.DidDispatchToAckSucceed.ExtensionPage", false);
+    const char* metric_name =
+        BackgroundInfo::HasLazyBackgroundPage(extension())
+            ? "Extensions.Events.DidDispatchToAckSucceed.ExtensionPage"
+            : "Extensions.Events.DidDispatchToAckSucceed."
+              "ExtensionPersistentPage";
+    // TODO(crbug.com/1470045): Update this histogram once we have a way to
+    // ack only for lazy background page events. Until then this could be
+    // slightly inaccurate and not perfectly comparable to the service worker
+    // version.
+    base::UmaHistogramBoolean(metric_name, false);
   }
 }
 
@@ -469,18 +455,20 @@ void ExtensionHost::OnEventAck(int event_id,
   // can't exclude non-script extensions page contexts (e.g. popup scripts) yet
   // so we have to emit this for all events to remain proportionate to the
   // `false` emits.
-  if (BackgroundInfo::HasLazyBackgroundPage(extension())) {
-    bool late_ack =
-        (base::TimeTicks::Now() - unacked_message_data.dispatch_start_time) >
-        kEventAckMetricTimeLimit;
-    if (!late_ack) {
-      // Emit only if we're within the expected event ack time limit. We'll take
-      // care of the emit for a late ack via a delayed task we started on event
-      // dispatch.
-      // TODO(crbug.com/1441221): Emit this metric for persistent background
-      // pages.
+  bool late_ack =
+      (base::TimeTicks::Now() - unacked_message_data.dispatch_start_time) >
+      kEventAckMetricTimeLimit;
+  if (!late_ack) {
+    // Emit only if we're within the expected event ack time limit. We'll take
+    // care of the emit for a late ack via a delayed task we started on event
+    // dispatch.
+    if (BackgroundInfo::HasLazyBackgroundPage(extension())) {
       base::UmaHistogramBoolean(
           "Extensions.Events.DidDispatchToAckSucceed.ExtensionPage", true);
+    } else if (BackgroundInfo::HasPersistentBackgroundPage(extension())) {
+      base::UmaHistogramBoolean(
+          "Extensions.Events.DidDispatchToAckSucceed.ExtensionPersistentPage",
+          true);
     }
   }
 

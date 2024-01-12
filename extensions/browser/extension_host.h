@@ -111,19 +111,13 @@ class ExtensionHost : public DeferredStartRenderHost,
   void AddObserver(ExtensionHostObserver* observer);
   void RemoveObserver(ExtensionHostObserver* observer);
 
-  // Called when an event is dispatched to the event page associated with this
-  // ExtensionHost.
+  // Called when an event is dispatched to a lazy background page associated
+  // with this ExtensionHost.
   void OnBackgroundEventDispatched(const std::string& event_name,
                                    base::TimeTicks dispatch_start_time,
                                    int event_id,
                                    EventDispatchSource dispatch_source,
                                    bool lazy_background_active_on_dispatch);
-  // The same as above, but for persistent background pages.
-  void OnPersistentBackgroundEventDispatched(
-      const std::string& event_name,
-      base::TimeTicks dispatch_start_time,
-      int event_id,
-      EventDispatchSource dispatch_source);
 
   // Called by the ProcessManager when a network request is started by the
   // extension corresponding to this ExtensionHost.

@@ -609,7 +609,9 @@ struct Event {
   base::TimeTicks dispatch_start_time;
 
   // `true` if the event was dispatched to a active/running lazy background.
-  // Used in UMA histograms.
+  // This is only used for lazy background contexts (event pages and service
+  // workers), it is unused for persistent background pages. Used in UMA
+  // histograms.
   bool lazy_background_active_on_dispatch;
 
   // Whether a user gesture triggered the event.

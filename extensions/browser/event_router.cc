@@ -1303,13 +1303,10 @@ void EventRouter::IncrementInFlightEvents(
       // Only increment in-flight events if the lazy background page is active.
       if (BackgroundInfo::HasLazyBackgroundPage(extension)) {
         pm->IncrementLazyKeepaliveCount(extension, Activity::EVENT, event_name);
-        host->OnBackgroundEventDispatched(event_name, dispatch_start_time,
-                                          event_id, dispatch_source,
-                                          lazy_background_active_on_dispatch);
-      } else {  // persistent background page.
-        host->OnPersistentBackgroundEventDispatched(
-            event_name, dispatch_start_time, event_id, dispatch_source);
       }
+      host->OnBackgroundEventDispatched(event_name, dispatch_start_time,
+                                        event_id, dispatch_source,
+                                        lazy_background_active_on_dispatch);
     }
   } else if (service_worker_version_id !=
              blink::mojom::kInvalidServiceWorkerVersionId) {

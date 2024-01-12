@@ -217,11 +217,48 @@ IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest,
   histogram_tester.ExpectTotalCount(
       "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2",
       /*expected_count=*/0);
-  // We are not yet emitting a DidDispatchToAckSucceed for persistent background
-  // pages yet, so ensure we aren't accidentally emitting event page version
-  // since they use the same event acknowledgement flow.
+}
+
+// Tests that only the dispatch time histogram for a persistent background page
+// extension is emitted with a sane value, and that the same metric for other
+// background context types are not emitted.
+IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest,
+                       PersistentBackgroundStaleEventsMetricTest) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ExtensionTestMessageListener extension_oninstall_listener_fired(
+      "installed listener fired");
+  // Load the extension for a persistent background page
+  scoped_refptr<const Extension> extension = LoadExtension(
+      test_data_dir_.AppendASCII("events/metrics/persistent_background"));
+  ASSERT_TRUE(extension);
+  // This ensures that we wait until the the browser receives the ack from the
+  // renderer. This prevents unexpected histogram emits later.
+  ASSERT_TRUE(extension_oninstall_listener_fired.WaitUntilSatisfied());
+
+  base::HistogramTester histogram_tester;
+  ExtensionTestMessageListener test_event_listener_fired("listener fired");
+  // Navigate somewhere to trigger the webNavigation.onBeforeRequest event to
+  // the extension listener.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("example.com", "/simple.html")));
+  ASSERT_TRUE(test_event_listener_fired.WaitUntilSatisfied());
+
+  // Call to webNavigation.onCompleted expected.
+  histogram_tester.ExpectTotalCount(
+      "Extensions.Events.DidDispatchToAckSucceed.ExtensionPersistentPage",
+      /*expected_count=*/1);
+  // Verify that the value is `true` since the event wasn't delayed in acking.
+  histogram_tester.ExpectBucketCount(
+      "Extensions.Events.DidDispatchToAckSucceed.ExtensionPersistentPage",
+      /*sample=*/true, /*expected_count=*/1);
+
+  // Verify other extension background context types are not logged.
   histogram_tester.ExpectTotalCount(
       "Extensions.Events.DidDispatchToAckSucceed.ExtensionPage",
+      /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount(
+      "Extensions.Events.DidDispatchToAckSucceed.ExtensionServiceWorker2",
       /*expected_count=*/0);
 }
 
