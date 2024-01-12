@@ -50,7 +50,7 @@ using testing::WithoutArgs;
 namespace syncer {
 
 namespace {
-
+base::OnceClosure g_quit_closure_;
 void SimulatePollSuccess(ModelTypeSet requested_types, SyncCycle* cycle) {
   cycle->mutable_status_controller()->set_last_download_updates_result(
       SyncerError::Success());
@@ -193,11 +193,13 @@ void QuitLoopNow() {
   // indefinitely in the presence of repeated timers with low delays
   // and a slow test (e.g., ThrottlingDoesThrottle [which has a poll
   // delay of 5ms] run under TSAN on the trybots).
-  base::RunLoop::QuitCurrentDeprecated();
+  std::move(g_quit_closure_).Run();
 }
 
 void RunLoop() {
-  base::RunLoop().Run();
+  base::RunLoop loop;
+  g_quit_closure_ = loop.QuitClosure();
+  loop.Run();
 }
 
 void PumpLoop() {
