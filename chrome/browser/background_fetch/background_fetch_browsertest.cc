@@ -229,9 +229,7 @@ class OfflineContentProviderObserver final
   const OfflineItem& latest_item() const { return latest_item_; }
 
  private:
-  void Resume(const ContentId& id) {
-    delegate_->ResumeDownload(id, false /* has_user_gesture */);
-  }
+  void Resume(const ContentId& id) { delegate_->ResumeDownload(id); }
 
   ItemsAddedCallback items_added_callback_;
   FinishedProcessingItemCallback finished_processing_item_callback_;

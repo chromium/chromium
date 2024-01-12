@@ -398,17 +398,12 @@ void DownloadUIAdapter::PauseDownloadContinuation(
       FilterRequestsByGuid(std::move(requests), guid));
 }
 
-void DownloadUIAdapter::ResumeDownload(const ContentId& id,
-                                       bool has_user_gesture) {
+void DownloadUIAdapter::ResumeDownload(const ContentId& id) {
   // TODO(fgorski): Clean this up in a way where 2 round trips + GetAllRequests
   // is not necessary.
-  if (has_user_gesture) {
-    request_coordinator_->GetAllRequests(
-        base::BindOnce(&DownloadUIAdapter::ResumeDownloadContinuation,
-                       weak_ptr_factory_.GetWeakPtr(), id.id));
-  } else {
-    request_coordinator_->StartImmediateProcessing(base::DoNothing());
-  }
+  request_coordinator_->GetAllRequests(
+      base::BindOnce(&DownloadUIAdapter::ResumeDownloadContinuation,
+                     weak_ptr_factory_.GetWeakPtr(), id.id));
 }
 
 void DownloadUIAdapter::ResumeDownloadContinuation(

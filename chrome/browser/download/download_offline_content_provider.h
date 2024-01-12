@@ -90,7 +90,7 @@ class DownloadOfflineContentProvider
   // Methods that can be run in reduced mode.
   void CancelDownload(const ContentId& id) override;
   void PauseDownload(const ContentId& id) override;
-  void ResumeDownload(const ContentId& id, bool has_user_gesture) override;
+  void ResumeDownload(const ContentId& id) override;
 
   // Entry point for associating this class with a download item. Must be called
   // for all new and in-progress downloads, after which this class will start

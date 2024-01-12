@@ -237,8 +237,7 @@ void ContentIndexProviderImpl::PauseDownload(const ContentId& id) {
   NOTREACHED();
 }
 
-void ContentIndexProviderImpl::ResumeDownload(const ContentId& id,
-                                              bool has_user_gesture) {
+void ContentIndexProviderImpl::ResumeDownload(const ContentId& id) {
   NOTREACHED();
 }
 

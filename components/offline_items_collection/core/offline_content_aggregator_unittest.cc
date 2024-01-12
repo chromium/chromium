@@ -216,8 +216,8 @@ TEST_F(OfflineContentAggregatorTest, ActionPropagatesToRightProvider) {
   EXPECT_CALL(provider2, RemoveItem(id2)).Times(1);
   EXPECT_CALL(provider1, CancelDownload(id1)).Times(1);
   EXPECT_CALL(provider2, CancelDownload(id2)).Times(1);
-  EXPECT_CALL(provider1, ResumeDownload(id1, false)).Times(1);
-  EXPECT_CALL(provider2, ResumeDownload(id2, true)).Times(1);
+  EXPECT_CALL(provider1, ResumeDownload(id1)).Times(1);
+  EXPECT_CALL(provider2, ResumeDownload(id2)).Times(1);
   EXPECT_CALL(provider1, PauseDownload(id1)).Times(1);
   EXPECT_CALL(provider2, PauseDownload(id2)).Times(1);
   EXPECT_CALL(provider1, GetVisualsForItem_(id1, _, _)).Times(1);
@@ -230,8 +230,8 @@ TEST_F(OfflineContentAggregatorTest, ActionPropagatesToRightProvider) {
   aggregator_.RemoveItem(id2);
   aggregator_.CancelDownload(id1);
   aggregator_.CancelDownload(id2);
-  aggregator_.ResumeDownload(id1, false);
-  aggregator_.ResumeDownload(id2, true);
+  aggregator_.ResumeDownload(id1);
+  aggregator_.ResumeDownload(id2);
   aggregator_.PauseDownload(id1);
   aggregator_.PauseDownload(id2);
   aggregator_.GetVisualsForItem(id1, GetVisualsOptions::IconOnly(),
@@ -252,7 +252,7 @@ TEST_F(OfflineContentAggregatorTest, ActionPropagatesImmediately) {
 
   testing::InSequence sequence;
   EXPECT_CALL(provider1, PauseDownload(id1)).Times(1);
-  EXPECT_CALL(provider1, ResumeDownload(id1, true)).Times(1);
+  EXPECT_CALL(provider1, ResumeDownload(id1)).Times(1);
   EXPECT_CALL(
       provider1,
       OpenItem(OpenParamsEqual(OpenParams(LaunchLocation::DOWNLOAD_HOME)), id1))
@@ -264,7 +264,7 @@ TEST_F(OfflineContentAggregatorTest, ActionPropagatesImmediately) {
   EXPECT_CALL(provider2, RemoveItem(id3)).Times(1);
 
   aggregator_.PauseDownload(id1);
-  aggregator_.ResumeDownload(id1, true);
+  aggregator_.ResumeDownload(id1);
   aggregator_.OpenItem(OpenParams(LaunchLocation::DOWNLOAD_HOME), id1);
   aggregator_.OpenItem(OpenParams(LaunchLocation::NOTIFICATION), id2);
   aggregator_.RemoveItem(id3);

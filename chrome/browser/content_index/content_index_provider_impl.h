@@ -61,8 +61,7 @@ class ContentIndexProviderImpl
   void RemoveItem(const offline_items_collection::ContentId& id) override;
   void CancelDownload(const offline_items_collection::ContentId& id) override;
   void PauseDownload(const offline_items_collection::ContentId& id) override;
-  void ResumeDownload(const offline_items_collection::ContentId& id,
-                      bool has_user_gesture) override;
+  void ResumeDownload(const offline_items_collection::ContentId& id) override;
   void GetItemById(const offline_items_collection::ContentId& id,
                    SingleItemCallback callback) override;
   void GetAllItems(MultipleItemCallback callback) override;

@@ -56,9 +56,8 @@ void ThrottledOfflineContentProvider::PauseDownload(const ContentId& id) {
   FlushUpdates();
 }
 
-void ThrottledOfflineContentProvider::ResumeDownload(const ContentId& id,
-                                                     bool has_user_gesture) {
-  wrapped_provider_->ResumeDownload(id, has_user_gesture);
+void ThrottledOfflineContentProvider::ResumeDownload(const ContentId& id) {
+  wrapped_provider_->ResumeDownload(id);
   FlushUpdates();
 }
 

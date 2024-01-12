@@ -919,27 +919,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
                         getNativeDownloadManagerService(),
                         DownloadManagerService.this,
                         item.getId(),
-                        IncognitoUtils.getProfileKeyFromOTRProfileID(otrProfileID),
-                        true);
-    }
-
-    /**
-     * Called to retry a download. May resume the current download or start a new one.
-     * @param id The {@link ContentId} of the download to retry.
-     * @param item The current download that needs to retry.
-     * @param hasUserGesture Whether the request was originated due to user gesture.
-     */
-    // Deprecated after new download backend.
-    // TODO(shaktisahu): Add retry to offline content provider or route it from resume call.
-    public void retryDownload(ContentId id, DownloadItem item, boolean hasUserGesture) {
-        OTRProfileID otrProfileID = item.getDownloadInfo().getOTRProfileId();
-        DownloadManagerServiceJni.get()
-                .retryDownload(
-                        getNativeDownloadManagerService(),
-                        DownloadManagerService.this,
-                        item.getId(),
-                        IncognitoUtils.getProfileKeyFromOTRProfileID(otrProfileID),
-                        hasUserGesture);
+                        IncognitoUtils.getProfileKeyFromOTRProfileID(otrProfileID));
     }
 
     /**
@@ -1694,15 +1674,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
                 long nativeDownloadManagerService,
                 DownloadManagerService caller,
                 String downloadGuid,
-                ProfileKey profileKey,
-                boolean hasUserGesture);
-
-        void retryDownload(
-                long nativeDownloadManagerService,
-                DownloadManagerService caller,
-                String downloadGuid,
-                ProfileKey profileKey,
-                boolean hasUserGesture);
+                ProfileKey profileKey);
 
         void cancelDownload(
                 long nativeDownloadManagerService,

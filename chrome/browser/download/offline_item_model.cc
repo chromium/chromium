@@ -145,7 +145,7 @@ void OfflineItemModel::Resume() {
   if (!offline_item_)
     return;
 
-  GetProvider()->ResumeDownload(offline_item_->id, true /* has_user_gesture */);
+  GetProvider()->ResumeDownload(offline_item_->id);
 }
 
 void OfflineItemModel::Cancel(bool user_cancel) {

@@ -267,18 +267,17 @@ void DownloadOfflineContentProvider::PauseDownload(const ContentId& id) {
     item->Pause();
 }
 
-void DownloadOfflineContentProvider::ResumeDownload(const ContentId& id,
-                                                    bool has_user_gesture) {
+void DownloadOfflineContentProvider::ResumeDownload(const ContentId& id) {
   if (state_ == State::UNINITIALIZED) {
     pending_actions_for_reduced_mode_.push_back(
         base::BindOnce(&DownloadOfflineContentProvider::ResumeDownload,
-                       weak_ptr_factory_.GetWeakPtr(), id, has_user_gesture));
+                       weak_ptr_factory_.GetWeakPtr(), id));
     return;
   }
 
   DownloadItem* item = GetDownload(id.id);
   if (item)
-    item->Resume(has_user_gesture);
+    item->Resume(true /* user_resume */);
 }
 
 void DownloadOfflineContentProvider::GetItemById(

@@ -61,8 +61,7 @@ class DownloadManagerServiceTest : public testing::Test {
             env,
             base::android::ConvertUTF8ToJavaString(env, download_guid).obj()),
         JavaParamRef<jobject>(env,
-                              profile_key_android.GetJavaObject().Release()),
-        false);
+                              profile_key_android.GetJavaObject().Release()));
     EXPECT_FALSE(success_);
     service_->OnDownloadsInitialized(&coordinator_, false);
     run_loop_.Run();

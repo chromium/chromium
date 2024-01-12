@@ -98,14 +98,14 @@ TEST_F(ThrottledOfflineContentProviderTest, TestBasicPassthrough) {
   EXPECT_CALL(wrapped_provider_, RemoveItem(id));
   EXPECT_CALL(wrapped_provider_, CancelDownload(id));
   EXPECT_CALL(wrapped_provider_, PauseDownload(id));
-  EXPECT_CALL(wrapped_provider_, ResumeDownload(id, true));
+  EXPECT_CALL(wrapped_provider_, ResumeDownload(id));
   EXPECT_CALL(wrapped_provider_, GetVisualsForItem_(id, _, _));
   wrapped_provider_.SetItems(items);
   provider_.OpenItem(OpenParams(LaunchLocation::DOWNLOAD_HOME), id);
   provider_.RemoveItem(id);
   provider_.CancelDownload(id);
   provider_.PauseDownload(id);
-  provider_.ResumeDownload(id, true);
+  provider_.ResumeDownload(id);
   provider_.GetVisualsForItem(id, GetVisualsOptions::IconOnly(),
                               OfflineContentProvider::VisualsCallback());
 
@@ -349,7 +349,7 @@ TEST_F(ThrottledOfflineContentProviderTest, TestPokingProviderFlushesQueue) {
       .WillRepeatedly(InvokeWithoutArgs([=]() {
         wrapped_provider_.NotifyOnItemUpdated(item5, absl::nullopt);
       }));
-  EXPECT_CALL(wrapped_provider_, ResumeDownload(_, _))
+  EXPECT_CALL(wrapped_provider_, ResumeDownload(_))
       .WillRepeatedly(InvokeWithoutArgs([=]() {
         wrapped_provider_.NotifyOnItemUpdated(item6, absl::nullopt);
       }));
@@ -391,7 +391,7 @@ TEST_F(ThrottledOfflineContentProviderTest, TestPokingProviderFlushesQueue) {
     EXPECT_CALL(observer, OnItemUpdated(item6, Eq(absl::nullopt))).Times(1);
     provider_.set_last_update_time(base::TimeTicks::Now());
     wrapped_provider_.NotifyOnItemUpdated(item1, absl::nullopt);
-    provider_.ResumeDownload(id1, false);
+    provider_.ResumeDownload(id1);
   }
 }
 

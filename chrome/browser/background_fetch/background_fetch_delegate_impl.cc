@@ -142,8 +142,7 @@ void BackgroundFetchDelegateImpl::PauseDownload(
 }
 
 void BackgroundFetchDelegateImpl::ResumeDownload(
-    const offline_items_collection::ContentId& id,
-    bool has_user_gesture) {
+    const offline_items_collection::ContentId& id) {
   UpdateOfflineItem(id.id);
   BackgroundFetchDelegateBase::ResumeDownload(id.id);
 }
