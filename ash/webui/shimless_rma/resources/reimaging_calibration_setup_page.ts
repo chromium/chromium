@@ -2,22 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/icons.html.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './shimless_rma_shared.css.js';
 import './base_page.js';
 import './icons.html.js';
+import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
-import {assert} from 'chrome://resources/ash/common/assert.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {getTemplate} from './reimaging_calibration_setup_page.html.js';
 import {CalibrationSetupInstruction, ShimlessRmaServiceInterface, StateResult} from './shimless_rma.mojom-webui.js';
 import {enableNextButton, focusPageTitle} from './shimless_rma_util.js';
 
-/** @type {!Object<!CalibrationSetupInstruction, string>} */
 const INSRUCTION_MESSAGE_KEY_MAP = {
   [CalibrationSetupInstruction.kCalibrationInstructionPlaceBaseOnFlatSurface]:
       'calibrateBaseInstructionsText',
@@ -25,7 +24,6 @@ const INSRUCTION_MESSAGE_KEY_MAP = {
       'calibrateLidInstructionsText',
 };
 
-/** @type {!Object<!CalibrationSetupInstruction, string>} */
 const CALIBRATION_IMG_MAP = {
   [CalibrationSetupInstruction.kCalibrationInstructionPlaceBaseOnFlatSurface]:
       'base_on_flat_surface',
@@ -33,7 +31,6 @@ const CALIBRATION_IMG_MAP = {
       'lid_on_flat_surface',
 };
 
-/** @type {!Object<!CalibrationSetupInstruction, string>} */
 const CALIBRATION_ALT_MAP = {
   [CalibrationSetupInstruction.kCalibrationInstructionPlaceBaseOnFlatSurface]:
       'baseOnFlatSurfaceAltText',
@@ -47,19 +44,12 @@ const CALIBRATION_ALT_MAP = {
  * user to prepare the device for a calibration step.
  */
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const ReimagingCalibrationSetupPageBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+const ReimagingCalibrationSetupPageBase = I18nMixin(PolymerElement);
 
-/** @polymer */
 export class ReimagingCalibrationSetupPage extends
     ReimagingCalibrationSetupPageBase {
   static get is() {
-    return 'reimaging-calibration-setup-page';
+    return 'reimaging-calibration-setup-page' as const;
   }
 
   static get template() {
@@ -68,84 +58,78 @@ export class ReimagingCalibrationSetupPage extends
 
   static get properties() {
     return {
-      /** @protected {?CalibrationSetupInstruction} */
       calibrationSetupInstruction: {
         type: Object,
       },
 
-      /** @protected {string} */
       imgSrc: {
         type: String,
         value: '',
       },
 
-      /** @protected {string} */
       imgAlt: {
         type: String,
         value: '',
       },
 
-      /** @protected {string} */
       calibrationInstructionsText: {
         type: String,
       },
     };
   }
 
-  constructor() {
-    super();
-    /** @private {ShimlessRmaServiceInterface} */
-    this.shimlessRmaService = getShimlessRmaService();
-  }
+  calibrationSetupInstruction: CalibrationSetupInstruction;
+  shimlessRmaService: ShimlessRmaServiceInterface = getShimlessRmaService();
+  protected imgSrc: string;
+  protected imgAlt: string;
+  protected calibrationInstructionsText: string;
 
   static get observers() {
     return ['onStatusChanged(calibrationSetupInstruction)'];
   }
 
-  /** @override */
-  ready() {
+  override ready() {
     super.ready();
-    this.shimlessRmaService.getCalibrationSetupInstructions().then((result) => {
-      this.calibrationSetupInstruction = result.instructions;
-    });
+    this.shimlessRmaService.getCalibrationSetupInstructions().then(
+        (result: {instructions: CalibrationSetupInstruction}) => {
+          this.calibrationSetupInstruction = result.instructions;
+        });
     enableNextButton(this);
 
     focusPageTitle(this);
   }
 
-  /** @return {!Promise<{stateResult: !StateResult}>} */
-  onNextButtonClick() {
+  onNextButtonClick(): Promise<{stateResult: StateResult}> {
     return this.shimlessRmaService.runCalibrationStep();
   }
 
   /**
    * Groups state changes related to the |calibrationSetupInstruction|
    * updating.
-   * @protected
    */
-  onStatusChanged() {
+  protected onStatusChanged(): void {
     this.setCalibrationInstructionsText();
     this.setImgSrcAndAlt();
   }
 
-  /**
-   * @protected
-   */
-  setCalibrationInstructionsText() {
+  protected setCalibrationInstructionsText(): void {
     assert(this.calibrationSetupInstruction);
     this.calibrationInstructionsText =
         this.i18n(INSRUCTION_MESSAGE_KEY_MAP[this.calibrationSetupInstruction]);
   }
 
-  /**
-   * @protected
-   */
-  setImgSrcAndAlt() {
+  protected setImgSrcAndAlt(): void {
     assert(this.calibrationSetupInstruction);
     this.imgSrc = `illustrations/${
         CALIBRATION_IMG_MAP[this.calibrationSetupInstruction]}.svg`;
     this.imgAlt =
         this.i18n(CALIBRATION_ALT_MAP[this.calibrationSetupInstruction]);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [ReimagingCalibrationSetupPage.is]: ReimagingCalibrationSetupPage;
   }
 }
 
