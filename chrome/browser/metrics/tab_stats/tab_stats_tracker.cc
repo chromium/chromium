@@ -171,12 +171,26 @@ TabStatsTracker::~TabStatsTracker() {
 
 // static
 void TabStatsTracker::SetInstance(std::unique_ptr<TabStatsTracker> instance) {
-  DCHECK_EQ(nullptr, g_tab_stats_tracker_instance);
+  CHECK(!g_tab_stats_tracker_instance);
   g_tab_stats_tracker_instance = instance.release();
 }
 
+// static
+void TabStatsTracker::ClearInstance() {
+  CHECK(g_tab_stats_tracker_instance);
+  delete g_tab_stats_tracker_instance;
+  g_tab_stats_tracker_instance = nullptr;
+}
+
+// static
 TabStatsTracker* TabStatsTracker::GetInstance() {
+  CHECK(g_tab_stats_tracker_instance);
   return g_tab_stats_tracker_instance;
+}
+
+// static
+bool TabStatsTracker::HasInstance() {
+  return g_tab_stats_tracker_instance != nullptr;
 }
 
 void TabStatsTracker::AddObserverAndSetInitialState(

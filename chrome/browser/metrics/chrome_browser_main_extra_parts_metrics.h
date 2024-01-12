@@ -60,6 +60,7 @@ class ChromeBrowserMainExtraPartsMetrics : public ChromeBrowserMainExtraParts,
   void PreBrowserStart() override;
   void PostBrowserStart() override;
   void PreMainMessageLoopRun() override;
+  void PostDestroyThreads() override;
 
   // Registers local state prefs used by this class.
   static void RegisterPrefs(PrefRegistrySimple* registry);

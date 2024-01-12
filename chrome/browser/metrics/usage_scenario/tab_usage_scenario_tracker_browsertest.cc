@@ -129,6 +129,7 @@ class TabUsageScenarioTrackerBrowserTest : public InProcessBrowserTest {
   void TearDownOnMainThread() override {
     tab_stats_tracker_->RemoveObserver(tab_usage_scenario_tracker_.get());
     tab_usage_scenario_tracker_.reset();
+    tab_stats_tracker_ = nullptr;
     InProcessBrowserTest::TearDownOnMainThread();
   }
 

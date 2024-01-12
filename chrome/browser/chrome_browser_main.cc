@@ -1914,6 +1914,10 @@ void ChromeBrowserMainParts::PostDestroyThreads() {
   NOTREACHED();
 #else
 
+  for (auto& chrome_extra_part : chrome_extra_parts_) {
+    chrome_extra_part->PostDestroyThreads();
+  }
+
   browser_shutdown::RestartMode restart_mode =
       browser_shutdown::RestartMode::kNoRestart;
 

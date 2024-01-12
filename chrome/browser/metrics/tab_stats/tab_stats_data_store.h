@@ -126,7 +126,7 @@ class TabStatsDataStore : public TabStatsObserver {
       base::SampleMetadata("NumberOfTabs", base::SampleMetadataScope::kProcess);
 
   // A raw pointer to the PrefService used to read and write the statistics.
-  raw_ptr<PrefService, LeakedDanglingUntriaged> pref_service_;
+  raw_ptr<PrefService> pref_service_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
