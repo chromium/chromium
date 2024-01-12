@@ -123,9 +123,14 @@ TabGroupHeader::TabGroupHeader(TabSlotController& tab_slot_controller,
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_->SetElideBehavior(gfx::FADE_TAIL);
 
-  if (features::IsChromeRefresh2023() &&
-      base::FeatureList::IsEnabled(features::kChromeRefresh2023TopChromeFont)) {
-    title_->SetTextStyle(views::style::STYLE_BODY_4_EMPHASIS);
+  if (features::IsChromeRefresh2023()) {
+    title_->SetLineHeight(20);
+    if (base::FeatureList::IsEnabled(
+            features::kChromeRefresh2023TopChromeFont)) {
+      title_->SetTextStyle(views::style::STYLE_BODY_4_EMPHASIS);
+    }
+  } else {
+    title_->SetTextStyle(views::style::STYLE_BODY_4);
   }
 
   // Enable keyboard focus.
@@ -507,7 +512,8 @@ void TabGroupHeader::VisualsChanged() {
     // horizontal and vertical insets of the title chip.
     const gfx::Insets title_chip_insets =
         group_style_->GetInsetsForHeaderChip(ShouldShowSyncIcon());
-    const int title_chip_vertical_inset = title_chip_insets.top();
+    const int title_chip_vertical_inset =
+        features::IsChromeRefresh2023() ? 0 : title_chip_insets.top();
     const int title_chip_horizontal_inset_left = title_chip_insets.left();
     const int title_chip_horizontal_inset_right = title_chip_insets.right();
 
