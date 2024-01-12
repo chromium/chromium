@@ -53,8 +53,7 @@ TEST_F(FocusModeSessionTest, NormalCase) {
 
   // Verify that the ending moment terminates correctly.
   task_environment_.AdvanceClock(base::Minutes(1));
-  EXPECT_EQ(FocusModeSession::State::kComplete,
-            session.GetState(base::Time::Now()));
+  EXPECT_EQ(FocusModeSession::State::kOff, session.GetState(base::Time::Now()));
 }
 
 // Tests that `GetSnapshot` gives the correct results.
@@ -132,7 +131,7 @@ TEST_F(FocusModeSessionTest, ExtendSession) {
 }
 
 // Tests that a session that is marked for having a persistent ending doesn't
-// become `kComplete` even when passing the previously expected ending time.
+// become `kOff` even when passing the previously expected ending time.
 TEST_F(FocusModeSessionTest, PersistEnding) {
   base::Time start_time = base::Time::Now();
   base::Time expected_end_time = kEndDuration + start_time;
@@ -168,11 +167,10 @@ TEST_F(FocusModeSessionTest, PersistEnding) {
             session.end_time());
   EXPECT_FALSE(session.persistent_ending());
 
-  // Test that the session can advance into the kComplete state, and doesn't get
+  // Test that the session can advance into the kOff state, and doesn't get
   // locked to `kEnding`.
   task_environment_.AdvanceClock(base::Minutes(11));
-  EXPECT_EQ(FocusModeSession::State::kComplete,
-            session.GetState(base::Time::Now()));
+  EXPECT_EQ(FocusModeSession::State::kOff, session.GetState(base::Time::Now()));
 }
 
 }  // namespace ash

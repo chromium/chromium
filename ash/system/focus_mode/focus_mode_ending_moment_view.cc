@@ -55,7 +55,7 @@ FocusModeEndingMomentView::FocusModeEndingMomentView() {
   auto* text_container = AddChildView(std::make_unique<views::BoxLayoutView>());
   text_container->SetOrientation(views::BoxLayout::Orientation::kVertical);
   text_container->SetMainAxisAlignment(
-      views::BoxLayout::MainAxisAlignment::kCenter);
+      views::BoxLayout::MainAxisAlignment::kStart);
   text_container->SetBetweenChildSpacing(kSpaceBetweenText);
   text_container->SetPreferredSize(kTextContainerSize);
   text_container->SetProperty(

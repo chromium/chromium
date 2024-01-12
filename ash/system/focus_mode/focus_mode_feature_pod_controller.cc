@@ -10,6 +10,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
+#include "ash/system/focus_mode/focus_mode_session.h"
 #include "ash/system/focus_mode/focus_mode_util.h"
 #include "ash/system/unified/feature_tile.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
@@ -32,7 +33,6 @@ FocusModeFeaturePodController::~FocusModeFeaturePodController() {
   FocusModeController::Get()->RemoveObserver(this);
 }
 
-
 std::unique_ptr<FeatureTile> FocusModeFeaturePodController::CreateTile(
     bool compact) {
   auto tile = std::make_unique<FeatureTile>(
@@ -53,8 +53,9 @@ std::unique_ptr<FeatureTile> FocusModeFeaturePodController::CreateTile(
                           weak_factory_.GetWeakPtr()));
   tile_->CreateDecorativeDrillInArrow();
   tile_->SetVectorIcon(kFocusModeLampIcon);
-  tile_->SetToggled(FocusModeController::Get()->in_focus_session());
-  UpdateUI();
+  auto* controller = FocusModeController::Get();
+  tile_->SetToggled(controller->in_focus_session());
+  UpdateUI(controller->GetSnapshot(base::Time::Now()));
   return tile;
 }
 
@@ -84,24 +85,40 @@ void FocusModeFeaturePodController::OnLabelPressed() {
 }
 
 void FocusModeFeaturePodController::OnFocusModeChanged(bool in_focus_session) {
-  UpdateUI();
+  UpdateUI(FocusModeController::Get()->GetSnapshot(base::Time::Now()));
   tile_->SetToggled(in_focus_session);
 }
 
-void FocusModeFeaturePodController::OnTimerTick() {
-  UpdateUI();
+void FocusModeFeaturePodController::OnTimerTick(
+    const FocusModeSession::Snapshot& session_snapshot) {
+  UpdateUI(session_snapshot);
 }
 
-void FocusModeFeaturePodController::OnSessionDurationChanged() {
-  UpdateUI();
+void FocusModeFeaturePodController::OnInactiveSessionDurationChanged(
+    const base::TimeDelta& session_duration) {
+  CHECK(tile_);
+
+  if (!FocusModeController::Get()->HasStartedSessionBefore()) {
+    return;
+  }
+
+  tile_->SetSubLabel(focus_mode_util::GetDurationString(
+      session_duration, /*digital_format=*/false));
 }
 
-void FocusModeFeaturePodController::UpdateUI() {
+void FocusModeFeaturePodController::OnActiveSessionDurationChanged(
+    const FocusModeSession::Snapshot& session_snapshot) {
+  UpdateUI(session_snapshot);
+}
+
+void FocusModeFeaturePodController::UpdateUI(
+    const FocusModeSession::Snapshot& session_snapshot) {
   auto* controller = FocusModeController::Get();
   CHECK(controller);
   CHECK(tile_);
 
-  const bool in_focus_session = controller->in_focus_session();
+  const bool in_focus_session =
+      session_snapshot.state == FocusModeSession::State::kOn;
   const std::u16string label_text = l10n_util::GetStringUTF16(
       in_focus_session ? IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_ACTIVE_LABEL
                        : IDS_ASH_STATUS_TRAY_FOCUS_MODE);
@@ -121,8 +138,8 @@ void FocusModeFeaturePodController::UpdateUI() {
   }
 
   const base::TimeDelta session_duration_remaining =
-      in_focus_session ? controller->GetActualEndTime() - base::Time::Now()
-                       : controller->session_duration();
+      in_focus_session ? session_snapshot.remaining_time
+                       : controller->GetSessionDuration();
   const std::u16string duration_string = focus_mode_util::GetDurationString(
       session_duration_remaining, /*digital_format=*/false);
   tile_->SetSubLabel(

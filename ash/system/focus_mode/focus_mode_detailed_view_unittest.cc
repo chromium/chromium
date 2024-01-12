@@ -25,7 +25,6 @@
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/fake_detailed_view_delegate.h"
 #include "ash/system/tray/hover_highlight_view.h"
-#include "ash/system/tray/tri_view.h"
 #include "ash/system/unified/feature_tile.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
@@ -269,7 +268,8 @@ TEST_F(FocusModeDetailedViewTest, DndOnBeforeStart) {
 TEST_F(FocusModeDetailedViewTest, ToggleRow) {
   auto* focus_mode_controller = FocusModeController::Get();
 
-  auto validate_labels = [&](bool active) {
+  auto validate_labels = [&](bool active, const std::string& trace_name) {
+    SCOPED_TRACE(trace_name);
     EXPECT_EQ(active, focus_mode_controller->in_focus_session());
     EXPECT_EQ(active ? u"Focusing" : u"Focus", GetToggleRowLabel()->GetText());
 
@@ -283,7 +283,7 @@ TEST_F(FocusModeDetailedViewTest, ToggleRow) {
     EXPECT_EQ(active ? u"Finish" : u"Start", GetToggleRowButton()->GetText());
   };
 
-  validate_labels(/*active=*/false);
+  validate_labels(/*active=*/false, "Initial state");
 
   // Starting the focus session closes the bubble, so we need to simulate
   // recreating the detailed view.
@@ -291,11 +291,11 @@ TEST_F(FocusModeDetailedViewTest, ToggleRow) {
   CreateFakeFocusModeDetailedView();
 
   // Wait a minute to test that the time remaining label updates.
-  task_environment()->FastForwardBy(base::Seconds(61));
-  validate_labels(/*active=*/true);
+  task_environment()->FastForwardBy(base::Seconds(60));
+  validate_labels(/*active=*/true, "Wait for a minute");
 
   LeftClickOn(GetToggleRowButton());
-  validate_labels(/*active=*/false);
+  validate_labels(/*active=*/false, "Toggle off session");
 
   // Verify that the time displays correctly in the 24-hour clock format.
   Shell::Get()->system_tray_model()->SetUse24HourClock(true);
@@ -308,10 +308,10 @@ TEST_F(FocusModeDetailedViewTest, ToggleRow) {
   // Wait a second to avoid the time remaining being either 1500 seconds or
   // 1499.99 seconds.
   task_environment()->FastForwardBy(base::Seconds(1));
-  validate_labels(/*active=*/true);
+  validate_labels(/*active=*/true, "Check time passed");
 
   LeftClickOn(GetToggleRowButton());
-  validate_labels(/*active=*/false);
+  validate_labels(/*active=*/false, "Toggle off session again");
 }
 
 // Tests how the textfield for the timer setting view handles valid and invalid
@@ -524,13 +524,13 @@ TEST_F(FocusModeDetailedViewTest, TimerViewVisibility) {
   EXPECT_TRUE(timer_setting_view->GetVisible());
 
   const base::TimeDelta session_duration =
-      focus_mode_controller->session_duration();
+      focus_mode_controller->GetSessionDuration();
   EXPECT_EQ(focus_mode_util::GetFormattedEndTimeString(base::Time::Now() +
                                                        session_duration),
             GetEndTimeLabel()->GetText());
 
   // Wait a minute to test that the end time label updates.
-  task_environment()->FastForwardBy(base::Seconds(61));
+  task_environment()->FastForwardBy(base::Seconds(60));
   EXPECT_EQ(focus_mode_util::GetFormattedEndTimeString(base::Time::Now() +
                                                        session_duration),
             GetEndTimeLabel()->GetText());

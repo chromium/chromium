@@ -387,42 +387,41 @@ void FocusModeDetailedView::AddedToWidget() {
 
 void FocusModeDetailedView::OnFocusModeChanged(bool in_focus_session) {
   if (in_focus_session) {
-    // The system tray bubble is closed by the `FocusModeController` whenever we
-    // toggle focus mode on, so do nothing here.
+    // The system tray bubble is closed by the `FocusModeController` whenever
+    // we toggle focus mode on, so do nothing here.
     return;
   }
 
-  toggle_view_->text_label()->SetText(l10n_util::GetStringUTF16(
-      in_focus_session ? IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_ACTIVE_LABEL
-                       : IDS_ASH_STATUS_TRAY_FOCUS_MODE));
+  toggle_view_->text_label()->SetText(
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_FOCUS_MODE));
   if (toggle_view_->sub_text_label()) {
     toggle_view_->sub_text_label()->SetVisible(false);
   }
   views::AsViewClass<PillButton>(toggle_view_->right_view())
       ->SetText(l10n_util::GetStringUTF16(
-          in_focus_session
-              ? IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_END_BUTTON
-              : IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_START_BUTTON));
+          IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_START_BUTTON));
   UpdateToggleButtonAccessibility(in_focus_session);
 
-  UpdateTimerView(in_focus_session);
+  UpdateTimerView(false);
 
   StartClockTimer();
   do_not_disturb_view_->SetVisible(true);
 }
 
-void FocusModeDetailedView::OnTimerTick() {
-  timer_countdown_view_->UpdateUI();
+void FocusModeDetailedView::OnTimerTick(
+    const FocusModeSession::Snapshot& session_snapshot) {
+  timer_countdown_view_->UpdateUI(session_snapshot);
 }
 
-void FocusModeDetailedView::OnSessionDurationChanged() {
-  if (!FocusModeController::Get()->in_focus_session()) {
+void FocusModeDetailedView::OnActiveSessionDurationChanged(
+    const FocusModeSession::Snapshot& session_snapshot) {
+  if (session_snapshot.state != FocusModeSession::State::kOn) {
     return;
   }
 
   toggle_view_->SetSubText(focus_mode_util::GetFormattedEndTimeString(
       FocusModeController::Get()->GetActualEndTime()));
-  timer_countdown_view_->UpdateUI();
+  timer_countdown_view_->UpdateUI(session_snapshot);
   UpdateToggleButtonAccessibility(/*in_focus_session=*/true);
 }
 
@@ -640,7 +639,9 @@ void FocusModeDetailedView::UpdateTimerView(bool in_focus_session) {
   timer_countdown_view_->SetVisible(in_focus_session);
 
   if (in_focus_session) {
-    timer_countdown_view_->UpdateUI();
+    timer_countdown_view_->UpdateUI(
+        FocusModeController::Get()->current_session()->GetSnapshot(
+            base::Time::Now()));
     UpdateEndTimeLabelUI();
   } else {
     UpdateTimerSettingViewUI();
@@ -800,10 +801,11 @@ void FocusModeDetailedView::OnClockMinutePassed() {
     return;
   }
 
-  // When a clock minute passes outside of focus mode, we want to update the
-  // subheading to display the correct session end time and restart the clock
-  // timer. If we are in focus mode, then `FocusModeController::end_time()` will
-  // tell us the time at which the session will end.
+  // When a clock minute passes outside of a focus session, we want to update
+  // the subheading to display the correct session end time and restart the
+  // clock timer. If we are in a focus session, then
+  // `FocusModeController::GetEndTime()` will tell us the time at which the
+  // session will end.
   UpdateTimerSettingViewUI();
 }
 
@@ -838,6 +840,9 @@ void FocusModeDetailedView::AdjustInactiveSessionDuration(bool decrement) {
 }
 
 void FocusModeDetailedView::UpdateTimerSettingViewUI() {
+  // We always directly fetch `session_duration` here since the timer setting
+  // view doesn't care about the durations that are adjusted during a focus
+  // session.
   const base::TimeDelta session_duration =
       FocusModeController::Get()->session_duration();
   end_time_label_->SetText(focus_mode_util::GetFormattedEndTimeString(

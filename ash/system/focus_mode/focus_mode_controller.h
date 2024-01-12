@@ -33,10 +33,18 @@ class ASH_EXPORT FocusModeController : public SessionObserver {
 
     // Called every `timer_` tick for updating UI elements during a Focus Mode
     // session.
-    virtual void OnTimerTick() {}
+    virtual void OnTimerTick(
+        const FocusModeSession::Snapshot& session_snapshot) {}
 
-    // Notifies clients every time the session duration is changed.
-    virtual void OnSessionDurationChanged() {}
+    // Notifies when the session duration is changed in the focus panel without
+    // an active session.
+    virtual void OnInactiveSessionDurationChanged(
+        const base::TimeDelta& session_duration) {}
+
+    // Notifies clients every time the session duration is changed during an
+    // active session.
+    virtual void OnActiveSessionDurationChanged(
+        const FocusModeSession::Snapshot& session_snapshot) {}
   };
 
   FocusModeController();
@@ -47,6 +55,10 @@ class ASH_EXPORT FocusModeController : public SessionObserver {
   // Convenience function to get the controller instance, which is created and
   // owned by Shell.
   static FocusModeController* Get();
+
+  // Verifies that the session duration hasn't reached `kMaximumDuration`.
+  static bool CanExtendSessionDuration(
+      const FocusModeSession::Snapshot& snapshot);
 
   // Registers user profile prefs with the specified `registry`.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -64,6 +76,9 @@ class ASH_EXPORT FocusModeController : public SessionObserver {
   void set_turn_on_do_not_disturb(bool turn_on) {
     turn_on_do_not_disturb_ = turn_on;
   }
+  const std::optional<FocusModeSession>& current_session() const {
+    return current_session_;
+  }
   const std::string& selected_task_id() const { return selected_task_id_; }
   const std::string& selected_task_title() const {
     return selected_task_title_;
@@ -78,9 +93,6 @@ class ASH_EXPORT FocusModeController : public SessionObserver {
   // SessionObserver:
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
 
-  // Verifies that the session duration hasn't reached `kMaximumDuration`.
-  bool CanExtendSessionDuration() const;
-
   // Extends an active focus session by ten minutes by clicking the `+10 min`
   // button.
   void ExtendSessionDuration();
@@ -90,9 +102,9 @@ class ASH_EXPORT FocusModeController : public SessionObserver {
   // This ensures that states are all reverted (especially DND and UI elements).
   void ResetFocusSession();
 
-  // Used when we want to stop the ongoing timer that will automatically
-  // terminate the ending moment.
-  void StopEndingMomentTimer();
+  // Used when we want to extend the ending state indefinitely, and requires
+  // direct user action to terminate the ending moment.
+  void EnablePersistentEnding();
 
   // Sets a specific value for `session_duration_`. We have two different
   // notions of a session, so this one is only in charge of updating the session
@@ -105,6 +117,10 @@ class ASH_EXPORT FocusModeController : public SessionObserver {
 
   // Returns whether the user has ever started a focus session previously.
   bool HasStartedSessionBefore() const;
+
+  // Creates and returns a snapshot of the current session based on `now`.
+  // Returns a default struct if there is no session.
+  FocusModeSession::Snapshot GetSnapshot(const base::Time& now) const;
 
   // Returns the session duration of either the current session, or what the
   // upcoming session will be set to.

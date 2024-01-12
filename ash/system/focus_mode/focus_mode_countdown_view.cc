@@ -8,6 +8,7 @@
 #include "ash/style/pill_button.h"
 #include "ash/style/typography.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
+#include "ash/system/focus_mode/focus_mode_session.h"
 #include "ash/system/focus_mode/focus_mode_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -25,7 +26,7 @@ namespace {
 
 constexpr int kCountdownViewHeight = 62;
 constexpr int kSpaceBetweenButtons = 8;
-constexpr int kBarWidth = 200;
+constexpr int kBarWidth = 225;
 constexpr int kBarHeight = 8;
 constexpr int kAboveBarSpace = 8;
 constexpr int kBelowBarSpace = 6;
@@ -69,7 +70,7 @@ FocusModeCountdownView::FocusModeCountdownView(bool include_end_button)
       AddChildView(std::make_unique<views::BoxLayoutView>());
   timer_container->SetOrientation(views::BoxLayout::Orientation::kVertical);
   timer_container->SetMainAxisAlignment(
-      views::BoxLayout::MainAxisAlignment::kEnd);
+      views::BoxLayout::MainAxisAlignment::kCenter);
   timer_container->SetPreferredSize(gfx::Size(kBarWidth, kCountdownViewHeight));
   timer_container->SetProperty(
       views::kFlexBehaviorKey,
@@ -149,26 +150,20 @@ FocusModeCountdownView::FocusModeCountdownView(bool include_end_button)
       ->SetMode(views::InkDropHost::InkDropMode::OFF);
 }
 
-void FocusModeCountdownView::UpdateUI() {
-  auto* controller = FocusModeController::Get();
-  CHECK(controller->in_focus_session());
+void FocusModeCountdownView::UpdateUI(
+    const FocusModeSession::Snapshot& session_snapshot) {
+  CHECK_EQ(session_snapshot.state, FocusModeSession::State::kOn);
 
-  const base::TimeDelta time_remaining =
-      controller->GetActualEndTime() - base::Time::Now();
   time_remaining_label_->SetText(focus_mode_util::GetDurationString(
-      time_remaining, /*digital_format=*/true));
-
-  const base::TimeDelta session_duration = controller->session_duration();
+      session_snapshot.remaining_time, /*digital_format=*/true));
   time_total_label_->SetText(focus_mode_util::GetDurationString(
-      session_duration, /*digital_format=*/true));
-
-  const base::TimeDelta time_elapsed = session_duration - time_remaining;
+      session_snapshot.session_duration, /*digital_format=*/true));
   time_elapsed_label_->SetText(focus_mode_util::GetDurationString(
-      time_elapsed, /*digital_format=*/true));
+      session_snapshot.time_elapsed, /*digital_format=*/true));
+  progress_bar_->SetValue(session_snapshot.progress);
 
-  progress_bar_->SetValue(time_elapsed / session_duration);
-
-  const bool session_extendable = controller->CanExtendSessionDuration();
+  const bool session_extendable =
+      FocusModeController::CanExtendSessionDuration(session_snapshot);
   // Clear the focus if we are disabling the extend button and it has focus.
   if (extend_session_duration_button_->HasFocus() && !session_extendable) {
     // Release focus so that disabling `extend_session_duration_button_` below

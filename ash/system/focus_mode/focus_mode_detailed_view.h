@@ -54,8 +54,9 @@ class ASH_EXPORT FocusModeDetailedView : public TrayDetailedView,
 
   // FocusModeController::Observer:
   void OnFocusModeChanged(bool in_focus_session) override;
-  void OnTimerTick() override;
-  void OnSessionDurationChanged() override;
+  void OnTimerTick(const FocusModeSession::Snapshot& session_snapshot) override;
+  void OnActiveSessionDurationChanged(
+      const FocusModeSession::Snapshot& session_snapshot) override;
 
   // Creates the row with functionality to start and stop focus mode.
   void CreateToggleView();

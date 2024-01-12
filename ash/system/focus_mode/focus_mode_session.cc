@@ -28,7 +28,7 @@ FocusModeSession::State FocusModeSession::GetState(
     return State::kEnding;
   }
 
-  return State::kComplete;
+  return State::kOff;
 }
 
 FocusModeSession::Snapshot FocusModeSession::GetSnapshot(
@@ -61,7 +61,7 @@ void FocusModeSession::ExtendSession(const base::Time& now) {
     case State::kEnding:
       end_time_ = now + session_duration_increase;
       break;
-    case State::kComplete:
+    case State::kOff:
       break;
   }
 

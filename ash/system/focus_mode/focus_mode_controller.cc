@@ -73,6 +73,12 @@ FocusModeController* FocusModeController::Get() {
 }
 
 // static
+bool FocusModeController::CanExtendSessionDuration(
+    const FocusModeSession::Snapshot& snapshot) {
+  return snapshot.session_duration < focus_mode_util::kMaximumDuration;
+}
+
+// static
 void FocusModeController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterTimeDeltaPref(
       prefs::kFocusModeSessionDuration,
@@ -106,10 +112,6 @@ void FocusModeController::OnActiveUserSessionChanged(
   UpdateFromUserPrefs();
 }
 
-bool FocusModeController::CanExtendSessionDuration() const {
-  return GetSessionDuration() < focus_mode_util::kMaximumDuration;
-}
-
 void FocusModeController::ExtendSessionDuration() {
   CHECK(current_session_);
   const base::Time now = base::Time::Now();
@@ -117,8 +119,9 @@ void FocusModeController::ExtendSessionDuration() {
   // to the same time, since the state depends on `now`.
   current_session_->ExtendSession(now);
 
+  const auto session_snapshot = current_session_->GetSnapshot(now);
   for (auto& observer : observers_) {
-    observer.OnSessionDurationChanged();
+    observer.OnActiveSessionDurationChanged(session_snapshot);
   }
 
   if (!timer_.IsRunning()) {
@@ -126,10 +129,8 @@ void FocusModeController::ExtendSessionDuration() {
     timer_.Start(FROM_HERE, base::Seconds(1), this,
                  &FocusModeController::OnTimerTick, base::TimeTicks::Now());
 
-    const bool in_session =
-        current_session_->GetState(now) == FocusModeSession::State::kOn;
     for (auto& observer : observers_) {
-      observer.OnFocusModeChanged(in_session);
+      observer.OnFocusModeChanged(/*in_focus_session=*/true);
     }
   }
 
@@ -153,12 +154,12 @@ void FocusModeController::ResetFocusSession() {
 
   if (was_in_focus_session) {
     for (auto& observer : observers_) {
-      observer.OnFocusModeChanged(false);
+      observer.OnFocusModeChanged(/*in_focus_session=*/false);
     }
   }
 }
 
-void FocusModeController::StopEndingMomentTimer() {
+void FocusModeController::EnablePersistentEnding() {
   // This is only used right now for when we click the tray icon to open the
   // bubble during the ending moment. This prevents the bubble from being closed
   // automatically.
@@ -190,7 +191,7 @@ void FocusModeController::SetInactiveSessionDuration(
   session_duration_ = valid_new_session_duration;
 
   for (auto& observer : observers_) {
-    observer.OnSessionDurationChanged();
+    observer.OnInactiveSessionDurationChanged(session_duration_);
   }
 }
 
@@ -205,9 +206,15 @@ bool FocusModeController::HasStartedSessionBefore() const {
   return false;
 }
 
+FocusModeSession::Snapshot FocusModeController::GetSnapshot(
+    const base::Time& now) const {
+  return current_session_ ? current_session_->GetSnapshot(now)
+                          : FocusModeSession::Snapshot{};
+}
+
 base::TimeDelta FocusModeController::GetSessionDuration() const {
-  return current_session_ ? current_session_->session_duration()
-                          : session_duration_;
+  return in_focus_session() ? current_session_->session_duration()
+                            : session_duration_;
 }
 
 base::Time FocusModeController::GetActualEndTime() const {
@@ -275,7 +282,7 @@ void FocusModeController::StartFocusSession() {
   SetFocusTrayVisibility(true);
 
   for (auto& observer : observers_) {
-    observer.OnFocusModeChanged(true);
+    observer.OnFocusModeChanged(/*in_focus_session=*/true);
   }
 }
 
@@ -285,7 +292,7 @@ void FocusModeController::OnTimerTick() {
   switch (session_snapshot.state) {
     case FocusModeSession::State::kOn:
       for (auto& observer : observers_) {
-        observer.OnTimerTick();
+        observer.OnTimerTick(session_snapshot);
       }
       return;
     case FocusModeSession::State::kEnding:
@@ -306,7 +313,7 @@ void FocusModeController::OnTimerTick() {
         observer.OnFocusModeChanged(/*in_focus_session=*/false);
       }
       return;
-    case FocusModeSession::State::kComplete:
+    case FocusModeSession::State::kOff:
       ResetFocusSession();
       return;
   }

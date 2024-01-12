@@ -29,7 +29,7 @@ class FocusModeEndingMomentView : public views::FlexLayoutView {
   void SetExtendButtonEnabled(bool enabled);
 
  private:
-  friend class FocusModeEndingMomentViewTest;
+  friend class FocusModeTrayTest;
 
   // The `+10 min` button.
   raw_ptr<PillButton> extend_session_duration_button_ = nullptr;

@@ -12,7 +12,10 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/pill_button.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
+#include "ash/system/focus_mode/focus_mode_countdown_view.h"
+#include "ash/system/focus_mode/focus_mode_ending_moment_view.h"
 #include "ash/system/focus_mode/focus_mode_util.h"
 #include "ash/system/progress_indicator/progress_indicator.h"
 #include "ash/system/status_area_widget_test_helper.h"
@@ -21,6 +24,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -37,12 +41,12 @@ constexpr base::TimeDelta kStartAnimationDelay = base::Milliseconds(300);
 class FocusModeTrayTest : public AshTestBase {
  public:
   FocusModeTrayTest()
-      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        feature_list_(features::kFocusMode) {}
   ~FocusModeTrayTest() override = default;
 
   // AshTestBase:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(features::kFocusMode);
     AshTestBase::SetUp();
 
     focus_mode_tray_ =
@@ -52,6 +56,21 @@ class FocusModeTrayTest : public AshTestBase {
   void TearDown() override {
     focus_mode_tray_ = nullptr;
     AshTestBase::TearDown();
+  }
+
+  void AdvanceClock(base::TimeDelta time_delta) {
+    // Note that AdvanceClock() is used here instead of FastForwardBy() to
+    // prevent long run time during an ash test session.
+    task_environment()->AdvanceClock(time_delta);
+    task_environment()->RunUntilIdle();
+  }
+
+  // Advances the clock for all but 5 seconds of the supplied `minutes`, and
+  // then fast forward for the last 5 seconds in order to give callbacks that
+  // are called once every second a chance to run.
+  void SkipMinutes(int minutes) {
+    task_environment()->AdvanceClock(base::Seconds(minutes * 60 - 5));
+    task_environment()->FastForwardBy(base::Seconds(5));
   }
 
   TrayBubbleView* GetBubbleView() {
@@ -66,12 +85,32 @@ class FocusModeTrayTest : public AshTestBase {
     return focus_mode_tray_->progress_indicator_.get();
   }
 
-  // Advances the clock for all but 5 seconds of the supplied `minutes`, and
-  // then fast forward for the last 5 seconds in order to give callbacks that
-  // are called once every second a chance to run.
-  void SkipMinutes(int minutes) {
-    task_environment()->AdvanceClock(base::Seconds(minutes * 60 - 5));
-    task_environment()->FastForwardBy(base::Seconds(5));
+  PillButton* GetEndingMomentExtendTimeButton() {
+    return focus_mode_tray_->ending_moment_view_for_testing()
+        ->extend_session_duration_button_;
+  }
+
+  views::Label* GetCountdownTimeRemainingLabel() {
+    return focus_mode_tray_->countdown_view_for_testing()
+        ->time_remaining_label_;
+  }
+
+  bool IsCountdownViewVisible() const {
+    return focus_mode_tray_->countdown_view_for_testing()->GetVisible();
+  }
+
+  bool IsEndingMomentViewVisible() const {
+    return focus_mode_tray_->ending_moment_view_for_testing()->GetVisible();
+  }
+
+  // Click outside of the bubble (in this case, the center of the screen).
+  void ClickOutsideBubble() {
+    auto* event_generator = GetEventGenerator();
+    const gfx::Rect work_area =
+        screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
+            Shell::GetPrimaryRootWindow());
+    event_generator->MoveMouseTo(work_area.CenterPoint());
+    event_generator->ClickLeftButton();
   }
 
  protected:
@@ -129,17 +168,11 @@ TEST_F(FocusModeTrayTest, ClickActivateDeactivate) {
   EXPECT_FALSE(focus_mode_tray_->is_active());
   EXPECT_EQ(1, GetProgressIndicator()->layer()->opacity());
 
-  // Clicking anywhere outside of the bubble, in this case the center of the
-  // screen, should also deactivate the tray.
+  // Clicking anywhere outside of the bubble should also deactivate the tray.
   LeftClickOn(focus_mode_tray_);
   EXPECT_TRUE(focus_mode_tray_->is_active());
   EXPECT_EQ(0, GetProgressIndicator()->layer()->opacity());
-  auto* event_generator = GetEventGenerator();
-  const gfx::Rect work_area =
-      screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
-          Shell::GetPrimaryRootWindow());
-  event_generator->MoveMouseTo(work_area.CenterPoint());
-  event_generator->ClickLeftButton();
+  ClickOutsideBubble();
   EXPECT_FALSE(focus_mode_tray_->is_active());
   EXPECT_EQ(1, GetProgressIndicator()->layer()->opacity());
 }
@@ -294,6 +327,160 @@ TEST_F(FocusModeTrayTest, BubbleTabbingAndAccessibility) {
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_RADIO_BUTTON),
             focus_manager->GetFocusedView()->GetAccessibleName());
+}
+
+// Tests basic ending moment functionality. If the time expires for the ending
+// moment, the tray icon will disappear.
+TEST_F(FocusModeTrayTest, EndingMoment) {
+  FocusModeController* controller = FocusModeController::Get();
+  EXPECT_FALSE(controller->in_focus_session());
+  EXPECT_FALSE(focus_mode_tray_->GetVisible());
+
+  // Case 1: the ending moment automatically terminates.
+  // Start a focus session.
+  controller->ToggleFocusMode();
+  EXPECT_TRUE(controller->in_focus_session());
+  EXPECT_TRUE(focus_mode_tray_->GetVisible());
+
+  // Wait for the session duration to complete, and verify that the tray icon is
+  // still visible, even though the focus session has ended.
+  AdvanceClock(controller->GetSessionDuration());
+  EXPECT_FALSE(controller->in_focus_session());
+  EXPECT_TRUE(focus_mode_tray_->GetVisible());
+
+  // Verify that if there is no action for the `kEndingMomentDuration`, the
+  // ending moment terminates and the tray icon is hidden.
+  AdvanceClock(focus_mode_util::kEndingMomentDuration);
+  EXPECT_FALSE(focus_mode_tray_->GetVisible());
+}
+
+// Tests that if the tray bubble is open during the ending moment, that the
+// bubble will persist until user action terminates it.
+TEST_F(FocusModeTrayTest, EndingMomentPersists) {
+  // Start a focus session.
+  FocusModeController* controller = FocusModeController::Get();
+  controller->ToggleFocusMode();
+  EXPECT_TRUE(controller->in_focus_session());
+  EXPECT_TRUE(focus_mode_tray_->GetVisible());
+
+  // Focus session ends.
+  AdvanceClock(controller->GetSessionDuration());
+  EXPECT_FALSE(controller->in_focus_session());
+  EXPECT_TRUE(controller->in_ending_moment());
+  EXPECT_TRUE(focus_mode_tray_->GetVisible());
+
+  // Open the tray bubble and wait foran arbitrarily long time. Verify that
+  // the bubble is not closed automatically.
+  LeftClickOn(focus_mode_tray_);
+  EXPECT_TRUE(focus_mode_tray_->is_active());
+  AdvanceClock(base::Minutes(2));
+  EXPECT_TRUE(focus_mode_tray_->is_active());
+  EXPECT_TRUE(focus_mode_tray_->GetVisible());
+  EXPECT_TRUE(controller->in_ending_moment());
+
+  // Clicks outside of the tray bubble should close it and terminate the ending
+  // moment as well.
+  ClickOutsideBubble();
+  EXPECT_FALSE(focus_mode_tray_->is_active());
+  EXPECT_FALSE(focus_mode_tray_->GetVisible());
+  EXPECT_FALSE(controller->in_ending_moment());
+}
+
+// Verifies that the tray contents are updated between an in-session state and
+// the ending moment state.
+TEST_F(FocusModeTrayTest, EndingMomentPanelFunctionality) {
+  base::TimeDelta kSessionDuration = base::Minutes(20);
+  FocusModeController* controller = FocusModeController::Get();
+  EXPECT_FALSE(controller->in_focus_session());
+  EXPECT_FALSE(focus_mode_tray_->GetVisible());
+
+  controller->SetInactiveSessionDuration(kSessionDuration);
+
+  // Start a focus session
+  controller->ToggleFocusMode();
+  EXPECT_TRUE(controller->in_focus_session());
+  EXPECT_TRUE(focus_mode_tray_->GetVisible());
+
+  // Open the contextual panel and verify that the countdown view is showing.
+  LeftClickOn(focus_mode_tray_);
+  EXPECT_TRUE(focus_mode_tray_->is_active());
+  EXPECT_TRUE(IsCountdownViewVisible());
+
+  // When the focus session ends, verify that the bubble contents have changed
+  // and that the ending moment view is showing.
+  AdvanceClock(kSessionDuration);
+  EXPECT_FALSE(controller->in_focus_session());
+  EXPECT_TRUE(controller->in_ending_moment());
+  EXPECT_TRUE(focus_mode_tray_->GetVisible());
+  ASSERT_TRUE(focus_mode_tray_->is_active());
+  EXPECT_FALSE(IsCountdownViewVisible());
+  EXPECT_TRUE(IsEndingMomentViewVisible());
+
+  // Verify that the ending moment isn't terminated and that the bubble doesn't
+  // close due to time passing.
+  AdvanceClock(base::Minutes(2));
+  EXPECT_TRUE(controller->in_ending_moment());
+  EXPECT_TRUE(focus_mode_tray_->GetVisible());
+  ASSERT_TRUE(focus_mode_tray_->is_active());
+  EXPECT_TRUE(IsEndingMomentViewVisible());
+}
+
+// Tests the `+10 min` button functionality during the ending moment, as well as
+// the case where the button should be disabled.
+TEST_F(FocusModeTrayTest, EndingMomentUpdateSessionDuration) {
+  // Set the session duration to 20 minutes shy of the maximum duration and turn
+  // on focus mode. This will allow us to extend twice in this test.
+  const base::TimeDelta kStartingDuration =
+      focus_mode_util::kMaximumDuration -
+      (2 * focus_mode_util::kExtendDuration);
+  FocusModeController* controller = FocusModeController::Get();
+  controller->SetInactiveSessionDuration(kStartingDuration);
+  controller->ToggleFocusMode();
+
+  // Advance the clock to end the focus session, then verify that the correct
+  // ending moment UI is displayed.
+  AdvanceClock(kStartingDuration);
+  EXPECT_TRUE(focus_mode_tray_->GetVisible());
+  LeftClickOn(focus_mode_tray_);
+  EXPECT_TRUE(IsEndingMomentViewVisible());
+
+  // Since the session duration isn't at the maximum, the button should be
+  // enabled to allow adding more time.
+  auto* button = GetEndingMomentExtendTimeButton();
+  EXPECT_TRUE(button->GetEnabled());
+
+  // Wait a minute and verify that the bubble hasn't closed.
+  AdvanceClock(base::Minutes(1));
+  EXPECT_TRUE(focus_mode_tray_->GetBubbleView());
+
+  // Extend the session duration and verify that the UI has swapped back to the
+  // countdown view.
+  LeftClickOn(button);
+  EXPECT_TRUE(focus_mode_tray_->GetVisible());
+  EXPECT_TRUE(focus_mode_tray_->GetBubbleView());
+  EXPECT_TRUE(IsCountdownViewVisible());
+  EXPECT_FALSE(IsEndingMomentViewVisible());
+
+  // Verify that the session duration and ending time wasn't affected by the
+  // time the user was waiting in the ending moment.
+  EXPECT_EQ(kStartingDuration + focus_mode_util::kExtendDuration,
+            controller->GetSessionDuration());
+  EXPECT_EQ(u"10:00", GetCountdownTimeRemainingLabel()->GetText());
+
+  // Allow the timer to expire, then extend by another `kExtendDuration` to
+  // reach the maximum session duration.
+  AdvanceClock(focus_mode_util::kExtendDuration);
+  LeftClickOn(button);
+  AdvanceClock(focus_mode_util::kExtendDuration);
+  // Verify that when the ending moment triggers, that the `+10 min` button is
+  // now disabled since the session duration can no longer be extended.
+  EXPECT_TRUE(focus_mode_tray_->GetVisible());
+  EXPECT_TRUE(focus_mode_tray_->GetBubbleView());
+  EXPECT_FALSE(IsCountdownViewVisible());
+  EXPECT_TRUE(IsEndingMomentViewVisible());
+  EXPECT_FALSE(button->GetEnabled());
+  EXPECT_EQ(focus_mode_util::kMaximumDuration,
+            controller->current_session()->session_duration());
 }
 
 }  // namespace ash

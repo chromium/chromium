@@ -29,17 +29,18 @@ class ASH_EXPORT FocusModeCountdownView : public views::FlexLayoutView {
   METADATA_HEADER(FocusModeCountdownView, views::FlexLayoutView)
 
  public:
-  FocusModeCountdownView(bool include_end_button);
+  explicit FocusModeCountdownView(bool include_end_button);
   FocusModeCountdownView(const FocusModeCountdownView&) = delete;
   FocusModeCountdownView& operator=(const FocusModeCountdownView&) = delete;
   ~FocusModeCountdownView() override = default;
 
   // Updates the timers and progress bar. This must be called from this view's
   // parent's `OnTimerTick()` and when the view is first created.
-  void UpdateUI();
+  void UpdateUI(const FocusModeSession::Snapshot& session_snapshot);
 
  private:
   friend class FocusModeCountdownViewTest;
+  friend class FocusModeTrayTest;
 
   // The main timer label, displays the amount of time left in the focus
   // session.

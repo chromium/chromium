@@ -18,9 +18,9 @@ namespace ash {
 class ASH_EXPORT FocusModeSession {
  public:
   enum class State {
-    kOn,        // The session is currently running.
-    kEnding,    // The session is in the ending state and will soon finish.
-    kComplete,  // The session is complete.
+    kOff,     // There is no active session.
+    kOn,      // The session is currently running.
+    kEnding,  // The session is in the ending state and will soon finish.
   };
 
   // A snapshot of the current focus mode session.
