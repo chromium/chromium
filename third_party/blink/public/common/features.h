@@ -1392,12 +1392,16 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kUserLevelMemoryPressureSignal);
 // for managed users according to Data Leak Prevention policies.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kEnableFileBackedBlobFactory);
 
-// Feature flag for driving the Metronome by VSyncs instead of by timer.
+// Feature flag for driving decoding with the Metronome by VSyncs instead of by
+// timer.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kVSyncDecoding);
 // Feature parameter controlling WebRTC VSyncDecoding tick durations during
 // occluded tabs.
 BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kVSyncDecodingHiddenOccludedTickDuration;
+
+// Feature flag for driving encoding with the Metronome by VSyncs.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kVSyncEncoding);
 
 // Feature flag for making use of VideoFrameMetadata::capture_begin_time
 // if set, instead of relating incoming media timestamps to local time in the

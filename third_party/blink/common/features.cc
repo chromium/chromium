@@ -2134,6 +2134,10 @@ const base::FeatureParam<base::TimeDelta>
     kVSyncDecodingHiddenOccludedTickDuration{
         &kVSyncDecoding, "occluded_tick_duration", base::Hertz(10)};
 
+BASE_FEATURE(kVSyncEncoding,
+             "VSyncEncoding",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kWebRtcUseCaptureBeginTimestamp,
              "WebRtcUseCaptureBeginTimestamp",
              base::FEATURE_ENABLED_BY_DEFAULT);

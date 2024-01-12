@@ -194,13 +194,39 @@ class PeerConnectionStaticDeps {
   ~PeerConnectionStaticDeps() {
     if (chrome_worker_thread_.IsRunning()) {
       chrome_worker_thread_.task_runner()->DeleteSoon(
-          FROM_HERE, std::move(metronome_source_));
+          FROM_HERE, std::move(decode_metronome_source_));
+
+      if (encode_metronome_source_) {
+        chrome_worker_thread_.task_runner()->DeleteSoon(
+            FROM_HERE, std::move(encode_metronome_source_));
+      }
     }
   }
 
-  MetronomeSource& metronome_source() {
-    CHECK(metronome_source_);
-    return *metronome_source_;
+  std::unique_ptr<webrtc::Metronome> CreateDecodeMetronome() {
+    CHECK(decode_metronome_source_);
+    return decode_metronome_source_->CreateWebRtcMetronome();
+  }
+
+  std::unique_ptr<webrtc::Metronome> MaybeCreateEncodeMetronome() {
+    if (encode_metronome_source_) {
+      return encode_metronome_source_->CreateWebRtcMetronome();
+    } else {
+      return nullptr;
+    }
+  }
+
+  void EnsureVsyncProvider(ExecutionContext& context) {
+    if (!vsync_provider_) {
+      vsync_provider_.emplace(
+          Platform::Current()->VideoFrameCompositorTaskRunner(),
+          To<LocalDOMWindow>(context)
+              .GetFrame()
+              ->GetPage()
+              ->GetChromeClient()
+              .GetFrameSinkId(To<LocalDOMWindow>(context).GetFrame())
+              .client_id());
+    }
   }
 
   void EnsureChromeThreadsStarted(ExecutionContext& context) {
@@ -225,17 +251,10 @@ class PeerConnectionStaticDeps {
     // To allow sending to the signaling/worker threads.
     webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
     webrtc::ThreadWrapper::current()->set_send_allowed(true);
-    if (!metronome_source_) {
+    if (!decode_metronome_source_) {
       std::unique_ptr<MetronomeSource::TickProvider> tick_provider;
       if (base::FeatureList::IsEnabled(features::kVSyncDecoding)) {
-        vsync_provider_.emplace(
-            Platform::Current()->VideoFrameCompositorTaskRunner(),
-            To<LocalDOMWindow>(context)
-                .GetFrame()
-                ->GetPage()
-                ->GetChromeClient()
-                .GetFrameSinkId(To<LocalDOMWindow>(context).GetFrame())
-                .client_id());
+        EnsureVsyncProvider(context);
         tick_provider = VSyncTickProvider::Create(
             *vsync_provider_, chrome_worker_thread_.task_runner(),
             std::make_unique<TimerBasedTickProvider>(
@@ -244,7 +263,18 @@ class PeerConnectionStaticDeps {
         tick_provider = std::make_unique<TimerBasedTickProvider>(
             TimerBasedTickProvider::kDefaultPeriod);
       }
-      metronome_source_ =
+      decode_metronome_source_ =
+          std::make_unique<MetronomeSource>(std::move(tick_provider));
+    }
+    if (base::FeatureList::IsEnabled(features::kVSyncEncoding) &&
+        !encode_metronome_source_) {
+      std::unique_ptr<MetronomeSource::TickProvider> tick_provider;
+      EnsureVsyncProvider(context);
+      tick_provider = VSyncTickProvider::Create(
+          *vsync_provider_, chrome_worker_thread_.task_runner(),
+          std::make_unique<TimerBasedTickProvider>(
+              features::kVSyncDecodingHiddenOccludedTickDuration.Get()));
+      encode_metronome_source_ =
           std::make_unique<MetronomeSource>(std::move(tick_provider));
     }
   }
@@ -369,7 +399,10 @@ class PeerConnectionStaticDeps {
   base::Thread chrome_worker_thread_;
   absl::optional<base::Thread> chrome_network_thread_;
 
-  std::unique_ptr<MetronomeSource> metronome_source_;
+  // Metronome source used for driving decoding and encoding, created from
+  // renderer main thread, always used and destroyed on `chrome_worker_thread_`.
+  std::unique_ptr<MetronomeSource> decode_metronome_source_;
+  std::unique_ptr<MetronomeSource> encode_metronome_source_;
 
   // WaitableEvents for observing thread initialization.
   base::WaitableEvent init_signaling_event{
@@ -671,8 +704,8 @@ void PeerConnectionDependencyFactory::InitializeSignalingThread(
     LOG(INFO) << "Running WebRTC with a combined Network and Worker thread.";
   }
   pcf_deps.task_queue_factory = CreateWebRtcTaskQueueFactory();
-  pcf_deps.decode_metronome =
-      StaticDeps().metronome_source().CreateWebRtcMetronome();
+  pcf_deps.decode_metronome = StaticDeps().CreateDecodeMetronome();
+  pcf_deps.encode_metronome = StaticDeps().MaybeCreateEncodeMetronome();
   pcf_deps.event_log_factory = std::make_unique<webrtc::RtcEventLogFactory>();
   pcf_deps.adm = audio_device_.get();
   pcf_deps.audio_encoder_factory = blink::CreateWebrtcAudioEncoderFactory();
@@ -1020,6 +1053,6 @@ void PeerConnectionDependencyFactory::Trace(Visitor* visitor) const {
 
 std::unique_ptr<webrtc::Metronome>
 PeerConnectionDependencyFactory::CreateDecodeMetronome() {
-  return StaticDeps().metronome_source().CreateWebRtcMetronome();
+  return StaticDeps().CreateDecodeMetronome();
 }
 }  // namespace blink
