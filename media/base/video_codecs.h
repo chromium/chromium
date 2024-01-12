@@ -8,12 +8,8 @@
 #include <stdint.h>
 
 #include <string>
-#include <string_view>
 
 #include "media/base/media_export.h"
-#include "media/base/video_color_space.h"
-#include "media/media_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -134,64 +130,19 @@ struct CodecProfileLevel {
   VideoCodecLevel level;
 };
 
-// TODO(crbug.com/1116617): Replace this with VideoType after moving parsing
-// functions out of this file.
-struct VideoCodecParseResult {
-  VideoCodec codec;
-  VideoCodecProfile profile;
-  VideoCodecLevel level;
-  VideoColorSpace color_space;
-};
-
 // Returns a name for `codec` for logging and display purposes.
-std::string MEDIA_EXPORT GetCodecName(VideoCodec codec);
+MEDIA_EXPORT std::string GetCodecName(VideoCodec codec);
 
 // Returns a name for `codec` to be used for UMA reporting.
-std::string MEDIA_EXPORT GetCodecNameForUMA(VideoCodec codec);
+MEDIA_EXPORT std::string GetCodecNameForUMA(VideoCodec codec);
 
-std::string MEDIA_EXPORT GetProfileName(VideoCodecProfile profile);
-std::string MEDIA_EXPORT BuildH264MimeSuffix(VideoCodecProfile profile,
+MEDIA_EXPORT std::string GetProfileName(VideoCodecProfile profile);
+
+MEDIA_EXPORT std::string BuildH264MimeSuffix(VideoCodecProfile profile,
                                              uint8_t level);
-
-// ParseNewStyleVp9CodecID handles parsing of new style vp9 codec IDs per
-// proposed VP Codec ISO Media File Format Binding specification:
-// https://storage.googleapis.com/downloads.webmproject.org/docs/vp9/vp-codec-iso-media-file-format-binding-20160516-draft.pdf
-// ParseLegacyVp9CodecID handles parsing of legacy VP9 codec strings defined
-// for WebM.
-// TODO(kqyang): Consolidate the two functions once we address crbug.com/667834
-MEDIA_EXPORT absl::optional<VideoCodecParseResult> ParseNewStyleVp9CodecID(
-    std::string_view codec_id);
-
-MEDIA_EXPORT absl::optional<VideoCodecParseResult> ParseLegacyVp9CodecID(
-    std::string_view codec_id);
-
-MEDIA_EXPORT absl::optional<VideoCodecParseResult> ParseAv1CodecId(
-    std::string_view codec_id);
-
-// Handle parsing AVC/H.264 codec ids as outlined in RFC 6381 and ISO-14496-10.
-MEDIA_EXPORT absl::optional<VideoCodecParseResult> ParseAVCCodecId(
-    std::string_view codec_id);
-
-MEDIA_EXPORT absl::optional<VideoCodecParseResult> ParseHEVCCodecId(
-    std::string_view codec_id);
-
-MEDIA_EXPORT absl::optional<VideoCodecParseResult> ParseVVCCodecId(
-    std::string_view codec_id);
-
-MEDIA_EXPORT absl::optional<VideoCodecParseResult> ParseDolbyVisionCodecId(
-    std::string_view codec_id);
-
-MEDIA_EXPORT absl::optional<VideoCodecParseResult> ParseCodec(
-    std::string_view codec_id);
-MEDIA_EXPORT VideoCodec StringToVideoCodec(std::string_view codec_id);
 
 MEDIA_EXPORT VideoCodec
 VideoCodecProfileToVideoCodec(VideoCodecProfile profile);
-
-// Translate legacy avc1 codec ids (like avc1.66.30 or avc1.77.31) into a new
-// style standard avc1 codec ids like avc1.4D002F. If the input codec is not
-// recognized as a legacy codec id, then returns the input string unchanged.
-std::string TranslateLegacyAvc1CodecIds(std::string_view codec_id);
 
 MEDIA_EXPORT std::ostream& operator<<(std::ostream& os,
                                       const VideoCodec& codec);

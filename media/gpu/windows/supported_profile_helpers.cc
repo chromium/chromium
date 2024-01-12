@@ -4,13 +4,13 @@
 
 #include "media/gpu/windows/supported_profile_helpers.h"
 
+#include <d3d9.h>
+#include <dxva2api.h>
+
 #include <algorithm>
 #include <limits>
 #include <memory>
 #include <utility>
-
-#include <d3d9.h>
-#include <dxva2api.h>
 
 #include "base/feature_list.h"
 #include "base/trace_event/trace_event.h"

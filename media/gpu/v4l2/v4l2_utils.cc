@@ -23,6 +23,7 @@
 #include "media/base/video_types.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/macros.h"
+#include "media/media_buildflags.h"
 #include "ui/gfx/geometry/size.h"
 
 // This has not been accepted upstream.

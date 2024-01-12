@@ -13,8 +13,8 @@
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "media/base/media_export.h"
+#include "media/base/media_types.h"
 #include "media/base/mime_util.h"
-#include "media/base/video_codecs.h"
 #include "media/base/video_color_space.h"
 
 namespace media::internal {
@@ -74,7 +74,7 @@ class MEDIA_EXPORT MimeUtil {
   struct ParsedCodecResult {
     Codec codec;
     bool is_ambiguous;
-    absl::optional<VideoCodecParseResult> video;
+    absl::optional<VideoType> video;
   };
 
   // See mime_util.h for more information on these methods.
@@ -82,7 +82,7 @@ class MEDIA_EXPORT MimeUtil {
   void SplitCodecs(base::StringPiece codecs,
                    std::vector<std::string>* codecs_out) const;
   void StripCodecs(std::vector<std::string>* codecs) const;
-  absl::optional<VideoCodecParseResult> ParseVideoCodecString(
+  absl::optional<VideoType> ParseVideoCodecString(
       std::string_view mime_type,
       std::string_view codec_id,
       bool allow_ambiguous_matches) const;

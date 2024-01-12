@@ -2,11 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <set>
-
-#include "base/strings/string_piece.h"
+#include "base/containers/flat_set.h"
 #include "base/strings/stringprintf.h"
-#include "media/base/video_codecs.h"
+#include "media/base/video_codec_string_parsers.h"
 #include "media/base/video_color_space.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -56,8 +54,8 @@ TEST(ParseVP9CodecId, NewStyleVP9CodecIDs) {
   EXPECT_FALSE(ParseNewStyleVp9CodecID("vp09.04.10.08"));
 
   // Verify valid levels parse correctly.
-  const std::set<uint32_t> kValidVp9Levels = {10, 11, 20, 21, 30, 31, 40,
-                                              41, 50, 51, 52, 60, 61, 62};
+  const base::flat_set<uint32_t> kValidVp9Levels = {10, 11, 20, 21, 30, 31, 40,
+                                                    41, 50, 51, 52, 60, 61, 62};
   size_t num_valid_levels = 0;
   for (uint32_t i = 0; i < 99; ++i) {
     // Write "i" as the level.

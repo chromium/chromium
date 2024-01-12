@@ -21,6 +21,7 @@
 #include "media/base/audio_codecs.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/mime_util.h"
+#include "media/base/video_codec_string_parsers.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
 #include "media/formats/mp4/mp4_status.h"

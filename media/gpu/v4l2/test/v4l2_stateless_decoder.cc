@@ -15,6 +15,11 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "media/gpu/v4l2/test/video_decoder.h"
+#include "media/gpu/v4l2/test/vp8_decoder.h"
+#include "media/gpu/v4l2/test/vp9_decoder.h"
+#include "media/media_buildflags.h"
+
 // AV1 stateless decoding not supported upstream yet
 #if BUILDFLAG(IS_CHROMEOS)
 #include "media/gpu/v4l2/test/av1_decoder.h"
@@ -23,9 +28,6 @@
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 #include "media/gpu/v4l2/test/h265_decoder.h"
 #endif
-#include "media/gpu/v4l2/test/video_decoder.h"
-#include "media/gpu/v4l2/test/vp8_decoder.h"
-#include "media/gpu/v4l2/test/vp9_decoder.h"
 
 // AV1 stateless decoding not supported upstream yet
 #if BUILDFLAG(IS_CHROMEOS)

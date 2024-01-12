@@ -19,6 +19,7 @@
 #include "media/base/video_types.h"
 #include "media/gpu/buffer_validation.h"
 #include "media/gpu/macros.h"
+#include "media/media_buildflags.h"
 #include "ui/gfx/buffer_format_util.h"
 
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)

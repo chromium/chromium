@@ -11,7 +11,7 @@
 #include "base/strings/string_piece.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/media_export.h"
-#include "media/base/video_codecs.h"
+#include "media/base/media_types.h"
 
 namespace media {
 
@@ -39,7 +39,7 @@ MEDIA_EXPORT void StripCodecs(std::vector<std::string>* codecs);
 //
 // Returns absl::nullopt if parsing fails (invalid string, or unrecognized video
 // codec).
-MEDIA_EXPORT absl::optional<VideoCodecParseResult> ParseVideoCodecString(
+MEDIA_EXPORT absl::optional<VideoType> ParseVideoCodecString(
     std::string_view mime_type,
     std::string_view codec_id,
     bool allow_ambiguous_matches = false);

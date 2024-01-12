@@ -21,19 +21,19 @@ namespace media {
 struct MEDIA_EXPORT AudioType {
   static AudioType FromDecoderConfig(const AudioDecoderConfig& config);
 
-  AudioCodec codec;
-  AudioCodecProfile profile;
-  bool spatial_rendering;
+  AudioCodec codec = AudioCodec::kUnknown;
+  AudioCodecProfile profile = AudioCodecProfile::kUnknown;
+  bool spatial_rendering = false;
 };
 
 struct MEDIA_EXPORT VideoType {
   static VideoType FromDecoderConfig(const VideoDecoderConfig& config);
 
-  VideoCodec codec;
-  VideoCodecProfile profile;
-  VideoCodecLevel level;
+  VideoCodec codec = VideoCodec::kUnknown;
+  VideoCodecProfile profile = VIDEO_CODEC_PROFILE_UNKNOWN;
+  VideoCodecLevel level = kNoVideoCodecLevel;
   VideoColorSpace color_space;
-  gfx::HdrMetadataType hdr_metadata_type;
+  gfx::HdrMetadataType hdr_metadata_type = gfx::HdrMetadataType::kNone;
 };
 
 MEDIA_EXPORT bool operator==(const AudioType& x, const AudioType& y);

@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "media/base/media_export.h"
 #include "media/base/video_encoder.h"
+#include "media/media_buildflags.h"
 #include "media/video/video_encode_accelerator.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/color_space.h"

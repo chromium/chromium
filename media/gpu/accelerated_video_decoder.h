@@ -10,6 +10,7 @@
 
 #include "media/base/decoder_buffer.h"
 #include "media/base/video_codecs.h"
+#include "media/base/video_color_space.h"
 #include "media/base/video_types.h"
 #include "media/gpu/media_gpu_export.h"
 #include "ui/gfx/geometry/rect.h"

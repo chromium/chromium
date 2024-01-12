@@ -18,6 +18,7 @@
 #include "media/base/media_client.h"
 #include "media/base/media_switches.h"
 #include "media/base/supported_types.h"
+#include "media/base/video_codec_string_parsers.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_color_space.h"
 #include "media/media_buildflags.h"
@@ -110,7 +111,7 @@ const StringToCodecMap& GetStringToCodecMap() {
   return *kStringToCodecMap;
 }
 
-static absl::optional<VideoCodecParseResult> ParseVp9CodecID(
+static absl::optional<VideoType> ParseVp9CodecID(
     std::string_view mime_type_lower_case,
     std::string_view codec_id) {
   if (auto result = ParseNewStyleVp9CodecID(codec_id)) {
@@ -457,7 +458,7 @@ void MimeUtil::StripCodecs(std::vector<std::string>* codecs) const {
   }
 }
 
-absl::optional<VideoCodecParseResult> MimeUtil::ParseVideoCodecString(
+absl::optional<VideoType> MimeUtil::ParseVideoCodecString(
     std::string_view mime_type,
     std::string_view codec_id,
     bool allow_ambiguous_matches) const {

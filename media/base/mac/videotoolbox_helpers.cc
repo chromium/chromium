@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "media/base/video_codecs.h"
+#include "media/media_buildflags.h"
 
 namespace media {
 
