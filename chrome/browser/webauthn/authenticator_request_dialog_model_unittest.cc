@@ -1704,6 +1704,15 @@ TEST_F(AuthenticatorRequestDialogModelTest, NoAvailableTransports) {
 }
 
 TEST_F(AuthenticatorRequestDialogModelTest, Cable2ndFactorFlows) {
+#if BUILDFLAG(IS_WIN)
+  // TODO(https://crbug.com/1517923): Get test to pass in the webauthn supports
+  // hybrid case.
+  device::FakeWinWebAuthnApi fake_win_webauthn_api;
+  device::WinWebAuthnApi::ScopedOverride win_webauthn_api_override(
+      &fake_win_webauthn_api);
+  fake_win_webauthn_api.set_version(4);
+#endif  // BUILDFLAG(IS_WIN)
+
   enum class BLEPower {
     ON,
     OFF,
@@ -2422,6 +2431,15 @@ TEST_F(AuthenticatorRequestDialogModelTest, JumpToWindowsWithNewUI) {
 // previously paired phone, no local matches, and only hybrid or internal
 // credentials in the allow-list.
 TEST_F(AuthenticatorRequestDialogModelTest, ContactPriorityPhone_NoSync) {
+#if BUILDFLAG(IS_WIN)
+  // TODO(https://crbug.com/1517923): Get test to pass in the webauthn supports
+  // hybrid case.
+  device::FakeWinWebAuthnApi fake_win_webauthn_api;
+  device::WinWebAuthnApi::ScopedOverride win_webauthn_api_override(
+      &fake_win_webauthn_api);
+  fake_win_webauthn_api.set_version(4);
+#endif  // BUILDFLAG(IS_WIN)
+
   AuthenticatorRequestDialogModel model(main_rfh());
   std::vector<std::unique_ptr<device::cablev2::Pairing>> phones;
   phones.emplace_back(GetPairingFromQR());
