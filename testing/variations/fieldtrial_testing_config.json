@@ -15563,21 +15563,6 @@
             ]
         }
     ],
-    "SafeBrowsingSkipSubResources": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SafeBrowsingSkipSubResources"
-                    ]
-                }
-            ]
-        }
-    ],
     "SafeBrowsingSkipSubResources2": [
         {
             "platforms": [
