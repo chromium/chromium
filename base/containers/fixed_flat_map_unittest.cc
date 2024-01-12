@@ -57,7 +57,7 @@ TEST(FixedFlatMapTest, MakeFixedFlatMap_UnsortedInput) {
 // Tests that even though the keys are immutable, the values of a non-const map
 // can still be changed.
 TEST(FixedFlatMapTest, MutableValues) {
-  auto map = MakeFixedFlatMap<std::string, int>({{"bar", 1}, {"foo", 2}});
+  auto map = MakeFixedFlatMap<StringPiece, int>({{"bar", 1}, {"foo", 2}});
   EXPECT_THAT(map, ElementsAre(Pair("bar", 1), Pair("foo", 2)));
   map.at("bar") = 2;
   EXPECT_THAT(map, ElementsAre(Pair("bar", 2), Pair("foo", 2)));
