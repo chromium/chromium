@@ -516,8 +516,6 @@ void ProcessSingletonNotificationCallbackImpl(
   }
 #endif
 
-  g_browser_process->platform_part()->OnBrowserLaunch();
-
   StartupProfilePathInfo startup_profile_path_info =
       GetStartupProfilePath(current_directory, command_line,
                             /*ignore_profile_picker=*/false);
