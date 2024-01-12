@@ -125,6 +125,17 @@ TEST(CommandLineTest, CommandLineConstructor) {
   EXPECT_TRUE(iter == args.end());
 }
 
+TEST(CommandLineTest, CommandLineFromArgvWithoutProgram) {
+  CommandLine::StringVector argv = {FILE_PATH_LITERAL("--switch1"),
+                                    FILE_PATH_LITERAL("--switch2=value2")};
+
+  CommandLine cl = CommandLine::FromArgvWithoutProgram(argv);
+
+  EXPECT_EQ(base::FilePath(), cl.GetProgram());
+  EXPECT_TRUE(cl.HasSwitch("switch1"));
+  EXPECT_EQ("value2", cl.GetSwitchValueASCII("switch2"));
+}
+
 TEST(CommandLineTest, CommandLineFromString) {
 #if BUILDFLAG(IS_WIN)
   CommandLine cl = CommandLine::FromString(

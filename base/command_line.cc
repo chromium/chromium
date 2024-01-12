@@ -253,6 +253,13 @@ bool CommandLine::InitializedForCurrentProcess() {
   return !!current_process_commandline_;
 }
 
+// static
+CommandLine CommandLine::FromArgvWithoutProgram(const StringVector& argv) {
+  CommandLine cmd(NO_PROGRAM);
+  cmd.AppendSwitchesAndArguments(argv);
+  return cmd;
+}
+
 #if BUILDFLAG(IS_WIN)
 // static
 CommandLine CommandLine::FromString(StringPieceType command_line) {
@@ -275,7 +282,9 @@ void CommandLine::InitFromArgv(const StringVector& argv) {
   switches_.clear();
   begin_args_ = 1;
   SetProgram(argv.empty() ? FilePath() : FilePath(argv[0]));
-  AppendSwitchesAndArguments(argv);
+  if (!argv.empty()) {
+    AppendSwitchesAndArguments(make_span(argv).subspan(1));
+  }
 }
 
 FilePath CommandLine::GetProgram() const {
@@ -465,7 +474,9 @@ void CommandLine::AppendArguments(const CommandLine& other,
                                   bool include_program) {
   if (include_program)
     SetProgram(other.GetProgram());
-  AppendSwitchesAndArguments(other.argv());
+  if (!other.argv().empty()) {
+    AppendSwitchesAndArguments(make_span(other.argv()).subspan(1));
+  }
 }
 
 void CommandLine::PrependWrapper(StringPieceType wrapper) {
@@ -529,14 +540,12 @@ void CommandLine::ParseFromString(StringPieceType command_line) {
 
 #endif  // BUILDFLAG(IS_WIN)
 
-void CommandLine::AppendSwitchesAndArguments(
-    const CommandLine::StringVector& argv) {
+void CommandLine::AppendSwitchesAndArguments(span<const StringType> argv) {
   bool parse_switches = true;
 #if BUILDFLAG(IS_WIN)
   const bool is_parsed_from_string = !raw_command_line_string_.empty();
 #endif
-  for (size_t i = 1; i < argv.size(); ++i) {
-    CommandLine::StringType arg = argv[i];
+  for (StringType arg : argv) {
 #if BUILDFLAG(IS_WIN)
     arg = CommandLine::StringType(TrimWhitespace(arg, TRIM_ALL));
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
