@@ -84,6 +84,7 @@ source_set("platform") {
   deps = [
     "//ash/constants",
     "//base",
+    "//chrome/services/sharing/nearby/common",
     "//chrome/services/sharing/webrtc",
     "//chromeos/ash/components/nearby/presence/conversions:conversions",
     "//chromeos/ash/services/nearby/public/cpp:tcp_server_socket_port",
@@ -137,6 +138,7 @@ source_set("unit_tests") {
   deps = [
     ":platform",
     "//base/test:test_support",
+    "//chrome/services/sharing/nearby/common",
     "//chrome/services/sharing/nearby/test_support",
     "//chromeos/ash/components/login/login_state",
     "//chromeos/ash/services/nearby/public/cpp:tcp_server_socket_port",

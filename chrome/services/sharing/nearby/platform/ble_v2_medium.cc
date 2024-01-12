@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
+#include "chrome/services/sharing/nearby/common/nearby_features.h"
 #include "chrome/services/sharing/nearby/platform/ble_v2_remote_peripheral.h"
 #include "third_party/nearby/src/internal/platform/byte_array.h"
 #include "third_party/nearby/src/internal/platform/implementation/ble_v2.h"
@@ -205,8 +206,10 @@ std::unique_ptr<api::ble_v2::BleSocket> BleV2Medium::Connect(
 }
 
 bool BleV2Medium::IsExtendedAdvertisementsAvailable() {
-  NOTIMPLEMENTED();
-  return false;
+  // TODO(b/310269227): Also check hardware/chipset support for extended
+  // advertising; both the feature flag AND hardware support must be true to
+  // return true.
+  return features::IsNearbyBleV2ExtendedAdvertisingEnabled();
 }
 
 bool BleV2Medium::GetRemotePeripheral(const std::string& mac_address,
