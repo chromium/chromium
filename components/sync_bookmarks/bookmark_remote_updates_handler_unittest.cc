@@ -1118,12 +1118,11 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
 
   ASSERT_TRUE(IsValidBookmarkSpecifics(*bookmark_specifics));
 
-  bookmarks::BookmarkNode parent(/*id=*/1, base::Uuid::GenerateRandomV4(),
-                                 GURL());
-  bookmarks::BookmarkNode* node =
-      parent.Add(std::make_unique<bookmarks::BookmarkNode>(
-                     /*id=*/2, kBookmarkGuid, GURL()),
-                 /*index=*/0);
+  const bookmarks::BookmarkNode* node = bookmark_model()->AddFolder(
+      /*parent=*/bookmark_model()->bookmark_bar_node(),
+      /*index=*/0, u"title", /*meta_info=*/nullptr,
+      /*creation_time=*/absl::nullopt, kBookmarkGuid);
+
   // Track a sync entity (similar to what happens after a local creation). The
   // |originator_client_item_id| is used a temp sync id and mark the entity that
   // it needs to be committed..
@@ -1172,9 +1171,6 @@ TEST_F(
   const int64_t kServerVersion = 1000;
   const base::Time kModificationTime(base::Time::Now() - base::Seconds(1));
 
-  bookmarks::BookmarkNode parent(/*id=*/1, base::Uuid::GenerateRandomV4(),
-                                 GURL());
-
   sync_pb::ModelTypeState model_type_state;
   model_type_state.set_initial_sync_state(
       sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
@@ -1182,7 +1178,8 @@ TEST_F(
   sync_pb::EntitySpecifics specifics;
   sync_pb::BookmarkSpecifics* bookmark_specifics = specifics.mutable_bookmark();
   bookmark_specifics->set_guid(kBookmarkGuid.AsLowercaseString());
-  bookmark_specifics->set_parent_guid(parent.uuid().AsLowercaseString());
+  bookmark_specifics->set_parent_guid(
+      bookmark_model()->bookmark_bar_node()->uuid().AsLowercaseString());
   bookmark_specifics->set_legacy_canonicalized_title("Title");
   bookmark_specifics->set_type(sync_pb::BookmarkSpecifics::FOLDER);
   *bookmark_specifics->mutable_unique_position() =
@@ -1190,10 +1187,10 @@ TEST_F(
 
   ASSERT_TRUE(IsValidBookmarkSpecifics(*bookmark_specifics));
 
-  bookmarks::BookmarkNode* node =
-      parent.Add(std::make_unique<bookmarks::BookmarkNode>(
-                     /*id=*/2, kBookmarkGuid, GURL()),
-                 /*index=*/0);
+  const bookmarks::BookmarkNode* node = bookmark_model()->AddFolder(
+      /*parent=*/bookmark_model()->bookmark_bar_node(),
+      /*index=*/0, u"title", /*meta_info=*/nullptr,
+      /*creation_time=*/absl::nullopt, kBookmarkGuid);
   // Track a sync entity (similar to what happens after a local creation).
   const SyncedBookmarkTrackerEntity* entity =
       tracker()->Add(node, /*sync_id=*/kSyncId, /*server_version=*/0,

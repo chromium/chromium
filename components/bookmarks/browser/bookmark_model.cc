@@ -413,7 +413,7 @@ void BookmarkModel::Move(const BookmarkNode* node,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(loaded_);
   DCHECK(node);
-  // TODO(crbug.com/1446243): Check that `node` belongs to this model.
+  DCHECK(node->HasAncestor(root_node()));
   CHECK(new_parent->HasAncestor(root_node()));
   DCHECK(IsValidIndex(new_parent, index, true));
   DCHECK(!is_root_node(new_parent));
@@ -529,6 +529,8 @@ void BookmarkModel::Copy(const BookmarkNode* node,
   DCHECK(!is_root_node(new_parent));
   DCHECK(!is_permanent_node(node));
   DCHECK(!new_parent->HasAncestor(node));
+  DCHECK(node->HasAncestor(root_node()));
+  DCHECK(new_parent->HasAncestor(root_node()));
 
   SetDateFolderModified(new_parent, Time::Now());
   BookmarkNodeData drag_data(node);
@@ -845,6 +847,7 @@ const BookmarkNode* BookmarkModel::AddFolder(
   DCHECK(parent);
   DCHECK(parent->is_folder());
   DCHECK(!is_root_node(parent));
+  DCHECK(parent->HasAncestor(root_node()));
   DCHECK(IsValidIndex(parent, index, true));
   DCHECK(!uuid || uuid->is_valid());
 
@@ -895,6 +898,7 @@ const BookmarkNode* BookmarkModel::AddURL(
   DCHECK(parent);
   DCHECK(parent->is_folder());
   DCHECK(!is_root_node(parent));
+  DCHECK(parent->HasAncestor(root_node()));
   DCHECK(IsValidIndex(parent, index, true));
   DCHECK(!uuid || uuid->is_valid());
 
