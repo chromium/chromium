@@ -908,17 +908,15 @@ void AppServiceProxyAsh::OnPublisherNotReadyForLaunch(
     return;
   }
 
-  auto* chrome_controller = ChromeShelfController::instance();
-  if (!chrome_controller) {
-    return;
-  }
-
-  // Add spinner to the app icon.
-  chrome_controller->GetShelfSpinnerController()->AddSpinnerToShelf(
-      app_id, std::make_unique<ShelfSpinnerItemController>(app_id));
-
   // Save the launch request to launch the app later.
   launch_requests_[app_id].push_back(std::move(launch_request));
+
+  auto* chrome_controller = ChromeShelfController::instance();
+  if (chrome_controller) {
+    // Add spinner to the app icon.
+    chrome_controller->GetShelfSpinnerController()->AddSpinnerToShelf(
+        app_id, std::make_unique<ShelfSpinnerItemController>(app_id));
+  }
 }
 
 bool AppServiceProxyAsh::MaybeShowLaunchPreventionDialog(

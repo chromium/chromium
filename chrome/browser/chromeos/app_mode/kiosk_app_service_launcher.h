@@ -76,7 +76,8 @@ class KioskAppServiceLauncher :
 
   // apps::AppRegistryCache::Observer:
   void OnAppUpdate(const apps::AppUpdate& update) override;
-  void OnAppTypeInitialized(apps::AppType app_type) override;
+  void OnAppTypePublishing(const std::vector<apps::AppPtr>& deltas,
+                           apps::AppType app_type) override;
   void OnAppRegistryCacheWillBeDestroyed(
       apps::AppRegistryCache* cache) override;
 
