@@ -16,13 +16,6 @@ namespace blink {
 
 class OpenTypeMathSupportTest : public FontTestBase {
  protected:
-  void SetUp() override {
-    font_description.SetComputedSize(10.0);
-    font = Font(font_description);
-  }
-
-  void TearDown() override {}
-
   Font CreateMathFont(const String& name, float size = 1000) {
     FontDescription::VariantLigatures ligatures;
     return blink::test::CreateTestFont(
@@ -43,9 +36,6 @@ class OpenTypeMathSupportTest : public FontTestBase {
     return OpenTypeMathSupport::MathConstant(
         math.PrimaryFont()->PlatformData().GetHarfBuzzFace(), constant);
   }
-
-  FontDescription font_description;
-  Font font;
 };
 
 TEST_F(OpenTypeMathSupportTest, HasMathData) {

@@ -86,21 +86,18 @@ class ShapingLineBreakerPerfTest : public testing::Test {
 
   void SetUp() override {
     font_description.SetComputedSize(12.0);
-    font = Font(font_description);
   }
 
   void TearDown() override {}
 
   FontCachePurgePreventer font_cache_purge_preventer;
   FontDescription font_description;
-  Font font;
-  unsigned start_index = 0;
-  unsigned num_glyphs = 0;
-  hb_script_t script = HB_SCRIPT_INVALID;
   base::LapTimer timer_;
 };
 
 TEST_F(ShapingLineBreakerPerfTest, ShapeLatinText) {
+  Font font(font_description);
+
   // "My Brother's Keeper?"
   // By William Arthur Dunkerley (John Oxenham)
   // In the public domain.

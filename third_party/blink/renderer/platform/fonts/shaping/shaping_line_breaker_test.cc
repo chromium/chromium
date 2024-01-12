@@ -62,7 +62,6 @@ class ShapingLineBreakerTest : public FontTestBase {
  protected:
   void SetUp() override {
     font_description.SetComputedSize(12.0);
-    font = Font(font_description);
   }
 
   void SelectLucidaFont() {
@@ -81,7 +80,6 @@ class ShapingLineBreakerTest : public FontTestBase {
                                FontFamily::Type::kFamilyName);
 
     font_description.SetFamily(lucida_family);
-    font = Font(font_description);
   }
 
   void TearDown() override {}
@@ -115,13 +113,11 @@ class ShapingLineBreakerTest : public FontTestBase {
 
   FontCachePurgePreventer font_cache_purge_preventer;
   FontDescription font_description;
-  Font font;
-  unsigned start_index = 0;
-  unsigned num_glyphs = 0;
-  hb_script_t script = HB_SCRIPT_INVALID;
 };
 
 TEST_F(ShapingLineBreakerTest, ShapeLineLatin) {
+  Font font(font_description);
+
   String string = To16Bit(
       "Test run with multiple words and breaking "
       "opportunities.",
@@ -203,6 +199,8 @@ TEST_F(ShapingLineBreakerTest, ShapeLineLatin) {
 }
 
 TEST_F(ShapingLineBreakerTest, ShapeLineLatinMultiLine) {
+  Font font(font_description);
+
   String string = To16Bit("Line breaking test case.", 24);
   LazyLineBreakIterator break_iterator(string, AtomicString("en-US"),
                                        LineBreakType::kNormal);
@@ -232,6 +230,8 @@ TEST_F(ShapingLineBreakerTest, ShapeLineLatinMultiLine) {
 }
 
 TEST_F(ShapingLineBreakerTest, ShapeLineLatinBreakAll) {
+  Font font(font_description);
+
   String string = To16Bit("Testing break type-break all.", 29);
   LazyLineBreakIterator break_iterator(string, AtomicString("en-US"),
                                        LineBreakType::kBreakAll);
@@ -257,6 +257,8 @@ TEST_F(ShapingLineBreakerTest, ShapeLineLatinBreakAll) {
 }
 
 TEST_F(ShapingLineBreakerTest, ShapeLineZeroAvailableWidth) {
+  Font font(font_description);
+
   String string(u"Testing overflow line break.");
   LazyLineBreakIterator break_iterator(string, AtomicString("en-US"),
                                        LineBreakType::kNormal);
@@ -286,6 +288,8 @@ TEST_F(ShapingLineBreakerTest, ShapeLineZeroAvailableWidth) {
 // Hits DCHECK at end of ShapingLineBreaker::ShapeLine, not clear if the test
 // is correct. Disabling for now.
 TEST_F(ShapingLineBreakerTest, DISABLED_ShapeLineArabicThaiHanLatin) {
+  Font font(font_description);
+
   UChar mixed_string[] = {0x628, 0x20,   0x64A, 0x629, 0x20,
                           0xE20, 0x65E5, 0x62,  0};
   LazyLineBreakIterator break_iterator(mixed_string, AtomicString("ar_AE"),
@@ -330,6 +334,8 @@ TEST_F(ShapingLineBreakerTest, DISABLED_ShapeLineArabicThaiHanLatin) {
 }
 
 TEST_F(ShapingLineBreakerTest, ShapeLineRangeEndMidWord) {
+  Font font(font_description);
+
   String string(u"Mid word");
   LazyLineBreakIterator break_iterator(string, AtomicString("en-US"),
                                        LineBreakType::kNormal);
@@ -351,6 +357,8 @@ TEST_F(ShapingLineBreakerTest, ShapeLineRangeEndMidWord) {
 
 TEST_F(ShapingLineBreakerTest, ShapeLineWithLucidaFont) {
   SelectLucidaFont();
+  Font font(font_description);
+
   FontDescription::VariantLigatures ligatures;
   ligatures.common = FontDescription::kEnabledLigaturesState;
 
@@ -404,6 +412,8 @@ INSTANTIATE_TEST_SUITE_P(
                     BreakOpportunityTestData{u"\xAD\xADz", {2, 3}, {3}}));
 
 TEST_P(BreakOpportunityTest, Next) {
+  Font font(font_description);
+
   const BreakOpportunityTestData& data = GetParam();
   String string(data.string);
   LazyLineBreakIterator break_iterator(string);
@@ -426,6 +436,8 @@ TEST_P(BreakOpportunityTest, Next) {
 }
 
 TEST_P(BreakOpportunityTest, Previous) {
+  Font font(font_description);
+
   const BreakOpportunityTestData& data = GetParam();
   String string(data.string);
   LazyLineBreakIterator break_iterator(string);

@@ -25,14 +25,12 @@ class ShapeResultViewTest : public FontTestBase {
  protected:
   void SetUp() override {
     font_description.SetComputedSize(12.0);
-    font = Font(font_description);
   }
 
   void TearDown() override {}
 
   FontCachePurgePreventer font_cache_purge_preventer;
   FontDescription font_description;
-  Font font;
 };
 
 TEST_F(ShapeResultViewTest, ExpandRange) {
@@ -73,6 +71,8 @@ TEST_F(ShapeResultViewTest, ExpandRange) {
 // http://crbug.com/1221008
 TEST_F(ShapeResultViewTest,
        ExpandRangeToIncludePartialGlyphsWithCombiningCharacter) {
+  Font font(font_description);
+
   String string(u"abc\u0E35\u0E35\u0E35\u0E35");
   HarfBuzzShaper shaper(string);
   scoped_refptr<const ShapeResult> result =
@@ -87,6 +87,8 @@ TEST_F(ShapeResultViewTest,
 }
 
 TEST_F(ShapeResultViewTest, LatinSingleView) {
+  Font font(font_description);
+
   String string =
       To16Bit("Test run with multiple words and breaking opportunities.", 56);
   TextDirection direction = TextDirection::kLtr;
@@ -137,6 +139,8 @@ TEST_F(ShapeResultViewTest, LatinSingleView) {
 }
 
 TEST_F(ShapeResultViewTest, ArabicSingleView) {
+  Font font(font_description);
+
   String string = To16Bit("عربى نص", 7);
   TextDirection direction = TextDirection::kRtl;
 
@@ -182,6 +186,8 @@ TEST_F(ShapeResultViewTest, ArabicSingleView) {
 }
 
 TEST_F(ShapeResultViewTest, PreviousSafeToBreak) {
+  Font font(font_description);
+
   String string =
       u"\u0028\u05D1\u0029\u0020\u05D4\u05D1\u05DC\u0020\u05D0\u05DE\u05E8"
       u"\u0020\u05E2\u05DC\u0020"
@@ -223,6 +229,8 @@ TEST_F(ShapeResultViewTest, PreviousSafeToBreak) {
 }
 
 TEST_F(ShapeResultViewTest, LatinMultiRun) {
+  Font font(font_description);
+
   TextDirection direction = TextDirection::kLtr;
   HarfBuzzShaper shaper_a(To16Bit("hello", 5));
   HarfBuzzShaper shaper_b(To16Bit(" w", 2));
@@ -292,6 +300,8 @@ TEST_F(ShapeResultViewTest, LatinMultiRun) {
 }
 
 TEST_F(ShapeResultViewTest, LatinCompositeView) {
+  Font font(font_description);
+
   String string =
       To16Bit("Test run with multiple words and breaking opportunities.", 56);
   TextDirection direction = TextDirection::kLtr;
@@ -345,6 +355,8 @@ TEST_F(ShapeResultViewTest, LatinCompositeView) {
 }
 
 TEST_F(ShapeResultViewTest, MixedScriptsCompositeView) {
+  Font font(font_description);
+
   String string_a = To16Bit("Test with multiple 字体 ", 22);
   String string_b = To16Bit("and 本書.", 7);
   TextDirection direction = TextDirection::kLtr;
@@ -390,6 +402,8 @@ TEST_F(ShapeResultViewTest, MixedScriptsCompositeView) {
 }
 
 TEST_F(ShapeResultViewTest, TrimEndOfView) {
+  Font font(font_description);
+
   String string = To16Bit("12345678901234567890", 20);
   TextDirection direction = TextDirection::kLtr;
   HarfBuzzShaper shaper(string);
@@ -407,6 +421,8 @@ TEST_F(ShapeResultViewTest, TrimEndOfView) {
 }
 
 TEST_F(ShapeResultViewTest, MarkerAndTrailingSpace) {
+  Font font(font_description);
+
   String string = u"\u2067\u2022\u0020";
   TextDirection direction = TextDirection::kRtl;
   LayoutUnit symbol_width = LayoutUnit(7);
@@ -423,6 +439,8 @@ TEST_F(ShapeResultViewTest, MarkerAndTrailingSpace) {
 }
 
 TEST_F(ShapeResultViewTest, SpacesInLTR) {
+  Font font(font_description);
+
   constexpr unsigned kStartIndex = 0;
   constexpr unsigned kLength = 2;
   constexpr float kWidth = 8;
@@ -444,6 +462,8 @@ TEST_F(ShapeResultViewTest, SpacesInLTR) {
 
 // http://crbug.com/1160582
 TEST_F(ShapeResultViewTest, SpacesInRTL) {
+  Font font(font_description);
+
   constexpr unsigned kStartIndex = 0;
   constexpr unsigned kLength = 2;
   constexpr float kWidth = 8;
@@ -464,6 +484,8 @@ TEST_F(ShapeResultViewTest, SpacesInRTL) {
 }
 
 TEST_F(ShapeResultViewTest, TabulationCharactersInLTR) {
+  Font font(font_description);
+
   constexpr float kPosition = 0;
   constexpr unsigned kStartIndex = 0;
   constexpr unsigned kLength = 2;
@@ -485,6 +507,8 @@ TEST_F(ShapeResultViewTest, TabulationCharactersInLTR) {
 
 // http://crbug.com/1255310
 TEST_F(ShapeResultViewTest, TabulationCharactersInRTL) {
+  Font font(font_description);
+
   constexpr float kPosition = 0;
   constexpr unsigned kStartIndex = 0;
   constexpr unsigned kLength = 2;
@@ -510,6 +534,8 @@ TEST_F(ShapeResultViewTest, TabulationCharactersInRTL) {
 // some cases used to return the length of the view, rather than a position into
 // the view.
 TEST_F(ShapeResultViewTest, PreviousSafeOffsetInsideView) {
+  Font font(font_description);
+
   HarfBuzzShaper shaper("Blah bla test something. ");
   scoped_refptr<const ShapeResult> result =
       shaper.Shape(&font, TextDirection::kLtr);

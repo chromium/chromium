@@ -29,13 +29,6 @@ ShapeResultTestInfo* TestInfo(const scoped_refptr<ShapeResult>& result) {
 
 class StretchyOperatorShaperTest : public FontTestBase {
  protected:
-  void SetUp() override {
-    font_description.SetComputedSize(10.0);
-    font = Font(font_description);
-  }
-
-  void TearDown() override {}
-
   Font CreateMathFont(const String& name, float size = 1000) {
     FontDescription::VariantLigatures ligatures;
     return blink::test::CreateTestFont(
@@ -43,9 +36,6 @@ class StretchyOperatorShaperTest : public FontTestBase {
         blink::test::BlinkWebTestsFontsTestDataPath(String("math/") + name),
         size, &ligatures);
   }
-
-  FontDescription font_description;
-  Font font;
 };
 
 // See blink/web_tests/external/wpt/mathml/tools/operator-dictionary.py and

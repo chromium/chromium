@@ -45,20 +45,13 @@ class ShapeResultBloberizerTest : public FontTestBase {
     ASSERT_EQ(USCRIPT_LATIN, font_description.GetScript());
     font_description.SetGenericFamily(FontDescription::kStandardFamily);
 
-    font = Font(font_description);
-    ASSERT_TRUE(font.CanShapeWordByWord());
-    fallback_fonts = nullptr;
     cache = std::make_unique<ShapeCache>();
   }
 
   FontCachePurgePreventer font_cache_purge_preventer;
   FontDescription font_description;
-  Font font;
+
   std::unique_ptr<ShapeCache> cache;
-  HashSet<const SimpleFontData*>* fallback_fonts;
-  unsigned start_index = 0;
-  unsigned num_glyphs = 0;
-  hb_script_t script = HB_SCRIPT_INVALID;
 };
 
 struct ExpectedRun {
@@ -342,6 +335,7 @@ TEST_F(ShapeResultBloberizerTest, CommonAccentLeftToRightFillGlyphBuffer) {
   TextRunPaintInfo run_info(text_run);
   run_info.to = 3;
 
+  Font font(font_description);
   CachingWordShaper word_shaper(font);
   ShapeResultBuffer buffer;
   word_shaper.FillResultBuffer(run_info, &buffer);
@@ -392,6 +386,7 @@ TEST_F(ShapeResultBloberizerTest, CommonAccentRightToLeftFillGlyphBuffer) {
   TextRunPaintInfo run_info(text_run);
   run_info.from = 1;
 
+  Font font(font_description);
   CachingWordShaper word_shaper(font);
   ShapeResultBuffer buffer;
   word_shaper.FillResultBuffer(run_info, &buffer);
@@ -428,6 +423,7 @@ TEST_F(ShapeResultBloberizerTest, CommonAccentRightToLeftFillGlyphBufferNG) {
   const UChar kStr[] = {0x5B, 0x5D, 0x20, 0x5B, 0x301, 0x5D};
   String string(kStr, base::make_span(kStr).size());
 
+  Font font(font_description);
   HarfBuzzShaper shaper(string);
   scoped_refptr<ShapeResult> result = shaper.Shape(&font, TextDirection::kRtl);
 
@@ -453,6 +449,7 @@ TEST_F(ShapeResultBloberizerTest, FourByteUtf8CodepointsNG) {
   const UChar kStr[] = {0xD841, 0xDF31, 0xD841, 0xDF79};
   String string(kStr, base::make_span(kStr).size());
 
+  Font font(font_description);
   HarfBuzzShaper shaper(string);
   scoped_refptr<ShapeResult> result = shaper.Shape(&font, TextDirection::kLtr);
 
@@ -478,6 +475,7 @@ TEST_F(ShapeResultBloberizerTest, OffsetIntoTrailingSurrogateNG) {
   const UChar kStr[] = {0xD841, 0xDF31, 0xD841, 0xDF79};
   String string(kStr, base::make_span(kStr).size());
 
+  Font font(font_description);
   HarfBuzzShaper shaper(string);
   scoped_refptr<ShapeResult> result = shaper.Shape(&font, TextDirection::kLtr);
 
@@ -517,6 +515,8 @@ TEST_F(ShapeResultBloberizerTest, LatinMultRunNG) {
   HarfBuzzShaper shaper_b(string.Substring(range_b.from, range_b.to));
   HarfBuzzShaper shaper_c(string.Substring(range_c.from, range_c.to));
   HarfBuzzShaper shaper_d(string.Substring(range_d.from, range_d.to));
+
+  Font font(font_description);
 
   FontDescription font2_description(font_description);
   font2_description.SetComputedSize(20);
@@ -632,6 +632,7 @@ TEST_F(ShapeResultBloberizerTest, SubRunWithZeroGlyphs) {
   const UChar kStr[] = {0x46, 0x6F, 0x6F, 0x20, 0x200C, 0x20, 0x62, 0x61, 0x71};
   TextRun text_run(kStr, base::make_span(kStr).size());
 
+  Font font(font_description);
   CachingWordShaper shaper(font);
   gfx::RectF glyph_bounds;
   ASSERT_GT(shaper.Width(text_run, &glyph_bounds), 0);
