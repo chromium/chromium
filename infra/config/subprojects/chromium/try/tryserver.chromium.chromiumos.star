@@ -131,7 +131,9 @@ try_.orchestrator_builder(
                        " default CQ would include this builder which runs" +
                        " both Tast tests and gtests. Otherwise, the default" +
                        " CQ would include `chromeos-amd64-generic-rel-gtest`" +
-                       " which only runs gtests.",
+                       " which only runs gtests. If you encounter unexpected" +
+                       " Tast tests failures, please contact ChromeOS" +
+                       " gardeners for help.",
     mirrors = [
         "ci/chromeos-amd64-generic-rel",
         "ci/chromeos-amd64-generic-rel-gtest",
