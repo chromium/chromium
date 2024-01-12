@@ -78,6 +78,7 @@ constexpr char kFakeChallengeBytesBase64[] =
     "ABz12ClFhY8/D89zWFB+KTHgUwJ5T3Avco/1IQuu+K/"
     "65KlsmB7o0+UyPde8ZW+b33aeJ9uyST8EMzS6WhK60e/VDjug+7LLK4YzDz1nNw==";
 constexpr char kTestCredentialId[] = "TEST_CREDENTIAL_ID";
+constexpr char kTestAuthCode[] = "AUTHORIZATION_CODE";
 constexpr char kPemCertificateString[] = R"({
 -----BEGIN CERTIFICATE-----
 MIICUTCCAfugAwIBAgIBADANBgkqhkiG9w0BAQQFADBXMQswCQYDVQQGEwJDTjEL
@@ -633,11 +634,14 @@ TEST_F(TargetDeviceBootstrapControllerTest,
   fido_assertion.credential_id = Base64UrlEncode(kTestCredentialId);
   PEMCertChain pem_cert_chain{kPemCertificateString};
 
+  const auto auth_code_response =
+      SecondDeviceAuthBroker::AuthCodeSuccessResponse{.auth_code =
+                                                          kTestAuthCode};
+
   // TODO(b/287006890) - Expand test to include failure modes as well.
   auth_broker_->SetupChallengeBytesResponse(kFakeChallengeBytes_);
   auth_broker_->SetupAttestationCertificateResponse(pem_cert_chain);
-  auth_broker_->SetupAuthCodeResponse(
-      SecondDeviceAuthBroker::AuthCodeSuccessResponse());
+  auth_broker_->SetupAuthCodeResponse(auth_code_response);
 
   bootstrap_controller_->AttemptGoogleAccountTransfer();
 
@@ -664,8 +668,14 @@ TEST_F(TargetDeviceBootstrapControllerTest,
 
   EXPECT_EQ(fake_observer_->last_status.step,
             Step::TRANSFERRED_GOOGLE_ACCOUNT_DETAILS);
-  EXPECT_TRUE(absl::holds_alternative<FidoAssertionInfo>(
-      fake_observer_->last_status.payload));
+  const auto payload = fake_observer_->last_status.payload;
+  EXPECT_TRUE(
+      absl::holds_alternative<TargetDeviceBootstrapController::GaiaCredentials>(
+          payload));
+  const auto gaia_creds =
+      absl::get<TargetDeviceBootstrapController::GaiaCredentials>(payload);
+  EXPECT_EQ(gaia_creds.auth_code, kTestAuthCode);
+
   histogram_tester_.ExpectBucketCount(kGaiaTransferAttemptedName, true, 1);
 }
 
