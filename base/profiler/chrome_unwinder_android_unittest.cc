@@ -967,10 +967,10 @@ TEST(ChromeUnwinderAndroidTest, CanUnwindFrom) {
   const uint8_t function_offset_table[] = {0};
   const uint8_t unwind_instruction_table[] = {0};
   auto dummy_unwind_info = ChromeUnwindInfoAndroid{
-      make_span(unwind_instruction_table, 1ul),
-      make_span(function_offset_table, 1ul),
-      make_span(function_table, 1ul),
-      make_span(page_table, 1ul),
+      unwind_instruction_table,
+      function_offset_table,
+      function_table,
+      page_table,
   };
 
   auto chrome_module = std::make_unique<TestModule>(0x1000, 0x500);
@@ -1071,10 +1071,10 @@ TEST(ChromeUnwinderAndroidTest, TryUnwind) {
   };
 
   auto unwind_info = ChromeUnwindInfoAndroid{
-      make_span(unwind_instruction_table, std::size(unwind_instruction_table)),
-      make_span(function_offset_table, std::size(function_offset_table)),
-      make_span(function_table, std::size(function_table)),
-      make_span(page_table, std::size(page_table)),
+      unwind_instruction_table,
+      function_offset_table,
+      function_table,
+      page_table,
   };
 
   ModuleCache module_cache;
@@ -1145,10 +1145,10 @@ TEST(ChromeUnwinderAndroidTest, TryUnwindInfiniteLoopSingleFrame) {
   };
 
   auto unwind_info = ChromeUnwindInfoAndroid{
-      make_span(unwind_instruction_table, std::size(unwind_instruction_table)),
-      make_span(function_offset_table, std::size(function_offset_table)),
-      make_span(function_table, std::size(function_table)),
-      make_span(page_table, std::size(page_table)),
+      unwind_instruction_table,
+      function_offset_table,
+      function_table,
+      page_table,
   };
 
   ModuleCache module_cache;
@@ -1236,10 +1236,10 @@ TEST(ChromeUnwinderAndroidTest, TryUnwindInfiniteLoopMultipleFrames) {
   };
 
   auto unwind_info = ChromeUnwindInfoAndroid{
-      make_span(unwind_instruction_table, std::size(unwind_instruction_table)),
-      make_span(function_offset_table, std::size(function_offset_table)),
-      make_span(function_table, std::size(function_table)),
-      make_span(page_table, std::size(page_table)),
+      unwind_instruction_table,
+      function_offset_table,
+      function_table,
+      page_table,
   };
 
   ModuleCache module_cache;
@@ -1308,10 +1308,10 @@ TEST(ChromeUnwinderAndroidTest, TryUnwindUnalignedSPFrameUnwind) {
   };
 
   auto unwind_info = ChromeUnwindInfoAndroid{
-      make_span(unwind_instruction_table, std::size(unwind_instruction_table)),
-      make_span(function_offset_table, std::size(function_offset_table)),
-      make_span(function_table, std::size(function_table)),
-      make_span(page_table, std::size(page_table)),
+      unwind_instruction_table,
+      function_offset_table,
+      function_table,
+      page_table,
   };
 
   ModuleCache module_cache;
@@ -1381,10 +1381,10 @@ TEST(ChromeUnwinderAndroidTest, TryUnwindUnalignedSPInstructionUnwind) {
   };
 
   auto unwind_info = ChromeUnwindInfoAndroid{
-      make_span(unwind_instruction_table, std::size(unwind_instruction_table)),
-      make_span(function_offset_table, std::size(function_offset_table)),
-      make_span(function_table, std::size(function_table)),
-      make_span(page_table, std::size(page_table)),
+      unwind_instruction_table,
+      function_offset_table,
+      function_table,
+      page_table,
   };
 
   ModuleCache module_cache;
@@ -1452,10 +1452,10 @@ TEST(ChromeUnwinderAndroidTest, TryUnwindSPOverflow) {
   };
 
   auto unwind_info = ChromeUnwindInfoAndroid{
-      make_span(unwind_instruction_table, std::size(unwind_instruction_table)),
-      make_span(function_offset_table, std::size(function_offset_table)),
-      make_span(function_table, std::size(function_table)),
-      make_span(page_table, std::size(page_table)),
+      unwind_instruction_table,
+      function_offset_table,
+      function_table,
+      page_table,
   };
 
   ModuleCache module_cache;
@@ -1524,10 +1524,10 @@ TEST(ChromeUnwinderAndroidTest, TryUnwindNullSP) {
   };
 
   auto unwind_info = ChromeUnwindInfoAndroid{
-      make_span(unwind_instruction_table, std::size(unwind_instruction_table)),
-      make_span(function_offset_table, std::size(function_offset_table)),
-      make_span(function_table, std::size(function_table)),
-      make_span(page_table, std::size(page_table)),
+      unwind_instruction_table,
+      function_offset_table,
+      function_table,
+      page_table,
   };
 
   ModuleCache module_cache;
@@ -1599,10 +1599,10 @@ TEST(ChromeUnwinderAndroidTest, TryUnwindInvalidSPOperation) {
   };
 
   auto unwind_info = ChromeUnwindInfoAndroid{
-      make_span(unwind_instruction_table, std::size(unwind_instruction_table)),
-      make_span(function_offset_table, std::size(function_offset_table)),
-      make_span(function_table, std::size(function_table)),
-      make_span(page_table, std::size(page_table)),
+      unwind_instruction_table,
+      function_offset_table,
+      function_table,
+      page_table,
   };
 
   ModuleCache module_cache;
