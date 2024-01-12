@@ -133,7 +133,7 @@ class StyleEngineTest : public PageTestBase {
 
   String GetListMarkerText(LayoutObject* list_item) {
     LayoutObject* marker = ListMarker::MarkerFromListItem(list_item);
-    return ListMarker::Get(marker)->GetTextChild(*marker).GetText();
+    return ListMarker::Get(marker)->GetTextChild(*marker).TransformedText();
   }
 
   size_t FillOrClipPathCacheSize() {

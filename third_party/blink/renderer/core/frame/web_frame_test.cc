@@ -13582,7 +13582,7 @@ TEST_F(WebFrameTest, AltTextOnAboutBlankPage) {
   String text = "";
   for (LayoutObject* obj = layout_object; obj; obj = obj->NextInPreOrder()) {
     if (obj->IsText()) {
-      text = To<LayoutText>(obj)->GetText();
+      text = To<LayoutText>(obj)->TransformedText();
       break;
     }
   }

@@ -102,10 +102,21 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   void ClearFirstInlineFragmentItemIndex() final;
   void SetFirstInlineFragmentItemIndex(wtf_size_t) final;
 
-  const String& GetText() const {
+  // This function returns a string that is the result of applying
+  // text-transform and -webkit-text-security to the original text.
+  // Whitespace collapsing is not applied.  The length of the string might
+  // be different from the original text length.
+  const String& TransformedText() const {
     NOT_DESTROYED();
     return text_;
   }
+  // Returns the length of transformed text.  Do not use this.  This function
+  // is rarely useful, and we can use TransformedText().length().
+  unsigned TransformedTextLength() const {
+    NOT_DESTROYED();
+    return text_.length();
+  }
+
   virtual unsigned TextStartOffset() const {
     NOT_DESTROYED();
     return 0;
@@ -145,12 +156,6 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   bool HasEmptyText() const {
     NOT_DESTROYED();
     return text_.empty();
-  }
-  // Returns the length of transformed text.  Do not use this.  This function
-  // is rarely useful, and we can use GetText().length().
-  unsigned TextLength() const {
-    NOT_DESTROYED();
-    return text_.length();
   }
 
   // Get characters after whitespace collapsing was applied. Returns 0 if there

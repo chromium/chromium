@@ -634,7 +634,8 @@ LayoutTextSelectionStatus LayoutSelection::ComputeSelectionStatus(
   // TODO(yoichio): This is really weird legacy behavior. Remove this.
   if (layout_text.IsBR() && selection_state == SelectionState::kEnd)
     return {0, 0, SelectionIncludeEnd::kNotInclude};
-  return {0, layout_text.TextLength(), SelectionIncludeEnd::kInclude};
+  return {0, layout_text.TransformedTextLength(),
+          SelectionIncludeEnd::kInclude};
 }
 
 LayoutTextSelectionStatus FrameSelection::ComputeLayoutSelectionStatus(

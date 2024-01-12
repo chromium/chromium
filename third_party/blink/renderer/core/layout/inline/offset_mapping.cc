@@ -120,7 +120,8 @@ void OffsetMappingUnit::AssertValid() const {
     SECURITY_DCHECK(dom_end_ >= text_start)
         << dom_end_ << " vs. " << text_start;
     if (!RuntimeEnabledFeatures::OffsetMappingUnitVariableEnabled()) {
-      const unsigned text_end = text_start + layout_text.TextLength();
+      const unsigned text_end =
+          text_start + layout_text.TransformedTextLength();
       SECURITY_DCHECK(dom_end_ <= text_end) << dom_end_ << " vs. " << text_end;
     }
   } else {

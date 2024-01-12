@@ -31,7 +31,7 @@ unsigned CalculateMaxOffset(const Text& text) {
           DynamicTo<LayoutTextFragment>(text.GetLayoutObject())) {
     layout_length = fragment->Start() + fragment->FragmentLength();
   } else {
-    layout_length = text.GetLayoutObject()->TextLength();
+    layout_length = text.GetLayoutObject()->TransformedTextLength();
   }
   return std::min(dom_length, layout_length);
 }

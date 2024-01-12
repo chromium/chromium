@@ -453,12 +453,13 @@ int AXPosition::MaxTextOffset() const {
   if (!is_atomic_inline_level && !layout_object->IsText())
     return container_object_->ComputedName().length();
 
-  // TODO(crbug.com/1149171): NGInlineOffsetMappingBuilder does not properly
+  // TODO(crbug.com/1149171): OffsetMappingBuilder does not properly
   // compute offset mappings for empty LayoutText objects. Other text objects
   // (such as some list markers) are not affected.
   if (const LayoutText* layout_text = DynamicTo<LayoutText>(layout_object)) {
-    if (layout_text->GetText().empty())
+    if (layout_text->HasEmptyText()) {
       return container_object_->ComputedName().length();
+    }
   }
 
   LayoutBlockFlow* formatting_context =

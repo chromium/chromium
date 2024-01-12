@@ -937,7 +937,7 @@ String AXLayoutObject::TextAlternative(
           // If no textboxes, this was whitespace at the line's end.
           text_alternative = " ";
         } else {
-          text_alternative = layout_text->GetText();
+          text_alternative = layout_text->TransformedText();
         }
       } else {
         text_alternative = visible_text;

@@ -123,8 +123,9 @@ bool ContainsNonWhitespace(const LayoutBox* box) {
   const LayoutObject* next = box;
   while ((next = next->NextInPreOrder(box))) {
     if (const auto* text = DynamicTo<LayoutText>(next)) {
-      if (!text->GetText().ContainsOnlyWhitespaceOrEmpty())
+      if (!text->TransformedText().ContainsOnlyWhitespaceOrEmpty()) {
         return true;
+      }
     }
   }
   return false;

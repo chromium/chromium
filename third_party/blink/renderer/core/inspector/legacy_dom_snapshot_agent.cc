@@ -410,7 +410,7 @@ int LegacyDOMSnapshotAgent::VisitLayoutTreeNode(LayoutObject* layout_object,
 
   if (layout_object->IsText()) {
     auto* layout_text = To<LayoutText>(layout_object);
-    layout_tree_node->setLayoutText(layout_text->GetText());
+    layout_tree_node->setLayoutText(layout_text->TransformedText());
     Vector<LayoutText::TextBoxInfo> text_boxes = layout_text->GetTextBoxInfo();
     if (!text_boxes.empty()) {
       auto inline_text_nodes = std::make_unique<

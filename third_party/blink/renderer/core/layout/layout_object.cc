@@ -2450,7 +2450,7 @@ void LayoutObject::DumpLayoutObject(StringBuilder& string_builder,
 
   if (IsText() && To<LayoutText>(this)->IsTextFragment()) {
     string_builder.AppendFormat(
-        " \"%s\" ", To<LayoutText>(this)->GetText().Ascii().c_str());
+        " \"%s\" ", To<LayoutText>(this)->TransformedText().Ascii().c_str());
   }
 
   if (GetNode()) {

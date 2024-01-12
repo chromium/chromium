@@ -52,7 +52,7 @@ class TextPainterBaseTest : public RenderingTest {
     layout_text_ =
         To<LayoutText>(GetDocument().body()->firstChild()->GetLayoutObject());
     ASSERT_TRUE(layout_text_);
-    ASSERT_EQ("Hello world", layout_text_->GetText());
+    ASSERT_EQ("Hello world", layout_text_->TransformedText());
   }
 
   Persistent<LayoutText> layout_text_;

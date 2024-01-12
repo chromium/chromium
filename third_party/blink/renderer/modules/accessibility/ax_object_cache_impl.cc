@@ -245,8 +245,11 @@ bool CanIgnoreSpaceNextTo(LayoutObject* layout_object,
     auto* layout_text = To<LayoutText>(layout_object);
     if (layout_text->HasEmptyText())
       return false;
-    if (layout_text->GetText().Impl()->ContainsOnlyWhitespaceOrEmpty())
+    if (layout_text->TransformedText()
+            .Impl()
+            ->ContainsOnlyWhitespaceOrEmpty()) {
       return true;
+    }
     auto adjacent_char =
         is_after ? layout_text->FirstCharacterAfterWhitespaceCollapsing()
                  : layout_text->LastCharacterAfterWhitespaceCollapsing();

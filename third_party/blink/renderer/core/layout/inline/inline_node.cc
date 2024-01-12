@@ -284,7 +284,7 @@ void CollectInlinesInternal(ItemsBuilder* builder,
         // https://w3c.github.io/csswg-drafts/css-counter-styles/#simple-symbolic,
         // disclosure-* should have special rendering paths.
         if (counter->IsDirectionalSymbolMarker()) {
-          const String& text = counter->GetText();
+          const String& text = counter->TransformedText();
           // We assume the text representation length for a predefined symbol
           // marker is always 1.
           if (text.length() <= 1) {
@@ -933,7 +933,7 @@ bool InlineNode::SetTextWithOffset(LayoutText* layout_text,
   if (!layout_text->HasValidInlineItems() ||
       !layout_text->IsInLayoutNGInlineFormattingContext())
     return false;
-  const String old_text = layout_text->GetText();
+  const String old_text = layout_text->TransformedText();
   if (offset == 0 && length == old_text.length()) {
     // We'll run collect inline items since whole text of |layout_text| is
     // changed.
@@ -1075,7 +1075,7 @@ void InlineNode::CollectInlines(InlineNodeData* data,
     const auto* layout_text = DynamicTo<LayoutText>(block->FirstChild());
     bool empty_or_one_char =
         !block->FirstChild() || (layout_text && !layout_text->NextSibling() &&
-                                 layout_text->TextLength() <= 1);
+                                 layout_text->TransformedTextLength() <= 1);
     if (!empty_or_one_char)
       chunk_offsets = FindSvgTextChunks(*block, *data);
   }

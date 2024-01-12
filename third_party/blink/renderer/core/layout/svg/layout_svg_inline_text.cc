@@ -55,7 +55,7 @@ LayoutSVGInlineText::LayoutSVGInlineText(Node* n, String string)
 
 void LayoutSVGInlineText::TextDidChange() {
   NOT_DESTROYED();
-  SetTextInternal(NormalizeWhitespace(GetText()));
+  SetTextInternal(NormalizeWhitespace(TransformedText()));
   LayoutText::TextDidChange();
   LayoutSVGText::NotifySubtreeStructureChanged(
       this, layout_invalidation_reason::kTextChanged);

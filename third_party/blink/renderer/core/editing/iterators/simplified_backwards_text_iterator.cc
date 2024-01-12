@@ -40,7 +40,7 @@
 namespace blink {
 
 static int CollapsedSpaceLength(LayoutText* layout_text, int text_end) {
-  const String& text = layout_text->GetText();
+  const String& text = layout_text->TransformedText();
   int length = text.length();
   for (int i = text_end; i < length; ++i) {
     if (!layout_text->Style()->IsCollapsibleWhiteSpace(text[i]))
@@ -219,7 +219,7 @@ bool SimplifiedBackwardsTextIteratorAlgorithm<Strategy>::HandleTextNode() {
   if (!layout_object)
     return true;
 
-  String text = layout_object->GetText();
+  String text = layout_object->TransformedText();
 
   if (behavior_.EmitsSpaceForNbsp())
     text.Replace(kNoBreakSpaceCharacter, kSpaceCharacter);

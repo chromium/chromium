@@ -134,7 +134,7 @@ class SecureTextTimer final : public GarbageCollected<SecureTextTimer>,
   void Fired() override {
     DCHECK(GetSecureTextTimers().Contains(layout_text_));
     // Forcing setting text as it may be masked later
-    layout_text_->ForceSetText(layout_text_->GetText());
+    layout_text_->ForceSetText(layout_text_->TransformedText());
   }
 
   Member<LayoutText> layout_text_;
@@ -250,8 +250,9 @@ void LayoutText::StyleDidChange(StyleDifference diff,
     TransformAndSecureOriginalText();
 
   // This is an optimization that kicks off font load before layout.
-  if (!GetText().ContainsOnlyWhitespaceOrEmpty())
-    new_style.GetFont().WillUseFontData(GetText());
+  if (!TransformedText().ContainsOnlyWhitespaceOrEmpty()) {
+    new_style.GetFont().WillUseFontData(TransformedText());
+  }
 
   TextAutosizer* text_autosizer = GetDocument().GetTextAutosizer();
   if (!old_style && text_autosizer)
@@ -455,7 +456,7 @@ String LayoutText::OriginalText() const {
 unsigned LayoutText::OriginalTextLength() const {
   NOT_DESTROYED();
   if (!RuntimeEnabledFeatures::OffsetMappingUnitVariableEnabled()) {
-    return TextLength();
+    return TransformedTextLength();
   }
   return OriginalText().length();
 }
@@ -735,7 +736,7 @@ PhysicalRect LayoutText::LocalCaretRect(
 
 bool LayoutText::IsAllCollapsibleWhitespace() const {
   NOT_DESTROYED();
-  unsigned length = TextLength();
+  unsigned length = text_.length();
   if (text_.Is8Bit()) {
     for (unsigned i = 0; i < length; ++i) {
       if (!StyleRef().IsCollapsibleWhiteSpace(text_.Characters8()[i])) {
@@ -868,7 +869,7 @@ static inline bool IsInlineFlowOrEmptyText(const LayoutObject* o) {
     return true;
   if (!o->IsText())
     return false;
-  return To<LayoutText>(o)->GetText().empty();
+  return To<LayoutText>(o)->HasEmptyText();
 }
 
 UChar LayoutText::PreviousCharacter() const {
@@ -882,7 +883,7 @@ UChar LayoutText::PreviousCharacter() const {
   UChar prev = kSpaceCharacter;
   if (previous_text && previous_text->IsText()) {
     if (const String& previous_string =
-            To<LayoutText>(previous_text)->GetText()) {
+            To<LayoutText>(previous_text)->TransformedText()) {
       prev = previous_string[previous_string.length() - 1];
     }
   }
@@ -894,7 +895,8 @@ void LayoutText::SetTextInternal(String text) {
   DCHECK(text);
   text_ = String(std::move(text));
   DCHECK(text_);
-  DCHECK(!IsBR() || (TextLength() == 1 && text_[0] == kNewlineCharacter));
+  DCHECK(!IsBR() ||
+         (TransformedTextLength() == 1 && text_[0] == kNewlineCharacter));
 }
 
 String LayoutText::TransformAndSecureText(const String& original,
@@ -1202,7 +1204,8 @@ int LayoutText::CaretMinOffset() const {
         mapping->StartOfNextNonCollapsedContent(first_position));
     // Align with the legacy behavior that 0 is returned if the entire node
     // contains only collapsed whitespaces.
-    const bool fully_collapsed = !candidate || *candidate == TextLength();
+    const bool fully_collapsed =
+        !candidate || *candidate == TransformedTextLength();
     return fully_collapsed ? 0 : *candidate;
   }
 

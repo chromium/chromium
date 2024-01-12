@@ -95,8 +95,9 @@ class LayoutTextTest : public RenderingTest {
     // accept out-of-bound offset but |IsAfterNonCollapsedCharacter()| doesn't.
     result[0] = layout_text.IsBeforeNonCollapsedCharacter(offset) ? 'B' : '-';
     result[1] = layout_text.ContainsCaretOffset(offset) ? 'C' : '-';
-    if (offset <= layout_text.TextLength())
+    if (offset <= layout_text.TransformedTextLength()) {
       result[2] = layout_text.IsAfterNonCollapsedCharacter(offset) ? 'A' : '-';
+    }
     return result;
   }
   static constexpr unsigned kIncludeSnappedWidth = 1;
@@ -593,7 +594,7 @@ TEST_F(LayoutTextTest, ContainsCaretOffsetWithTrailingSpace3) {
   const auto& text_a = *GetLayoutTextById("target");
   const auto& layout_br1 = *To<LayoutText>(text_a.NextSibling());
   const auto& text_space = *To<LayoutText>(layout_br1.NextSibling());
-  EXPECT_EQ(1u, text_space.TextLength());
+  EXPECT_EQ(1u, text_space.TransformedTextLength());
   const auto& layout_br2 = *To<LayoutText>(text_space.NextSibling());
   const auto& text_b = *To<LayoutText>(layout_br2.NextSibling());
   // Note: the last <br> doesn't have layout object.

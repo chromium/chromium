@@ -242,8 +242,9 @@ void ElementInnerTextCollector::ProcessChildrenWithRequiredLineBreaks(
 
 void ElementInnerTextCollector::ProcessLayoutText(const LayoutText& layout_text,
                                                   const Text& text_node) {
-  if (layout_text.TextLength() == 0)
+  if (layout_text.TransformedTextLength() == 0) {
     return;
+  }
   if (layout_text.Style()->Visibility() != EVisibility::kVisible) {
     // TODO(editing-dev): Once we make ::first-letter don't apply "visibility",
     // we should get rid of this if-statement. http://crbug.com/866744
@@ -406,7 +407,7 @@ void ElementInnerTextCollector::ProcessTextNode(const Text& node) {
     return;
   const LayoutText& layout_text = *node.GetLayoutObject();
   if (LayoutText* first_letter_part = layout_text.GetFirstLetterPart()) {
-    if (layout_text.TextLength() == 0 ||
+    if (layout_text.TransformedTextLength() == 0 ||
         OffsetMapping::GetInlineFormattingContextOf(layout_text) !=
             OffsetMapping::GetInlineFormattingContextOf(*first_letter_part)) {
       // "::first-letter" with "float" reach here.
