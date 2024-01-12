@@ -3436,6 +3436,7 @@ crbug.com/1463891 external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-
 crbug.com/1463891 external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-start-001.html?class=trim-start,halt,vrl [ Failure ]
 crbug.com/1463891 external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-start-001.html?class=trim-start,chws,htb [ Failure ]
 crbug.com/1463891 external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-start-001.html?class=trim-start,chws,vrl [ Failure ]
+crbug.com/1463891 external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-start-002.html [ Failure ]
 crbug.com/1463891 virtual/css-text-spacing-trim/external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-001.html?class=halt,htb [ Pass ]
 crbug.com/1463891 virtual/css-text-spacing-trim/external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-001.html?class=halt,vrl [ Pass ]
 crbug.com/1463891 virtual/css-text-spacing-trim/external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-colon-001.html?class=halt,htb [ Pass ]
@@ -3463,6 +3464,7 @@ crbug.com/1463891 virtual/css-text-spacing-trim/external/wpt/css/css-text/text-s
 crbug.com/1463891 virtual/css-text-spacing-trim/external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-start-001.html?class=trim-start,halt,vrl [ Pass ]
 crbug.com/1463891 virtual/css-text-spacing-trim/external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-start-001.html?class=trim-start,chws,htb [ Pass ]
 crbug.com/1463891 virtual/css-text-spacing-trim/external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-start-001.html?class=trim-start,chws,vrl [ Pass ]
+crbug.com/1463891 virtual/css-text-spacing-trim/external/wpt/css/css-text/text-spacing-trim/text-spacing-trim-start-002.html [ Pass ]
 
 # Implement text-decoration correctly for vertical text
 crbug.com/1133806 external/wpt/css/css-text-decor/text-decoration-thickness-vertical-002.html [ Failure ]
