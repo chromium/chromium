@@ -774,11 +774,7 @@ const BookmarkNode* BookmarkModel::GetNodeByUuid(const base::Uuid& uuid) const {
     return nullptr;
   }
 
-  // TODO(mastiz): When C++20 is supported in Chromium, this map lookup should
-  // be possible without having to use a BookmarkNode instance.
-  BookmarkNode dummy_node_for_lookup(/*id=*/0, uuid, GURL());
-
-  auto it = uuid_index_.find(&dummy_node_for_lookup);
+  auto it = uuid_index_.find(uuid);
   return it == uuid_index_.end() ? nullptr : *it;
 }
 
