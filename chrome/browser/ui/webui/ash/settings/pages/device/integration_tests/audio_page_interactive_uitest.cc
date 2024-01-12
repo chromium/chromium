@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
+#include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/interaction_sequence.h"
@@ -50,7 +51,7 @@ constexpr char kInputSliderSelector[] = "#audioInputGainVolumeSlider";
 
 // ActiveAudioNodeStateObserver tracks when primary input or output device
 // changes. Returns state change with primary active device ID depending for
-//  input or output on the value of the `is_input` parameter.
+// input or output on the value of the `is_input` parameter.
 class ActiveAudioNodeStateObserver : public ui::test::ObservationStateObserver<
                                          uint64_t,
                                          ash::CrasAudioHandler,
@@ -257,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(AudioSettingsInteractiveUiTest, RenderAudioPage) {
       MaybeWaitForInputDevice(expected_active_input_node),
       Log("Expected primary input device configured"),
 
-      // Open audio settings page
+      // Open audio settings page.
       LoadAudioSettingsPage(),
 
       // Test that output controls exist.
@@ -271,6 +272,42 @@ IN_PROC_BROWSER_TEST_F(AudioSettingsInteractiveUiTest, RenderAudioPage) {
       WaitForAudioElementExists(kInputMuteSelector),
       WaitForAudioElementExists(kInputSliderSelector),
       Log("Expected input controls exist"));
+}
+
+// Verify changing output device is reflected in UI.
+IN_PROC_BROWSER_TEST_F(AudioSettingsInteractiveUiTest, ChangeOutputDevice) {
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kFakeHeadphoneActiveEvent);
+  base::AddFeatureIdTagToTestResult(kAudioSettingsFeatureIdTag);
+
+  SetupContextWidget();
+
+  // Output devices' ID configured here:
+  // chromeos/ash/components/dbus/audio/fake_cras_audio_client.cc.
+  const uint64_t fake_headphone = 0x200000001;
+  EXPECT_TRUE(audio_handler()->GetDeviceFromId(fake_headphone));
+
+  StateChange fake_headphone_active;
+  fake_headphone_active.type = StateChange::Type::kExistsAndConditionTrue;
+  fake_headphone_active.event = kFakeHeadphoneActiveEvent;
+  fake_headphone_active.where =
+      CreateAudioPageDeepQueryForSelector(kOutputDeviceDropdownSelector);
+  // Fake headphone is the second dropdown option.
+  fake_headphone_active.test_function =
+      "el => el.children[1].text.includes('Headphone') && "
+      "el.children[1].selected";
+
+  RunTestSequence(
+      // Set fake headphone as active output device.
+      DoSetActiveDevice(fake_headphone),
+      MaybeWaitForOutputDevice(fake_headphone),
+      Log("Expected headphone output device configured"),
+
+      // Open audio settings page.
+      LoadAudioSettingsPage(),
+
+      // Test that headphone is selected.
+      WaitForStateChange(kOsSettingsElementId, fake_headphone_active),
+      Log("Expected headphone is selected in the active output dropdown"));
 }
 
 }  // namespace
