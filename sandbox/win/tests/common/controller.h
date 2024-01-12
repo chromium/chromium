@@ -141,7 +141,7 @@ class TestRunner {
   BrokerServices* broker() { return broker_; }
 
   // Returns the process handle for an asynchronous test.
-  HANDLE process() { return target_process_.Get(); }
+  HANDLE process() { return target_process_.get(); }
 
   // Returns the process ID for an asynchronous test.
   DWORD process_id() { return target_process_id_; }

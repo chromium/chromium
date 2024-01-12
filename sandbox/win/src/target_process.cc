@@ -281,13 +281,13 @@ ResultCode TargetProcess::Init(
   shared_section_.Set(::CreateFileMappingW(
       INVALID_HANDLE_VALUE, nullptr, PAGE_READWRITE | SEC_COMMIT, 0,
       static_cast<DWORD>(shared_mem_size), nullptr));
-  if (!shared_section_.IsValid()) {
+  if (!shared_section_.is_valid()) {
     *win_error = ::GetLastError();
     return SBOX_ERROR_CREATE_FILE_MAPPING;
   }
 
   void* shared_memory = ::MapViewOfFile(
-      shared_section_.Get(), FILE_MAP_WRITE | FILE_MAP_READ, 0, 0, 0);
+      shared_section_.get(), FILE_MAP_WRITE | FILE_MAP_READ, 0, 0, 0);
   if (!shared_memory) {
     *win_error = ::GetLastError();
     return SBOX_ERROR_MAP_VIEW_OF_SHARED_SECTION;
@@ -351,7 +351,7 @@ ResultCode TargetProcess::Init(
 
   DWORD access = FILE_MAP_READ | FILE_MAP_WRITE | SECTION_QUERY;
   HANDLE target_shared_section;
-  if (!::DuplicateHandle(::GetCurrentProcess(), shared_section_.Get(),
+  if (!::DuplicateHandle(::GetCurrentProcess(), shared_section_.get(),
                          sandbox_process_info_.process_handle(),
                          &target_shared_section, access, false, 0)) {
     *win_error = ::GetLastError();

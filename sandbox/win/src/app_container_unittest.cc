@@ -130,7 +130,7 @@ void AccessCheckFile(AppContainer* container,
       path.value().c_str(), DELETE, FILE_SHARE_READ | FILE_SHARE_DELETE, &sa,
       CREATE_ALWAYS, FILE_FLAG_DELETE_ON_CLOSE, nullptr));
 
-  ASSERT_TRUE(file_handle.IsValid());
+  ASSERT_TRUE(file_handle.is_valid());
   DWORD granted_access;
   BOOL access_status;
   ASSERT_TRUE(container->AccessCheck(

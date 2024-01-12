@@ -38,11 +38,12 @@ bool HandleCloserAgent::AttemptToStuffHandleSlot(HANDLE closed_handle,
     return true;
   }
 
-  if (!dummy_handle_.IsValid())
+  if (!dummy_handle_.is_valid()) {
     return false;
+  }
 
   // This should never happen, as g_dummy is created before closing to_stuff.
-  DCHECK(dummy_handle_.Get() != closed_handle);
+  DCHECK(dummy_handle_.get() != closed_handle);
 
   std::vector<HANDLE> to_close;
 
@@ -71,7 +72,7 @@ bool HandleCloserAgent::AttemptToStuffHandleSlot(HANDLE closed_handle,
 
       do {
         result =
-            ::DuplicateHandle(::GetCurrentProcess(), dummy_handle_.Get(),
+            ::DuplicateHandle(::GetCurrentProcess(), dummy_handle_.get(),
                               ::GetCurrentProcess(), &dup_dummy, 0, false, 0);
         if (!result) {
           break;

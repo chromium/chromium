@@ -446,9 +446,10 @@ std::optional<std::wstring> GetNtPathFromWin32Path(const std::wstring& path) {
   base::win::ScopedHandle file(::CreateFileW(
       path.c_str(), 0, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
       nullptr, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, nullptr));
-  if (!file.IsValid())
+  if (!file.is_valid()) {
     return std::nullopt;
-  return GetPathFromHandle(file.Get());
+  }
+  return GetPathFromHandle(file.get());
 }
 
 std::optional<std::wstring> GetPathFromHandle(HANDLE handle) {

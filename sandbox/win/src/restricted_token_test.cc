@@ -122,8 +122,9 @@ SBOX_TESTS_COMMAND int RestrictedTokenTest_openprocess(int argc,
   DWORD desired_access = wcstoul(argv[1], nullptr, 0);
   base::win::ScopedHandle process_handle(
       ::OpenProcess(desired_access, false, pid));
-  if (process_handle.IsValid())
+  if (process_handle.is_valid()) {
     return SBOX_TEST_SUCCEEDED;
+  }
 
   return SBOX_TEST_DENIED;
 }
@@ -141,7 +142,7 @@ SBOX_TESTS_COMMAND int RestrictedTokenTest_currentprocess_dup(int argc,
     return SBOX_TEST_FIRST_ERROR;
   }
   base::win::ScopedHandle process_handle(dup_handle);
-  if (::DuplicateHandle(::GetCurrentProcess(), process_handle.Get(),
+  if (::DuplicateHandle(::GetCurrentProcess(), process_handle.get(),
                         ::GetCurrentProcess(), &dup_handle, desired_access,
                         FALSE, 0)) {
     ::CloseHandle(dup_handle);

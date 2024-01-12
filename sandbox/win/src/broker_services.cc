@@ -257,16 +257,18 @@ BrokerServicesBase::BrokerServicesBase() {}
 // port to perform policy notifications and associated cleanup tasks.
 ResultCode BrokerServicesBase::Init(
     std::unique_ptr<BrokerServicesTargetTracker> target_tracker) {
-  if (job_port_.IsValid() || thread_pool_)
+  if (job_port_.is_valid() || thread_pool_) {
     return SBOX_ERROR_UNEXPECTED_CALL;
+  }
 
   job_port_.Set(::CreateIoCompletionPort(INVALID_HANDLE_VALUE, nullptr, 0, 0));
-  if (!job_port_.IsValid())
+  if (!job_port_.is_valid()) {
     return SBOX_ERROR_CANNOT_INIT_BROKERSERVICES;
+  }
 
   // We transfer ownership of this memory to the thread.
   auto params = std::make_unique<TargetEventsThreadParams>(
-      job_port_.Get(), std::move(target_tracker),
+      job_port_.get(), std::move(target_tracker),
       std::make_unique<ThreadPool>());
 
   // We keep the thread alive until our destructor so we can use a raw
@@ -285,7 +287,7 @@ ResultCode BrokerServicesBase::Init(
   job_thread_.Set(::CreateThread(nullptr, stack_size,  // Default security.
                                  TargetEventsThread, params.get(), flags,
                                  nullptr));
-  if (!job_thread_.IsValid()) {
+  if (!job_thread_.is_valid()) {
     thread_pool_ = nullptr;
     // Returning cleans up params.
     return SBOX_ERROR_CANNOT_INIT_BROKERSERVICES;
@@ -312,17 +314,18 @@ ResultCode BrokerServicesBase::InitForTesting(
 // wait for threads here.
 BrokerServicesBase::~BrokerServicesBase() {
   // If there is no port Init() was never called successfully.
-  if (!job_port_.IsValid())
+  if (!job_port_.is_valid()) {
     return;
+  }
 
   // Closing the port causes, that no more Job notifications are delivered to
   // the worker thread and also causes the thread to exit. This is what we
   // want to do since we are going to close all outstanding Jobs and notifying
   // the policy objects ourselves.
-  ::PostQueuedCompletionStatus(job_port_.Get(), 0, THREAD_CTRL_QUIT, nullptr);
+  ::PostQueuedCompletionStatus(job_port_.get(), 0, THREAD_CTRL_QUIT, nullptr);
 
-  if (job_thread_.IsValid() &&
-      WAIT_TIMEOUT == ::WaitForSingleObject(job_thread_.Get(), 5000)) {
+  if (job_thread_.is_valid() &&
+      WAIT_TIMEOUT == ::WaitForSingleObject(job_thread_.get(), 5000)) {
     // Cannot clean broker services.
     NOTREACHED();
     return;
@@ -496,11 +499,11 @@ ResultCode BrokerServicesBase::SpawnTarget(const wchar_t* exe_path,
 
   // Post the tracker to the tracking thread, then associate the job with
   // the tracker. The worker thread takes ownership of these objects.
-  CHECK(::PostQueuedCompletionStatus(job_port_.Get(), 0,
+  CHECK(::PostQueuedCompletionStatus(job_port_.get(), 0,
                                      THREAD_CTRL_NEW_JOB_TRACKER,
                                      reinterpret_cast<LPOVERLAPPED>(tracker)));
   // There is no obvious cleanup here.
-  CHECK(AssociateCompletionPort(job_handle, job_port_.Get(), tracker));
+  CHECK(AssociateCompletionPort(job_handle, job_port_.get(), tracker));
 
   *target_info = process_info.Take();
   return result;
@@ -508,10 +511,10 @@ ResultCode BrokerServicesBase::SpawnTarget(const wchar_t* exe_path,
 
 ResultCode BrokerServicesBase::GetPolicyDiagnostics(
     std::unique_ptr<PolicyDiagnosticsReceiver> receiver) {
-  CHECK(job_thread_.IsValid());
+  CHECK(job_thread_.is_valid());
   // Post to the job thread.
   if (!::PostQueuedCompletionStatus(
-          job_port_.Get(), 0, THREAD_CTRL_GET_POLICY_INFO,
+          job_port_.get(), 0, THREAD_CTRL_GET_POLICY_INFO,
           reinterpret_cast<LPOVERLAPPED>(receiver.get()))) {
     receiver->OnError(SBOX_ERROR_GENERIC);
     return SBOX_ERROR_GENERIC;

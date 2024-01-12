@@ -78,14 +78,14 @@ std::wstring GetRandomName() {
 
 void CompareHandlePath(const base::win::ScopedHandle& handle,
                        const std::wstring& expected_path) {
-  auto path = GetPathFromHandle(handle.Get());
+  auto path = GetPathFromHandle(handle.get());
   ASSERT_TRUE(path.has_value());
   EXPECT_TRUE(base::EqualsCaseInsensitiveASCII(path.value(), expected_path));
 }
 
 void CompareHandleType(const base::win::ScopedHandle& handle,
                        const std::wstring& expected_type) {
-  auto type_name = GetTypeNameFromHandle(handle.Get());
+  auto type_name = GetTypeNameFromHandle(handle.get());
   ASSERT_TRUE(type_name);
   EXPECT_TRUE(
       base::EqualsCaseInsensitiveASCII(type_name.value(), expected_type));
@@ -96,7 +96,7 @@ void FindHandle(const ProcessHandleMap& handle_map,
                 const base::win::ScopedHandle& handle) {
   ProcessHandleMap::const_iterator entry = handle_map.find(type_name);
   ASSERT_NE(handle_map.end(), entry);
-  EXPECT_TRUE(base::Contains(entry->second, handle.Get()));
+  EXPECT_TRUE(base::Contains(entry->second, handle.get()));
 }
 
 void TestCurrentProcessHandles(std::optional<ProcessHandleMap> (*func)()) {
@@ -104,12 +104,12 @@ void TestCurrentProcessHandles(std::optional<ProcessHandleMap> (*func)()) {
   ASSERT_FALSE(random_name.empty());
   base::win::ScopedHandle event_handle(
       ::CreateEvent(nullptr, FALSE, FALSE, random_name.c_str()));
-  ASSERT_TRUE(event_handle.IsValid());
+  ASSERT_TRUE(event_handle.is_valid());
   std::wstring pipe_name = L"\\\\.\\pipe\\" + random_name;
   base::win::ScopedHandle pipe_handle(::CreateNamedPipe(
       pipe_name.c_str(), PIPE_ACCESS_DUPLEX, PIPE_TYPE_BYTE,
       PIPE_UNLIMITED_INSTANCES, 0, 0, NMPWAIT_USE_DEFAULT_WAIT, nullptr));
-  ASSERT_TRUE(pipe_handle.IsValid());
+  ASSERT_TRUE(pipe_handle.is_valid());
 
   std::optional<ProcessHandleMap> handle_map = func();
   ASSERT_TRUE(handle_map);
@@ -179,11 +179,11 @@ TEST(WinUtils, SameObject) {
                                           kSharing, nullptr, CREATE_ALWAYS,
                                           FILE_FLAG_DELETE_ON_CLOSE, nullptr));
 
-  EXPECT_TRUE(file.IsValid());
+  EXPECT_TRUE(file.is_valid());
   std::wstring file_name_nt1 = std::wstring(L"\\??\\") + file_name;
   std::wstring file_name_nt2 = std::wstring(L"\\??\\") + folder + L"\\FOO.txT";
-  EXPECT_TRUE(SameObject(file.Get(), file_name_nt1.c_str()));
-  EXPECT_TRUE(SameObject(file.Get(), file_name_nt2.c_str()));
+  EXPECT_TRUE(SameObject(file.get(), file_name_nt1.c_str()));
+  EXPECT_TRUE(SameObject(file.get(), file_name_nt2.c_str()));
 
   file.Close();
   EXPECT_TRUE(::RemoveDirectory(my_folder));
@@ -323,14 +323,14 @@ TEST(WinUtils, GetPathAndTypeFromHandle) {
   std::wstring event_name = L"Global\\" + random_name;
   base::win::ScopedHandle event_handle(
       ::CreateEvent(nullptr, FALSE, FALSE, event_name.c_str()));
-  ASSERT_TRUE(event_handle.IsValid());
+  ASSERT_TRUE(event_handle.is_valid());
   CompareHandlePath(event_handle, L"\\BaseNamedObjects\\" + random_name);
   CompareHandleType(event_handle, L"Event");
   std::wstring pipe_name = L"\\\\.\\pipe\\" + random_name;
   base::win::ScopedHandle pipe_handle(::CreateNamedPipe(
       pipe_name.c_str(), PIPE_ACCESS_DUPLEX, PIPE_TYPE_BYTE,
       PIPE_UNLIMITED_INSTANCES, 0, 0, NMPWAIT_USE_DEFAULT_WAIT, nullptr));
-  ASSERT_TRUE(pipe_handle.IsValid());
+  ASSERT_TRUE(pipe_handle.is_valid());
   CompareHandlePath(pipe_handle, L"\\Device\\NamedPipe\\" + random_name);
   CompareHandleType(pipe_handle, L"File");
 }

@@ -128,7 +128,7 @@ bool SharedMemIPCServer::Init(void* shared_mem,
     // Advance to the next channel.
     base_start += channel_size;
     // Register the ping event with the threadpool.
-    thread_pool_->RegisterWait(this, service_context->ping_event.Get(),
+    thread_pool_->RegisterWait(this, service_context->ping_event.get(),
                                ThreadPingEventReady, service_context);
   }
   if (!::DuplicateHandle(::GetCurrentProcess(), g_alive_mutex, target_process_,
@@ -317,7 +317,7 @@ void __stdcall SharedMemIPCServer::ThreadPingEventReady(void* context,
   CrossCallParams* call_params = reinterpret_cast<CrossCallParams*>(buffer);
   memcpy(call_params->GetCallReturn(), &call_result, sizeof(call_result));
   ::InterlockedExchange(&service_context->channel->state, kAckChannel);
-  ::SetEvent(service_context->pong_event.Get());
+  ::SetEvent(service_context->pong_event.get());
 }
 
 bool SharedMemIPCServer::MakeEvents(base::win::ScopedHandle* server_ping,
@@ -330,14 +330,14 @@ bool SharedMemIPCServer::MakeEvents(base::win::ScopedHandle* server_ping,
 
   // The events are auto reset, and start not signaled.
   server_ping->Set(::CreateEventW(nullptr, false, false, nullptr));
-  if (!::DuplicateHandle(::GetCurrentProcess(), server_ping->Get(),
+  if (!::DuplicateHandle(::GetCurrentProcess(), server_ping->get(),
                          target_process_, client_ping, kDesiredAccess, false,
                          0)) {
     return false;
   }
 
   server_pong->Set(::CreateEventW(nullptr, false, false, nullptr));
-  if (!::DuplicateHandle(::GetCurrentProcess(), server_pong->Get(),
+  if (!::DuplicateHandle(::GetCurrentProcess(), server_pong->get(),
                          target_process_, client_pong, kDesiredAccess, false,
                          0)) {
     return false;

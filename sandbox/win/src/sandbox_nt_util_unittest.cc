@@ -34,8 +34,8 @@ TEST(SandboxNtUtil, IsSameProcessPseudoHandle) {
 TEST(SandboxNtUtil, IsSameProcessNonPseudoHandle) {
   base::win::ScopedHandle current_process(
       OpenProcess(PROCESS_QUERY_INFORMATION, false, GetCurrentProcessId()));
-  ASSERT_TRUE(current_process.IsValid());
-  EXPECT_TRUE(IsSameProcess(current_process.Get()));
+  ASSERT_TRUE(current_process.is_valid());
+  EXPECT_TRUE(IsSameProcess(current_process.get()));
 }
 
 TEST(SandboxNtUtil, IsSameProcessDifferentProcess) {
