@@ -14,6 +14,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/sync/sync_startup_tracker.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
@@ -216,7 +217,9 @@ class TurnSyncOnHelper {
   void CreateNewSignedInProfile();
 
   // Called when the new profile is created.
-  void OnNewSignedInProfileCreated(Profile* new_profile);
+  void OnNewSignedInProfileCreated(
+      search_engines::ChoiceData search_engine_choice_data,
+      Profile* new_profile);
 
   // Returns the SyncService, or nullptr if sync is not allowed.
   syncer::SyncService* GetSyncService();
