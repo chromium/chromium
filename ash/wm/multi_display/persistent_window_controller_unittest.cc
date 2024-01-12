@@ -339,9 +339,6 @@ TEST_F(PersistentWindowControllerTest, ReconnectOnLockScreen) {
   EXPECT_EQ(gfx::Rect(200, 0, 100, 200), w1->GetBoundsInScreen());
   EXPECT_EQ(gfx::Rect(1, 0, 200, 100), w2->GetBoundsInScreen());
 
-  // Spin a run loop to ensure shelf is deleted. https://crbug.com/810807.
-  base::RunLoop().RunUntilIdle();
-
   // Enters locked session state and reconnects secondary display.
   GetSessionControllerClient()->SetSessionState(SessionState::LOCKED);
   display_info_list.push_back(secondary_info);
