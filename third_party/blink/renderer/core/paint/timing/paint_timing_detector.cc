@@ -587,44 +587,4 @@ void PaintTimingDetector::Trace(Visitor* visitor) const {
   visitor->Trace(potential_soft_navigation_text_record_);
 }
 
-void PaintTimingCallbackManagerImpl::
-    RegisterPaintTimeCallbackForCombinedCallbacks() {
-  DCHECK(!frame_callbacks_->empty());
-  LocalFrame& frame = frame_view_->GetFrame();
-  if (!frame.GetPage()) {
-    return;
-  }
-
-  auto combined_callback = CrossThreadBindOnce(
-      &PaintTimingCallbackManagerImpl::ReportPaintTime,
-      WrapCrossThreadWeakPersistent(this), std::move(frame_callbacks_));
-  frame_callbacks_ =
-      std::make_unique<PaintTimingCallbackManager::CallbackQueue>();
-
-  // |ReportPaintTime| on |layerTreeView| will queue a presentation-promise, the
-  // callback is called when the presentation for current render frame completes
-  // or fails to happen.
-  frame.GetPage()->GetChromeClient().NotifyPresentationTime(
-      frame, std::move(combined_callback));
-}
-
-void PaintTimingCallbackManagerImpl::ReportPaintTime(
-    std::unique_ptr<PaintTimingCallbackManager::CallbackQueue> frame_callbacks,
-    base::TimeTicks paint_time) {
-  // Do not report any paint timings for detached frames.
-  if (frame_view_->GetFrame().IsDetached()) {
-    return;
-  }
-
-  while (!frame_callbacks->empty()) {
-    std::move(frame_callbacks->front()).Run(paint_time);
-    frame_callbacks->pop();
-  }
-  frame_view_->GetPaintTimingDetector().UpdateLcpCandidate();
-}
-
-void PaintTimingCallbackManagerImpl::Trace(Visitor* visitor) const {
-  visitor->Trace(frame_view_);
-  PaintTimingCallbackManager::Trace(visitor);
-}
 }  // namespace blink
