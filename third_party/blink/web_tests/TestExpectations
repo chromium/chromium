@@ -1603,7 +1603,6 @@ crbug.com/1497337 external/wpt/html/semantics/popovers/popover-focus-2.html [ Pa
 crbug.com/1446719 [ Mac ] external/wpt/html/semantics/popovers/light-dismiss-event-ordering.html [ Pass Timeout ]
 crbug.com/1491468 [ Linux ] external/wpt/html/semantics/popovers/popover-light-dismiss.html [ Failure Pass ]
 crbug.com/1491468 [ Linux ] virtual/popover-hint-disabled/external/wpt/html/semantics/popovers/popover-light-dismiss.html [ Failure Pass ]
-crbug.com/1513282 external/wpt/html/semantics/popovers/popover-open-in-event-crash.html [ Crash ]
 
 # Only virtual/threaded version of these tests pass (or running them with --enable-threaded-compositing).
 crbug.com/936891 fast/scrolling/document-level-touchmove-event-listener-passive-by-default.html [ Failure ]

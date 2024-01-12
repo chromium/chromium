@@ -1456,7 +1456,7 @@ void HTMLElement::ShowPopoverInternal(Element* invoker,
   if (new_popover_is_auto || original_type == PopoverValueType::kHint) {
     auto& auto_stack = original_document.PopoverAutoStack();
     auto& hint_stack = original_document.PopoverHintStack();
-    HeapVector<Member<HTMLElement>>* append_to_stack = nullptr;
+    HTMLDocument::PopoverStack* append_to_stack = nullptr;
     auto focus_behavior = HidePopoverFocusBehavior::kNone;
     if (new_popover_is_auto) {
       // If the new popover is an auto-popover:
@@ -1605,7 +1605,7 @@ void HTMLElement::ShowPopoverInternal(Element* invoker,
 
 // static
 void HTMLElement::CloseEntirePopoverStack(
-    HeapVector<Member<HTMLElement>>& stack,
+    HTMLDocument::PopoverStack& stack,
     HidePopoverFocusBehavior focus_behavior,
     HidePopoverTransitionBehavior transition_behavior) {
   while (!stack.empty()) {
@@ -1627,9 +1627,13 @@ void HTMLElement::HideAllPopoversUntil(
     Document& document,
     HidePopoverFocusBehavior focus_behavior,
     HidePopoverTransitionBehavior transition_behavior) {
-  CHECK(!endpoint || endpoint->popoverOpen());
+  CHECK(!endpoint || endpoint->HasPopoverAttribute());
   CHECK(!endpoint || endpoint->PopoverType() == PopoverValueType::kAuto ||
         endpoint->PopoverType() == PopoverValueType::kHint);
+
+  if (endpoint && !endpoint->popoverOpen()) {
+    return;
+  }
 
   if (!endpoint) {
     CloseEntirePopoverStack(document.PopoverHintStack(), focus_behavior,
@@ -1645,7 +1649,7 @@ void HTMLElement::HideAllPopoversUntil(
   // stack.
   auto find_last_to_hide =
       [](const HTMLElement* endpoint,
-         HeapVector<Member<HTMLElement>>& stack) -> const HTMLElement* {
+         HTMLDocument::PopoverStack& stack) -> const HTMLElement* {
     const HTMLElement* last_to_hide = nullptr;
     for (auto it = stack.rbegin(); it != stack.rend(); ++it) {
       if (*it == endpoint) {
@@ -1660,7 +1664,7 @@ void HTMLElement::HideAllPopoversUntil(
   auto hide_stack_until = [&find_last_to_hide, &focus_behavior,
                            &transition_behavior,
                            &document](const HTMLElement* endpoint,
-                                      HeapVector<Member<HTMLElement>>& stack) {
+                                      HTMLDocument::PopoverStack& stack) {
     // We never throw exceptions from HideAllPopoversUntil, since it is always
     // used to close other popovers that are already showing.
     ExceptionState* exception_state = nullptr;
@@ -1728,7 +1732,6 @@ void HTMLElement::HidePopoverInternal(
                       /*include_event_handler_text=*/true, /*document=*/nullptr)) {
     return;
   }
-
   auto& document = GetDocument();
   bool show_warning =
       transition_behavior != HidePopoverTransitionBehavior::kNoEventsNoWaiting;
@@ -1739,6 +1742,9 @@ void HTMLElement::HidePopoverInternal(
     transition_behavior = HidePopoverTransitionBehavior::kNoEventsNoWaiting;
   }
 
+  auto& hint_stack = document.PopoverHintStack();
+  auto& auto_stack = document.PopoverAutoStack();
+  HTMLDocument::PopoverStack* stack_containing_this = nullptr;
   if (PopoverType() == PopoverValueType::kAuto ||
       PopoverType() == PopoverValueType::kHint) {
     // Hide any popovers above us in the stack.
@@ -1750,6 +1756,13 @@ void HTMLElement::HidePopoverInternal(
                         /*include_event_handler_text=*/true, &document)) {
       return;
     }
+    if (!auto_stack.empty() && auto_stack.back() == this) {
+      stack_containing_this = &auto_stack;
+    } else {
+      stack_containing_this = &hint_stack;
+    }
+    CHECK(!stack_containing_this->empty() &&
+          stack_containing_this->back() == this);
   }
 
   MarkPopoverInvokersDirty(*this);
@@ -1773,6 +1786,18 @@ void HTMLElement::HidePopoverInternal(
       // context no longer exists, etc. See crbug.com/1445329.
       CHECK_EQ(result, DispatchEventResult::kCanceledBeforeDispatch);
       return;
+    }
+    if (stack_containing_this && !stack_containing_this->empty() &&
+        stack_containing_this->back() != this) {
+      CHECK(PopoverType() == PopoverValueType::kAuto ||
+            PopoverType() == PopoverValueType::kHint);
+      document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+          mojom::blink::ConsoleMessageSource::kOther,
+          mojom::blink::ConsoleMessageLevel::kWarning,
+          "The `beforetoggle` event handler for a popover triggered another "
+          "popover to be shown. This is not recommended."));
+      HideAllPopoversUntil(this, document, focus_behavior,
+                           HidePopoverTransitionBehavior::kNoEventsNoWaiting);
     }
 
     // The 'beforetoggle' event handler could have changed this popover, e.g. by
@@ -1821,13 +1846,11 @@ void HTMLElement::HidePopoverInternal(
 
   // Remove this popover from the stack.
   if (PopoverType() != PopoverValueType::kManual) {
-    auto& hint_stack = document.PopoverHintStack();
     if (!hint_stack.empty() && this == hint_stack.back()) {
       CHECK_EQ(PopoverType(), PopoverValueType::kHint);
       CHECK(RuntimeEnabledFeatures::HTMLPopoverHintEnabled());
       hint_stack.pop_back();
     } else {
-      auto& auto_stack = document.PopoverAutoStack();
       CHECK(!auto_stack.empty());
       CHECK_EQ(auto_stack.back(), this);
       auto_stack.pop_back();
@@ -2008,7 +2031,7 @@ const HTMLElement* NearestTargetPopoverForInvoker(
 // Additionally, a `popover=hint` cannot be the ancestor of a `popover=auto`.
 const HTMLElement* HTMLElement::FindTopmostPopoverAncestor(
     HTMLElement& new_popover,
-    HeapVector<Member<HTMLElement>>& stack_to_check,
+    HTMLDocument::PopoverStack& stack_to_check,
     Element* new_popovers_invoker) {
   CHECK(new_popover.HasPopoverAttribute());
   CHECK_NE(new_popover.PopoverType(), PopoverValueType::kManual);

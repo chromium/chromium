@@ -1507,7 +1507,7 @@
       "external/wpt/html/semantics/popovers/popover-types.html",
       "external/wpt/html/semantics/popovers/popover-hint-crash.tentative.html",
       "external/wpt/html/semantics/popovers/popover-light-dismiss-hint.tentative.html",
-      "external/wpt/html/semantics/popovers/popover-open-in-event-crash.html"
+      "external/wpt/html/semantics/popovers/popover-open-in-beforetoggle.html"
     ],
     "args": ["--disable-blink-features=HTMLPopoverHint",
       "--disable-threaded-compositing", "--disable-threaded-animation"],

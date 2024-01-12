@@ -1577,19 +1577,12 @@ class CORE_EXPORT Document : public ContainerNode,
 
   HTMLDialogElement* ActiveModalDialog() const;
 
-  const HeapVector<Member<HTMLElement>>& PopoverHintStack() const {
-    return popover_hint_stack_;
-  }
-  HeapVector<Member<HTMLElement>>& PopoverHintStack() {
-    return popover_hint_stack_;
-  }
+  using PopoverStack = HeapVector<Member<HTMLElement>>;
+  const PopoverStack& PopoverHintStack() const { return popover_hint_stack_; }
+  PopoverStack& PopoverHintStack() { return popover_hint_stack_; }
   bool PopoverHintShowing() const { return !popover_hint_stack_.empty(); }
-  HeapVector<Member<HTMLElement>>& PopoverAutoStack() {
-    return popover_auto_stack_;
-  }
-  const HeapVector<Member<HTMLElement>>& PopoverAutoStack() const {
-    return popover_auto_stack_;
-  }
+  PopoverStack& PopoverAutoStack() { return popover_auto_stack_; }
+  const PopoverStack& PopoverAutoStack() const { return popover_auto_stack_; }
   bool PopoverAutoShowing() const { return !popover_auto_stack_.empty(); }
   HeapHashSet<Member<HTMLElement>>& AllOpenPopovers() {
     return all_open_popovers_;
