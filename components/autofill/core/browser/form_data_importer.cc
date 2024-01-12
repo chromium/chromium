@@ -504,13 +504,9 @@ FormDataImporter::GetAddressObservedFieldValues(
       continue;
     }
 
-    // When `kAutofillImportFromAutocompleteUnrecognized` is enabled, Autofill
-    // imports from fields despite an unrecognized autocomplete attribute.
+    // Don't import from ac=unrecognized fields.
     if (field->ShouldSuppressSuggestionsAndFillingByDefault()) {
-      if (!features::kAutofillImportFromAutocompleteUnrecognized.Get()) {
-        continue;
-      }
-      import_metadata.num_autocomplete_unrecognized_fields++;
+      continue;
     }
 
     AutofillType autofill_type = field->Type();

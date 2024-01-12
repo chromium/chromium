@@ -458,14 +458,9 @@ void ProfileImportProcess::CollectMetrics(ukm::UkmRecorder* ukm_recorder,
   // decision.
   if (import_type_ == AutofillProfileImportType::kNewProfile) {
     autofill_metrics::LogNewProfileImportDecision(user_decision_);
-    autofill_metrics::LogNewProfileNumberOfAutocompleteUnrecognizedFields(
-        import_metadata_.num_autocomplete_unrecognized_fields);
-
     LogUkmMetrics(num_edited_fields);
   } else if (is_confirmable_update()) {
     autofill_metrics::LogProfileUpdateImportDecision(user_decision_);
-    autofill_metrics::LogProfileUpdateNumberOfAutocompleteUnrecognizedFields(
-        import_metadata_.num_autocomplete_unrecognized_fields);
 
     DCHECK(merge_candidate_.has_value() && import_candidate_.has_value());
     // For all update prompts, log the field types and total number of fields

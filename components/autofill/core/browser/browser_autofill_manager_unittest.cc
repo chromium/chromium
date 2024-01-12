@@ -1556,22 +1556,13 @@ TEST_F(BrowserAutofillManagerTest,
 #endif
 }
 
-// Tests that when `kAutofillPredictionsForAutocompleteUnrecognized` is enabled,
-// ac=unrecognized fields only activate suggestions when triggered through
-// manual fallbacks (even though the field has a type in both cases) on
+// Tests that ac=unrecognized fields only activate suggestions when triggered
+// through manual fallbacks (even though the field has a type in both cases) on
 // desktop.
-// On mobile, suggestions are shown even for ac=unrecognized fields due to
-// `kAutofillSuggestionsForAutocompleteUnrecognizedFieldsOnMobile`.
+// On mobile, suggestions are shown even for ac=unrecognized fields.
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 TEST_F(BrowserAutofillManagerTest,
        GetProfileSuggestions_UnrecognizedAttribute_Predictions_Mobile) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      /*enabled_features=*/
-      {features::kAutofillPredictionsForAutocompleteUnrecognized,
-       features::kAutofillSuggestionsForAutocompleteUnrecognizedFieldsOnMobile},
-      /*disabled_features=*/{});
-
   // Create a form where the first field has ac=unrecognized.
   FormData form = CreateTestAddressFormData();
   form.fields[0].parsed_autocomplete =
@@ -1590,9 +1581,6 @@ TEST_F(BrowserAutofillManagerTest,
 #else
 TEST_F(BrowserAutofillManagerTest,
        AutofillManualFallback_UnclassifiedField_SuggestionsShown) {
-  base::test::ScopedFeatureList enabled_features(
-      features::kAutofillPredictionsForAutocompleteUnrecognized);
-
   // Create a form where the first field is unclassifiable.
   FormData form = CreateTestAddressFormData();
   form.fields[0].label = u"unclassified";
@@ -1621,9 +1609,6 @@ TEST_F(BrowserAutofillManagerTest,
 
 TEST_F(BrowserAutofillManagerTest,
        AutofillManualFallback_AutocompleteUnrecognized_SuggestionsShown) {
-  base::test::ScopedFeatureList enabled_features(
-      features::kAutofillPredictionsForAutocompleteUnrecognized);
-
   // Create a form where the first field has ac=unrecognized.
   FormData form = CreateTestAddressFormData();
   form.fields[0].parsed_autocomplete =
@@ -1658,9 +1643,6 @@ TEST_F(BrowserAutofillManagerTest,
 
 TEST_F(BrowserAutofillManagerTest,
        AutofillManualFallback_ClassifiedField_AddressForm_ShowSuggestions) {
-  base::test::ScopedFeatureList enabled_features(
-      features::kAutofillPredictionsForAutocompleteUnrecognized);
-
   // Create a form where all fields can be classified.
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});
@@ -1690,9 +1672,6 @@ TEST_F(BrowserAutofillManagerTest,
 
 TEST_F(BrowserAutofillManagerTest,
        AutofillManualFallback_ClassifiedField_PaymentsForm_ShowSuggestions) {
-  base::test::ScopedFeatureList enabled_features(
-      features::kAutofillPredictionsForAutocompleteUnrecognized);
-
   // Create a form where all fields can be classified.
   FormData form =
       CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
@@ -3729,14 +3708,10 @@ TEST_F(BrowserAutofillManagerTest, FillAddressForm_CollectObservations) {
       }));
 }
 
-// Tests that when `kAutofillPredictionsForAutocompleteUnrecognized` is enabled,
 // ac=unrecognized fields:
 // - Are not filled by default.
 // - Are filled through manual fallbacks.
 TEST_F(BrowserAutofillManagerTest, AutocompleteUnrecognizedFillingBehavior) {
-  base::test::ScopedFeatureList feature(
-      features::kAutofillPredictionsForAutocompleteUnrecognized);
-
   // Create a form where the middle name field has ac=unrecognized.
   FormData form = CreateTestAddressFormData();
   ASSERT_EQ(form.fields[1].name, u"middlename");
@@ -3766,13 +3741,9 @@ TEST_F(BrowserAutofillManagerTest, AutocompleteUnrecognizedFillingBehavior) {
                    /*card_fill_data=*/std::nullopt);
 }
 
-// Tests that when `kAutofillPredictionsForAutocompleteUnrecognized` is enabled,
-// fields with unrecognized autocomplete attribute don't contribute to key
-// metrics.
+// Tests that fields with unrecognized autocomplete attribute don't contribute
+// to key metrics.
 TEST_F(BrowserAutofillManagerTest, AutocompleteUnrecognizedFields_KeyMetrics) {
-  base::test::ScopedFeatureList feature(
-      features::kAutofillPredictionsForAutocompleteUnrecognized);
-
   // Create an address form where field 1 has an unrecognized autocomplete
   // attribute.
   FormData form = CreateTestAddressFormData();

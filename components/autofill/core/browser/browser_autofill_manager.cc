@@ -526,15 +526,11 @@ std::string_view ActionPersistenceToString(
 
 // Returns true if autocomplete=unrecognized (address) fields should receive
 // suggestions. On desktop, suggestion can only be triggered for them through
-// manual fallbacks. On mobile, it depends on
-// `kAutofillSuggestionsForAutocompleteUnrecognizedFieldsOnMobile`.
-// Note that this only affects address fields, since credit card fields ignore
-// autocomplete=unrecognized.
+// manual fallbacks. On mobile, suggestions are always shown.
 bool ShouldShowSuggestionsForAutocompleteUnrecognizedFields(
     AutofillSuggestionTriggerSource trigger_source) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  return base::FeatureList::IsEnabled(
-      features::kAutofillSuggestionsForAutocompleteUnrecognizedFieldsOnMobile);
+  return true;
 #else
   return IsAutofillManuallyTriggered(trigger_source);
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
@@ -3597,11 +3593,7 @@ void BrowserAutofillManager::GetAvailableSuggestions(
 autofill_metrics::FormEventLoggerBase*
 BrowserAutofillManager::GetEventFormLogger(const AutofillField& field) const {
   if (field.ShouldSuppressSuggestionsAndFillingByDefault()) {
-    // Ignore ac=unrecognized fields in key metrics: Prior to
-    // `kAutofillPredictionsForAutocompleteUnrecognized`, ac=unrecognized fields
-    // did not receive a type prediction and were consequently not associated to
-    // any event logger. To retain the same baseline for key metrics, continue
-    // to exclude such fields.
+    // Ignore ac=unrecognized fields in key metrics.
     return nullptr;
   }
   switch (FieldTypeGroupToFormType(field.Type().group())) {

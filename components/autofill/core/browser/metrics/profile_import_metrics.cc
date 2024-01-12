@@ -119,23 +119,10 @@ void LogNewProfileImportDecision(
                                 decision);
 }
 
-void LogNewProfileNumberOfAutocompleteUnrecognizedFields(int count) {
-  base::UmaHistogramExactLinear(
-      "Autofill.ProfileImport.NewProfileNumberOfAutocompleteUnrecognizedFields",
-      count, /*exclusive_max=*/20);
-}
-
 void LogProfileUpdateImportDecision(
     AutofillClient::SaveAddressProfileOfferUserDecision decision) {
   base::UmaHistogramEnumeration("Autofill.ProfileImport.UpdateProfileDecision",
                                 decision);
-}
-
-void LogProfileUpdateNumberOfAutocompleteUnrecognizedFields(int count) {
-  base::UmaHistogramExactLinear(
-      "Autofill.ProfileImport."
-      "UpdateProfileNumberOfAutocompleteUnrecognizedFields",
-      count, /*exclusive_max=*/20);
 }
 
 // static

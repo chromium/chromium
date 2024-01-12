@@ -33,10 +33,6 @@ class AutocompleteUnrecognizedFallbackEventLoggerTest
         AutofillSuggestionTriggerSource::kFormControlElementClicked);
     DidShowAutofillSuggestions(form);
   }
-
- private:
-  base::test::ScopedFeatureList feature_{
-      features::kAutofillPredictionsForAutocompleteUnrecognized};
 };
 
 // Tests that when suggestion on an autocomplete=unrecognized field are shown,

@@ -107,34 +107,6 @@ BASE_FEATURE(kAutofillDeferSubmissionClassificationAfterAjax,
              "AutofillDeferSubmissionClassificationAfterAjax",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, server/heuristic predictions take precedence over an unrecognized
-// autocomplete attribute. Suggestions are suppressed for such fields and they
-// won't be considered for filling or importing. The fields do however affect
-// rationalization and sectioning, and non-(key and quality) metrics.
-// When `kAutofillFillAndImportFromMoreFields` is enabled, fields with
-// unrecognized autocomplete attribute are considered for import.
-// TODO(crbug.com/1446318): Remove the feature when the experiment is completed.
-BASE_FEATURE(kAutofillPredictionsForAutocompleteUnrecognized,
-             "AutofillPredictionsForAutocompleteUnrecognized",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-const base::FeatureParam<bool> kAutofillImportFromAutocompleteUnrecognized{
-    &kAutofillPredictionsForAutocompleteUnrecognized,
-    "import_from_autocomplete_unrecognized", false};
-
-// When enabled, an entry is added to the context menu of ac=unrecognized fields
-// which allows triggering Autofill suggestions. Selecting such a suggestion
-// fills all address fields in the field's section, independently of the
-// autocomplete attribute.
-// TODO(crbug.com/1446318): Remove when launched.
-BASE_FEATURE(kAutofillFallbackForAutocompleteUnrecognized,
-             "AutofillFallbackForAutocompleteUnrecognized",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-// If true, the context menu entry is shown for all address fields.
-const base::FeatureParam<bool>
-    kAutofillFallForAutocompleteUnrecognizedOnAllAddressField{
-        &kAutofillFallbackForAutocompleteUnrecognized,
-        "show_on_all_address_fields", true};
-
 // Kill switch for Autofill filling.
 BASE_FEATURE(kAutofillDisableFilling,
              "AutofillDisableFilling",
@@ -731,19 +703,6 @@ BASE_FEATURE(kAutofillVirtualViewStructureAndroid,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-// When enabled, the keyboard accessory is shown for autocomplete=unrecognized
-// fields. Selecting a keyboard accessory suggestion will fill the triggering
-// field (independently of the autocomplete attribute) and all
-// autocomplete != unrecognized fields in the triggering field's section.
-// Note that this only affects address fields, since credit cards already ignore
-// autocomplete=unrecognized.
-// TODO(crbug.com/1446318): Remove when launched.
-BASE_FEATURE(kAutofillSuggestionsForAutocompleteUnrecognizedFieldsOnMobile,
-             "AutofillSuggestionsForAutocompleteUnrecognizedFieldsOnMobile",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 namespace test {
 

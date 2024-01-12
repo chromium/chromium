@@ -3912,13 +3912,8 @@ TEST_F(FormDataImporterTest, FormAssociator) {
   EXPECT_FALSE(associations->last_credit_card_form_submitted);
 }
 
-// Tests that when `kAutofillPredictionsForAutocompleteUnrecognized` is enabled,
-// ac=unrecognized fields have a prediction, but are not imported.
+// Tests that ac=unrecognized fields have a prediction, but are not imported.
 TEST_F(FormDataImporterTest, SkipAutocompleteUnrecognizedFields) {
-  base::test::ScopedFeatureList feature;
-  feature.InitAndEnableFeature(
-      features::kAutofillPredictionsForAutocompleteUnrecognized);
-
   // Create a `form_structure` where the email field has ac=unrecognized.
   std::unique_ptr<FormStructure> form_structure =
       ConstructDefaultProfileFormStructure();

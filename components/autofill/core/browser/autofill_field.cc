@@ -166,14 +166,8 @@ DenseSet<HtmlFieldType> BelievedHtmlTypes(FieldType heuristic_prediction,
     believed_html_types.erase_all(
         {HtmlFieldType::kAddressLine1, HtmlFieldType::kAddressLine2});
   }
-  // If the field is credit-card related or the feature
-  // `kAutofillPredictionsForAutocompleteUnrecognized` is enabled, we always
-  // override unrecognized autocomplete attributes.
-  if (is_credit_card_prediction ||
-      base::FeatureList::IsEnabled(
-          features::kAutofillPredictionsForAutocompleteUnrecognized)) {
-    believed_html_types.erase(HtmlFieldType::kUnrecognized);
-  }
+  // Always override unrecognized autocomplete attributes.
+  believed_html_types.erase(HtmlFieldType::kUnrecognized);
   return believed_html_types;
 }
 

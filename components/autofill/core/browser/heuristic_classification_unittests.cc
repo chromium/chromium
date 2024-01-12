@@ -518,8 +518,6 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
       variations::switches::kVariationsOverrideCountry, *country);
 
   std::vector<base::test::FeatureRef> enabled_features = {
-      // This is always enabled to classify autocomplete=invalid fields.
-      features::kAutofillPredictionsForAutocompleteUnrecognized,
       // Support for new field types.
       features::kAutofillEnableSupportForBetweenStreets,
       features::kAutofillEnableSupportForAdminLevel2,

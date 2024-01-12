@@ -305,11 +305,6 @@ bool AutofillContextMenuManager::ShouldAddAddressManualFallbackItem(
 bool AutofillContextMenuManager::
     ShouldAddAddressManualFallbackForAutocompleteUnrecognized(
         ContentAutofillDriver& driver) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillFallbackForAutocompleteUnrecognized)) {
-    return false;
-  }
-
   AutofillField* field =
       GetAutofillField(driver.GetAutofillManager(), driver.GetFrameToken());
 
@@ -321,19 +316,10 @@ bool AutofillContextMenuManager::
   // Only show the context menu entry for address fields, which can be filled
   // with at least one of the user's profiles.
   CHECK(personal_data_manager_);
-  if (base::ranges::none_of(personal_data_manager_->GetProfiles(),
-                            [field](AutofillProfile* profile) {
-                              return profile->HasInfo(
-                                  field->Type().GetStorableType());
-                            })) {
-    return false;
-  }
-
-  // Depending on the Finch parameter, only show the context menu entry for
-  // ac=unrecognized fields.
-  return field->ShouldSuppressSuggestionsAndFillingByDefault() ||
-         features::kAutofillFallForAutocompleteUnrecognizedOnAllAddressField
-             .Get();
+  return base::ranges::any_of(
+      personal_data_manager_->GetProfiles(), [field](AutofillProfile* profile) {
+        return profile->HasInfo(field->Type().GetStorableType());
+      });
 }
 
 void AutofillContextMenuManager::LogManualFallbackContextMenuEntryShown(
