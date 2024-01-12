@@ -414,7 +414,6 @@ defaults = args.defaults(
     siso_enable_cloud_profiler = None,
     siso_enable_cloud_trace = None,
     siso_experiments = [],
-    siso_remote_jobs = None,
     health_spec = None,
 
     # Variables for modifying builder characteristics in a shadow bucket
@@ -492,7 +491,6 @@ def builder(
         siso_enable_cloud_profiler = args.DEFAULT,
         siso_enable_cloud_trace = args.DEFAULT,
         siso_experiments = args.DEFAULT,
-        siso_remote_jobs = args.DEFAULT,
         health_spec = args.DEFAULT,
         shadow_builderless = args.DEFAULT,
         shadow_free_space = args.DEFAULT,
@@ -697,7 +695,6 @@ def builder(
         siso_enable_cloud_profiler: If True, enable cloud profiler in siso.
         siso_enable_cloud_trace: If True, enable cloud trace in siso.
         siso_experiments: a list of experiment flags for siso.
-        siso_remote_jobs: The number of remote jobs that Siso runs in parallel.
         health_spec: a health spec instance describing the threshold for when
             the builder should be considered unhealthy.
         shadow_builderless: If set to True, then led builds created for this
@@ -925,9 +922,6 @@ def builder(
             "experiments": defaults.get_value("siso_experiments", siso_experiments),
             "project": siso_project,
         }
-        remote_jobs = defaults.get_value("siso_remote_jobs", siso_remote_jobs)
-        if remote_jobs:
-            properties["$build/siso"]["remote_jobs"] = remote_jobs
 
     shadow_dimensions = {}
     shadow_builderless = defaults.get_value("shadow_builderless", shadow_builderless)

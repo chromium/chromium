@@ -397,9 +397,6 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         category = "mac",
         short_name = "siso",
     ),
-    # TODO: b/309724296 - Apply the remote jobs by default for Mac or remove this.
-    # Experiment limiting the number of remote jobs.
-    siso_remote_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
 )
 
 def developer_build_perf_builder(description_html, **kwargs):
@@ -547,5 +544,4 @@ This builder measures build performance for Mac developer builds, by simulating 
         short_name = "dev",
     ),
     reclient_jobs = 800,
-    siso_remote_jobs = 800,
 )

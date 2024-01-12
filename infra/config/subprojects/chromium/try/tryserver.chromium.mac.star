@@ -217,9 +217,6 @@ try_.compilator_builder(
     contact_team_email = "chrome-build-team@google.com",
     main_list_view = "try",
     siso_enabled = True,
-    # TODO: b/309724296 - Apply the remote jobs by default for Mac or remove this.
-    # Experiment limiting the number of remote jobs.
-    siso_remote_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -644,9 +641,6 @@ try_.compilator_builder(
     contact_team_email = "chrome-build-team@google.com",
     main_list_view = "try",
     siso_enabled = True,
-    # TODO: b/309724296 - Apply the remote jobs by default for Mac or remove this.
-    # Experiment limiting the number of remote jobs.
-    siso_remote_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     xcode = xcode.xcode_default,
 )
 
