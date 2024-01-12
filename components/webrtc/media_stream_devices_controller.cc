@@ -96,6 +96,9 @@ void MediaStreamDevicesController::RequestPermissions(
   content::PermissionController* permission_controller =
       web_contents->GetBrowserContext()->GetPermissionController();
 
+  std::vector<std::string> requested_audio_capture_device_ids;
+  std::vector<std::string> requested_video_capture_device_ids;
+
   if (controller->ShouldRequestAudio()) {
     content::PermissionResult permission_status =
         permission_controller->GetPermissionResultForCurrentDocument(
@@ -113,6 +116,7 @@ void MediaStreamDevicesController::RequestPermissions(
     }
 
     permission_types.push_back(blink::PermissionType::AUDIO_CAPTURE);
+    requested_audio_capture_device_ids = {request.requested_audio_device_id};
   }
   if (controller->ShouldRequestVideo()) {
     content::PermissionResult permission_status =
@@ -131,6 +135,7 @@ void MediaStreamDevicesController::RequestPermissions(
     }
 
     permission_types.push_back(blink::PermissionType::VIDEO_CAPTURE);
+    requested_video_capture_device_ids = {request.requested_video_device_id};
 
     bool has_pan_tilt_zoom_camera = controller->HasAvailableDevices(
         blink::PermissionType::CAMERA_PAN_TILT_ZOOM,
@@ -154,6 +159,13 @@ void MediaStreamDevicesController::RequestPermissions(
     }
   }
 
+  content::PermissionRequestDescription permission_request_description{
+      permission_types, request.user_gesture};
+  permission_request_description.requested_audio_capture_device_ids =
+      requested_audio_capture_device_ids;
+  permission_request_description.requested_video_capture_device_ids =
+      requested_video_capture_device_ids;
+
   // It is OK to ignore `request.security_origin` because it will be calculated
   // from `render_frame_host` and we always ignore `requesting_origin` for
   // `AUDIO_CAPTURE` and `VIDEO_CAPTURE`.
@@ -162,9 +174,7 @@ void MediaStreamDevicesController::RequestPermissions(
   rfh->GetBrowserContext()
       ->GetPermissionController()
       ->RequestPermissionsFromCurrentDocument(
-          rfh,
-          content::PermissionRequestDescription(permission_types,
-                                                request.user_gesture),
+          rfh, permission_request_description,
           base::BindOnce(
               &MediaStreamDevicesController::PromptAnsweredGroupedRequest,
               std::move(controller)));

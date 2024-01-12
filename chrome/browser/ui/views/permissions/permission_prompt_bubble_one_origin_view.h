@@ -47,9 +47,10 @@ class PermissionPromptBubbleOneOriginView
                       std::size_t index);
 
   // Adds Media (Camera / Mic) live preview feeds.
-  void MaybeAddMediaPreview(bool has_camera_request,
-                            bool has_mic_request,
-                            size_t index);
+  void MaybeAddMediaPreview(
+      std::vector<std::string> requested_audio_capture_device_id,
+      std::vector<std::string> requested_video_capture_device_id,
+      size_t index);
 
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
   std::optional<MediaCoordinator> media_preview_coordinator_;

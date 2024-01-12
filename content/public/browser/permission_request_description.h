@@ -61,6 +61,9 @@ struct CONTENT_EXPORT PermissionRequestDescription {
   // request is initiated from a <permission> element. Used on the embedder side
   // to help position the permission prompt.
   std::optional<gfx::Rect> anchor_element_position;
+
+  std::vector<std::string> requested_audio_capture_device_ids;
+  std::vector<std::string> requested_video_capture_device_ids;
 };
 
 }  // namespace content

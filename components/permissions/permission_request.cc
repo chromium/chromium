@@ -324,6 +324,16 @@ PermissionRequestGestureType PermissionRequest::GetGestureType() const {
   return PermissionUtil::GetGestureType(data_.user_gesture);
 }
 
+const std::vector<std::string>&
+PermissionRequest::GetRequestedAudioCaptureDeviceIds() const {
+  return data_.requested_audio_capture_device_ids;
+}
+
+const std::vector<std::string>&
+PermissionRequest::GetRequestedVideoCaptureDeviceIds() const {
+  return data_.requested_video_capture_device_ids;
+}
+
 ContentSettingsType PermissionRequest::GetContentSettingsType() const {
   auto type = RequestTypeToContentSettingsType(request_type());
   if (type.has_value())

@@ -158,6 +158,9 @@ class PermissionRequest {
   // request types.
   PermissionRequestGestureType GetGestureType() const;
 
+  const std::vector<std::string>& GetRequestedAudioCaptureDeviceIds() const;
+  const std::vector<std::string>& GetRequestedVideoCaptureDeviceIds() const;
+
   // Used on Android to determine what Android OS permissions are needed for
   // this permission request.
   ContentSettingsType GetContentSettingsType() const;
