@@ -2595,6 +2595,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Apps.Shortcut.PinAction" enum="ShortcutPinAction"
+    expires_after="2024-12-01">
+  <owner>mxcai@chromium.org</owner>
+  <owner>vpao@google.com</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <summary>
+    Records when the user pins or unpins a shortcut in the shelf. Pinning or
+    unpinning can be triggered via the context menu of the shortcut item in the
+    launcher or shelf.
+  </summary>
+</histogram>
+
 <histogram name="Apps.Shortcut.RemovalSource" enum="ShortcutActionSource"
     expires_after="2024-12-01">
   <owner>mxcai@chromium.org</owner>

@@ -17,6 +17,10 @@ enum class ShortcutActionSource {
   kMaxValue = kShelf
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class ShortcutPinAction { kPin = 0, kUnpin = 1, kMaxValue = kUnpin };
+
 // Records that the user has launched a shortcut, and indicates whether it
 // happened via the launcher or shelf.
 void RecordShortcutLaunchSource(const ShortcutActionSource action_source);
@@ -24,6 +28,11 @@ void RecordShortcutLaunchSource(const ShortcutActionSource action_source);
 // Records that the user removed a shortcut, and indicates whether it happened
 // via the launcher context menu or shelf context menu.
 void RecordShortcutRemovalSource(const ShortcutActionSource action_source);
+
+// Records when the user pins or unpins a shortcut in the shelf. Pinning
+// or unpinning can be triggered via the context menu in shortcut item in
+// the launcher or shelf.
+void RecordShortcutPinAction(const ShortcutPinAction pin_action);
 
 }  // namespace apps
 

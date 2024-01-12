@@ -93,6 +93,11 @@ void AppServiceShortcutContextMenu::ExecuteCommand(int command_id,
       proxy_->RemoveShortcut(shortcut_id_, apps::UninstallSource::kAppList,
                              controller()->GetAppListWindow());
       break;
+    case ash::TOGGLE_PIN:
+      RecordShortcutPinAction(controller()->IsAppPinned(shortcut_id_.value())
+                                  ? apps::ShortcutPinAction::kUnpin
+                                  : apps::ShortcutPinAction::kPin);
+      [[fallthrough]];
     default:
       AppContextMenu::ExecuteCommand(command_id, event_flags);
   }
