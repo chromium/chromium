@@ -82,10 +82,14 @@ bool ElementIntersectionObserverData::NeedsOcclusionTracking() const {
 }
 
 void ElementIntersectionObserverData::InvalidateCachedRects() {
-  for (auto& observer : observers_)
-    observer->InvalidateCachedRects();
-  for (auto& entry : observations_)
+  if (!RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
+    for (auto& observer : observers_) {
+      observer->InvalidateCachedRects();
+    }
+  }
+  for (auto& entry : observations_) {
     entry.value->InvalidateCachedRects();
+  }
 }
 
 void ElementIntersectionObserverData::Trace(Visitor* visitor) const {

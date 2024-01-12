@@ -406,6 +406,7 @@ bool IntersectionObserver::RootIsValid() const {
 }
 
 void IntersectionObserver::InvalidateCachedRects() {
+  DCHECK(!RuntimeEnabledFeatures::IntersectionOptimizationEnabled());
   for (auto& observation : observations_) {
     observation->InvalidateCachedRects();
   }
@@ -549,14 +550,6 @@ int64_t IntersectionObserver::ComputeIntersections(
       result += observation->ComputeIntersection(flags, gfx::Vector2dF(),
                                                  monotonic_time, root_geometry);
     }
-  }
-  return result;
-}
-
-gfx::Vector2dF IntersectionObserver::MinScrollDeltaToUpdate() const {
-  gfx::Vector2dF result = IntersectionGeometry::kInfiniteScrollDelta;
-  for (const auto& observation : observations_) {
-    result.SetToMin(observation->MinScrollDeltaToUpdate());
   }
   return result;
 }

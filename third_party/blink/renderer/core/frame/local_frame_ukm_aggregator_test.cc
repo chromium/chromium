@@ -725,7 +725,7 @@ class LocalFrameUkmAggregatorSimTest : public SimTest {
     EXPECT_EQ(
         histogram_tester.GetTotalSum(
             "Blink.IntersectionObservationInternalCount.UpdateTime.PreFCP"),
-        RuntimeEnabledFeatures::IntersectionOptimizationEnabled() ? 2 : 4);
+        4);
     EXPECT_EQ(
         histogram_tester.GetTotalSum(
             "Blink.IntersectionObservationJavascriptCount.UpdateTime.PreFCP"),
@@ -744,7 +744,7 @@ class LocalFrameUkmAggregatorSimTest : public SimTest {
     EXPECT_EQ(
         histogram_tester.GetTotalSum(
             "Blink.IntersectionObservationInternalCount.UpdateTime.PreFCP"),
-        RuntimeEnabledFeatures::IntersectionOptimizationEnabled() ? 2 : 4);
+        4);
     EXPECT_EQ(
         histogram_tester.GetTotalSum(
             "Blink.IntersectionObservationJavascriptCount.UpdateTime.PreFCP"),
