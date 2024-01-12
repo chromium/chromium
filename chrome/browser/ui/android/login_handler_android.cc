@@ -40,7 +40,7 @@ class LoginHandlerAndroid : public LoginHandler {
 
  protected:
   // LoginHandler methods:
-  void BuildViewImpl(const std::u16string& authority,
+  bool BuildViewImpl(const std::u16string& authority,
                      const std::u16string& explanation,
                      LoginModelData* login_model_data) override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -59,10 +59,11 @@ class LoginHandlerAndroid : public LoginHandler {
       chrome_http_auth_handler_->Init(this);
       chrome_http_auth_handler_->ShowDialog(tab->GetJavaObject(),
                                             window->GetJavaObject());
+      return true;
     } else {
-      CancelAuth();
       LOG(WARNING) << "HTTP Authentication failed because TabAndroid is "
           "missing";
+      return false;
     }
   }
 
