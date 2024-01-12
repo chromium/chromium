@@ -178,6 +178,10 @@ void OfficeFallbackDialog::GetDialogSize(gfx::Size* size) const {
   size->SetSize(kWidth, kHeight);
 }
 
+bool OfficeFallbackDialog::ShouldCloseDialogOnEscape() const {
+  return false;
+}
+
 bool OfficeFallbackDialog::ShouldShowCloseButton() const {
   return false;
 }

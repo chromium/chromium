@@ -57,6 +57,7 @@ export class OfficeFallbackElement extends HTMLElement {
     tryAgainButton.addEventListener(
         'click', () => this.onTryAgainButtonClick());
     cancelButton.addEventListener('click', () => this.onCancelButtonClick());
+    document.addEventListener('keydown', this.onKeyDown.bind(this));
   }
 
   /**
@@ -105,6 +106,16 @@ export class OfficeFallbackElement extends HTMLElement {
 
   private onCancelButtonClick(): void {
     this.proxy.handler.close(DialogChoice.kCancel);
+  }
+
+  private onKeyDown(e: KeyboardEvent) {
+    if (e.key === 'Escape') {
+      // Handle Escape as a "cancel".
+      e.stopImmediatePropagation();
+      e.preventDefault();
+      this.onCancelButtonClick();
+      return;
+    }
   }
 }
 
