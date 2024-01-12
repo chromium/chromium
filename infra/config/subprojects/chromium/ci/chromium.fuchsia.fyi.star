@@ -9,6 +9,7 @@ load("//lib/builders.star", "os", "reclient", "sheriff_rotations")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
+load("//lib/builder_health_indicators.star", "health_spec")
 
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
@@ -18,6 +19,7 @@ ci.defaults.set(
     os = os.LINUX_DEFAULT,
     sheriff_rotations = sheriff_rotations.FUCHSIA,
     execution_timeout = 10 * time.hour,
+    health_spec = health_spec.DEFAULT,
     notifies = ["cr-fuchsia"],
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.DEFAULT,

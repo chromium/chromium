@@ -9,6 +9,7 @@ load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
 load("//project.star", "settings")
+load("//lib/builder_health_indicators.star", "health_spec")
 
 # crbug/1408581 - The code coverage CI builders are expected to be triggered
 # off the same ref every 24 hours. This poller is configured with a schedule
@@ -30,6 +31,7 @@ ci.defaults.set(
     cores = 32,
     ssd = True,
     execution_timeout = 20 * time.hour,
+    health_spec = health_spec.DEFAULT,
     priority = ci.DEFAULT_FYI_PRIORITY,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.DEFAULT,

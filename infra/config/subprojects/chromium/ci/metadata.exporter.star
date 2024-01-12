@@ -6,12 +6,14 @@
 load("//lib/builders.star", "os")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
+load("//lib/builder_health_indicators.star", "health_spec")
 
 ci.defaults.set(
     pool = ci.DEFAULT_POOL,
     cores = 8,
     os = os.LINUX_DEFAULT,
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
+    health_spec = health_spec.DEFAULT,
 )
 
 consoles.console_view(

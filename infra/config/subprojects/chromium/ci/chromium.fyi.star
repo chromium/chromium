@@ -10,6 +10,7 @@ load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
 load("//lib/structs.star", "structs")
+load("//lib/builder_health_indicators.star", "health_spec")
 
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
@@ -17,6 +18,7 @@ ci.defaults.set(
     pool = ci.DEFAULT_POOL,
     cores = 8,
     execution_timeout = 10 * time.hour,
+    health_spec = health_spec.DEFAULT,
     priority = ci.DEFAULT_FYI_PRIORITY,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.DEFAULT,
