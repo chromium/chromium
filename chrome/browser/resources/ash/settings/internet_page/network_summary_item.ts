@@ -275,6 +275,7 @@ export class NetworkSummaryItemElement extends NetworkSummaryItemElementBase {
     }
     switch (deviceState!.type) {
       case NetworkType.kTether:
+        return this.i18n('internetToggleTetherA11yLabel');
       case NetworkType.kCellular:
         return this.i18n('internetToggleMobileA11yLabel');
       case NetworkType.kWiFi:

@@ -788,7 +788,8 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
     // If both Tether and Cellular are enabled, use the Cellular device state
     // when directly navigating to the Tether page.
     if (subpageType === NetworkType.kTether &&
-        this.deviceStates![NetworkType.kCellular]) {
+        this.deviceStates![NetworkType.kCellular] &&
+        !this.isInstantHotspotRebrandEnabled_) {
       subpageType = NetworkType.kCellular;
     }
     return deviceStates![subpageType];
