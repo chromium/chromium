@@ -93,12 +93,14 @@ class SessionImpl::ContextProcessor
 SessionImpl::SessionImpl(
     StartSessionFn start_session_fn,
     proto::ModelExecutionFeature feature,
+    std::optional<proto::OnDeviceModelVersions> on_device_model_versions,
     const OnDeviceModelExecutionConfigInterpreter* config_interpreter,
     base::WeakPtr<OnDeviceModelServiceController> controller,
     ExecuteRemoteFn execute_remote_fn,
     OptimizationGuideLogger* optimization_guide_logger)
     : controller_(controller),
       feature_(feature),
+      on_device_model_versions_(on_device_model_versions),
       execute_remote_fn_(std::move(execute_remote_fn)),
       optimization_guide_logger_(optimization_guide_logger) {
   if (controller_ && controller_->ShouldStartNewSession()) {
@@ -214,6 +216,11 @@ void SessionImpl::ExecuteModel(
                            std::move(callback));
     return;
   }
+
+  CHECK(on_device_model_versions_);
+  *(log_ai_data_request->mutable_model_execution_info()
+        ->mutable_on_device_model_execution_info()
+        ->mutable_model_versions()) = *on_device_model_versions_;
 
   if (on_device_state_->add_context_before_execute) {
     CHECK(context_);

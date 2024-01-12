@@ -92,24 +92,27 @@ void OnDeviceModelServiceController::Init() {
   auto model_path_override_switch =
       switches::GetOnDeviceModelExecutionOverride();
   if (model_path_override_switch) {
-    SetModelPath(*StringToFilePath(*model_path_override_switch));
+    SetModelPath(*StringToFilePath(*model_path_override_switch), "override");
   } else if (on_device_component_state_manager_) {
     const OnDeviceModelComponentState* state =
         on_device_component_state_manager_->GetState();
     if (state) {
-      SetModelPath(state->GetInstallDirectory());
+      SetModelPath(state->GetInstallDirectory(),
+                   state->GetVersion().GetString());
     }
   }
 }
 
 void OnDeviceModelServiceController::ClearModelPath() {
   model_paths_ = std::nullopt;
+  model_versions_ = std::nullopt;
   config_interpreter_->ClearState();
   model_remote_.reset();
 }
 
 void OnDeviceModelServiceController::SetModelPath(
-    const base::FilePath& model_path) {
+    const base::FilePath& model_path,
+    const std::string& version) {
   // Even if model_path didn't change, we want to go through this process anyway
   // because the content in the directory may have changed.
   ClearModelPath();
@@ -125,6 +128,7 @@ void OnDeviceModelServiceController::SetModelPath(
         *(safety_model_info_->GetAdditionalFileWithBaseName(kTsSpModelFile));
   }
   model_paths_ = std::move(model_paths);
+  model_versions_ = GetModelVersions(version);
   config_interpreter_->UpdateConfigWithFileDir(model_path);
 }
 
@@ -167,8 +171,9 @@ OnDeviceModelServiceController::CreateSession(
   return std::make_unique<SessionImpl>(
       base::BindRepeating(&OnDeviceModelServiceController::StartMojoSession,
                           weak_ptr_factory_.GetWeakPtr()),
-      feature, config_interpreter_.get(), weak_ptr_factory_.GetWeakPtr(),
-      std::move(execute_remote_fn), optimization_guide_logger);
+      feature, model_versions_, config_interpreter_.get(),
+      weak_ptr_factory_.GetWeakPtr(), std::move(execute_remote_fn),
+      optimization_guide_logger);
 }
 
 void OnDeviceModelServiceController::GetEstimatedPerformanceClass(
@@ -238,6 +243,9 @@ void OnDeviceModelServiceController::MaybeUpdateSafetyModel(
       model_paths_->ts_sp_model =
           *(safety_model_info_->GetAdditionalFileWithBaseName(kTsSpModelFile));
     }
+    if (model_versions_) {
+      model_versions_->set_text_safety_model_version(model_info->GetVersion());
+    }
   } else if (model_paths_) {
     safety_model_info_ = std::nullopt;
     // Clear out T&S model paths if we shouldn't use the current safety model
@@ -255,7 +263,7 @@ void OnDeviceModelServiceController::StateChanged(
   }
 
   if (state) {
-    SetModelPath(state->GetInstallDirectory());
+    SetModelPath(state->GetInstallDirectory(), state->GetVersion().GetString());
   } else {
     ClearModelPath();
   }
@@ -297,6 +305,21 @@ void OnDeviceModelServiceController::ShutdownServiceIfNoModelLoaded() {
 void OnDeviceModelServiceController::OnRemoteIdle() {
   service_remote_.reset();
   model_remote_.reset();
+}
+
+proto::OnDeviceModelVersions OnDeviceModelServiceController::GetModelVersions(
+    const std::string& component_version) const {
+  CHECK(!component_version.empty());
+
+  proto::OnDeviceModelVersions versions;
+  versions.mutable_on_device_model_service_version()->set_component_version(
+      component_version);
+
+  if (safety_model_info_) {
+    versions.set_text_safety_model_version(safety_model_info_->GetVersion());
+  }
+
+  return versions;
 }
 
 }  // namespace optimization_guide

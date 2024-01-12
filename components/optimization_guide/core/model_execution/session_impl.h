@@ -79,12 +79,14 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
     kMaxValue = kContainedPII,
   };
 
-  SessionImpl(StartSessionFn start_session_fn,
-              proto::ModelExecutionFeature feature,
-              const OnDeviceModelExecutionConfigInterpreter* config_interpreter,
-              base::WeakPtr<OnDeviceModelServiceController> controller,
-              ExecuteRemoteFn execute_remote_fn,
-              OptimizationGuideLogger* optimization_guide_logger);
+  SessionImpl(
+      StartSessionFn start_session_fn,
+      proto::ModelExecutionFeature feature,
+      std::optional<proto::OnDeviceModelVersions> on_device_model_versions,
+      const OnDeviceModelExecutionConfigInterpreter* config_interpreter,
+      base::WeakPtr<OnDeviceModelServiceController> controller,
+      ExecuteRemoteFn execute_remote_fn,
+      OptimizationGuideLogger* optimization_guide_logger);
   ~SessionImpl() override;
 
   // optimization_guide::OptimizationGuideModelExecutor::Session:
@@ -200,6 +202,7 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
 
   base::WeakPtr<OnDeviceModelServiceController> controller_;
   const proto::ModelExecutionFeature feature_;
+  const std::optional<proto::OnDeviceModelVersions> on_device_model_versions_;
 
   ExecuteRemoteFn execute_remote_fn_;
 

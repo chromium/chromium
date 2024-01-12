@@ -497,15 +497,16 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionSuccess) {
   EXPECT_TRUE(*provided_by_on_device_);
   EXPECT_THAT(streamed_responses_, ElementsAre(expected_response));
   EXPECT_TRUE(log_entry_received_);
-  EXPECT_GT(log_entry_received_->log_ai_data_request()
-                ->model_execution_info()
-                .on_device_model_execution_info()
-                .execution_infos_size(),
-            0);
-  EXPECT_EQ(log_entry_received_->log_ai_data_request()
-                ->model_execution_info()
-                .on_device_model_execution_info()
-                .execution_infos(0)
+  const auto logged_on_device_model_execution_info =
+      log_entry_received_->log_ai_data_request()
+          ->model_execution_info()
+          .on_device_model_execution_info();
+  EXPECT_EQ(logged_on_device_model_execution_info.model_versions()
+                .on_device_model_service_version()
+                .component_version(),
+            "0.0.1");
+  EXPECT_GT(logged_on_device_model_execution_info.execution_infos_size(), 0);
+  EXPECT_EQ(logged_on_device_model_execution_info.execution_infos(0)
                 .response()
                 .on_device_model_service_response()
                 .status(),
