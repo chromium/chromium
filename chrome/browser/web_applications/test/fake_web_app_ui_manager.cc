@@ -171,11 +171,12 @@ void FakeWebAppUiManager::MigrateLauncherState(
 }
 
 void FakeWebAppUiManager::DisplayRunOnOsLoginNotification(
-    const std::vector<std::string>& app_names,
+    const base::flat_map<webapps::AppId,
+                         WebAppUiManager::RoolNotificationBehavior>& apps,
     base::WeakPtr<Profile> profile) {
   // Still show the notification so it can be tested using the
   // NotificationDisplayServiceTester
-  web_app::DisplayRunOnOsLoginNotification(app_names, profile);
+  web_app::DisplayRunOnOsLoginNotification(apps, std::move(profile));
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS)

@@ -449,9 +449,9 @@ void WebAppUiManagerImpl::MigrateLauncherState(
 }
 
 void WebAppUiManagerImpl::DisplayRunOnOsLoginNotification(
-    const std::vector<std::string>& app_names,
+    const base::flat_map<webapps::AppId, RoolNotificationBehavior>& apps,
     base::WeakPtr<Profile> profile) {
-  web_app::DisplayRunOnOsLoginNotification(app_names, profile);
+  web_app::DisplayRunOnOsLoginNotification(apps, profile);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

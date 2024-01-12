@@ -101,6 +101,11 @@ enum class LaunchWebAppWindowSetting {
 // events from WebAppTabHelpers.
 class WebAppUiManager {
  public:
+  struct RoolNotificationBehavior {
+    bool is_rool_enabled = false;
+    bool is_prevent_close_enabled = false;
+  };
+
   static std::unique_ptr<WebAppUiManager> Create(Profile* profile);
 
   // The returned params are populated except for the disposition and container,
@@ -214,7 +219,7 @@ class WebAppUiManager {
   // Displays a notification for web apps launched on login via the RunOnOsLogin
   // feature on the provided |profile|.
   virtual void DisplayRunOnOsLoginNotification(
-      const std::vector<std::string>& app_names,
+      const base::flat_map<webapps::AppId, RoolNotificationBehavior>& apps,
       base::WeakPtr<Profile> profile) = 0;
 #endif
 

@@ -4747,18 +4747,23 @@
       </if>
 
       <!-- Strings for WebAppSettings -->
-      <message name="IDS_RUN_ON_OS_LOGIN_ENABLED_MESSAGE" desc="This is the message of the notification when an application is automatically started on OS login.[ICU Syntax]">
-        {NUM_ROOL_APPS, plural, offset:2
-          =1 {Your administrator has set <ph name="APP_NAME_1">{APP_NAME_1}</ph> to start automatically every time you log in.}
-          =2 {Your administrator has set <ph name="APP_NAME_1">{APP_NAME_1}</ph> and <ph name="APP_NAME_2">{APP_NAME_2}</ph> to start automatically every time you log in.}
-          =3 {Your administrator has set <ph name="APP_NAME_1">{APP_NAME_1}</ph>, <ph name="APP_NAME_2">{APP_NAME_2}</ph> and <ph name="APP_NAME_3">{APP_NAME_3}</ph> to start automatically every time you log in.}
-          other {Your administrator has set <ph name="APP_NAME_1">{APP_NAME_1}</ph>, <ph name="APP_NAME_2">{APP_NAME_2}</ph> and # other apps to start automatically every time you log in.}
+      <message name="IDS_RUN_ON_OS_LOGIN_ENABLED_NO_PREVENTCLOSE_MESSAGE" desc="This is the message of the notification when an application is automatically started on OS login.[ICU Syntax]">
+        {NUM_ROOL_APPS, plural, offset:1
+          =1 {Your administrator has set up "<ph name="APP_NAME">{APP_NAME}</ph>" to start automatically every time you log in.}
+          =2 {Your administrator has set up "<ph name="APP_NAME">{APP_NAME}</ph>" and 1 other app to start automatically every time you log in.}
+          other {Your administrator has set up "<ph name="APP_NAME">{APP_NAME}</ph>" and # other apps to start automatically every time you log in.}
         }
+      </message>
+      <message name="IDS_RUN_ON_OS_LOGIN_ENABLED_ONE_APP_ROOL_AND_PREVENTCLOSE_MESSAGE" desc="This is the message of the notification when one application is automatically started on OS login and is prevented from closing.[ICU Syntax]">
+        Your administrator has set up "<ph name="APP_NAME">{APP_NAME}</ph>" to start automatically. This app may not be closed.
+      </message>
+      <message name="IDS_RUN_ON_OS_LOGIN_ENABLED_MULTIPLE_APPS_ROOL_AND_PREVENTCLOSE_MESSAGE" desc="This is the message of the notification when multiple applications are automatically started on OS login and are prevented from closing.[ICU Syntax]">
+        Your administrator has set up some apps to start automatically. Some of these apps may not be closed.
       </message>
 
       <message name="IDS_RUN_ON_OS_LOGIN_ENABLED_TITLE" desc="This is the title of the notification when an application is automatically started on OS login. [ICU Syntax]">
         {NUM_ROOL_APPS, plural,
-          =1 {<ph name="APP_NAME_1">{APP_NAME_1}</ph> was started automatically}
+          =1 {"<ph name="APP_NAME_1">{APP_NAME_1}</ph>" was started automatically}
           other {# apps were started automatically}
         }
       </message>

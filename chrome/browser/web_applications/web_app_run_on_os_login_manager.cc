@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
@@ -55,7 +56,8 @@ void WebAppRunOnOsLoginManager::Start() {
 void WebAppRunOnOsLoginManager::RunAppsOnOsLogin(
     AllAppsLock& lock,
     base::Value::Dict& debug_value) {
-  std::vector<std::string> app_names;
+  base::flat_map<webapps::AppId, WebAppUiManager::RoolNotificationBehavior>
+      notification_behaviors;
 
   for (const webapps::AppId& app_id : lock.registrar().GetAppIds()) {
     if (!IsRunOnOsLoginModeEnabledForAutostart(
@@ -63,9 +65,12 @@ void WebAppRunOnOsLoginManager::RunAppsOnOsLogin(
       continue;
     }
 
-    std::string app_name = lock.registrar().GetAppShortName(app_id);
-    app_names.push_back(std::move(app_name));
-    debug_value.EnsureList("app_names")->Append(app_name);
+    WebAppUiManager::RoolNotificationBehavior behavior{
+        .is_rool_enabled = true,
+        .is_prevent_close_enabled =
+            lock.registrar().IsPreventCloseEnabled(app_id)};
+    notification_behaviors.insert({app_id, std::move(behavior)});
+    debug_value.EnsureList("app_ids")->Append(app_id);
 
     // In case of already opened/restored apps, we do not launch them again
     if (lock.ui_manager().GetNumWindowsForApp(app_id) > 0) {
@@ -85,9 +90,9 @@ void WebAppRunOnOsLoginManager::RunAppsOnOsLogin(
                                                      base::DoNothing());
   }
 
-  if (!app_names.empty()) {
+  if (!notification_behaviors.empty()) {
     provider_->ui_manager().DisplayRunOnOsLoginNotification(
-        app_names, profile_->GetWeakPtr());
+        notification_behaviors, profile_->GetWeakPtr());
   }
 }
 

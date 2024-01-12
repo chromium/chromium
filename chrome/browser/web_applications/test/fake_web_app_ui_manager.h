@@ -96,7 +96,8 @@ class FakeWebAppUiManager : public WebAppUiManager {
                             base::OnceClosure callback) override;
 
   void DisplayRunOnOsLoginNotification(
-      const std::vector<std::string>& app_names,
+      const base::flat_map<webapps::AppId,
+                           WebAppUiManager::RoolNotificationBehavior>& apps,
       base::WeakPtr<Profile> profile) override;
 #endif
   void NotifyAppRelaunchState(const webapps::AppId& placeholder_app_id,
