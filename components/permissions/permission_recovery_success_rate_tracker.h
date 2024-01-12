@@ -6,10 +6,9 @@
 #define COMPONENTS_PERMISSIONS_PERMISSION_RECOVERY_SUCCESS_RATE_TRACKER_H_
 
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
-
-enum class ContentSettingsType;
 
 namespace permissions {
 

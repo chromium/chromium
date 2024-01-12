@@ -5,6 +5,7 @@
 module network.mojom;
 
 import "components/content_settings/core/common/content_settings.mojom";
+import "components/content_settings/core/common/content_settings_types.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "sandbox/policy/mojom/context.mojom";
 import "services/network/public/mojom/cookie_partition_key.mojom";

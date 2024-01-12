@@ -104,7 +104,7 @@ public class StatusMediator
     private final PermissionDialogController mPermissionDialogController;
     private final Handler mPermissionTaskHandler = new Handler();
     private final Handler mStoreIconHandler = new Handler();
-    private @ContentSettingsType int mLastPermission = ContentSettingsType.DEFAULT;
+    private @ContentSettingsType.EnumType int mLastPermission = ContentSettingsType.DEFAULT;
     private final PageInfoIPHController mPageInfoIPHController;
     private final WindowAndroid mWindowAndroid;
 
@@ -617,12 +617,12 @@ public class StatusMediator
     @Override
     public void onDialogResult(
             WindowAndroid window,
-            @ContentSettingsType int[] permissions,
+            @ContentSettingsType.EnumType int[] permissions,
             @ContentSettingValues int result) {
         if (window != mWindowAndroid) {
             return;
         }
-        @ContentSettingsType
+        @ContentSettingsType.EnumType
         int permission = SiteSettingsUtil.getHighestPriorityPermission(permissions);
         // The permission is not available in the settings page. Do not show an icon.
         if (permission == ContentSettingsType.DEFAULT) return;

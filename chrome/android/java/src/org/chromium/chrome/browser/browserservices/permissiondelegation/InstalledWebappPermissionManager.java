@@ -84,7 +84,7 @@ public class InstalledWebappPermissionManager {
         return customTabActivity != null;
     }
 
-    InstalledWebappBridge.Permission[] getPermissions(@ContentSettingsType int type) {
+    InstalledWebappBridge.Permission[] getPermissions(@ContentSettingsType.EnumType int type) {
         if (type == ContentSettingsType.GEOLOCATION) {
             if (!isRunningTwa()) {
                 return new InstalledWebappBridge.Permission[0];
@@ -126,7 +126,7 @@ public class InstalledWebappPermissionManager {
     public void updatePermission(
             Origin origin,
             String packageName,
-            @ContentSettingsType int type,
+            @ContentSettingsType.EnumType int type,
             @ContentSettingValues int settingValue) {
         String appName = getAppNameForPackage(packageName);
         if (appName == null) return;
@@ -158,7 +158,7 @@ public class InstalledWebappPermissionManager {
     }
 
     @UiThread
-    void resetStoredPermission(Origin origin, @ContentSettingsType int type) {
+    void resetStoredPermission(Origin origin, @ContentSettingsType.EnumType int type) {
         mStore.resetPermission(origin, type);
         InstalledWebappBridge.notifyPermissionsChange(type);
     }
@@ -208,7 +208,7 @@ public class InstalledWebappPermissionManager {
 
     @VisibleForTesting
     @ContentSettingValues
-    int getPermission(@ContentSettingsType int type, Origin origin) {
+    int getPermission(@ContentSettingsType.EnumType int type, Origin origin) {
         switch (type) {
             case ContentSettingsType.NOTIFICATIONS:
                 {

@@ -30,10 +30,12 @@ public class WebsitePreferenceBridge {
         public void onStorageInfoCleared();
     }
 
-    /** @return the list of all origins that have permissions in non-incognito mode. */
+    /**
+     * @return the list of all origins that have permissions in non-incognito mode.
+     */
     @SuppressWarnings("unchecked")
     public List<PermissionInfo> getPermissionInfo(
-            BrowserContextHandle browserContextHandle, @ContentSettingsType int type) {
+            BrowserContextHandle browserContextHandle, @ContentSettingsType.EnumType int type) {
         ArrayList<PermissionInfo> list = new ArrayList<>();
         boolean managedOnly = false;
         // Camera, Location & Microphone can be managed by the custodian
@@ -51,7 +53,7 @@ public class WebsitePreferenceBridge {
 
     @CalledByNative
     private static void insertPermissionInfoIntoList(
-            @ContentSettingsType int type,
+            @ContentSettingsType.EnumType int type,
             ArrayList<PermissionInfo> list,
             String origin,
             String embedder,
@@ -121,7 +123,7 @@ public class WebsitePreferenceBridge {
 
     public List<ContentSettingException> getContentSettingsExceptions(
             BrowserContextHandle browserContextHandle,
-            @ContentSettingsType int contentSettingsType) {
+            @ContentSettingsType.EnumType int contentSettingsType) {
         List<ContentSettingException> exceptions = new ArrayList<>();
         org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni.get()
                 .getContentSettingsExceptions(
@@ -169,13 +171,13 @@ public class WebsitePreferenceBridge {
     /**
      * Returns the list of all chosen object permissions for the given ContentSettingsType.
      *
-     * There will be one ChosenObjectInfo instance for each granted permission. That means that if
-     * two origin/embedder pairs have permission for the same object there will be two
+     * <p>There will be one ChosenObjectInfo instance for each granted permission. That means that
+     * if two origin/embedder pairs have permission for the same object there will be two
      * ChosenObjectInfo instances.
      */
     public List<ChosenObjectInfo> getChosenObjectInfo(
             BrowserContextHandle browserContextHandle,
-            @ContentSettingsType int contentSettingsType) {
+            @ContentSettingsType.EnumType int contentSettingsType) {
         ArrayList<ChosenObjectInfo> list = new ArrayList<ChosenObjectInfo>();
         org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni.get()
                 .getChosenObjects(browserContextHandle, contentSettingsType, list);
@@ -186,7 +188,7 @@ public class WebsitePreferenceBridge {
     @CalledByNative
     private static void insertChosenObjectInfoIntoList(
             ArrayList<ChosenObjectInfo> list,
-            @ContentSettingsType int contentSettingsType,
+            @ContentSettingsType.EnumType int contentSettingsType,
             String origin,
             String name,
             String object,
@@ -213,7 +215,7 @@ public class WebsitePreferenceBridge {
     @CalledByNative
     private static void addContentSettingExceptionToList(
             ArrayList<ContentSettingException> list,
-            @ContentSettingsType int contentSettingsType,
+            @ContentSettingsType.EnumType int contentSettingsType,
             String primaryPattern,
             String secondaryPattern,
             int contentSetting,
@@ -236,11 +238,12 @@ public class WebsitePreferenceBridge {
 
     /**
      * Returns whether a particular content setting type is enabled.
+     *
      * @param contentSettingsType The content setting type to check.
      */
     public static boolean isContentSettingEnabled(
             BrowserContextHandle browserContextHandle,
-            @ContentSettingsType int contentSettingsType) {
+            @ContentSettingsType.EnumType int contentSettingsType) {
         return org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni.get()
                 .isContentSettingEnabled(browserContextHandle, contentSettingsType);
     }
@@ -251,7 +254,7 @@ public class WebsitePreferenceBridge {
      */
     public static boolean isContentSettingManaged(
             BrowserContextHandle browserContextHandle,
-            @ContentSettingsType int contentSettingsType) {
+            @ContentSettingsType.EnumType int contentSettingsType) {
         return org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni.get()
                 .isContentSettingManaged(browserContextHandle, contentSettingsType);
     }
@@ -262,19 +265,20 @@ public class WebsitePreferenceBridge {
      */
     public static boolean isContentSettingManagedByCustodian(
             BrowserContextHandle browserContextHandle,
-            @ContentSettingsType int contentSettingsType) {
+            @ContentSettingsType.EnumType int contentSettingsType) {
         return org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni.get()
                 .isContentSettingManagedByCustodian(browserContextHandle, contentSettingsType);
     }
 
     /**
      * Sets a default value for content setting type.
+     *
      * @param contentSettingsType The content setting type to check.
      * @param enabled Whether the default value should be disabled or enabled.
      */
     public static void setContentSettingEnabled(
             BrowserContextHandle browserContextHandle,
-            @ContentSettingsType int contentSettingsType,
+            @ContentSettingsType.EnumType int contentSettingsType,
             boolean enabled) {
         org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni.get()
                 .setContentSettingEnabled(browserContextHandle, contentSettingsType, enabled);
@@ -282,7 +286,7 @@ public class WebsitePreferenceBridge {
 
     /** Whether the setting type requires tri-state (Allowed/Ask/Blocked) setting. */
     public static boolean requiresTriStateContentSetting(
-            @ContentSettingsType int contentSettingsType) {
+            @ContentSettingsType.EnumType int contentSettingsType) {
         switch (contentSettingsType) {
             case ContentSettingsType.PROTECTED_MEDIA_IDENTIFIER:
                 return true;
@@ -294,7 +298,7 @@ public class WebsitePreferenceBridge {
     /** Sets the preferences on whether to enable/disable given setting. */
     public static void setCategoryEnabled(
             BrowserContextHandle browserContextHandle,
-            @ContentSettingsType int contentSettingsType,
+            @ContentSettingsType.EnumType int contentSettingsType,
             boolean allow) {
         assert !requiresTriStateContentSetting(contentSettingsType);
         setContentSettingEnabled(browserContextHandle, contentSettingsType, allow);
@@ -302,29 +306,32 @@ public class WebsitePreferenceBridge {
 
     public static boolean isCategoryEnabled(
             BrowserContextHandle browserContextHandle,
-            @ContentSettingsType int contentSettingsType) {
+            @ContentSettingsType.EnumType int contentSettingsType) {
         assert !requiresTriStateContentSetting(contentSettingsType);
         return isContentSettingEnabled(browserContextHandle, contentSettingsType);
     }
 
     /**
-     * Gets the default ContentSetting for a settings type. Should only be used for more
-     * complex settings where a binary on/off value is not sufficient.
-     * Otherwise, use isCategoryEnabled() above.
+     * Gets the default ContentSetting for a settings type. Should only be used for more complex
+     * settings where a binary on/off value is not sufficient. Otherwise, use isCategoryEnabled()
+     * above.
+     *
      * @param contentSettingsType The settings type to get setting for.
      * @return The ContentSetting for |contentSettingsType|.
      */
     public static int getDefaultContentSetting(
             BrowserContextHandle browserContextHandle,
-            @ContentSettingsType int contentSettingsType) {
+            @ContentSettingsType.EnumType int contentSettingsType) {
         return org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni.get()
                 .getDefaultContentSetting(browserContextHandle, contentSettingsType);
     }
 
-    /** @param setting New default ContentSetting to set for |contentSettingsType|. */
+    /**
+     * @param setting New default ContentSetting to set for |contentSettingsType|.
+     */
     public static void setDefaultContentSetting(
             BrowserContextHandle browserContextHandle,
-            @ContentSettingsType int contentSettingsType,
+            @ContentSettingsType.EnumType int contentSettingsType,
             int setting) {
         org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni.get()
                 .setDefaultContentSetting(browserContextHandle, contentSettingsType, setting);
@@ -353,21 +360,23 @@ public class WebsitePreferenceBridge {
                 && LocationUtils.getInstance().isSystemLocationSettingEnabled();
     }
 
-    /** @return Whether the camera permission is editable by the user. */
+    /**
+     * @return Whether the camera permission is editable by the user.
+     */
     public static boolean isContentSettingUserModifiable(
             BrowserContextHandle browserContextHandle,
-            @ContentSettingsType int contentSettingsType) {
+            @ContentSettingsType.EnumType int contentSettingsType) {
         return org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni.get()
                 .isContentSettingUserModifiable(browserContextHandle, contentSettingsType);
     }
 
     /**
-     * Returns the ContentSetting for a specific site.
-     * See HostContentSettingsMap::GetContentSetting() for more details.
+     * Returns the ContentSetting for a specific site. See
+     * HostContentSettingsMap::GetContentSetting() for more details.
      */
     public static @ContentSettingValues int getContentSetting(
             BrowserContextHandle browserContextHandle,
-            @ContentSettingsType int contentSettingType,
+            @ContentSettingsType.EnumType int contentSettingType,
             GURL primaryUrl,
             GURL secondaryUrl) {
         return org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni.get()
@@ -375,10 +384,12 @@ public class WebsitePreferenceBridge {
                         browserContextHandle, contentSettingType, primaryUrl, secondaryUrl);
     }
 
-    /** @return Whether the ContentSettings is global setting. */
+    /**
+     * @return Whether the ContentSettings is global setting.
+     */
     public static boolean isContentSettingGlobal(
             BrowserContextHandle browserContextHandle,
-            @ContentSettingsType int contentSettingType,
+            @ContentSettingsType.EnumType int contentSettingType,
             GURL primaryUrl,
             GURL secondaryUrl) {
         return org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni.get()
@@ -387,13 +398,13 @@ public class WebsitePreferenceBridge {
     }
 
     /**
-     * Sets the content setting for the default scope of the url that is appropriate for the
-     * given contentSettingType.
-     * See HostContentSettingsMap::SetContentSettingDefaultScope() for more details.
+     * Sets the content setting for the default scope of the url that is appropriate for the given
+     * contentSettingType. See HostContentSettingsMap::SetContentSettingDefaultScope() for more
+     * details.
      */
     public static void setContentSettingDefaultScope(
             BrowserContextHandle browserContextHandle,
-            @ContentSettingsType int contentSettingType,
+            @ContentSettingsType.EnumType int contentSettingType,
             GURL primaryUrl,
             GURL secondaryUrl,
             @ContentSettingValues int setting) {
@@ -408,13 +419,12 @@ public class WebsitePreferenceBridge {
 
     /**
      * Sets the ContentSetting for a specific pattern combination.Unless adding a custom-scoped
-     * setting, most developers will want to use setContentSettingDefaultScope()
-     * instead.
-     * See HostContentSettingsMap::SetContentSettingCustomScope() for more details.
+     * setting, most developers will want to use setContentSettingDefaultScope() instead. See
+     * HostContentSettingsMap::SetContentSettingCustomScope() for more details.
      */
     public static void setContentSettingCustomScope(
             BrowserContextHandle browserContextHandle,
-            @ContentSettingsType int contentSettingType,
+            @ContentSettingsType.EnumType int contentSettingType,
             String primaryPattern,
             String secondaryPattern,
             @ContentSettingValues int setting) {
@@ -493,14 +503,14 @@ public class WebsitePreferenceBridge {
 
         void getChosenObjects(
                 BrowserContextHandle browserContextHandle,
-                @ContentSettingsType int type,
+                @ContentSettingsType.EnumType int type,
                 Object list);
 
         void resetNotificationsSettingsForTest(BrowserContextHandle browserContextHandle);
 
         void revokeObjectPermission(
                 BrowserContextHandle browserContextHandle,
-                @ContentSettingsType int type,
+                @ContentSettingsType.EnumType int type,
                 String origin,
                 String object);
 
@@ -521,27 +531,27 @@ public class WebsitePreferenceBridge {
 
         void getOriginsForPermission(
                 BrowserContextHandle browserContextHandle,
-                @ContentSettingsType int contentSettingsType,
+                @ContentSettingsType.EnumType int contentSettingsType,
                 Object list,
                 boolean managedOnly);
 
         @ContentSettingValues
         int getPermissionSettingForOrigin(
                 BrowserContextHandle browserContextHandle,
-                @ContentSettingsType int contentSettingsType,
+                @ContentSettingsType.EnumType int contentSettingsType,
                 String origin,
                 String embedder);
 
         void setPermissionSettingForOrigin(
                 BrowserContextHandle browserContextHandle,
-                @ContentSettingsType int contentSettingsType,
+                @ContentSettingsType.EnumType int contentSettingsType,
                 String origin,
                 String embedder,
                 @ContentSettingValues int value);
 
         void setEphemeralGrantForTesting( // IN-TEST
                 BrowserContextHandle browserContextHandle,
-                @ContentSettingsType int contentSettingsType,
+                @ContentSettingsType.EnumType int contentSettingsType,
                 GURL origin,
                 GURL embedder);
 
@@ -562,32 +572,32 @@ public class WebsitePreferenceBridge {
 
         void getContentSettingsExceptions(
                 BrowserContextHandle browserContextHandle,
-                @ContentSettingsType int contentSettingsType,
+                @ContentSettingsType.EnumType int contentSettingsType,
                 List<ContentSettingException> list);
 
         @ContentSettingValues
         int getContentSetting(
                 BrowserContextHandle browserContextHandle,
-                @ContentSettingsType int contentSettingType,
+                @ContentSettingsType.EnumType int contentSettingType,
                 GURL primaryUrl,
                 GURL secondaryUrl);
 
         boolean isContentSettingGlobal(
                 BrowserContextHandle browserContextHandle,
-                @ContentSettingsType int contentSettingType,
+                @ContentSettingsType.EnumType int contentSettingType,
                 GURL primaryUrl,
                 GURL secondaryUrl);
 
         void setContentSettingDefaultScope(
                 BrowserContextHandle browserContextHandle,
-                @ContentSettingsType int contentSettingType,
+                @ContentSettingsType.EnumType int contentSettingType,
                 GURL primaryUrl,
                 GURL secondaryUrl,
                 @ContentSettingValues int setting);
 
         void setContentSettingCustomScope(
                 BrowserContextHandle browserContextHandle,
-                @ContentSettingsType int contentSettingType,
+                @ContentSettingsType.EnumType int contentSettingType,
                 String primaryPattern,
                 String secondaryPattern,
                 @ContentSettingValues int setting);
@@ -595,11 +605,11 @@ public class WebsitePreferenceBridge {
         @ContentSettingValues
         int getDefaultContentSetting(
                 BrowserContextHandle browserContextHandle,
-                @ContentSettingsType int contentSettingType);
+                @ContentSettingsType.EnumType int contentSettingType);
 
         void setDefaultContentSetting(
                 BrowserContextHandle browserContextHandle,
-                @ContentSettingsType int contentSettingType,
+                @ContentSettingsType.EnumType int contentSettingType,
                 @ContentSettingValues int setting);
 
         boolean isContentSettingUserModifiable(

@@ -7,9 +7,6 @@ module content_settings.mojom;
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/values.mojom";
 
-[Native]
-enum ContentSettingsType;
-
 // This mirrors the C++ type in content_settings_pattern.h.
 struct PatternParts {
   // Lowercase string of the URL scheme to match. This string is empty if the

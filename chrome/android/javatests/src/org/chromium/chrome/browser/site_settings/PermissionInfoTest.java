@@ -106,7 +106,7 @@ public class PermissionInfoTest {
     }
 
     private void setSettingAndExpectValue(
-            @ContentSettingsType int type,
+            @ContentSettingsType.EnumType int type,
             String origin,
             String embedder,
             @ContentSettingValues int setting,

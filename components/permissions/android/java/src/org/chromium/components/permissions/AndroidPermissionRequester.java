@@ -80,7 +80,7 @@ public class AndroidPermissionRequester {
     @CalledByNative
     public static boolean hasRequiredAndroidPermissionsForContentSetting(
             AndroidPermissionDelegate permissionDelegate,
-            @ContentSettingsType int contentSettingsType) {
+            @ContentSettingsType.EnumType int contentSettingsType) {
         Set<String> missingPermissions =
                 filterPermissionsKeepMissing(
                         permissionDelegate,

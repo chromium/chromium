@@ -219,12 +219,12 @@ public class PageInfoViewTest {
     }
 
     private void loadUrlAndOpenPageInfoWithPermission(
-            String url, @ContentSettingsType int highlightedPermission) {
+            String url, @ContentSettingsType.EnumType int highlightedPermission) {
         sActivityTestRule.loadUrl(url);
         openPageInfo(highlightedPermission);
     }
 
-    private void openPageInfo(@ContentSettingsType int highlightedPermission) {
+    private void openPageInfo(@ContentSettingsType.EnumType int highlightedPermission) {
         ChromeActivity activity = sActivityTestRule.getActivity();
         Tab tab = activity.getActivityTab();
         TestThreadUtils.runOnUiThreadBlocking(
@@ -371,7 +371,7 @@ public class PageInfoViewTest {
     }
 
     private List<ContentSettingException> getNonWildcardContentSettingExceptions(
-            @ContentSettingsType int type) {
+            @ContentSettingsType.EnumType int type) {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> {
                     List<ContentSettingException> exceptions =

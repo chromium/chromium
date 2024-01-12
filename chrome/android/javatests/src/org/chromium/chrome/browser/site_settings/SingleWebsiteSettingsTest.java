@@ -88,7 +88,8 @@ public class SingleWebsiteSettingsTest {
         @Override
         public Iterable<ParameterSet> getParameters() {
             ArrayList<ParameterSet> testCases = new ArrayList<>();
-            for (@ContentSettingsType int contentSettings : SiteSettingsUtil.SETTINGS_ORDER) {
+            for (@ContentSettingsType.EnumType
+            int contentSettings : SiteSettingsUtil.SETTINGS_ORDER) {
                 testCases.add(
                         createParameterSet("Allow_", contentSettings, ContentSettingValues.ALLOW));
                 testCases.add(
@@ -103,7 +104,7 @@ public class SingleWebsiteSettingsTest {
     @EnableFeatures(PermissionsAndroidFeatureList.BLOCK_MIDI_BY_DEFAULT)
     @UseMethodParameter(SingleWebsiteSettingsParams.class)
     public void testExceptionToggleShowing(
-            @ContentSettingsType int contentSettingsType,
+            @ContentSettingsType.EnumType int contentSettingsType,
             @ContentSettingValues int contentSettingValue) {
         // Preference for Notification on O+ is added as a ChromeImageViewPreference. See
         // SingleWebsiteSettings#setUpNotificationsPreference
@@ -259,7 +260,9 @@ public class SingleWebsiteSettingsTest {
     }
 
     private static int getStorageAccessSetting(
-            @ContentSettingsType int contentSettingType, GURL primaryUrl, GURL secondaryUrl) {
+            @ContentSettingsType.EnumType int contentSettingType,
+            GURL primaryUrl,
+            GURL secondaryUrl) {
         int[] result = {0};
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -278,7 +281,7 @@ public class SingleWebsiteSettingsTest {
      */
     private static ParameterSet createParameterSet(
             String namePrefix,
-            @ContentSettingsType int contentSettingsType,
+            @ContentSettingsType.EnumType int contentSettingsType,
             @ContentSettingValues int contentSettingValue) {
         String prefKey = SingleWebsiteSettings.getPreferenceKey(contentSettingsType);
         Assert.assertNotNull(
@@ -293,12 +296,12 @@ public class SingleWebsiteSettingsTest {
     /** Test case class that check whether a toggle exists for a given content setting. */
     private static class SingleExceptionTestCase {
         @ContentSettingValues int mContentSettingValue;
-        @ContentSettingsType int mContentSettingsType;
+        @ContentSettingsType.EnumType int mContentSettingsType;
 
         private SettingsActivity mSettingsActivity;
 
         SingleExceptionTestCase(
-                @ContentSettingsType int contentSettingsType,
+                @ContentSettingsType.EnumType int contentSettingsType,
                 @ContentSettingValues int contentSettingValue) {
             mContentSettingsType = contentSettingsType;
             mContentSettingValue = contentSettingValue;
@@ -332,7 +335,7 @@ public class SingleWebsiteSettingsTest {
     }
 
     private static Website createWebsiteWithContentSettingException(
-            @ContentSettingsType int type, @ContentSettingValues int value) {
+            @ContentSettingsType.EnumType int type, @ContentSettingValues int value) {
         WebsiteAddress address = WebsiteAddress.create(EXAMPLE_ADDRESS);
         Website website = new Website(address, address);
         website.setContentSettingException(

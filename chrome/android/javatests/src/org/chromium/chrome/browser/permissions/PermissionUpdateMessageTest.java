@@ -171,7 +171,9 @@ public class PermissionUpdateMessageTest {
      * @param value expected value for the above ContentSetting type.
      */
     public void setNativeContentSetting(
-            @ContentSettingsType int type, final String origin, @ContentSettingValues int value) {
+            @ContentSettingsType.EnumType int type,
+            final String origin,
+            @ContentSettingValues int value) {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     WebsitePreferenceBridgeJni.get()

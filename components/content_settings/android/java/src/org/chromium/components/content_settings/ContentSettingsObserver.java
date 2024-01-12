@@ -31,7 +31,7 @@ public abstract class ContentSettingsObserver {
     private void onContentSettingChanged(
             String primaryPattern,
             String secondaryPattern,
-            @ContentSettingsType int contentSettingsType) {
+            @ContentSettingsType.EnumType int contentSettingsType) {
         onContentSettingChanged(
                 primaryPattern, secondaryPattern, new ContentSettingsTypeSet(contentSettingsType));
     }

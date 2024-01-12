@@ -44,7 +44,7 @@ public class InstalledWebappBridge {
         }
     }
 
-    public static void notifyPermissionsChange(@ContentSettingsType int type) {
+    public static void notifyPermissionsChange(@ContentSettingsType.EnumType int type) {
         if (sNativeInstalledWebappProvider == 0) return;
 
         InstalledWebappBridgeJni.get()
@@ -64,7 +64,7 @@ public class InstalledWebappBridge {
     }
 
     @CalledByNative
-    private static Permission[] getPermissions(@ContentSettingsType int type) {
+    private static Permission[] getPermissions(@ContentSettingsType.EnumType int type) {
         return InstalledWebappPermissionManager.get().getPermissions(type);
     }
 
@@ -80,7 +80,7 @@ public class InstalledWebappBridge {
 
     @CalledByNative
     private static void decidePermission(
-            @ContentSettingsType int type,
+            @ContentSettingsType.EnumType int type,
             String originUrl,
             String lastCommittedUrl,
             long callback) {

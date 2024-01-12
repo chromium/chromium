@@ -1107,6 +1107,7 @@ mojom("cookies_mojom") {
   public_deps = [
     ":mojom_first_party_sets",
     ":mojom_schemeful_site",
+    "//components/content_settings/core/common:content_settings_types",
     "//components/content_settings/core/common:mojo_bindings",
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_APP_SERVICE_WEB_APP_PUBLISHER_HELPER_H_
 
 #include <stdint.h>
+
 #include <map>
 #include <string>
 #include <vector>
@@ -27,6 +28,7 @@
 #include "chrome/browser/web_applications/web_app_registrar_observer.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
@@ -52,8 +54,6 @@ class ContentSettingsPattern;
 class ContentSettingsTypeSet;
 class Profile;
 class GURL;
-
-enum class ContentSettingsType : int32_t;
 
 namespace apps {
 struct AppLaunchParams;

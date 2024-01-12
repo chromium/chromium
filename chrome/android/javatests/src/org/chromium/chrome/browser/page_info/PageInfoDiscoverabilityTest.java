@@ -333,14 +333,14 @@ public class PageInfoDiscoverabilityTest {
     @Feature({"PageInfoDiscoverability"})
     @ParameterAnnotations.UseMethodParameter(RequestTypeTestParams.class)
     public void testPermissionRequestTypes(
-            @ContentSettingsType int contentSettingsType, boolean isInSiteSettings) {
+            @ContentSettingsType.EnumType int contentSettingsType, boolean isInSiteSettings) {
         if (contentSettingsType == ContentSettingsType.BLUETOOTH_CHOOSER_DATA) {
             isInSiteSettings =
                     ContentFeatureMap.isEnabled(
                             ContentFeatureList.WEB_BLUETOOTH_NEW_PERMISSIONS_BACKEND);
         }
         Assert.assertEquals(ContentSettingsType.DEFAULT, mMediator.getLastPermission());
-        @ContentSettingsType int[] permissions = {contentSettingsType};
+        @ContentSettingsType.EnumType int[] permissions = {contentSettingsType};
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mMediator.onDialogResult(

@@ -899,7 +899,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
 
         BrowserContextHandle browserContextHandle =
                 getSiteSettingsDelegate().getBrowserContextHandle();
-        @ContentSettingsType int type = mCategory.getContentSettingsType();
+        @ContentSettingsType.EnumType int type = mCategory.getContentSettingsType();
         boolean allowSpecifyingExceptions = false;
 
         switch (mCategory.getType()) {
@@ -1456,7 +1456,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
     private AlertDialog buildPreferenceDialog(Website site) {
         BrowserContextHandle browserContextHandle =
                 getSiteSettingsDelegate().getBrowserContextHandle();
-        @ContentSettingsType int contentSettingsType = mCategory.getContentSettingsType();
+        @ContentSettingsType.EnumType int contentSettingsType = mCategory.getContentSettingsType();
 
         @ContentSettingValues
         Integer value = site.getContentSetting(browserContextHandle, contentSettingsType);

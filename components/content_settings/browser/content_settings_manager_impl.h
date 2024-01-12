@@ -7,6 +7,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "components/content_settings/common/content_settings_manager.mojom.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/browser/global_routing_id.h"
 
 namespace content {

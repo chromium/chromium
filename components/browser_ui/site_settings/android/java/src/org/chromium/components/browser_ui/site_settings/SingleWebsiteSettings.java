@@ -117,7 +117,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
      * @return The preference key of this type
      */
     @VisibleForTesting
-    public static @Nullable String getPreferenceKey(@ContentSettingsType int type) {
+    public static @Nullable String getPreferenceKey(@ContentSettingsType.EnumType int type) {
         switch (type) {
             case ContentSettingsType.ADS:
                 return "ads_permission_list";
@@ -185,7 +185,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
     };
 
     /** The permission type to be highlighted on this page, if any. */
-    @ContentSettingsType private int mHighlightedPermission = ContentSettingsType.DEFAULT;
+    @ContentSettingsType.EnumType private int mHighlightedPermission = ContentSettingsType.DEFAULT;
 
     /** The highlight color. */
     @ColorRes private int mHighlightColor;
@@ -382,11 +382,12 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
 
     /**
      * Sets the permission row that should be highlighted on the page, with its corresponding color.
+     *
      * @param permission The ContentSettingsType for the permission to be highlighted.
      * @param colorResId The color resource id for the background color of the permission row.
      */
     public void setHighlightedPermission(
-            @ContentSettingsType int permission, @ColorRes int colorResId) {
+            @ContentSettingsType.EnumType int permission, @ColorRes int colorResId) {
         mHighlightedPermission = permission;
         mHighlightColor = colorResId;
     }
@@ -490,7 +491,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
     }
 
     private Drawable getContentSettingsIcon(
-            @ContentSettingsType int contentSettingsType,
+            @ContentSettingsType.EnumType int contentSettingsType,
             @ContentSettingValues @Nullable Integer value) {
         return ContentSettingsResources.getContentSettingsIcon(
                 getContext(), contentSettingsType, value, getSiteSettingsDelegate());
@@ -544,7 +545,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
 
     private void setupContentSettingsPreferences() {
         mMaxPermissionOrder = findPreference(PREF_PERMISSIONS_HEADER).getOrder();
-        for (@ContentSettingsType int type : SiteSettingsUtil.SETTINGS_ORDER) {
+        for (@ContentSettingsType.EnumType int type : SiteSettingsUtil.SETTINGS_ORDER) {
             Preference preference = new ChromeSwitchPreference(getStyledContext());
             preference.setKey(getPreferenceKey(type));
 
@@ -604,7 +605,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         }
     }
 
-    private Intent getSettingsIntent(String packageName, @ContentSettingsType int type) {
+    private Intent getSettingsIntent(String packageName, @ContentSettingsType.EnumType int type) {
         Intent intent = new Intent();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
                 && type == ContentSettingsType.NOTIFICATIONS) {
@@ -632,7 +633,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         newPreference.setKey(oldPreference.getKey());
         setUpPreferenceCommon(newPreference, value);
         newPreference.setSummary(newSummary);
-        @ContentSettingsType
+        @ContentSettingsType.EnumType
         int contentType = getContentSettingsTypeFromPreferenceKey(newPreference.getKey());
         if (contentType == mHighlightedPermission) {
             newPreference.setBackgroundColor(mHighlightColor);
@@ -649,7 +650,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
     private boolean setupAppDelegatePreference(
             Preference preference,
             @StringRes int contentDescriptionRes,
-            @ContentSettingsType int type,
+            @ContentSettingsType.EnumType int type,
             @ContentSettingValues @Nullable Integer value) {
         Origin origin = Origin.create(mSite.getAddress().getOrigin());
         if (origin == null) {
@@ -683,7 +684,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
     }
 
     private void setUpNotificationsPreference(Preference preference, boolean isEmbargoed) {
-        @ContentSettingsType int notificationType = ContentSettingsType.NOTIFICATIONS;
+        @ContentSettingsType.EnumType int notificationType = ContentSettingsType.NOTIFICATIONS;
         final @ContentSettingValues @Nullable Integer value =
                 mSite.getContentSetting(
                         getSiteSettingsDelegate().getBrowserContextHandle(), notificationType);
@@ -1075,7 +1076,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                         ? getString(R.string.automatically_blocked)
                         : getString(ContentSettingsResources.getCategorySummary(value, isOneTime)));
         switchPreference.setOnPreferenceChangeListener(this);
-        @ContentSettingsType
+        @ContentSettingsType.EnumType
         int contentType = getContentSettingsTypeFromPreferenceKey(preference.getKey());
         if (contentType == mHighlightedPermission) {
             switchPreference.setBackgroundColor(mHighlightColor);
@@ -1088,7 +1089,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
      */
     private void setUpPreferenceCommon(
             Preference preference, @ContentSettingValues @Nullable Integer value) {
-        @ContentSettingsType
+        @ContentSettingsType.EnumType
         int contentType = getContentSettingsTypeFromPreferenceKey(preference.getKey());
         int titleResourceId =
                 ContentSettingsResources.getTitle(contentType, getSiteSettingsDelegate());
@@ -1246,10 +1247,13 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                 : getString(R.string.website_settings_permissions_blocked_dse);
     }
 
-    public @ContentSettingsType int getContentSettingsTypeFromPreferenceKey(String preferenceKey) {
+    public @ContentSettingsType.EnumType int getContentSettingsTypeFromPreferenceKey(
+            String preferenceKey) {
         if (mPreferenceMap == null) {
             mPreferenceMap = new HashMap<>();
-            for (@ContentSettingsType int type = 0; type < ContentSettingsType.NUM_TYPES; type++) {
+            for (@ContentSettingsType.EnumType int type = 0;
+                    type < ContentSettingsType.NUM_TYPES;
+                    type++) {
                 String key = getPreferenceKey(type);
                 if (key != null) {
                     mPreferenceMap.put(key, type);
@@ -1321,7 +1325,9 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         // TODO(mvanouwerkerk): Refactor this class so that it does not depend on the screen state
         // for its logic. This class should maintain its own data model, and only update the screen
         // after a change is made.
-        for (@ContentSettingsType int type = 0; type < ContentSettingsType.NUM_TYPES; type++) {
+        for (@ContentSettingsType.EnumType int type = 0;
+                type < ContentSettingsType.NUM_TYPES;
+                type++) {
             String key = getPreferenceKey(type);
             if (key != null) {
                 removePreferenceSafely(key);
@@ -1357,7 +1363,7 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         }
     }
 
-    public boolean isOneTime(@ContentSettingsType int type) {
+    public boolean isOneTime(@ContentSettingsType.EnumType int type) {
         PermissionInfo permissionInfo = mSite.getPermissionInfo(type);
         return permissionInfo != null && permissionInfo.getSessionModel() == SessionModel.ONE_TIME;
     }

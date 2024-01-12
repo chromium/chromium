@@ -18,11 +18,11 @@ public class PermissionInfo implements Serializable {
     private final boolean mIsEmbargoed;
     private final String mEmbedder;
     private final String mOrigin;
-    private final @ContentSettingsType int mContentSettingsType;
+    private final @ContentSettingsType.EnumType int mContentSettingsType;
     private final @SessionModel int mSessionModel;
 
     public PermissionInfo(
-            @ContentSettingsType int type,
+            @ContentSettingsType.EnumType int type,
             String origin,
             String embedder,
             boolean isEmbargoed,
@@ -37,7 +37,7 @@ public class PermissionInfo implements Serializable {
         mSessionModel = sessionModel;
     }
 
-    public @ContentSettingsType int getContentSettingsType() {
+    public @ContentSettingsType.EnumType int getContentSettingsType() {
         return mContentSettingsType;
     }
 
@@ -64,7 +64,7 @@ public class PermissionInfo implements Serializable {
     /** Returns the ContentSetting value using the minimal set of defining parameters. */
     public static @ContentSettingValues @Nullable Integer getContentSetting(
             BrowserContextHandle browserContextHandle,
-            @ContentSettingsType int mContentSettingsType,
+            @ContentSettingsType.EnumType int mContentSettingsType,
             String origin,
             @Nullable String embeddingOrigin) {
         return org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni.get()

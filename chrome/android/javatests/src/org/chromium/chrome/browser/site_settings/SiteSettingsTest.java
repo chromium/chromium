@@ -2831,7 +2831,7 @@ public class SiteSettingsTest {
     static class PermissionTestCase {
         protected final String mTestName;
         protected final @SiteSettingsCategory.Type int mSiteSettingsType;
-        protected final @ContentSettingsType int mContentSettingsType;
+        protected final @ContentSettingsType.EnumType int mContentSettingsType;
         protected final boolean mIsCategoryEnabled;
         protected final List<String> mExpectedPreferenceKeys;
 
@@ -2840,7 +2840,7 @@ public class SiteSettingsTest {
         PermissionTestCase(
                 final String testName,
                 @SiteSettingsCategory.Type final int siteSettingsType,
-                @ContentSettingsType final int contentSettingsType,
+                @ContentSettingsType.EnumType final int contentSettingsType,
                 final boolean enabled) {
             mTestName = testName;
             mSiteSettingsType = siteSettingsType;
