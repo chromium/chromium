@@ -127,8 +127,7 @@ class MockDropHandler : public WmDropHandler {
     dropped_data_ = std::move(data);
     MockOnDragEnter();
   }
-  void OnDragDrop(std::unique_ptr<OSExchangeData> data,
-                  int modifiers) override {
+  void OnDragDrop(int modifiers) override {
     MockOnDragDrop();
     if (on_drop_closure_) {
       on_drop_closure_.Run();

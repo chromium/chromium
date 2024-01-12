@@ -1700,8 +1700,8 @@ DragOperation X11Window::PerformDrop() {
   // should have it since then.
   auto* target_current_context = drag_drop_client_->target_current_context();
   DCHECK(target_current_context);
-  drop_handler->OnDragDrop({}, GetKeyModifiers(XDragDropClient::GetForWindow(
-                                   target_current_context->source_window())));
+  drop_handler->OnDragDrop(GetKeyModifiers(
+      XDragDropClient::GetForWindow(target_current_context->source_window())));
   notified_enter_ = false;
   return PreferredDragOperation(allowed_drag_operations_);
 }

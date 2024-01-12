@@ -37,13 +37,10 @@ class COMPONENT_EXPORT(WM) WmDropHandler {
                            int operation,
                            int modifiers) = 0;
 
-  // Notifies that dragged data is dropped. When it doesn't deliver
-  // the dragged data on OnDragEnter, it should put it to |data|. The location
-  // of the drop is the location of the latest DragEnter/DragMotion. If
-  // OSExchangeData is provided on OnDragEnter, the |data| should be same as it.
-  // |modifiers| contains bitmask of ui::EventFlags that accompany the event.
-  virtual void OnDragDrop(std::unique_ptr<OSExchangeData> data,
-                          int modifiers) = 0;
+  // Notifies that the dragged data has been dropped. The location of the drop
+  // is the location of the latest DragEnter/DragMotion. |modifiers| contains a
+  // bitmask of ui::EventFlags that accompany the event.
+  virtual void OnDragDrop(int modifiers) = 0;
 
   // Notifies that dragging is left. Must be called before
   // WmDragHandler::OnDragFinished when the drag session gets cancelled.

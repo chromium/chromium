@@ -103,8 +103,7 @@ class VIEWS_EXPORT DesktopDragDropClientOzone
   int OnDragMotion(const gfx::PointF& point,
                    int operation,
                    int modifiers) override;
-  void OnDragDrop(std::unique_ptr<ui::OSExchangeData> data,
-                  int modifiers) override;
+  void OnDragDrop(int modifiers) override;
   void OnDragLeave() override;
 
   // aura::WindowObserver

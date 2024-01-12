@@ -264,34 +264,13 @@ int DesktopDragDropClientOzone::OnDragMotion(const gfx::PointF& point,
   return client_operation;
 }
 
-void DesktopDragDropClientOzone::OnDragDrop(
-    std::unique_ptr<ui::OSExchangeData> data,
-    int modifiers) {
-  // If we didn't have |data_to_drop_|, then |drag_drop_delegate_| had never
-  // been updated, and now it needs to receive deferred enter and update events
-  // before handling the actual drop.
-  const bool postponed_enter_and_update = !data_to_drop_;
-
-  // If we didn't have |data_to_drop_| already since the drag had entered the
-  // window, take the new data that comes now.
-  if (!data_to_drop_)
-    data_to_drop_ = std::move(data);
-
-  // crbug.com/1151836: check that we have data.
+void DesktopDragDropClientOzone::OnDragDrop(int modifiers) {
+  // Ensure |data_to_drop_| is set, so crashes, such as
+  // https://crbug.com/1151836, are avoided.
   if (data_to_drop_) {
     // This will call the delegate's OnDragEntered if needed.
     auto event = UpdateTargetAndCreateDropEvent(last_drag_point_, modifiers);
     if (drag_drop_delegate_ && event) {
-      if (postponed_enter_and_update) {
-        // TODO(https://crbug.com/1014860): deal with drop refusals.
-        // The delegate's OnDragUpdated returns an operation that the delegate
-        // would accept.  Normally the accepted operation would be propagated
-        // properly, and if the delegate didn't accept it, the drop would never
-        // be called, but in this scenario of postponed updates we send all
-        // events at once.  Now we just drop, but perhaps we could call
-        // OnDragLeave and quit?
-        current_drag_info_ = drag_drop_delegate_->OnDragUpdated(*event);
-      }
       auto drop_cb = drag_drop_delegate_->GetDropCallback(*event);
       if (drop_cb) {
         base::ScopedClosureRunner drag_cancel(

@@ -755,7 +755,7 @@ void WaylandWindow::OnDragDrop() {
     return;
   }
   // TODO(crbug.com/1102857): get the real event modifier here.
-  drop_handler->OnDragDrop({}, /*modifiers=*/0);
+  drop_handler->OnDragDrop(/*modifiers=*/0);
 }
 
 void WaylandWindow::OnDragLeave() {
