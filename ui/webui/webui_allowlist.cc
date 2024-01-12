@@ -110,13 +110,6 @@ std::unique_ptr<content_settings::RuleIterator> WebUIAllowlist::GetRuleIterator(
   return value_map_.GetRuleIterator(content_type);
 }
 
-std::unique_ptr<content_settings::Rule> WebUIAllowlist::GetRule(
-    const GURL& primary_url,
-    const GURL& secondary_url,
-    ContentSettingsType content_type) const {
-  return value_map_.GetRule(primary_url, secondary_url, content_type);
-}
-
 void WebUIAllowlist::SetContentSettingsAndNotifyProvider(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
