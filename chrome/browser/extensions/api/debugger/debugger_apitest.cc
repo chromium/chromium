@@ -814,7 +814,13 @@ INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(DebuggerExtensionApiPdfTest);
 // Tests that navigation to a forbidden URL is properly denied and
 // does not cause a crash.
 // This is a regression test for https://crbug.com/1188889.
-IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, NavigateToForbiddenUrl) {
+// TODO(crbug.com/1517512): Re-enable this test.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_NavigateToForbiddenUrl DISABLED_NavigateToForbiddenUrl
+#else
+#define MAYBE_NavigateToForbiddenUrl NavigateToForbiddenUrl
+#endif
+IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, MAYBE_NavigateToForbiddenUrl) {
   content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
   ASSERT_TRUE(RunExtensionTest("debugger_navigate_to_forbidden_url"))
       << message_;
