@@ -33,26 +33,23 @@ class FocusModeSessionTest : public testing::Test {
 TEST_F(FocusModeSessionTest, NormalCase) {
   base::Time start_time = base::Time::Now();
   base::Time expected_end_time = kEndDuration + start_time;
-  base::Time expected_ending_moment_end_time =
-      expected_end_time + focus_mode_util::kEndingMomentDuration;
 
   // Create a FocusModeSession and verify that it is in the on state with the
   // right end time.
   FocusModeSession session{kEndDuration, expected_end_time};
   EXPECT_EQ(FocusModeSession::State::kOn, session.GetState(start_time));
-  EXPECT_EQ(expected_end_time, session.GetEndTime(start_time));
+  EXPECT_EQ(expected_end_time, session.end_time());
 
   // Verify it is still running.
   task_environment_.AdvanceClock(base::Minutes(1));
-  base::Time current_time = base::Time::Now();
-  EXPECT_EQ(FocusModeSession::State::kOn, session.GetState(current_time));
-  EXPECT_EQ(expected_end_time, session.GetEndTime(current_time));
+  EXPECT_EQ(FocusModeSession::State::kOn, session.GetState(base::Time::Now()));
+  EXPECT_EQ(expected_end_time, session.end_time());
 
   // Verify that we enter the ending moment when the session duration elapses.
   task_environment_.AdvanceClock(base::Minutes(1));
-  current_time = base::Time::Now();
-  EXPECT_EQ(FocusModeSession::State::kEnding, session.GetState(current_time));
-  EXPECT_EQ(expected_ending_moment_end_time, session.GetEndTime(current_time));
+  EXPECT_EQ(FocusModeSession::State::kEnding,
+            session.GetState(base::Time::Now()));
+  EXPECT_EQ(expected_end_time, session.end_time());
 
   // Verify that the ending moment terminates correctly.
   task_environment_.AdvanceClock(base::Minutes(1));
@@ -114,29 +111,24 @@ TEST_F(FocusModeSessionTest, ExtendSession) {
   base::Time expected_long_end_time = kLongEndDuration + start_time;
   FocusModeSession session{kLongEndDuration, expected_long_end_time};
   EXPECT_EQ(FocusModeSession::State::kOn, session.GetState(start_time));
-  EXPECT_EQ(expected_long_end_time, session.GetEndTime(start_time));
+  EXPECT_EQ(expected_long_end_time, session.end_time());
 
   // Extend the session duration with no special cases.
-  base::Time current_time = base::Time::Now();
-  session.ExtendSession(current_time);
+  session.ExtendSession(base::Time::Now());
   EXPECT_EQ(kLongEndDuration + focus_mode_util::kExtendDuration,
             session.session_duration());
   EXPECT_EQ(expected_long_end_time + focus_mode_util::kExtendDuration,
-            session.GetEndTime(current_time));
+            session.end_time());
 
   // Extends the session duraton, reaching the max duration.
-  current_time = base::Time::Now();
-  session.ExtendSession(current_time);
+  session.ExtendSession(base::Time::Now());
   EXPECT_EQ(focus_mode_util::kMaximumDuration, session.session_duration());
-  EXPECT_EQ(start_time + focus_mode_util::kMaximumDuration,
-            session.GetEndTime(current_time));
+  EXPECT_EQ(start_time + focus_mode_util::kMaximumDuration, session.end_time());
 
   // Try to extend the time when already at the maximum duration.
-  current_time = base::Time::Now();
-  session.ExtendSession(current_time);
+  session.ExtendSession(base::Time::Now());
   EXPECT_EQ(focus_mode_util::kMaximumDuration, session.session_duration());
-  EXPECT_EQ(start_time + focus_mode_util::kMaximumDuration,
-            session.GetEndTime(current_time));
+  EXPECT_EQ(start_time + focus_mode_util::kMaximumDuration, session.end_time());
 }
 
 // Tests that a session that is marked for having a persistent ending doesn't
@@ -173,7 +165,7 @@ TEST_F(FocusModeSessionTest, PersistEnding) {
             session_snapshot.session_duration);
   EXPECT_EQ(focus_mode_util::kExtendDuration, session_snapshot.remaining_time);
   EXPECT_EQ(extend_timestamp + focus_mode_util::kExtendDuration,
-            session.GetEndTime(extend_timestamp));
+            session.end_time());
   EXPECT_FALSE(session.persistent_ending());
 
   // Test that the session can advance into the kComplete state, and doesn't get

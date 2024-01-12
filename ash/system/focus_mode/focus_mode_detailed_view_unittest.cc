@@ -277,7 +277,7 @@ TEST_F(FocusModeDetailedViewTest, ToggleRow) {
 
     if (active) {
       EXPECT_EQ(focus_mode_util::GetFormattedEndTimeString(
-                    focus_mode_controller->end_time()),
+                    focus_mode_controller->GetActualEndTime()),
                 GetToggleRowSubLabel()->GetText());
     }
     EXPECT_EQ(active ? u"Finish" : u"Start", GetToggleRowButton()->GetText());

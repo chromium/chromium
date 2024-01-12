@@ -79,8 +79,8 @@ TEST_F(FocusModeCountdownViewTest, ToggleVisibility) {
 // progress bar should be equal to the maximum session duration.
 TEST_F(FocusModeCountdownViewTest, ExtendSessionDurationUntilUpperBound) {
   FocusModeController* controller = FocusModeController::Get();
-  controller->SetSessionDuration(focus_mode_util::kMaximumDuration -
-                                 base::Minutes(1));
+  controller->SetInactiveSessionDuration(focus_mode_util::kMaximumDuration -
+                                         base::Minutes(1));
   controller->ToggleFocusMode();
 
   LeftClickOn(focus_mode_tray_);
@@ -97,7 +97,8 @@ TEST_F(FocusModeCountdownViewTest, ExtendSessionDurationUntilUpperBound) {
 
   EXPECT_FALSE(button->GetEnabled());
   EXPECT_EQ(u"5:00:00", label->GetText());
-  EXPECT_EQ(focus_mode_util::kMaximumDuration, controller->session_duration());
+  EXPECT_EQ(focus_mode_util::kMaximumDuration,
+            controller->GetSessionDuration());
 }
 
 }  // namespace ash

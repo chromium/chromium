@@ -421,7 +421,7 @@ void FocusModeDetailedView::OnSessionDurationChanged() {
   }
 
   toggle_view_->SetSubText(focus_mode_util::GetFormattedEndTimeString(
-      FocusModeController::Get()->end_time()));
+      FocusModeController::Get()->GetActualEndTime()));
   timer_countdown_view_->UpdateUI();
   UpdateToggleButtonAccessibility(/*in_focus_session=*/true);
 }
@@ -460,7 +460,7 @@ void FocusModeDetailedView::CreateToggleView() {
 
   if (in_focus_session) {
     toggle_view_->SetSubText(focus_mode_util::GetFormattedEndTimeString(
-        focus_mode_controller->end_time()));
+        focus_mode_controller->GetActualEndTime()));
     toggle_view_->sub_text_label()->SetEnabledColorId(
         cros_tokens::kCrosSysSecondary);
     TypographyProvider::Get()->StyleLabel(
@@ -471,7 +471,7 @@ void FocusModeDetailedView::CreateToggleView() {
   toggle_view_->AddRightView(
       std::make_unique<PillButton>(
           base::BindRepeating(&FocusModeController::ToggleFocusMode,
-                              base::Unretained(FocusModeController::Get())),
+                              base::Unretained(focus_mode_controller)),
           l10n_util::GetStringUTF16(
               in_focus_session
                   ? IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_END_BUTTON
@@ -502,7 +502,7 @@ void FocusModeDetailedView::UpdateToggleButtonAccessibility(
   }
 
   const std::u16string duration_string = focus_mode_util::GetDurationString(
-      FocusModeController::Get()->end_time() - base::Time::Now(),
+      FocusModeController::Get()->GetActualEndTime() - base::Time::Now(),
       /*digital_format=*/false);
   toggle_button->SetAccessibleName(l10n_util::GetStringFUTF16(
       IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_END_BUTTON_ACCESSIBLE_NAME,
@@ -856,13 +856,13 @@ void FocusModeDetailedView::UpdateTimerSettingViewUI() {
 
 void FocusModeDetailedView::SetInactiveSessionDuration(
     base::TimeDelta duration) {
-  FocusModeController::Get()->SetSessionDuration(duration);
+  FocusModeController::Get()->SetInactiveSessionDuration(duration);
   UpdateTimerSettingViewUI();
 }
 
 void FocusModeDetailedView::UpdateEndTimeLabelUI() {
   end_time_label_->SetText(focus_mode_util::GetFormattedEndTimeString(
-      FocusModeController::Get()->end_time()));
+      FocusModeController::Get()->GetActualEndTime()));
 }
 
 BEGIN_METADATA(FocusModeDetailedView, TrayDetailedView)

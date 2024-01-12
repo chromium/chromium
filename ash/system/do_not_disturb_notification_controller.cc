@@ -57,7 +57,7 @@ std::unique_ptr<message_center::Notification> CreateNotification() {
       DoNotDisturbNotificationController::kDoNotDisturbNotificationId,
       should_show_focus_text
           ? focus_mode_util::GetNotificationTitleForFocusSession(
-                focus_mode_controller->end_time())
+                focus_mode_controller->GetActualEndTime())
           : l10n_util::GetStringUTF16(
                 IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_TITLE),
       l10n_util::GetStringUTF16(

@@ -121,7 +121,7 @@ void FocusModeFeaturePodController::UpdateUI() {
   }
 
   const base::TimeDelta session_duration_remaining =
-      in_focus_session ? controller->end_time() - base::Time::Now()
+      in_focus_session ? controller->GetActualEndTime() - base::Time::Now()
                        : controller->session_duration();
   const std::u16string duration_string = focus_mode_util::GetDurationString(
       session_duration_remaining, /*digital_format=*/false);

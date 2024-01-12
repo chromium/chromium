@@ -104,7 +104,7 @@ FocusModeEndingMomentView::FocusModeEndingMomentView() {
 
   extend_session_duration_button_ =
       button_container->AddChildView(std::make_unique<PillButton>(
-          base::BindRepeating(&FocusModeController::ExtendExpiredSession,
+          base::BindRepeating(&FocusModeController::ExtendSessionDuration,
                               base::Unretained(focus_mode_controller)),
           l10n_util::GetStringUTF16(
               IDS_ASH_STATUS_TRAY_FOCUS_MODE_EXTEND_TEN_MINUTES_BUTTON_LABEL),

@@ -136,7 +136,7 @@ FocusModeCountdownView::FocusModeCountdownView(bool include_end_button)
 
   extend_session_duration_button_ =
       button_container->AddChildView(std::make_unique<PillButton>(
-          base::BindRepeating(&FocusModeController::ExtendActiveSessionDuration,
+          base::BindRepeating(&FocusModeController::ExtendSessionDuration,
                               base::Unretained(focus_mode_controller)),
           l10n_util::GetStringUTF16(
               IDS_ASH_STATUS_TRAY_FOCUS_MODE_EXTEND_TEN_MINUTES_BUTTON_LABEL),
@@ -154,7 +154,7 @@ void FocusModeCountdownView::UpdateUI() {
   CHECK(controller->in_focus_session());
 
   const base::TimeDelta time_remaining =
-      controller->end_time() - base::Time::Now();
+      controller->GetActualEndTime() - base::Time::Now();
   time_remaining_label_->SetText(focus_mode_util::GetDurationString(
       time_remaining, /*digital_format=*/true));
 
@@ -168,8 +168,7 @@ void FocusModeCountdownView::UpdateUI() {
 
   progress_bar_->SetValue(time_elapsed / session_duration);
 
-  const bool session_extendable =
-      session_duration < focus_mode_util::kMaximumDuration;
+  const bool session_extendable = controller->CanExtendSessionDuration();
   // Clear the focus if we are disabling the extend button and it has focus.
   if (extend_session_duration_button_->HasFocus() && !session_extendable) {
     // Release focus so that disabling `extend_session_duration_button_` below

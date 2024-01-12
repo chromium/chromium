@@ -194,7 +194,7 @@ TEST_F(FocusModeTrayTest, MarkTaskAsCompleted) {
 // Tests that the progress indicator progresses as the focus session progresses.
 TEST_F(FocusModeTrayTest, ProgressIndicatorProgresses) {
   FocusModeController* controller = FocusModeController::Get();
-  controller->SetSessionDuration(base::Minutes(40));
+  controller->SetInactiveSessionDuration(base::Minutes(40));
   controller->ToggleFocusMode();
 
   // Define a margin of error for floating point math.
@@ -260,7 +260,7 @@ TEST_F(FocusModeTrayTest, BubbleTabbingAndAccessibility) {
   const base::TimeDelta session_duration = base::Minutes(40);
   const std::u16string time_remaining = focus_mode_util::GetDurationString(
       session_duration, /*digital_format=*/false);
-  controller->SetSessionDuration(session_duration);
+  controller->SetInactiveSessionDuration(session_duration);
   controller->SetSelectedTask(std::make_unique<api::Task>(
                                   /*id=*/base::NumberToString(1), task_name,
                                   /*completed=*/false,

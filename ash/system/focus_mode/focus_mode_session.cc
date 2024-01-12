@@ -75,14 +75,4 @@ base::TimeDelta FocusModeSession::GetTimeRemaining(
   return remaining.is_negative() ? base::TimeDelta() : remaining;
 }
 
-base::Time FocusModeSession::GetEndTime(const base::Time& now) const {
-  switch (GetState(now)) {
-    case State::kOn:
-    case State::kComplete:
-      return end_time_;
-    case State::kEnding:
-      return end_time_ + focus_mode_util::kEndingMomentDuration;
-  }
-}
-
 }  // namespace ash

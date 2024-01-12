@@ -144,7 +144,8 @@ FocusModeTray::FocusModeTray(Shelf* shelf)
             const base::TimeDelta session_duration =
                 controller->session_duration();
             const base::TimeDelta time_elapsed =
-                session_duration - (controller->end_time() - base::Time::Now());
+                session_duration -
+                (controller->GetActualEndTime() - base::Time::Now());
             return time_elapsed / session_duration;
           },
           base::Unretained(this)));
@@ -194,7 +195,7 @@ std::u16string FocusModeTray::GetAccessibleNameForTray() {
 std::u16string FocusModeTray::GetAccessibleNameForBubble() {
   auto* focus_mode_controller = FocusModeController::Get();
   const std::u16string time_remaining = focus_mode_util::GetDurationString(
-      focus_mode_controller->end_time() - base::Time::Now(),
+      focus_mode_controller->GetActualEndTime() - base::Time::Now(),
       /*digital_format=*/false);
   const std::u16string task_title =
       base::UTF8ToUTF16(focus_mode_controller->selected_task_title());

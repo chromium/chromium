@@ -62,10 +62,6 @@ class ASH_EXPORT FocusModeSession {
   // the delta would be negative, 0 is returned.
   base::TimeDelta GetTimeRemaining(const base::Time& now) const;
 
-  // Returns the ending time of the session. Varies based on if the ending
-  // moment is active in order to account for the extra duration.
-  base::Time GetEndTime(const base::Time& now) const;
-
  private:
   // This is the expected duration of a Focus Mode session once it starts.
   // Depends on previous session data (from user prefs) or user input.
