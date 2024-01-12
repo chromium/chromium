@@ -613,7 +613,7 @@ wgpu::Texture DawnIOSurfaceRepresentation::BeginAccess(
 
   texture_descriptor.nextInChain = &internalDesc;
 
-  wgpu::SharedTextureMemoryBeginAccessDescriptor begin_access_desc;
+  wgpu::SharedTextureMemoryBeginAccessDescriptor begin_access_desc = {};
   begin_access_desc.initialized = IsCleared();
 
   std::vector<wgpu::SharedFence> shared_fences;
