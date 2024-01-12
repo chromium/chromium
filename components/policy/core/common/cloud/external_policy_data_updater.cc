@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/policy/core/common/cloud/external_policy_data_fetcher.h"
 #include "components/policy/core/common/policy_logger.h"
@@ -113,8 +114,7 @@ const int kMaxLimitedRetries = 3;
 
 }  // namespace
 
-class ExternalPolicyDataUpdater::FetchJob
-    : public base::SupportsWeakPtr<FetchJob> {
+class ExternalPolicyDataUpdater::FetchJob final {
  public:
   FetchJob(ExternalPolicyDataUpdater* updater,
            const std::string& key,
@@ -135,6 +135,8 @@ class ExternalPolicyDataUpdater::FetchJob
   bool IsRescheduleWithDelayRunning() const {
     return is_reschedule_with_delay_running_;
   }
+
+  base::WeakPtr<FetchJob> AsWeakPtr() { return weak_factory_.GetWeakPtr(); }
 
  private:
   void OnFailed(net::BackoffEntry* backoff_entry);
@@ -167,6 +169,8 @@ class ExternalPolicyDataUpdater::FetchJob
   net::BackoffEntry retry_soon_entry_{&kRetrySoonPolicy};
   net::BackoffEntry retry_later_entry_{&kRetryLaterPolicy};
   net::BackoffEntry retry_much_later_entry_{&kRetryMuchLaterPolicy};
+
+  base::WeakPtrFactory<FetchJob> weak_factory_{this};
 };
 
 ExternalPolicyDataUpdater::Request::Request() = default;
@@ -303,7 +307,9 @@ void ExternalPolicyDataUpdater::FetchJob::OnFailed(net::BackoffEntry* entry) {
     // in the process of being deleted. If this is the case, the WeakPtr will
     // become invalid and the delayed task will never run.
     updater_->task_runner_->PostDelayedTask(
-        FROM_HERE, base::BindOnce(&FetchJob::Reschedule, AsWeakPtr()), delay);
+        FROM_HERE,
+        base::BindOnce(&FetchJob::Reschedule, weak_factory_.GetWeakPtr()),
+        delay);
   }
 
   updater_->OnJobFailed(this);
