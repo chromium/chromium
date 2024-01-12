@@ -403,6 +403,28 @@ namespace os.telemetry {
 
   callback StatefulPartitionInfoCallback = void (StatefulPartitionInfo statefulPartitionInfo);
 
+  enum ThermalSensorSource {
+    unknown,
+    ec,
+    sysFs
+  };
+
+  dictionary ThermalSensorInfo {
+    // Name of the thermal sensor.
+    DOMString? name;
+    // Temperature detected by the thermal sensor in celsius.
+    double? temperatureCelsius;
+    // Where the thermal sensor is detected from.
+    ThermalSensorSource? source;
+  };
+
+  dictionary ThermalInfo {
+    // An array containing all the information retrieved for thermal sensors.
+    ThermalSensorInfo[] thermalSensors;
+  };
+
+  callback ThermalInfoCallback = void (ThermalInfo thermalInfo);
+
   enum TpmGSCVersion {
     not_gsc,
     cr50,
@@ -487,6 +509,8 @@ namespace os.telemetry {
     [supportsPromises] static void getTpmInfo(TpmInfoCallback callback);
 
     [supportsPromises] static void getDisplayInfo(DisplayInfoCallback callback);
+
+    [supportsPromises] static void getThermalInfo(ThermalInfoCallback callback);
   };
 
   // LINT.ThenChange(//docs/telemetry_extension/api_overview.md)

@@ -361,6 +361,30 @@ void OsTelemetryGetStatefulPartitionInfoFunction::OnResult(
       cx_telem::GetStatefulPartitionInfo::Results::Create(result)));
 }
 
+// OsTelemetryGetThermalInfoFunction
+// -----------------------------------------------
+
+void OsTelemetryGetThermalInfoFunction::RunIfAllowed() {
+  auto cb = base::BindOnce(&OsTelemetryGetThermalInfoFunction::OnResult, this);
+
+  GetRemoteService()->ProbeTelemetryInfo({crosapi::ProbeCategoryEnum::kThermal},
+                                         std::move(cb));
+}
+
+void OsTelemetryGetThermalInfoFunction::OnResult(
+    crosapi::ProbeTelemetryInfoPtr ptr) {
+  if (!ptr || !ptr->thermal_result || !ptr->thermal_result->is_thermal_info()) {
+    Respond(Error("API internal error"));
+    return;
+  }
+
+  cx_telem::ThermalInfo result;
+  result = converters::telemetry::ConvertPtr(
+      std::move(ptr->thermal_result->get_thermal_info()));
+
+  Respond(ArgumentList(cx_telem::GetThermalInfo::Results::Create(result)));
+}
+
 // OsTelemetryGetTpmInfoFunction -----------------------------------------------
 
 void OsTelemetryGetTpmInfoFunction::RunIfAllowed() {

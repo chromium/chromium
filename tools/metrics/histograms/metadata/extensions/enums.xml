@@ -2704,6 +2704,7 @@ Called by update_extension_histograms.py.-->
       label="DEVELOPERPRIVATE_DISMISSSAFETYHUBEXTENSIONSMENUNOTIFICATION"/>
   <int value="1864" label="CONTROLLEDFRAMEINTERNAL_CONTEXTMENUSCREATE"/>
   <int value="1865" label="ODFSCONFIGPRIVATE_SHOWAUTOMATEDMOUNTERROR"/>
+  <int value="1866" label="OS_TELEMETRY_GETTHERMALINFO"/>
 </enum>
 
 <enum name="ExtensionInstallationCrxInstallError">
