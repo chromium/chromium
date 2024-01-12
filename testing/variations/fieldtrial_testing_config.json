@@ -7232,6 +7232,30 @@
             ]
         }
     ],
+    "FetchLaterAPI": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20240112",
+                    "params": {
+                        "send_on_enter_bfcache": "true"
+                    },
+                    "enable_features": [
+                        "FetchLaterAPI"
+                    ]
+                }
+            ]
+        }
+    ],
     "FilteringScrollPrediction": [
         {
             "platforms": [
