@@ -32,6 +32,10 @@ export type ClickRepairComponentButtonEvent = CustomEvent<number>;
 
 export type OnSelectedChangedEvent = CustomEvent<{value: string}>;
 
+export const CLICK_CALIBRATION_COMPONENT_BUTTON =
+    'click-calibration-component-button';
+export type ClickCalibrationComponentEvent = CustomEvent<number>;
+
 type ExtractDetail<T> = T extends CustomEvent<infer U>? U : never;
 
 /**

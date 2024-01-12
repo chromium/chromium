@@ -10,11 +10,15 @@ import './calibration_component_chip.js';
 import './icons.html.js';
 import './shimless_rma_shared.css.js';
 
-import {assert} from 'chrome://resources/ash/common/assert.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {CalibrationComponentChipElement} from './calibration_component_chip.js';
 import {ComponentTypeToId} from './data.js';
+import {CLICK_CALIBRATION_COMPONENT_BUTTON, ClickCalibrationComponentEvent} from './events.js';
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {getTemplate} from './reimaging_calibration_failed_page.html.js';
 import {CalibrationComponentStatus, CalibrationStatus, ComponentType, ShimlessRmaServiceInterface, StateResult} from './shimless_rma.mojom-webui.js';
@@ -28,33 +32,32 @@ import {disableNextButton, enableNextButton, executeThenTransitionState, focusPa
  * functioning state.)
  */
 
-/**
- * @typedef {{
- *   component: !ComponentType,
- *   uniqueId: number,
- *   id: string,
- *   name: string,
- *   checked: boolean,
- *   failed: boolean,
- * }}
- */
-let ComponentCheckbox;
+interface ComponentCheckbox {
+  component: ComponentType;
+  uniqueId: number;
+  id: string;
+  name: string;
+  checked: boolean;
+  failed: boolean;
+  disabled?: boolean;
+  isFirstClickableComponent?: boolean;
+}
+
+declare global {
+  interface WindowEventMap {
+    [CLICK_CALIBRATION_COMPONENT_BUTTON]: ClickCalibrationComponentEvent;
+  }
+}
+
 
 const NUM_COLUMNS = 1;
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const ReimagingCalibrationFailedPageBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+const ReimagingCalibrationFailedPageBase = I18nMixin(PolymerElement);
 
-/** @polymer */
 export class ReimagingCalibrationFailedPage extends
     ReimagingCalibrationFailedPageBase {
   static get is() {
-    return 'reimaging-calibration-failed-page';
+    return 'reimaging-calibration-failed-page' as const;
   }
 
   static get template() {
@@ -64,12 +67,10 @@ export class ReimagingCalibrationFailedPage extends
   static get properties() {
     return {
       /**
-       * Set by shimless_rma.js.
-       * @type {boolean}
+       * Set by shimless_rma.ts.
        */
       allButtonsDisabled: Boolean,
 
-      /** @private {!Array<!ComponentCheckbox>} */
       componentCheckboxes: {
         type: Array,
         value: () => [],
@@ -78,7 +79,6 @@ export class ReimagingCalibrationFailedPage extends
       /**
        * The index into componentCheckboxes for keyboard navigation between
        * components.
-       * @private
        */
       focusedComponentIndex: {
         type: Number,
@@ -86,6 +86,14 @@ export class ReimagingCalibrationFailedPage extends
       },
     };
   }
+
+  allButtonsDisabled: boolean;
+  shimlessRmaService: ShimlessRmaServiceInterface = getShimlessRmaService();
+  private componentCheckboxes: ComponentCheckbox[];
+  private focusedComponentIndex: number;
+  componentClicked: (event: ClickCalibrationComponentEvent) => void;
+  handleKeyDownEvent: (event: KeyboardEvent) => void;
+  onExitButtonClick: () => Promise<{stateResult: StateResult}>;
 
   static get observers() {
     return [
@@ -96,14 +104,10 @@ export class ReimagingCalibrationFailedPage extends
 
   constructor() {
     super();
-    /** @private {ShimlessRmaServiceInterface} */
-    this.shimlessRmaService = getShimlessRmaService();
-
     /**
      * The componentClickedCallback callback is used to capture events when
      * components are clicked, so that the page can put the focus on the
      * component that was clicked.
-     * @private {?Function}
      */
     this.componentClicked = (event) => {
       const componentIndex = this.componentCheckboxes.findIndex(
@@ -122,9 +126,8 @@ export class ReimagingCalibrationFailedPage extends
      * Handles keyboard navigation over the list of components.
      * TODO(240717594): Find a way to avoid duplication of this code in the
      * repair components page.
-     * @private {?Function}
      */
-    this.HandleKeyDownEvent = (event) => {
+    this.handleKeyDownEvent = (event: KeyboardEvent) => {
       if (event.key !== 'ArrowRight' && event.key !== 'ArrowDown' &&
           event.key !== 'ArrowLeft' && event.key !== 'ArrowUp') {
         return;
@@ -137,8 +140,8 @@ export class ReimagingCalibrationFailedPage extends
 
       // Don't use keyboard navigation if the user tabbed out of the
       // component list.
-      if (!this.shadowRoot.activeElement ||
-          this.shadowRoot.activeElement.tagName !==
+      if (!this.shadowRoot!.activeElement ||
+          this.shadowRoot!.activeElement.tagName !==
               'CALIBRATION-COMPONENT-CHIP') {
         return;
       }
@@ -187,14 +190,16 @@ export class ReimagingCalibrationFailedPage extends
 
     /**
      * The "Skip calibration" button on this page is styled and positioned like
-     * a exit button. So we use the common exit button from shimless_rma.js
+     * a exit button. So we use the common exit button from shimless_rma.ts
      * This function needs to be public, because it's invoked by
-     * shimless_rma.js as part of the response to the exit button click.
-     * @return {!Promise<!{stateResult: !StateResult}>}
+     * shimless_rma.ts as part of the response to the exit button click.
      */
     this.onExitButtonClick = () => {
       if (this.tryingToSkipWithFailedComponents()) {
-        this.shadowRoot.querySelector('#failedComponentsDialog').showModal();
+        const dialog: CrDialogElement|null =
+            this.shadowRoot!.querySelector('#failedComponentsDialog');
+        assert(dialog);
+        dialog.showModal();
         return Promise.reject(
             new Error('Attempting to skip with failed components.'));
       }
@@ -203,17 +208,22 @@ export class ReimagingCalibrationFailedPage extends
     };
   }
 
-  /** @override */
-  ready() {
+  override ready() {
     super.ready();
     this.getInitialComponentsList();
 
     // Hide the gradient when the list is scrolled to the end.
-    this.shadowRoot.querySelector('.scroll-container')
-        .addEventListener('scroll', (event) => {
-          const gradient = this.shadowRoot.querySelector('.gradient');
-          if (event.target.scrollHeight - event.target.scrollTop ===
-              event.target.clientHeight) {
+    (this.shadowRoot!.querySelector('.scroll-container') as HTMLDivElement)
+        .addEventListener('scroll', (event: Event) => {
+          const gradient =
+              this.shadowRoot!.querySelector('.gradient') as HTMLDivElement;
+          const dialog: CrDialogElement|null =
+              this.shadowRoot!.querySelector('#failedComponentsDialog');
+          assert(dialog);
+          dialog.close();
+          const target = (event.target as HTMLElement);
+          assert(target);
+          if (target.scrollHeight - target.scrollTop === target.clientHeight) {
             gradient.style.setProperty('visibility', 'hidden');
           } else {
             gradient.style.setProperty('visibility', 'visible');
@@ -223,8 +233,7 @@ export class ReimagingCalibrationFailedPage extends
     focusPageTitle(this);
   }
 
-  /** @private */
-  getInitialComponentsList() {
+  private getInitialComponentsList(): void {
     this.shimlessRmaService.getCalibrationComponentList().then((result) => {
       if (!result || !result.hasOwnProperty('components')) {
         // TODO(gavindodd): Set an error state?
@@ -252,40 +261,34 @@ export class ReimagingCalibrationFailedPage extends
     });
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
-    window.addEventListener('keydown', this.HandleKeyDownEvent);
+    window.addEventListener('keydown', this.handleKeyDownEvent);
     window.addEventListener(
-        'click-calibration-component-button', this.componentClicked);
+        CLICK_CALIBRATION_COMPONENT_BUTTON, this.componentClicked);
   }
 
-  /** @override */
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
-    window.removeEventListener('keydown', this.HandleKeyDownEvent);
+    window.removeEventListener('keydown', this.handleKeyDownEvent);
     window.removeEventListener(
-        'click-calibration-component-button', this.componentClicked);
+        CLICK_CALIBRATION_COMPONENT_BUTTON, this.componentClicked);
   }
 
-  /**
-   * Make the page focus on the component at focusedComponentIndex.
-   * @private
-   */
-  focusOnCurrentComponent() {
-    if (this.focusedComponentIndex != -1) {
-      const componentChip = this.shadowRoot.querySelector(`[unique-id="${
-          this.componentCheckboxes[this.focusedComponentIndex].uniqueId}"]`);
-      componentChip.shadowRoot.querySelector('#componentButton').focus();
+  private focusOnCurrentComponent() {
+    if (this.focusedComponentIndex !== -1) {
+      const componentChip: CalibrationComponentChipElement|null =
+          this.shadowRoot!.querySelector(`[unique-id="${
+              this.componentCheckboxes[this.focusedComponentIndex]
+                  .uniqueId}"]`);
+      assert(componentChip);
+      (componentChip.shadowRoot!.querySelector('#componentButton') as
+       CrButtonElement)
+          .focus();
     }
   }
 
-
-  /**
-   * @return {!Array<!CalibrationComponentStatus>}
-   * @private
-   */
-  getComponentsList() {
+  private getComponentsList(): CalibrationComponentStatus[] {
     return this.componentCheckboxes.map(item => {
       // These statuses tell rmad how to treat each component in this request.
       // If the component didn't fail a calibration, its status needs to be
@@ -309,11 +312,7 @@ export class ReimagingCalibrationFailedPage extends
     });
   }
 
-  /**
-   * @return {!Promise<!{stateResult: !StateResult}>}
-   * @private
-   */
-  skipCalibration() {
+  private skipCalibration(): Promise<{stateResult: StateResult}> {
     const skippedComponents = this.componentCheckboxes.map(item => {
       return {
         component: item.component,
@@ -328,42 +327,32 @@ export class ReimagingCalibrationFailedPage extends
     return this.shimlessRmaService.startCalibration(skippedComponents);
   }
 
-  /** @return {!Promise<!{stateResult: !StateResult}>} */
-  onNextButtonClick() {
+  onNextButtonClick(): Promise<{stateResult: StateResult}> {
     return this.shimlessRmaService.startCalibration(this.getComponentsList());
   }
 
-  /**
-   * @param {boolean} componentDisabled
-   * @return {boolean}
-   * @private
-   */
-  isComponentDisabled(componentDisabled) {
+  private isComponentDisabled(componentDisabled: boolean): boolean {
     return componentDisabled || this.allButtonsDisabled;
   }
 
-  /** @protected */
-  onSkipDialogButtonClicked() {
+  protected onSkipDialogButtonClicked(): void {
     this.closeDialog();
     executeThenTransitionState(this, () => this.skipCalibration());
   }
 
-  /** @protected */
-  closeDialog() {
-    this.shadowRoot.querySelector('#failedComponentsDialog').close();
+  protected closeDialog(): void {
+    const dialog: CrDialogElement|null =
+        this.shadowRoot!.querySelector('#failedComponentsDialog');
+    assert(dialog);
+    dialog.close();
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  tryingToSkipWithFailedComponents() {
+  private tryingToSkipWithFailedComponents(): boolean {
     return this.componentCheckboxes.some(
         component => component.failed && !component.checked);
   }
 
-  /** @private */
-  updateIsFirstClickableComponent() {
+  private updateIsFirstClickableComponent(): void {
     const firstClickableComponent =
         this.componentCheckboxes.find(component => !component.disabled);
     this.componentCheckboxes.forEach(component => {
@@ -372,13 +361,18 @@ export class ReimagingCalibrationFailedPage extends
     });
   }
 
-  /** @private */
-  updateNextButtonAvailability() {
+  private updateNextButtonAvailability(): void {
     if (this.componentCheckboxes.some(component => component.checked)) {
       enableNextButton(this);
     } else {
       disableNextButton(this);
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [ReimagingCalibrationFailedPage.is]: ReimagingCalibrationFailedPage;
   }
 }
 
