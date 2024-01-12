@@ -523,6 +523,13 @@ ThreadCache::ThreadCache(PartitionRoot* root)
       tcache_bucket->limit.store(0, std::memory_order_relaxed);
     }
   }
+
+  // When enabled, initialize scheduler loop quarantine branch.
+  // This branch is only used within this thread, so not `lock_required`.
+  if (root_->settings.scheduler_loop_quarantine) {
+    scheduler_loop_quarantine_branch_.emplace(
+        root_->CreateSchedulerLoopQuarantineBranch(false));
+  }
 }
 
 ThreadCache::~ThreadCache() {

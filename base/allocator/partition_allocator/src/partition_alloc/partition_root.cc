@@ -986,6 +986,8 @@ void PartitionRoot::Init(PartitionOptions opts) {
     settings.scheduler_loop_quarantine =
         opts.scheduler_loop_quarantine == PartitionOptions::kEnabled;
     if (settings.scheduler_loop_quarantine) {
+      scheduler_loop_quarantine_capacity_in_bytes =
+          opts.scheduler_loop_quarantine_capacity_in_bytes;
       scheduler_loop_quarantine_root.SetCapacityInBytes(
           opts.scheduler_loop_quarantine_capacity_in_bytes);
       scheduler_loop_quarantine.emplace(
@@ -1659,6 +1661,12 @@ ThreadCache* PartitionRoot::MaybeInitThreadCache() {
   thread_caches_being_constructed_.fetch_sub(1, std::memory_order_relaxed);
 
   return tcache;
+}
+
+internal::LightweightQuarantineBranch
+PartitionRoot::CreateSchedulerLoopQuarantineBranch(bool lock_required) {
+  return scheduler_loop_quarantine_root.CreateBranch(
+      scheduler_loop_quarantine_capacity_in_bytes, lock_required);
 }
 
 // static

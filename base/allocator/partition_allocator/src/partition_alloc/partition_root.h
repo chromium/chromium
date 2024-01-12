@@ -375,6 +375,7 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 
   bool quarantine_always_for_testing = false;
 
+  size_t scheduler_loop_quarantine_capacity_in_bytes = 0;
   internal::LightweightQuarantineRoot scheduler_loop_quarantine_root;
   // NoDestructor because we don't need to dequarantine objects as the root
   // associated with it is dying anyway.
@@ -1030,6 +1031,9 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 
   PA_ALWAYS_INLINE internal::LightweightQuarantineBranch&
   GetSchedulerLoopQuarantineBranch();
+
+  internal::LightweightQuarantineBranch CreateSchedulerLoopQuarantineBranch(
+      bool lock_required);
 
   PA_ALWAYS_INLINE AllocationNotificationData
   CreateAllocationNotificationData(void* object,
@@ -2524,9 +2528,12 @@ ThreadCache* PartitionRoot::GetThreadCache() {
 // private.
 internal::LightweightQuarantineBranch&
 PartitionRoot::GetSchedulerLoopQuarantineBranch() {
-  // TODO(crbug.com/1462223): Implement thread-local version and return it here.
-  PA_DCHECK(scheduler_loop_quarantine.has_value());
-  return *scheduler_loop_quarantine->get();
+  ThreadCache* thread_cache = GetThreadCache();
+  if (PA_LIKELY(ThreadCache::IsValid(thread_cache))) {
+    return thread_cache->GetSchedulerLoopQuarantineBranch();
+  } else {
+    return *scheduler_loop_quarantine->get();
+  }
 }
 
 // Explicitly declare common template instantiations to reduce compile time.
