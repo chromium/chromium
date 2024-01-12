@@ -73,6 +73,13 @@ class WebUIAllowlist : public base::RefCountedThreadSafe<WebUIAllowlist> {
   std::unique_ptr<content_settings::RuleIterator> GetRuleIterator(
       ContentSettingsType content_type) const;
 
+  // Returns the matching Rule with highest precedence or nullptr if no Rule
+  // matched. This method is thread-safe.
+  std::unique_ptr<content_settings::Rule> GetRule(
+      const GURL& primary_url,
+      const GURL& secondary_url,
+      ContentSettingsType content_type) const;
+
   void SetWebUIAllowlistProvider(WebUIAllowlistProvider* provider);
   void ResetWebUIAllowlistProvider();
 
