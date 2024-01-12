@@ -9,6 +9,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/values_util.h"
@@ -571,7 +572,8 @@ void ProfilePickerHandler::OnProfileForDialogLoaded(Profile* profile) {
         ProfilePicker::SwitchToReauth(
             profile,
             base::BindOnce(&ProfilePickerHandler::DisplayForceSigninErrorDialog,
-                           weak_factory_.GetWeakPtr()));
+                           weak_factory_.GetWeakPtr(), profile->GetPath(),
+                           base::UTF16ToUTF8(entry->GetUserName())));
       } else {
         ProfilePickerForceSigninDialog::ShowReauthDialog(
             profile, base::UTF16ToUTF8(entry->GetUserName()));
@@ -584,7 +586,9 @@ void ProfilePickerHandler::OnProfileForDialogLoaded(Profile* profile) {
       // signed in with an email address matched RestrictSigninToPattern policy
       // already.
       if (base::FeatureList::IsEnabled(kForceSigninFlowInProfilePicker)) {
-        DisplayForceSigninErrorDialog(ReauthUIError::kNotAllowed);
+        DisplayForceSigninErrorDialog(/*profile_path=*/base::FilePath(),
+                                      /*email=*/std::string(),
+                                      ReauthUIError::kNotAllowed);
       } else {
         LoginUIServiceFactory::GetForProfile(profile)
             ->SetProfileBlockingErrorMessage();
@@ -613,12 +617,16 @@ void ProfilePickerHandler::OnProfileForDialogLoaded(Profile* profile) {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
-void ProfilePickerHandler::DisplayForceSigninErrorDialog(ReauthUIError error) {
+void ProfilePickerHandler::DisplayForceSigninErrorDialog(
+    const base::FilePath& profile_path,
+    const std::string& email,
+    ReauthUIError error) {
   AllowJavascript();
-  const auto& [title_id, body_id] = GetReauthUIErrorMessageIDs(error);
-  FireWebUIListener("display-force-signin-error-dialog",
-                    base::Value(l10n_util::GetStringUTF8(title_id)),
-                    base::Value(l10n_util::GetStringUTF8(body_id)));
+
+  const auto& [title, body] = GetReauthUIErrorMessages(error, email);
+  FireWebUIListener("display-force-signin-error-dialog", base::Value(title),
+                    base::Value(body),
+                    base::Value(profile_path.AsUTF16Unsafe()));
 }
 
 void ProfilePickerHandler::HandleLaunchGuestProfile(

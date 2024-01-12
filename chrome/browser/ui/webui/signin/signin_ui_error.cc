@@ -8,6 +8,7 @@
 #include <tuple>
 
 #include "base/containers/fixed_flat_map.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -143,22 +144,30 @@ SigninUIError::SigninUIError(Type type,
                              const std::u16string& error_message)
     : type_(type), email_(base::UTF8ToUTF16(email)), message_(error_message) {}
 
-ReauthUIErrorMessageIDs GetReauthUIErrorMessageIDs(ReauthUIError error) {
+ReauthUIErrorMessages GetReauthUIErrorMessages(ReauthUIError error,
+                                               const std::string& email) {
   CHECK_NE(error, ReauthUIError::kNone);
-
-  constexpr base::fixed_flat_map<ReauthUIError, ReauthUIErrorMessageIDs, 3>
-      reauth_error_map = base::MakeFixedFlatMap<ReauthUIError,
-                                                ReauthUIErrorMessageIDs>({
-          {ReauthUIError::kNotAllowed,
-           {IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_DIALOG_NOT_ALLOWED_TITLE,
-            IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_DIALOG_NOT_ALLOWED_BODY}},
-          {ReauthUIError::kWrongAccount,
-           {IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_DIALOG_WRONG_ACCOUNT_TITLE,
-            IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_DIALOG_WRONG_ACCOUNT_BODY}},
-          {ReauthUIError::kTimeout,
-           {IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_TIMEOUT_TITLE,
-            IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_TIMEOUT_BODY}},
-      });
-
-  return reauth_error_map.at(error);
+  switch (error) {
+    case ReauthUIError::kNotAllowed:
+      return {
+          l10n_util::GetStringUTF16(
+              IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_DIALOG_NOT_ALLOWED_TITLE),
+          l10n_util::GetStringUTF16(
+              IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_DIALOG_NOT_ALLOWED_BODY)};
+    case ReauthUIError::kWrongAccount:
+      CHECK(!email.empty());
+      return {
+          l10n_util::GetStringUTF16(
+              IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_DIALOG_WRONG_ACCOUNT_TITLE),
+          l10n_util::GetStringFUTF16(
+              IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_DIALOG_WRONG_ACCOUNT_BODY,
+              base::UTF8ToUTF16(email))};
+    case ReauthUIError::kTimeout:
+      return {l10n_util::GetStringUTF16(
+                  IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_TIMEOUT_TITLE),
+              l10n_util::GetStringUTF16(
+                  IDS_PROFILE_PICKER_FORCE_SIGN_IN_ERROR_TIMEOUT_BODY)};
+    case ReauthUIError::kNone:
+      NOTREACHED_NORETURN();
+  }
 }

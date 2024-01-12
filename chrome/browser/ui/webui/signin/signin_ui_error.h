@@ -115,10 +115,14 @@ enum class ReauthUIError {
 
 // Helper pair to get the error messages based on the `ReauthUIError`
 // error enum to be displayed on the Profile Picker error dialog.
-// - `first` for the title message ID.
-// - `second` for the body message ID.
-using ReauthUIErrorMessageIDs = std::pair<int, int>;
+// - `first` for the title message.
+// - `second` for the body message.
+using ReauthUIErrorMessages = std::pair<std::u16string, std::u16string>;
 
-ReauthUIErrorMessageIDs GetReauthUIErrorMessageIDs(ReauthUIError error);
+// Returns the error messages for the given `error`.
+// The `email` is only used when the error is `ReauthUIError::kWrongAccount` and
+// must not be empty in this case. `error` must not be `ReauthUIError::kNone`.
+ReauthUIErrorMessages GetReauthUIErrorMessages(ReauthUIError error,
+                                               const std::string& email);
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_SIGNIN_UI_ERROR_H_
