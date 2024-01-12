@@ -251,9 +251,39 @@ TEST_F(SessionRestorationServiceFactoryTest, MigrateSession_ToLegacy_Legacy) {
                           SessionStorageMigrationStatus::kSuccess);
 }
 
-// Tests that MigrateSessionStorage(...) succeed when asked to migrate to
-// legacy storage when the storage format is unknown, the sessions are in
-// the legacy format, and thus the conversion is a no-op.
+// Tests that MigrateSessionStorage(...) does not perform conversion when the
+// storage format is unknown, and instead detect the existing format. When no
+// previous session exists, and thus the detection must succeed, and reports
+// the storage is in the requested format.
+TEST_F(SessionRestorationServiceFactoryTest,
+       MigrateSession_ToLegacy_UnknownInexistent) {
+  bool callback_called = false;
+  base::OnceClosure closure =
+      base::BindOnce([](bool* invoked) { *invoked = true; }, &callback_called);
+
+  // Start the migration, and check that it is not immediate, but requires
+  // to spin the main run loop.
+  base::RunLoop run_loop;
+  SessionRestorationServiceFactory::GetInstance()->MigrateSessionStorageFormat(
+      browser_state(), SessionRestorationServiceFactory::kLegacy,
+      std::move(closure).Then(run_loop.QuitClosure()));
+  EXPECT_FALSE(callback_called);
+
+  // The callback should eventually be called, but asynchronously.
+  run_loop.Run();
+  EXPECT_TRUE(callback_called);
+
+  // Check that the preferences have been updated.
+  CheckSessionStoragePref(browser_state()->GetPrefs(),
+                          SessionStorageFormat::kLegacy,
+                          SessionStorageMigrationStatus::kSuccess);
+}
+
+// Tests that MigrateSessionStorage(...) does not perform conversion when the
+// storage format is unknown, and instead detect the existing format. When a
+// previous session in legacy format exists, it should leave it untouched,
+// the detection should report success, and that the storage is in legacy
+// format.
 TEST_F(SessionRestorationServiceFactoryTest,
        MigrateSession_ToLegacy_UnknownAsLegacy) {
   // Create an empty session in legacy format.
@@ -289,9 +319,11 @@ TEST_F(SessionRestorationServiceFactoryTest,
                           SessionStorageMigrationStatus::kSuccess);
 }
 
-// Tests that MigrateSessionStorage(...) succeed when asked to migrate to
-// legacy storage when the storage format is unknown, the sessions are in
-// the optimized format, and thus requires conversion.
+// Tests that MigrateSessionStorage(...) does not perform conversion when the
+// storage format is unknown, and instead detect the existing format. When a
+// previous session in optimized format exists, it should leave it untouched,
+// the detection should report success, and that the storage is in optimized
+// format.
 TEST_F(SessionRestorationServiceFactoryTest,
        MigrateSession_ToLegacy_UnknownAsOptimized) {
   // Create an empty session in optimized format.
@@ -318,12 +350,12 @@ TEST_F(SessionRestorationServiceFactoryTest,
   run_loop.Run();
   EXPECT_TRUE(callback_called);
 
-  // Check that the session storage is in the legacy format.
-  EXPECT_TRUE(LegacySessionExists(root, kSessionIdentifier));
+  // Check that the session storage is in the optimized format.
+  EXPECT_TRUE(OptimizedSessionExists(root, kSessionIdentifier));
 
   // Check that the preferences have been updated.
   CheckSessionStoragePref(browser_state()->GetPrefs(),
-                          SessionStorageFormat::kLegacy,
+                          SessionStorageFormat::kOptimized,
                           SessionStorageMigrationStatus::kSuccess);
 }
 
@@ -439,7 +471,7 @@ TEST_F(SessionRestorationServiceFactoryTest,
        MigrateSession_ToLegacy_OptimizedPreviousMigrationCrashedInProgress) {
   WriteSessionStoragePref(browser_state()->GetPrefs(),
                           SessionStorageFormat::kOptimized,
-                          SessionStorageMigrationStatus::kInProgressToLegacy);
+                          SessionStorageMigrationStatus::kInProgress);
 
   bool callback_called = false;
   base::OnceClosure closure =
@@ -452,10 +484,10 @@ TEST_F(SessionRestorationServiceFactoryTest,
       std::move(closure));
   EXPECT_TRUE(callback_called);
 
-  // Check that the preferences have been updated.
+  // Check that the preferences have been not updated.
   CheckSessionStoragePref(browser_state()->GetPrefs(),
                           SessionStorageFormat::kOptimized,
-                          SessionStorageMigrationStatus::kFailure);
+                          SessionStorageMigrationStatus::kInProgress);
 }
 
 // Tests that MigrateSessionStorage(...) succeed when asked to migrate to
@@ -491,9 +523,39 @@ TEST_F(SessionRestorationServiceFactoryTest,
                           SessionStorageMigrationStatus::kSuccess);
 }
 
-// Tests that MigrateSessionStorage(...) succeed when asked to migrate to
-// optimized storage when the storage format is unknown, the sessions are in
-// the optimized format, and thus the conversion is a no-op.
+// Tests that MigrateSessionStorage(...) does not perform conversion when the
+// storage format is unknown, and instead detect the existing format. When no
+// previous session exists, and thus the detection must succeed, and reports
+// the storage is in the requested format.
+TEST_F(SessionRestorationServiceFactoryTest,
+       MigrateSession_ToOptimized_UnknownInexistent) {
+  bool callback_called = false;
+  base::OnceClosure closure =
+      base::BindOnce([](bool* invoked) { *invoked = true; }, &callback_called);
+
+  // Start the migration, and check that it is not immediate, but requires
+  // to spin the main run loop.
+  base::RunLoop run_loop;
+  SessionRestorationServiceFactory::GetInstance()->MigrateSessionStorageFormat(
+      browser_state(), SessionRestorationServiceFactory::kOptimized,
+      std::move(closure).Then(run_loop.QuitClosure()));
+  EXPECT_FALSE(callback_called);
+
+  // The callback should eventually be called, but asynchronously.
+  run_loop.Run();
+  EXPECT_TRUE(callback_called);
+
+  // Check that the preferences have been updated.
+  CheckSessionStoragePref(browser_state()->GetPrefs(),
+                          SessionStorageFormat::kOptimized,
+                          SessionStorageMigrationStatus::kSuccess);
+}
+
+// Tests that MigrateSessionStorage(...) does not perform conversion when the
+// storage format is unknown, and instead detect the existing format. When a
+// previous session in legacy format exists, it should leave it untouched,
+// the detection should report success, and that the storage is in legacy
+// format.
 TEST_F(SessionRestorationServiceFactoryTest,
        MigrateSession_ToOptimized_UnknownAsOptimized) {
   // Create an empty session in optimized format.
@@ -529,9 +591,11 @@ TEST_F(SessionRestorationServiceFactoryTest,
                           SessionStorageMigrationStatus::kSuccess);
 }
 
-// Tests that MigrateSessionStorage(...) succeed when asked to migrate to
-// optimized storage when the storage format is unknown, the sessions are in
-// the legacy format, and thus requires conversion.
+// Tests that MigrateSessionStorage(...) does not perform conversion when the
+// storage format is unknown, and instead detect the existing format. When a
+// previous session in optimized format exists, it should leave it untouched,
+// the detection should report success, and that the storage is in optimized
+// format.
 TEST_F(SessionRestorationServiceFactoryTest,
        MigrateSession_ToOptimized_UnknownAsLegacy) {
   // Create an empty session in legacy format.
@@ -559,11 +623,11 @@ TEST_F(SessionRestorationServiceFactoryTest,
   EXPECT_TRUE(callback_called);
 
   // Check that the session storage is in the optimized format.
-  EXPECT_TRUE(OptimizedSessionExists(root, kSessionIdentifier));
+  EXPECT_TRUE(LegacySessionExists(root, kSessionIdentifier));
 
   // Check that the preferences have been updated.
   CheckSessionStoragePref(browser_state()->GetPrefs(),
-                          SessionStorageFormat::kOptimized,
+                          SessionStorageFormat::kLegacy,
                           SessionStorageMigrationStatus::kSuccess);
 }
 
@@ -677,9 +741,9 @@ TEST_F(SessionRestorationServiceFactoryTest,
 // the previous migration was in progress.
 TEST_F(SessionRestorationServiceFactoryTest,
        MigrateSession_ToOptimized_LegacyPreviousMigrationCrashedInProgress) {
-  WriteSessionStoragePref(
-      browser_state()->GetPrefs(), SessionStorageFormat::kLegacy,
-      SessionStorageMigrationStatus::kInProgressToOptimized);
+  WriteSessionStoragePref(browser_state()->GetPrefs(),
+                          SessionStorageFormat::kLegacy,
+                          SessionStorageMigrationStatus::kInProgress);
 
   bool callback_called = false;
   base::OnceClosure closure =
@@ -692,8 +756,8 @@ TEST_F(SessionRestorationServiceFactoryTest,
       std::move(closure));
   EXPECT_TRUE(callback_called);
 
-  // Check that the preferences have been updated.
+  // Check that the preferences have been not updated.
   CheckSessionStoragePref(browser_state()->GetPrefs(),
                           SessionStorageFormat::kLegacy,
-                          SessionStorageMigrationStatus::kFailure);
+                          SessionStorageMigrationStatus::kInProgress);
 }

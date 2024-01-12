@@ -58,8 +58,7 @@ enum class SessionStorageMigrationStatus {
   kUnkown,
   kSuccess,
   kFailure,
-  kInProgressToLegacy,
-  kInProgressToOptimized,
+  kInProgress,
 };
 
 // Name of the histogram used to record the time spent blocking the main
