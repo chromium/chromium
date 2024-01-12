@@ -1692,8 +1692,7 @@ TEST_P(ShapeParameterTest, ShapeResultViewMissingRun) {
   scoped_refptr<ShapeResult> result = CreateMissingRunResult(direction);
 
   // 6 and 7 are missing but NumCharacters() should be 4.
-  scoped_refptr<ShapeResultView> view =
-      ShapeResultView::Create(result.get(), 5, 9);
+  ShapeResultView* view = ShapeResultView::Create(result.get(), 5, 9);
   EXPECT_EQ(view->StartIndex(), 5u);
   EXPECT_EQ(view->EndIndex(), 9u);
   EXPECT_EQ(view->NumCharacters(), 4u);

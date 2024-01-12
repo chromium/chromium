@@ -45,12 +45,12 @@ class HarfBuzzShapingLineBreaker : public ShapingLineBreaker {
   const Font* font_;
 };
 
-scoped_refptr<const ShapeResultView> ShapeLine(ShapingLineBreaker* breaker,
-                                               unsigned start_offset,
-                                               LayoutUnit available_space,
-                                               unsigned* break_offset) {
+const ShapeResultView* ShapeLine(ShapingLineBreaker* breaker,
+                                 unsigned start_offset,
+                                 LayoutUnit available_space,
+                                 unsigned* break_offset) {
   ShapingLineBreaker::Result result;
-  scoped_refptr<const ShapeResultView> shape_result =
+  const ShapeResultView* shape_result =
       breaker->ShapeLine(start_offset, available_space, &result);
   *break_offset = result.break_offset;
   return shape_result;
@@ -155,7 +155,7 @@ TEST_F(ShapingLineBreakerTest, ShapeLineLatin) {
 
   HarfBuzzShapingLineBreaker breaker(&shaper, &font, result, &break_iterator,
                                      nullptr);
-  scoped_refptr<const ShapeResultView> line;
+  const ShapeResultView* line = nullptr;
   unsigned break_offset = 0;
 
   // Test the case where the entire string fits.
@@ -244,7 +244,7 @@ TEST_F(ShapingLineBreakerTest, ShapeLineLatinBreakAll) {
 
   HarfBuzzShapingLineBreaker breaker(&shaper, &font, result, &break_iterator,
                                      nullptr);
-  scoped_refptr<const ShapeResultView> line;
+  const ShapeResultView* line;
   unsigned break_offset = 0;
 
   line = ShapeLine(&breaker, 0, midpoint->SnappedWidth(), &break_offset);
@@ -267,20 +267,19 @@ TEST_F(ShapingLineBreakerTest, ShapeLineZeroAvailableWidth) {
 
   HarfBuzzShapingLineBreaker breaker(&shaper, &font, result, &break_iterator,
                                      nullptr);
-  scoped_refptr<const ShapeResultView> line;
   unsigned break_offset = 0;
   LayoutUnit zero(0);
 
-  line = ShapeLine(&breaker, 0, zero, &break_offset);
+  ShapeLine(&breaker, 0, zero, &break_offset);
   EXPECT_EQ(7u, break_offset);
 
-  line = ShapeLine(&breaker, 8, zero, &break_offset);
+  ShapeLine(&breaker, 8, zero, &break_offset);
   EXPECT_EQ(16u, break_offset);
 
-  line = ShapeLine(&breaker, 17, zero, &break_offset);
+  ShapeLine(&breaker, 17, zero, &break_offset);
   EXPECT_EQ(21u, break_offset);
 
-  line = ShapeLine(&breaker, 22, zero, &break_offset);
+  ShapeLine(&breaker, 22, zero, &break_offset);
   EXPECT_EQ(28u, break_offset);
 }
 
@@ -342,7 +341,7 @@ TEST_F(ShapingLineBreakerTest, ShapeLineRangeEndMidWord) {
 
   HarfBuzzShapingLineBreaker breaker(&shaper, &font, result, &break_iterator,
                                      nullptr);
-  scoped_refptr<const ShapeResultView> line;
+  const ShapeResultView* line;
   unsigned break_offset = 0;
 
   line = ShapeLine(&breaker, 0, LayoutUnit::Max(), &break_offset);
@@ -373,7 +372,7 @@ TEST_F(ShapingLineBreakerTest, ShapeLineWithLucidaFont) {
 
   HarfBuzzShapingLineBreaker breaker(&shaper, &font, result, &break_iterator,
                                      nullptr);
-  scoped_refptr<const ShapeResultView> line;
+  const ShapeResultView* line;
   unsigned break_offset = 0;
 
   line = ShapeLine(&breaker, 13, segment1->SnappedWidth(), &break_offset);

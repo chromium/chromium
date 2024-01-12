@@ -42,11 +42,11 @@ ASSERT_SIZE(FragmentItem, SameSizeAsFragmentItem);
 }  // namespace
 
 FragmentItem::FragmentItem(const InlineItem& inline_item,
-                           scoped_refptr<const ShapeResultView> shape_result,
+                           const ShapeResultView* shape_result,
                            const TextOffsetRange& text_offset,
                            const PhysicalSize& size,
                            bool is_hidden_for_paint)
-    : text_({std::move(shape_result), nullptr, text_offset}),
+    : text_({shape_result, nullptr, text_offset}),
       rect_({PhysicalOffset(), size}),
       layout_object_(inline_item.GetLayoutObject()),
       const_type_(kText),
@@ -71,11 +71,11 @@ FragmentItem::FragmentItem(const LayoutObject& layout_object,
                            TextItemType text_type,
                            StyleVariant style_variant,
                            TextDirection direction,
-                           scoped_refptr<const ShapeResultView> shape_result,
+                           const ShapeResultView* shape_result,
                            const String& text_content,
                            const PhysicalSize& size,
                            bool is_hidden_for_paint)
-    : generated_text_({std::move(shape_result), text_content}),
+    : generated_text_({shape_result, text_content}),
       rect_({PhysicalOffset(), size}),
       layout_object_(&layout_object),
       const_type_(kGeneratedText),
@@ -93,7 +93,7 @@ FragmentItem::FragmentItem(const LayoutObject& layout_object,
 }
 
 FragmentItem::FragmentItem(const InlineItem& inline_item,
-                           scoped_refptr<const ShapeResultView> shape_result,
+                           const ShapeResultView* shape_result,
                            const String& text_content,
                            const PhysicalSize& size,
                            bool is_hidden_for_paint)
@@ -101,7 +101,7 @@ FragmentItem::FragmentItem(const InlineItem& inline_item,
                    inline_item.TextType(),
                    inline_item.GetStyleVariant(),
                    inline_item.Direction(),
-                   std::move(shape_result),
+                   shape_result,
                    text_content,
                    size,
                    is_hidden_for_paint) {}
@@ -349,11 +349,11 @@ LayoutObject& FragmentItem::BlockInInline() const {
   return *block;
 }
 
-void FragmentItem::SetSvgFragmentData(scoped_refptr<const SvgFragmentData> data,
+void FragmentItem::SetSvgFragmentData(const SvgFragmentData* data,
                                       const PhysicalRect& unscaled_rect,
                                       bool is_hidden) {
   DCHECK_EQ(Type(), kText);
-  text_.svg_data = std::move(data);
+  text_.svg_data = data;
   rect_ = unscaled_rect;
   is_hidden_for_paint_ = is_hidden;
 }
@@ -519,9 +519,9 @@ PhysicalRect FragmentItem::InkOverflowRect() const {
 
 const ShapeResultView* FragmentItem::TextShapeResult() const {
   if (Type() == kText)
-    return text_.shape_result.get();
+    return text_.shape_result.Get();
   if (Type() == kGeneratedText)
-    return generated_text_.shape_result.get();
+    return generated_text_.shape_result.Get();
   NOTREACHED();
   return nullptr;
 }
@@ -570,11 +570,11 @@ TextFragmentPaintInfo FragmentItem::TextPaintInfo(
     const FragmentItems& items) const {
   if (Type() == kText) {
     return {items.Text(UsesFirstLineStyle()), text_.text_offset.start,
-            text_.text_offset.end, text_.shape_result.get()};
+            text_.text_offset.end, text_.shape_result.Get()};
   }
   if (Type() == kGeneratedText) {
     return {generated_text_.text, 0, generated_text_.text.length(),
-            generated_text_.shape_result.get()};
+            generated_text_.shape_result.Get()};
   }
   NOTREACHED();
   return {};
@@ -1122,8 +1122,12 @@ void FragmentItem::Trace(Visitor* visitor) const {
   // Looking up |const_type_| inside Trace() is safe since it is const.
   switch (const_type_) {
     case kInvalid:
+      break;
     case kText:
+      visitor->Trace(text_);
+      break;
     case kGeneratedText:
+      visitor->Trace(generated_text_);
       break;
     case kLine:
       visitor->Trace(line_);

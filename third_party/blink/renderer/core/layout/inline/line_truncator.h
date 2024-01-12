@@ -96,7 +96,7 @@ class CORE_EXPORT LineTruncator final {
 
   // This data member is available between SetupEllipsis() and
   // PlaceEllipsisNextTo().
-  scoped_refptr<ShapeResultView> ellipsis_shape_result_;
+  ShapeResultView* ellipsis_shape_result_ = nullptr;
 };
 
 }  // namespace blink

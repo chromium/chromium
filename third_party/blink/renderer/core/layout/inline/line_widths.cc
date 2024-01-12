@@ -68,9 +68,9 @@ bool LineWidths::Set(const InlineNode& node,
                                       baseline_type);
           if (text_box.include_used_fonts) {
             text_box.style = &item_style;
-            scoped_refptr<ShapeResultView> shape_result_view =
+            const ShapeResultView* shape_result_view =
                 ShapeResultView::Create(shape_result);
-            text_box.AccumulateUsedFonts(shape_result_view.get());
+            text_box.AccumulateUsedFonts(shape_result_view);
           }
           // If it doesn't fit to the default line box, fail.
           if (!line_box.metrics.Contains(text_box.metrics)) {

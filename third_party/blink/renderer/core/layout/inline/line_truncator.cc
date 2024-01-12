@@ -85,10 +85,10 @@ LayoutUnit LineTruncator::PlaceEllipsisNextTo(
   }
 
   DCHECK(ellipsis_text_);
-  DCHECK(ellipsis_shape_result_.get());
+  DCHECK(ellipsis_shape_result_);
   line_box->AddChild(
       *ellipsized_layout_object, StyleVariant::kEllipsis,
-      std::move(ellipsis_shape_result_), ellipsis_text_,
+      ellipsis_shape_result_, ellipsis_text_,
       LogicalRect(ellipsis_inline_offset, -ellipsis_metrics.ascent,
                   ellipsis_width_, ellipsis_metrics.LineHeight()),
       /* bidi_level */ 0);
@@ -536,10 +536,10 @@ LogicalLineItem LineTruncator::TruncateText(const LogicalLineItem& item,
                             item.StartOffset() + offset_to_fit)
           : TextOffsetRange(item.StartOffset() + offset_to_fit,
                             item.EndOffset());
-  scoped_refptr<ShapeResultView> new_shape_result = ShapeResultView::Create(
+  const ShapeResultView* new_shape_result = ShapeResultView::Create(
       &shape_result, new_text_offset.start, new_text_offset.end);
   DCHECK(item.inline_item);
-  return LogicalLineItem(item, std::move(new_shape_result), new_text_offset);
+  return LogicalLineItem(item, new_shape_result, new_text_offset);
 }
 
 }  // namespace blink

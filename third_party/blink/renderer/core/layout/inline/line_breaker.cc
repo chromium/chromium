@@ -1302,7 +1302,7 @@ void LineBreaker::SplitTextIntoSegments(const InlineItem& item,
       continue;
     InlineItemResult* result = AddItem(item, glyph_end, line_info);
     result->should_create_line_box = true;
-    auto shape_result_view =
+    auto* shape_result_view =
         ShapeResultView::Create(&shape, current_.text_offset, glyph_end);
     // For general CSS text, we apply SnappedWidth().ClampNegativeToZero().
     // However we need to remove ClampNegativeToZero() for SVG <text> in order
@@ -1426,7 +1426,7 @@ LineBreaker::BreakResult LineBreaker::BreakText(
     ++try_count;
     DCHECK_LE(try_count, 2u);
 #endif
-    scoped_refptr<const ShapeResultView> shape_result =
+    const ShapeResultView* shape_result =
         breaker.ShapeLine(item_result->StartOffset(),
                           available_width.ClampNegativeToZero(), &result);
 
@@ -1466,7 +1466,7 @@ LineBreaker::BreakResult LineBreaker::BreakText(
     item_result->text_offset.end = result.break_offset;
     item_result->text_offset.AssertNotEmpty();
     item_result->has_only_trailing_spaces = result.has_trailing_spaces;
-    item_result->shape_result = std::move(shape_result);
+    item_result->shape_result = shape_result;
     break;
   }
 
@@ -1518,11 +1518,11 @@ bool LineBreaker::BreakTextAt(InlineItemResult* item_result,
     DCHECK_GE(break_at_.end.text_offset, item_result->text_offset.end);
   }
   if (item_result->Length()) {
-    scoped_refptr<const ShapeResultView> shape_result = breaker.ShapeLineAt(
+    const ShapeResultView* shape_result = breaker.ShapeLineAt(
         item_result->StartOffset(), item_result->EndOffset());
     item_result->inline_size =
         shape_result->SnappedWidth().ClampNegativeToZero();
-    item_result->shape_result = std::move(shape_result);
+    item_result->shape_result = shape_result;
     if (break_at_.is_hyphenated) {
       AddHyphen(line_info->MutableResults(), item_result);
     }
@@ -2047,7 +2047,7 @@ bool LineBreaker::CanBreakInside(const InlineItemResult& item_result) {
 
 // Compute a new ShapeResult for the specified end offset.
 // The end is re-shaped if it is not safe-to-break.
-scoped_refptr<ShapeResultView> LineBreaker::TruncateLineEndResult(
+const ShapeResultView* LineBreaker::TruncateLineEndResult(
     const LineInfo& line_info,
     const InlineItemResult& item_result,
     unsigned end_offset) {
@@ -2056,7 +2056,7 @@ scoped_refptr<ShapeResultView> LineBreaker::TruncateLineEndResult(
 
   // Check given offsets require to truncate |item_result.shape_result|.
   const unsigned start_offset = item_result.StartOffset();
-  const ShapeResultView* source_result = item_result.shape_result.get();
+  const ShapeResultView* source_result = item_result.shape_result.Get();
   DCHECK(source_result);
   DCHECK_GE(start_offset, source_result->StartIndex());
   DCHECK_LE(end_offset, source_result->EndIndex());
@@ -2248,7 +2248,7 @@ void LineBreaker::RemoveTrailingCollapsibleSpace(LineInfo* line_info) {
   // We have a trailing collapsible space. Remove it.
   InlineItemResult* item_result = trailing_collapsible_space_->item_result;
   position_ -= item_result->inline_size;
-  if (scoped_refptr<const ShapeResultView>& collapsed_shape_result =
+  if (const ShapeResultView* collapsed_shape_result =
           trailing_collapsible_space_->collapsed_shape_result) {
     --item_result->text_offset.end;
     item_result->text_offset.AssertNotEmpty();
@@ -2274,7 +2274,7 @@ LayoutUnit LineBreaker::TrailingCollapsibleSpaceWidth(LineInfo* line_info) {
   // Normally, the width of new_reuslt is smaller, but technically it can be
   // larger. In such case, it means the trailing spaces has negative width.
   InlineItemResult* item_result = trailing_collapsible_space_->item_result;
-  if (scoped_refptr<const ShapeResultView>& collapsed_shape_result =
+  if (const ShapeResultView* collapsed_shape_result =
           trailing_collapsible_space_->collapsed_shape_result) {
     return item_result->inline_size - collapsed_shape_result->SnappedWidth();
   }

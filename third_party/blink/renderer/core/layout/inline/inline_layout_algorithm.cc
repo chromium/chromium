@@ -455,7 +455,7 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
 
       // Take all used fonts into account if 'line-height: normal'.
       if (box->include_used_fonts)
-        box->AccumulateUsedFonts(item_result.shape_result.get());
+        box->AccumulateUsedFonts(item_result.shape_result.Get());
 
       DCHECK(item.TextType() == TextItemType::kNormal ||
              item.TextType() == TextItemType::kSymbolMarker);

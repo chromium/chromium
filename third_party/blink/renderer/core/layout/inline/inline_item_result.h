@@ -81,7 +81,7 @@ struct CORE_EXPORT InlineItemResult {
 
   // ShapeResult for text items. Maybe different from InlineItem if re-shape
   // is needed in the line breaker.
-  scoped_refptr<const ShapeResultView> shape_result;
+  Member<const ShapeResultView> shape_result;
 
   // Hyphen character and its |ShapeResult|.
   // Use |is_hyphenated| to determine whether this item is hyphenated or not.

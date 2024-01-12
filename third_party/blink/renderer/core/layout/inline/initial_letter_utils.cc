@@ -187,7 +187,7 @@ FontHeight AdjustInitialLetterInTextPosition(const FontHeight& line_box_metrics,
                                              LogicalLineItems* line_box) {
   FontHeight font_height = FontHeight::Empty();
   for (LogicalLineItem& line_item : *line_box) {
-    const ShapeResultView* const shape_result = line_item.shape_result.get();
+    const ShapeResultView* const shape_result = line_item.shape_result.Get();
     if (!shape_result || !line_item.inline_item ||
         line_item.inline_item->Type() != InlineItem::kText) {
       continue;
@@ -224,7 +224,7 @@ FontHeight AdjustInitialLetterInTextPosition(const FontHeight& line_box_metrics,
 LayoutUnit CalculateInitialLetterBoxInlineSize(const LineInfo& line_info) {
   LayoutUnit inline_size = line_info.TextIndent();
   for (const InlineItemResult& item_result : line_info.Results()) {
-    const ShapeResultView* const shape_result = item_result.shape_result.get();
+    const ShapeResultView* const shape_result = item_result.shape_result.Get();
     if (!shape_result || item_result.item->Type() != InlineItem::kText) {
       inline_size += item_result.inline_size;
       continue;

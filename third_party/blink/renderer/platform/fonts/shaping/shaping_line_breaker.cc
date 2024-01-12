@@ -258,7 +258,7 @@ inline void ShapingLineBreaker::SetBreakOffset(
 //   If we further assume that the font kerns with space then even though it's a
 //   valid break opportunity reshaping is required as the combined width of the
 //   two segments "Line " and "breaking" may be different from "Line breaking".
-scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeLine(
+const ShapeResultView* ShapingLineBreaker::ShapeLine(
     unsigned start,
     LayoutUnit available_space,
     ShapingLineBreaker::Result* result_out) {
@@ -555,7 +555,7 @@ scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeLine(
                             last_safe, std::move(line_start_result),
                             std::move(line_end_result));
 }
-scoped_refptr<const ShapeResultView> ShapingLineBreaker::ConcatShapeResults(
+const ShapeResultView* ShapingLineBreaker::ConcatShapeResults(
     unsigned start,
     unsigned end,
     unsigned first_safe,
@@ -574,14 +574,14 @@ scoped_refptr<const ShapeResultView> ShapingLineBreaker::ConcatShapeResults(
   if (line_end_result) {
     segments[count++] = {line_end_result.get(), last_safe, max_length};
   }
-  auto line_result = ShapeResultView::Create({&segments[0], count});
+  auto* line_result = ShapeResultView::Create({&segments[0], count});
   DCHECK_EQ(end - start, line_result->NumCharacters());
   return line_result;
 }
 
 // Shape from the specified offset to the end of the ShapeResult.
 // If |start| is safe-to-break, this copies the subset of the result.
-scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeToEnd(
+const ShapeResultView* ShapingLineBreaker::ShapeToEnd(
     unsigned start,
     const EdgeOffset& first_safe,
     unsigned range_start,
@@ -619,9 +619,8 @@ scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeToEnd(
   return ShapeResultView::Create(segments);
 }
 
-scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeLineAt(
-    unsigned start,
-    unsigned end) {
+const ShapeResultView* ShapingLineBreaker::ShapeLineAt(unsigned start,
+                                                       unsigned end) {
   DCHECK_GT(end, start);
 
   const EdgeOffset first_safe = FirstSafeOffset(start);

@@ -134,7 +134,7 @@ const LayoutResult* MathOperatorLayoutAlgorithm::Layout() {
   StretchyOperatorShaper::Metrics metrics;
   scoped_refptr<ShapeResult> shape_result =
       shaper.Shape(&Style().GetFont(), operator_target_size, &metrics);
-  scoped_refptr<const ShapeResultView> shape_result_view =
+  const ShapeResultView* shape_result_view =
       ShapeResultView::Create(shape_result.get());
 
   if (metrics.italic_correction) {
@@ -150,9 +150,9 @@ const LayoutResult* MathOperatorLayoutAlgorithm::Layout() {
   LayoutUnit operator_ascent = LayoutUnit::FromFloatFloor(metrics.ascent);
   LayoutUnit operator_descent = LayoutUnit::FromFloatFloor(metrics.descent);
 
-  container_builder_.SetMathMLPaintInfo(
-      GetBaseCodePoint(), std::move(shape_result_view),
-      LayoutUnit(metrics.advance), operator_ascent, operator_descent);
+  container_builder_.SetMathMLPaintInfo(MakeGarbageCollected<MathMLPaintInfo>(
+      GetBaseCodePoint(), shape_result_view, LayoutUnit(metrics.advance),
+      operator_ascent, operator_descent));
 
   LayoutUnit ascent = BorderScrollbarPadding().block_start + operator_ascent;
   LayoutUnit descent = operator_descent + BorderScrollbarPadding().block_end;

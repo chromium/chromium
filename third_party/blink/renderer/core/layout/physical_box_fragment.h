@@ -427,12 +427,10 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
   bool HasExtraMathMLPainting() const {
     if (IsMathMLFraction())
       return true;
-
-    return GetRareField(FieldId::kMathMLPaintInfo);
+    return rare_data_ && rare_data_->mathml_paint_info_;
   }
   const MathMLPaintInfo& GetMathMLPaintInfo() const {
-    return *rare_data_->GetField(FieldId::kMathMLPaintInfo)
-                ->mathml_paint_info.get();
+    return *rare_data_->mathml_paint_info_;
   }
 
   class MutableForStyleRecalc {

@@ -66,11 +66,14 @@ class ShapeResult;
 // be a separate result owned by the ShapeResultView instance. The second
 // and third lines would again be represented as parts.
 class PLATFORM_EXPORT ShapeResultView final
-    : public RefCounted<ShapeResultView> {
+    : public GarbageCollected<ShapeResultView> {
  public:
   // Create a new ShapeResultView from a pre-defined list of segments.
   // The segments list is assumed to be in logical order.
   struct Segment {
+    STACK_ALLOCATED();
+
+   public:
     Segment() = default;
     Segment(const ShapeResult* result, unsigned start_index, unsigned end_index)
         : result(result),
@@ -89,21 +92,24 @@ class PLATFORM_EXPORT ShapeResultView final
     unsigned start_index;
     unsigned end_index;
   };
-  static scoped_refptr<ShapeResultView> Create(
-      base::span<const Segment> segments);
+  static ShapeResultView* Create(base::span<const Segment> segments);
 
   // Creates a new ShapeResultView from a single segment.
-  static scoped_refptr<ShapeResultView> Create(const ShapeResult*);
-  static scoped_refptr<ShapeResultView> Create(const ShapeResult*,
-                                               unsigned start_index,
-                                               unsigned end_index);
-  static scoped_refptr<ShapeResultView> Create(const ShapeResultView*,
-                                               unsigned start_index,
-                                               unsigned end_index);
+  static ShapeResultView* Create(const ShapeResult*);
+  static ShapeResultView* Create(const ShapeResult*,
+                                 unsigned start_index,
+                                 unsigned end_index);
+  static ShapeResultView* Create(const ShapeResultView*,
+                                 unsigned start_index,
+                                 unsigned end_index);
 
+  struct InitData;
+  explicit ShapeResultView(const InitData& data);
   ShapeResultView(const ShapeResultView&) = delete;
   ShapeResultView& operator=(const ShapeResultView&) = delete;
   ~ShapeResultView();
+
+  void Trace(Visitor*) const {}
 
   scoped_refptr<ShapeResult> CreateShapeResult() const;
 
@@ -151,9 +157,6 @@ class PLATFORM_EXPORT ShapeResultView final
   void ExpandRangeToIncludePartialGlyphs(unsigned* from, unsigned* to) const;
 
  private:
-  struct InitData;
-  explicit ShapeResultView(const InitData& data);
-
   struct RunInfoPart;
   RunInfoPart* PopulateRunInfoParts(const Segment& segment, RunInfoPart* part);
 
@@ -182,7 +185,7 @@ class PLATFORM_EXPORT ShapeResultView final
 
   // Returns byte size, aka allocation size, of |ShapeResultView| with
   // |num_parts| count of |RunInfoPart| in flexible array member.
-  static constexpr size_t ByteSize(wtf_size_t num_parts);
+  static constexpr size_t AdditionalByteSize(wtf_size_t num_parts);
 
   scoped_refptr<const SimpleFontData> const primary_font_;
 

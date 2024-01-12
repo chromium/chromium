@@ -54,6 +54,7 @@ void InlineItemResult::CheckConsistency(bool allow_null_shape_result) const {
 #endif
 
 void InlineItemResult::Trace(Visitor* visitor) const {
+  visitor->Trace(shape_result);
   visitor->Trace(layout_result);
   if (positioned_float)
     visitor->Trace(positioned_float.value());

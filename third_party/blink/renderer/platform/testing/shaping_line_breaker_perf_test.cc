@@ -66,9 +66,9 @@ LayoutUnit ShapeText(ShapingLineBreaker* breaker,
   unsigned break_offset = 0;
   LayoutUnit total_width;
   ShapingLineBreaker::Result result;
-  scoped_refptr<const ShapeResultView> shape_result;
   while (break_offset < string_length) {
-    shape_result = breaker->ShapeLine(break_offset, available_space, &result);
+    const ShapeResultView* shape_result =
+        breaker->ShapeLine(break_offset, available_space, &result);
     break_offset = result.break_offset;
     total_width += shape_result->SnappedWidth();
   }

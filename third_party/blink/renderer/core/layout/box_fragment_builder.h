@@ -453,43 +453,8 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
 
   void SetIsMathMLFraction() { is_math_fraction_ = true; }
   void SetIsMathMLOperator() { is_math_operator_ = true; }
-  void SetMathMLPaintInfo(
-      UChar operator_character,
-      scoped_refptr<const ShapeResultView> operator_shape_result_view,
-      LayoutUnit operator_inline_size,
-      LayoutUnit operator_ascent,
-      LayoutUnit operator_descent) {
-    if (!mathml_paint_info_)
-      mathml_paint_info_ = std::make_unique<MathMLPaintInfo>();
-
-    mathml_paint_info_->operator_character = operator_character;
-    mathml_paint_info_->operator_shape_result_view =
-        std::move(operator_shape_result_view);
-
-    mathml_paint_info_->operator_inline_size = operator_inline_size;
-    mathml_paint_info_->operator_ascent = operator_ascent;
-    mathml_paint_info_->operator_descent = operator_descent;
-  }
-  void SetMathMLPaintInfo(
-      scoped_refptr<const ShapeResultView> operator_shape_result_view,
-      LayoutUnit operator_inline_size,
-      LayoutUnit operator_ascent,
-      LayoutUnit operator_descent,
-      LayoutUnit radical_operator_inline_offset,
-      const BoxStrut& radical_base_margins) {
-    if (!mathml_paint_info_)
-      mathml_paint_info_ = std::make_unique<MathMLPaintInfo>();
-
-    mathml_paint_info_->operator_character = kSquareRootCharacter;
-    mathml_paint_info_->operator_shape_result_view =
-        std::move(operator_shape_result_view);
-
-    mathml_paint_info_->operator_inline_size = operator_inline_size;
-    mathml_paint_info_->operator_ascent = operator_ascent;
-    mathml_paint_info_->operator_descent = operator_descent;
-    mathml_paint_info_->radical_base_margins = radical_base_margins;
-    mathml_paint_info_->radical_operator_inline_offset =
-        radical_operator_inline_offset;
+  void SetMathMLPaintInfo(const MathMLPaintInfo* mathml_paint_info) {
+    mathml_paint_info_ = mathml_paint_info;
   }
 
   void SetSidesToInclude(LogicalBoxSides sides_to_include) {
@@ -705,7 +670,7 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
 
   scoped_refptr<SerializedScriptValue> custom_layout_data_;
 
-  std::unique_ptr<MathMLPaintInfo> mathml_paint_info_;
+  const MathMLPaintInfo* mathml_paint_info_ = nullptr;
 
 #if DCHECK_IS_ON()
   // Describes what size_.block_size represents; either the size of a single
