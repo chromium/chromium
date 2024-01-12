@@ -433,7 +433,7 @@
 #include "chrome/browser/plugins/plugin_info_host_impl.h"
 #endif
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) || !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/profiles/profile_statistics_factory.h"
 #include "chrome/browser/ui/startup/first_run_service.h"
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
