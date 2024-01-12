@@ -25,9 +25,7 @@ WorkletDevToolsAgentHost::WorkletDevToolsAgentHost(
 WorkletDevToolsAgentHost::~WorkletDevToolsAgentHost() = default;
 
 std::string WorkletDevToolsAgentHost::GetType() {
-  // TODO(crbug.com/1517088): update this to kWorklet when we're ready to
-  // switch.
-  return kTypeDedicatedWorker;
+  return kTypeWorklet;
 }
 
 }  // namespace content
