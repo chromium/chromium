@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.AreaMotionEventFilter;
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.MotionEventHandler;
 import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayer;
+import org.chromium.chrome.browser.dragdrop.DragDropGlobalState;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
@@ -185,6 +186,9 @@ public class StripLayoutHelperManager
     private class TabStripEventHandler implements MotionEventHandler {
         @Override
         public void onDown(float x, float y, boolean fromMouse, int buttons) {
+            if (DragDropGlobalState.hasValue()) {
+                return;
+            }
             if (mModelSelectorButton.onDown(x, y, fromMouse)) {
                 return;
             }
@@ -204,12 +208,18 @@ public class StripLayoutHelperManager
 
         @Override
         public void drag(float x, float y, float dx, float dy, float tx, float ty) {
+            if (DragDropGlobalState.hasValue()) {
+                return;
+            }
             mModelSelectorButton.drag(x, y);
             getActiveStripLayoutHelper().drag(time(), x, y, dx);
         }
 
         @Override
         public void click(float x, float y, boolean fromMouse, int buttons) {
+            if (DragDropGlobalState.hasValue()) {
+                return;
+            }
             long time = time();
             if (mModelSelectorButton.click(x, y)) {
                 mModelSelectorButton.handleClick(time);
@@ -220,11 +230,17 @@ public class StripLayoutHelperManager
 
         @Override
         public void fling(float x, float y, float velocityX, float velocityY) {
+            if (DragDropGlobalState.hasValue()) {
+                return;
+            }
             getActiveStripLayoutHelper().fling(time(), x, y, velocityX, velocityY);
         }
 
         @Override
         public void onLongPress(float x, float y) {
+            if (DragDropGlobalState.hasValue()) {
+                return;
+            }
             getActiveStripLayoutHelper().onLongPress(time(), x, y);
         }
 
@@ -235,6 +251,10 @@ public class StripLayoutHelperManager
 
         @Override
         public void onHoverEnter(float x, float y) {
+            if (DragDropGlobalState.hasValue()) {
+                return;
+            }
+
             // Inflate the hover card ViewStub if not already inflated.
             if (ChromeFeatureList.isEnabled(
                             ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP)
@@ -246,6 +266,9 @@ public class StripLayoutHelperManager
 
         @Override
         public void onHoverMove(float x, float y) {
+            if (DragDropGlobalState.hasValue()) {
+                return;
+            }
             getActiveStripLayoutHelper().onHoverMove(x, y);
         }
 
