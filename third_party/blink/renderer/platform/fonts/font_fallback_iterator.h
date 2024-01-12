@@ -25,7 +25,7 @@ class FontFallbackIterator {
 
  public:
   FontFallbackIterator(const FontDescription&,
-                       scoped_refptr<FontFallbackList>,
+                       FontFallbackList*,
                        FontFallbackPriority);
   FontFallbackIterator(FontFallbackIterator&&) = default;
   FontFallbackIterator(const FontFallbackIterator&) = delete;
@@ -60,7 +60,7 @@ class FontFallbackIterator {
       const Vector<UChar32>& hint_list);
 
   const FontDescription& font_description_;
-  scoped_refptr<FontFallbackList> font_fallback_list_;
+  FontFallbackList* font_fallback_list_;
   int current_font_data_index_;
   unsigned segmented_face_index_;
 

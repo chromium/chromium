@@ -198,7 +198,7 @@ void DrawImageExpectingIconAndTextLTR(PlaceholderImage& image,
       .WillOnce(InvokeWithoutArgs([&image, scale_factor]() {
         EXPECT_NEAR(
             scale_factor * kBaseFontSize,
-            image.GetFontForTesting()->GetFontDescription().ComputedSize(),
+            image.GetFontForTesting().GetFontDescription().ComputedSize(),
             0.01);
       }));
 
@@ -454,7 +454,7 @@ TEST_F(PlaceholderImageTest, DrawWithOriginalResourceSizeRTL) {
       .WillOnce(InvokeWithoutArgs([image]() {
         EXPECT_NEAR(
             kScaleFactor * kBaseFontSize,
-            image->GetFontForTesting()->GetFontDescription().ComputedSize(),
+            image->GetFontForTesting().GetFontDescription().ComputedSize(),
             0.01);
       }));
 

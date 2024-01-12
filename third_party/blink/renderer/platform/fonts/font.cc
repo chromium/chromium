@@ -56,7 +56,7 @@ FontFallbackMap& GetFontFallbackMap(FontSelector* font_selector) {
   return FontCache::Get().GetFontFallbackMap();
 }
 
-scoped_refptr<FontFallbackList> GetOrCreateFontFallbackList(
+FontFallbackList* GetOrCreateFontFallbackList(
     const FontDescription& font_description,
     FontSelector* font_selector) {
   return GetFontFallbackMap(font_selector).Get(font_description);
@@ -75,54 +75,16 @@ Font::Font(const FontDescription& font_description, FontSelector* font_selector)
               ? GetOrCreateFontFallbackList(font_description, font_selector)
               : nullptr) {}
 
-Font::Font(const Font& other) = default;
-
-Font& Font::operator=(const Font& other) {
-  if (this == &other || *this == other)
-    return *this;
-  ReleaseFontFallbackListRef();
-  font_description_ = other.font_description_;
-  font_fallback_list_ = other.font_fallback_list_;
-  return *this;
-}
-
-Font::~Font() {
-  ReleaseFontFallbackListRef();
-}
-
-// Ensures that FontFallbackMap only keeps FontFallbackLists that are still in
-// use by at least one Font object. If the last Font releases its reference, we
-// should clear the entry from FontFallbackMap.
-// Note that we must not persist a FontFallbackList reference outside Font.
-void Font::ReleaseFontFallbackListRef() const {
-  if (!font_fallback_list_ || !font_fallback_list_->IsValid() ||
-      !font_fallback_list_->HasFontFallbackMap()) {
-    font_fallback_list_.reset();
-    return;
-  }
-
-  FontFallbackList& list_ref = *font_fallback_list_;
-  // Failing this CHECK causes use-after-free below.
-  CHECK(!list_ref.HasOneRef());
-  font_fallback_list_.reset();
-  if (list_ref.HasOneRef())
-    list_ref.GetFontFallbackMap().Remove(font_description_);
-}
-
-void Font::RevalidateFontFallbackList() const {
-  DCHECK(font_fallback_list_);
-  font_fallback_list_ =
-      font_fallback_list_->GetFontFallbackMap().Get(font_description_);
-}
-
 FontFallbackList* Font::EnsureFontFallbackList() const {
   if (!font_fallback_list_ || !font_fallback_list_->HasFontFallbackMap()) {
     font_fallback_list_ =
         GetOrCreateFontFallbackList(font_description_, nullptr);
   }
-  if (!font_fallback_list_->IsValid())
-    RevalidateFontFallbackList();
-  return font_fallback_list_.get();
+  if (!font_fallback_list_->IsValid()) {
+    font_fallback_list_ =
+        font_fallback_list_->GetFontFallbackMap().Get(font_description_);
+  }
+  return font_fallback_list_.Get();
 }
 
 bool Font::operator==(const Font& other) const {

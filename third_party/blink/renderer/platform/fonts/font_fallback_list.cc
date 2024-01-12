@@ -56,6 +56,10 @@ FontFallbackList::~FontFallbackList() {
   ReleaseFontData();
 }
 
+void FontFallbackList::Trace(Visitor* visitor) const {
+  visitor->Trace(font_fallback_map_);
+}
+
 FontSelector* FontFallbackList::GetFontSelector() const {
   // FontFallbackList objects are managed in FontFallbackMap, and should not be
   // used after FontFallbackMap is destroyed. FontFallbackList may outlive its

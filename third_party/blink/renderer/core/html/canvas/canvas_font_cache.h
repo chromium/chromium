@@ -66,7 +66,7 @@ class CORE_EXPORT CanvasFontCache final
   struct FontWrapper : public GarbageCollected<FontWrapper> {
     explicit FontWrapper(Font&& font) : font(font) {}
 
-    void Trace(Visitor* visitor) const {}
+    void Trace(Visitor* visitor) const { visitor->Trace(font); }
     Font font;
   };
 
