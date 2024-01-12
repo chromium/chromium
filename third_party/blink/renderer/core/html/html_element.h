@@ -95,11 +95,6 @@ enum class HidePopoverTransitionBehavior {
   kNoEventsNoWaiting,
 };
 
-enum class HidePopoverIndependence {
-  kLeaveUnrelated,
-  kHideUnrelated,
-};
-
 class CORE_EXPORT HTMLElement : public Element {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -267,6 +262,7 @@ class CORE_EXPORT HTMLElement : public Element {
   void PopoverHideFinishIfNeeded(bool immediate);
   static const HTMLElement* FindTopmostPopoverAncestor(
       HTMLElement& new_popover,
+      HeapVector<Member<HTMLElement>>& stack_to_check,
       Element* new_popovers_invoker);
 
   // Retrieves the element pointed to by this element's 'anchor' content
@@ -281,8 +277,7 @@ class CORE_EXPORT HTMLElement : public Element {
   static void HideAllPopoversUntil(const HTMLElement*,
                                    Document&,
                                    HidePopoverFocusBehavior,
-                                   HidePopoverTransitionBehavior,
-                                   HidePopoverIndependence);
+                                   HidePopoverTransitionBehavior);
   // Popover hover triggering behavior.
   bool IsNodePopoverDescendant(const Node& node) const;
   void MaybeQueuePopoverHideEvent();
@@ -386,6 +381,11 @@ class CORE_EXPORT HTMLElement : public Element {
   TranslateAttributeMode GetTranslateAttributeMode() const;
 
   void HandleKeypressEvent(KeyboardEvent&);
+
+  static void CloseEntirePopoverStack(
+      HeapVector<Member<HTMLElement>>& stack,
+      HidePopoverFocusBehavior focus_behavior,
+      HidePopoverTransitionBehavior transition_behavior);
 
   static AttributeTriggers* TriggersForAttributeName(
       const QualifiedName& attr_name);

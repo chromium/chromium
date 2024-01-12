@@ -8151,22 +8151,16 @@ HTMLDialogElement* Document::ActiveModalDialog() const {
   return nullptr;
 }
 
-void Document::SetPopoverHintShowing(HTMLElement* element) {
-  DCHECK(!element || element->HasPopoverAttribute());
-  DCHECK(RuntimeEnabledFeatures::HTMLPopoverHintEnabled());
-  popover_hint_showing_ = element;
-}
-
 HTMLElement* Document::TopmostPopoverOrHint() const {
-  if (PopoverHintShowing()) {
-    DCHECK(RuntimeEnabledFeatures::HTMLPopoverHintEnabled());
-    return PopoverHintShowing();
+  if (!PopoverHintStack().empty()) {
+    CHECK(RuntimeEnabledFeatures::HTMLPopoverHintEnabled());
+    return PopoverHintStack().back();
   }
-  if (PopoverStack().empty())
-    return nullptr;
-  return PopoverStack().back();
+  if (!PopoverAutoStack().empty()) {
+    return PopoverAutoStack().back();
+  }
+  return nullptr;
 }
-
 void Document::SetPopoverPointerdownTarget(const HTMLElement* popover) {
   DCHECK(!popover || popover->HasPopoverAttribute());
   popover_pointerdown_target_ = popover;
@@ -8902,8 +8896,8 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(node_lists_);
   visitor->Trace(top_layer_elements_);
   visitor->Trace(top_layer_elements_pending_removal_);
-  visitor->Trace(popover_stack_);
-  visitor->Trace(popover_hint_showing_);
+  visitor->Trace(popover_auto_stack_);
+  visitor->Trace(popover_hint_stack_);
   visitor->Trace(popover_pointerdown_target_);
   visitor->Trace(popovers_waiting_to_hide_);
   visitor->Trace(all_open_popovers_);

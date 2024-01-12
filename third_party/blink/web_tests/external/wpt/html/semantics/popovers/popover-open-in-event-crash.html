@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<link rel="author" href="mailto:masonf@chromium.org">
+<link rel=help href="https://html.spec.whatwg.org/multipage/popover.html#attr-popover">
+
+<div popover id=p1>Popover 1
+  <div popover id=p2>Popover 2</div>
+</div>
+<script>
+  const p1 = document.querySelector('#p1');
+  const p2 = document.querySelector('#p2');
+  p1.addEventListener('beforetoggle',e => {
+    if (e.newState === "closed") {
+      p2.showPopover();
+    }
+  })
+  p1.showPopover();
+  p1.hidePopover();
+  // This test passes if it does not crash
+</script>

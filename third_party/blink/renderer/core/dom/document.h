@@ -1577,15 +1577,20 @@ class CORE_EXPORT Document : public ContainerNode,
 
   HTMLDialogElement* ActiveModalDialog() const;
 
-  HTMLElement* PopoverHintShowing() const {
-    return popover_hint_showing_.Get();
+  const HeapVector<Member<HTMLElement>>& PopoverHintStack() const {
+    return popover_hint_stack_;
   }
-  void SetPopoverHintShowing(HTMLElement* element);
-  HeapVector<Member<HTMLElement>>& PopoverStack() { return popover_stack_; }
-  const HeapVector<Member<HTMLElement>>& PopoverStack() const {
-    return popover_stack_;
+  HeapVector<Member<HTMLElement>>& PopoverHintStack() {
+    return popover_hint_stack_;
   }
-  bool PopoverAutoShowing() const { return !popover_stack_.empty(); }
+  bool PopoverHintShowing() const { return !popover_hint_stack_.empty(); }
+  HeapVector<Member<HTMLElement>>& PopoverAutoStack() {
+    return popover_auto_stack_;
+  }
+  const HeapVector<Member<HTMLElement>>& PopoverAutoStack() const {
+    return popover_auto_stack_;
+  }
+  bool PopoverAutoShowing() const { return !popover_auto_stack_.empty(); }
   HeapHashSet<Member<HTMLElement>>& AllOpenPopovers() {
     return all_open_popovers_;
   }
@@ -2542,11 +2547,16 @@ class CORE_EXPORT Document : public ContainerNode,
   };
   VectorOf<TopLayerPendingRemoval> top_layer_elements_pending_removal_;
 
-  // The stack of currently-displayed `popover=auto` elements. Elements in the
-  // stack go from earliest (bottom-most) to latest (top-most).
-  HeapVector<Member<HTMLElement>> popover_stack_;
-  // The `popover=hint` that is currently showing, if any.
-  Member<HTMLElement> popover_hint_showing_;
+  // The stack of currently-displayed popover elements that descend from a root
+  // `popover=auto` element. Elements in the stack go from earliest
+  // (bottom-most) to latest (top-most). Note that `popover=hint` elements can
+  // exist in this stack, but there will never be a `popover=auto` that comes
+  // after that in the stack.
+  HeapVector<Member<HTMLElement>> popover_auto_stack_;
+  // The stack of currently-displayed `popover=hint` elements. Ordering in the
+  // stack is the same as for `popover_auto_stack_`. This stack will only ever
+  // contain `popover=hint` elements, and nothing else.
+  HeapVector<Member<HTMLElement>> popover_hint_stack_;
   // The popover (if any) that received the most recent pointerdown event.
   Member<const HTMLElement> popover_pointerdown_target_;
   // A set of popovers for which hidePopover() has been called, but animations
