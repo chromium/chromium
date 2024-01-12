@@ -150,6 +150,24 @@
             ]
         }
     ],
+    "AddressInfobarDisplayLength": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Sixteen_Seconds",
+                    "params": {
+                        "duration-seconds": "16"
+                    },
+                    "enable_features": [
+                        "AddressInfobarDisplayLength"
+                    ]
+                }
+            ]
+        }
+    ],
     "AggressiveSkiaGpuResourcePurge": [
         {
             "platforms": [
@@ -5107,6 +5125,24 @@
                     "name": "Enabled",
                     "enable_features": [
                         "CreateWarningShownClientSafeBrowsingReports"
+                    ]
+                }
+            ]
+        }
+    ],
+    "CreditCardInfobarDisplayLength": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Sixteen_Seconds",
+                    "params": {
+                        "duration-seconds": "16"
+                    },
+                    "enable_features": [
+                        "CreditCardInfobarDisplayLength"
                     ]
                 }
             ]
