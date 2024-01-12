@@ -26,8 +26,6 @@ js_type_check("closure_compile_local") {
         "js_module_root=./gen/chrome/browser/resources/gaia_auth_host",
       ]
   deps = [
-    ":app_downloading",
-
     #":assistant_optin",
     ":consolidated_consent",
     ":device_disabled",
@@ -56,18 +54,6 @@ js_type_check("closure_compile_multidevice_setup") {
 
 ###############################
 # Closure compiler libraries below
-
-js_library("app_downloading") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/app_downloading.js" ]
-  deps = [
-    "../../components:oobe_cr_lottie",
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:oobe_dialog_host_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/dialogs:oobe_adaptive_dialog",
-  ]
-  extra_deps = [ ":web_components" ]
-}
 
 js_library("assistant_optin") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/assistant_optin.js" ]
