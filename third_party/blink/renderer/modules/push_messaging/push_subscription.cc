@@ -138,8 +138,8 @@ ScriptValue PushSubscription::toJSONForBinding(ScriptState* script_state) {
   }
 
   V8ObjectBuilder keys(script_state);
-  keys.Add("p256dh", ToBase64URLWithoutPadding(p256dh_));
-  keys.Add("auth", ToBase64URLWithoutPadding(auth_));
+  keys.AddString("p256dh", ToBase64URLWithoutPadding(p256dh_));
+  keys.AddString("auth", ToBase64URLWithoutPadding(auth_));
 
   result.Add("keys", keys);
 

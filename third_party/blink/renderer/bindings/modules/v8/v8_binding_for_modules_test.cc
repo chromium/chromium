@@ -229,7 +229,7 @@ TEST(IDBKeyFromValueAndKeyPathTest, TopLevelPropertyStringValue) {
 
   // object = { foo: "zoo" }
   ScriptValue script_value = V8ObjectBuilder(scope.GetScriptState())
-                                 .Add("foo", "zoo")
+                                 .AddString("foo", "zoo")
                                  .GetScriptValue();
   CheckKeyPathStringValue(isolate, script_value, "foo", "zoo");
   CheckKeyPathNullValue(isolate, script_value, "bar");
@@ -259,7 +259,7 @@ TEST(IDBKeyFromValueAndKeyPathTest, SubProperty) {
   // object = { foo: { bar: "zee" } }
   ScriptValue script_value =
       V8ObjectBuilder(script_state)
-          .Add("foo", V8ObjectBuilder(script_state).Add("bar", "zee"))
+          .Add("foo", V8ObjectBuilder(script_state).AddString("bar", "zee"))
           .GetScriptValue();
   CheckKeyPathStringValue(isolate, script_value, "foo.bar", "zee");
   CheckKeyPathNullValue(isolate, script_value, "bar");
@@ -517,7 +517,7 @@ TEST(IDBKeyFromValueAndKeyPathsTest, IndexKeys) {
   // object = { foo: { bar: "zee" }, bad: null }
   ScriptValue script_value =
       V8ObjectBuilder(script_state)
-          .Add("foo", V8ObjectBuilder(script_state).Add("bar", "zee"))
+          .Add("foo", V8ObjectBuilder(script_state).AddString("bar", "zee"))
           .AddNull("bad")
           .GetScriptValue();
 
@@ -584,7 +584,7 @@ TEST(InjectIDBKeyTest, TopLevelPropertyStringValue) {
 
   // object = { foo: "zoo" }
   ScriptValue script_object = V8ObjectBuilder(scope.GetScriptState())
-                                  .Add("foo", "zoo")
+                                  .AddString("foo", "zoo")
                                   .GetScriptValue();
   std::unique_ptr<IDBKey> idb_string_key = IDBKey::CreateString("myNewKey");
   CheckInjection(scope.GetScriptState(), idb_string_key.get(), script_object,
@@ -604,7 +604,7 @@ TEST(InjectIDBKeyTest, SubProperty) {
   // object = { foo: { bar: "zee" } }
   ScriptValue script_object =
       V8ObjectBuilder(script_state)
-          .Add("foo", V8ObjectBuilder(script_state).Add("bar", "zee"))
+          .Add("foo", V8ObjectBuilder(script_state).AddString("bar", "zee"))
           .GetScriptValue();
 
   std::unique_ptr<IDBKey> idb_string_key = IDBKey::CreateString("myNewKey");

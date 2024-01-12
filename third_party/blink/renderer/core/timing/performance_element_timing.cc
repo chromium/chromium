@@ -92,14 +92,14 @@ std::unique_ptr<TracedValue> PerformanceElementTiming::ToTracedValue() const {
 
 void PerformanceElementTiming::BuildJSONValue(V8ObjectBuilder& builder) const {
   PerformanceEntry::BuildJSONValue(builder);
-  builder.Add("renderTime", render_time_);
-  builder.Add("loadTime", load_time_);
-  builder.Add("intersectionRect", intersection_rect_);
-  builder.Add("identifier", identifier_);
-  builder.Add("naturalWidth", naturalWidth_);
-  builder.Add("naturalHeight", naturalHeight_);
-  builder.Add("id", id_);
-  builder.Add("url", url_);
+  builder.AddNumber("renderTime", render_time_);
+  builder.AddNumber("loadTime", load_time_);
+  builder.Add("intersectionRect", intersection_rect_.Get());
+  builder.AddString("identifier", identifier_);
+  builder.AddNumber("naturalWidth", naturalWidth_);
+  builder.AddNumber("naturalHeight", naturalHeight_);
+  builder.AddString("id", id_);
+  builder.AddString("url", url_);
 }
 
 void PerformanceElementTiming::Trace(Visitor* visitor) const {

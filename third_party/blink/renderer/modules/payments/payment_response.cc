@@ -151,13 +151,15 @@ ScriptValue PaymentResponse::toJSONForBinding(ScriptState* script_state) const {
   V8ObjectBuilder result(script_state);
   result.AddString("requestId", requestId());
   result.AddString("methodName", methodName());
-  result.Add("details", details(script_state));
+  result.AddV8Value("details", details(script_state).V8Value());
 
-  if (shippingAddress())
-    result.Add("shippingAddress",
-               shippingAddress()->toJSONForBinding(script_state));
-  else
+  if (shippingAddress()) {
+    result.AddV8Value(
+        "shippingAddress",
+        shippingAddress()->toJSONForBinding(script_state).V8Value());
+  } else {
     result.AddNull("shippingAddress");
+  }
 
   result.AddStringOrNull("shippingOption", shippingOption())
       .AddStringOrNull("payerName", payerName())

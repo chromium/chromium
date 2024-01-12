@@ -382,14 +382,18 @@ void PerformanceNavigationTiming::BuildJSONValue(
 
   if (RuntimeEnabledFeatures::BackForwardCacheNotRestoredReasonsEnabled(
           ExecutionContext::From(builder.GetScriptState()))) {
-    builder.Add("notRestoredReasons", notRestoredReasons());
+    if (auto* not_restored_reasons = notRestoredReasons()) {
+      builder.Add("notRestoredReasons", not_restored_reasons);
+    } else {
+      builder.AddNull("notRestoredReasons");
+    }
     ExecutionContext::From(builder.GetScriptState())
         ->CountUse(WebFeature::kBackForwardCacheNotRestoredReasons);
   }
 
   if (RuntimeEnabledFeatures::PerformanceNavigateSystemEntropyEnabled(
           ExecutionContext::From(builder.GetScriptState()))) {
-    builder.Add("systemEntropy", GetSystemEntropy(GetDocumentLoader()));
+    builder.AddString("systemEntropy", GetSystemEntropy(GetDocumentLoader()));
   }
 }
 

@@ -46,9 +46,10 @@ TaskAttributionVector PerformanceLongTaskTiming::attribution() const {
 
 void PerformanceLongTaskTiming::BuildJSONValue(V8ObjectBuilder& builder) const {
   PerformanceEntry::BuildJSONValue(builder);
-  builder.Add("attribution", ToV8Traits<IDLArray<TaskAttributionTiming>>::ToV8(
-                                 builder.GetScriptState(), attribution_)
-                                 .ToLocalChecked());
+  builder.AddV8Value("attribution",
+                     ToV8Traits<IDLArray<TaskAttributionTiming>>::ToV8(
+                         builder.GetScriptState(), attribution_)
+                         .ToLocalChecked());
 }
 
 void PerformanceLongTaskTiming::Trace(Visitor* visitor) const {

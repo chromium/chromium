@@ -235,12 +235,8 @@ void CryptoResultImpl::CompleteWithKeyPair(const WebCryptoKey& public_key,
 
   V8ObjectBuilder key_pair(script_state);
 
-  key_pair.Add("publicKey",
-               ScriptValue::From(script_state,
-                                 MakeGarbageCollected<CryptoKey>(public_key)));
-  key_pair.Add("privateKey",
-               ScriptValue::From(script_state,
-                                 MakeGarbageCollected<CryptoKey>(private_key)));
+  key_pair.Add("publicKey", MakeGarbageCollected<CryptoKey>(public_key));
+  key_pair.Add("privateKey", MakeGarbageCollected<CryptoKey>(private_key));
 
   resolver_->Resolve(key_pair.V8Value());
   ClearResolver();

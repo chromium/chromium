@@ -265,11 +265,11 @@ AuthenticationExtensionsClientOutputsToJSON(
     }
     if (prf.hasResults()) {
       V8ObjectBuilder results_builder(script_state);
-      results_builder.Add("first",
-                          WebAuthnBase64UrlEncode(prf.results()->first()));
+      results_builder.AddString(
+          "first", WebAuthnBase64UrlEncode(prf.results()->first()));
       if (prf.results()->hasSecond()) {
-        results_builder.Add("second",
-                            WebAuthnBase64UrlEncode(prf.results()->second()));
+        results_builder.AddString(
+            "second", WebAuthnBase64UrlEncode(prf.results()->second()));
       }
     }
     json->setPrf(builder.GetScriptValue());
@@ -279,7 +279,8 @@ AuthenticationExtensionsClientOutputsToJSON(
         supplemental_pub_keys = *in.supplementalPubKeys();
     V8ObjectBuilder builder(script_state);
     if (supplemental_pub_keys.hasSignatures()) {
-      builder.Add("signatures", supplemental_pub_keys.signatures());
+      builder.AddVector<DOMArrayBuffer>("signatures",
+                                        supplemental_pub_keys.signatures());
     }
     json->setSupplementalPubKeys(builder.GetScriptValue());
   }

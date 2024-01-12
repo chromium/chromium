@@ -74,7 +74,7 @@ ScriptValue NotRestoredReasons::toJSON(ScriptState* script_state) const {
     for (const auto& reason : reasons_) {
       reason_strings.push_back(reason);
     }
-    builder.Add("reasons", reason_strings);
+    builder.AddVector<IDLString>("reasons", reason_strings);
   } else {
     builder.AddNull("reasons");
   }
@@ -84,7 +84,7 @@ ScriptValue NotRestoredReasons::toJSON(ScriptState* script_state) const {
     for (Member<NotRestoredReasons> child : children_) {
       children_result.push_back(child->toJSON(script_state).V8Value());
     }
-    builder.Add("children", children_result);
+    builder.AddVector<IDLAny>("children", children_result);
   } else {
     builder.AddNull("children");
   }

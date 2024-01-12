@@ -267,9 +267,9 @@ ScriptPromise NavigatorUAData::getHighEntropyValues(
 
 ScriptValue NavigatorUAData::toJSON(ScriptState* script_state) const {
   V8ObjectBuilder builder(script_state);
-  builder.Add("brands", brands());
-  builder.Add("mobile", mobile());
-  builder.Add("platform", platform());
+  builder.AddVector<NavigatorUABrandVersion>("brands", brands());
+  builder.AddBoolean("mobile", mobile());
+  builder.AddString("platform", platform());
 
   // Record IdentifiabilityStudy metrics for `mobile()` and `platform()`
   // (the `brands()` part is already recorded inside that function).
