@@ -101,8 +101,7 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) VideoRtpStream final {
 };
 
 // Receives audio data and submits the data to media::cast::AudioSender.
-class COMPONENT_EXPORT(MIRRORING_SERVICE) AudioRtpStream
-    : public base::SupportsWeakPtr<AudioRtpStream> {
+class COMPONENT_EXPORT(MIRRORING_SERVICE) AudioRtpStream final {
  public:
   AudioRtpStream(std::unique_ptr<media::cast::AudioSender> audio_sender,
                  base::WeakPtr<RtpStreamClient> client);
@@ -123,9 +122,14 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) AudioRtpStream
   // changing the bitrate in realtime.
   int GetEncoderBitrate() const;
 
+  base::WeakPtr<AudioRtpStream> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   const std::unique_ptr<media::cast::AudioSender> audio_sender_;
   const base::WeakPtr<RtpStreamClient> client_;
+  base::WeakPtrFactory<AudioRtpStream> weak_ptr_factory_{this};
 };
 
 }  // namespace mirroring
