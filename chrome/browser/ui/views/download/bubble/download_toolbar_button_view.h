@@ -203,6 +203,9 @@ class DownloadToolbarButtonView : public ToolbarButton,
   DownloadBubbleRowView* ShowPrimaryDialogRow(
       std::optional<offline_items_collection::ContentId> content_id);
 
+  // Helper function to show an IPH promo
+  void ShowIphPromo();
+
   // Callback invoked when the partial view is closed.
   void OnPartialViewClosed();
 

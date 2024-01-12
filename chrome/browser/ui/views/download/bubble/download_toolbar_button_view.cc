@@ -706,7 +706,7 @@ void DownloadToolbarButtonView::BubbleCloser::OnEvent(const ui::Event& event) {
   }
 }
 
-void DownloadToolbarButtonView::OnPartialViewClosed() {
+void DownloadToolbarButtonView::ShowIphPromo() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   Profile* profile = browser_->profile();
   if (safe_browsing::GetSafeBrowsingState(*profile->GetPrefs()) ==
@@ -717,6 +717,16 @@ void DownloadToolbarButtonView::OnPartialViewClosed() {
     return;
   }
 #endif
+}
+
+void DownloadToolbarButtonView::OnPartialViewClosed() {
+  // We use PostTask to avoid calling the FocusAndActivateWindow
+  // function reentrantly from ui/wm/core/focus_controller.cc.
+  // We make sure each call to the FocusAndActivateWindow method
+  // finishes before the next.
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&DownloadToolbarButtonView::ShowIphPromo,
+                                weak_factory_.GetWeakPtr()));
 }
 
 void DownloadToolbarButtonView::DeactivateAutoClose() {
