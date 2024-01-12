@@ -13886,6 +13886,12 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4762" label="WindowMaximize"/>
   <int value="4763" label="WindowRestore"/>
   <int value="4764" label="WindowSetResizable"/>
+  <int value="4765" label="V8WasmReturnCall"/>
+  <int value="4766" label="V8WasmExtendedConst"/>
+  <int value="4767" label="V8WasmRelaxedSimd"/>
+  <int value="4768" label="V8WasmTypeReflection"/>
+  <int value="4769" label="V8WasmExnRef"/>
+  <int value="4770" label="V8WasmTypedFuncRef"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">
