@@ -326,8 +326,7 @@ PinnedToolbarActionsContainer::DropInfo::DropInfo(actions::ActionId action_id,
 
 PinnedToolbarActionsContainer::PinnedToolbarActionsContainer(
     BrowserView* browser_view)
-    : ToolbarIconContainerView(/*uses_highlight=*/false),
-      browser_view_(browser_view),
+    : browser_view_(browser_view),
       model_(PinnedToolbarActionsModel::Get(browser_view->GetProfile())) {
   SetProperty(views::kElementIdentifierKey,
               kPinnedToolbarActionsContainerElementId);
@@ -343,12 +342,12 @@ PinnedToolbarActionsContainer::PinnedToolbarActionsContainer(
                                views::MinimumFlexSizeRule::kPreferredSnapToZero,
                                views::MaximumFlexSizeRule::kPreferred)
           .WithWeight(0);
-  GetTargetLayoutManager()
-      ->SetFlexAllocationOrder(views::FlexAllocationOrder::kReverse)
+
+  auto* flex_layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
+  flex_layout->SetFlexAllocationOrder(views::FlexAllocationOrder::kReverse)
       .SetDefault(views::kFlexBehaviorKey,
                   hide_icon_flex_specification.WithOrder(1));
-  GetTargetLayoutManager()->SetCrossAxisAlignment(
-      views::LayoutAlignment::kCenter);
+  flex_layout->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
 
   // Create the toolbar divider.
   toolbar_divider_ = AddChildView(std::make_unique<views::View>());
@@ -433,7 +432,7 @@ void PinnedToolbarActionsContainer::OnThemeChanged() {
       GetColorProvider()->GetColor(kColorToolbarExtensionSeparatorEnabled);
   toolbar_divider_->SetBackground(views::CreateRoundedRectBackground(
       toolbar_divider_color, GetLayoutConstant(TOOLBAR_DIVIDER_CORNER_RADIUS)));
-  ToolbarIconContainerView::OnThemeChanged();
+  View::OnThemeChanged();
 }
 
 bool PinnedToolbarActionsContainer::GetDropFormats(
@@ -817,9 +816,7 @@ void PinnedToolbarActionsContainer::MovePinnedAction(
 void PinnedToolbarActionsContainer::DragDropCleanup(
     const actions::ActionId& dragged_action_id) {
   ReorderViews();
-  GetAnimatingLayoutManager()->PostOrQueueAction(base::BindOnce(
-      &PinnedToolbarActionsContainer::SetActionButtonIconVisibility,
-      weak_ptr_factory_.GetWeakPtr(), dragged_action_id, true));
+  SetActionButtonIconVisibility(dragged_action_id, true);
 }
 
 size_t PinnedToolbarActionsContainer::WidthToIconCount(int x_offset) {

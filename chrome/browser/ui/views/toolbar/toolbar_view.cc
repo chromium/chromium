@@ -952,7 +952,8 @@ void ToolbarView::InitLayout() {
   if (pinned_toolbar_actions_container_) {
     const views::FlexSpecification toolbar_actions_flex_rule =
         views::FlexSpecification(
-            pinned_toolbar_actions_container_->GetAnimatingLayoutManager()
+            static_cast<views::FlexLayout*>(
+                pinned_toolbar_actions_container_->GetLayoutManager())
                 ->GetDefaultFlexRule())
             .WithOrder(kToolbarActionsFlexOrder);
 
