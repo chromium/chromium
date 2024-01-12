@@ -87,13 +87,15 @@ bool operator==(const AuctionConfig::NonSharedParams& a,
 
 bool operator==(const AuctionConfig& a, const AuctionConfig& b) {
   return std::tie(a.seller, a.decision_logic_url, a.trusted_scoring_signals_url,
-                  a.non_shared_params, a.direct_from_seller_signals,
+                  a.max_trusted_scoring_signals_url_length, a.non_shared_params,
+                  a.direct_from_seller_signals,
                   a.expects_direct_from_seller_signals_header_ad_slot,
                   a.seller_experiment_group_id, a.all_buyer_experiment_group_id,
                   a.per_buyer_experiment_group_ids,
                   a.expects_additional_bids) ==
          std::tie(b.seller, b.decision_logic_url, b.trusted_scoring_signals_url,
-                  b.non_shared_params, b.direct_from_seller_signals,
+                  b.max_trusted_scoring_signals_url_length, b.non_shared_params,
+                  b.direct_from_seller_signals,
                   b.expects_direct_from_seller_signals_header_ad_slot,
                   b.seller_experiment_group_id, b.all_buyer_experiment_group_id,
                   b.per_buyer_experiment_group_ids, b.expects_additional_bids);
@@ -109,7 +111,6 @@ constexpr char kAuctionSignals[] = "auction-signals";
 
 constexpr char kBundleUrl[] = "bundle-url";
 constexpr char kPrefix[] = "prefix";
-
 
 // Attempts to serialize and then deserialize `auction_config`, returning true
 // if deserialization succeeded. On success, also checks that the resulting

@@ -268,6 +268,13 @@ bool StructTraits<blink::mojom::AuctionAdConfigDataView, blink::AuctionConfig>::
     return false;
   }
 
+  // Negative length limit is invalid.
+  if (data.max_trusted_scoring_signals_url_length() < 0) {
+    return false;
+  }
+  out->max_trusted_scoring_signals_url_length =
+      data.max_trusted_scoring_signals_url_length();
+
   out->expects_additional_bids = data.expects_additional_bids();
   // An auction that expects additional bids must have an auction nonce provided
   // on the config.

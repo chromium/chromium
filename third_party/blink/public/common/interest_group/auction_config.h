@@ -337,6 +337,11 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
   absl::optional<GURL> decision_logic_url;
   absl::optional<GURL> trusted_scoring_signals_url;
 
+  // The maximum length limit for the trusted scoring signal fetch URL. Can
+  // only be set as either 0 or a positive number. A value of 0 indicates that
+  // there is no limit.
+  int32_t max_trusted_scoring_signals_url_length = 0;
+
   // Other parameters are grouped in a struct that is passed to SellerWorklets.
   NonSharedParams non_shared_params;
 

@@ -1299,6 +1299,28 @@ bool CopyTrustedScoringSignalsFromIdlToMojo(
   return true;
 }
 
+bool CopyMaxTrustedScoringSignalsURLLengthFromIdlToMojo(
+    ExceptionState& exception_state,
+    const AuctionAdConfig& input,
+    mojom::blink::AuctionAdConfig& output) {
+  if (!input.hasMaxTrustedScoringSignalsURLLength()) {
+    return true;
+  }
+
+  // TODO(xtlsheep): Add a test to join-leave-ad-interest-group.https.window.js
+  // for the negative length case
+  if (input.maxTrustedScoringSignalsURLLength() < 0) {
+    exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
+        input, "maxTrustedScoringSignalsURLLength",
+        String::Number(input.maxTrustedScoringSignalsURLLength()),
+        "must not be negative."));
+  }
+
+  output.max_trusted_scoring_signals_url_length =
+      input.maxTrustedScoringSignalsURLLength();
+  return true;
+}
+
 bool CopyInterestGroupBuyersFromIdlToMojo(
     ExceptionState& exception_state,
     const AuctionAdConfig& input,
@@ -2205,6 +2227,8 @@ mojom::blink::AuctionAdConfigPtr IdlAuctionConfigToMojo(
                                          *mojo_config) ||
       !CopyTrustedScoringSignalsFromIdlToMojo(context, exception_state, config,
                                               *mojo_config) ||
+      !CopyMaxTrustedScoringSignalsURLLengthFromIdlToMojo(
+          exception_state, config, *mojo_config) ||
       !CopyInterestGroupBuyersFromIdlToMojo(exception_state, config,
                                             *mojo_config) ||
       !CopyPerBuyerExperimentIdsFromIdlToMojo(script_state, exception_state,
