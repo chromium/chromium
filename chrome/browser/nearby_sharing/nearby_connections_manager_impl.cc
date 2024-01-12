@@ -204,8 +204,7 @@ void NearbyConnectionsManagerImpl::StartAdvertising(
       ShouldEnableWifiLan(data_usage, PowerLevel::kHighPower) &&
           kIsWifiLanAdvertisingSupported);
   CD_LOG(VERBOSE, Feature::NC)
-      << __func__ << ": "
-      << "is_high_power=" << (is_high_power ? "yes" : "no")
+      << __func__ << ": " << "is_high_power=" << (is_high_power ? "yes" : "no")
       << ", data_usage=" << data_usage
       << ", allowed_mediums=" << MediumSelectionToString(*allowed_mediums);
 
@@ -272,8 +271,7 @@ void NearbyConnectionsManagerImpl::StartDiscovery(
       ShouldEnableWifiLan(data_usage, PowerLevel::kHighPower) &&
           kIsWifiLanDiscoverySupported);
   CD_LOG(VERBOSE, Feature::NC)
-      << __func__ << ": "
-      << "data_usage=" << data_usage
+      << __func__ << ": " << "data_usage=" << data_usage
       << ", allowed_mediums=" << MediumSelectionToString(*allowed_mediums);
 
   discovery_listener_ = listener;
@@ -330,8 +328,7 @@ void NearbyConnectionsManagerImpl::Connect(
       /*ble=*/false, ShouldEnableWebRtc(data_usage, PowerLevel::kHighPower),
       /*wifi_lan=*/ShouldEnableWifiLan(data_usage, PowerLevel::kHighPower));
   CD_LOG(VERBOSE, Feature::NC)
-      << __func__ << ": "
-      << "data_usage=" << data_usage
+      << __func__ << ": " << "data_usage=" << data_usage
       << ", allowed_mediums=" << MediumSelectionToString(*allowed_mediums);
 
   mojo::PendingRemote<ConnectionLifecycleListener> lifecycle_listener;
@@ -674,6 +671,7 @@ NearbyConnectionsManagerImpl::GetWeakPtr() {
 void NearbyConnectionsManagerImpl::OnNearbyProcessStopped(
     ash::nearby::NearbyProcessManager::NearbyProcessShutdownReason) {
   CD_LOG(VERBOSE, Feature::NC) << __func__;
+  process_reference_.reset();
   Reset();
 }
 
