@@ -102,8 +102,6 @@ PerformanceSidePanelCoordinator::CreatePerformanceWebUIView() {
           /*esc_closes_ui=*/false);
   auto view = std::make_unique<SidePanelWebUIViewT<PerformanceSidePanelUI>>(
       base::RepeatingClosure(), base::RepeatingClosure(), std::move(wrapper));
-  view->SetVisible(true);
-  SidePanelUtil::GetSidePanelContentProxy(view.get())->SetAvailable(true);
   view->SetProperty(views::kElementIdentifierKey,
                     kPerformanceSidePanelWebViewElementId);
   return view;
