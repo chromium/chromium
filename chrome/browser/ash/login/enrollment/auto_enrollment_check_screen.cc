@@ -290,14 +290,6 @@ bool AutoEnrollmentCheckScreen::IsBlockingError(
   // devices.
   return std::visit(
       base::Overloaded{
-          [this](policy::AutoEnrollmentLegacyError legacy_error) {
-            switch (legacy_error) {
-              case policy::AutoEnrollmentLegacyError::kConnectionError:
-                return true;
-              case policy::AutoEnrollmentLegacyError::kServerError:
-                return ShouldBlockOnServerError();
-            }
-          },
           [](policy::AutoEnrollmentSafeguardTimeoutError) { return true; },
           [](policy::AutoEnrollmentSystemClockSyncError) { return true; },
           [this](const policy::AutoEnrollmentDMServerError& error) {

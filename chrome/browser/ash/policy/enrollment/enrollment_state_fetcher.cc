@@ -82,14 +82,6 @@ std::string_view AutoEnrollmentStateToUmaSuffix(AutoEnrollmentState state) {
   // TODO(b/309921228): Add more suffixes.
   return std::visit(
       base::Overloaded{
-          [](AutoEnrollmentLegacyError legacy_error) {
-            switch (legacy_error) {
-              case AutoEnrollmentLegacyError::kConnectionError:
-                return kUMASuffixConnectionError;
-              case AutoEnrollmentLegacyError::kServerError:
-                return kUMASuffixServerError;
-            }
-          },
           [](AutoEnrollmentSafeguardTimeoutError) {
             return kUMASuffixConnectionError;
           },

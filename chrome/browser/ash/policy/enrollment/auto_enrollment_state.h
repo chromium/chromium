@@ -26,16 +26,6 @@ enum class AutoEnrollmentResult {
   kDisabled,
 };
 
-// Indicates an error during state determination.
-// TODO(b/309921228): Remove once `AutoEnrollmentError` does not use legacy
-// errors.
-enum class AutoEnrollmentLegacyError {
-  // Failed to connect to DMServer or to synchronize the system clock.
-  kConnectionError,
-  // Connection successful, but the server failed to generate a valid reply.
-  kServerError,
-};
-
 // Represents a state determination error due to a timeout.
 struct AutoEnrollmentSafeguardTimeoutError {
   constexpr bool operator==(const AutoEnrollmentSafeguardTimeoutError&) const =
@@ -79,8 +69,7 @@ struct AutoEnrollmentStateRetrievalResponseError {
 };
 
 using AutoEnrollmentError =
-    std::variant<AutoEnrollmentLegacyError,
-                 AutoEnrollmentSafeguardTimeoutError,
+    std::variant<AutoEnrollmentSafeguardTimeoutError,
                  AutoEnrollmentSystemClockSyncError,
                  AutoEnrollmentDMServerError,
                  AutoEnrollmentStateAvailabilityResponseError,
@@ -90,19 +79,6 @@ using AutoEnrollmentError =
 // Indicates the current state of the auto-enrollment check.
 using AutoEnrollmentState =
     base::expected<AutoEnrollmentResult, AutoEnrollmentError>;
-
-static constexpr AutoEnrollmentState kAutoEnrollmentLegacyConnectionError =
-    base::unexpected(AutoEnrollmentLegacyError::kConnectionError);
-
-static constexpr AutoEnrollmentState kAutoEnrollmentLegacyServerError =
-    base::unexpected(AutoEnrollmentLegacyError::kServerError);
-
-// Provides a way to report legacy errors and handle new errors as corresponding
-// legacy ones.
-// TODO(b/309921228): Remove once `AutoEnrollmentError` does not use legacy
-// errors.
-AutoEnrollmentLegacyError AutoEnrollmentErrorToLegacyError(
-    const AutoEnrollmentError& error);
 
 std::string AutoEnrollmentStateToString(const AutoEnrollmentState& state);
 
