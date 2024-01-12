@@ -5,7 +5,7 @@
       'leftspacertop    selected  rightspacertop'
       'leftspacerbottom imagegrid rightspacerbottom';
     grid-template-columns: minmax(10px, 1fr) minmax(568px, 920px) minmax(10px, 1fr);
-    grid-template-rows: 172px minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
     height: 100%;
     min-height: var(--personalization-app-subpage-container-min-height);
     position: relative;
@@ -15,6 +15,7 @@
   sea-pen-template-query {
     background-color: var(--cros-sys-app_base_shaded);
     grid-area: selected;
+    height: 172px;
     position: sticky;
     top: 56px;
     z-index: 1;

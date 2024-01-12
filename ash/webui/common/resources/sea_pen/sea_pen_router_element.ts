@@ -125,7 +125,7 @@ export class SeaPenRouterElement extends PolymerElement {
     return isSeaPenTextInputEnabled() &&
         (relativePath === SeaPenPaths.ROOT ||
          relativePath === SeaPenPaths.RESULTS) &&
-        (templateId === QUERY || !templateId);
+        templateId === QUERY;
   }
 
   private shouldShowTemplateQuery_(
