@@ -147,7 +147,7 @@ TEST_F(HatsHandlerTest, GetMostChromeHats) {
       *mock_hats_service_,
       LaunchDelayedSurveyForWebContents(
           kHatsSurveyTriggerGetMostChrome, web_contents(), _, _, _,
-          HatsService::NavigationBehaviour::REQUIRE_SAME_ORIGIN, _, _, _))
+          HatsService::NavigationBehaviour::REQUIRE_SAME_DOCUMENT, _, _, _))
       .Times(1);
   base::Value::List args;
   args.Append(static_cast<int>(

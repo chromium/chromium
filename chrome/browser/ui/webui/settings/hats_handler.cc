@@ -330,7 +330,7 @@ void HatsHandler::RequestHatsSurvey(TrustSafetyInteraction interaction) {
       timeout_ms = features::kHappinessTrackingSurveysGetMostChromeTime.Get()
                        .InMilliseconds();
       navigation_behaviour =
-          HatsService::NavigationBehaviour::REQUIRE_SAME_ORIGIN;
+          HatsService::NavigationBehaviour::REQUIRE_SAME_DOCUMENT;
       break;
     }
 #endif
