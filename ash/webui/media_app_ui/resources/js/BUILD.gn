@@ -131,12 +131,8 @@ js_type_check("closure_compile_index") {
   closure_flags = media_closure_flags
   deps = [
     ":error_reporter",
-    ":message_types",
     ":mojo_api_bootstrap",
   ]
-}
-
-js_library("message_types") {
 }
 
 js_library("error_reporter") {

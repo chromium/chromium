@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,110 +7,114 @@
  * Message definitions passed over the MediaApp privileged/unprivileged pipe.
  */
 
-/**
- * Enum for message types.
- * @enum {string}
- */
-export const Message = {
-  DELETE_FILE: 'delete-file',
-  EDIT_IN_PHOTOS: 'edit-in-photos',
-  IFRAME_READY: 'iframe-ready',
-  IS_FILE_ARC_WRITABLE: 'is-file-arc-writable',
-  IS_FILE_BROWSER_WRITABLE: 'is-file-browser-writable',
-  LOAD_EXTRA_FILES: 'load-extra-files',
-  LOAD_FILES: 'load-files',
-  MAYBE_TRIGGER_PDF_HATS: 'maybe-trigger-pdf-hats',
-  NAVIGATE: 'navigate',
-  NOTIFY_CURRENT_FILE: 'notify-current-file',
-  OPEN_ALLOWED_FILE: 'open-allowed-file',
-  OPEN_FEEDBACK_DIALOG: 'open-feedback-dialog',
-  OPEN_FILES_WITH_PICKER: 'open-files-with-picker',
-  OPEN_IN_SANDBOXED_VIEWER: 'open-in-sandboxed-viewer',
-  OVERWRITE_FILE: 'overwrite-file',
-  RELOAD_MAIN_FRAME: 'reload-main-frame',
-  RENAME_FILE: 'rename-file',
-  REQUEST_SAVE_FILE: 'request-save-file',
-  SAVE_AS: 'save-as',
-  TOGGLE_BROWSER_FULLSCREEN_MODE: 'toggle-browser-fullscreen-mode',
-};
+/** Enum for message types. */
+export enum Message {
+  DELETE_FILE = 'delete-file',
+  EDIT_IN_PHOTOS = 'edit-in-photos',
+  IFRAME_READY = 'iframe-ready',
+  IS_FILE_ARC_WRITABLE = 'is-file-arc-writable',
+  IS_FILE_BROWSER_WRITABLE = 'is-file-browser-writable',
+  LOAD_EXTRA_FILES = 'load-extra-files',
+  LOAD_FILES = 'load-files',
+  MAYBE_TRIGGER_PDF_HATS = 'maybe-trigger-pdf-hats',
+  NAVIGATE = 'navigate',
+  NOTIFY_CURRENT_FILE = 'notify-current-file',
+  OPEN_ALLOWED_FILE = 'open-allowed-file',
+  OPEN_FEEDBACK_DIALOG = 'open-feedback-dialog',
+  OPEN_FILES_WITH_PICKER = 'open-files-with-picker',
+  OPEN_IN_SANDBOXED_VIEWER = 'open-in-sandboxed-viewer',
+  OVERWRITE_FILE = 'overwrite-file',
+  RELOAD_MAIN_FRAME = 'reload-main-frame',
+  RENAME_FILE = 'rename-file',
+  REQUEST_SAVE_FILE = 'request-save-file',
+  SAVE_AS = 'save-as',
+  TOGGLE_BROWSER_FULLSCREEN_MODE = 'toggle-browser-fullscreen-mode',
+}
 
 /**
  * Message sent by the unprivileged context to request the privileged context to
  * delete the currently writable file.
  * If the supplied file `token` is invalid the request is rejected.
- * @typedef {{token: number}}
  */
-export let DeleteFileMessage;
+export interface DeleteFileMessage {
+  token: number;
+}
 
-/**
- * Representation of a file passed in on the LoadFilesMessage.
- * @typedef {{
- *    token: number,
- *    file: ?File,
- *    name: string,
- *    error: string,
- *    canDelete: boolean,
- *    canRename: boolean
- * }}
- */
-export let FileContext;
+/** Representation of a file passed in on the LoadFilesMessage. */
+export interface FileContext {
+  token: number;
+  file: File|null;
+  name: string;
+  error: string;
+  canDelete: boolean;
+  canRename: boolean;
+}
 
 /**
  * Message sent by the privileged context to the unprivileged context indicating
  * the files available to open.
- * @typedef {{
- *    currentFileIndex: number,
- *    files: !Array<!FileContext>
- * }}
  */
-export let LoadFilesMessage;
+export interface LoadFilesMessage {
+  currentFileIndex: number;
+  files: FileContext[];
+}
 
 /**
  * Message sent by the unprivileged context to the privileged context to check
  * whether or not the current file is writable according to ARC. If the supplied
  * file `token` is invalid the request is rejected.
- * @typedef {{token: number}}
  */
-export let IsFileArcWritableMessage;
+export interface IsFileArcWritableMessage {
+  token: number;
+}
 
-/** @typedef {{writable: boolean}} */
-export let IsFileArcWritableResponse;
+export interface IsFileArcWritableResponse {
+  writable: boolean;
+}
 
 /**
  * Message sent by the unprivileged context to the privileged context to check
  * whether or not the current file is writable according to Ash. If the supplied
  * file `token` is invalid the request is rejected.
- * @typedef {{token: number}}
  */
-export let IsFileBrowserWritableMessage;
+export interface IsFileBrowserWritableMessage {
+  token: number;
+}
 
-/** @typedef {{writable: boolean}} */
-export let IsFileBrowserWritableResponse;
+export interface IsFileBrowserWritableResponse {
+  writable: boolean;
+}
 
 /**
  * Message sent by the unprivileged context to the privileged context requesting
  * the current file to be launched in Photos with an edit intent. If the
  * supplied file `token` is invalid the request is rejected.
- * @typedef {{token: number, mimeType: string}}
  */
-export let EditInPhotosMessage;
+export interface EditInPhotosMessage {
+  token: number;
+  mimeType: string;
+}
 
 /**
  * Message sent by the unprivileged context to the privileged context requesting
  * that the currently writable file be overridden with the provided `blob`.
  * If the supplied file `token` is invalid the request is rejected.
- * @typedef {{token: number, blob: !Blob}}
  */
-export let OverwriteFileMessage;
+export interface OverwriteFileMessage {
+  token: number;
+  blob: Blob;
+}
 
 /**
  * Response message to a successful overwrite (no error thrown). If fields are
  * defined, indicates that an overwrite failed, but the user was able to select
  * a new file from a file picker. The UI should update to reflect the new name.
  * `errorName` is the error on the write attempt that triggered the picker.
- * @typedef {{renamedTo: (string|undefined), errorName: (string|undefined)}}
  */
-export let OverwriteViaFilePickerResponse;
+export interface OverwriteViaFilePickerResponse {
+  renamedTo?: string;
+  errorName?: string;
+}
 
 /**
  * Message sent by the unprivileged context to the privileged context requesting
@@ -120,40 +124,41 @@ export let OverwriteViaFilePickerResponse;
  * negative integers specify files "back" in the navigation order.
  * The `currentFileToken` is the token of the file which is currently opened,
  * this is used to decide what `direction` is in reference to.
- * @typedef {{direction: number, currentFileToken: (number|undefined)}}
  */
-export let NavigateMessage;
+export interface NavigateMessage {
+  direction: number;
+  currentFileToken?: number;
+}
 
-/**
- * Enum for results of renaming a file.
- * @enum {number}
- */
-export const RenameResult = {
-  FILE_NO_LONGER_IN_LAST_OPENED_DIRECTORY: -1,
-  SUCCESS: 0,
-  FILE_EXISTS: 1,
-};
+/** Enum for results of renaming a file. */
+export enum RenameResult {
+  FILE_NO_LONGER_IN_LAST_OPENED_DIRECTORY = -1,
+  SUCCESS = 0,
+  FILE_EXISTS = 1
+}
 
 /**
  * Message sent by the unprivileged context to request the privileged context to
  * rename the currently writable file.
  * If the supplied file `token` is invalid the request is rejected.
- * @typedef {{token: number, newFilename: string}}
  */
-export let RenameFileMessage;
+export interface RenameFileMessage {
+  token: number;
+  newFilename: string;
+}
 
-/** @typedef {{renameResult: RenameResult!}}  */
-export let RenameFileResponse;
+export interface RenameFileResponse {
+  renameResult: RenameResult;
+}
 
 /**
  * Message sent by the unprivileged context to notify the privileged context
  * that the current file has been updated.
- * @typedef {{
- *   name: (string|undefined),
- *   type: (string|undefined),
- * }}
  */
-export let NotifyCurrentFileMessage;
+export interface NotifyCurrentFileMessage {
+  name?: string;
+  type?: string;
+}
 
 /**
  * Message sent by the unprivileged context to the privileged context requesting
@@ -168,14 +173,13 @@ export let NotifyCurrentFileMessage;
  * The `accept` array contains keys of preconfigured file filters to include on
  * the file picker file type dropdown. These are keys such as "PDF", "JPG",
  * "PNG", etc. that are known on both sides of API boundary.
- * @typedef {{
- *   suggestedName: string,
- *   mimeType: string,
- *   startInToken: number,
- *   accept: !Array<string>
- * }}
  */
-export let RequestSaveFileMessage;
+export interface RequestSaveFileMessage {
+  suggestedName: string;
+  mimeType: string;
+  startInToken: number;
+  accept: string[];
+}
 
 /**
  * Message sent by the unprivileged context to the privileged context requesting
@@ -184,21 +188,21 @@ export let RequestSaveFileMessage;
  * the file picker file type dropdown. These are keys such as "AUDIO", "IMAGE",
  * "PDF", etc. that are known on both sides of API boundary.
  * `isSingleFile` prevents a user selecting more than one file.
- * @typedef {{
- *   startInToken: number,
- *   accept: !Array<string>,
- *   isSingleFile: ?boolean,
- * }}
  */
-export let OpenFilesWithPickerMessage;
+export interface OpenFilesWithPickerMessage {
+  startInToken: number;
+  accept: string[];
+  isSingleFile?: boolean;
+}
 
 /**
  * Response message sent by the privileged context with a unique identifier for
- * the new writable file created on disk by the corresponding request save
- * file message.
- * @typedef {{pickedFileContext: !FileContext}}
+ * the new writable file created on disk by the corresponding request save file
+ * message.
  */
-export let RequestSaveFileResponse;
+export interface RequestSaveFileResponse {
+  pickedFileContext: FileContext;
+}
 
 /**
  * Message sent by the unprivileged context to the privileged context requesting
@@ -208,34 +212,42 @@ export let RequestSaveFileResponse;
  * writable. The file specified by oldFileToken is given a new token and pushed
  * forward in the navigation order. This method can be called with any file, not
  * just the currently writable file.
- * @typedef {{blob: !Blob, oldFileToken: ?number, pickedFileToken: number}}
  */
-export let SaveAsMessage;
+export interface SaveAsMessage {
+  blob: Blob;
+  oldFileToken?: number;
+  pickedFileToken: number;
+}
+
+/**
+ * Response message sent by the privileged context with the name of the new
+ * current file.
+ */
+export interface SaveAsResponse {
+  newFilename: string;
+}
 
 /**
  * Message sent from the app to open a sandboxed viewer for a Blob in a popup.
  * `title` is the window title for the popup and `blobUuid` is the UUID of the
  * blob which will be reconstructed as a blob URL in the sandbox.
- * @typedef {{title: string, blobUuid: string}}
  */
-export let OpenInSandboxedViewerMessage;
-
-/**
- * Response message sent by the privileged context with the name of the new
- * current file.
- * @typedef {{newFilename: string}}
- */
-export let SaveAsResponse;
+export interface OpenInSandboxedViewerMessage {
+  title: string;
+  blobUuid: string;
+}
 
 /**
  * Message sent by the unprivileged context to the privileged context requesting
  * an "allowed" file to be opened.
- * @typedef {{fileToken: number}}
  */
-export let OpenAllowedFileMessage;
+export interface OpenAllowedFileMessage {
+  fileToken: number;
+}
 
 /**
  * Response message sent by the privileged context to "open" an allowed file.
- * @typedef {{file: !File}}
  */
-export let OpenAllowedFileResponse;
+export interface OpenAllowedFileResponse {
+  file: File;
+}
