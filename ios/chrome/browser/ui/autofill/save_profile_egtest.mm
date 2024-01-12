@@ -76,7 +76,7 @@ BOOL WaitForKeyboardToAppear() {
   return [waitForKeyboard waitWithTimeout:kWaitForActionTimeout.InSecondsF()];
 }
 
-}  // namepsace
+}  // namespace
 
 @interface SaveProfileEGTest : ChromeTestCase
 
