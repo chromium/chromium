@@ -37,11 +37,11 @@ Your PRIMARY DIRECTIVE as PRIMARY SHEPHERD is to tackle all the red cells on the
 security bug dashboard.
 
 For [*every new incoming security bug*](#Every-New-Incoming-Security-Bug):
-* Make sure it's [*self-contained*](#Ensure-self-contained-issue).
-* Make sure the report is [*valid and actionable*](#Confirm-valid-and-actionable)
+* Make sure it's [*self-contained*](#Ensure-self_contained-issue).
+* Make sure the report is [*valid and actionable*](#Confirm-Valid-and-Actionable)
   * Ideally, you’ll be able to do this by [reproducing the bug](#Reproduce-the-bug),
     more ideally, [with ClusterFuzz](clusterfuzz-for-shepherds.md).
-* Set [*severity*](#Set-Severity).
+* Set [*severity*](#Set-severity).
 * Set [*oldest impacted active release channel*](#Set-oldest-impacted-active-release-channel) – AKA FoundIn.
 * Set [*impacted-operating-systems*](#Set-impacted-operating-systems).
 * [*Assign*](#Assign) to an appropriate or suitable owner or engineering team.
@@ -59,9 +59,9 @@ All this is hard, so please remember to [ask for help](#Ask-for-help).
 # TL;DR Checklist for Secondary Shepherding
 (“I’m Secondary Shepherd, what do I do???”)
 
-* [*Check in on triaged issues*](#Check-In-On-Triaged-Issues) to ensure progress
+* [*Check in on triaged issues*](#Check-in-on-triaged-issues) to ensure progress
   is being made on medium+ severity security bugs.
-* [*Manage incoming security email*](#Manage-incoming-security-email).
+* [*Manage incoming security email*](#Handle-incoming-security-emails).
 
 
 [TOC]
