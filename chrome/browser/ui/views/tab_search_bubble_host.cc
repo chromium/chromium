@@ -141,13 +141,19 @@ void TabSearchBubbleHost::OnOrganizationAccepted(const Browser* browser) {
 
 void TabSearchBubbleHost::OnUserInvokedFeature(const Browser* browser) {
   if (browser == GetBrowser()) {
-    profile_->GetPrefs()->SetInteger(tab_search_prefs::kTabSearchTabIndex, 1);
-    ShowTabSearchBubble(false);
+    const int tab_organization_tab_index = 1;
+    ShowTabSearchBubble(false, tab_organization_tab_index);
   }
 }
 
 bool TabSearchBubbleHost::ShowTabSearchBubble(
-    bool triggered_by_keyboard_shortcut) {
+    bool triggered_by_keyboard_shortcut,
+    int tab_index) {
+  if (tab_index >= 0) {
+    profile_->GetPrefs()->SetInteger(tab_search_prefs::kTabSearchTabIndex,
+                                     tab_index);
+  }
+
   if (webui_bubble_manager_.GetBubbleWidget())
     return false;
 

@@ -1755,7 +1755,8 @@ void FindInPage(Browser* browser, bool find_next, bool forward_direction) {
 }
 
 void ShowTabSearch(Browser* browser) {
-  browser->window()->CreateTabSearchBubble();
+  const int tab_search_tab_index = 0;
+  browser->window()->CreateTabSearchBubble(tab_search_tab_index);
 }
 
 void CloseTabSearch(Browser* browser) {

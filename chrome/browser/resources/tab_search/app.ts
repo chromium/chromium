@@ -23,7 +23,7 @@ export class TabSearchAppElement extends PolymerElement {
     return {
       selectedTabIndex_: {
         type: Number,
-        value: loadTimeData.getInteger('tabIndex'),
+        value: () => loadTimeData.getInteger('tabIndex'),
       },
 
       tabNames_: {
@@ -49,6 +49,7 @@ export class TabSearchAppElement extends PolymerElement {
   }
 
   private apiProxy_: TabSearchApiProxy = TabSearchApiProxyImpl.getInstance();
+  private listenerIds_: number[] = [];
   private selectedTabIndex_: number;
   private tabNames_: string[];
   private tabIcons_: string[];
@@ -56,6 +57,24 @@ export class TabSearchAppElement extends PolymerElement {
 
   static get template() {
     return getTemplate();
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
+
+    const callbackRouter = this.apiProxy_.getCallbackRouter();
+    this.listenerIds_.push(callbackRouter.tabSearchTabIndexChanged.addListener(
+        this.onTabIndexChanged_.bind(this)));
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.listenerIds_.forEach(
+        id => this.apiProxy_.getCallbackRouter().removeListener(id));
+  }
+
+  private onTabIndexChanged_(index: number) {
+    this.selectedTabIndex_ = index;
   }
 
   private onSelectedTabChanged_(event: CustomEvent<{value: number}>) {

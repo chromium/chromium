@@ -569,8 +569,9 @@ class BrowserWindow : public ui::BaseWindow {
   // Shows a confirmation dialog about enabling caret browsing.
   virtual void ShowCaretBrowsingDialog() = 0;
 
-  // Create and open the tab search bubble.
-  virtual void CreateTabSearchBubble() = 0;
+  // Create and open the tab search bubble. Optionally force it to open to the
+  // given tab index
+  virtual void CreateTabSearchBubble(const int tab_index = -1) = 0;
   // Closes the tab search bubble if open for the given browser instance.
   virtual void CloseTabSearchBubble() = 0;
 

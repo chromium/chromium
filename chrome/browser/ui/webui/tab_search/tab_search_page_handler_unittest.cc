@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/tab_search/tab_search_page_handler.h"
 
+#include <stdint.h>
+
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/timer/mock_timer.h"
@@ -68,6 +70,7 @@ class MockPage : public tab_search::mojom::Page {
   MOCK_METHOD(void, TabsChanged, (tab_search::mojom::ProfileDataPtr));
   MOCK_METHOD(void, TabUpdated, (tab_search::mojom::TabUpdateInfoPtr));
   MOCK_METHOD(void, TabsRemoved, (tab_search::mojom::TabsRemovedInfoPtr));
+  MOCK_METHOD(void, TabSearchTabIndexChanged, (int32_t));
 };
 
 void ExpectNewTab(const tab_search::mojom::Tab* tab,

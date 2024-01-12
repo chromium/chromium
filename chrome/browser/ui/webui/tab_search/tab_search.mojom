@@ -287,4 +287,7 @@ interface Page {
 
   // Callback when tabs are removed.
   TabsRemoved(TabsRemovedInfo tabsRemovedInfo);
+
+  // Called when the top level bubble tab should change.
+  TabSearchTabIndexChanged(int32 index);
 };
