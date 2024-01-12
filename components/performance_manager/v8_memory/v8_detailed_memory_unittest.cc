@@ -98,10 +98,17 @@ using MockV8DetailedMemoryObserverAnySeq =
 using MeasurementMode = V8DetailedMemoryRequest::MeasurementMode;
 
 // An arbitrary object used to test object lifetimes with WeakPtr.
-class LifetimeTestObject : public base::SupportsWeakPtr<LifetimeTestObject> {
+class LifetimeTestObject final {
  public:
   LifetimeTestObject() = default;
   ~LifetimeTestObject() = default;
+
+  base::WeakPtr<LifetimeTestObject> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<LifetimeTestObject> weak_ptr_factory_{this};
 };
 
 constexpr base::TimeDelta kMinTimeBetweenRequests = base::Seconds(30);
