@@ -45,7 +45,7 @@ ComposeUI::ComposeUI(content::WebUI* web_ui)
       {"firstRunMainTop", IDS_COMPOSE_FRE_MAIN_TOP},
       {"firstRunMainMid", IDS_COMPOSE_FRE_MAIN_MID},
       {"firstRunMainBottom", IDS_COMPOSE_EXPERIMENTAL_DISCLAIMER_FOOTER},
-      {"firstRunLetsGoButton", IDS_COMPOSE_FRE_LETS_GO_BUTTON},
+      {"firstRunOkButton", IDS_COMPOSE_FRE_OK_BUTTON},
       {"dialogTitle", IDS_COMPOSE_DIALOG_TITLE},
       {"inputPlaceholderTitle", IDS_COMPOSE_INPUT_PLACEHOLDER_TITLE},
       {"inputPlaceholderLine1", IDS_COMPOSE_INPUT_PLACEHOLDER_LINE_1},

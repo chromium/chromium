@@ -54,8 +54,7 @@ DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementChangedEvent);
 const char kTestPageDomain[] = "a.test";
 const char kTestPageUrl[] = "/compose/compose_happy_path.html";
 
-const DeepQuery kFirstRunLetsGoButton = {"compose-app",
-                                         "#firstRunLetsGoButton"};
+const DeepQuery kFirstRunOkButton = {"compose-app", "#firstRunOkButton"};
 const DeepQuery kSubmitButton = {"compose-app", "#submitButton"};
 const DeepQuery kAcceptButton = {"compose-app", "#acceptButton"};
 const DeepQuery kComposeTextArea = {"compose-app", "compose-textarea"};
@@ -166,7 +165,7 @@ class MAYBE_ComposeInteractiveUiTest : public InteractiveBrowserTest {
   }
 
   InteractiveTestApi::MultiStep AcceptFRE() {
-    return Steps(PressJsButton(kComposeWebContents, kFirstRunLetsGoButton));
+    return Steps(PressJsButton(kComposeWebContents, kFirstRunOkButton));
   }
 
   InteractiveTestApi::MultiStep RequestCompose() {

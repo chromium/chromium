@@ -241,22 +241,22 @@ suite('ComposeApp', () => {
     assertEquals(CloseReason.kMSBBCloseButton, closeReason);
   });
 
-  test('FirstRunLetsGoButtonToMainDialog', async () => {
+  test('FirstRunOkButtonToMainDialog', async () => {
     const appWithFirstRunDialog =
         await initializeNewAppWithFirstRunAndMsbbState(false, true);
 
-    appWithFirstRunDialog.$.firstRunLetsGoButton.click();
+    appWithFirstRunDialog.$.firstRunOkButton.click();
     // View state should change from FRE UI to main app UI.
     assertFalse(isVisible(appWithFirstRunDialog.$.firstRunDialog));
     assertFalse(isVisible(appWithFirstRunDialog.$.freMsbbDialog));
     assertTrue(isVisible(appWithFirstRunDialog.$.appDialog));
   });
 
-  test('FirstRunLetsGoButtonToMSBBDialog', async () => {
+  test('FirstRunOkButtonToMSBBDialog', async () => {
     const appWithFirstRunDialog =
         await initializeNewAppWithFirstRunAndMsbbState(false, false);
 
-    appWithFirstRunDialog.$.firstRunLetsGoButton.click();
+    appWithFirstRunDialog.$.firstRunOkButton.click();
     // View state should change from FRE UI to MSBB UI.
     assertFalse(isVisible(appWithFirstRunDialog.$.firstRunDialog));
     assertTrue(isVisible(appWithFirstRunDialog.$.freMsbbDialog));

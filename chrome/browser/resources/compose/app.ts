@@ -42,7 +42,7 @@ export interface ComposeAppElement {
   $: {
     firstRunDialog: HTMLElement,
     firstRunFooter: HTMLElement,
-    firstRunLetsGoButton: CrButtonElement,
+    firstRunOkButton: CrButtonElement,
     freMsbbDialog: HTMLElement,
     appDialog: HTMLElement,
     body: HTMLElement,
@@ -341,7 +341,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
     return this.partialResponse_?.result.trim();
   }
 
-  private onfirstRunLetsGoButtonClick_() {
+  private onFirstRunOkButtonClick_() {
     this.apiProxy_.completeFirstRun();
 
     if (this.shouldShowMSBBDialog_) {

@@ -19,17 +19,17 @@
   </message>
 
   <!-- FRE dialog -->
-  <message name="IDS_COMPOSE_FRE_TITLE" desc="The title of the Help me write disclaimer dialog." translateable="false">
-    Write better and with more confidence anywhere on the web
+  <message name="IDS_COMPOSE_FRE_TITLE" desc="The title of the Help me write disclaimer dialog.">
+    Write with more confidence anywhere on the web
   </message>
-  <message name="IDS_COMPOSE_FRE_MAIN_TOP" desc="The top main text of the Help me write disclaimer dialog." translateable="false">
-    Just start with a few words or enter a first draft to get writing and editing suggestions.
+  <message name="IDS_COMPOSE_FRE_MAIN_TOP" desc="The top main text of the Help me write disclaimer dialog.">
+    Just start with a few words or a first draft to get writing suggestions.
   </message>
-  <message name="IDS_COMPOSE_FRE_MAIN_MID" desc="The middle main text of the Help me write disclaimer dialog." translateable="false">
-    Your text and the content and url of the page you're writing on will be sent to Google, reviewed by humans, and used to improve this feature. Avoid entering personal information (like medical or financial details) or using this tool on sites that contain private or sensitive information.
+  <message name="IDS_COMPOSE_FRE_MAIN_MID" desc="The middle main text of the Help me write disclaimer dialog.">
+    Your text and the content and URL of the page you're writing on will be sent to Google, reviewed by humans, and used to improve this feature. Avoid entering personal information (like medical or financial details) or using this tool on sites that contain private or sensitive information.
   </message>
-  <message name="IDS_COMPOSE_FRE_LETS_GO_BUTTON" desc="The button to acknowledge the Help me write disclaimer message.">
-    Let's go
+  <message name="IDS_COMPOSE_FRE_OK_BUTTON" desc="The button to acknowledge the Help me write disclaimer message.">
+    OK
   </message>
 
   <!-- MSBB consent dialog -->
