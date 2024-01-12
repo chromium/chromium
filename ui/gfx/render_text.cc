@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <climits>
+#include <utility>
 
 #include "base/check_op.h"
 #include "base/command_line.h"
@@ -506,11 +507,11 @@ std::unique_ptr<RenderText> RenderText::CreateInstanceOfSameStyle(
   return render_text;
 }
 
-void RenderText::SetText(const std::u16string& text) {
+void RenderText::SetText(std::u16string text) {
   DCHECK(!composition_range_.IsValid());
   if (text_ == text)
     return;
-  text_ = text;
+  text_ = std::move(text);
   UpdateStyleLengths();
 
   // Clear style ranges as they might break new text graphemes and apply
@@ -2179,7 +2180,7 @@ std::u16string RenderText::Elide(const std::u16string& text,
     // The elided text must be smaller in bytes. Otherwise, break-lists are not
     // consistent and the characters after the last range are not styled.
     DCHECK_LE(new_text.size(), text.size());
-    render_text->SetText(new_text);
+    render_text->SetText(std::move(new_text));
 
     // Restore styles and baselines without breaking multi-character graphemes.
     render_text->styles_ = styles_;

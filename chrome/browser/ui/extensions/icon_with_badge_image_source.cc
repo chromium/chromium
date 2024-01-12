@@ -173,7 +173,7 @@ void IconWithBadgeImageSource::SetBadge(std::unique_ptr<Badge> badge) {
   badge_text_->SetCursorEnabled(false);
   badge_text_->SetFontList(base_font);
   badge_text_->SetColor(text_color);
-  badge_text_->SetText(utf16_text);
+  badge_text_->SetText(std::move(utf16_text));
   badge_text_->SetDisplayRect(badge_rect);
 }
 
