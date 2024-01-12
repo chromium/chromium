@@ -120,49 +120,56 @@ suite('CellularNetworksList', function() {
     return new Promise(resolve => setTimeout(resolve));
   }
 
-  test('Tether, cellular and eSIM profiles', async () => {
-    eSimManagerRemote.addEuiccForTest(2);
-    init();
-    browserProxy.setInstantTetheringStateForTest(
-        MultiDeviceFeatureState.ENABLED_BY_USER);
+  [true, false].forEach(shouldEnableSmdsSupport => {
+    test('Tether, cellular and eSIM profiles', async () => {
+      eSimManagerRemote.addEuiccForTest(2);
+      init();
+      browserProxy.setInstantTetheringStateForTest(
+          MultiDeviceFeatureState.ENABLED_BY_USER);
+      setIsSmdsSupportEnabled(shouldEnableSmdsSupport);
 
-    const eSimNetwork1 = OncMojo.getDefaultManagedProperties(
-        NetworkType.kCellular, 'cellular_esim1');
-    eSimNetwork1.typeProperties.cellular.eid =
-        '11111111111111111111111111111111';
-    const eSimNetwork2 = OncMojo.getDefaultManagedProperties(
-        NetworkType.kCellular, 'cellular_esim2');
-    eSimNetwork2.typeProperties.cellular.eid =
-        '22222222222222222222222222222222';
-    setManagedPropertiesForTest(NetworkType.kCellular, [
-      OncMojo.getDefaultManagedProperties(NetworkType.kCellular, 'cellular1'),
-      OncMojo.getDefaultManagedProperties(NetworkType.kCellular, 'cellular2'),
-      eSimNetwork1,
-      eSimNetwork2,
-      OncMojo.getDefaultManagedProperties(NetworkType.kTether, 'tether1'),
-      OncMojo.getDefaultManagedProperties(NetworkType.kTether, 'tether2'),
-    ]);
-    addPSimSlot();
-    addESimSlot();
+      const eSimNetwork1 = OncMojo.getDefaultManagedProperties(
+          NetworkType.kCellular, 'cellular_esim1');
+      eSimNetwork1.typeProperties.cellular.eid =
+          '11111111111111111111111111111111';
+      const eSimNetwork2 = OncMojo.getDefaultManagedProperties(
+          NetworkType.kCellular, 'cellular_esim2');
+      eSimNetwork2.typeProperties.cellular.eid =
+          '22222222222222222222222222222222';
+      setManagedPropertiesForTest(NetworkType.kCellular, [
+        OncMojo.getDefaultManagedProperties(NetworkType.kCellular, 'cellular1'),
+        OncMojo.getDefaultManagedProperties(NetworkType.kCellular, 'cellular2'),
+        eSimNetwork1,
+        eSimNetwork2,
+        OncMojo.getDefaultManagedProperties(NetworkType.kTether, 'tether1'),
+        OncMojo.getDefaultManagedProperties(NetworkType.kTether, 'tether2'),
+      ]);
+      addPSimSlot();
+      addESimSlot();
 
-    await flushAsync();
+      await flushAsync();
 
-    const eSimNetworkList =
-        cellularNetworkList.shadowRoot.querySelector('#esimNetworkList');
-    assertTrue(!!eSimNetworkList);
+      const eSimNetworkList =
+          cellularNetworkList.shadowRoot.querySelector('#esimNetworkList');
+      assertTrue(!!eSimNetworkList);
 
-    const pSimNetworkList =
-        cellularNetworkList.shadowRoot.querySelector('#psimNetworkList');
-    assertTrue(!!pSimNetworkList);
+      const pSimNetworkList =
+          cellularNetworkList.shadowRoot.querySelector('#psimNetworkList');
+      assertTrue(!!pSimNetworkList);
 
-    const tetherNetworkList =
-        cellularNetworkList.shadowRoot.querySelector('#tetherNetworkList');
-    assertTrue(!!tetherNetworkList);
+      const tetherNetworkList =
+          cellularNetworkList.shadowRoot.querySelector('#tetherNetworkList');
+      assertTrue(!!tetherNetworkList);
 
-    assertEquals(2, eSimNetworkList.networks.length);
-    assertEquals(2, pSimNetworkList.networks.length);
-    assertEquals(2, tetherNetworkList.networks.length);
-    assertEquals(2, eSimNetworkList.customItems.length);
+      assertEquals(2, eSimNetworkList.networks.length);
+      assertEquals(2, pSimNetworkList.networks.length);
+      assertEquals(2, tetherNetworkList.networks.length);
+      if (shouldEnableSmdsSupport) {
+        assertEquals(0, eSimNetworkList.customItems.length);
+      } else {
+        assertEquals(2, eSimNetworkList.customItems.length);
+      }
+    });
   });
 
   test(
@@ -227,37 +234,50 @@ suite('CellularNetworksList', function() {
     });
   });
 
-  test(
-      'Hide esim section when no EUICC is found or no eSIM slots', async () => {
-        init();
-        setManagedPropertiesForTest(NetworkType.kCellular, [
-          OncMojo.getDefaultManagedProperties(NetworkType.kTether, 'tether1'),
-        ]);
-        flush();
-        await flushAsync();
-        // The list should be hidden with no EUICC or eSIM slots.
-        assertFalse(
-            !!cellularNetworkList.shadowRoot.querySelector('#esimNetworkList'));
+  [true, false].forEach(shouldEnableSmdsSupport => {
+    test(
+        'Hide eSIM section when no EUICC is found or no eSIM slots',
+        async () => {
+          init();
+          setIsSmdsSupportEnabled(shouldEnableSmdsSupport);
 
-        // Add an eSIM slot.
-        await addESimSlot();
-        // The list should still be hidden.
-        assertFalse(
-            !!cellularNetworkList.shadowRoot.querySelector('#esimNetworkList'));
+          const eSimNetwork = OncMojo.getDefaultManagedProperties(
+              NetworkType.kCellular, 'cellular_esim');
+          eSimNetwork.typeProperties.cellular.eid =
+              '11111111111111111111111111111111';
+          eSimNetwork.typeProperties.cellular.iccid =
+              '11111111111111111111111111111111';
+          setManagedPropertiesForTest(NetworkType.kCellular, [
+            eSimNetwork,
+            OncMojo.getDefaultManagedProperties(NetworkType.kTether, 'tether1'),
+          ]);
+          flush();
+          await flushAsync();
 
-        // Add an EUICC.
-        eSimManagerRemote.addEuiccForTest(1);
-        await flushAsync();
-        // The list should now be showing
-        assertTrue(
-            !!cellularNetworkList.shadowRoot.querySelector('#esimNetworkList'));
+          // The list should be hidden with no EUICC or eSIM slots.
+          assertFalse(!!cellularNetworkList.shadowRoot.querySelector(
+              '#esimNetworkList'));
 
-        // Remove the eSIM slot
-        clearSimSlots();
-        // The list should be hidden again.
-        assertFalse(
-            !!cellularNetworkList.shadowRoot.querySelector('#esimNetworkList'));
-      });
+          // Add an eSIM slot.
+          await addESimSlot();
+          // The list should still be hidden.
+          assertFalse(!!cellularNetworkList.shadowRoot.querySelector(
+              '#esimNetworkList'));
+
+          // Add an EUICC.
+          eSimManagerRemote.addEuiccForTest(1);
+          await flushAsync();
+          // The list should now be showing
+          assertTrue(!!cellularNetworkList.shadowRoot.querySelector(
+              '#esimNetworkList'));
+
+          // Remove the eSIM slot
+          clearSimSlots();
+          // The list should be hidden again.
+          assertFalse(!!cellularNetworkList.shadowRoot.querySelector(
+              '#esimNetworkList'));
+        });
+  });
 
   test('Hide pSIM section when no pSIM slots', async () => {
     init();
@@ -322,6 +342,9 @@ suite('CellularNetworksList', function() {
       async () => {
         eSimManagerRemote.addEuiccForTest(1);
         init();
+        // Pending profiles are never shown in the UI when SM-DS Support is
+        // enabled.
+        setIsSmdsSupportEnabled(false);
         addESimSlot();
         cellularNetworkList.globalPolicy = {
           allowOnlyPolicyCellularNetworks: false,
@@ -357,6 +380,9 @@ suite('CellularNetworksList', function() {
       async () => {
         eSimManagerRemote.addEuiccForTest(1);
         init();
+        // Pending profiles are never shown in the UI when SM-DS Support is
+        // enabled.
+        setIsSmdsSupportEnabled(false);
         addESimSlot();
         cellularNetworkList.isConnectedToNonCellularNetwork = false;
         await flushAsync();
@@ -474,6 +500,8 @@ suite('CellularNetworksList', function() {
     const eSimNetwork1 = OncMojo.getDefaultManagedProperties(
         NetworkType.kCellular, 'cellular_esim1');
     eSimNetwork1.typeProperties.cellular.eid =
+        '11111111111111111111111111111111';
+    eSimNetwork1.typeProperties.cellular.iccid =
         '11111111111111111111111111111111';
     setManagedPropertiesForTest(NetworkType.kCellular, [
       OncMojo.getDefaultManagedProperties(NetworkType.kCellular, 'cellular1'),
