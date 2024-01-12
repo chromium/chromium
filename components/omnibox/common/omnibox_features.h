@@ -164,6 +164,8 @@ BASE_DECLARE_FEATURE(kPolicyIndicationForManagedDefaultSearch);
 // Kill switch for use of the new SQL recovery module in `ShortcutsDatabase`.
 BASE_DECLARE_FEATURE(kShortcutsDatabaseUseBuiltInRecoveryIfSupported);
 
+BASE_DECLARE_FEATURE(kAblateSearchProviderWarmup);
+
 }  // namespace omnibox
 
 #endif  // COMPONENTS_OMNIBOX_COMMON_OMNIBOX_FEATURES_H_

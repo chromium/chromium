@@ -535,4 +535,9 @@ BASE_FEATURE(kShortcutsDatabaseUseBuiltInRecoveryIfSupported,
              "ShortcutsDatabaseUseBuiltInRecoveryIfSupported",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, |SearchProvider| will not function in Zero Suggest.
+BASE_FEATURE(kAblateSearchProviderWarmup,
+             "AblateSearchProviderWarmup",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace omnibox

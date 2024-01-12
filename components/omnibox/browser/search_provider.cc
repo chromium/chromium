@@ -239,6 +239,14 @@ void SearchProvider::Start(const AutocompleteInput& input,
   // per-user models into memory.  Having a per-user model in memory allows the
   // suggest server to respond more quickly with personalized suggestions as the
   // user types.
+  //
+  // 2024-01 Adding a feature flag for experiment to ablate the warmup request.
+  if (base::FeatureList::IsEnabled(omnibox::kAblateSearchProviderWarmup) &&
+      (input.IsZeroSuggest() ||
+       input.type() == metrics::OmniboxInputType::EMPTY)) {
+    Stop(true, false);
+    return;
+  }
 
   keyword_input_ = input;
   const TemplateURL* keyword_provider =
