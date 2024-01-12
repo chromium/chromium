@@ -440,7 +440,7 @@ void ScreenRotationAnimator::AnimateRotation(
   }
   ui::AnimationThroughputReporter reporter(
       old_layer_animator,
-      metrics_util::ForSmoothness(base::BindRepeating([](int smoothness) {
+      metrics_util::ForSmoothnessV3(base::BindRepeating([](int smoothness) {
         UMA_HISTOGRAM_PERCENTAGE(kRotationAnimationSmoothness, smoothness);
       })));
 

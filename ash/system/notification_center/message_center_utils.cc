@@ -216,7 +216,7 @@ void FadeInView(views::View* view,
 
   ui::AnimationThroughputReporter reporter(
       view->layer()->GetAnimator(),
-      metrics_util::ForSmoothness(base::BindRepeating(
+      metrics_util::ForSmoothnessV3(base::BindRepeating(
           &ReportAnimationSmoothness, animation_histogram_name)));
 
   views::AnimationBuilder()
@@ -251,7 +251,7 @@ void FadeOutView(views::View* view,
 
   ui::AnimationThroughputReporter reporter(
       view->layer()->GetAnimator(),
-      metrics_util::ForSmoothness(base::BindRepeating(
+      metrics_util::ForSmoothnessV3(base::BindRepeating(
           &ReportAnimationSmoothness, animation_histogram_name)));
 
   view->SetVisible(true);
@@ -286,7 +286,7 @@ void SlideOutView(views::View* view,
 
   ui::AnimationThroughputReporter reporter(
       view->layer()->GetAnimator(),
-      metrics_util::ForSmoothness(base::BindRepeating(
+      metrics_util::ForSmoothnessV3(base::BindRepeating(
           &ReportAnimationSmoothness, animation_histogram_name)));
 
   gfx::Transform transform;

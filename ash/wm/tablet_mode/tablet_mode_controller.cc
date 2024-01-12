@@ -804,7 +804,7 @@ void TabletModeController::OnLayerAnimationScheduled(
   if (!transition_tracker_) {
     transition_tracker_ =
         animating_layer_->GetCompositor()->RequestNewThroughputTracker();
-    transition_tracker_->Start(metrics_util::ForSmoothness(
+    transition_tracker_->Start(metrics_util::ForSmoothnessV3(
         base::BindRepeating(&ReportTrasitionSmoothness,
                             display::Screen::GetScreen()->GetTabletState() ==
                                 display::TabletState::kEnteringTabletMode)));

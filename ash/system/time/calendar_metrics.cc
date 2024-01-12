@@ -113,7 +113,7 @@ ui::AnimationThroughputReporter CreateAnimationReporter(
   // TODO(crbug.com/1297376): Add unit tests for animation metrics recording.
   return ui::AnimationThroughputReporter(
       view->layer()->GetAnimator(),
-      metrics_util::ForSmoothness(base::BindRepeating(
+      metrics_util::ForSmoothnessV3(base::BindRepeating(
           [](const std::string& animation_histogram_name, int smoothness) {
             base::UmaHistogramPercentage(animation_histogram_name, smoothness);
           },

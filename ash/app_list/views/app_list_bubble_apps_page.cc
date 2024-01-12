@@ -302,7 +302,7 @@ void AppListBubbleAppsPage::AnimateShowLauncher(bool is_side_shelf) {
   // handled in AppListBubbleView, so track overall smoothness here.
   ui::AnimationThroughputReporter reporter(
       scrollable_apps_grid_view_->layer()->GetAnimator(),
-      metrics_util::ForSmoothness(base::BindRepeating([](int value) {
+      metrics_util::ForSmoothnessV3(base::BindRepeating([](int value) {
         // This histogram name is used in Tast tests. Do not rename.
         base::UmaHistogramPercentage(
             "Apps.ClamshellLauncher.AnimationSmoothness.OpenAppsPage", value);
@@ -397,7 +397,7 @@ void AppListBubbleAppsPage::AnimateShowPage() {
 
   ui::AnimationThroughputReporter reporter(
       scroll_contents->layer()->GetAnimator(),
-      metrics_util::ForSmoothness(base::BindRepeating([](int value) {
+      metrics_util::ForSmoothnessV3(base::BindRepeating([](int value) {
         base::UmaHistogramPercentage(
             "Apps.ClamshellLauncher.AnimationSmoothness.ShowAppsPage", value);
       })));
@@ -464,7 +464,7 @@ void AppListBubbleAppsPage::AnimateHidePage() {
 
   ui::AnimationThroughputReporter reporter(
       scroll_contents->layer()->GetAnimator(),
-      metrics_util::ForSmoothness(base::BindRepeating([](int value) {
+      metrics_util::ForSmoothnessV3(base::BindRepeating([](int value) {
         base::UmaHistogramPercentage(
             "Apps.ClamshellLauncher.AnimationSmoothness.HideAppsPage", value);
       })));

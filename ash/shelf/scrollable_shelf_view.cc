@@ -672,7 +672,7 @@ void ScrollableShelfView::StartShelfScrollAnimation(float scroll_distance) {
 
   ui::AnimationThroughputReporter reporter(
       animation_settings.GetAnimator(),
-      metrics_util::ForSmoothness(
+      metrics_util::ForSmoothnessV3(
           base::BindRepeating(&ReportSmoothness, Shell::Get()->IsInTabletMode(),
                               Shell::Get()->app_list_controller()->IsVisible(
                                   GetDisplayIdForView(this)))));

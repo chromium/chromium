@@ -265,7 +265,7 @@ void ScaleAndTranslateView(views::View* view,
 
   ui::AnimationThroughputReporter reporter(
       view->layer()->GetAnimator(),
-      ash::metrics_util::ForSmoothness(base::BindRepeating(
+      ash::metrics_util::ForSmoothnessV3(base::BindRepeating(
           [](const std::string& animation_histogram_name, int smoothness) {
             base::UmaHistogramPercentage(animation_histogram_name, smoothness);
           },
@@ -920,7 +920,7 @@ void AshNotificationView::AnimateSingleToGroup(
 
   ui::AnimationThroughputReporter reporter(
       left_content()->layer()->GetAnimator(),
-      metrics_util::ForSmoothness(base::BindRepeating([](int smoothness) {
+      metrics_util::ForSmoothnessV3(base::BindRepeating([](int smoothness) {
         base::UmaHistogramPercentage(
             "Ash.NotificationView.ConvertSingleToGroup.FadeOut."
             "AnimationSmoothness",
@@ -2092,12 +2092,13 @@ void AshNotificationView::PerformLargeImageAnimation() {
 
   ui::AnimationThroughputReporter reporter(
       image_container_view()->layer()->GetAnimator(),
-      ash::metrics_util::ForSmoothness(base::BindRepeating([](int smoothness) {
-        base::UmaHistogramPercentage(
-            "Ash.NotificationView.ImageContainerView.ScaleDown."
-            "AnimationSmoothness",
-            smoothness);
-      })));
+      ash::metrics_util::ForSmoothnessV3(
+          base::BindRepeating([](int smoothness) {
+            base::UmaHistogramPercentage(
+                "Ash.NotificationView.ImageContainerView.ScaleDown."
+                "AnimationSmoothness",
+                smoothness);
+          })));
 
   views::AnimationBuilder()
       .SetPreemptionStrategy(

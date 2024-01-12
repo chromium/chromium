@@ -226,7 +226,7 @@ bool DeskActivationAnimation::EndSwipeAnimation() {
   throughput_tracker_ = desks_util::GetSelectedCompositorForPerformanceMetrics()
                             ->RequestNewThroughputTracker();
   throughput_tracker_->Start(
-      metrics_util::ForSmoothness(base::BindRepeating([](int smoothness) {
+      metrics_util::ForSmoothnessV3(base::BindRepeating([](int smoothness) {
         UMA_HISTOGRAM_PERCENTAGE(kDeskEndGestureSmoothnessHistogramName,
                                  smoothness);
       })));
@@ -290,7 +290,7 @@ DeskActivationAnimation::GetLatencyReportCallback() const {
 
 metrics_util::ReportCallback
 DeskActivationAnimation::GetSmoothnessReportCallback() const {
-  return metrics_util::ForSmoothness(base::BindRepeating([](int smoothness) {
+  return metrics_util::ForSmoothnessV3(base::BindRepeating([](int smoothness) {
     UMA_HISTOGRAM_PERCENTAGE(kDeskActivationSmoothnessHistogramName,
                              smoothness);
   }));
@@ -386,7 +386,7 @@ DeskRemovalAnimation::GetLatencyReportCallback() const {
 
 metrics_util::ReportCallback DeskRemovalAnimation::GetSmoothnessReportCallback()
     const {
-  return ash::metrics_util::ForSmoothness(
+  return ash::metrics_util::ForSmoothnessV3(
       base::BindRepeating([](int smoothness) {
         UMA_HISTOGRAM_PERCENTAGE(kDeskRemovalSmoothnessHistogramName,
                                  smoothness);

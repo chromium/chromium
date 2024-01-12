@@ -139,7 +139,7 @@ void PhotoView::StartTransitionAnimation() {
 
     ui::AnimationThroughputReporter reporter(
         animation.GetAnimator(),
-        metrics_util::ForSmoothness(base::BindRepeating(ReportSmoothness)));
+        metrics_util::ForSmoothnessV3(base::BindRepeating(ReportSmoothness)));
 
     visible_layer->SetOpacity(0.0f);
   }
@@ -157,7 +157,7 @@ void PhotoView::StartTransitionAnimation() {
 
     ui::AnimationThroughputReporter reporter(
         animation.GetAnimator(),
-        metrics_util::ForSmoothness(base::BindRepeating(ReportSmoothness)));
+        metrics_util::ForSmoothnessV3(base::BindRepeating(ReportSmoothness)));
 
     invisible_layer->SetOpacity(1.0f);
   }

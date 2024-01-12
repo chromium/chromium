@@ -596,7 +596,7 @@ void PagedAppsGridView::TransitionStarted() {
 
   pagination_metrics_tracker_ =
       GetWidget()->GetCompositor()->RequestNewThroughputTracker();
-  pagination_metrics_tracker_->Start(metrics_util::ForSmoothness(
+  pagination_metrics_tracker_->Start(metrics_util::ForSmoothnessV3(
       base::BindRepeating(&ReportPaginationSmoothness)));
 }
 
@@ -835,7 +835,7 @@ void PagedAppsGridView::AnimateCardifiedState() {
   for (auto& background_card : background_cards_) {
     reporters.push_back(std::make_unique<ui::AnimationThroughputReporter>(
         background_card->layer()->GetAnimator(),
-        metrics_util::ForSmoothness(base::BindRepeating(
+        metrics_util::ForSmoothnessV3(base::BindRepeating(
             &ReportCardifiedSmoothness, cardified_state_))));
   }
 

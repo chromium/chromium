@@ -1553,7 +1553,7 @@ void BrowserView::UpdateLoadingAnimations(bool is_visible) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     loading_animation_tracker_.emplace(
         GetWidget()->GetCompositor()->RequestNewThroughputTracker());
-    loading_animation_tracker_->Start(ash::metrics_util::ForSmoothness(
+    loading_animation_tracker_->Start(ash::metrics_util::ForSmoothnessV3(
         base::BindRepeating(&RecordTabLoadingSmoothness)));
 #endif
     // Loads are happening, and the timer isn't running, so start it.

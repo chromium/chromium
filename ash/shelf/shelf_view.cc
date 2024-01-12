@@ -1515,7 +1515,7 @@ void ShelfView::AnimateToIdealBounds() {
 
   move_animation_tracker_.emplace(
       GetWidget()->GetCompositor()->RequestNewThroughputTracker());
-  move_animation_tracker_->Start(metrics_util::ForSmoothness(
+  move_animation_tracker_->Start(metrics_util::ForSmoothnessV3(
       base::BindRepeating(&ReportMoveAnimationSmoothness)));
 
   for (size_t i = 0; i < view_model_->view_size(); ++i) {
@@ -1580,7 +1580,7 @@ void ShelfView::FadeIn(views::View* view) {
 
   ui::AnimationThroughputReporter reporter(
       fade_in_animation_settings.GetAnimator(),
-      metrics_util::ForSmoothness(
+      metrics_util::ForSmoothnessV3(
           base::BindRepeating(&ReportFadeInAnimationSmoothness)));
 
   view->layer()->SetOpacity(1.f);
@@ -2375,7 +2375,7 @@ void ShelfView::ShelfItemRemoved(int model_index, const ShelfItem& old_item) {
     if (!fade_out_animation_tracker_) {
       fade_out_animation_tracker_.emplace(
           GetWidget()->GetCompositor()->RequestNewThroughputTracker());
-      fade_out_animation_tracker_->Start(metrics_util::ForSmoothness(
+      fade_out_animation_tracker_->Start(metrics_util::ForSmoothnessV3(
           base::BindRepeating(&ReportFadeOutAnimationSmoothness)));
     }
 

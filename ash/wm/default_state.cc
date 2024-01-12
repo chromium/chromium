@@ -706,7 +706,7 @@ void DefaultState::UpdateBoundsFromState(
         bounds_in_parent.size() != window->bounds().size()) {
       reporter.emplace(
           window_state->window()->layer()->GetAnimator(),
-          metrics_util::ForSmoothness(base::BindRepeating([](int smoothness) {
+          metrics_util::ForSmoothnessV3(base::BindRepeating([](int smoothness) {
             UMA_HISTOGRAM_PERCENTAGE(kSnapWindowSmoothnessHistogramName,
                                      smoothness);
           })));

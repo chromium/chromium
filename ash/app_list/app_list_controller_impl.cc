@@ -1968,7 +1968,7 @@ void AppListControllerImpl::StartTrackingAnimationSmoothness(
   auto* compositor = root_window->layer()->GetCompositor();
   smoothness_tracker_ = compositor->RequestNewThroughputTracker();
   smoothness_tracker_->Start(
-      metrics_util::ForSmoothness(base::BindRepeating([](int smoothness) {
+      metrics_util::ForSmoothnessV3(base::BindRepeating([](int smoothness) {
         UMA_HISTOGRAM_PERCENTAGE(kHomescreenAnimationHistogram, smoothness);
       })));
 }

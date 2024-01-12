@@ -104,10 +104,15 @@ class TrayItemViewTest : public AshTestBase {
     TrayItemViewAnimationWaiter waiter(tray_item());
     waiter.Wait();
 
-    // Ensure there is one more frame presented after animation finishes to
-    // allow animation throughput data to be passed from cc to ui.
-    EXPECT_TRUE(ui::WaitForNextFrameToBePresented(
-        tray_item()->GetWidget()->GetCompositor()));
+    // Force frames and wait for all throughput trackers to be gone to allow
+    // animation throughput data to be passed from cc to ui.
+    ui::Compositor* const compositor =
+        tray_item()->GetWidget()->GetCompositor();
+    while (compositor->has_throughput_trackers_for_testing()) {
+      compositor->ScheduleFullRedraw();
+      std::ignore = ui::WaitForNextFrameToBePresented(compositor,
+                                                      base::Milliseconds(500));
+    }
   }
 
   views::Widget* widget() { return widget_.get(); }

@@ -109,8 +109,8 @@ void RecordDurationMetrics(
 
   int duration_ms = (base::TimeTicks::Now() - start).InMilliseconds();
   int smoothness, jank;
-  smoothness = metrics_util::CalculateSmoothness(data);
-  jank = metrics_util::CalculateJank(data);
+  smoothness = metrics_util::CalculateSmoothnessV3(data);
+  jank = metrics_util::CalculateJankV3(data);
 
   std::string suffix = GetDeviceModeSuffix();
   base::UmaHistogramPercentage(smoothness_name + suffix, smoothness);
@@ -163,7 +163,7 @@ void RecordSmoothnessMetrics(
     return;
   }
 
-  const int smoothness = metrics_util::CalculateSmoothness(data);
+  const int smoothness = metrics_util::CalculateSmoothnessV3(data);
 
   const std::string suffix = GetDeviceModeSuffix();
   base::UmaHistogramPercentage(smoothness_name + suffix, smoothness);

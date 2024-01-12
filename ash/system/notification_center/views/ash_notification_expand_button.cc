@@ -253,7 +253,7 @@ void AshNotificationExpandButton::AnimateBoundsChange(
 
   ui::AnimationThroughputReporter reporter(
       layer()->GetAnimator(),
-      metrics_util::ForSmoothness(base::BindRepeating(
+      metrics_util::ForSmoothnessV3(base::BindRepeating(
           [](const std::string& animation_histogram_name, int smoothness) {
             base::UmaHistogramPercentage(animation_histogram_name, smoothness);
           },

@@ -285,7 +285,7 @@ class SplitViewController::DividerSnapAnimation
 
     tracker_.emplace(widget->GetCompositor()->RequestNewThroughputTracker());
     tracker_->Start(
-        metrics_util::ForSmoothness(base::BindRepeating([](int smoothness) {
+        metrics_util::ForSmoothnessV3(base::BindRepeating([](int smoothness) {
           UMA_HISTOGRAM_PERCENTAGE(kDividerAnimationSmoothness, smoothness);
         })));
   }

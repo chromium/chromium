@@ -105,7 +105,7 @@ void OnCompositorThroughputReported(
           << " expected_fps=" << data.frames_expected / duration_sec
           << " actual_fps=" << data.frames_produced / duration_sec
           << " duration=" << duration;
-  metrics_util::ForSmoothness(
+  metrics_util::ForSmoothnessV3(
       base::BindRepeating(&LogCompositorThroughput, ui_settings))
       .Run(data);
 }

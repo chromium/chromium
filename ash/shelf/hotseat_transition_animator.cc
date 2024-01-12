@@ -144,7 +144,7 @@ void HotseatTransitionAnimator::DoAnimation(HotseatState old_state,
 
     ui::AnimationThroughputReporter reporter(
         shelf_bg_animation_setter.GetAnimator(),
-        metrics_util::ForSmoothness(
+        metrics_util::ForSmoothnessV3(
             base::BindRepeating(&ReportSmoothness, new_state)));
 
     shelf_widget_->GetAnimatingBackground()->SetTransform(transform);

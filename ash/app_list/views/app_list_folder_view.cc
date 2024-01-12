@@ -785,7 +785,7 @@ void AppListFolderView::ScheduleShowHideAnimation(bool show,
   show_hide_metrics_tracker_ =
       GetWidget()->GetCompositor()->RequestNewThroughputTracker();
   show_hide_metrics_tracker_->Start(
-      metrics_util::ForSmoothness(base::BindRepeating([](int smoothness) {
+      metrics_util::ForSmoothnessV3(base::BindRepeating([](int smoothness) {
         UMA_HISTOGRAM_PERCENTAGE(
             "Apps.AppListFolder.ShowHide.AnimationSmoothness", smoothness);
       })));

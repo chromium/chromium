@@ -433,7 +433,7 @@ void AshMessagePopupCollection::AnimationStarted() {
     animation_tracker_.emplace(last_pop_up_added_->GetWidget()
                                    ->GetCompositor()
                                    ->RequestNewThroughputTracker());
-    animation_tracker_->Start(metrics_util::ForSmoothness(
+    animation_tracker_->Start(metrics_util::ForSmoothnessV3(
         base::BindRepeating(&ReportPopupAnimationSmoothness)));
   }
   ++popups_animating_;

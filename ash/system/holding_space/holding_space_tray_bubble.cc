@@ -344,7 +344,7 @@ class HoldingSpaceTrayBubble::ChildBubbleContainer
     layout_animation_throughput_tracker_ =
         GetWidget()->GetCompositor()->RequestNewThroughputTracker();
     layout_animation_throughput_tracker_->Start(
-        metrics_util::ForSmoothness(base::BindRepeating(
+        metrics_util::ForSmoothnessV3(base::BindRepeating(
             holding_space_metrics::RecordBubbleResizeAnimationSmoothness)));
     layout_animation_->Show();
   }
