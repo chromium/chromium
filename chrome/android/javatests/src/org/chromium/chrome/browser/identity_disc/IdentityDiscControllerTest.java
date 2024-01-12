@@ -31,6 +31,7 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
@@ -149,13 +150,11 @@ public class IdentityDiscControllerTest {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    when(mIdentityServicesProviderMock.getSigninManager(
-                                    Profile.getLastUsedRegularProfile()))
+                    when(mIdentityServicesProviderMock.getSigninManager(Mockito.any()))
                             .thenReturn(mSigninManagerMock);
                     // This mock is required because the MainSettings class calls the
                     // IdentityManager.
-                    when(mIdentityServicesProviderMock.getIdentityManager(
-                                    Profile.getLastUsedRegularProfile()))
+                    when(mIdentityServicesProviderMock.getIdentityManager(Mockito.any()))
                             .thenReturn(mIdentityManagerMock);
                 });
         when(mSigninManagerMock.isSigninDisabledByPolicy()).thenReturn(true);
