@@ -190,7 +190,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) LightweightQuarantineBranch {
     void* object;
     size_t usable_size;
   };
-  std::unique_ptr<QuarantineSlot[]> slots_ PA_GUARDED_BY(lock_);
+  QuarantineSlot* slots_ PA_GUARDED_BY(lock_);
 
   // # of quarantined entries in this branch.
   size_t branch_count_ PA_GUARDED_BY(lock_) = 0;
