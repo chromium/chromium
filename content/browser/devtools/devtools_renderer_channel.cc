@@ -9,8 +9,8 @@
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/devtools/devtools_session.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
-#include "content/browser/devtools/worker_devtools_agent_host.h"
 #include "content/browser/devtools/worker_devtools_manager.h"
+#include "content/browser/devtools/worker_or_worklet_devtools_agent_host.h"
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "third_party/blink/public/common/features.h"
@@ -69,8 +69,9 @@ void DevToolsRendererChannel::CleanupConnection() {
 }
 
 void DevToolsRendererChannel::ForceDetachWorkerSessions() {
-  for (WorkerDevToolsAgentHost* host : child_targets_)
+  for (auto* host : child_targets_) {
     host->ForceDetachAllSessions();
+  }
 }
 
 void DevToolsRendererChannel::SetRendererInternal(
@@ -182,7 +183,7 @@ void DevToolsRendererChannel::ChildTargetCreated(
     // browser process when PlzDedicatedWorker is enabled.
     DCHECK(
         content::DevToolsAgentHost::GetForId(devtools_worker_token.ToString()));
-    scoped_refptr<WorkerDevToolsAgentHost> agent_host =
+    scoped_refptr<WorkerOrWorkletDevToolsAgentHost> agent_host =
         WorkerDevToolsManager::GetInstance().GetDevToolsHostFromToken(
             devtools_worker_token);
     if (!agent_host) {
@@ -212,7 +213,7 @@ void DevToolsRendererChannel::ChildTargetCreated(
     mojo::ReportBadMessage("Workers should have unique tokens.");
     return;
   }
-  auto agent_host = base::MakeRefCounted<WorkerDevToolsAgentHost>(
+  auto agent_host = base::MakeRefCounted<WorkerOrWorkletDevToolsAgentHost>(
       process_id_, filtered_url, std::move(name), devtools_worker_token,
       owner_->GetId(),
       base::BindOnce(&DevToolsRendererChannel::ChildTargetDestroyed,

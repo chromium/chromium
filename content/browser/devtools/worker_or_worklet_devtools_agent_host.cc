@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/devtools/worker_devtools_agent_host.h"
+#include "content/browser/devtools/worker_or_worklet_devtools_agent_host.h"
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -24,12 +24,12 @@ class TargetAutoAttacher;
 }  // namespace protocol
 
 // static
-WorkerDevToolsAgentHost* WorkerDevToolsAgentHost::GetFor(
+WorkerOrWorkletDevToolsAgentHost* WorkerOrWorkletDevToolsAgentHost::GetFor(
     DedicatedWorkerHost* host) {
   return WorkerDevToolsManager::GetInstance().GetDevToolsHost(host);
 }
 
-WorkerDevToolsAgentHost::WorkerDevToolsAgentHost(
+WorkerOrWorkletDevToolsAgentHost::WorkerOrWorkletDevToolsAgentHost(
     int process_id,
     const GURL& url,
     const std::string& name,
@@ -54,9 +54,9 @@ WorkerDevToolsAgentHost::WorkerDevToolsAgentHost(
   NotifyCreated();
 }
 
-WorkerDevToolsAgentHost::~WorkerDevToolsAgentHost() = default;
+WorkerOrWorkletDevToolsAgentHost::~WorkerOrWorkletDevToolsAgentHost() = default;
 
-void WorkerDevToolsAgentHost::SetRenderer(
+void WorkerOrWorkletDevToolsAgentHost::SetRenderer(
     int process_id,
     mojo::PendingRemote<blink::mojom::DevToolsAgent> agent_remote,
     mojo::PendingReceiver<blink::mojom::DevToolsAgentHost> host_receiver) {
@@ -64,14 +64,14 @@ void WorkerDevToolsAgentHost::SetRenderer(
   DCHECK(host_receiver);
 
   base::OnceClosure connection_error = (base::BindOnce(
-      &WorkerDevToolsAgentHost::Disconnected, base::Unretained(this)));
+      &WorkerOrWorkletDevToolsAgentHost::Disconnected, base::Unretained(this)));
   GetRendererChannel()->SetRenderer(std::move(agent_remote),
                                     std::move(host_receiver), process_id,
                                     std::move(connection_error));
   ProcessHostChanged();
 }
 
-void WorkerDevToolsAgentHost::ChildWorkerCreated(
+void WorkerOrWorkletDevToolsAgentHost::ChildWorkerCreated(
     const GURL& url,
     const std::string& name,
     base::OnceCallback<void(DevToolsAgentHostImpl*)> callback) {
@@ -82,7 +82,7 @@ void WorkerDevToolsAgentHost::ChildWorkerCreated(
   destroyed_callback_ = std::move(callback);
 }
 
-void WorkerDevToolsAgentHost::Disconnected() {
+void WorkerOrWorkletDevToolsAgentHost::Disconnected() {
   auto retain_this = ForceDetachAllSessionsImpl();
   GetRendererChannel()->SetRenderer(mojo::NullRemote(), mojo::NullReceiver(),
                                     ChildProcessHost::kInvalidUniqueID);
@@ -90,42 +90,42 @@ void WorkerDevToolsAgentHost::Disconnected() {
   Release();  // Matches AddRef() in constructor.
 }
 
-BrowserContext* WorkerDevToolsAgentHost::GetBrowserContext() {
+BrowserContext* WorkerOrWorkletDevToolsAgentHost::GetBrowserContext() {
   RenderProcessHost* process = RenderProcessHost::FromID(process_id_);
   return process ? process->GetBrowserContext() : nullptr;
 }
 
-RenderProcessHost* WorkerDevToolsAgentHost::GetProcessHost() {
+RenderProcessHost* WorkerOrWorkletDevToolsAgentHost::GetProcessHost() {
   return RenderProcessHost::FromID(process_id_);
 }
 
-std::string WorkerDevToolsAgentHost::GetType() {
+std::string WorkerOrWorkletDevToolsAgentHost::GetType() {
   return kTypeDedicatedWorker;
 }
 
-std::string WorkerDevToolsAgentHost::GetTitle() {
+std::string WorkerOrWorkletDevToolsAgentHost::GetTitle() {
   return name_.empty() ? url_.spec() : name_;
 }
 
-std::string WorkerDevToolsAgentHost::GetParentId() {
+std::string WorkerOrWorkletDevToolsAgentHost::GetParentId() {
   return parent_id_;
 }
 
-GURL WorkerDevToolsAgentHost::GetURL() {
+GURL WorkerOrWorkletDevToolsAgentHost::GetURL() {
   return url_;
 }
 
-bool WorkerDevToolsAgentHost::Activate() {
+bool WorkerOrWorkletDevToolsAgentHost::Activate() {
   return false;
 }
 
-void WorkerDevToolsAgentHost::Reload() {}
+void WorkerOrWorkletDevToolsAgentHost::Reload() {}
 
-bool WorkerDevToolsAgentHost::Close() {
+bool WorkerOrWorkletDevToolsAgentHost::Close() {
   return false;
 }
 
-bool WorkerDevToolsAgentHost::AttachSession(DevToolsSession* session,
+bool WorkerOrWorkletDevToolsAgentHost::AttachSession(DevToolsSession* session,
                                             bool acquire_wake_lock) {
   session->CreateAndAddHandler<protocol::IOHandler>(GetIOContext());
   session->CreateAndAddHandler<protocol::TargetHandler>(
@@ -138,15 +138,17 @@ bool WorkerDevToolsAgentHost::AttachSession(DevToolsSession* session,
   return true;
 }
 
-void WorkerDevToolsAgentHost::DetachSession(DevToolsSession* session) {
+void WorkerOrWorkletDevToolsAgentHost::DetachSession(DevToolsSession* session) {
   // Destroying session automatically detaches in renderer.
 }
 
-protocol::TargetAutoAttacher* WorkerDevToolsAgentHost::auto_attacher() {
+protocol::TargetAutoAttacher*
+WorkerOrWorkletDevToolsAgentHost::auto_attacher() {
   return auto_attacher_.get();
 }
 
-DedicatedWorkerHost* WorkerDevToolsAgentHost::GetDedicatedWorkerHost() {
+DedicatedWorkerHost*
+WorkerOrWorkletDevToolsAgentHost::GetDedicatedWorkerHost() {
   RenderProcessHost* process = RenderProcessHost::FromID(process_id_);
   auto* storage_partition_impl =
       static_cast<StoragePartitionImpl*>(process->GetStoragePartition());
@@ -156,7 +158,8 @@ DedicatedWorkerHost* WorkerDevToolsAgentHost::GetDedicatedWorkerHost() {
 }
 
 std::optional<network::CrossOriginEmbedderPolicy>
-WorkerDevToolsAgentHost::cross_origin_embedder_policy(const std::string&) {
+WorkerOrWorkletDevToolsAgentHost::cross_origin_embedder_policy(
+    const std::string&) {
   DedicatedWorkerHost* host = GetDedicatedWorkerHost();
   if (!host) {
     return std::nullopt;

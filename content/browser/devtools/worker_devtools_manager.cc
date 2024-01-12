@@ -6,7 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
-#include "content/browser/devtools/worker_devtools_agent_host.h"
+#include "content/browser/devtools/worker_or_worklet_devtools_agent_host.h"
 #include "content/browser/worker_host/dedicated_worker_host.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/blink/public/common/features.h"
@@ -23,7 +23,7 @@ WorkerDevToolsManager& WorkerDevToolsManager::GetInstance() {
 WorkerDevToolsManager::WorkerDevToolsManager() = default;
 WorkerDevToolsManager::~WorkerDevToolsManager() = default;
 
-WorkerDevToolsAgentHost* WorkerDevToolsManager::GetDevToolsHost(
+WorkerOrWorkletDevToolsAgentHost* WorkerDevToolsManager::GetDevToolsHost(
     DedicatedWorkerHost* host) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -31,7 +31,8 @@ WorkerDevToolsAgentHost* WorkerDevToolsManager::GetDevToolsHost(
   return it == hosts_.end() ? nullptr : it->second.get();
 }
 
-WorkerDevToolsAgentHost* WorkerDevToolsManager::GetDevToolsHostFromToken(
+WorkerOrWorkletDevToolsAgentHost*
+WorkerDevToolsManager::GetDevToolsHostFromToken(
     const base::UnguessableToken& token) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -50,7 +51,7 @@ void WorkerDevToolsManager::WorkerCreated(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!base::Contains(hosts_, host));
 
-  hosts_[host] = base::MakeRefCounted<WorkerDevToolsAgentHost>(
+  hosts_[host] = base::MakeRefCounted<WorkerOrWorkletDevToolsAgentHost>(
       process_id,
       /*url=*/GURL(), /*name=*/"", host->GetToken().value(), /*parent_id=*/"",
       /*destroyed_callback=*/base::DoNothing());

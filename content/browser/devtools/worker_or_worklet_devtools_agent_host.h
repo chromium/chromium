@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_DEVTOOLS_WORKER_DEVTOOLS_AGENT_HOST_H_
-#define CONTENT_BROWSER_DEVTOOLS_WORKER_DEVTOOLS_AGENT_HOST_H_
+#ifndef CONTENT_BROWSER_DEVTOOLS_WORKER_OR_WORKLET_DEVTOOLS_AGENT_HOST_H_
+#define CONTENT_BROWSER_DEVTOOLS_WORKER_OR_WORKLET_DEVTOOLS_AGENT_HOST_H_
 
 #include "base/unguessable_token.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
@@ -20,11 +20,11 @@ class DedicatedWorkerHost;
 // to a DedicatedWorkerHost object, but in case the host is for a dedicated
 // worker (and not a worklet) then the devtools_worker_token_ is identical to
 // the DedicatedWorkerToken of the dedicated worker.
-class WorkerDevToolsAgentHost : public DevToolsAgentHostImpl {
+class WorkerOrWorkletDevToolsAgentHost : public DevToolsAgentHostImpl {
  public:
-  static WorkerDevToolsAgentHost* GetFor(DedicatedWorkerHost* host);
+  static WorkerOrWorkletDevToolsAgentHost* GetFor(DedicatedWorkerHost* host);
 
-  WorkerDevToolsAgentHost(
+  WorkerOrWorkletDevToolsAgentHost(
       int process_id,
       const GURL& url,
       const std::string& name,
@@ -32,8 +32,10 @@ class WorkerDevToolsAgentHost : public DevToolsAgentHostImpl {
       const std::string& parent_id,
       base::OnceCallback<void(DevToolsAgentHostImpl*)> destroyed_callback);
 
-  WorkerDevToolsAgentHost(const WorkerDevToolsAgentHost&) = delete;
-  WorkerDevToolsAgentHost& operator=(const WorkerDevToolsAgentHost&) = delete;
+  WorkerOrWorkletDevToolsAgentHost(
+      const WorkerOrWorkletDevToolsAgentHost&) = delete;
+  WorkerOrWorkletDevToolsAgentHost& operator=(
+      const WorkerOrWorkletDevToolsAgentHost&) = delete;
 
   // DevToolsAgentHost override.
   BrowserContext* GetBrowserContext() override;
@@ -63,7 +65,7 @@ class WorkerDevToolsAgentHost : public DevToolsAgentHostImpl {
   }
 
  private:
-  ~WorkerDevToolsAgentHost() override;
+  ~WorkerOrWorkletDevToolsAgentHost() override;
   void Disconnected();
   DedicatedWorkerHost* GetDedicatedWorkerHost();
 
@@ -83,4 +85,4 @@ class WorkerDevToolsAgentHost : public DevToolsAgentHostImpl {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_DEVTOOLS_WORKER_DEVTOOLS_AGENT_HOST_H_
+#endif  // CONTENT_BROWSER_DEVTOOLS_WORKER_OR_WORKLET_DEVTOOLS_AGENT_HOST_H_

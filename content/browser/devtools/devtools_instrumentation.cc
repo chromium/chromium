@@ -33,8 +33,8 @@
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/devtools/service_worker_devtools_agent_host.h"
 #include "content/browser/devtools/web_contents_devtools_agent_host.h"
-#include "content/browser/devtools/worker_devtools_agent_host.h"
 #include "content/browser/devtools/worker_devtools_manager.h"
+#include "content/browser/devtools/worker_or_worklet_devtools_agent_host.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_metrics.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -1064,7 +1064,7 @@ void ThrottleWorkerMainScriptFetch(
     const base::UnguessableToken& devtools_worker_token,
     const GlobalRenderFrameHostId& ancestor_render_frame_host_id,
     scoped_refptr<DevToolsThrottleHandle> throttle_handle) {
-  WorkerDevToolsAgentHost* agent_host =
+  WorkerOrWorkletDevToolsAgentHost* agent_host =
       WorkerDevToolsManager::GetInstance().GetDevToolsHostFromToken(
           devtools_worker_token);
   if (!agent_host) {
