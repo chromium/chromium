@@ -519,6 +519,17 @@ const FeatureEntry::Choice kWebXrForceRuntimeChoices[] = {
 #endif  // ENABLE_VR
 
 #if BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam kCCTMinimizedDefaultIcon[] = {
+    {"icon_variant", "0"}};
+const FeatureEntry::FeatureParam kCCTMinimizedAlternativeIcon[] = {
+    {"icon_variant", "1"}};
+
+const FeatureEntry::FeatureVariation kCCTMinimizedIconVariations[] = {
+    {"Use default minimize icon", kCCTMinimizedDefaultIcon,
+     std::size(kCCTMinimizedDefaultIcon), nullptr},
+    {"Use alternative minimize icon", kCCTMinimizedAlternativeIcon,
+     std::size(kCCTMinimizedAlternativeIcon), nullptr}};
+
 const FeatureEntry::FeatureParam kCCTResizablePolicyParamUseAllowlist[] = {
     {"default_policy", "use-allowlist"}};
 const FeatureEntry::FeatureParam kCCTResizablePolicyParamUseDenylist[] = {
@@ -7128,7 +7139,9 @@ const FeatureEntry kFeatureEntries[] = {
 #if BUILDFLAG(IS_ANDROID)
     {"cct-minimized", flag_descriptions::kCCTMinimizedName,
      flag_descriptions::kCCTMinimizedDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kCCTMinimized)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kCCTMinimized,
+                                    kCCTMinimizedIconVariations,
+                                    "CCTMinimizedIconVariations")},
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
