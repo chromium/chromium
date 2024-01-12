@@ -42,7 +42,6 @@ class CORE_EXPORT JSEventHandler : public JSBasedEventListener {
                           HandlerType type)
       : event_handler_(event_handler), type_(type) {}
 
-  // blink::CustomWrappable overrides:
   void Trace(Visitor* visitor) const override;
 
   // blink::EventListener overrides:

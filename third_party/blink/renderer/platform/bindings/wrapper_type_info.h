@@ -41,7 +41,6 @@
 
 namespace blink {
 
-class CustomWrappable;
 class DOMWrapperWorld;
 class ScriptWrappable;
 
@@ -219,19 +218,6 @@ inline ScriptWrappable* ToScriptWrappable(v8::Isolate* isolate,
 
 inline ScriptWrappable* ToScriptWrappable(v8::Object* wrapper) {
   return GetInternalField<ScriptWrappable, kV8DOMWrapperObjectIndex>(wrapper);
-}
-
-inline CustomWrappable* ToCustomWrappable(v8::Local<v8::Object> wrapper) {
-  return GetInternalField<CustomWrappable, kV8DOMWrapperObjectIndex>(wrapper);
-}
-
-inline void* ToUntypedWrappable(
-    const v8::TracedReference<v8::Object>& wrapper) {
-  return GetInternalField<void, kV8DOMWrapperObjectIndex>(wrapper);
-}
-
-inline void* ToUntypedWrappable(v8::Local<v8::Object> wrapper) {
-  return GetInternalField<void, kV8DOMWrapperObjectIndex>(wrapper);
 }
 
 inline const WrapperTypeInfo* ToWrapperTypeInfo(
