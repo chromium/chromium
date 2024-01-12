@@ -8,6 +8,8 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/user_metrics.h"
 #include "base/time/time.h"
 #include "components/user_education/common/feature_promo_storage_service.h"
 #include "components/user_education/common/user_education_features.h"
@@ -110,11 +112,59 @@ bool FeaturePromoSessionManager::IsApplicationActive() const {
              is_locked_);
 }
 
-void FeaturePromoSessionManager::OnNewSession() {}
+void FeaturePromoSessionManager::OnNewSession(
+    const base::Time old_start_time,
+    const base::Time old_active_time,
+    const base::Time new_active_time) {
+  base::RecordAction(
+      base::UserMetricsAction("UserEducation.Session.ActivePeriodStart"));
+
+  // Now starting new session. The Active Period of the old session
+  // is the difference between old session times.
+  RecordActivePeriodDuration(old_active_time - old_start_time);
+
+  // The now-elapsed Idle Period is difference between now and the
+  // previous most_recent_active_time.
+  RecordIdlePeriodDuration(new_active_time - old_active_time);
+}
 
 void FeaturePromoSessionManager::OnIdleStateUpdating(
     base::Time new_last_active_time,
     bool new_locked_state) {}
+
+void FeaturePromoSessionManager::RecordActivePeriodDuration(
+    base::TimeDelta duration) {
+  // Increments of 1 minute under 1 hour.
+  base::UmaHistogramCustomCounts(
+      "UserEducation.Session.ActivePeriodDuration.Min.Under1Hour",
+      duration.InMinutes(), /*min=*/1,
+      /*exclusive_max=*/60,
+      /*buckets=*/60);
+
+  // Increments of 15 minutes under 24 hours.
+  base::UmaHistogramCustomCounts(
+      "UserEducation.Session.ActivePeriodDuration.Min.Under24Hours",
+      duration.InMinutes(), /*min=*/1,
+      /*exclusive_max=*/60 * 24 /* minutes per 24 hours */,
+      /*buckets=*/24 * 4 /* per 15 minutes */);
+}
+
+void FeaturePromoSessionManager::RecordIdlePeriodDuration(
+    base::TimeDelta duration) {
+  // Increments of 15 minutes under 24 hours.
+  base::UmaHistogramCustomCounts(
+      "UserEducation.Session.IdlePeriodDuration.Min.Under24Hours",
+      duration.InMinutes(), /*min=*/1,
+      /*exclusive_max=*/60 * 24 /* minutes per 24 hours */,
+      /*buckets=*/24 * 4 /* per 15 minute */);
+
+  // Increments of ~13 hours under 28 days.
+  base::UmaHistogramCustomCounts(
+      "UserEducation.Session.IdlePeriodDuration.Hr.Under28Days",
+      duration.InHours(), /*min=*/1,
+      /*exclusive_max=*/24 * 28 /* hours per 28 days */,
+      /*buckets=*/50);
+}
 
 void FeaturePromoSessionManager::UpdateIdleState(
     const IdleState& new_idle_state) {
@@ -134,7 +184,7 @@ void FeaturePromoSessionManager::UpdateIdleState(
     if (idle_policy_->IsNewSession(old_start_time, old_active_time,
                                    new_active_time)) {
       session_data.start_time = new_active_time;
-      OnNewSession();
+      OnNewSession(old_start_time, old_active_time, new_active_time);
     }
   }
   storage_service_->SaveSessionData(session_data);

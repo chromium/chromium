@@ -150,7 +150,9 @@ class FeaturePromoSessionManager {
 
   // Called when a new session is started. By default, does nothing. Override to
   // (for example) log metrics, or notify observers.
-  virtual void OnNewSession();
+  virtual void OnNewSession(const base::Time old_start_time,
+                            const base::Time old_active_time,
+                            const base::Time new_active_time);
 
   // Called whenever the idle state is updated, before the session data is
   // updated in the storage service, so that both the current update and the
@@ -160,6 +162,9 @@ class FeaturePromoSessionManager {
                                    bool new_locked_state);
 
  private:
+  void RecordActivePeriodDuration(base::TimeDelta duration);
+  void RecordIdlePeriodDuration(base::TimeDelta duration);
+
   friend class FeaturePromoSessionManagerTest;
   friend test::FeaturePromoSessionTestUtil;
 

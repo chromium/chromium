@@ -203,7 +203,8 @@ TEST_F(FeaturePromoSessionManagerTest, IdleUpdatedActiveNewSession) {
       .WillOnce(testing::Return(true));
   EXPECT_CALL(session_manager(),
               OnIdleStateUpdating(kSecondNewActiveTime, false));
-  EXPECT_CALL(session_manager(), OnNewSession);
+  EXPECT_CALL(session_manager(), OnNewSession(kSessionStartTime, kNewActiveTime,
+                                              kSecondNewActiveTime));
   clock_.SetNow(kNow2);
   idle_observer().UpdateState({kSecondNewActiveTime, false});
 }
