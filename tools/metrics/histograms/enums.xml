@@ -22188,6 +22188,7 @@ from previous Chrome versions.
   <int value="-898005938" label="disable-pinch-virtual-viewport"/>
   <int value="-897994913"
       label="OmniboxUIExperimentRevealSteadyStateUrlPathQueryAndRefOnHover:enabled"/>
+  <int value="-897660267" label="BluetoothDisconnectWarning:enabled"/>
   <int value="-897069393"
       label="kAutofillRationalizeRepeatedServerPredictions:disabled"/>
   <int value="-896040242" label="PrefetchFontLookupTables:enabled"/>
@@ -24222,6 +24223,7 @@ from previous Chrome versions.
       label="AutofillOfferToSaveCardWithSameLastFour:disabled"/>
   <int value="58099178" label="SecondaryUiMd:enabled"/>
   <int value="58619646" label="AndroidMultipleDisplay:disabled"/>
+  <int value="58679195" label="BluetoothDisconnectWarning:disabled"/>
   <int value="58695502" label="NTPButton:disabled"/>
   <int value="58727839" label="WebAssemblyLazyCompilation:enabled"/>
   <int value="59784035" label="ImeThread:disabled"/>

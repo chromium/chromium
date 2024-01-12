@@ -840,6 +840,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "bluetooth-disconnect-warning",
+    "owners": [ "tjohnsonkanu@google.com", "cros-connectivity@google.com" ],
+    "expiry_milestone": 132
+  },
+  {
     "name": "bluetooth-fix-a2dp-packet-size",
     "owners": [ "michaelfsun@chromium.org", "chromeos-bt-champs@google.com" ],
     "expiry_milestone": 86

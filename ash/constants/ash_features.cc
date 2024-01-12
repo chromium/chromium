@@ -286,6 +286,11 @@ BASE_FEATURE(kBluetoothFixA2dpPacketSize,
              "BluetoothFixA2dpPacketSize",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables or disables the Bluetooth Disconnect Warning feature.
+BASE_FEATURE(kBluetoothDisconnectWarning,
+             "BluetoothDisconnectWarning",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables the Bluetooth Quality Report feature.
 BASE_FEATURE(kBluetoothQualityReport,
              "BluetoothQualityReport",
@@ -3188,6 +3193,10 @@ bool IsBatterySaverAlwaysOn() {
 
 bool IsBirchFeatureEnabled() {
   return base::FeatureList::IsEnabled(kBirchFeature);
+}
+
+bool IsBluetoothDisconnectWarningEnabled() {
+  return base::FeatureList::IsEnabled(kBluetoothDisconnectWarning);
 }
 
 bool IsBluetoothQualityReportEnabled() {

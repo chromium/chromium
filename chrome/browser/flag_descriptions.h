@@ -3271,6 +3271,9 @@ extern const char kBluetoothFixA2dpPacketSizeDescription[];
 extern const char kBluetoothFlossTelephonyName[];
 extern const char kBluetoothFlossTelephonyDescription[];
 
+extern const char kBluetoothDisconnectWarningName[];
+extern const char kBluetoothDisconnectWarningDescription[];
+
 extern const char kBluetoothQualityReportName[];
 extern const char kBluetoothQualityReportDescription[];
 
