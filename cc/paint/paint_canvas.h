@@ -13,6 +13,7 @@
 #include "cc/paint/node_id.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_image.h"
+#include "cc/paint/refcounted_buffer.h"
 #include "cc/paint/skottie_color_map.h"
 #include "cc/paint/skottie_frame_data.h"
 #include "cc/paint/skottie_text_property_value.h"
@@ -178,6 +179,11 @@ class CC_PAINT_EXPORT PaintCanvas {
                      SkCanvas::SrcRectConstraint constraint) {
     drawImageRect(image, src, dst, SkSamplingOptions(), nullptr, constraint);
   }
+
+  virtual void drawVertices(scoped_refptr<RefCountedBuffer<SkPoint>> vertices,
+                            scoped_refptr<RefCountedBuffer<SkPoint>> uvs,
+                            scoped_refptr<RefCountedBuffer<uint16_t>> indices,
+                            const PaintFlags& flags) = 0;
 
   // Draws the frame of the |skottie| animation specified by the normalized time
   // t [0->first frame..1->last frame] at the destination bounds given by |dst|

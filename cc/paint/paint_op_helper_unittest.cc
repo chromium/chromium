@@ -245,6 +245,27 @@ TEST(PaintOpHelper, DrawTextBlobToString) {
       "isValid=true, hasDiscardableImages=false])");
 }
 
+TEST(PaintOpHelper, DrawVerticesToString) {
+  auto verts = base::MakeRefCounted<RefCountedBuffer<SkPoint>>(
+      std::vector<SkPoint>{{100, 100}});
+  auto uvs = base::MakeRefCounted<RefCountedBuffer<SkPoint>>(
+      std::vector<SkPoint>{{1, 1}});
+  auto indices = base::MakeRefCounted<RefCountedBuffer<uint16_t>>(
+      std::vector<uint16_t>{0, 0, 0});
+
+  DrawVerticesOp op(verts, uvs, indices, PaintFlags());
+  EXPECT_EQ(
+      PaintOpHelper::ToString(op),
+      "DrawVerticesOp(flags=[color=rgba(0, 0, 0, 255), blendMode=kSrcOver, "
+      "isAntiAlias=false, isDither=false, "
+      "filterQuality=kNone_SkFilterQuality, strokeWidth=0.000, "
+      "strokeMiter=4.000, strokeCap=kButt_Cap, strokeJoin=kMiter_Join, "
+      "colorFilter=(nil), maskFilter=(nil), shader=(nil), hasShader=false, "
+      "shaderIsOpaque=false, pathEffect=(nil), imageFilter=(nil), "
+      "drawLooper=(nil), supportsFoldingAlpha=true, isValid=true, "
+      "hasDiscardableImages=false])");
+}
+
 TEST(PaintOpHelper, NoopToString) {
   NoopOp op;
   std::string str = PaintOpHelper::ToString(op);

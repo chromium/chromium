@@ -22,6 +22,7 @@
 #include "cc/paint/paint_op_buffer_serializer.h"
 #include "cc/paint/paint_op_reader.h"
 #include "cc/paint/paint_op_writer.h"
+#include "cc/paint/refcounted_buffer.h"
 #include "cc/paint/shader_transfer_cache_entry.h"
 #include "cc/paint/skottie_resource_metadata.h"
 #include "cc/paint/skottie_text_property_value.h"
@@ -1268,6 +1269,7 @@ std::vector<PaintImage> test_images = {
 };
 
 #if BUILDFLAG(SKIA_SUPPORT_SKOTTIE)
+
 bool kIsSkottieSupported = true;
 #else
 bool kIsSkottieSupported = false;
@@ -1571,6 +1573,36 @@ void PushDrawRRectOps(PaintOpBuffer* buffer) {
   EXPECT_THAT(*buffer, Each(PaintOpIs<DrawRRectOp>()));
 }
 
+void PushDrawVerticesOps(PaintOpBuffer* buffer) {
+  struct VerticesTest {
+    std::vector<SkPoint> verts;
+    std::vector<SkPoint> uvs;
+    std::vector<uint16_t> indices;
+  };
+
+  std::vector<VerticesTest> test_vertices = {
+      {.verts = {{0, 0}}, .uvs = {{0, 0}}, .indices = {0, 0, 0}},
+      {.verts = {{0, 0}, {0, 100}},
+       .uvs = {{0, 0}, {0, 1}},
+       .indices = {0, 1, 0}},
+      {.verts = {{0, 0}, {0, 100}, {100, 100}},
+       .uvs = {{0, 0}, {0, 1}, {1, 1}},
+       .indices = {0, 1, 2}},
+  };
+
+  size_t len = std::min(test_vertices.size(), test_flags.size());
+  for (size_t i = 0; i < len; ++i) {
+    buffer->push<DrawVerticesOp>(
+        base::MakeRefCounted<RefCountedBuffer<SkPoint>>(test_vertices[i].verts),
+        base::MakeRefCounted<RefCountedBuffer<SkPoint>>(test_vertices[i].uvs),
+        base::MakeRefCounted<RefCountedBuffer<uint16_t>>(
+            test_vertices[i].indices),
+        test_flags[i]);
+  }
+
+  EXPECT_THAT(*buffer, Each(PaintOpIs<DrawVerticesOp>()));
+}
+
 SkottieFrameDataMap GetTestImagesForSkottie(SkottieWrapper& skottie,
                                             const SkRect& skottie_rect,
                                             PaintFlags::FilterQuality quality,
@@ -1868,6 +1900,9 @@ class PaintOpSerializationTest : public ::testing::TestWithParam<uint8_t> {
       case PaintOpType::kDrawTextBlob:
         // TODO(crbug.com/1321150): fix the test for kDrawtextblobs
         // PushDrawTextBlobOps(&buffer_);
+        break;
+      case PaintOpType::kDrawVertices:
+        PushDrawVerticesOps(&buffer_);
         break;
       case PaintOpType::kNoop:
         PushNoopOps(&buffer_);

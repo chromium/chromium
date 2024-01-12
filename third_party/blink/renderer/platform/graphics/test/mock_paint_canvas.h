@@ -92,6 +92,11 @@ class MockPaintCanvas : public cc::PaintCanvas {
                     const SkSamplingOptions&,
                     const cc::PaintFlags* flags,
                     SkCanvas::SrcRectConstraint constraint));
+  MOCK_METHOD4(drawVertices,
+               void(scoped_refptr<cc::RefCountedBuffer<SkPoint>> vertices,
+                    scoped_refptr<cc::RefCountedBuffer<SkPoint>> uvs,
+                    scoped_refptr<cc::RefCountedBuffer<uint16_t>> indices,
+                    const cc::PaintFlags& flags));
   MOCK_METHOD6(drawSkottie,
                void(scoped_refptr<cc::SkottieWrapper> skottie,
                     const SkRect& dst,

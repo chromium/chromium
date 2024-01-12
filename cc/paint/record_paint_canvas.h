@@ -105,6 +105,10 @@ class CC_PAINT_EXPORT RecordPaintCanvas : public PaintCanvas {
                      const SkSamplingOptions&,
                      const PaintFlags* flags,
                      SkCanvas::SrcRectConstraint constraint) override;
+  void drawVertices(scoped_refptr<RefCountedBuffer<SkPoint>> vertices,
+                    scoped_refptr<RefCountedBuffer<SkPoint>> uvs,
+                    scoped_refptr<RefCountedBuffer<uint16_t>> indices,
+                    const PaintFlags& flags) override;
   void drawSkottie(scoped_refptr<SkottieWrapper> skottie,
                    const SkRect& dst,
                    float t,

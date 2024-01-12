@@ -4,12 +4,16 @@
 
 #include "cc/paint/skia_paint_canvas.h"
 
+#include <cstdint>
+#include <cstring>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/paint/display_item_list.h"
+#include "cc/paint/paint_op.h"
+#include "cc/paint/paint_op_buffer.h"
 #include "cc/paint/paint_recorder.h"
 #include "cc/paint/scoped_raster_flags.h"
 #include "cc/paint/skottie_wrapper.h"
@@ -314,6 +318,26 @@ void SkiaPaintCanvas::drawImageRect(const PaintImage& image,
                                      constraint);
   DrawImageRectOp::RasterWithFlags(&draw_image_rect_op, raster_flags, canvas_,
                                    params);
+  FlushAfterDrawIfNeeded();
+}
+
+void SkiaPaintCanvas::drawVertices(
+    scoped_refptr<RefCountedBuffer<SkPoint>> vertices,
+    scoped_refptr<RefCountedBuffer<SkPoint>> uvs,
+    scoped_refptr<RefCountedBuffer<uint16_t>> indices,
+    const PaintFlags& flags) {
+  ScopedRasterFlags raster_flags(&flags, image_provider_,
+                                 canvas_->getTotalMatrix(), GetMaxTextureSize(),
+                                 /*alpha=*/1.0f);
+  DrawVerticesOp op(std::move(vertices), std::move(uvs), std::move(indices),
+                    flags);
+  if (!raster_flags.flags() || !op.IsValid()) {
+    return;
+  }
+
+  PlaybackParams params(image_provider_);
+  DrawVerticesOp::RasterWithFlags(&op, raster_flags.flags(), canvas_, params);
+
   FlushAfterDrawIfNeeded();
 }
 

@@ -305,6 +305,15 @@ void RecordPaintCanvas::drawImageRect(const PaintImage& image,
   push<DrawImageRectOp>(image, src, dst, sampling, flags, constraint);
 }
 
+void RecordPaintCanvas::drawVertices(
+    scoped_refptr<RefCountedBuffer<SkPoint>> vertices,
+    scoped_refptr<RefCountedBuffer<SkPoint>> uvs,
+    scoped_refptr<RefCountedBuffer<uint16_t>> indices,
+    const PaintFlags& flags) {
+  push<DrawVerticesOp>(std::move(vertices), std::move(uvs), std::move(indices),
+                       flags);
+}
+
 void RecordPaintCanvas::drawSkottie(scoped_refptr<SkottieWrapper> skottie,
                                     const SkRect& dst,
                                     float t,

@@ -27,6 +27,10 @@ class CC_PAINT_EXPORT RefCountedBuffer
   const std::vector<T>& data() const { return buffer_; }
   std::vector<T>& data() { return buffer_; }
 
+  bool operator==(const RefCountedBuffer& other) const {
+    return buffer_ == other.buffer_;
+  }
+
  private:
   friend class base::RefCounted<RefCountedBuffer<T>>;
   ~RefCountedBuffer() = default;

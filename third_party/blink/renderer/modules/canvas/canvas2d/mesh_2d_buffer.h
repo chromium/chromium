@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_MESH_2D_BUFFER_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "base/numerics/safe_conversions.h"
 #include "cc/paint/refcounted_buffer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 

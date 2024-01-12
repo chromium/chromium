@@ -163,6 +163,11 @@ class PaintOpHelper {
         str << "flags=" << ToString(op.flags);
         break;
       }
+      case PaintOpType::kDrawVertices: {
+        const auto& op = static_cast<const DrawVerticesOp&>(base_op);
+        str << "flags=" << ToString(op.flags);
+        break;
+      }
       case PaintOpType::kNoop:
         break;
       case PaintOpType::kRestore:
