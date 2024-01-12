@@ -25,9 +25,6 @@
 
 namespace {
 
-// Accessibility Identifier.
-NSString* const kSearchEngineChoiceTitleAccessibilityIdentifier =
-    @"SearchEngineChoiceTitleAccessibilityIdentifier";
 // Line width for the bottom separator.
 constexpr CGFloat kLineWidth = 1.;
 // The horizontal space between the safe area edges and the view elements.

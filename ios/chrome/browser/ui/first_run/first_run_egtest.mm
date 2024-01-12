@@ -36,6 +36,7 @@
 #import "ios/chrome/browser/ui/first_run/first_run_app_interface.h"
 #import "ios/chrome/browser/ui/first_run/first_run_constants.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_constants.h"
+#import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
@@ -97,67 +98,8 @@ id<GREYMatcher> GetSyncSettings() {
                     grey_ancestor(disclaimer), grey_sufficientlyVisible(), nil);
 }
 
-// Selects search engine cell with `search_engine_name`.
-void SelectSearchEngineCellWithName(NSString* search_engine_name,
-                                    GREYDirection scroll_direction,
-                                    CGFloat scroll_amount) {
-  NSString* searchEngineAccessibiltyIdentifier =
-      [NSString stringWithFormat:@"%@%@", kSnippetSearchEngineIdentifierPrefix,
-                                 search_engine_name];
-  id<GREYMatcher> searchEngineRowMatcher =
-      grey_allOf(grey_userInteractionEnabled(),
-                 grey_accessibilityID(searchEngineAccessibiltyIdentifier),
-                 grey_sufficientlyVisible(), nil);
-  // Scroll down to find the search engine cell.
-  id<GREYMatcher> scrollView =
-      grey_accessibilityID(kSearchEngineTableViewIdentifier);
-  [[[EarlGrey selectElementWithMatcher:searchEngineRowMatcher]
-         usingSearchAction:grey_scrollInDirection(scroll_direction,
-                                                  scroll_amount)
-      onElementWithMatcher:scrollView] assertWithMatcher:grey_notNil()];
-  // Tap on the search engine cell.
-  [[[EarlGrey selectElementWithMatcher:searchEngineRowMatcher]
-      assertWithMatcher:grey_notNil()] performAction:grey_tap()];
-}
-
-// Confirms the search engine choice screen. A search engine must have been
-// selected before.
-void ConfirmSearchEngineChoiceScreen() {
-  id<GREYMatcher> moreButtonMatcher =
-      grey_allOf(grey_accessibilityID(kSearchEngineMoreButtonIdentifier),
-                 grey_sufficientlyVisible(), nil);
-  NSError* error = nil;
-  [[EarlGrey selectElementWithMatcher:moreButtonMatcher]
-      assertWithMatcher:grey_notNil()
-                  error:&error];
-  if (!error) {
-    // Tap on the "More" button if it exists.
-    [[[EarlGrey selectElementWithMatcher:moreButtonMatcher]
-        assertWithMatcher:grey_notNil()] performAction:grey_tap()];
-  }
-  // Tap on the "Set as Default" button.
-  id<GREYMatcher> primaryButtonMatcher =
-      grey_allOf(grey_accessibilityID(kSetAsDefaultSearchEngineIdentifier),
-                 grey_sufficientlyVisible(), nil);
-  [[[EarlGrey selectElementWithMatcher:primaryButtonMatcher]
-      assertWithMatcher:grey_notNil()] performAction:grey_tap()];
-}
-
-// Dismisses the choice screen if it appears
-void DismissChoiceScreenIfNecessary() {
-  if (![ChromeEarlGreyAppInterface IsSearchEngineChoiceScreenEnabledFre]) {
-    return;
-  }
-  // Selects a search engine. The list of search engines varies from country to
-  // country and is refreshed periodically. Google should always be proposed in
-  // the countries selected by test settings.
-  SelectSearchEngineCellWithName(
-      @"Google", /*scroll_direction=*/kGREYDirectionDown, /*scroll_amount*/ 50);
-  ConfirmSearchEngineChoiceScreen();
-}
-
 // Dismisses the remaining screens in FRE after the search engine choice screen.
-void DismissScreensAfterChoiceScreen() {
+void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
   id<GREYMatcher> buttonMatcher = grey_allOf(
       grey_ancestor(grey_accessibilityID(
           first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier)),
@@ -180,12 +122,6 @@ void DismissScreensAfterChoiceScreen() {
     [[[EarlGrey selectElementWithMatcher:omniboxPositionScreenPrimaryButton]
         assertWithMatcher:grey_notNil()] performAction:grey_tap()];
   }
-}
-
-// Dismisses the remaining screens in FRE after sign-in and sync.
-void DismissScreensAfterSigninAndSync() {
-  DismissChoiceScreenIfNecessary();
-  DismissScreensAfterChoiceScreen();
 }
 
 }  // namespace
@@ -427,18 +363,8 @@ void DismissScreensAfterSigninAndSync() {
       assertWithMatcher:grey_notNil()];
 }
 
-// Checks that the search engine choice screen is being displayed when the
-// feature is enabled. If the feature is not enabled, checks that the default
-// browser screen is displayed.
-- (void)verifyChoiceScreenOrDefaultBrowserIsDisplayed {
-  if ([ChromeEarlGreyAppInterface IsSearchEngineChoiceScreenEnabledFre]) {
-    [[EarlGrey
-        selectElementWithMatcher:
-            grey_accessibilityID(
-                first_run::kSearchEngineChoiceTitleAccessibilityIdentifier)]
-        assertWithMatcher:grey_sufficientlyVisible()];
-    return;
-  }
+// Checks that the default browser screen is displayed.
+- (void)verifyDefaultBrowserIsDisplayed {
   [[EarlGrey
       selectElementWithMatcher:
           grey_accessibilityID(
@@ -478,17 +404,6 @@ void DismissScreensAfterSigninAndSync() {
   } else {
     [SigninEarlGrey verifySyncUIEnabled:enabled];
   }
-}
-
-- (void)verifyDefaultSearchEngineSetting:(NSString*)searchEngineName {
-  // Opens the default search engine settings menu.
-  [ChromeEarlGreyUI openSettingsMenu];
-  // Verifies that the correct search engine is selected. The default engine's
-  // name appears in the name of the selected row.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::SettingsSearchEngineButton()]
-      assertWithMatcher:grey_allOf(grey_accessibilityValue(searchEngineName),
-                                   grey_sufficientlyVisible(), nil)];
 }
 
 // Returns GREYElementInteraction for `matcher`, using `scrollViewMatcher` to
@@ -768,7 +683,7 @@ void DismissScreensAfterSigninAndSync() {
   // Check signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   // Check sync is on.
-  DismissScreensAfterSigninAndSync();
+  DismissDefaultBrowserAndOmniboxPositionSelectionScreens();
   [ChromeEarlGreyUI openSettingsMenu];
   [self verifySyncOrHistoryEnabled:YES];
 }
@@ -796,7 +711,7 @@ void DismissScreensAfterSigninAndSync() {
   // Check signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   // Check sync is on.
-  DismissScreensAfterSigninAndSync();
+  DismissDefaultBrowserAndOmniboxPositionSelectionScreens();
   [ChromeEarlGreyUI openSettingsMenu];
   [self verifySyncOrHistoryEnabled:YES];
 }
@@ -828,7 +743,7 @@ void DismissScreensAfterSigninAndSync() {
   // Check signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   // Check sync is off.
-  DismissScreensAfterSigninAndSync();
+  DismissDefaultBrowserAndOmniboxPositionSelectionScreens();
   [ChromeEarlGreyUI openSettingsMenu];
   [self verifySyncOrHistoryEnabled:NO];
 }
@@ -885,7 +800,7 @@ void DismissScreensAfterSigninAndSync() {
   // Check signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   // Check sync is on.
-  DismissScreensAfterSigninAndSync();
+  DismissDefaultBrowserAndOmniboxPositionSelectionScreens();
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI
       tapSettingsMenuButton:chrome_test_util::ManageSyncSettingsButton()];
@@ -941,7 +856,7 @@ void DismissScreensAfterSigninAndSync() {
   // Accept sync.
   [self acceptSyncOrHistory];
   // Check sync is on.
-  DismissScreensAfterSigninAndSync();
+  DismissDefaultBrowserAndOmniboxPositionSelectionScreens();
   [ChromeEarlGreyUI openSettingsMenu];
   [SigninEarlGrey verifySyncUIEnabled:YES];
 }
@@ -994,7 +909,7 @@ void DismissScreensAfterSigninAndSync() {
   // Check signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   // Check sync is on.
-  DismissScreensAfterSigninAndSync();
+  DismissDefaultBrowserAndOmniboxPositionSelectionScreens();
   [ChromeEarlGreyUI openSettingsMenu];
   [self verifySyncOrHistoryEnabled:YES];
   // Close settings.
@@ -1031,7 +946,7 @@ void DismissScreensAfterSigninAndSync() {
   // Check signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   // Check sync is on.
-  DismissScreensAfterSigninAndSync();
+  DismissDefaultBrowserAndOmniboxPositionSelectionScreens();
   [ChromeEarlGreyUI openSettingsMenu];
   [self verifySyncOrHistoryEnabled:NO];
   // Close settings.
@@ -1062,7 +977,7 @@ void DismissScreensAfterSigninAndSync() {
   // Check signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   // Check sync is on.
-  DismissScreensAfterSigninAndSync();
+  DismissDefaultBrowserAndOmniboxPositionSelectionScreens();
   [ChromeEarlGreyUI openSettingsMenu];
   [self verifySyncOrHistoryEnabled:NO];
 }
@@ -1115,7 +1030,7 @@ void DismissScreensAfterSigninAndSync() {
   // Check signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   // Check sync is on.
-  DismissScreensAfterSigninAndSync();
+  DismissDefaultBrowserAndOmniboxPositionSelectionScreens();
   [ChromeEarlGreyUI openSettingsMenu];
   [SigninEarlGrey verifySyncUIEnabled:YES];
 }
@@ -1203,7 +1118,7 @@ void DismissScreensAfterSigninAndSync() {
   // Check signed in.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeSupervisedIdentity];
   // Check sync is on.
-  DismissScreensAfterSigninAndSync();
+  DismissDefaultBrowserAndOmniboxPositionSelectionScreens();
   [ChromeEarlGreyUI openSettingsMenu];
   [self verifySyncOrHistoryEnabled:YES];
 }
@@ -1267,7 +1182,7 @@ void DismissScreensAfterSigninAndSync() {
                                    kHistorySyncViewAccessibilityIdentifier)]
       assertWithMatcher:grey_nil()];
   // Verify that the search engine choice screen is shown.
-  [self verifyChoiceScreenOrDefaultBrowserIsDisplayed];
+  [self verifyDefaultBrowserIsDisplayed];
 }
 
 // Tests if the user signs in with the first screen, the History Sync Opt-In
@@ -1356,7 +1271,7 @@ void DismissScreensAfterSigninAndSync() {
                                    kHistorySyncViewAccessibilityIdentifier)]
       assertWithMatcher:grey_nil()];
   // Verify that the search engine choice screen is shown.
-  [self verifyChoiceScreenOrDefaultBrowserIsDisplayed];
+  [self verifyDefaultBrowserIsDisplayed];
 }
 
 // Tests that the standard subtitle is shown in the FRE sign-in screen, and that
@@ -1396,7 +1311,7 @@ void DismissScreensAfterSigninAndSync() {
                                    kHistorySyncViewAccessibilityIdentifier)]
       assertWithMatcher:grey_nil()];
   // Verify that the search engine choice screen is shown.
-  [self verifyChoiceScreenOrDefaultBrowserIsDisplayed];
+  [self verifyDefaultBrowserIsDisplayed];
 }
 
 // Tests that the standard subtitle is shown in the FRE sign-in screen, and
@@ -1456,7 +1371,7 @@ void DismissScreensAfterSigninAndSync() {
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
   // Verify that the search engine choice screen is shown.
-  [self verifyChoiceScreenOrDefaultBrowserIsDisplayed];
+  [self verifyDefaultBrowserIsDisplayed];
   // Verify that the history sync is enabled.
   GREYAssertTrue(
       [SigninEarlGreyAppInterface
@@ -1495,7 +1410,7 @@ void DismissScreensAfterSigninAndSync() {
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
   // Verify that the search engine choice screen is shown.
-  [self verifyChoiceScreenOrDefaultBrowserIsDisplayed];
+  [self verifyDefaultBrowserIsDisplayed];
   // Verify that the history sync is disabled.
   GREYAssertFalse(
       [SigninEarlGreyAppInterface
@@ -1587,7 +1502,7 @@ void DismissScreensAfterSigninAndSync() {
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
   // Checks that the choice screen is shown
-  [self verifyChoiceScreenOrDefaultBrowserIsDisplayed];
+  [SearchEngineChoiceEarlGreyUI verifySearchEngineChoiceScreenIsDisplayed];
   // Verifies that the primary button is initially the "More" button.
   id<GREYMatcher> moreButtonMatcher =
       grey_accessibilityID(kSearchEngineMoreButtonIdentifier);
@@ -1596,19 +1511,20 @@ void DismissScreensAfterSigninAndSync() {
 
   // Selects a search engine.
   NSString* searchEngineToSelect = @"Bing";
-  SelectSearchEngineCellWithName(searchEngineToSelect,
-                                 /*scroll_direction=*/kGREYDirectionDown,
-                                 /*scroll_amount*/ 50);
+  [SearchEngineChoiceEarlGreyUI
+      selectSearchEngineCellWithName:searchEngineToSelect
+                     scrollDirection:kGREYDirectionDown
+                              amount:50];
   // Taps the primary button. This scrolls the table down to the bottom.
   [[[EarlGrey selectElementWithMatcher:moreButtonMatcher]
       assertWithMatcher:grey_notNil()] performAction:grey_tap()];
   // Verify that the "More" button has been removed.
   [[EarlGrey selectElementWithMatcher:moreButtonMatcher]
       assertWithMatcher:grey_nil()];
-  ConfirmSearchEngineChoiceScreen();
-  DismissScreensAfterChoiceScreen();
-
-  [self verifyDefaultSearchEngineSetting:searchEngineToSelect];
+  [SearchEngineChoiceEarlGreyUI confirmSearchEngineChoiceScreen];
+  DismissDefaultBrowserAndOmniboxPositionSelectionScreens();
+  [SearchEngineChoiceEarlGreyUI
+      verifyDefaultSearchEngineSetting:searchEngineToSelect];
 }
 
 // Tests that the Search Engine Choice screen is displayed, that the
@@ -1626,7 +1542,7 @@ void DismissScreensAfterSigninAndSync() {
                           kPromoStyleScrollViewAccessibilityIdentifier]
       performAction:grey_tap()];
   // Checks that the choice screen is shown
-  [self verifyChoiceScreenOrDefaultBrowserIsDisplayed];
+  [SearchEngineChoiceEarlGreyUI verifySearchEngineChoiceScreenIsDisplayed];
   // Verifies that the primary button is initially the "More" button.
   id<GREYMatcher> moreButtonMatcher =
       grey_accessibilityID(kSearchEngineMoreButtonIdentifier);
@@ -1647,11 +1563,14 @@ void DismissScreensAfterSigninAndSync() {
 
   // Selects a search engine.
   NSString* searchEngineToSelect = @"Bing";
-  SelectSearchEngineCellWithName(searchEngineToSelect,
-                                 /*scroll_direction=*/kGREYDirectionUp,
-                                 /*scroll_amount*/ 300);
-  ConfirmSearchEngineChoiceScreen();
-  DismissScreensAfterChoiceScreen();
-  [self verifyDefaultSearchEngineSetting:searchEngineToSelect];
+  [SearchEngineChoiceEarlGreyUI
+      selectSearchEngineCellWithName:searchEngineToSelect
+                     scrollDirection:kGREYDirectionUp
+                              amount:300];
+  [SearchEngineChoiceEarlGreyUI confirmSearchEngineChoiceScreen];
+
+  DismissDefaultBrowserAndOmniboxPositionSelectionScreens();
+  [SearchEngineChoiceEarlGreyUI
+      verifyDefaultSearchEngineSetting:searchEngineToSelect];
 }
 @end
