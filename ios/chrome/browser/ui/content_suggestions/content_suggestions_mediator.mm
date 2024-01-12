@@ -95,7 +95,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_return_to_recent_tab_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_shortcut_tile_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_constants.h"
-#import "ios/chrome/browser/ui/content_suggestions/cells/parcel_tracking_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/query_suggestion_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/suggested_content.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
@@ -106,6 +105,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/identifier/content_suggestions_section_information.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/most_visited_tiles_config.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/shortcuts_config.h"
+#import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/parcel_tracking_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_prefs.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_state.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/utils.h"
@@ -1161,6 +1161,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   if (IsSafetyCheckMagicStackEnabled() &&
       !safety_check_prefs::IsSafetyCheckInMagicStackDisabled(_localState) &&
       _safetyCheckState.runningState == RunningSafetyCheckState::kDefault) {
+    _safetyCheckState.commandhandler = self.presentationDelegate;
     [self.consumer showSafetyCheck:_safetyCheckState];
   }
   if (IsIOSParcelTrackingEnabled() &&
@@ -1685,6 +1686,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   }
 
   _tabResumptionItem = item;
+  _tabResumptionItem.commandHandler = self;
   _latestMagicStackOrder =
       base::FeatureList::IsEnabled(
           segmentation_platform::features::kSegmentationPlatformIosModuleRanker)
@@ -1730,6 +1732,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
     item.parcelID = base::SysUTF8ToNSString(iter->tracking_id);
     item.trackingURL = iter->tracking_url;
     item.status = (ParcelState)iter->state;
+    item.commandHandler = self;
     [parcelItems addObject:item];
 
     if (!iter->estimated_delivery_time.is_null() &&
@@ -1762,7 +1765,15 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
         [self.consumer updateMagicStackOrder:change];
       }
     }
-    [self.consumer showParcelTrackingItems:parcelItems];
+
+    if ([parcelItems count] > 2) {
+      ParcelTrackingItem* itemToShow = parcelItems[0];
+      itemToShow.shouldShowSeeMore = YES;
+      [self.consumer showParcelTrackingItems:@[ itemToShow ]];
+
+    } else {
+      [self.consumer showParcelTrackingItems:parcelItems];
+    }
   }
 }
 
@@ -1951,6 +1962,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 
 - (void)runningStateChanged:(RunningSafetyCheckState)state {
   _safetyCheckState.runningState = state;
+  _safetyCheckState.shouldShowSeeMore = CheckIssuesCount(_safetyCheckState) > 2;
 
   if (safety_check_prefs::IsSafetyCheckInMagicStackDisabled(_localState)) {
     // Safety Check can be disabled by long-pressing the module, so
@@ -1962,6 +1974,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   // Ensures the consumer gets the latest Safety Check state only when the
   // running state changes; this avoids calling the consumer every time an
   // individual check state changes.
+  _safetyCheckState.commandhandler = self.presentationDelegate;
   [self.consumer showSafetyCheck:_safetyCheckState];
 }
 

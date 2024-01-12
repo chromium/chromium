@@ -2,20 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/content_suggestions/cells/parcel_tracking_view.h"
+#import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/parcel_tracking_view.h"
 
 #import "base/i18n/time_formatting.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/content_suggestions/cells/parcel_tracking_item.h"
+#import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/parcel_tracking_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/branded_images/branded_images_api.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
 
 namespace {
 
@@ -439,7 +440,7 @@ const CGFloat kStatusBarMarginFromBottom = 5.0f;
 
 - (void)handleTap:(UITapGestureRecognizer*)sender {
   if (sender.state == UIGestureRecognizerStateEnded) {
-    [self.delegate loadParcelTrackingPage:_parcelTrackingURL];
+    [self.commandHandler loadParcelTrackingPage:_parcelTrackingURL];
   }
 }
 

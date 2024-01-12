@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_VIEW_CONTROLLER_AUDIENCE_H_
 #define IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_VIEW_CONTROLLER_AUDIENCE_H_
 
+enum class ContentSuggestionsModuleType;
+enum class SafetyCheckItemType;
 @class SetUpListItemViewData;
 
 // Audience for the ContentSuggestions, getting information from it.
@@ -36,6 +38,9 @@
 
 // Notifies the audience to show the list of parcels.
 - (void)showMagicStackParcelList;
+
+// Called when a Safety Check item is selected by the user.
+- (void)didSelectSafetyCheckItem:(SafetyCheckItemType)type;
 
 @end
 

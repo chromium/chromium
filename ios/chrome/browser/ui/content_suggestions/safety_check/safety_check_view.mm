@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/multi_row_container_view.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller_audience.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_item_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_state.h"
@@ -41,7 +42,7 @@
 #pragma mark - SafetyCheckItemViewTapDelegate
 
 - (void)didTapSafetyCheckItemView:(SafetyCheckItemView*)view {
-  [self.delegate didSelectSafetyCheckItem:view.itemType];
+  [self.commandhandler didSelectSafetyCheckItem:view.itemType];
 }
 
 #pragma mark - Private methods

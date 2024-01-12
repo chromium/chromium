@@ -14,6 +14,12 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_image_data_source.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/most_visited_tiles_config.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/shortcuts_config.h"
+#import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/parcel_tracking_item.h"
+#import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/parcel_tracking_view.h"
+#import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_state.h"
+#import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_view.h"
+#import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_item.h"
+#import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_view.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "url/gurl.h"
@@ -38,6 +44,24 @@
           shortcutsStackViewForConfig:shortcutsConfig
                           tileSpacing:ContentSuggestionsTilesHorizontalSpacing(
                                           traitCollection)];
+    }
+    case ContentSuggestionsModuleType::kTabResumption: {
+      TabResumptionItem* tabResumptionItem =
+          static_cast<TabResumptionItem*>(config);
+      return [self tabResumptionViewForConfig:tabResumptionItem];
+    }
+    case ContentSuggestionsModuleType::kParcelTracking:
+    case ContentSuggestionsModuleType::kParcelTrackingSeeMore: {
+      ParcelTrackingItem* parcelTrackingItem =
+          static_cast<ParcelTrackingItem*>(config);
+      return [self parcelTrackingViewForConfig:parcelTrackingItem];
+    }
+    case ContentSuggestionsModuleType::kSafetyCheck:
+    case ContentSuggestionsModuleType::kSafetyCheckMultiRow:
+    case ContentSuggestionsModuleType::kSafetyCheckMultiRowOverflow: {
+      SafetyCheckState* safetyCheckConfig =
+          static_cast<SafetyCheckState*>(config);
+      return [self safetyCheckViewForConfigState:safetyCheckConfig];
     }
     default:
       NOTREACHED_NORETURN();
@@ -122,6 +146,28 @@
     index++;
   }
   return shortcutsStackView;
+}
+
+- (UIView*)tabResumptionViewForConfig:(TabResumptionItem*)tabResumptionItem {
+  TabResumptionView* tabResumptionView =
+      [[TabResumptionView alloc] initWithItem:tabResumptionItem];
+  tabResumptionView.commandHandler = tabResumptionItem.commandHandler;
+  return tabResumptionView;
+}
+
+- (UIView*)parcelTrackingViewForConfig:(ParcelTrackingItem*)parcelTrackingItem {
+  ParcelTrackingModuleView* parcelTrackingModuleView =
+      [[ParcelTrackingModuleView alloc] initWithFrame:CGRectZero];
+  parcelTrackingModuleView.commandHandler = parcelTrackingItem.commandHandler;
+  [parcelTrackingModuleView configureView:parcelTrackingItem];
+  return parcelTrackingModuleView;
+}
+
+- (UIView*)safetyCheckViewForConfigState:(SafetyCheckState*)state {
+  SafetyCheckView* safetyCheckView =
+      [[SafetyCheckView alloc] initWithState:state];
+  safetyCheckView.commandhandler = state.commandhandler;
+  return safetyCheckView;
 }
 
 @end

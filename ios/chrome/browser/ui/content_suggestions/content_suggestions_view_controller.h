@@ -14,7 +14,6 @@
 @protocol ContentSuggestionsMenuProvider;
 @protocol ContentSuggestionsViewControllerAudience;
 @protocol ParcelTrackingOptInCommands;
-@protocol SafetyCheckViewDelegate;
 @protocol SetUpListViewDelegate;
 @class ContentSuggestionsMetricsRecorder;
 @class LayoutGuideCenter;
@@ -38,7 +37,6 @@ class UrlLoadingBrowserAgent;
 @property(nonatomic, weak) id<ContentSuggestionsImageDataSource>
     imageDataSource;
 @property(nonatomic, weak) id<ContentSuggestionsViewControllerAudience,
-                              SafetyCheckViewDelegate,
                               SetUpListViewDelegate>
     audience;
 // Provider of menu configurations for the contentSuggestions component.

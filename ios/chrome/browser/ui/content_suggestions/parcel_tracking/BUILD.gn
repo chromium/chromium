@@ -1,0 +1,34 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("parcel_tracking") {
+  sources = [
+    "magic_stack_parcel_list_half_sheet_table_view_controller.h",
+    "magic_stack_parcel_list_half_sheet_table_view_controller.mm",
+    "parcel_tracking_item.h",
+    "parcel_tracking_item.mm",
+    "parcel_tracking_view.h",
+    "parcel_tracking_view.mm",
+  ]
+  deps = [
+    "resources:untrack_parcel",
+    "//base",
+    "//base:i18n",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/content_suggestions:constants",
+    "//ios/chrome/browser/ui/content_suggestions:public",
+    "//ios/chrome/browser/ui/content_suggestions/magic_stack:public",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ios/public/provider/chrome/browser/branded_images:branded_images_api",
+    "//ui/base",
+    "//url",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

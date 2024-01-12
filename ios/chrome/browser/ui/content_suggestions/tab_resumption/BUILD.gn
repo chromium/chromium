@@ -8,7 +8,6 @@ source_set("tab_resumption") {
     "tab_resumption_item.mm",
     "tab_resumption_view.h",
     "tab_resumption_view.mm",
-    "tab_resumption_view_delegate.h",
   ]
   deps = [
     ":constants",
@@ -18,6 +17,9 @@ source_set("tab_resumption") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/content_suggestions:constants",
+    "//ios/chrome/browser/ui/content_suggestions:public",
+    "//ios/chrome/browser/ui/content_suggestions/magic_stack:public",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
     "//ui/base",

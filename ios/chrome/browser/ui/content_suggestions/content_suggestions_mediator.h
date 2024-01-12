@@ -50,6 +50,7 @@ class AuthenticationService;
 class Browser;
 @class BrowserActionFactory;
 @protocol BrowserCoordinatorCommands;
+@protocol ContentSuggestionsViewControllerAudience;
 @protocol ContentSuggestionsDelegate;
 @class ContentSuggestionsMetricsRecorder;
 enum class ContentSuggestionsModuleType;
@@ -103,6 +104,10 @@ class WebStateList;
 
 // Delegate used to communicate Content Suggestions events to the delegate.
 @property(nonatomic, weak) id<ContentSuggestionsDelegate> delegate;
+
+// Delegate for presentation actions.
+@property(nonatomic, weak) id<ContentSuggestionsViewControllerAudience>
+    presentationDelegate;
 
 // The consumer that will be notified when the data change.
 @property(nonatomic, weak) id<ContentSuggestionsConsumer> consumer;

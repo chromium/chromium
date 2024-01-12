@@ -14,7 +14,6 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
-#import "ios/chrome/browser/ui/content_suggestions/cells/parcel_tracking_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_constants.h"
@@ -22,6 +21,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module_container.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/most_visited_tiles_config.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/shortcuts_config.h"
+#import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/parcel_tracking_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_state.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view_data.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_item.h"
@@ -513,52 +513,6 @@ TEST_F(ContentSuggestionsViewControllerTest,
             parcelTrackingModule.type);
   parcelTrackingModule = (MagicStackModuleContainer*)subviews[2];
   EXPECT_EQ(ContentSuggestionsModuleType::kParcelTracking,
-            parcelTrackingModule.type);
-}
-
-// Test that passing more than two parcel tracking items to the ViewController
-// adds the "See More" parcel tracking module.
-TEST_F(ContentSuggestionsViewControllerTest,
-       TestInsertMoreThanTwoParcelTrackingModulesIntoMagicStack) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeaturesAndParameters(
-      {{kMagicStack, {{kMagicStackMostVisitedModuleParam, "true"}}}}, {});
-  [view_controller_ setMagicStackOrder:@[
-    @(int(ContentSuggestionsModuleType::kMostVisited)),
-    @(int(ContentSuggestionsModuleType::kParcelTrackingSeeMore)),
-    @(int(ContentSuggestionsModuleType::kShortcuts))
-  ]];
-  // Simulate scenario where:
-  // Shortcuts should be inserted at index 0
-  // Safety Check should be inserted at index 1
-  // Most Visited should be inserted at index 0
-  [view_controller_ setShortcutTilesConfig:ShortcutsConfigWithBookmark()];
-  // Trigger -viewDidLoad for initial Magic Stack construction.
-  // TODO(crbug.com/1477476): This view get should ideally happen before
-  // setShortcutTilesConfig: to ensure Shortcuts is inserted correctly as
-  // well.
-  [view_controller_ loadViewIfNeeded];
-
-  [view_controller_ setMostVisitedTilesConfig:MVTConfig()];
-  ParcelTrackingItem* item1 = [[ParcelTrackingItem alloc] init];
-  item1.estimatedDeliveryTime = base::Time();
-  ParcelTrackingItem* item2 = [[ParcelTrackingItem alloc] init];
-  item2.estimatedDeliveryTime = base::Time();
-  ParcelTrackingItem* item3 = [[ParcelTrackingItem alloc] init];
-  item3.estimatedDeliveryTime = base::Time();
-  [view_controller_ showParcelTrackingItems:@[ item1, item2, item3 ]];
-
-  UIStackView* magicStack = FindMagicStack();
-
-  // Assert order is correct.
-  NSArray<UIView*>* subviews = magicStack.arrangedSubviews;
-
-  // Three modules and edit button.
-  ASSERT_EQ(4u, [subviews count]);
-
-  MagicStackModuleContainer* parcelTrackingModule =
-      (MagicStackModuleContainer*)subviews[1];
-  EXPECT_EQ(ContentSuggestionsModuleType::kParcelTrackingSeeMore,
             parcelTrackingModule.type);
 }
 
