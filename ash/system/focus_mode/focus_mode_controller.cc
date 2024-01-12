@@ -247,6 +247,14 @@ void FocusModeController::CompleteTask() {
   SetSelectedTask(nullptr);
 }
 
+void FocusModeController::TriggerEndingMomentImmediately() {
+  if (!in_focus_session()) {
+    return;
+  }
+  current_session_->set_end_time(base::Time::Now());
+  OnTimerTick();
+}
+
 void FocusModeController::StartFocusSession() {
   current_session_ = FocusModeSession(session_duration_,
                                       session_duration_ + base::Time::Now());

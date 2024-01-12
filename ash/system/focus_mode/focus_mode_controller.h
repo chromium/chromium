@@ -142,6 +142,11 @@ class ASH_EXPORT FocusModeController : public SessionObserver {
   // selected task data.
   void CompleteTask();
 
+  // TODO(b/318897434): This is only needed for the accelerator to trigger an
+  // ending moment immediately if there is an ongoing session. Remove this after
+  // testing is complete.
+  void TriggerEndingMomentImmediately();
+
  private:
   // Starts a focus session by updating UI elements, starting `timer_`, and
   // setting `current_session_` to the desired session duration and end time.

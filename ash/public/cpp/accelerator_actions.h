@@ -188,7 +188,8 @@ namespace ash {
   /* Different than kToggleAppList to ignore search-as-modifier-key */  \
   /* rules for enabling the accelerator. */                             \
   ACCELERATOR_ACTION_ENTRY(DevToggleAppList)                            \
-  ACCELERATOR_ACTION_ENTRY(DevToggleUnifiedDesktop)
+  ACCELERATOR_ACTION_ENTRY(DevToggleUnifiedDesktop)                     \
+  ACCELERATOR_ACTION_ENTRY(DebugToggleFocusModeState)
 // LINT.ThenChange(//ash/public/mojom/accelerator_actions.mojom)
 
 enum AcceleratorAction {

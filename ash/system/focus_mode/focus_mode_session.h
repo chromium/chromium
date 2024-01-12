@@ -40,6 +40,9 @@ class ASH_EXPORT FocusModeSession {
   ~FocusModeSession() = default;
 
   base::Time end_time() const { return end_time_; }
+  // TODO(b/318897434): This is only needed for the accelerator to trigger an
+  // ending moment immediately. Remove this after testing is complete.
+  void set_end_time(base::Time end_time) { end_time_ = end_time; }
   base::TimeDelta session_duration() const { return session_duration_; }
   bool persistent_ending() const { return persistent_ending_; }
   // This will cause `GetState` to always return `kEnding` even if the session

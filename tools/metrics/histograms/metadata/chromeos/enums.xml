@@ -207,6 +207,7 @@ chromium-metrics-reviews@google.com.
   <int value="153" label="DevAddRemoveDisplay"/>
   <int value="154" label="DevToggleAppList"/>
   <int value="155" label="DevToggleUnifiedDesktop"/>
+  <int value="156" label="DebugToggleFocusModeState"/>
 </enum>
 
 <enum name="ArcIntentHandlerDestinationPlatform">
