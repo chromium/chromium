@@ -16,7 +16,7 @@
 
 namespace content {
 
-class WorkerOrWorkletDevToolsAgentHost;
+class DedicatedWorkerDevToolsAgentHost;
 class DedicatedWorkerHost;
 
 // Manages WorkerDevToolsAgentHost's for Dedicated Workers. This class lives on
@@ -26,8 +26,8 @@ class WorkerDevToolsManager {
   // Returns the WorkerDevToolsManager singleton.
   static WorkerDevToolsManager& GetInstance();
 
-  WorkerOrWorkletDevToolsAgentHost* GetDevToolsHost(DedicatedWorkerHost* host);
-  WorkerOrWorkletDevToolsAgentHost* GetDevToolsHostFromToken(
+  DedicatedWorkerDevToolsAgentHost* GetDevToolsHost(DedicatedWorkerHost* host);
+  DedicatedWorkerDevToolsAgentHost* GetDevToolsHostFromToken(
       const base::UnguessableToken& token);
   void WorkerCreated(
       DedicatedWorkerHost* host,
@@ -44,7 +44,7 @@ class WorkerDevToolsManager {
 
   // Retains agent hosts as long as the dedicated worker is alive.
   std::map<DedicatedWorkerHost*,
-           scoped_refptr<WorkerOrWorkletDevToolsAgentHost>>
+           scoped_refptr<DedicatedWorkerDevToolsAgentHost>>
       hosts_;
 };
 

@@ -16,9 +16,9 @@
 #include "content/browser/broadcast_channel/broadcast_channel_provider.h"
 #include "content/browser/broadcast_channel/broadcast_channel_service.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
+#include "content/browser/devtools/dedicated_worker_devtools_agent_host.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/devtools/worker_devtools_manager.h"
-#include "content/browser/devtools/worker_or_worklet_devtools_agent_host.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/loader/content_security_notifier.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
@@ -330,7 +330,7 @@ void DedicatedWorkerHost::StartScriptLoad(
       service_worker_handle_.get(), std::move(blob_url_loader_factory), nullptr,
       storage_partition_impl, partition_domain,
       // TODO(crbug.com/1138622): Propagate dedicated worker ukm::SourceId here.
-      ukm::kInvalidSourceId, WorkerOrWorkletDevToolsAgentHost::GetFor(this),
+      ukm::kInvalidSourceId, DedicatedWorkerDevToolsAgentHost::GetFor(this),
       token_.value(),
       base::BindOnce(&DedicatedWorkerHost::DidStartScriptLoad,
                      weak_factory_.GetWeakPtr()));
@@ -475,7 +475,7 @@ void DedicatedWorkerHost::DidStartScriptLoad(
   // `Network.onLoadingFinished` event.
   devtools_instrumentation::OnWorkerMainScriptLoadingFinished(
       FrameTreeNode::From(ancestor_render_frame_host),
-      WorkerOrWorkletDevToolsAgentHost::GetFor(this)->devtools_worker_token(),
+      DedicatedWorkerDevToolsAgentHost::GetFor(this)->devtools_worker_token(),
       network::URLLoaderCompletionStatus(net::OK));
 
   client_->OnScriptLoadStarted(
@@ -505,7 +505,7 @@ void DedicatedWorkerHost::ScriptLoadStartFailed(
     // `Network.onLoadingFailed` event.
     devtools_instrumentation::OnWorkerMainScriptLoadingFailed(
         url,
-        WorkerOrWorkletDevToolsAgentHost::GetFor(this)->devtools_worker_token(),
+        DedicatedWorkerDevToolsAgentHost::GetFor(this)->devtools_worker_token(),
         FrameTreeNode::From(ancestor_render_frame_host),
         ancestor_render_frame_host, status);
   }
