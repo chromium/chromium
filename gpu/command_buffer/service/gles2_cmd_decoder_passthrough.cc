@@ -1372,7 +1372,8 @@ gpu::Capabilities GLES2DecoderPassthroughImpl::GetCapabilities() {
   caps.disable_one_component_textures =
       group_->shared_image_manager() &&
       group_->shared_image_manager()->display_context_on_another_thread() &&
-      features::IsUsingVulkan();
+      (feature_info_->workarounds().avoid_one_component_egl_images ||
+       features::IsUsingVulkan());
   caps.sync_query = feature_info_->feature_flags().chromium_sync_query;
   caps.texture_rg = feature_info_->feature_flags().ext_texture_rg;
   caps.texture_norm16 = feature_info_->feature_flags().ext_texture_norm16;
