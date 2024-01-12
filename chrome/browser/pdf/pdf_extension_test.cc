@@ -39,6 +39,8 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/pdf/pdf_extension_test_base.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
+#include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
+#include "chrome/browser/pdf/test_pdf_viewer_stream_manager.h"
 #include "chrome/browser/plugins/plugin_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"
@@ -3725,17 +3727,21 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionIncognitoTest, IncognitoIframe) {
     GTEST_SKIP() << "GuestView PDF viewer cannot ensure PDF load in an iframe.";
   }
 
+  content::WebContents* contents =
+      incognito_browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_FALSE(pdf::PdfViewerStreamManager::FromWebContents(contents));
+
+  auto* manager =
+      pdf::TestPdfViewerStreamManager::CreateForWebContents(contents);
+
   // Load the HTML containing an iframe embedding a PDF.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       incognito_browser(),
       embedded_test_server()->GetURL("/pdf/test-iframe.html")));
+  ASSERT_EQ(manager, pdf::PdfViewerStreamManager::FromWebContents(contents));
 
-  content::WebContents* contents =
-      incognito_browser()->tab_strip_model()->GetActiveWebContents();
-
-  // Verify the pdf has loaded.
-  EXPECT_EQ(true, content::EvalJs(contents->GetPrimaryMainFrame(),
-                                  kOopifPostMessageIframe));
+  // Verify the pdf has loaded. The test will timeout if the PDF fails to load.
+  manager->WaitUntilPdfLoaded();
 }
 
 // PDF extension tests for the OOPIF PDF viewer.
