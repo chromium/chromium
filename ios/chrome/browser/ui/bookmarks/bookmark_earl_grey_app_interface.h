@@ -42,6 +42,10 @@ enum class StorageType;
 // be loaded.
 + (NSError*)waitForBookmarkModelsLoaded;
 
+// Flush any pending bookmarks writes to disk now. This is useful before
+// terminating and restarting the app.
++ (void)commitPendingWrite;
+
 // Asserts that `expectedCount` bookmarks exist with the corresponding `title`
 // using the BookmarkModel.
 + (NSError*)verifyBookmarksWithTitle:(NSString*)title

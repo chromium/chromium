@@ -1036,6 +1036,12 @@ void BookmarkModel::LoadEmptyForTest() {
   CHECK(loaded_);
 }
 
+void BookmarkModel::CommitPendingWriteForTest() {
+  if (store_) {
+    store_->SaveNowIfScheduledForTesting();  // IN-TEST
+  }
+}
+
 void BookmarkModel::RestoreRemovedNode(const BookmarkNode* parent,
                                        size_t index,
                                        std::unique_ptr<BookmarkNode> node) {

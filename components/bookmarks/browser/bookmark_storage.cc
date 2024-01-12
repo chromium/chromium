@@ -106,4 +106,10 @@ bool BookmarkStorage::HasScheduledSaveForTesting() const {
   return writer_.HasPendingWrite();
 }
 
+void BookmarkStorage::SaveNowIfScheduledForTesting() {
+  if (writer_.HasPendingWrite()) {
+    writer_.DoScheduledWrite();
+  }
+}
+
 }  // namespace bookmarks

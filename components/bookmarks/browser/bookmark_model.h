@@ -410,6 +410,11 @@ class BookmarkModel final : public BookmarkUndoProvider,
   // synchronously.
   void LoadEmptyForTest();
 
+  // If a write to disk is scheduled, performs it immediately. This is useful
+  // for tests that restart the browser without necessarily shutting it down
+  // cleanly first.
+  void CommitPendingWriteForTest();
+
  private:
   friend class BookmarkCodecTest;
   friend class BookmarkModelFaviconTest;
