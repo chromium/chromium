@@ -58,8 +58,9 @@ namespace mini_installer {
 void DeleteWithRetryAndMetrics(const wchar_t* path, int& max_delete_attempts) {
   int attempts = 0;
   DeleteWithRetry(path, attempts);
-  if (attempts > max_delete_attempts)
+  if (attempts > max_delete_attempts) {
     max_delete_attempts = attempts;
+  }
 }
 
 // TODO(grt): Frame this in terms of whether or not the brand supports
@@ -84,8 +85,9 @@ void WriteInstallResults(const Configuration& configuration,
                          ProcessExitResult result) {
   // Calls to setup.exe will write a "success" result if everything was good
   // so we don't need to write anything from here.
-  if (result.IsSuccess())
+  if (result.IsSuccess()) {
     return;
+  }
 
   // Write the value in Chrome ClientState key.
   RegKey key;
@@ -137,8 +139,9 @@ constexpr DWORD MetricToExtraCode1(MetricCategory category,
 void WriteExtraCode1(const Configuration& configuration, DWORD extra_code_1) {
   // Write the value in Chrome ClientState key.
   RegKey key;
-  if (OpenInstallStateKey(configuration, &key))
+  if (OpenInstallStateKey(configuration, &key)) {
     key.WriteDWValue(kInstallerExtraCode1RegistryValue, extra_code_1);
+  }
 }
 
 // This function sets the flag in registry to indicate that Google Update
@@ -148,8 +151,9 @@ void SetInstallerFlags(const Configuration& configuration) {
   StackString<128> value;
 
   RegKey key;
-  if (!OpenInstallStateKey(configuration, &key))
+  if (!OpenInstallStateKey(configuration, &key)) {
     return;
+  }
 
   // TODO(grt): Trim legacy modifiers (chrome,chromeframe,apphost,applauncher,
   // multi,readymode,stage,migrating,multifail) from the ap value.
@@ -162,8 +166,9 @@ void SetInstallerFlags(const Configuration& configuration) {
   // 2. When ap value is missing, we are going to create it with the required
   //    tag.
   if ((ret == ERROR_SUCCESS) || (ret == ERROR_FILE_NOT_FOUND)) {
-    if (ret == ERROR_FILE_NOT_FOUND)
+    if (ret == ERROR_FILE_NOT_FOUND) {
       value.clear();
+    }
 
     if (!StrEndsWith(value.get(), kFullInstallerSuffix) &&
         value.append(kFullInstallerSuffix)) {
@@ -183,23 +188,27 @@ ProcessExitResult GetSetupExePathForAppGuid(bool system_level,
   const HKEY root_key = system_level ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
   RegKey key;
   LONG result = OpenClientStateKey(root_key, app_guid, KEY_QUERY_VALUE, &key);
-  if (result == ERROR_SUCCESS)
+  if (result == ERROR_SUCCESS) {
     result = key.ReadSZValue(kUninstallRegistryValue, path, size);
-  if (result != ERROR_SUCCESS)
+  }
+  if (result != ERROR_SUCCESS) {
     return ProcessExitResult(UNABLE_TO_FIND_REGISTRY_KEY, result);
+  }
 
   // Check that the path to the existing installer includes the expected
   // version number.  It's not necessary for accuracy to verify before/after
   // delimiters.
-  if (!SearchStringI(path, previous_version))
+  if (!SearchStringI(path, previous_version)) {
     return ProcessExitResult(PATCH_NOT_FOR_INSTALLED_VERSION);
+  }
 
   // Strip double-quotes surrounding the string, if present.
   if (size >= 1 && path[0] == '\"') {
     size_t path_length = SafeStrLen(path, size);
     if (path_length >= 2 && path[path_length - 1] == '\"') {
-      if (!SafeStrCopy(path, size, path + 1))
+      if (!SafeStrCopy(path, size, path + 1)) {
         return ProcessExitResult(PATH_STRING_OVERFLOW);
+      }
       path[path_length - 2] = '\0';
     }
   }
@@ -288,8 +297,9 @@ void AppendCommandLineFlags(const wchar_t* command_line,
     ++command_line;
     while (true) {
       a_char = *command_line;
-      if (!a_char)
+      if (!a_char) {
         break;
+      }
       ++command_line;
       if (a_char == L'"') {
         a_char = *command_line;
@@ -300,18 +310,21 @@ void AppendCommandLineFlags(const wchar_t* command_line,
     // Scan forward for the first space or tab character.
     while (true) {
       a_char = *command_line;
-      if (!a_char || a_char == L' ' || a_char == L'\t')
+      if (!a_char || a_char == L' ' || a_char == L'\t') {
         break;
+      }
       ++command_line;
     }  // postcondition: |a_char| contains the character at *command_line.
   }
 
-  if (!a_char)
+  if (!a_char) {
     return;
+  }
 
   // Append a space if |command_line| doesn't begin with one.
-  if (a_char != ' ' && a_char != '\t' && !buffer->append(L" "))
+  if (a_char != ' ' && a_char != '\t' && !buffer->append(L" ")) {
     return;
+  }
   buffer->append(command_line);
 }
 
@@ -482,8 +495,10 @@ ProcessExitResult UnpackBinaryResources(const Configuration& configuration,
                                         int& max_delete_attempts) {
   // Generate the setup.exe path where we patch/uncompress setup resource.
   PathString setup_dest_path;
-  if (!setup_dest_path.assign(base_path) || !setup_dest_path.append(kSetupExe))
+  if (!setup_dest_path.assign(base_path) ||
+      !setup_dest_path.append(kSetupExe)) {
     return ProcessExitResult(PATH_STRING_OVERFLOW);
+  }
 
   PathString archive_name;
   MemoryRange archive_range;
@@ -554,10 +569,11 @@ ProcessExitResult UnpackBinaryResources(const Configuration& configuration,
           SETUP_PATCH_FAILED_COULD_NOT_CREATE_PROCESS);
     }
     DeleteWithRetryAndMetrics(setup_path->get(), max_delete_attempts);
-    if (exit_code.IsSuccess())
+    if (exit_code.IsSuccess()) {
       setup_path->assign(setup_dest_path);
-    else
+    } else {
       setup_path->clear();
+    }
 
     return exit_code;
   }
@@ -586,10 +602,11 @@ ProcessExitResult UnpackBinaryResources(const Configuration& configuration,
       mini_installer::Expand(setup_path->get(), setup_dest_path.get());
   DeleteWithRetryAndMetrics(setup_path->get(), max_delete_attempts);
 
-  if (success)
+  if (success) {
     setup_path->assign(setup_dest_path);
-  else
+  } else {
     exit_code = ProcessExitResult(UNABLE_TO_EXTRACT_SETUP_EXE);
+  }
 
 #if defined(COMPONENT_BUILD)
   if (exit_code.IsSuccess()) {
@@ -612,13 +629,15 @@ ProcessExitResult RunSetup(const Configuration& configuration,
   PathString setup_exe;
 
   if (*setup_path != L'\0') {
-    if (!setup_exe.assign(setup_path))
+    if (!setup_exe.assign(setup_path)) {
       return ProcessExitResult(COMMAND_STRING_OVERFLOW);
+    }
   } else {
     ProcessExitResult exit_code = GetPreviousSetupExePath(
         configuration, setup_exe.get(), setup_exe.capacity());
-    if (!exit_code.IsSuccess())
+    if (!exit_code.IsSuccess()) {
       return exit_code;
+    }
   }
 
   // There could be three full paths in the command line for setup.exe (path
@@ -665,10 +684,12 @@ void DeleteExtractedFiles(HMODULE module,
                           const PathString& setup_path,
                           const PathString& base_path,
                           int& max_delete_attempts) {
-  if (!archive_path.empty())
+  if (!archive_path.empty()) {
     DeleteWithRetryAndMetrics(archive_path.get(), max_delete_attempts);
-  if (!setup_path.empty())
+  }
+  if (!setup_path.empty()) {
     DeleteWithRetryAndMetrics(setup_path.get(), max_delete_attempts);
+  }
 
 #if defined(COMPONENT_BUILD)
   // Delete the modules in a component build extracted for use by setup.exe.
@@ -696,8 +717,9 @@ bool IsAclSupportedForPath(const wchar_t* path) {
 // NOTE: On success the |sid| parameter must be freed with LocalFree().
 bool GetCurrentOwnerSid(wchar_t** sid) {
   HANDLE token;
-  if (!::OpenProcessToken(::GetCurrentProcess(), TOKEN_QUERY, &token))
+  if (!::OpenProcessToken(::GetCurrentProcess(), TOKEN_QUERY, &token)) {
     return false;
+  }
 
   DWORD size = 0;
   bool result = false;
@@ -707,8 +729,9 @@ bool GetCurrentOwnerSid(wchar_t** sid) {
   if (size && GetLastError() == ERROR_INSUFFICIENT_BUFFER) {
     if (TOKEN_OWNER* owner =
             reinterpret_cast<TOKEN_OWNER*>(::LocalAlloc(LPTR, size))) {
-      if (::GetTokenInformation(token, TokenOwner, owner, size, &size))
+      if (::GetTokenInformation(token, TokenOwner, owner, size, &size)) {
         result = !!::ConvertSidToStringSid(owner->Owner, sid);
+      }
       ::LocalFree(owner);
     }
   }
@@ -722,12 +745,14 @@ bool GetCurrentOwnerSid(wchar_t** sid) {
 bool SetSecurityDescriptor(const wchar_t* path, PSECURITY_DESCRIPTOR* sd) {
   *sd = nullptr;
   // We succeed without doing anything if ACLs aren't supported.
-  if (!IsAclSupportedForPath(path))
+  if (!IsAclSupportedForPath(path)) {
     return true;
+  }
 
   wchar_t* sid = nullptr;
-  if (!GetCurrentOwnerSid(&sid))
+  if (!GetCurrentOwnerSid(&sid)) {
     return false;
+  }
 
   // The largest SID is under 200 characters, so 300 should give enough slack.
   StackString<300> sddl;
@@ -752,13 +777,15 @@ bool SetSecurityDescriptor(const wchar_t* path, PSECURITY_DESCRIPTOR* sd) {
 bool GetModuleDir(HMODULE module, PathString* directory) {
   DWORD len = ::GetModuleFileName(module, directory->get(),
                                   static_cast<DWORD>(directory->capacity()));
-  if (!len || len >= directory->capacity())
+  if (!len || len >= directory->capacity()) {
     return false;  // Failed to get module path.
+  }
 
   // Chop off the basename of the path.
   wchar_t* name = GetNameFromPathExt(directory->get(), len);
-  if (name == directory->get())
+  if (name == directory->get()) {
     return false;  // No path separator found.
+  }
 
   *name = L'\0';
 
@@ -779,8 +806,9 @@ bool CreateWorkDir(const wchar_t* base_path,
                    PathString* work_dir,
                    ProcessExitResult* exit_code) {
   *exit_code = ProcessExitResult(PATH_STRING_OVERFLOW);
-  if (!work_dir->assign(base_path) || !work_dir->append(kTempPrefix))
+  if (!work_dir->assign(base_path) || !work_dir->append(kTempPrefix)) {
     return false;
+  }
 
   // Store the location where we'll append the id.
   size_t end = work_dir->length();
@@ -789,8 +817,9 @@ bool CreateWorkDir(const wchar_t* base_path,
   // The name of the directory will use up 11 chars and then we need to append
   // the trailing backslash and a terminator.  We've already added the prefix
   // to the buffer, so let's just make sure we've got enough space for the rest.
-  if ((work_dir->capacity() - end) < (_countof("fffff.tmp") + 1))
+  if ((work_dir->capacity() - end) < (_countof("fffff.tmp") + 1)) {
     return false;
+  }
 
   // Add an ACL if supported by the filesystem. Otherwise system-level installs
   // are potentially vulnerable to file squatting attacks.
@@ -831,8 +860,9 @@ bool CreateWorkDir(const wchar_t* base_path,
     }
   }
 
-  if (sa.lpSecurityDescriptor)
+  if (sa.lpSecurityDescriptor) {
     LocalFree(sa.lpSecurityDescriptor);
+  }
   return exit_code->IsSuccess();
 }
 
@@ -855,18 +885,21 @@ ProcessExitResult WMain(HMODULE module) {
 
   // Parse configuration from the command line and resources.
   Configuration configuration;
-  if (!configuration.Initialize(module))
+  if (!configuration.Initialize(module)) {
     return ProcessExitResult(GENERIC_INITIALIZATION_FAILURE, ::GetLastError());
+  }
 
   // Exit early if an invalid switch (e.g., "--chrome-frame") was found on the
   // command line.
-  if (configuration.has_invalid_switch())
+  if (configuration.has_invalid_switch()) {
     return ProcessExitResult(INVALID_OPTION);
+  }
 
   // First get a path where we can extract payload
   PathString base_path;
-  if (!GetWorkDir(module, &base_path, &exit_code))
+  if (!GetWorkDir(module, &base_path, &exit_code)) {
     return exit_code;
+  }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Set the magic suffix in registry to try full installer next time. We ignore
@@ -889,8 +922,9 @@ ProcessExitResult WMain(HMODULE module) {
   // setup.
   ::SetProcessWorkingSetSize(::GetCurrentProcess(), (SIZE_T)-1, (SIZE_T)-1);
 
-  if (exit_code.IsSuccess())
+  if (exit_code.IsSuccess()) {
     exit_code = RunSetup(configuration, archive_path.get(), setup_path.get());
+  }
 
   if (configuration.should_delete_extracted_files()) {
     DeleteExtractedFiles(module, archive_path, setup_path, base_path,
