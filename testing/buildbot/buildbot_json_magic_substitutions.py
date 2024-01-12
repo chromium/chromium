@@ -24,10 +24,15 @@ CROS_BOARD_GPUS = {
 
 VENDOR_SUBSTITUTIONS = {
     'apple': '106b',
+    'qcom': '4d4f4351',
 }
 DEVICE_SUBSTITUTIONS = {
     'm1': '0',
     'm2': '0',
+    # Qualcomm Adreno 690 on Windows arm64. The approach swarming uses to find
+    # GPUs (looking for all Win32_VideoController WMI objects) results in
+    # different output than what Chrome does.
+    '043a': '41333430',
 }
 
 

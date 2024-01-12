@@ -1631,6 +1631,8 @@ targets.mixin(
             "cpu": "arm64",
             "os": "Windows-11",
             "pool": "chrome.tests.arm64",
+            # Qualcomm Adreno 690.
+            "gpu": "qcom:043a",
             # Currently used to limit testing to the homogenous fleet. Can be
             # removed once the older experimental devices are decommissioned.
             "zone": "us-sfo",
