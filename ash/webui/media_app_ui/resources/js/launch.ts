@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,10 @@ import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import * as error_reporter from './error_reporter.js';
 import {DeleteFileMessage, EditInPhotosMessage, FileContext, IsFileArcWritableMessage, IsFileBrowserWritableMessage, LoadFilesMessage, Message, NavigateMessage, NotifyCurrentFileMessage, OpenAllowedFileMessage, OpenAllowedFileResponse, OpenFilesWithPickerMessage, OverwriteFileMessage, OverwriteViaFilePickerResponse, RenameFileMessage, RenameResult, RequestSaveFileMessage, RequestSaveFileResponse, SaveAsMessage, SaveAsResponse} from './message_types.js';
 import {mediaAppPageHandler} from './mojo_api_bootstrap.js';
+
+// TODO(b/319570394): Replace these.
+declare const blink: any;
+declare const Mojo: any;
 
 const DEFAULT_APP_ICON = 'app';
 const EMPTY_WRITE_ERROR_NAME = 'EmptyWriteError';
@@ -42,7 +46,7 @@ const VIDEO_EXTENSIONS = [
   '.webm',
 ];
 const PDF_EXTENSIONS = ['.pdf'];
-const OPEN_ACCEPT_ARGS = {
+const OPEN_ACCEPT_ARGS: {[index: string]: FilePickerAcceptType} = {
   'AUDIO': {
     description: loadTimeData.getString('fileFilterAudio'),
     accept: {'audio/*': AUDIO_EXTENSIONS},
@@ -72,22 +76,21 @@ const OPEN_ACCEPT_ARGS = {
 
 /**
  * Sort order for files in the navigation ring.
- * @enum
  */
-const SortOrder = {
+enum SortOrder {
   /**
    * Lexicographic (with natural number ordering): advancing goes "down" the
    * alphabet.
    */
-  A_FIRST: 1,
+  A_FIRST = 1,
   /**
    * Reverse lexicographic (with natural number ordering): advancing goes "up"
    * the alphabet.
    */
-  Z_FIRST: 2,
+  Z_FIRST = 2,
   /** By modified time: pressing "right" goes to older files. */
-  NEWEST_FIRST: 3,
-};
+  NEWEST_FIRST = 3,
+}
 
 /**
  * Wrapper around a file handle that allows the privileged context to arbitrate
@@ -95,43 +98,37 @@ const SortOrder = {
  * the file, `file` temporarily holds the object passed over postMessage, and
  * `handle` allows it to be reopened upon navigation. If an error occurred on
  * the last attempt to open `handle`, `lastError` holds the error name.
- * @typedef {{
- *     token: number,
- *     file: ?File,
- *     handle: !FileSystemFileHandle,
- *     lastError: (string|undefined),
- *     inCurrentDirectory: (boolean|undefined),
- * }}
  */
-let FileDescriptor;
+interface FileDescriptor {
+  token: number;
+  file: File|null;
+  handle: FileSystemFileHandle;
+  lastError?: string;
+  inCurrentDirectory?: boolean;
+}
 
 /**
  * Array of entries available in the current directory.
- *
- * @type {!Array<!FileDescriptor>}
  */
-const currentFiles = [];
+const currentFiles: FileDescriptor[] = [];
 
 /**
  * A variable for storing the name of the app, taken from the <title>. We store
  * it here since we mutate the title to show filename, but may want to restore
  * it in some circumstances i.e. returning to zero state.
  */
-let appTitle;
+let appTitle: string|undefined;
 
 /**
  * The current sort order.
  * TODO(crbug/414789): Match the file manager order when launched that way.
  * Note currently this is reassigned in tests.
- * @type {!SortOrder}
  */
 // eslint-disable-next-line prefer-const
 let sortOrder = SortOrder.A_FIRST;
 
 /**
  * Index into `currentFiles` of the current file.
- *
- * @type {number}
  */
 let entryIndex = -1;
 
@@ -141,24 +138,20 @@ let entryIndex = -1;
  * and start using the app then load other files in `loadOtherRelatedFiles()` we
  * need to make sure `loadOtherRelatedFiles` gets aborted if it is out of date
  * i.e. in interleaved launches.
- *
- * @type {number}
  */
 let globalLaunchNumber = -1;
 
 /**
  * Reference to the directory handle that contains the first file in the most
  * recent launch event.
- * @type {?FileSystemDirectoryHandle}
  */
-let currentDirectoryHandle = null;
+let currentDirectoryHandle: FileSystemDirectoryHandle|null = null;
 
 /**
  * Map of file tokens. Persists across new launch requests from the file
  * manager when chrome://media-app has not been closed.
- * @type {!Map<number, !FileSystemFileHandle>}
  */
-const tokenMap = new Map();
+const tokenMap = new Map<number, FileSystemFileHandle>();
 
 /**
  * A pipe through which we can send messages to the guest frame.
@@ -179,36 +172,34 @@ guestMessagePipe.registerHandler(Message.IFRAME_READY, () => {});
 
 /**
  * The type of icon to show for this app's window.
- * @type {string}
  */
 let appIconType = DEFAULT_APP_ICON;
 
 /**
  * Sets the app icon depending on the icon type and color theme.
- * @param {!MediaQueryList|!Event<!{matches: boolean}>}
- *     mediaQueryList Determines whether or not the icon should be in dark mode.
+ * @param mediaQueryList Determines whether or not the icon should be in dark
+ *     mode.
  */
-function updateAppIcon(mediaQueryList) {
+function updateAppIcon(mediaQueryList: MediaQueryList|
+                       (Event & {matches: boolean})) {
   // The default app icon does not have a separate dark variant.
   const isDark =
       mediaQueryList.matches && appIconType !== DEFAULT_APP_ICON ? '_dark' : '';
 
-  const icon = /** @type {!HTMLLinkElement} */ (
-      document.querySelector('link[rel=icon]'));
-  icon.href = `system_assets/${appIconType}_icon${isDark}.svg`;
+  const icon = document.querySelector<HTMLLinkElement>('link[rel=icon]');
+  icon!.href = `system_assets/${appIconType}_icon${isDark}.svg`;
 }
 
 const darkMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
-guestMessagePipe.registerHandler(Message.NOTIFY_CURRENT_FILE, message => {
-  const notifyMsg = /** @type {!NotifyCurrentFileMessage} */ (message);
+guestMessagePipe.registerHandler(Message.NOTIFY_CURRENT_FILE, (message) => {
+  const notifyMsg: NotifyCurrentFileMessage = message;
 
-  const title =
-      /** @type {!HTMLTitleElement} */ (document.querySelector('title'));
+  const title = document.querySelector('title')!;
   appTitle = appTitle || title.text;
   title.text = notifyMsg.name || appTitle;
 
-  appIconType = notifyMsg.type ? notifyMsg.type.split('/')[0] : 'file';
+  appIconType = notifyMsg.type ? notifyMsg.type.split('/')[0]! : 'file';
   if (title.text === appTitle) {
     appIconType = DEFAULT_APP_ICON;
   } else if (notifyMsg.type === 'application/pdf') {
@@ -233,11 +224,12 @@ guestMessagePipe.registerHandler(Message.TOGGLE_BROWSER_FULLSCREEN_MODE, () => {
   mediaAppPageHandler.toggleBrowserFullscreenMode();
 });
 
-guestMessagePipe.registerHandler(Message.OPEN_IN_SANDBOXED_VIEWER, message => {
-  window.open(
-      `./viewpdfhost.html?${new URLSearchParams(message)}`, '_blank',
-      'popup=1');
-});
+guestMessagePipe.registerHandler(
+    Message.OPEN_IN_SANDBOXED_VIEWER, (message) => {
+      window.open(
+          `./viewpdfhost.html?${new URLSearchParams(message)}`, '_blank',
+          'popup=1');
+    });
 
 guestMessagePipe.registerHandler(Message.RELOAD_MAIN_FRAME, () => {
   window.location.reload();
@@ -247,8 +239,8 @@ guestMessagePipe.registerHandler(Message.MAYBE_TRIGGER_PDF_HATS, () => {
   mediaAppPageHandler.maybeTriggerPdfHats();
 });
 
-guestMessagePipe.registerHandler(Message.EDIT_IN_PHOTOS, message => {
-  const editInPhotosMsg = /** @type {!EditInPhotosMessage} */ (message);
+guestMessagePipe.registerHandler(Message.EDIT_IN_PHOTOS, (message) => {
+  const editInPhotosMsg: EditInPhotosMessage = message;
   const fileHandle = fileHandleForToken(editInPhotosMsg.token);
 
   const transferToken = new blink.mojom.FileSystemAccessTransferTokenRemote(
@@ -258,9 +250,8 @@ guestMessagePipe.registerHandler(Message.EDIT_IN_PHOTOS, message => {
       transferToken, editInPhotosMsg.mimeType);
 });
 
-guestMessagePipe.registerHandler(Message.IS_FILE_ARC_WRITABLE, message => {
-  const writableMsg =
-      /** @type {!IsFileArcWritableMessage} */ (message);
+guestMessagePipe.registerHandler(Message.IS_FILE_ARC_WRITABLE, (message) => {
+  const writableMsg: IsFileArcWritableMessage = message;
   const fileHandle = fileHandleForToken(writableMsg.token);
 
   const transferToken = new blink.mojom.FileSystemAccessTransferTokenRemote(
@@ -269,41 +260,42 @@ guestMessagePipe.registerHandler(Message.IS_FILE_ARC_WRITABLE, message => {
   return mediaAppPageHandler.isFileArcWritable(transferToken);
 });
 
-guestMessagePipe.registerHandler(Message.IS_FILE_BROWSER_WRITABLE, message => {
-  const writableMsg =
-      /** @type {!IsFileBrowserWritableMessage} */ (message);
-  const fileHandle = fileHandleForToken(writableMsg.token);
+guestMessagePipe.registerHandler(
+    Message.IS_FILE_BROWSER_WRITABLE, (message) => {
+      const writableMsg: IsFileBrowserWritableMessage = message;
+      const fileHandle = fileHandleForToken(writableMsg.token);
 
-  const transferToken = new blink.mojom.FileSystemAccessTransferTokenRemote(
-      Mojo.getFileSystemAccessTransferToken(fileHandle));
+      const transferToken = new blink.mojom.FileSystemAccessTransferTokenRemote(
+          Mojo.getFileSystemAccessTransferToken(fileHandle));
 
-  return mediaAppPageHandler.isFileBrowserWritable(transferToken);
-});
+      return mediaAppPageHandler.isFileBrowserWritable(transferToken);
+    });
 
-guestMessagePipe.registerHandler(Message.OVERWRITE_FILE, async (message) => {
-  const overwrite = /** @type {!OverwriteFileMessage} */ (message);
-  const originalHandle = fileHandleForToken(overwrite.token);
-  try {
-    await saveBlobToFile(originalHandle, overwrite.blob);
-  } catch (/** @type {!DOMException|!Error} */ e) {
-    if (e.name === EMPTY_WRITE_ERROR_NAME) {
-      throw e;
-    }
-    // TODO(b/160843424): Collect UMA.
-    console.warn('Showing a picker due to', e);
-    return pickFileForFailedOverwrite(originalHandle.name, e.name, overwrite);
-  }
-});
+guestMessagePipe.registerHandler(
+    Message.OVERWRITE_FILE,
+    async(message): Promise<void|OverwriteViaFilePickerResponse> => {
+      const overwrite: OverwriteFileMessage = message;
+      const originalHandle = fileHandleForToken(overwrite.token);
+      try {
+        await saveBlobToFile(originalHandle, overwrite.blob);
+      } catch (e: any) {
+        if (e.name === EMPTY_WRITE_ERROR_NAME) {
+          throw e;
+        }
+        // TODO(b/160843424): Collect UMA.
+        console.warn('Showing a picker due to', e);
+        return pickFileForFailedOverwrite(
+            originalHandle.name, e.name, overwrite);
+      }
+    });
 
 /**
  * Shows a file picker and redirects a failed OverwriteFileMessage to the chosen
  * file. Updates app state and rebinds file tokens if the write is successful.
- * @param {string} fileName
- * @param {string} errorName
- * @param {!OverwriteFileMessage} overwrite
- * @return {!Promise<!OverwriteViaFilePickerResponse>}
  */
-async function pickFileForFailedOverwrite(fileName, errorName, overwrite) {
+async function pickFileForFailedOverwrite(
+    fileName: string, errorName: string,
+    overwrite: OverwriteFileMessage): Promise<OverwriteViaFilePickerResponse> {
   const fileHandle = await pickWritableFile(
       fileName, overwrite.blob.type, overwrite.token, []);
   await saveBlobToFile(fileHandle, overwrite.blob);
@@ -318,7 +310,7 @@ async function pickFileForFailedOverwrite(fileName, errorName, overwrite) {
 }
 
 guestMessagePipe.registerHandler(Message.DELETE_FILE, async (message) => {
-  const deleteMsg = /** @type {!DeleteFileMessage} */ (message);
+  const deleteMsg: DeleteFileMessage = message;
   const {handle, directory} =
       assertFileAndDirectoryMutable(deleteMsg.token, 'Delete');
 
@@ -343,7 +335,7 @@ guestMessagePipe.registerHandler(Message.DELETE_FILE, async (message) => {
 
 /** Handler to rename the currently focused file. */
 guestMessagePipe.registerHandler(Message.RENAME_FILE, async (message) => {
-  const renameMsg = /** @type {!RenameFileMessage} */ (message);
+  const renameMsg: RenameFileMessage = message;
   const {handle, directory} =
       assertFileAndDirectoryMutable(renameMsg.token, 'Rename');
 
@@ -363,9 +355,8 @@ guestMessagePipe.registerHandler(Message.RENAME_FILE, async (message) => {
       await directory.getFileHandle(renameMsg.newFilename, {create: true});
   // Copy file data over to the new file.
   const writer = await renamedFileHandle.createWritable();
-  const sink = /** @type {!WritableStream<*>} */ (writer);
-  const source =
-      /** @type {{stream: function(): !ReadableStream}} */ (originalFile);
+  const sink: WritableStream<any> = writer;
+  const source: {stream: () => ReadableStream} = originalFile;
   await source.stream().pipeTo(sink);
 
   // Remove the old file since the new file has all the data & the new name.
@@ -404,18 +395,18 @@ guestMessagePipe.registerHandler(Message.RENAME_FILE, async (message) => {
 });
 
 guestMessagePipe.registerHandler(Message.NAVIGATE, async (message) => {
-  const navigate = /** @type {!NavigateMessage} */ (message);
+  const navigate: NavigateMessage = message;
 
   await advance(navigate.direction, navigate.currentFileToken);
 });
 
 guestMessagePipe.registerHandler(Message.REQUEST_SAVE_FILE, async (message) => {
   const {suggestedName, mimeType, startInToken, accept} =
-      /** @type {!RequestSaveFileMessage} */ (message);
+      message as RequestSaveFileMessage;
   const handle =
       await pickWritableFile(suggestedName, mimeType, startInToken, accept);
-  /** @type {!RequestSaveFileResponse} */
-  const response = {
+
+  const response: RequestSaveFileResponse = {
     pickedFileContext: {
       token: generateToken(handle),
       file: assertCast(await handle.getFile()),
@@ -429,20 +420,19 @@ guestMessagePipe.registerHandler(Message.REQUEST_SAVE_FILE, async (message) => {
 });
 
 guestMessagePipe.registerHandler(Message.SAVE_AS, async (message) => {
-  const {blob, oldFileToken, pickedFileToken} =
-      /** @type {!SaveAsMessage} */ (message);
+  const {blob, oldFileToken, pickedFileToken} = message as SaveAsMessage;
   const oldFileDescriptor = currentFiles.find(fd => fd.token === oldFileToken);
-  /** @type {!FileDescriptor} */
-  const pickedFileDescriptor = {
+  const pickedHandle = assertCast(tokenMap.get(pickedFileToken));
+  const pickedFileDescriptor: FileDescriptor = {
     // We silently take over the old file's file descriptor by taking its token,
     // note we can be passed an undefined token if the file we are saving was
     // dragged into the media app.
     token: oldFileToken || tokenGenerator.next().value,
     file: null,
-    handle: tokenMap.get(pickedFileToken),
+    handle: pickedHandle,
   };
   const oldFileIndex = currentFiles.findIndex(fd => fd.token === oldFileToken);
-  tokenMap.set(pickedFileDescriptor.token, pickedFileDescriptor.handle);
+  tokenMap.set(pickedFileDescriptor.token, pickedHandle);
   // Give the old file a new token, if we couldn't find the old file we assume
   // its been deleted (or pasted/dragged into the media app) and skip this
   // step.
@@ -454,8 +444,8 @@ guestMessagePipe.registerHandler(Message.SAVE_AS, async (message) => {
     // that exists in `tokenMap`. Possibly even the `File` currently open. But
     // that's OK. E.g. the next overwrite-file request will just invoke
     // `saveBlobToFile` in the same way.
-    await saveBlobToFile(pickedFileDescriptor.handle, blob);
-  } catch (/** @type {!DOMException} */ e) {
+    await saveBlobToFile(pickedHandle, blob);
+  } catch (e: unknown) {
     // If something went wrong revert the token back to its original
     // owner so future file actions function correctly.
     if (oldFileDescriptor && oldFileToken) {
@@ -471,18 +461,16 @@ guestMessagePipe.registerHandler(Message.SAVE_AS, async (message) => {
   // Silently update entry index without triggering a reload of the media app.
   entryIndex = oldFileIndex + 1;
 
-  /** @type {!SaveAsResponse} */
-  const response = {newFilename: pickedFileDescriptor.handle.name};
+  const response: SaveAsResponse = {newFilename: pickedHandle.name};
   return response;
 });
 
 guestMessagePipe.registerHandler(Message.OPEN_FILES_WITH_PICKER, async (m) => {
-  const {startInToken, accept, isSingleFile} =
-      /** @type {!OpenFilesWithPickerMessage} */ (m);
-  const acceptTypes = accept.map(k => OPEN_ACCEPT_ARGS[k]).filter(a => !!a);
+  const {startInToken, accept, isSingleFile} = m as OpenFilesWithPickerMessage;
+  const acceptTypes = accept.map(k => OPEN_ACCEPT_ARGS[k]).filter(a => !!a) as
+      FilePickerAcceptType[];
 
-  /** @type {!FilePickerOptions|DraftFilePickerOptions} */
-  const options = {multiple: !isSingleFile};
+  const options: OpenFilePickerOptions = {multiple: !isSingleFile};
 
   if (startInToken) {
     options.startIn = fileHandleForToken(startInToken);
@@ -493,9 +481,8 @@ guestMessagePipe.registerHandler(Message.OPEN_FILES_WITH_PICKER, async (m) => {
     options.types = acceptTypes;
   }
 
-  const handles = await window.showOpenFilePicker(options);
-  /** @type {!Array<!FileDescriptor>} */
-  const newDescriptors = [];
+  const handles = await window.showOpenFilePicker!(options);
+  const newDescriptors: FileDescriptor[] = [];
   for (const handle of handles) {
     newDescriptors.push({
       token: generateToken(handle),
@@ -517,34 +504,31 @@ guestMessagePipe.registerHandler(Message.OPEN_FILES_WITH_PICKER, async (m) => {
 });
 
 guestMessagePipe.registerHandler(Message.OPEN_ALLOWED_FILE, async (message) => {
-  const {fileToken} = /** @type {!OpenAllowedFileMessage} */ (message);
+  const {fileToken} = message as OpenAllowedFileMessage;
   const handle = fileHandleForToken(fileToken);
-  /** @type {!OpenAllowedFileResponse} */
-  const response = {file: (await getFileFromHandle(handle)).file};
+  const response:
+      OpenAllowedFileResponse = {file: (await getFileFromHandle(handle)).file};
   return response;
 });
 
 /**
  * Shows a file picker to get a writable file.
- * @param {string} suggestedName
- * @param {string} mimeType
- * @param {number} startInToken,
- * @param {!Array<string>} accept
- * @return {!Promise<!FileSystemFileHandle>}
  */
-function pickWritableFile(suggestedName, mimeType, startInToken, accept) {
+function pickWritableFile(
+    suggestedName: string, mimeType: string, startInToken: number,
+    accept: string[]): Promise<FileSystemFileHandle> {
   const JPG_EXTENSIONS =
       ['.jpg', '.jpeg', '.jpe', '.jfif', '.jif', '.jfi', '.pjpeg', '.pjp'];
-  const ACCEPT_ARGS = {
+  const ACCEPT_ARGS: {[index: string]: FilePickerAcceptType} = {
     'JPG': {description: 'JPG', accept: {'image/jpeg': JPG_EXTENSIONS}},
     'PNG': {description: 'PNG', accept: {'image/png': ['.png']}},
     'WEBP': {description: 'WEBP', accept: {'image/webp': ['.webp']}},
     'PDF': {description: 'PDF', accept: {'application/pdf': ['.pdf']}},
   };
-  const acceptTypes = accept.map(k => ACCEPT_ARGS[k]).filter(a => !!a);
+  const acceptTypes = accept.map(k => ACCEPT_ARGS[k]).filter(a => !!a) as
+      FilePickerAcceptType[];
 
-  /** @type {!FilePickerOptions|DraftFilePickerOptions} */
-  const options = {
+  const options: SaveFilePickerOptions = {
     suggestedName,
   };
 
@@ -568,15 +552,13 @@ function pickWritableFile(suggestedName, mimeType, startInToken, accept) {
 
   // This may throw an error, but we can handle and recover from it on the
   // unprivileged side.
-  return window.showSaveFilePicker(options);
+  return window.showSaveFilePicker!(options);
 }
 
 /**
  * Generator instance for unguessable tokens.
- * @suppress {reportUnknownTypes} Typing of yield is broken (b/142881197).
- * @type {!Generator<number>}
  */
-const tokenGenerator = (function*() {
+const tokenGenerator: Generator<number> = (function*() {
   // To use the regular number type, tokens must stay below
   // Number.MAX_SAFE_INTEGER (2^53). So stick with ~33 bits. Note we can not
   // request more than 64kBytes from crypto.getRandomValues() at a time.
@@ -595,10 +577,8 @@ const tokenGenerator = (function*() {
 
 /**
  * Generate a file token, and persist the mapping to `handle`.
- * @param {!FileSystemFileHandle} handle
- * @return {number}
  */
-function generateToken(handle) {
+function generateToken(handle: FileSystemFileHandle): number {
   const token = tokenGenerator.next().value;
   tokenMap.set(token, handle);
   return token;
@@ -609,13 +589,11 @@ function generateToken(handle) {
  * mimetype could not be determined or if the file does not have a extension.
  * TODO(b/178986064): Remove this once we have a file system access metadata
  * api.
- * @param {string} filename
- * @return {?string}
  */
-function getMimeTypeFromFilename(filename) {
+function getMimeTypeFromFilename(filename: string): string|null {
   // This file extension to mime type map is adapted from
   // https://source.chromium.org/chromium/chromium/src/+/main:net/base/mime_util.cc;l=147;drc=51373c4ea13372d7711c59d9929b0be5d468633e
-  const mapping = {
+  const mapping: {[index: string]: string} = {
     'avif': 'image/avif',
     'crx': 'application/x-chrome-extension',
     'css': 'text/css',
@@ -708,8 +686,7 @@ function getMimeTypeFromFilename(filename) {
   if (fileParts.length < 2) {
     return null;
   }
-  const extension = fileParts[fileParts.length - 1].toLowerCase();
-  /** @type {(string|undefined)} */
+  const extension = fileParts[fileParts.length - 1]!.toLowerCase();
   const mimeType = mapping[extension];
   return mimeType !== undefined ? mimeType : null;
 }
@@ -721,10 +698,8 @@ function getMimeTypeFromFilename(filename) {
  * handle doesn't expire, but file system operations may fail later on.
  * One corner case, however, is when the initial file open fails and the token
  * gets replaced by `-1`. File operations all need to fail in that case.
- * @param {number} token
- * @return {!FileSystemFileHandle}
  */
-function fileHandleForToken(token) {
+function fileHandleForToken(token: number): FileSystemFileHandle {
   const handle = tokenMap.get(token);
   if (!handle) {
     throw new DOMException(`No handle for token(${token})`, 'NotFoundError');
@@ -735,11 +710,9 @@ function fileHandleForToken(token) {
 /**
  * Saves the provided blob the provided fileHandle. Assumes the handle is
  * writable.
- * @param {!FileSystemFileHandle} handle
- * @param {!Blob} data
- * @return {!Promise<undefined>}
  */
-async function saveBlobToFile(handle, data) {
+async function saveBlobToFile(
+    handle: FileSystemFileHandle, data: Blob): Promise<void> {
   if (data.size === 0) {
     // Bugs or error states in the app could cause an unexpected write of zero
     // bytes to a file, which could cause data loss. Reject it here.
@@ -757,10 +730,8 @@ async function saveBlobToFile(handle, data) {
  * Warns if a given exception is "uncommon". That is, one that the guest might
  * not provide UX for and should be dumped to console to give additional
  * context.
- * @param {!DOMException} e
- * @param {string} fileName
  */
-function warnIfUncommon(e, fileName) {
+function warnIfUncommon(e: DOMException, fileName: string) {
   // Errors we expect to be thrown in normal operation.
   const commonErrors = ['NotFoundError', 'NotAllowedError', 'NotAFile'];
   if (commonErrors.includes(e.name)) {
@@ -771,16 +742,15 @@ function warnIfUncommon(e, fileName) {
 
 /**
  * If `fd.file` is null, re-opens the file handle in `fd`.
- * @param {!FileDescriptor} fd
  */
-async function refreshFile(fd) {
+async function refreshFile(fd: FileDescriptor) {
   if (fd.file) {
     return;
   }
   fd.lastError = '';
   try {
     fd.file = (await getFileFromHandle(fd.handle)).file;
-  } catch (/** @type {!DOMException} */ e) {
+  } catch (e: any) {
     fd.lastError = e.name;
     // A failure here is only a problem for the "current" file (and that needs
     // to be handled in the unprivileged context), so ignore known errors.
@@ -790,9 +760,8 @@ async function refreshFile(fd) {
 
 /**
  * Loads the current file list into the guest.
- * @return {!Promise<undefined>}
  */
-async function sendFilesToGuest() {
+async function sendFilesToGuest(): Promise<void> {
   return sendSnapshotToGuest(
       [...currentFiles], globalLaunchNumber);  // Shallow copy.
 }
@@ -801,10 +770,8 @@ async function sendFilesToGuest() {
  * Converts a file descriptor from `currentFiles` into a `FileContext` used by
  * the LoadFilesMessage. Closure forgets that some fields may be missing without
  * naming the type explicitly on the signature here.
- * @param {!FileDescriptor} fd
- * @return {!FileContext}
  */
-function fileDescriptorToFileContext(fd) {
+function fileDescriptorToFileContext(fd: FileDescriptor): FileContext {
   // TODO(b/163285659): Properly detect files that can't be renamed/deleted.
   return {
     token: fd.token,
@@ -822,13 +789,10 @@ function fileDescriptorToFileContext(fd) {
  * `globalLaunchNumber` to ensure their deferred load is still relevant when it
  * finishes processing. Other code paths that call `sendSnapshotToGuest()` don't
  * have to.
- * @param {!Array<!FileDescriptor>} snapshot
- * @param {number} localLaunchNumber
- * @param {boolean=} extraFiles
- * @return {!Promise<undefined>}
  */
 async function sendSnapshotToGuest(
-    snapshot, localLaunchNumber, extraFiles = false) {
+    snapshot: FileDescriptor[], localLaunchNumber: number,
+    extraFiles: boolean = false): Promise<void> {
   const focusIndex = entryIndex;
 
   // Attempt to reopen the focus file only. In future we might also open
@@ -843,9 +807,9 @@ async function sendSnapshotToGuest(
   }
   if (targetIndex >= 0) {
     const descriptor = snapshot[targetIndex];
-    await refreshFile(descriptor);
+    await refreshFile(descriptor!);
     await refreshLoadRequiredAssociatedFiles(
-        snapshot, descriptor.handle.name, extraFiles);
+        snapshot, descriptor!.handle.name, extraFiles);
     if (extraFiles) {
       snapshot.shift();
     }
@@ -854,8 +818,7 @@ async function sendSnapshotToGuest(
   if (localLaunchNumber !== globalLaunchNumber) {
     return;
   }
-  /** @type {!LoadFilesMessage} */
-  const loadFilesMessage = {
+  const loadFilesMessage: LoadFilesMessage = {
     currentFileIndex: focusIndex,
     // Handle can't be passed through a message pipe.
     files: snapshot.map(fileDescriptorToFileContext),
@@ -869,8 +832,7 @@ async function sendSnapshotToGuest(
   }
 
   // Wait for the signal from first_message_received.js before proceeding.
-  await /** @type {{firstMessageReceived: !Promise<*>}} */ (window)
-      .firstMessageReceived;
+  await window.firstMessageReceived;
 
   if (extraFiles) {
     await guestMessagePipe.sendMessage(
@@ -883,12 +845,10 @@ async function sendSnapshotToGuest(
 /**
  * Throws an error if the file or directory handles don't exist or the token for
  * the file to be mutated is incorrect.
- * @param {number} editFileToken
- * @param {string} operation
- * @return {{handle: !FileSystemFileHandle, directory:
- *     !FileSystemDirectoryHandle}}
  */
-function assertFileAndDirectoryMutable(editFileToken, operation) {
+function assertFileAndDirectoryMutable(
+    editFileToken: number, operation: string):
+    {handle: FileSystemFileHandle, directory: FileSystemDirectoryHandle} {
   if (!currentDirectoryHandle) {
     throw new Error(`${operation} failed. File without launch directory.`);
   }
@@ -902,12 +862,10 @@ function assertFileAndDirectoryMutable(editFileToken, operation) {
 /**
  * Returns whether `handle` is in `currentDirectoryHandle`. Prevents mutating a
  * file that doesn't exist.
- * @param {!FileSystemFileHandle} handle
- * @return {!Promise<boolean>}
  */
-async function isHandleInCurrentDirectory(handle) {
-  /** @type {?File} */
-  const file = await maybeGetFileFromFileHandle(handle);
+async function isHandleInCurrentDirectory(handle: FileSystemFileHandle):
+    Promise<boolean> {
+  const file: File|null = await maybeGetFileFromFileHandle(handle);
   // If we were unable to get a file from the handle it must not be in the
   // current directory anymore.
   if (!file) {
@@ -927,29 +885,25 @@ async function isHandleInCurrentDirectory(handle) {
 
 /**
  * Returns if a`filename` exists in `currentDirectoryHandle`.
- * @param {string} filename
- * @return {!Promise<boolean>}
  */
-async function filenameExistsInCurrentDirectory(filename) {
+async function filenameExistsInCurrentDirectory(filename: string):
+    Promise<boolean> {
   return (await getFileHandleFromCurrentDirectory(filename, true)) !== null;
 }
 
 /**
  * Returns the `FileSystemFileHandle` for `filename` if it exists in the current
  * directory, otherwise null.
- * @param {string} filename
- * @param {boolean=} suppressError
- * @return {!Promise<!FileSystemHandle|null>}
  */
 async function getFileHandleFromCurrentDirectory(
-    filename, suppressError = false) {
+    filename: string, suppressError = false): Promise<FileSystemHandle|null> {
   if (!currentDirectoryHandle) {
     return null;
   }
   try {
     return (
         await currentDirectoryHandle.getFileHandle(filename, {create: false}));
-  } catch (/** @type {!DOMException|!Error} */ e) {
+  } catch (e: any) {
     if (!suppressError) {
       // Some filenames (e.g. "thumbs.db") can't be opened (or deleted) by
       // filename. TypeError doesn't give a good error message in the app, so
@@ -973,16 +927,15 @@ async function getFileHandleFromCurrentDirectory(
  * Gets a file from a handle received via the fileHandling API. Only handles
  * expected to be files should be passed to this function. Throws a DOMException
  * if opening the file fails - usually because the handle is stale.
- * @param {?FileSystemHandle} fileSystemHandle
- * @return {!Promise<{file: !File, handle: !FileSystemFileHandle}>}
  */
-async function getFileFromHandle(fileSystemHandle) {
+async function getFileFromHandle(fileSystemHandle: FileSystemHandle):
+    Promise<{file: File, handle: FileSystemFileHandle}> {
   if (!fileSystemHandle || fileSystemHandle.kind !== 'file') {
     // Invent our own exception for this corner case. It might happen if a file
     // is deleted and replaced with a directory with the same name.
     throw new DOMException('Not a file.', 'NotAFile');
   }
-  const handle = /** @type {!FileSystemFileHandle} */ (fileSystemHandle);
+  const handle = fileSystemHandle as FileSystemFileHandle;
   const file = await handle.getFile();  // Note: throws DOMException.
   return {file, handle};
 }
@@ -991,15 +944,13 @@ async function getFileFromHandle(fileSystemHandle) {
  * Calls getFile on `handle` and gracefully returns null if it encounters a
  * NotFoundError, which can happen if the file is no longer in the current
  * directory due to being moved or deleted.
- * @param {!FileSystemFileHandle} handle
- * @return {!Promise<?File>}
  */
-async function maybeGetFileFromFileHandle(handle) {
-  /** @type {?File} */
-  let file;
+async function maybeGetFileFromFileHandle(handle: FileSystemFileHandle):
+    Promise<File|null> {
+  let file: File|null;
   try {
     file = await handle.getFile();
-  } catch (/** @type {!DOMException} */ e) {
+  } catch (e: any) {
     // NotFoundError can be thrown if `handle` is no longer in the directory we
     // have access to.
     if (e.name === 'NotFoundError') {
@@ -1014,49 +965,39 @@ async function maybeGetFileFromFileHandle(handle) {
 
 /**
  * Returns whether `fileName` is a file potentially containing subtitles.
- * @param {string} fileName
- * @return {boolean}
  */
-function isSubtitleFile(fileName) {
+function isSubtitleFile(fileName: string): boolean {
   return /\.vtt$/.test(fileName.toLowerCase());
 }
 
 /**
  * Returns whether `fileName` is a file likely to be a video.
- * @param {string} fileName
- * @return {boolean}
  */
-function isVideoFile(fileName) {
-  return /^video\//.test(getMimeTypeFromFilename(fileName));
+function isVideoFile(fileName: string): boolean {
+  return /^video\//.test(getMimeTypeFromFilename(fileName) ?? '');
 }
 
 /**
  * Returns whether `fileName` is a file likely to be an image.
- * @param {string} fileName
- * @return {boolean}
  */
-function isImageFile(fileName) {
+function isImageFile(fileName: string): boolean {
   // Detect RAW images, which often don't have a mime type set.
   return /\.(arw|cr2|dng|nef|nrw|orf|raf|rw2)$/.test(fileName.toLowerCase()) ||
-      /^image\//.test(getMimeTypeFromFilename(fileName));
+      /^image\//.test(getMimeTypeFromFilename(fileName) ?? '');
 }
 
 /**
  * Returns whether `fileName` is a file likely to be audio.
- * @param {string} fileName
- * @return {boolean}
  */
-function isAudioFile(fileName) {
-  return /^audio\//.test(getMimeTypeFromFilename(fileName));
+function isAudioFile(fileName: string): boolean {
+  return /^audio\//.test(getMimeTypeFromFilename(fileName) ?? '');
 }
 
 /**
  * Returns whether fileName is the filename for a video or image, or a related
  * file type (e.g. video subtitles).
- * @param {string} fileName
- * @return {boolean}
  */
-function isVideoOrImage(fileName) {
+function isVideoOrImage(fileName: string): boolean {
   return isImageFile(fileName) || isVideoFile(fileName) ||
       isSubtitleFile(fileName);
 }
@@ -1065,12 +1006,11 @@ function isVideoOrImage(fileName) {
  * Returns whether `siblingFile` is related to `focusFile`. That is, whether
  * they should be traversable from one another. Usually this means they share a
  * similar (non-empty) MIME type.
- * @param {!File} focusFile The file selected by the user.
- * @param {string} siblingFileName Filename for a file in the same directory as
+ * @param focusFile The file selected by the user.
+ * @param siblingFileName Filename for a file in the same directory as
  *     `focusFile`.
- * @return {boolean}
  */
-function isFileRelated(focusFile, siblingFileName) {
+function isFileRelated(focusFile: File, siblingFileName: string): boolean {
   const siblingFileType = getMimeTypeFromFilename(siblingFileName);
   return focusFile.name === siblingFileName ||
       (!!focusFile.type && !!siblingFileType &&
@@ -1080,39 +1020,34 @@ function isFileRelated(focusFile, siblingFileName) {
 
 /**
  * Enum like return value of `processOtherFilesInDirectory()`.
- * @enum {number}
  */
-const ProcessOtherFilesResult = {
+enum ProcessOtherFilesResult {
   // Newer load in progress, can abort loading these files.
-  ABORT: -2,
+  ABORT = -2,
   // The focusFile is missing, treat this as a normal load.
-  FOCUS_FILE_MISSING: -1,
+  FOCUS_FILE_MISSING = -1,
   // The focusFile is present, load these files as extra files.
-  FOCUS_FILE_RELEVANT: 0,
-};
+  FOCUS_FILE_RELEVANT = 0,
+}
 
 /**
  * Loads related files the working directory to initialize file iteration
  * according to the type of the opened file. If `globalLaunchNumber` changes
  * (i.e. another launch occurs), this will abort early and not change
  * `currentFiles`.
- * @param {!FileSystemDirectoryHandle} directory
- * @param {?File} focusFile
- * @param {number} localLaunchNumber
- * @return {!Promise<!ProcessOtherFilesResult>}
  */
 async function processOtherFilesInDirectory(
-    directory, focusFile, localLaunchNumber) {
+    directory: FileSystemDirectoryHandle, focusFile: File|null,
+    localLaunchNumber: number): Promise<ProcessOtherFilesResult> {
   if (!focusFile || !focusFile.name) {
     return ProcessOtherFilesResult.ABORT;
   }
 
-  /** @type {!Array<!FileDescriptor>} */
-  let relatedFiles = [];
+  let relatedFiles: FileDescriptor[] = [];
   // TODO(b/158149714): Clear out old tokens as well? Care needs to be taken to
   // ensure any file currently open with unsaved changes can still be saved.
   try {
-    for await (const /** !FileSystemHandle */ handle of directory.values()) {
+    for await (const handle of directory.values()) {
       if (localLaunchNumber !== globalLaunchNumber) {
         // Abort, another more up to date launch in progress.
         return ProcessOtherFilesResult.ABORT;
@@ -1121,7 +1056,7 @@ async function processOtherFilesInDirectory(
       if (handle.kind !== 'file') {
         continue;
       }
-      const fileHandle = /** @type {!FileSystemFileHandle} */ (handle);
+      const fileHandle = handle as FileSystemFileHandle;
       // Only allow traversal of related file types.
       if (isFileRelated(focusFile, handle.name)) {
         // Note: The focus file will be processed here again but will be skipped
@@ -1135,7 +1070,7 @@ async function processOtherFilesInDirectory(
         });
       }
     }
-  } catch (e) {
+  } catch (e: unknown) {
     console.warn(e, '(failed to traverse directory)');
     // It's unlikely traversal can "resume", but try to continue with anything
     // obtained so far.
@@ -1173,10 +1108,8 @@ async function processOtherFilesInDirectory(
 
 /**
  * Sorts the given `files` by `sortOrder`.
- * @param {!Array<!FileDescriptor>} files
- * @private
  */
-async function sortFiles(files) {
+async function sortFiles(files: FileDescriptor[]) {
   if (sortOrder === SortOrder.NEWEST_FIRST) {
     // If we are sorting by modification time we need to have the actual File
     // object available.
@@ -1187,7 +1120,7 @@ async function sortFiles(files) {
       // no way to get modified time without calling getFile.
       try {
         descriptor.file = (await getFileFromHandle(descriptor.handle)).file;
-      } catch (/** @type {!DOMException} */ e) {
+      } catch (e: any) {
         warnIfUncommon(e, descriptor.handle.name);
       }
     }
@@ -1227,13 +1160,10 @@ async function sortFiles(files) {
  * Loads related files in the working directory and sends them to the guest. If
  * the focus file (currentFiles[0]) is no longer relevant i.e. is has been
  * deleted, we load files as usual.
- * @param {!FileSystemDirectoryHandle} directory
- * @param {?File} focusFile
- * @param {?FileSystemFileHandle} focusHandle
- * @param {number} localLaunchNumber
  */
 async function loadOtherRelatedFiles(
-    directory, focusFile, focusHandle, localLaunchNumber) {
+    directory: FileSystemDirectoryHandle, focusFile: File|null,
+    _focusHandle: FileSystemFileHandle|null, localLaunchNumber: number) {
   const processResult = await processOtherFilesInDirectory(
       directory, focusFile, localLaunchNumber);
   if (localLaunchNumber !== globalLaunchNumber ||
@@ -1250,10 +1180,10 @@ async function loadOtherRelatedFiles(
 
 /**
  * Sets state for the files opened in the current directory.
- * @param {!FileSystemDirectoryHandle} directory
- * @param {{file: !File, handle: !FileSystemFileHandle}} focusFile
  */
-function setCurrentDirectory(directory, focusFile) {
+function setCurrentDirectory(
+    directory: FileSystemDirectoryHandle,
+    focusFile: {file: File, handle: FileSystemFileHandle}) {
   // Load currentFiles into the guest.
   currentFiles.length = 0;
   currentFiles.push({
@@ -1270,10 +1200,8 @@ function setCurrentDirectory(directory, focusFile) {
  * Returns a filename associated with `focusFileName` that may be required to
  * properly load the file. The file might not exist.
  * TODO(b/175099007): Support multiple associated files.
- * @param {string} focusFileName
- * @return {string}
  */
-function requiredAssociatedFileName(focusFileName) {
+function requiredAssociatedFileName(focusFileName: string): string {
   // Subtitles must be identified for the initial load to be properly attached.
   if (!isVideoFile(focusFileName)) {
     return '';
@@ -1285,10 +1213,9 @@ function requiredAssociatedFileName(focusFileName) {
 
 /**
  * Adds file handles for associated files to the set of launch files.
- * @param {!FileSystemDirectoryHandle} directory
- * @param {string} focusFileName
  */
-async function detectLoadRequiredAssociatedFiles(directory, focusFileName) {
+async function detectLoadRequiredAssociatedFiles(
+    directory: FileSystemDirectoryHandle, focusFileName: string) {
   const vttFileName = requiredAssociatedFileName(focusFileName);
   if (!vttFileName) {
     return;
@@ -1301,7 +1228,7 @@ async function detectLoadRequiredAssociatedFiles(directory, focusFileName) {
       handle: vttFileHandle,
       inCurrentDirectory: true,
     });
-  } catch (e) {
+  } catch (e: unknown) {
     // Do nothing if not found or not permitted.
   }
 }
@@ -1309,19 +1236,17 @@ async function detectLoadRequiredAssociatedFiles(directory, focusFileName) {
 /**
  * Refreshes the File object for all file handles associated with the focus
  * file.
- * @param {!Array<!FileDescriptor>} snapshot
- * @param {string} focusFileName
- * @param {boolean} forExtraFilesMessage
  */
 async function refreshLoadRequiredAssociatedFiles(
-    snapshot, focusFileName, forExtraFilesMessage) {
+    snapshot: FileDescriptor[], focusFileName: string,
+    forExtraFilesMessage: boolean) {
   const vttFileName = requiredAssociatedFileName(focusFileName);
   if (!vttFileName) {
     return;
   }
   const index = snapshot.findIndex(d => d.handle.name === vttFileName);
   if (index >= 0) {
-    await refreshFile(snapshot[index]);
+    await refreshFile(snapshot[index]!);
     // In the extra files message, it's necessary to remove the vtt file from
     // the snapshot to avoid it being added again in the receiver.
     if (forExtraFilesMessage) {
@@ -1333,19 +1258,24 @@ async function refreshLoadRequiredAssociatedFiles(
 /**
  * Launch the media app with the files in the provided directory, using `handle`
  * as the initial launch entry.
- * @param {!FileSystemDirectoryHandle} directory
- * @param {!FileSystemHandle} handle
  */
-async function launchWithDirectory(directory, handle) {
+async function launchWithDirectory(
+    directory: FileSystemDirectoryHandle, handle: FileSystemHandle) {
   const localLaunchNumber = ++globalLaunchNumber;
 
   let asFile;
   try {
     asFile = await getFileFromHandle(handle);
-  } catch (/** @type {!DOMException} */ e) {
+  } catch (e: any) {
     console.warn(`${handle.name}: ${e.message}`);
     sendSnapshotToGuest(
-        [{token: -1, file: null, handle, error: e.name}], localLaunchNumber);
+        [{
+          token: -1,
+          file: null,
+          handle: handle as FileSystemFileHandle,
+          lastError: e.name,
+        }],
+        localLaunchNumber);
     return;
   }
   // Load currentFiles into the guest.
@@ -1364,14 +1294,14 @@ async function launchWithDirectory(directory, handle) {
 
 /**
  * Launch the media app with the selected files.
- * @param {!FileSystemDirectoryHandle} directory
- * @param {!Array<?FileSystemHandle>} handles
  */
-async function launchWithMultipleSelection(directory, handles) {
+async function launchWithMultipleSelection(
+    directory: FileSystemDirectoryHandle,
+    handles: Array<FileSystemHandle|null|undefined>) {
   currentFiles.length = 0;
   for (const handle of handles) {
     if (handle && handle.kind === 'file') {
-      const fileHandle = /** @type {!FileSystemFileHandle} */ (handle);
+      const fileHandle = handle as FileSystemFileHandle;
       currentFiles.push({
         token: generateToken(fileHandle),
         file: null,  // Just let sendSnapshotToGuest() "refresh" it.
@@ -1389,12 +1319,12 @@ async function launchWithMultipleSelection(directory, handles) {
 /**
  * Advance to another file.
  *
- * @param {number} direction How far to advance (e.g. +/-1).
- * @param {number=} currentFileToken The token of the file that
+ * @param direction How far to advance (e.g. +/-1).
+ * @param currentFileToken The token of the file that
  *     direction is in reference to. If unprovided it's assumed that
  *     currentFiles[entryIndex] is the current file.
  */
-async function advance(direction, currentFileToken) {
+async function advance(direction: number, currentFileToken?: number) {
   let currIndex = entryIndex;
   if (currentFileToken) {
     const fileIndex =
@@ -1416,10 +1346,8 @@ async function advance(direction, currentFileToken) {
 /**
  * The launchQueue consumer. This returns a promise to help tests, but the file
  * handling API will ignore it.
- * @param {?LaunchParams} params
- * @return {!Promise<undefined>}
  */
-async function launchConsumer(params) {
+async function launchConsumer(params?: LaunchParams): Promise<void> {
   // The MediaApp sets `include_launch_directory = true` in its SystemAppInfo
   // struct compiled into Chrome. That means files[0] is guaranteed to be a
   // directory, with remaining launch files following it. Validate that this is
@@ -1433,8 +1361,7 @@ async function launchConsumer(params) {
     console.error('Invalid launch: files[0] is not a directory: ', params);
     return;
   }
-  const directory =
-      /** @type {!FileSystemDirectoryHandle} */ (params.files[0]);
+  const directory = params.files[0] as FileSystemDirectoryHandle;
   // With a single file selected, that file is the focus file. Otherwise, there
   // is no inherent focus file.
   const maybeFocusEntry = assertCast(params.files[1]);
@@ -1446,13 +1373,13 @@ async function launchConsumer(params) {
   if (params.files.length === 2 && !isAudioFile(maybeFocusEntry.name)) {
     try {
       await launchWithDirectory(directory, maybeFocusEntry);
-    } catch (e) {
+    } catch (e: unknown) {
       console.error(e, '(launchWithDirectory aborted)');
     }
   } else {
     try {
       await launchWithMultipleSelection(directory, params.files.slice(1));
-    } catch (e) {
+    } catch (e: unknown) {
       console.error(e, '(launchWithMultipleSelection aborted)');
     }
   }
@@ -1462,9 +1389,8 @@ async function launchConsumer(params) {
  * Wrapper for the launch consumer to ensure it doesn't return a Promise, nor
  * propagate exceptions. Tests will want to target `launchConsumer` directly so
  * that they can properly await launch results.
- * @param {?LaunchParams} params
  */
-function wrappedLaunchConsumer(params) {
+function wrappedLaunchConsumer(params?: LaunchParams) {
   launchConsumer(params).catch(e => {
     console.error(e, '(launch aborted)');
   });
@@ -1484,9 +1410,8 @@ function installLaunchHandler() {
 installLaunchHandler();
 
 // Make sure the guest frame has focus.
-/** @type {!Element} */
-const guest = assertCast(
-    document.querySelector('iframe[src^="chrome-untrusted://media-app"]'));
+const guest = assertCast(document.querySelector<HTMLIFrameElement>(
+    'iframe[src^="chrome-untrusted://media-app"]'));
 guest.addEventListener('load', () => {
   guest.focus();
 });
@@ -1514,14 +1439,14 @@ export const TEST_ONLY = {
   error_reporter,
   getGlobalLaunchNumber: () => globalLaunchNumber,
   incrementLaunchNumber: () => ++globalLaunchNumber,
-  setCurrentDirectoryHandle: d => {
+  setCurrentDirectoryHandle: (d: FileSystemDirectoryHandle|null) => {
     currentDirectoryHandle = d;
   },
-  setSortOrder: s => {
+  setSortOrder: (s: SortOrder) => {
     sortOrder = s;
   },
   getEntryIndex: () => entryIndex,
-  setEntryIndex: i => {
+  setEntryIndex: (i: number) => {
     entryIndex = i;
   },
 };

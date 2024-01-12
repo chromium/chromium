@@ -76,6 +76,7 @@ optimize_webui("launch_rollup") {
   js_module_in_files = [ "launch.js" ]
   input = rebase_path(stage_folder, root_build_dir)
   deps = [
+    ":stage_compiled_ts",
     ":stage_generated",
     ":stage_static",
     "//ash/webui/system_apps/public/js:build_ts",
@@ -128,29 +129,10 @@ group("closure_compile") {
 
 js_type_check("closure_compile_index") {
   closure_flags = media_closure_flags
-  deps = [ ":launch" ]
-}
-
-js_library("app_context_test_support") {
-}
-
-js_library("launch") {
-  externs_list = [
-    "//ash/webui/web_applications/externs/file_handling.externs.js",
-    "//ash/webui/web_applications/externs/file_system_access.externs.js",
-    "//ash/webui/system_apps/public/js/message_pipe.externs.js",
-    "dom_draft.externs.js",
-
-    # The privileged context can't access the app, but shares struct definitions
-    # passed over postMessage.
-    "media_app.externs.js",
-  ]
   deps = [
-    ":app_context_test_support",
     ":error_reporter",
     ":message_types",
     ":mojo_api_bootstrap",
-    "//ash/webui/common/resources:load_time_data.m",
   ]
 }
 

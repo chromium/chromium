@@ -21,7 +21,7 @@ interface FilePickerAcceptType {
 }
 
 interface FilePickerOptions {
-  types: FilePickerAcceptType[];
+  types?: FilePickerAcceptType[];
   excludeAcceptAllOption?: boolean;
   id?: string;
   startIn?: string|FileSystemHandle;
@@ -31,16 +31,35 @@ interface OpenFilePickerOptions extends FilePickerOptions {
   multiple?: boolean;
 }
 
+interface SaveFilePickerOptions extends FilePickerOptions {
+  suggestedName?: string;
+}
+
+type LaunchConsumer = (params: LaunchParams) => void;
+
+interface LaunchQueue {
+  setConsumer(consumer: LaunchConsumer): void;
+}
+
+interface FileSystemDirectoryHandle {
+  values(): AsyncIterable<FileSystemHandle>;
+}
+
 interface Window {
   readonly launchQueue: LaunchQueue;
+
+  // Added to window by first_message_received.js which cannot be a JS module.
+  readonly firstMessageReceived: Promise<any>;
 
   // These are cleared in the untrusted context to prevent accidental usage.
   // (They are guaranteed to fail).
   showOpenFilePicker: null|
-      ((options: OpenFilePickerOptions) =>
-           Promise<FileSystemFileHandle|FileSystemFileHandle[]>);
+      ((options: OpenFilePickerOptions) => Promise<FileSystemFileHandle[]>);
   showSaveFilePicker: null|
-      ((options: FilePickerOptions) => Promise<FileSystemFileHandle>);
+      ((options: SaveFilePickerOptions) => Promise<FileSystemFileHandle>);
   showDirectoryPicker: null|
       ((options: FilePickerOptions) => Promise<FileSystemDirectoryHandle>);
+
+  // Added to window by launch.js for integration testing.
+  advance: (direction: number, currentFileToken?: number) => void;
 }

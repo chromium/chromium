@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,11 +13,11 @@
 // integration. These can't be injected because errors on lines of injected code
 // do not go to the error handlers installed on window in the real app context.
 window.addEventListener('simulate-type-error-for-test', event => {
-  /** @type {{notAFunction: function()}} */ (event).notAFunction();
+  (event as any).notAFunction();
 });
 
-window.addEventListener('simulate-unhandled-rejection-for-test', event => {
-  new Promise(resolve => {
+window.addEventListener('simulate-unhandled-rejection-for-test', _event => {
+  new Promise(_resolve => {
     const error = new Error('fake_throw');
     error.name = 'FakeErrorName';
     throw error;
@@ -25,8 +25,8 @@ window.addEventListener('simulate-unhandled-rejection-for-test', event => {
 });
 
 window.addEventListener(
-    'simulate-unhandled-rejection-with-dom-exception-for-test', event => {
-      new Promise(resolve => {
+    'simulate-unhandled-rejection-with-dom-exception-for-test', _event => {
+      new Promise(_resolve => {
         throw new DOMException('Not a file.', 'NotAFile');
       });
     });

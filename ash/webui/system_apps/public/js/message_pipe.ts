@@ -55,7 +55,7 @@ function serializeError(error: Partial<GenericErrorResponse>):
  * pipe receives a message.
  */
 type MessageHandler = (message: any) =>
-    object|undefined|Promise<object|undefined>;
+    object|undefined|void|Promise<object|undefined|void>;
 
 /**
  * Creates a new JavaScript native Promise and captures its resolve and reject
@@ -291,7 +291,7 @@ export class MessagePipe {
   private async callHandlerForMessageType_(
       messageType: string, message: object, messageId: number): Promise<void> {
     const {RESPONSE_TYPE, ERROR_TYPE} = ReservedMessageTypes;
-    let response: object|undefined;
+    let response: object|undefined|void;
     let error: Partial<GenericErrorResponse>|null = null;
     let sawError = false;
 
@@ -356,7 +356,7 @@ export class MessagePipe {
   }
 
   private postToTarget_(
-      messageType: string, message: object|undefined, messageId: number) {
+      messageType: string, message: object|undefined|void, messageId: number) {
     const messageWrapper: MessageData = {
       messageId,
       type: messageType,
