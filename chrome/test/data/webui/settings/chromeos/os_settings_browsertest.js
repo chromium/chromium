@@ -90,8 +90,6 @@ TEST_F('OSSettingsDevicePageRevampTest', 'AllJsTests', () => {
  ['CellularNetworksList', 'cellular_networks_list_test.js'],
  ['CellularRoamingToggleButton', 'cellular_roaming_toggle_button_test.js'],
  ['EsimRemoveProfileDialog', 'esim_remove_profile_dialog_test.js'],
- ['GuestOsSharedPaths', 'guest_os/guest_os_shared_paths_test.js'],
- ['GuestOsSharedUsbDevices', 'guest_os/guest_os_shared_usb_devices_test.js'],
  [
    'InternetPage', 'internet_page_tests.js', {
      enabled: [
@@ -101,51 +99,6 @@ TEST_F('OSSettingsDevicePageRevampTest', 'AllJsTests', () => {
        'ash::features::kPasspointARCSupport',
      ]
    }
- ],
- ['KerberosPage', 'kerberos_page/kerberos_page_test.js'],
- [
-   'KerberosPageKerberosAccountsSubpage',
-   'kerberos_page/kerberos_accounts_subpage_test.js',
- ],
- [
-   'KerberosPageKerberosAddAccountDialog',
-   'kerberos_page/kerberos_add_account_dialog_test.js',
- ],
- [
-   'KeyboardShortcutBanner',
-   'keyboard_shortcut_banner/keyboard_shortcut_banner_test.js'
- ],
- ['LockScreenSubpage', 'lock_screen_subpage_test.js'],
- [
-   'MainPageContainer',
-   'main_page_container/main_page_container_test.js',
-   {
-     disabled: [
-       'ash::features::kOsSettingsRevampWayfinding',
-     ],
-   },
- ],
- [
-   'MainPageContainerRevamp',
-   'main_page_container/main_page_container_test.js',
-   {
-     enabled: [
-       'ash::features::kOsSettingsRevampWayfinding',
-     ],
-   },
- ],
- [
-   'MainPageContainerPageDisplayer',
-   'main_page_container/page_displayer_test.js',
- ],
- [
-   'MainPageContainerRouteNavigation',
-   'main_page_container/route_navigation_test.js',
-   {
-     enabled: [
-       'ash::features::kOsSettingsRevampWayfinding',
-     ],
-   },
  ],
  [
    'MultidevicePage',

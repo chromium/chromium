@@ -544,6 +544,14 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, InternetPageCellularSetupDialog) {
   RunSettingsTest("internet_page/cellular_setup_dialog_test.js");
 }
 
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, GuestOsSharedPaths) {
+  RunSettingsTest("guest_os/guest_os_shared_paths_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, GuestOsSharedUsbDevices) {
+  RunSettingsTest("guest_os/guest_os_shared_usb_devices_test.js");
+}
+
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
                        InternetPageEsimInstallErrorDialog) {
   RunSettingsTest("internet_page/esim_install_error_dialog_test.js");
@@ -679,4 +687,43 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
   RunSettingsTest("internet_page/tether_connection_dialog_test.js");
 }
 
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, KerberosPage) {
+  RunSettingsTest("kerberos_page/kerberos_page_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       KerberosPageKerberosAccountsSubpage) {
+  RunSettingsTest("kerberos_page/kerberos_accounts_subpage_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       KerberosPageKerberosAddAccountDialog) {
+  RunSettingsTest("kerberos_page/kerberos_add_account_dialog_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, KeyboardShortcutBanner) {
+  RunSettingsTest("keyboard_shortcut_banner/keyboard_shortcut_banner_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, LockScreenSubpage) {
+  RunSettingsTest("lock_screen_subpage_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampDisabled, MainPageContainer) {
+  RunSettingsTest("main_page_container/main_page_container_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled,
+                       MainPageContainerRevamp) {
+  RunSettingsTest("main_page_container/main_page_container_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, MainPageContainerPageDisplayer) {
+  RunSettingsTest("main_page_container/page_displayer_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled,
+                       MainPageContainerRouteNavigation) {
+  RunSettingsTest("main_page_container/route_navigation_test.js");
+}
 }  // namespace ash::settings
