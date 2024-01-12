@@ -198,6 +198,14 @@ void LoginShelfView::OnRequestShutdownCancelled() {
 }
 
 void LoginShelfView::RequestShutdown() {
+  // If the shutdown bubble already on the screen, on the button click
+  // the bubble should be closed to match the right hand side (tray)
+  // behavior.
+  if (test_shutdown_confirmation_bubble_ != nullptr) {
+    test_shutdown_confirmation_bubble_->GetWidget()->CloseWithReason(
+        views::Widget::ClosedReason::kUnspecified);
+    return;
+  }
   base::RecordAction(base::UserMetricsAction("Shelf_ShutDown"));
   if (base::FeatureList::IsEnabled(features::kShutdownConfirmationBubble)) {
     Shelf* shelf = Shelf::ForWindow(GetWidget()->GetNativeWindow());
