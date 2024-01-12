@@ -158,11 +158,10 @@ HeapVector<ScriptValue> GetDefaultCallbackArgs(
     const char* type,
     const ExceptionContext& exception_context,
     const String& value = g_empty_string) {
-  ScriptState* script_state = ScriptState::Current(isolate);
   HeapVector<ScriptValue> args;
-  args.push_back(ScriptValue::From(script_state, type));
-  args.push_back(ScriptValue::From(script_state,
-                                   GetSamplePrefix(exception_context, value)));
+  args.push_back(ScriptValue(isolate, V8String(isolate, type)));
+  args.push_back(ScriptValue(
+      isolate, V8String(isolate, GetSamplePrefix(exception_context, value))));
   return args;
 }
 

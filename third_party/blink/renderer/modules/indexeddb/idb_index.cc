@@ -30,7 +30,6 @@
 #include <utility>
 
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
-#include "third_party/blink/renderer/bindings/modules/v8/to_v8_for_modules.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_binding_for_modules.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_database.h"
@@ -102,7 +101,8 @@ void IDBIndex::setName(const String& name, ExceptionState& exception_state) {
 }
 
 ScriptValue IDBIndex::keyPath(ScriptState* script_state) const {
-  return ScriptValue::From(script_state, Metadata().key_path);
+  return ScriptValue(script_state->GetIsolate(),
+                     Metadata().key_path.ToV8(script_state));
 }
 
 void IDBIndex::RevertMetadata(scoped_refptr<IDBIndexMetadata> old_metadata) {

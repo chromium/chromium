@@ -63,7 +63,8 @@ ScriptValue SQLResultSetRowList::item(ScriptState* script_state,
     data_array.push_back(
         std::make_pair(columns_[i], result_[values_index + i]));
 
-  return ScriptValue::From(script_state, data_array);
+  return ScriptValue(script_state->GetIsolate(),
+                     blink::ToV8(data_array, script_state));
 }
 
 }  // namespace blink

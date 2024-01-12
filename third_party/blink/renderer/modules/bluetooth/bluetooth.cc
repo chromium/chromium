@@ -334,8 +334,8 @@ ScriptPromise Bluetooth::getAvailability(ScriptState* script_state,
   // If Bluetooth is disallowed by Permissions Policy, getAvailability should
   // return false.
   if (!IsFeatureEnabled(window)) {
-    return ScriptPromise::Cast(script_state,
-                               ScriptValue::From(script_state, false));
+    return ScriptPromise::Cast(
+        script_state, v8::Boolean::New(script_state->GetIsolate(), false));
   }
 
   CHECK(window->IsSecureContext());

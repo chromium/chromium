@@ -319,7 +319,8 @@ class WebCryptoResultAdapter : public ScriptFunction::Callable {
 
   ScriptValue Call(ScriptState* script_state, ScriptValue value) final {
     function_.Run(ConvertCryptoResult<T>(script_state->GetIsolate(), value));
-    return ScriptValue::From(script_state, ToV8UndefinedGenerator());
+    return ScriptValue(script_state->GetIsolate(),
+                       v8::Undefined(script_state->GetIsolate()));
   }
 
  private:

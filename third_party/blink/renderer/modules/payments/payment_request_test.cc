@@ -487,7 +487,8 @@ TEST(PaymentRequestTest, IgnoreUpdatePaymentDetailsAfterShowPromiseResolved) {
       ->OnPaymentResponse(BuildPaymentResponseForTest());
 
   request->OnUpdatePaymentDetails(
-      ScriptValue::From(scope.GetScriptState(), "foo"));
+      ScriptValue(scope.GetScriptState()->GetIsolate(),
+                  V8String(scope.GetScriptState()->GetIsolate(), "foo")));
 }
 
 TEST(PaymentRequestTest, RejectShowPromiseOnNonPaymentDetailsUpdate) {
@@ -505,8 +506,9 @@ TEST(PaymentRequestTest, RejectShowPromiseOnNonPaymentDetailsUpdate) {
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
       ->OnShippingAddressChange(BuildPaymentAddressForTest());
-  request->OnUpdatePaymentDetails(
-      ScriptValue::From(scope.GetScriptState(), "NotPaymentDetails"));
+  request->OnUpdatePaymentDetails(ScriptValue(
+      scope.GetScriptState()->GetIsolate(),
+      V8String(scope.GetScriptState()->GetIsolate(), "NotPaymentDetails")));
 }
 
 TEST(PaymentRequestTest, RejectShowPromiseOnInvalidPaymentDetailsUpdate) {
@@ -524,11 +526,11 @@ TEST(PaymentRequestTest, RejectShowPromiseOnInvalidPaymentDetailsUpdate) {
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
       ->OnShippingAddressChange(BuildPaymentAddressForTest());
-  request->OnUpdatePaymentDetails(ScriptValue::From(
-      scope.GetScriptState(),
-      FromJSONString(scope.GetScriptState()->GetIsolate(),
-                     scope.GetScriptState()->GetContext(), "{\"total\": {}}",
-                     ASSERT_NO_EXCEPTION)));
+  request->OnUpdatePaymentDetails(
+      ScriptValue(scope.GetScriptState()->GetIsolate(),
+                  FromJSONString(scope.GetScriptState()->GetIsolate(),
+                                 scope.GetScriptState()->GetContext(),
+                                 "{\"total\": {}}", ASSERT_NO_EXCEPTION)));
 }
 
 TEST(PaymentRequestTest,
@@ -558,8 +560,8 @@ TEST(PaymentRequestTest,
       "\"shippingOptions\": [{\"id\": \"standardShippingOption\", \"label\": "
       "\"Standard shipping\", \"amount\": {\"currency\": \"USD\", \"value\": "
       "\"5.00\"}, \"selected\": true}]}";
-  request->OnUpdatePaymentDetails(ScriptValue::From(
-      scope.GetScriptState(),
+  request->OnUpdatePaymentDetails(ScriptValue(
+      scope.GetScriptState()->GetIsolate(),
       FromJSONString(scope.GetScriptState()->GetIsolate(),
                      scope.GetScriptState()->GetContext(),
                      detail_with_shipping_options, ASSERT_NO_EXCEPTION)));
@@ -570,8 +572,8 @@ TEST(PaymentRequestTest,
       "{\"total\": {\"label\": \"Total\", \"amount\": {\"currency\": \"USD\", "
       "\"value\": \"5.00\"}}}";
 
-  request->OnUpdatePaymentDetails(ScriptValue::From(
-      scope.GetScriptState(),
+  request->OnUpdatePaymentDetails(ScriptValue(
+      scope.GetScriptState()->GetIsolate(),
       FromJSONString(scope.GetScriptState()->GetIsolate(),
                      scope.GetScriptState()->GetContext(),
                      detail_without_shipping_options, ASSERT_NO_EXCEPTION)));
@@ -604,10 +606,10 @@ TEST(
       "\"USD\", \"value\": \"50.00\"}}]}";
 
   request->OnUpdatePaymentDetails(
-      ScriptValue::From(scope.GetScriptState(),
-                        FromJSONString(scope.GetScriptState()->GetIsolate(),
-                                       scope.GetScriptState()->GetContext(),
-                                       detail, ASSERT_NO_EXCEPTION)));
+      ScriptValue(scope.GetScriptState()->GetIsolate(),
+                  FromJSONString(scope.GetScriptState()->GetIsolate(),
+                                 scope.GetScriptState()->GetContext(), detail,
+                                 ASSERT_NO_EXCEPTION)));
 
   EXPECT_TRUE(request->shippingOption().IsNull());
 }
@@ -637,10 +639,10 @@ TEST(PaymentRequestTest, UseTheSelectedShippingOptionFromPaymentDetailsUpdate) {
       "\"USD\", \"value\": \"50.00\"}, \"selected\": true}]}";
 
   request->OnUpdatePaymentDetails(
-      ScriptValue::From(scope.GetScriptState(),
-                        FromJSONString(scope.GetScriptState()->GetIsolate(),
-                                       scope.GetScriptState()->GetContext(),
-                                       detail, ASSERT_NO_EXCEPTION)));
+      ScriptValue(scope.GetScriptState()->GetIsolate(),
+                  FromJSONString(scope.GetScriptState()->GetIsolate(),
+                                 scope.GetScriptState()->GetContext(), detail,
+                                 ASSERT_NO_EXCEPTION)));
 
   EXPECT_EQ("fast", request->shippingOption());
 }
@@ -662,11 +664,11 @@ TEST(PaymentRequestTest, NoExceptionWithErrorMessageInUpdate) {
       "\"value\": \"5.00\"}},"
       "\"error\": \"This is an error message.\"}";
 
-  request->OnUpdatePaymentDetails(ScriptValue::From(
-      scope.GetScriptState(),
-      FromJSONString(scope.GetScriptState()->GetIsolate(),
-                     scope.GetScriptState()->GetContext(),
-                     detail_with_error_msg, ASSERT_NO_EXCEPTION)));
+  request->OnUpdatePaymentDetails(
+      ScriptValue(scope.GetScriptState()->GetIsolate(),
+                  FromJSONString(scope.GetScriptState()->GetIsolate(),
+                                 scope.GetScriptState()->GetContext(),
+                                 detail_with_error_msg, ASSERT_NO_EXCEPTION)));
 }
 
 TEST(PaymentRequestTest,

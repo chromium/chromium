@@ -290,9 +290,11 @@ TEST_F(TransformStreamTest, EnqueueFromFlush) {
 
     void FlushVoid(TransformStreamDefaultController* controller,
                    ExceptionState& exception_state) override {
-      controller->enqueue(GetScriptState(),
-                          ScriptValue::From(GetScriptState(), "a"),
-                          exception_state);
+      controller->enqueue(
+          GetScriptState(),
+          ScriptValue(GetScriptState()->GetIsolate(),
+                      V8String(GetScriptState()->GetIsolate(), "a")),
+          exception_state);
     }
   };
 

@@ -35,7 +35,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "third_party/blink/public/platform/web_blob_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
-#include "third_party/blink/renderer/bindings/modules/v8/to_v8_for_modules.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_binding_for_modules.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_idbcursor_idbindex_idbobjectstore.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_idbindex_idbobjectstore.h"
@@ -279,8 +278,13 @@ ScriptValue IDBRequest::result(ScriptState* script_state,
     return ScriptValue();
   }
   result_dirty_ = false;
-  ScriptValue value = ScriptValue::From(script_state, result_);
-  return value;
+  v8::Local<v8::Value> value;
+  if (!result_) {
+    value = v8::Null(script_state->GetIsolate());
+  } else {
+    value = result_->ToV8(script_state).ToLocalChecked();
+  }
+  return ScriptValue(script_state->GetIsolate(), value);
 }
 
 DOMException* IDBRequest::error(ExceptionState& exception_state) const {

@@ -32,9 +32,10 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "v8/include/v8-forward.h"
 
 namespace blink {
-
+class ScriptState;
 class V8UnionStringOrStringSequence;
 
 enum IDBKeyPathParseError {
@@ -70,6 +71,8 @@ class MODULES_EXPORT IDBKeyPath {
   bool IsNull() const { return type_ == mojom::IDBKeyPathType::Null; }
   bool IsValid() const;
   bool operator==(const IDBKeyPath& other) const;
+
+  v8::Local<v8::Value> ToV8(ScriptState*) const;
 
  private:
   mojom::IDBKeyPathType type_;

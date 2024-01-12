@@ -12,10 +12,6 @@
 
 namespace blink {
 
-class IDBAny;
-class IDBKey;
-class IDBKeyPath;
-
 inline v8::Local<v8::Value> ToV8(const SQLValue& sql_value,
                                  v8::Local<v8::Object> creation_context,
                                  v8::Isolate* isolate) {
@@ -30,16 +26,6 @@ inline v8::Local<v8::Value> ToV8(const SQLValue& sql_value,
   NOTREACHED();
   return v8::Local<v8::Value>();
 }
-
-v8::Local<v8::Value> ToV8(const IDBKeyPath&,
-                          v8::Local<v8::Object> creation_context,
-                          v8::Isolate*);
-MODULES_EXPORT v8::Local<v8::Value> ToV8(const IDBKey*,
-                                         v8::Local<v8::Object> creation_context,
-                                         v8::Isolate*);
-v8::Local<v8::Value> ToV8(const IDBAny*,
-                          v8::Local<v8::Object> creation_context,
-                          v8::Isolate*);
 
 }  // namespace blink
 

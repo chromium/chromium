@@ -36,7 +36,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
-#include "third_party/blink/renderer/bindings/modules/v8/to_v8_for_modules.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_any.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key_path.h"
@@ -94,7 +93,7 @@ bool InjectKey(ScriptState* script_state,
                const String& key_path) {
   IDBKeyPath idb_key_path(key_path);
   EXPECT_TRUE(idb_key_path.IsValid());
-  ScriptValue key_value = ScriptValue::From(script_state, key);
+  ScriptValue key_value(script_state->GetIsolate(), key->ToV8(script_state));
   return InjectV8KeyIntoV8Value(script_state->GetIsolate(), key_value.V8Value(),
                                 value.V8Value(), idb_key_path);
 }
@@ -644,8 +643,8 @@ TEST(DeserializeIDBValueTest, CurrentVersions) {
   std::unique_ptr<IDBValue> idb_value =
       CreateIDBValue(isolate, object_bytes, 42.0, "foo");
 
-  v8::Local<v8::Value> v8_value = DeserializeIDBValue(
-      isolate, scope.GetContext()->Global(), idb_value.get());
+  v8::Local<v8::Value> v8_value =
+      DeserializeIDBValue(scope.GetScriptState(), idb_value.get());
   EXPECT_TRUE(!scope.GetExceptionState().HadException());
 
   ASSERT_TRUE(v8_value->IsObject());
@@ -677,8 +676,8 @@ TEST(DeserializeIDBValueTest, FutureV8Version) {
   std::unique_ptr<IDBValue> idb_value =
       CreateIDBValue(isolate, object_bytes, 42.0, "foo");
 
-  v8::Local<v8::Value> v8_value = DeserializeIDBValue(
-      isolate, scope.GetContext()->Global(), idb_value.get());
+  v8::Local<v8::Value> v8_value =
+      DeserializeIDBValue(scope.GetScriptState(), idb_value.get());
   EXPECT_TRUE(!scope.GetExceptionState().HadException());
   EXPECT_TRUE(v8_value->IsNull());
 }
@@ -696,8 +695,8 @@ TEST(DeserializeIDBValueTest, InjectionIntoNonObject) {
   std::unique_ptr<IDBValue> idb_value =
       CreateIDBValue(isolate, object_bytes, 42.0, "foo");
 
-  v8::Local<v8::Value> v8_value = DeserializeIDBValue(
-      isolate, scope.GetContext()->Global(), idb_value.get());
+  v8::Local<v8::Value> v8_value =
+      DeserializeIDBValue(scope.GetScriptState(), idb_value.get());
   EXPECT_TRUE(!scope.GetExceptionState().HadException());
   ASSERT_TRUE(v8_value->IsNumber());
   v8::Local<v8::Number> v8_number = v8_value.As<v8::Number>();
@@ -717,8 +716,8 @@ TEST(DeserializeIDBValueTest, NestedInjectionIntoNonObject) {
   std::unique_ptr<IDBValue> idb_value =
       CreateIDBValue(isolate, object_bytes, 42.0, "foo.bar");
 
-  v8::Local<v8::Value> v8_value = DeserializeIDBValue(
-      isolate, scope.GetContext()->Global(), idb_value.get());
+  v8::Local<v8::Value> v8_value =
+      DeserializeIDBValue(scope.GetScriptState(), idb_value.get());
   EXPECT_TRUE(!scope.GetExceptionState().HadException());
   ASSERT_TRUE(v8_value->IsNumber());
   v8::Local<v8::Number> v8_number = v8_value.As<v8::Number>();
