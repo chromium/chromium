@@ -602,7 +602,7 @@ void SharedImageInterfaceInProcess::CreateGMBSharedImageOnGpuThread(
   sync_point_client_state_->ReleaseFenceSync(sync_token.release_count());
 }
 
-SharedImageInterface::SwapChainMailboxes
+SharedImageInterface::SwapChainSharedImages
 SharedImageInterfaceInProcess::CreateSwapChain(
     viz::SharedImageFormat format,
     const gfx::Size& size,
@@ -611,7 +611,7 @@ SharedImageInterfaceInProcess::CreateSwapChain(
     SkAlphaType alpha_type,
     uint32_t usage) {
   NOTREACHED();
-  return {};
+  return SharedImageInterface::SwapChainSharedImages(nullptr, nullptr);
 }
 
 void SharedImageInterfaceInProcess::PresentSwapChain(

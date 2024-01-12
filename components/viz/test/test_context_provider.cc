@@ -320,7 +320,7 @@ void TestSharedImageInterface::DestroySharedImage(
   DestroySharedImage(sync_token, client_shared_image->mailbox());
 }
 
-gpu::SharedImageInterface::SwapChainMailboxes
+gpu::SharedImageInterface::SwapChainSharedImages
 TestSharedImageInterface::CreateSwapChain(SharedImageFormat format,
                                           const gfx::Size& size,
                                           const gfx::ColorSpace& color_space,
@@ -331,7 +331,8 @@ TestSharedImageInterface::CreateSwapChain(SharedImageFormat format,
   auto back_buffer = gpu::Mailbox::GenerateForSharedImage();
   shared_images_.insert(front_buffer);
   shared_images_.insert(back_buffer);
-  return {front_buffer, back_buffer};
+  return {base::MakeRefCounted<gpu::ClientSharedImage>(front_buffer),
+          base::MakeRefCounted<gpu::ClientSharedImage>(back_buffer)};
 }
 
 void TestSharedImageInterface::PresentSwapChain(

@@ -514,7 +514,7 @@ bool SharedImageInterfaceProxy::GetSHMForPixelData(
   return true;
 }
 
-SharedImageInterface::SwapChainMailboxes
+SharedImageInterfaceProxy::SwapChainMailboxes
 SharedImageInterfaceProxy::CreateSwapChain(viz::SharedImageFormat format,
                                            const gfx::Size& size,
                                            const gfx::ColorSpace& color_space,
@@ -522,8 +522,8 @@ SharedImageInterfaceProxy::CreateSwapChain(viz::SharedImageFormat format,
                                            SkAlphaType alpha_type,
                                            uint32_t usage) {
 #if BUILDFLAG(IS_WIN)
-  const SharedImageInterface::SwapChainMailboxes mailboxes = {
-      Mailbox::GenerateForSharedImage(), Mailbox::GenerateForSharedImage()};
+  const SwapChainMailboxes mailboxes = {Mailbox::GenerateForSharedImage(),
+                                        Mailbox::GenerateForSharedImage()};
   auto params = mojom::CreateSwapChainParams::New();
   params->front_buffer_mailbox = mailboxes.front_buffer;
   params->back_buffer_mailbox = mailboxes.back_buffer;

@@ -1101,9 +1101,9 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSwapChain::Bitmap() {
       base::RetainedRef(this));
 
   return AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
-      back_buffer_mailbox_, GetSyncToken(), shared_texture_id, image_info,
-      GL_TEXTURE_2D, true /*is_origin_top_left*/, context_provider_wrapper_,
-      owning_thread_ref_, owning_thread_task_runner_,
+      back_buffer_shared_image_->mailbox(), GetSyncToken(), shared_texture_id,
+      image_info, GL_TEXTURE_2D, true /*is_origin_top_left*/,
+      context_provider_wrapper_, owning_thread_ref_, owning_thread_task_runner_,
       std::move(release_callback), /*supports_display_compositing=*/true,
       /*is_overlay_candidate=*/true);
 }
@@ -1133,18 +1133,21 @@ void CanvasResourceSwapChain::TearDown() {
   auto* sii =
       context_provider_wrapper_->ContextProvider()->SharedImageInterface();
   DCHECK(sii);
-  sii->DestroySharedImage(gpu::SyncToken(), front_buffer_mailbox_);
-  sii->DestroySharedImage(gpu::SyncToken(), back_buffer_mailbox_);
+  sii->DestroySharedImage(gpu::SyncToken(),
+                          std::move(front_buffer_shared_image_));
+  sii->DestroySharedImage(gpu::SyncToken(),
+                          std::move(back_buffer_shared_image_));
 }
 
 const gpu::Mailbox& CanvasResourceSwapChain::GetOrCreateGpuMailbox(
     MailboxSyncMode sync_mode) {
   DCHECK_EQ(sync_mode, kVerifiedSyncToken);
-  return front_buffer_mailbox_;
+  return (front_buffer_shared_image_) ? front_buffer_shared_image_->mailbox()
+                                      : empty_mailbox_;
 }
 
 bool CanvasResourceSwapChain::HasGpuMailbox() const {
-  return !front_buffer_mailbox_.IsZero();
+  return front_buffer_shared_image_ != nullptr;
 }
 
 const gpu::SyncToken CanvasResourceSwapChain::GetSyncToken() {
@@ -1167,7 +1170,7 @@ void CanvasResourceSwapChain::PresentSwapChain() {
 
   // Synchronize presentation and rendering.
   raster_interface->GenUnverifiedSyncTokenCHROMIUM(sync_token_.GetData());
-  sii->PresentSwapChain(sync_token_, back_buffer_mailbox_);
+  sii->PresentSwapChain(sync_token_, back_buffer_shared_image_->mailbox());
   // This only gets called via the CanvasResourceDispatcher export path so a
   // verified sync token will be needed ultimately.
   sync_token_ = sii->GenVerifiedSyncToken();
@@ -1184,7 +1187,8 @@ void CanvasResourceSwapChain::PresentSwapChain() {
   // copied into the back buffer to support a retained mode like canvas expects.
   // The wait sync token ensure that the present executes before we do the copy.
   // Don't generate sync token after the copy so that it's not on critical path.
-  raster_interface->CopySharedImage(front_buffer_mailbox_, back_buffer_mailbox_,
+  raster_interface->CopySharedImage(front_buffer_shared_image_->mailbox(),
+                                    back_buffer_shared_image_->mailbox(),
                                     GL_TEXTURE_2D, 0, 0, 0, 0, size_.width(),
                                     size_.height(), false /* unpack_flip_y */,
                                     false /* unpack_premultiply_alpha */);
@@ -1229,12 +1233,14 @@ CanvasResourceSwapChain::CanvasResourceSwapChain(
   auto* sii =
       context_provider_wrapper_->ContextProvider()->SharedImageInterface();
   DCHECK(sii);
-  gpu::SharedImageInterface::SwapChainMailboxes mailboxes =
+  gpu::SharedImageInterface::SwapChainSharedImages shared_images =
       sii->CreateSwapChain(GetSharedImageFormat(), Size(), GetColorSpace(),
                            kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
                            usage);
-  back_buffer_mailbox_ = mailboxes.back_buffer;
-  front_buffer_mailbox_ = mailboxes.front_buffer;
+  CHECK(shared_images.back_buffer);
+  CHECK(shared_images.front_buffer);
+  back_buffer_shared_image_ = std::move(shared_images.back_buffer);
+  front_buffer_shared_image_ = std::move(shared_images.front_buffer);
   sync_token_ = sii->GenVerifiedSyncToken();
 
   // Wait for the mailboxes to be ready to be used.
@@ -1248,8 +1254,8 @@ CanvasResourceSwapChain::CanvasResourceSwapChain(
   if (use_oop_rasterization_)
     return;
 
-  back_buffer_texture_id_ =
-      raster_interface->CreateAndConsumeForGpuRaster(back_buffer_mailbox_);
+  back_buffer_texture_id_ = raster_interface->CreateAndConsumeForGpuRaster(
+      back_buffer_shared_image_->mailbox());
   raster_interface->BeginSharedImageAccessDirectCHROMIUM(
       back_buffer_texture_id_, GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
 }

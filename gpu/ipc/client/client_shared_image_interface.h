@@ -115,12 +115,12 @@ class GPU_EXPORT ClientSharedImageInterface : public SharedImageInterface {
                          scoped_refptr<gfx::D3DSharedFence> d3d_shared_fence,
                          const Mailbox& mailbox) override;
 #endif
-  SwapChainMailboxes CreateSwapChain(viz::SharedImageFormat format,
-                                     const gfx::Size& size,
-                                     const gfx::ColorSpace& color_space,
-                                     GrSurfaceOrigin surface_origin,
-                                     SkAlphaType alpha_type,
-                                     uint32_t usage) override;
+  SwapChainSharedImages CreateSwapChain(viz::SharedImageFormat format,
+                                        const gfx::Size& size,
+                                        const gfx::ColorSpace& color_space,
+                                        GrSurfaceOrigin surface_origin,
+                                        SkAlphaType alpha_type,
+                                        uint32_t usage) override;
   void DestroySharedImage(const SyncToken& sync_token,
                           const Mailbox& mailbox) override;
   void DestroySharedImage(

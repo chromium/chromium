@@ -138,12 +138,12 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
       const SyncToken& sync_token,
       const Mailbox& mailbox,
       uint32_t usage) override;
-  SwapChainMailboxes CreateSwapChain(viz::SharedImageFormat format,
-                                     const gfx::Size& size,
-                                     const gfx::ColorSpace& color_space,
-                                     GrSurfaceOrigin surface_origin,
-                                     SkAlphaType alpha_type,
-                                     uint32_t usage) override;
+  SwapChainSharedImages CreateSwapChain(viz::SharedImageFormat format,
+                                        const gfx::Size& size,
+                                        const gfx::ColorSpace& color_space,
+                                        GrSurfaceOrigin surface_origin,
+                                        SkAlphaType alpha_type,
+                                        uint32_t usage) override;
   void PresentSwapChain(const SyncToken& sync_token,
                         const Mailbox& mailbox) override;
 #if BUILDFLAG(IS_FUCHSIA)

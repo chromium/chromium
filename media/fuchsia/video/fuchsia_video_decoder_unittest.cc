@@ -203,14 +203,15 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
     DestroySharedImage(sync_token, client_shared_image->mailbox());
   }
 
-  SwapChainMailboxes CreateSwapChain(viz::SharedImageFormat format,
-                                     const gfx::Size& size,
-                                     const gfx::ColorSpace& color_space,
-                                     GrSurfaceOrigin surface_origin,
-                                     SkAlphaType alpha_type,
-                                     uint32_t usage) override {
+  gpu::SharedImageInterface::SwapChainSharedImages CreateSwapChain(
+      viz::SharedImageFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage) override {
     ADD_FAILURE();
-    return SwapChainMailboxes();
+    return gpu::SharedImageInterface::SwapChainSharedImages(nullptr, nullptr);
   }
   void PresentSwapChain(const gpu::SyncToken& sync_token,
                         const gpu::Mailbox& mailbox) override {

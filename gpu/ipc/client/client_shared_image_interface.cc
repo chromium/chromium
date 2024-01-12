@@ -232,7 +232,7 @@ void ClientSharedImageInterface::UpdateSharedImage(
 }
 #endif
 
-ClientSharedImageInterface::SwapChainMailboxes
+ClientSharedImageInterface::SwapChainSharedImages
 ClientSharedImageInterface::CreateSwapChain(viz::SharedImageFormat format,
                                             const gfx::Size& size,
                                             const gfx::ColorSpace& color_space,
@@ -244,7 +244,9 @@ ClientSharedImageInterface::CreateSwapChain(viz::SharedImageFormat format,
                                            surface_origin, alpha_type, usage);
   AddMailbox(mailboxes.front_buffer);
   AddMailbox(mailboxes.back_buffer);
-  return mailboxes;
+  return ClientSharedImageInterface::SwapChainSharedImages(
+      base::MakeRefCounted<ClientSharedImage>(mailboxes.front_buffer),
+      base::MakeRefCounted<ClientSharedImage>(mailboxes.back_buffer));
 }
 
 void ClientSharedImageInterface::DestroySharedImage(const SyncToken& sync_token,

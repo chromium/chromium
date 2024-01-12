@@ -124,12 +124,12 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
       const gpu::SyncToken& sync_token,
       scoped_refptr<gpu::ClientSharedImage> client_shared_image) override;
 
-  SwapChainMailboxes CreateSwapChain(SharedImageFormat format,
-                                     const gfx::Size& size,
-                                     const gfx::ColorSpace& color_space,
-                                     GrSurfaceOrigin surface_origin,
-                                     SkAlphaType alpha_type,
-                                     uint32_t usage) override;
+  SwapChainSharedImages CreateSwapChain(SharedImageFormat format,
+                                        const gfx::Size& size,
+                                        const gfx::ColorSpace& color_space,
+                                        GrSurfaceOrigin surface_origin,
+                                        SkAlphaType alpha_type,
+                                        uint32_t usage) override;
   void PresentSwapChain(const gpu::SyncToken& sync_token,
                         const gpu::Mailbox& mailbox) override;
 
