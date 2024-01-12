@@ -45,6 +45,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/about_flags.h"
+#include "chrome/browser/active_use_util.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
@@ -544,6 +545,12 @@ void ChromeBrowserMainPartsWin::PostBrowserStart() {
   DCHECK(__pfnDliFailureHook2);
 
   InitializeChromeElf();
+
+#if BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)
+  if constexpr (kShouldRecordActiveUse) {
+    did_run_updater_.emplace();
+  }
+#endif
 
   // Query feature first, to include full population in field trial.
   if (base::FeatureList::IsEnabled(features::kAppBoundEncryptionMetrics) &&

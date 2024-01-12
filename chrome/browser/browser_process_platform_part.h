@@ -18,8 +18,6 @@
 class BrowserProcessPlatformPart : public BrowserProcessPlatformPartChromeOS {};
 #elif BUILDFLAG(IS_MAC)
 #include "chrome/browser/browser_process_platform_part_mac.h"  // IWYU pragma: export
-#elif BUILDFLAG(IS_WIN)
-#include "chrome/browser/browser_process_platform_part_win.h"  // IWYU pragma: export
 #else
 #include "chrome/browser/browser_process_platform_part_base.h"  // IWYU pragma: export
 class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {};

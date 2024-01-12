@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_BROWSER_PROCESS_PLATFORM_PART_BASE_H_
 #define CHROME_BROWSER_BROWSER_PROCESS_PLATFORM_PART_BASE_H_
 
-#include "chrome/browser/buildflags.h"
-
 // A base class for platform-specific BrowserProcessPlatformPart
 // implementations. This class itself should never be used verbatim.
 class BrowserProcessPlatformPartBase {
@@ -19,12 +17,6 @@ class BrowserProcessPlatformPartBase {
       const BrowserProcessPlatformPartBase&) = delete;
 
   virtual ~BrowserProcessPlatformPartBase();
-
-#if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
-  // Called after launch, whether it is from creating a new process or after
-  // rendezvous to an existing process via the process singleton.
-  virtual void OnBrowserLaunch();
-#endif
 
   // Called in the middle of BrowserProcessImpl::StartTearDown().
   virtual void StartTearDown();

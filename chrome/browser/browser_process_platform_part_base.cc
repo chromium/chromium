@@ -17,10 +17,6 @@ BrowserProcessPlatformPartBase::BrowserProcessPlatformPartBase() {
 BrowserProcessPlatformPartBase::~BrowserProcessPlatformPartBase() {
 }
 
-#if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
-void BrowserProcessPlatformPartBase::OnBrowserLaunch() {}
-#endif
-
 void BrowserProcessPlatformPartBase::StartTearDown() {
 }
 
