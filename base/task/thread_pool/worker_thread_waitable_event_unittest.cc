@@ -1029,29 +1029,35 @@ class WorkerThreadThreadCacheDelegate
     size_t cached_memory_after =
         partition_alloc::ThreadCache::Get()->CachedMemory();
 
-    if (!first_wakeup_done_) {
-      // First time we sleep is a short sleep, no cache purging.
-      //
-      // Here and below, cannot assert on exact thread cache size, since
-      // anything that allocates will make it fluctuate.
-      EXPECT_GT(cached_memory_after, cached_memory_before / 2);
-      first_wakeup_done_.store(true, std::memory_order_release);
-    } else {
-      // Second one is long, should purge.
-      EXPECT_LT(cached_memory_after, cached_memory_before / 2);
+    if (!test_done_) {
+      if (purge_expected_) {
+        EXPECT_LT(cached_memory_after, cached_memory_before / 2);
+      } else {
+        EXPECT_GT(cached_memory_after, cached_memory_before / 2);
+      }
+      // Unblock the test.
+      wakeup_done_.Signal();
+      test_done_ = true;
     }
   }
 
-  std::atomic<bool> first_wakeup_done_{false};
+  // Avoid using the default sleep timeout which is infinite and prevents the
+  // tests for completing.
+  TimeDelta GetSleepTimeout() override {
+    return WorkerThread::Delegate::kPurgeThreadCacheIdleDelay +
+           TestTimeouts::tiny_timeout();
+  }
+
+  void SetPurgeExpectation(bool purge_expected) {
+    purge_expected_ = purge_expected;
+  }
+
+  bool test_done_ = false;
+  bool purge_expected_ = false;
+  base::WaitableEvent wakeup_done_;
 };
 
-// TODO(crbug.com/1469364): Re-enable this test on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_WorkerThreadCachePurgeTest DISABLED_WorkerThreadCachePurgeTest
-#else
-#define MAYBE_WorkerThreadCachePurgeTest WorkerThreadCachePurgeTest
-#endif
-TYPED_TEST(ThreadPoolWorkerTest, MAYBE_WorkerThreadCachePurgeTest) {
+TYPED_TEST(ThreadPoolWorkerTest, WorkerThreadCacheNoPurgeOnSignal) {
   // Make sure the thread cache is enabled in the main partition.
   partition_alloc::internal::ThreadCacheProcessScopeForTesting scope(
       allocator_shim::internal::PartitionAllocMalloc::Allocator());
@@ -1059,19 +1065,41 @@ TYPED_TEST(ThreadPoolWorkerTest, MAYBE_WorkerThreadCachePurgeTest) {
   this->template ConstructWorker<WorkerThreadThreadCacheDelegate>(
       ThreadType::kDefault);
 
-  // Wake up before the thread is started to make sure the first sleep is short.
+  auto* delegate = static_cast<
+      WorkerThreadThreadCacheDelegate<typename TestFixture::WorkerType>*>(
+      this->delegate_raw_);
+
+  // No purge is expected on waking up from a signal.
+  delegate->SetPurgeExpectation(false);
+
+  // Wake up before the thread is started to make sure the first wakeup is
+  // caused by a signal.
   this->WakeUpWorker();
   this->StartWorker(false);
+
+  // Wait until a wakeup has completed.
+  delegate->wakeup_done_.Wait();
+}
+
+TYPED_TEST(ThreadPoolWorkerTest, PurgeOnUninteruptedSleep) {
+  // Make sure the thread cache is enabled in the main partition.
+  partition_alloc::internal::ThreadCacheProcessScopeForTesting scope(
+      allocator_shim::internal::PartitionAllocMalloc::Allocator());
+
+  this->template ConstructWorker<WorkerThreadThreadCacheDelegate>(
+      ThreadType::kDefault);
 
   auto* delegate = static_cast<
       WorkerThreadThreadCacheDelegate<typename TestFixture::WorkerType>*>(
       this->delegate_raw_);
-  while (delegate->first_wakeup_done_.load(std::memory_order_acquire)) {
-  }
 
-  // Have to use real sleep unfortunately rather than virtual time, because
-  // WaitableEvent uses the non-overridable variant of TimeTicks.
-  PlatformThread::Sleep(2 * WorkerThread::Delegate::kPurgeThreadCacheIdleDelay);
+  // A purge will take place
+  delegate->SetPurgeExpectation(true);
+
+  this->StartWorker(false);
+
+  // Wait until a wakeup has completed.
+  delegate->wakeup_done_.Wait();
 }
 
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
