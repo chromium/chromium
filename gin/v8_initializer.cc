@@ -397,6 +397,8 @@ void SetFlags(IsolateHolder::ScriptMode mode,
   SetV8FlagsIfOverridden(features::kJavaScriptImportAttributes,
                          "--harmony-import-attributes",
                          "--no-harmony-import-attributes");
+  SetV8FlagsIfOverridden(features::kJavaScriptSetMethods,
+                         "--harmony-set-methods", "--no-harmony-set-methods");
 
   if (IsolateHolder::kStrictMode == mode) {
     SetV8Flags("--use_strict");
