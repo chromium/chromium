@@ -119,6 +119,11 @@ class TRIVIAL_ABI GSL_OWNER HeapArray {
     return base::span<const T>(data_.get(), size_);
   }
 
+  // Convenience method to copy the contents of the entire array from a
+  // span<>. Hard CHECK occurs in span<>::copy_from() if the HeapArray and
+  // the span have different sizes.
+  void copy_from(base::span<const T> other) { as_span().copy_from(other); }
+
   // Convenience methods to slice the vector into spans.
   // Returns a span over the HeapArray starting at `offset` of `count` elements.
   // If `count` is unspecified, all remaining elements are included. A CHECK()

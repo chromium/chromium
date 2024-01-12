@@ -213,4 +213,20 @@ TEST(HeapArray, RunsDestructor) {
   EXPECT_EQ(count, 2u);
 }
 
+TEST(HeapArray, CopyFrom) {
+  HeapArray<uint32_t> empty;
+  HeapArray<uint32_t> something = HeapArray<uint32_t>::Uninit(2);
+  HeapArray<uint32_t> other = HeapArray<uint32_t>::Uninit(2);
+  const uint32_t kStuff[] = {1000u, 1001u};
+
+  empty.copy_from(base::span<uint32_t>());  // Should not check.
+  something.copy_from(kStuff);
+  EXPECT_EQ(1000u, something[0]);
+  EXPECT_EQ(1001u, something[1]);
+
+  other.copy_from(something);
+  EXPECT_EQ(1000u, other[0]);
+  EXPECT_EQ(1001u, other[1]);
+}
+
 }  // namespace base
