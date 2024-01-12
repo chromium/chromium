@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.flags;
 
 import androidx.annotation.AnyThread;
 
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.base.cached_flags.CachedFlagsSharedPreferences;
 
 /** A double-type {@link CachedFieldTrialParameter}. */
 public class DoubleCachedFieldTrialParameter extends CachedFieldTrialParameter {
@@ -44,7 +44,7 @@ public class DoubleCachedFieldTrialParameter extends CachedFieldTrialParameter {
                             .getDoubleFieldTrialParam(preferenceName, defaultValue);
             if (value == null) {
                 value =
-                        ChromeSharedPreferences.getInstance()
+                        CachedFlagsSharedPreferences.getInstance()
                                 .readDouble(preferenceName, defaultValue);
             }
 
@@ -62,7 +62,7 @@ public class DoubleCachedFieldTrialParameter extends CachedFieldTrialParameter {
         double value =
                 ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
                         getFeatureName(), getParameterName(), getDefaultValue());
-        ChromeSharedPreferences.getInstance().writeDouble(getSharedPreferenceKey(), value);
+        CachedFlagsSharedPreferences.getInstance().writeDouble(getSharedPreferenceKey(), value);
     }
 
     /**

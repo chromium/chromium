@@ -6,9 +6,9 @@ package org.chromium.chrome.browser.flags;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.base.cached_flags.CachedFlagsSharedPreferences;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.CheckDiscard;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -97,7 +97,7 @@ public abstract class CachedFieldTrialParameter {
     }
 
     static String generateSharedPreferenceKey(String featureName, String parameterName) {
-        return ChromePreferenceKeys.FLAGS_FIELD_TRIAL_PARAM_CACHED.createKey(
+        return CachedFlagsSharedPreferences.FLAGS_FIELD_TRIAL_PARAM_CACHED.createKey(
                 generateFullName(featureName, parameterName));
     }
 
