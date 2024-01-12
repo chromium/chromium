@@ -187,12 +187,18 @@ constexpr NSTimeInterval kSnippetAnimationDurationInSecond = .3;
     [NSLayoutConstraint activateConstraints:constraints];
     [self updateCellWithSnippetSate:SnippetState::kHidden animate:NO];
     [self updateCircleImageView];
-    // Set the button/accessibility settings.
-    self.accessibilityTraits |= UIAccessibilityTraitButton;
     self.userInteractionEnabled = YES;
-    self.accessibilityTraits &= ~UIAccessibilityTraitNotEnabled;
   }
   return self;
+}
+
+- (void)updateAccessibilityTraits {
+  self.accessibilityTraits |= UIAccessibilityTraitButton;
+  if (_checked) {
+    self.accessibilityTraits |= UIAccessibilityTraitSelected;
+  } else {
+    self.accessibilityTraits &= ~UIAccessibilityTraitSelected;
+  }
 }
 
 #pragma mark - Properties
@@ -202,12 +208,8 @@ constexpr NSTimeInterval kSnippetAnimationDurationInSecond = .3;
     return;
   }
   _checked = checked;
-  if (_checked) {
-    self.accessibilityTraits |= UIAccessibilityTraitSelected;
-  } else {
-    self.accessibilityTraits &= ~UIAccessibilityTraitSelected;
-  }
   [self updateCircleImageView];
+  [self updateAccessibilityTraits];
 }
 
 - (void)setFaviconImage:(UIImage*)faviconImage {
@@ -325,6 +327,8 @@ constexpr NSTimeInterval kSnippetAnimationDurationInSecond = .3;
   [self updateCellWithSnippetSate:SnippetState::kHidden animate:NO];
   self.checked = NO;
   self.chevronToggledBlock = nil;
+  self.accessibilityTraits |= UIAccessibilityTraitButton;
+  self.userInteractionEnabled = YES;
 }
 
 #pragma mark - Accessibility

@@ -39,6 +39,7 @@
   if (styler.cellTitleColor) {
     cell.nameLabel.textColor = styler.cellTitleColor;
   }
+  [cell updateAccessibilityTraits];
 }
 
 @end
