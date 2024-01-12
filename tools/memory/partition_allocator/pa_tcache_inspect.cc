@@ -16,6 +16,7 @@
 #include <ios>
 #include <iostream>
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -40,7 +41,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "tools/memory/partition_allocator/inspect_utils.h"
 
 namespace partition_alloc::tools {
@@ -261,7 +261,7 @@ namespace {
 bool CopySlotSpanList(std::vector<SlotSpanMetadata>& list,
                       uintptr_t head_address,
                       RemoteProcessMemoryReader& reader) {
-  absl::optional<RawBuffer<SlotSpanMetadata>> metadata;
+  std::optional<RawBuffer<SlotSpanMetadata>> metadata;
   for (uintptr_t slot_span_address = head_address; slot_span_address;
        slot_span_address =
            reinterpret_cast<uintptr_t>(metadata->get()->next_slot_span)) {

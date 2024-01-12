@@ -15,9 +15,10 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <optional>
+
 #include "base/files/file.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_MAC)
 #include <mach/mach.h>
@@ -80,14 +81,14 @@ class RawBuffer {
   const T* get() const { return reinterpret_cast<const T*>(buffer_); }
   char* get_buffer() { return buffer_; }
 
-  static absl::optional<RawBuffer<T>> ReadFromProcessMemory(
+  static std::optional<RawBuffer<T>> ReadFromProcessMemory(
       RemoteProcessMemoryReader& reader,
       uintptr_t address) {
     RawBuffer<T> buf;
     bool ok = reader.ReadMemory(reinterpret_cast<unsigned long>(address),
                                 sizeof(T), buf.get_buffer());
     if (!ok)
-      return absl::nullopt;
+      return std::nullopt;
 
     return {buf};
   }

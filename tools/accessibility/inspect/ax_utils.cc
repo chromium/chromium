@@ -92,7 +92,7 @@ void PrintHelpFooter() {
       "automated-testing/ax-inspect\n");
 }
 
-absl::optional<AXTreeSelector> TreeSelectorFromCommandLine(
+std::optional<AXTreeSelector> TreeSelectorFromCommandLine(
     const base::CommandLine& command_line) {
   int selectors = AXTreeSelector::None;
   if (command_line.HasSwitch(kChromeSwitch)) {
@@ -116,7 +116,7 @@ absl::optional<AXTreeSelector> TreeSelectorFromCommandLine(
     unsigned hwnd_or_pid = 0;
     if (!StringToInt(id_str, &hwnd_or_pid)) {
       LOG(ERROR) << "Error: can't convert window id string to integer.";
-      return absl::nullopt;
+      return std::nullopt;
     }
     return AXTreeSelector(selectors, pattern_str,
                           CastToAcceleratedWidget(hwnd_or_pid));
@@ -140,13 +140,13 @@ std::string DirectivePrefixFromAPIType(ui::AXApiType::Type api) {
   }
 }
 
-absl::optional<ui::AXInspectScenario> ScenarioFromCommandLine(
+std::optional<ui::AXInspectScenario> ScenarioFromCommandLine(
     const base::CommandLine& command_line,
     ui::AXApiType::Type api) {
   base::FilePath filters_path = command_line.GetSwitchValuePath(kFiltersSwitch);
   if (filters_path.empty() && command_line.HasSwitch(kFiltersSwitch)) {
     LOG(ERROR) << "Error: empty filter path given. Run with --help for help.";
-    return absl::nullopt;
+    return std::nullopt;
   }
 
   std::string directive_prefix = DirectivePrefixFromAPIType(api);
@@ -157,13 +157,13 @@ absl::optional<ui::AXInspectScenario> ScenarioFromCommandLine(
                                        std::vector<std::string>());
   }
 
-  absl::optional<ui::AXInspectScenario> scenario =
+  std::optional<ui::AXInspectScenario> scenario =
       ui::AXInspectScenario::From(directive_prefix, filters_path);
   if (!scenario) {
     LOG(ERROR) << "Error: failed to open filters file " << filters_path
                << ". Note: path traversal components ('..') are not allowed "
                   "for security reasons";
-    return absl::nullopt;
+    return std::nullopt;
   }
   return scenario;
 }

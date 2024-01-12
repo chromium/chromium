@@ -71,13 +71,13 @@ class ElementGeneratorTest(unittest.TestCase):
     lines = []
     GenerateFieldContent('', {
         'type': 'class',
-        'default': 'absl::nullopt'
+        'default': 'std::nullopt'
     }, None, lines, '  ', {})
-    self.assertEquals(['  absl::nullopt,'], lines)
+    self.assertEquals(['  std::nullopt,'], lines)
     lines = []
     GenerateFieldContent('', {
         'type': 'class',
-        'default': 'absl::nullopt'
+        'default': 'std::nullopt'
     }, 'true', lines, '  ', {})
     self.assertEquals(['  true,'], lines)
     lines = []

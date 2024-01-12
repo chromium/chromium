@@ -5,13 +5,13 @@
 #include "tools/mac/power/power_sampler/m1_sampler.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/containers/flat_map.h"
 #include "base/memory/ptr_util.h"
 #include "components/power_metrics/m1_sensors_mac.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "tools/mac/power/power_sampler/battery_sampler.h"
 
 namespace power_sampler {
@@ -76,7 +76,7 @@ TEST_F(M1SamplerTest, GetSample_AllFieldsAvailable) {
 TEST_F(M1SamplerTest, GetSample_IndividualFieldNotAvailable) {
   {
     power_metrics::M1SensorsReader::TemperaturesCelsius temperatures;
-    temperatures.p_cores = absl::nullopt;
+    temperatures.p_cores = std::nullopt;
     temperatures.e_cores = 2;
     reader_->set_temperatures(temperatures);
 
@@ -88,7 +88,7 @@ TEST_F(M1SamplerTest, GetSample_IndividualFieldNotAvailable) {
   {
     power_metrics::M1SensorsReader::TemperaturesCelsius temperatures;
     temperatures.p_cores = 1;
-    temperatures.e_cores = absl::nullopt;
+    temperatures.e_cores = std::nullopt;
     reader_->set_temperatures(temperatures);
 
     Sampler::Sample sample = sampler_->GetSample(base::TimeTicks());

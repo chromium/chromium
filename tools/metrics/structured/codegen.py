@@ -168,7 +168,7 @@ class EventInfo:
         for metric_info in metric_infos)
 
   def build_validator_code(self) -> str:
-    # metric_hash_map = "  return absl::nullopt;" if len(
+    # metric_hash_map = "  return std::nullopt;" if len(
     #     self.metrics) == 0 else self.build_metric_hash_map()
     return validator_tmpl.IMPL_EVENT_VALIDATOR_TEMPLATE.format(
         event=self,
