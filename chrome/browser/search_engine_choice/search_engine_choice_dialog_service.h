@@ -125,7 +125,7 @@ class SearchEngineChoiceDialogService : public KeyedService {
   // Updates `profile` with the values from `choice_data`.
   static void UpdateProfileFromChoiceData(
       Profile& profile,
-      search_engines::ChoiceData& choice_data);
+      const search_engines::ChoiceData& choice_data);
 
  private:
   // Observes the BrowserList to make sure that closed browsers are correctly

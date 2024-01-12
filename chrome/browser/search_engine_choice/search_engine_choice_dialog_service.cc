@@ -213,7 +213,7 @@ SearchEngineChoiceDialogService::GetChoiceDataFromProfile(Profile& profile) {
 // static
 void SearchEngineChoiceDialogService::UpdateProfileFromChoiceData(
     Profile& profile,
-    search_engines::ChoiceData& choice_data) {
+    const search_engines::ChoiceData& choice_data) {
   if (!search_engines::IsChoiceScreenFlagEnabled(
           search_engines::ChoicePromo::kAny)) {
     return;
@@ -232,7 +232,8 @@ void SearchEngineChoiceDialogService::UpdateProfileFromChoiceData(
         choice_data.chrome_version);
   }
 
-  TemplateURLData& default_search_engine = choice_data.default_search_engine;
+  const TemplateURLData& default_search_engine =
+      choice_data.default_search_engine;
   if (!default_search_engine.keyword().empty() &&
       !default_search_engine.url().empty()) {
     TemplateURLService* template_url_service =
