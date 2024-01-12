@@ -171,6 +171,13 @@ struct AppShimInfo {
 
   // The urls that are to be opened by this app.
   array<url.mojom.Url> urls;
+
+  // Interface that will be used by the app shim to inform the browser process
+  // of any notification actions taken. Note that this is included even when
+  // the notification attribution feature is disabled; it is ignored by the
+  // browser process in that case.
+  pending_receiver<mac_notifications.mojom.MacNotificationActionHandler>
+      notification_action_handler;
 };
 
 // Struct used to pass the state of features and field trials from the browser

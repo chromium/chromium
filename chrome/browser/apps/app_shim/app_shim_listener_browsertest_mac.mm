@@ -259,6 +259,10 @@ IN_PROC_BROWSER_TEST_F(AppShimListenerBrowserTest, LaunchNormal) {
   app_shim_info->app_id = "test_app";
   app_shim_info->app_url = GURL("https://example.com");
   app_shim_info->launch_type = chrome::mojom::AppShimLaunchType::kNormal;
+  app_shim_info->notification_action_handler =
+      mojo::PendingRemote<
+          mac_notifications::mojom::MacNotificationActionHandler>()
+          .InitWithNewPipeAndPassReceiver();
   test_client_->host_bootstrap()->OnShimConnected(
       test_client_->GetHostReceiver(), std::move(app_shim_info),
       test_client_->GetOnShimConnectedCallback());
@@ -275,6 +279,10 @@ IN_PROC_BROWSER_TEST_F(AppShimListenerBrowserTest, LaunchRegisterOnly) {
   app_shim_info->app_id = "test_app";
   app_shim_info->app_url = GURL("https://example.com");
   app_shim_info->launch_type = chrome::mojom::AppShimLaunchType::kRegisterOnly;
+  app_shim_info->notification_action_handler =
+      mojo::PendingRemote<
+          mac_notifications::mojom::MacNotificationActionHandler>()
+          .InitWithNewPipeAndPassReceiver();
   test_client_->host_bootstrap()->OnShimConnected(
       test_client_->GetHostReceiver(), std::move(app_shim_info),
       test_client_->GetOnShimConnectedCallback());

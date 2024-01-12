@@ -37,6 +37,7 @@
 #include "chrome/browser/apps/app_shim/app_shim_termination_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/notifications/mac/notification_utils.h"
 #include "chrome/browser/profiles/avatar_menu.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -635,6 +636,12 @@ void AppShimManager::BindNotificationService(
   // app shim process to connect to, instead a remote bound to this is returned.
 }
 
+void AppShimManager::OnNotificationAction(
+    mac_notifications::mojom::NotificationActionInfoPtr info) {
+  ProcessMacNotificationResponse(mac_notifications::NotificationStyle::kAppShim,
+                                 std::move(info));
+}
+
 void AppShimManager::UpdateApplicationBadge(ProfileState* profile_state) {
   if (profile_state->single_profile_host &&
       profile_state->single_profile_host->GetAppShim()) {
@@ -730,6 +737,14 @@ void AppShimManager::OnShimProcessConnected(
   if (app_shim_observer_) {
     app_shim_observer_->OnShimProcessConnected(bootstrap->GetAppShimPid());
   }
+
+  auto notification_action_handler = bootstrap->TakeNotificationActionHandler();
+  if (base::FeatureList::IsEnabled(features::kAppShimNotificationAttribution) &&
+      notification_action_handler) {
+    notification_action_handler_receivers_.Add(
+        this, std::move(notification_action_handler));
+  }
+
   switch (bootstrap->GetLaunchType()) {
     case chrome::mojom::AppShimLaunchType::kNormal: {
       const base::FilePath profile_path = bootstrap->GetProfilePath();
