@@ -2021,6 +2021,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.Storage.Mmc.Internal.{Error}" units="errors"
+    expires_after="2025-01-08">
+  <owner>korneld@chromium.org</owner>
+  <owner>chromeos-devices-team@google.com</owner>
+  <summary>
+    MMC error counters for the MMC that controls the rootfs drive. Only reported
+    on machines that use an MMC controller for rootfs. The counters represent
+    the number of errors per wall-clock hour.
+  </summary>
+  <token key="Error">
+    <variant name="CmdCRC"/>
+    <variant name="CmdTimeout"/>
+    <variant name="DataCRC"/>
+    <variant name="DataTimeout"/>
+  </token>
+</histogram>
+
 <histogram name="Platform.Storage.Nvme.PercentageUsed" units="%"
     expires_after="2024-06-30">
   <owner>asavery@chromium.org</owner>
