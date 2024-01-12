@@ -714,7 +714,11 @@ void AXRelationCache::GetReverseRelated(
 }
 
 AXObject* AXRelationCache::GetOrCreateAriaOwnerFor(Node* node, AXObject* obj) {
-  CHECK(object_cache_->IsProcessingDeferredEvents());
+  // In M122 and later, this is a CHECK that can pass, but for now, return
+  // nullptr, so that GetOrCreate() while the tree is frozen does not hit it.
+  if (!object_cache_->IsProcessingDeferredEvents()) {
+    return nullptr;
+  }
 
   if (!IsA<Element>(node)) {
     return nullptr;
