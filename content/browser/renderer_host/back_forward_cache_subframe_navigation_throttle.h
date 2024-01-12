@@ -24,7 +24,8 @@ class BackForwardCacheSubframeNavigationThrottle : public NavigationThrottle,
  public:
   ~BackForwardCacheSubframeNavigationThrottle() override;
 
-  static std::unique_ptr<BackForwardCacheSubframeNavigationThrottle>
+  CONTENT_EXPORT static std::unique_ptr<
+      BackForwardCacheSubframeNavigationThrottle>
   MaybeCreateThrottleFor(NavigationHandle* navigation_handle);
 
  private:
