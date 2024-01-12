@@ -22,6 +22,11 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="CacheType">
+  <variant name="GrShaderCache"/>
+  <variant name="PassthroughProgramCache"/>
+</variants>
+
 <variants name="GPUProtectedVideoType">
   <variant name="Clear" summary="Clear"/>
   <variant name="HardwareProtected" summary="HardwareProtected"/>
@@ -1471,6 +1476,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     Types of EGL displays used to back large (area &gt;= 128*128) WebGL
     contexts. Recorded at context creation time in the GPU process.
+  </summary>
+</histogram>
+
+<histogram name="Gpu.{CacheType}LoadHitInCache" units="Boolean"
+    expires_after="2024-06-01">
+  <owner>blundell@chromium.org</owner>
+  <owner>geofflang@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    For each load of an entry from {CacheType}, records whether the entry was
+    found in the cache.
   </summary>
 </histogram>
 
