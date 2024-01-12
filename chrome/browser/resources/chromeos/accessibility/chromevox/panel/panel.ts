@@ -297,29 +297,24 @@ export class Panel implements PanelInterface {
     const sideBySide = SettingsManager.get('brailleSideBySide');
 
     this.brailleContainer_!.addEventListener(
-        'mouseover', event => PanelCaptions.braille.addBorders(
-            event.target as Element));
+        'mouseover',
+        event => PanelCaptions.braille.addBorders(
+            event.target as HTMLTableCellElement));
     this.brailleContainer_!.addEventListener(
-        'mouseout', event => PanelCaptions.braille.removeBorders(
-            event.target as Element));
+        'mouseout',
+        event => PanelCaptions.braille.removeBorders(
+            event.target as HTMLTableCellElement));
     this.brailleContainer_!.addEventListener(
-        'click', event => PanelCaptions.braille.routeCursor(
-            event.target as Element));
+        'click',
+        event => PanelCaptions.braille.routeCursor(
+            event.target as HTMLTableCellElement));
 
-    // Clear the tables.
-    let rowCount = this.brailleTableElement_.rows.length;
-    for (let i = 0; i < rowCount; i++) {
-      this.brailleTableElement_.deleteRow(0);
-    }
-    rowCount = this.brailleTableElement2_.rows.length;
-    for (let i = 0; i < rowCount; i++) {
-      this.brailleTableElement2_.deleteRow(0);
-    }
+    PanelCaptions.braille.clearTables();
 
     let row1;
     let row2;
     // Number of rows already written.
-    rowCount = 0;
+    let rowCount = 0;
     // Number of cells already written in this row.
     let cellCount = cols;
     for (let i = 0; i < groups.length; i++) {

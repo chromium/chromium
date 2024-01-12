@@ -8,7 +8,10 @@
  */
 
 class BrailleCaptions {
-  addBorders(cell: Element): void {
+  private brailleTableElement_ = $('braille-table') as HTMLTableElement;
+  private brailleTableElement2_ = $('braille-table2') as HTMLTableElement;
+
+  addBorders(cell: HTMLTableCellElement): void {
     if (cell.tagName === 'TD') {
       cell.className = 'highlighted-cell';
       const companionIDs = cell.getAttribute('data-companionIDs');
@@ -17,7 +20,12 @@ class BrailleCaptions {
     }
   }
 
-  removeBorders(cell: Element): void {
+  clearTables(): void {
+    this.clearTable_(this.brailleTableElement_);
+    this.clearTable_(this.brailleTableElement2_);
+  }
+
+  removeBorders(cell: HTMLTableCellElement): void {
     if (cell.tagName === 'TD') {
       cell.className = 'unhighlighted-cell';
       const companionIDs = cell.getAttribute('data-companionIDs');
@@ -26,7 +34,7 @@ class BrailleCaptions {
     }
   }
 
-  routeCursor(cell: Element): void {
+  routeCursor(cell: HTMLTableCellElement): void {
     if (cell.tagName === 'TD') {
       const displayPosition = parseInt(cell.id.split('-')[0], 10);
       if (Number.isNaN(displayPosition)) {
@@ -37,6 +45,13 @@ class BrailleCaptions {
       }
       chrome.extension.getBackgroundPage()['ChromeVox'].braille.route(
           displayPosition);
+    }
+  }
+
+  private clearTable_(table: HTMLTableElement): void {
+    const rowCount = table.rows.length;
+    for (let i = 0; i < rowCount; i++) {
+      table.deleteRow(0);
     }
   }
 }
