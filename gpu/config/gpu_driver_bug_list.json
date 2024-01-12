@@ -3311,6 +3311,23 @@
       "features": [
         "disable_svc_encoding"
       ]
+    },
+    {
+      "id": 426,
+      "cr_bugs": [1508379],
+      "description": "Disable VP9 k-SVC video decoding on non-Intel GPUs",
+      "os": {
+        "type": "win"
+      },
+      "exceptions": [
+        {
+          "multi_gpu_category": "active",
+          "vendor_id": "0x8086"
+        }
+      ],
+      "features": [
+        "disable_d3d11_vp9_ksvc_decoding"
+      ]
     }
   ]
 }

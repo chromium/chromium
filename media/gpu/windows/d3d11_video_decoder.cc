@@ -528,6 +528,14 @@ void D3D11VideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
     return;
   }
 
+  const bool is_spatial_layer_buffer =
+      buffer->has_side_data() && !buffer->side_data()->spatial_layers.empty();
+  if (config_.codec() == VideoCodec::kVP9 && is_spatial_layer_buffer &&
+      gpu_workarounds_.disable_d3d11_vp9_ksvc_decoding) {
+    PostDecoderStatus(DecoderStatus::Codes::kPlatformDecodeFailure);
+    return;
+  }
+
   input_buffer_queue_.push_back(
       std::make_pair(std::move(buffer), std::move(decode_cb)));
 
