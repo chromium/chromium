@@ -2643,6 +2643,24 @@
             ]
         }
     ],
+    "BoardingPassDetector": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "boarding_pass_detector_urls": "https://www.aa.com,https://www.delta.com,https://www.hawaiianairlines.com"
+                    },
+                    "enable_features": [
+                        "BoardingPassDetector"
+                    ]
+                }
+            ]
+        }
+    ],
     "BoostResourceLoadingTaskPriorities": [
         {
             "platforms": [
