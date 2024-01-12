@@ -4,6 +4,7 @@
 
 #include "ash/shelf/shelf_shutdown_confirmation_bubble.h"
 
+#include "ash/shelf/login_shelf_button.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/pill_button.h"
@@ -52,14 +53,15 @@ constexpr char kActionHistogramName[] =
 }  // namespace
 
 ShelfShutdownConfirmationBubble::ShelfShutdownConfirmationBubble(
-    views::View* anchor,
+    LoginShelfButton* anchor,
     ShelfAlignment alignment,
     base::OnceClosure on_confirm_callback,
     base::OnceClosure on_cancel_callback)
     : ShelfBubble(anchor,
                   alignment,
                   /*for_tooltip=*/false,
-                  /*arrow_position=*/std::nullopt) {
+                  /*arrow_position=*/std::nullopt),
+      anchor_(anchor) {
   DCHECK(on_confirm_callback);
   DCHECK(on_cancel_callback);
   confirm_callback_ = std::move(on_confirm_callback);
@@ -198,6 +200,7 @@ void ShelfShutdownConfirmationBubble::OnConfirmed() {
 }
 
 void ShelfShutdownConfirmationBubble::OnClosed() {
+  anchor_->SetIsActive(false);
   switch (dialog_result_) {
     case DialogResult::kCancelled:
       ReportBubbleAction(

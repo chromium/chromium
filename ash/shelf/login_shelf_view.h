@@ -191,6 +191,8 @@ class ASH_EXPORT LoginShelfView : public views::View,
   // Returns the shutdown confirmation bubble.
   ShelfShutdownConfirmationBubble* GetShutdownConfirmationBubbleForTesting();
 
+  LoginShelfButton* GetLoginShelfButtonByID(ButtonId button_id);
+
  private:
   class ScopedGuestButtonBlockerImpl;
 
@@ -276,6 +278,9 @@ class ASH_EXPORT LoginShelfView : public views::View,
   // The kiosk app button will only be created for the primary display's login
   // shelf.
   raw_ptr<KioskAppsButton> kiosk_apps_button_ = nullptr;
+
+  // The shutdown confirmation bubble button.
+  raw_ptr<LoginShelfButton> shutdown_confirmation_button_ = nullptr;
 
   // The kiosk app instruction will be shown if the kiosk app button is visible.
   raw_ptr<KioskAppInstructionBubble> kiosk_instruction_bubble_ = nullptr;
