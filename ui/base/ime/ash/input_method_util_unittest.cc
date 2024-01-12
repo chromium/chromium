@@ -47,8 +47,6 @@ class InputMethodUtilTest : public testing::Test {
   InputMethodUtilTest() : util_(&delegate_) {
     delegate_.set_get_localized_string_callback(
         base::BindRepeating(&l10n_util::GetStringUTF16));
-    delegate_.set_get_display_language_name_callback(
-        base::BindRepeating(&InputMethodUtilTest::GetDisplayLanguageName));
 
     xkb_input_method_descriptors_ = {
         GetDesc(Id("xkb:us::eng"), "", "us", {"en", "en-US", "en-AU", "en-NZ"},
@@ -88,11 +86,6 @@ class InputMethodUtilTest : public testing::Test {
                                  GURL(),  // options page url
                                  GURL(),  // input view page url
                                  /*handwriting_language=*/absl::nullopt);
-  }
-
-  static std::u16string GetDisplayLanguageName(
-      const std::string& language_code) {
-    return l10n_util::GetDisplayNameForLocale(language_code, "en", true);
   }
 
   FakeInputMethodDelegate delegate_;
