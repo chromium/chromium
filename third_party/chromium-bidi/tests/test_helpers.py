@@ -129,13 +129,17 @@ async def goto_url(
 
 async def set_html_content(websocket, context_id: str, html_content: str):
     """Sets the current page content without navigation."""
-    await execute_command(
+    return await execute_command(
         websocket, {
-            "method": "script.evaluate",
+            "method": "script.callFunction",
             "params": {
-                "expression": f"document.body.innerHTML = '{html_content}'",
+                "functionDeclaration": "(html_content) => { document.body.innerHTML = html_content }",
+                "arguments": [{
+                    'type': 'string',
+                    'value': html_content
+                }],
                 "target": {
-                    "context": context_id,
+                    "context": context_id
                 },
                 "awaitPromise": True
             }

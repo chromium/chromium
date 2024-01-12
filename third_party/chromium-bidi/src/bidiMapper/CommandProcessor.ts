@@ -42,6 +42,7 @@ import type {RealmStorage} from './domains/script/RealmStorage.js';
 import {ScriptProcessor} from './domains/script/ScriptProcessor.js';
 import type {EventManager} from './domains/session/EventManager.js';
 import {SessionProcessor} from './domains/session/SessionProcessor.js';
+import {StorageProcessor} from './domains/storage/StorageProcessor.js';
 import {OutgoingMessage} from './OutgoingMessage.js';
 
 export const enum CommandProcessorEvents {
@@ -64,6 +65,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
   #networkProcessor: NetworkProcessor;
   #scriptProcessor: ScriptProcessor;
   #sessionProcessor: SessionProcessor;
+  #storageProcessor: StorageProcessor;
   // keep-sorted end
 
   #parser: BidiCommandParameterParser;
@@ -120,6 +122,11 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       logger
     );
     this.#sessionProcessor = new SessionProcessor(eventManager);
+    this.#storageProcessor = new StorageProcessor(
+      browserCdpClient,
+      browsingContextStorage,
+      logger
+    );
     // keep-sorted end
   }
 
@@ -293,10 +300,16 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       // Storage domain
       // keep-sorted start block=yes
       case 'storage.deleteCookies':
-      case 'storage.getCookies':
-      case 'storage.setCookie':
         throw new UnsupportedOperationException(
           `${command.method} is not supported yet`
+        );
+      case 'storage.getCookies':
+        return await this.#storageProcessor.getCookies(
+          this.#parser.parseGetCookiesParams(command.params)
+        );
+      case 'storage.setCookie':
+        return await this.#storageProcessor.setCookie(
+          this.#parser.parseSetCookieParams(command.params)
         );
       // keep-sorted end
     }
