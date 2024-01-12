@@ -278,6 +278,7 @@ component("proxy_config_mojom_support") {
     "proxy_config_with_annotation_mojom_traits.h",
   ]
   deps = [
+    ":network_param_mojom_support",
     "//mojo/public/mojom/base",
     "//net",
     "//services/network/public/mojom:mojom_proxy_config_shared",
