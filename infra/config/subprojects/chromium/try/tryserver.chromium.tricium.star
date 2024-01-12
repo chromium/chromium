@@ -5,6 +5,7 @@
 
 load("//lib/builders.star", "os", "reclient", "xcode")
 load("//lib/consoles.star", "consoles")
+load("//lib/gn_args.star", "gn_args")
 load("//lib/try.star", "SOURCELESS_BUILDER_CACHES", "try_")
 
 try_.defaults.set(
@@ -50,18 +51,40 @@ try_.builder(
 try_.builder(
     name = "android-clang-tidy-rel",
     executable = "recipe:tricium_clang_tidy_wrapper",
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "release_try_builder",
+            "reclient",
+            "strip_debug_info",
+        ],
+    ),
     os = os.LINUX_DEFAULT,
 )
 
 try_.builder(
     name = "fuchsia-clang-tidy-rel",
     executable = "recipe:tricium_clang_tidy_wrapper",
+    gn_args = gn_args.config(
+        configs = [
+            "release_try_builder",
+            "reclient",
+            "fuchsia",
+        ],
+    ),
     os = os.LINUX_DEFAULT,
 )
 
 try_.builder(
     name = "linux-chromeos-clang-tidy-rel",
     executable = "recipe:tricium_clang_tidy_wrapper",
+    gn_args = gn_args.config(
+        configs = [
+            "chromeos_with_codecs",
+            "release_try_builder",
+            "reclient",
+        ],
+    ),
     builderless = False,
     os = os.LINUX_DEFAULT,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
@@ -70,6 +93,12 @@ try_.builder(
 try_.builder(
     name = "linux-clang-tidy-rel",
     executable = "recipe:tricium_clang_tidy_wrapper",
+    gn_args = gn_args.config(
+        configs = [
+            "release_try_builder",
+            "reclient",
+        ],
+    ),
     builderless = False,
     os = os.LINUX_DEFAULT,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
@@ -78,6 +107,14 @@ try_.builder(
 try_.builder(
     name = "linux-lacros-clang-tidy-rel",
     executable = "recipe:tricium_clang_tidy_wrapper",
+    gn_args = gn_args.config(
+        configs = [
+            "lacros_on_linux",
+            "release_try_builder",
+            "reclient",
+            "also_build_ash_chrome",
+        ],
+    ),
     os = os.LINUX_DEFAULT,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
 )
@@ -85,6 +122,12 @@ try_.builder(
 try_.builder(
     name = "mac-clang-tidy-rel",
     executable = "recipe:tricium_clang_tidy_wrapper",
+    gn_args = gn_args.config(
+        configs = [
+            "release_try_builder",
+            "reclient",
+        ],
+    ),
     cores = None,
     os = os.MAC_DEFAULT,
     ssd = True,
@@ -97,5 +140,11 @@ try_.builder(
 try_.builder(
     name = "win10-clang-tidy-rel",
     executable = "recipe:tricium_clang_tidy_wrapper",
+    gn_args = gn_args.config(
+        configs = [
+            "release_try_builder",
+            "reclient",
+        ],
+    ),
     os = os.WINDOWS_DEFAULT,
 )

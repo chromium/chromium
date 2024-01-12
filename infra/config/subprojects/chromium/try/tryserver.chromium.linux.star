@@ -60,6 +60,23 @@ try_.builder(
     name = "linux-afl-asan-rel",
     branch_selector = branches.selector.LINUX_BRANCHES,
     executable = "recipe:chromium/fuzz",
+    gn_args = gn_args.config(
+        configs = [
+            "afl",
+            "asan",
+            "shared",
+            "release",
+            "reclient",
+            "no_symbols",
+            "dcheck_always_on",
+            "chromeos_codecs",
+            "pdf_xfa",
+            "disable_nacl",
+            "optimize_for_fuzzing",
+            "mojo_fuzzer",
+            "skip_generate_fuzzer_owners",
+        ],
+    ),
 )
 
 try_.builder(
@@ -119,6 +136,23 @@ try_.builder(
     name = "linux-centipede-asan-rel",
     branch_selector = branches.selector.LINUX_BRANCHES,
     executable = "recipe:chromium/fuzz",
+    gn_args = gn_args.config(
+        configs = [
+            "centipede",
+            "asan",
+            "shared",
+            "release",
+            "reclient",
+            "no_symbols",
+            "dcheck_always_on",
+            "chromeos_codecs",
+            "pdf_xfa",
+            "disable_nacl",
+            "optimize_for_fuzzing",
+            "mojo_fuzzer",
+            "skip_generate_fuzzer_owners",
+        ],
+    ),
 )
 
 try_.builder(
@@ -145,6 +179,13 @@ try_.builder(
 try_.builder(
     name = "linux-dcheck-off-rel",
     mirrors = builder_config.copy_from("linux-rel"),
+    gn_args = gn_args.config(
+        configs = [
+            "release_try_builder",
+            "reclient",
+            "dcheck_off",
+        ],
+    ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -221,6 +262,16 @@ try_.builder(
 try_.builder(
     name = "linux-mbi-mode-per-render-process-host-rel",
     mirrors = builder_config.copy_from("linux-rel"),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "release_builder",
+            "reclient",
+            "no_symbols",
+            "dcheck_always_on",
+            "mbi_mode_per_render_process_host",
+        ],
+    ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -251,6 +302,14 @@ try_.builder(
             target_platform = builder_config.target_platform.LINUX,
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "no_symbols",
+            "dcheck_always_on",
+        ],
+    ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -258,6 +317,23 @@ try_.builder(
     name = "linux-libfuzzer-asan-rel",
     branch_selector = branches.selector.LINUX_BRANCHES,
     executable = "recipe:chromium/fuzz",
+    gn_args = gn_args.config(
+        configs = [
+            "libfuzzer",
+            "asan",
+            "shared",
+            "release",
+            "reclient",
+            "no_symbols",
+            "dcheck_always_on",
+            "chromeos_codecs",
+            "pdf_xfa",
+            "disable_nacl",
+            "optimize_for_fuzzing",
+            "mojo_fuzzer",
+            "skip_generate_fuzzer_owners",
+        ],
+    ),
     builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),
@@ -604,6 +680,14 @@ try_.builder(
 try_.builder(
     name = "linux_chromium_clobber_deterministic",
     executable = "recipe:swarming/deterministic_build",
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "no_symbols",
+            "dcheck_always_on",
+        ],
+    ),
     execution_timeout = 6 * time.hour,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
 )
@@ -671,6 +755,14 @@ try_.builder(
     try_settings = builder_config.try_settings(
         include_all_triggered_testers = True,
         is_compile_only = True,
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "reclient",
+            "no_symbols",
+            "dcheck_always_on",
+        ],
     ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
@@ -808,6 +900,12 @@ try_.builder(
 try_.builder(
     name = "linux_upload_clang",
     executable = "recipe:chromium_toolchain/package_clang",
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "goma",
+        ],
+    ),
     builderless = True,
     cores = 32,
     ssd = True,
@@ -894,6 +992,16 @@ try_.gpu.optional_tests_builder(
     ),
     try_settings = builder_config.try_settings(
         retry_failed_shards = False,
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_fyi_tests",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "dcheck_always_on",
+            "disable_nacl",
+        ],
     ),
     main_list_view = "try",
     tryjob = try_.job(

@@ -572,12 +572,27 @@ try_.builder(
 try_.builder(
     name = "android-deterministic-dbg",
     executable = "recipe:swarming/deterministic_build",
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "debug_builder",
+            "reclient",
+        ],
+    ),
     execution_timeout = 6 * time.hour,
 )
 
 try_.builder(
     name = "android-deterministic-rel",
     executable = "recipe:swarming/deterministic_build",
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder_without_codecs",
+            "release_try_builder",
+            "reclient",
+            "strip_debug_info",
+        ],
+    ),
     execution_timeout = 6 * time.hour,
 )
 
@@ -933,6 +948,15 @@ try_.builder(
             config = "main_builder",
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "release_try_builder",
+            "reclient",
+            "strip_debug_info",
+            "x64",
+        ],
+    ),
 )
 
 try_.builder(
@@ -1115,6 +1139,17 @@ try_.gpu.optional_tests_builder(
     ),
     try_settings = builder_config.try_settings(
         retry_failed_shards = False,
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "android_builder",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "dcheck_always_on",
+            "static_angle",
+        ],
     ),
     main_list_view = "try",
     tryjob = try_.job(

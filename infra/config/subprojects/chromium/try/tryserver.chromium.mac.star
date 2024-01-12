@@ -785,6 +785,17 @@ try_.gpu.optional_tests_builder(
         ),
         build_gs_bucket = "chromium-gpu-fyi-archive",
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_fyi_tests",
+            "release_builder",
+            "reclient",
+            "minimal_symbols",
+            "dcheck_always_on",
+            "x64",
+            "disable_nacl",
+        ],
+    ),
     cpu = cpu.ARM64,
     ssd = None,
     main_list_view = "try",

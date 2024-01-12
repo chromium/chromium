@@ -1,6 +1,9 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/try/linux-mbi-mode-per-render-process-host-rel/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {

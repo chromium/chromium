@@ -256,26 +256,6 @@
       'fuchsia-x64': 'official_fuchsia_x64',
     },
 
-    'tryserver.blink': {
-      # Most tryservers should have '_trybot' in their config names, but
-      # 'release_trybot' includes 'dcheck_always_on', and the blink
-      # release trybots must *not* enable dchecks, because that could
-      # cause them to produce different baselines than the release
-      # waterfall bots, and run_web_tests.py can't handle that (by design).
-      'linux-blink-rel': 'release_bot_blink_minimal_symbols_reclient',
-      'mac10.15-blink-rel': 'release_bot_blink_minimal_symbols_no_nacl_reclient',
-      'mac11.0-blink-rel': 'release_bot_blink_minimal_symbols_no_nacl_reclient',
-      'mac11.0.arm64-blink-rel': 'release_bot_blink_arm64_minimal_symbols_reclient',
-      'mac12.0-blink-rel': 'release_bot_blink_minimal_symbols_no_nacl_reclient',
-      'mac12.0.arm64-blink-rel': 'release_bot_blink_arm64_minimal_symbols_reclient',
-      'mac13-blink-rel': 'release_bot_blink_minimal_symbols_no_nacl_reclient',
-      'mac13.arm64-blink-rel': 'release_bot_blink_arm64_minimal_symbols_reclient',
-      'mac13.arm64-skia-alt-blink-rel': 'release_bot_blink_arm64_minimal_symbols_reclient',
-      'win10.20h2-blink-rel': 'release_bot_blink_x86_minimal_symbols_reclient',
-      'win11-arm64-blink-rel': 'release_bot_blink_arm64_minimal_symbols_reclient',
-      'win11-blink-rel': 'release_bot_blink_x64_minimal_symbols_reclient',
-    },
-
     'tryserver.chrome': {
       'chromeos-arm-generic-cfi-thin-lto-chrome': 'chromeos_arm-generic_cfi_thin_lto_official',
       'chromeos-arm64-generic-cfi-thin-lto-chrome': 'chromeos_arm64-generic_cfi_thin_lto_official',
@@ -335,43 +315,6 @@
       'win64-pgo': 'official_x64_pgo',
     },
 
-    'tryserver.chromium.android': {
-      'android-cronet-lollipop-arm-rel': 'android_cronet_release_bot_minimal_symbols_arm_no_neon',
-      'android-cronet-marshmallow-arm64-rel': 'android_cronet_release_trybot_arm64',
-      'android-deterministic-dbg': 'android_debug_bot_reclient',
-      'android-deterministic-rel': 'android_without_codecs_release_trybot_reclient',
-      'android-weblayer-pie-x86-fyi-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome',
-      'android_blink_rel': 'android_release_trybot_x64_reclient',
-      'android_coverage': 'android_debug_trybot_java_coverage',
-      'android_n5x_swarming_dbg': 'android_debug_trybot_arm64_reclient',
-      'android_optional_gpu_tests_rel': 'gpu_tests_android_release_trybot_reclient',
-      'gpu-fyi-try-android-pixel-6-64': 'gpu_tests_android_release_trybot_arm64_reclient',
-      'gpu-try-android-m-nexus-5x-64': 'gpu_tests_android_release_trybot_arm64_reclient',
-      'linux_android_dbg_ng': 'android_debug_bot',
-    },
-
-    'tryserver.chromium.chromiumos': {
-      'gpu-fyi-try-chromeos-skylab-volteer': 'gpu_tests_chromeos_volteer_release_trybot_dcheck_off_no_symbols_reclient_skylab',
-      'lacros-arm64-generic-rel-skylab-fyi': 'chromeos_arm64-generic_lacros_rel_skylab_reclient',
-    },
-
-    'tryserver.chromium.linux': {
-      'linux-afl-asan-rel': 'afl_asan_release_trybot_reclient',
-      'linux-centipede-asan-rel': 'centipede_asan_release_trybot_reclient',
-      'linux-dcheck-off-rel': 'release_trybot_dcheck_off_reclient',
-      'linux-layout-tests-edit-ng': 'release_trybot_reclient',
-      'linux-libfuzzer-asan-rel': 'libfuzzer_asan_release_trybot_reclient',
-      'linux-mbi-mode-per-render-process-host-rel': 'gpu_tests_release_trybot_mbi_mode_per_render_process_host_reclient',
-      'linux_chromium_clobber_deterministic': 'release_trybot_reclient',
-      'linux_chromium_compile_rel_ng': 'release_trybot_reclient',
-
-      'linux_optional_gpu_tests_rel': 'gpu_fyi_tests_release_trybot_reclient',
-    },
-
-    'tryserver.chromium.mac': {
-      'mac_optional_gpu_tests_rel': 'gpu_fyi_tests_release_trybot_x64_reclient',
-    },
-
     'tryserver.chromium.perf': {
       'Android Compile Perf': 'official_goma_minimal_symbols_android',
       'Android Compile Perf PGO': 'official_goma_minimal_symbols_android_pgo',
@@ -390,22 +333,6 @@
       'Mac arm Builder Perf PGO': 'official_goma_mac_arm_perf_pgo',
       'Win x64 Builder Perf': 'official_goma_perf',
       'Win x64 Builder Perf PGO': 'official_goma_perf_pgo',
-    },
-
-    'tryserver.chromium.tricium': {
-      'android-clang-tidy-rel': 'android_release_trybot_reclient',
-      'fuchsia-clang-tidy-rel': 'release_trybot_fuchsia_reclient',
-      'linux-chromeos-clang-tidy-rel': 'chromeos_with_codecs_release_trybot_reclient',
-      'linux-clang-tidy-rel': 'release_trybot_reclient',
-      'linux-lacros-clang-tidy-rel': 'lacros_on_linux_release_trybot_reclient',
-      'mac-clang-tidy-rel': 'release_trybot_reclient',
-      'win10-clang-tidy-rel': 'release_trybot_reclient',
-    },
-
-    'tryserver.chromium.win': {
-      'win-celab-try-rel': 'release_bot_minimal_symbols_reclient',
-      'win-libfuzzer-asan-rel': 'libfuzzer_windows_asan_release_trybot_reclient',
-      'win_optional_gpu_tests_rel': 'gpu_fyi_tests_release_trybot_reclient',
     },
 
     'tryserver.devtools-frontend': {
@@ -450,27 +377,8 @@
   # This is the list of configs that you can pass to mb; each config
   # represents a particular combination of gn args that
   # we must support. A given config *may* be platform-specific but
-  # is not necessarily so (i.e., we might have mac, win, and linux
-  # bots all using the 'release_bot' config).
+  # is not necessarily so.
   'configs': {
-    'afl_asan_release_trybot_reclient': [
-      'afl', 'asan', 'shared_release_trybot_reclient', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'mojo_fuzzer', 'skip_generate_fuzzer_owners',
-    ],
-
-    'android_cronet_release_bot_minimal_symbols_arm_no_neon': [
-      'android', 'cronet_android', 'official_optimize', 'release_bot', 'minimal_symbols', 'arm_no_neon',
-      'strip_debug_info',
-    ],
-
-    'android_cronet_release_trybot_arm64': [
-      'android', 'cronet_android', 'official_optimize', 'release_trybot', 'arm64',
-      'strip_debug_info',
-    ],
-
-    'android_debug_bot': [
-      'android', 'debug_bot',
-    ],
-
     'android_debug_bot_reclient': [
       'android', 'debug_bot_reclient',
     ],
@@ -481,14 +389,6 @@
 
     'android_debug_bot_reclient_fastbuild': [
       'android', 'debug_bot_reclient', 'android_fastbuild',
-    ],
-
-    'android_debug_trybot_arm64_reclient': [
-      'android', 'debug_bot_reclient', 'arm64',
-    ],
-
-    'android_debug_trybot_java_coverage': [
-      'android', 'debug_bot', 'use_java_coverage', 'strip_debug_info',
     ],
 
     'android_release_bot_minimal_symbols_arm64_webview_monochrome_reclient': [
@@ -506,29 +406,12 @@
       'android', 'release_trybot_reclient', 'strip_debug_info',
     ],
 
-    'android_release_trybot_x64_reclient': [
-      'android', 'release_trybot_reclient', 'strip_debug_info', 'x64',
-    ],
-
-    'android_release_trybot_x86_fastbuild_webview_monochrome': [
-      'android', 'release_trybot', 'strip_debug_info', 'x86',
-      'android_fastbuild', 'webview_monochrome', 'webview_shell',
-    ],
-
-    'android_without_codecs_release_trybot_reclient': [
-      'android_without_codecs', 'release_trybot_reclient', 'strip_debug_info',
-    ],
-
     'asan_lsan_release_trybot_reclient': [
       'asan', 'lsan', 'release_trybot_minimal_symbols_reclient',
     ],
 
     'cast_binary_size_reclient': [
       'cast_receiver', 'cast_os', 'minimal_symbols', 'release_bot_reclient',
-    ],
-
-    'centipede_asan_release_trybot_reclient': [
-      'centipede', 'asan', 'shared_release_trybot_reclient', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'mojo_fuzzer', 'skip_generate_fuzzer_owners',
     ],
 
     'chrome_branded_reclient_minimal_symbols': [
@@ -596,10 +479,6 @@
     ],
     'chromeos_arm64-generic_lacros_official_skylab_reclient': [
       'chromeos_arm64-generic-crostoolchain_reclient', 'lacros', 'official', 'minimal_symbols', 'cfi', 'thin_lto', 'is_skylab',
-    ],
-
-    'chromeos_arm64-generic_lacros_rel_skylab_reclient': [
-      'chromeos_arm64-generic-crostoolchain_reclient', 'lacros', 'release','is_skylab',
     ],
 
     'chromeos_betty-arc-r_include_unwind_tables_official_use_fake_dbus_clients': [
@@ -732,10 +611,6 @@
       'also_build_lacros_chrome_for_architecture_amd64',
     ],
 
-    'chromeos_with_codecs_release_trybot_reclient': [
-      'chromeos_with_codecs', 'release_trybot_reclient', 'no_symbols',
-    ],
-
     'clang_tot_official': [
       'clang_tot', 'official',
     ],
@@ -802,20 +677,8 @@
       'chromeos_device_reclient', 'also_build_lacros_chrome_for_architecture_amd64',
     ],
 
-    'gpu_fyi_tests_release_trybot_reclient': [
-      'gpu_fyi_tests', 'release_trybot_minimal_symbols_reclient', 'disable_nacl',
-    ],
-
-    'gpu_fyi_tests_release_trybot_x64_reclient': [
-      'gpu_fyi_tests', 'release_trybot_minimal_symbols_reclient', 'x64', 'disable_nacl',
-    ],
-
     'gpu_tests_android_release_trybot_arm64_reclient': [
       'gpu_tests', 'android', 'release_trybot_minimal_symbols_reclient', 'arm64', 'static_angle',
-    ],
-
-    'gpu_tests_android_release_trybot_reclient': [
-      'gpu_tests', 'android', 'release_trybot_minimal_symbols_reclient', 'static_angle',
     ],
 
     'gpu_tests_arm64_debug_reclient': [
@@ -828,10 +691,6 @@
 
     'gpu_tests_chromeos_jacuzzi_release_trybot_dcheck_off_no_symbols_reclient_skylab': [
       'gpu_tests', 'chromeos_jacuzzi_reclient', 'release_trybot_dcheck_off_reclient', 'no_symbols', 'is_skylab',
-    ],
-
-    'gpu_tests_chromeos_volteer_release_trybot_dcheck_off_no_symbols_reclient_skylab': [
-      'gpu_tests', 'chromeos_volteer_reclient', 'release_trybot_dcheck_off_reclient', 'no_symbols', 'is_skylab',
     ],
 
     'gpu_tests_debug_bot_x86_no_symbols_reclient': [
@@ -848,10 +707,6 @@
 
     'gpu_tests_release_bot_minimal_symbols_reclient': [
       'gpu_tests', 'release_bot_reclient', 'minimal_symbols',
-    ],
-
-    'gpu_tests_release_trybot_mbi_mode_per_render_process_host_reclient': [
-      'gpu_tests', 'release_trybot_reclient', 'mbi_mode_per_render_process_host'
     ],
 
     'gpu_tests_release_trybot_minimal_symbol_x86_resource_allowlisting_reclient': [
@@ -872,18 +727,6 @@
 
     'gpu_tests_release_trybot_resource_allowlisting_reclient': [
       'gpu_tests', 'release_trybot_reclient', 'resource_allowlisting',
-    ],
-
-    'lacros_on_linux_release_trybot_reclient': [
-      'lacros_on_linux_release_trybot_reclient',
-    ],
-
-    'libfuzzer_asan_release_trybot_reclient': [
-      'libfuzzer', 'asan', 'shared_release_trybot_reclient', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'mojo_fuzzer', 'skip_generate_fuzzer_owners',
-    ],
-
-    'libfuzzer_windows_asan_release_trybot_reclient': [
-      'libfuzzer', 'asan', 'release_trybot_reclient', 'chrome_with_codecs', 'pdf_xfa', 'disable_nacl', 'mojo_fuzzer', 'skip_generate_fuzzer_owners', 'no_symbols',
     ],
 
     'mac_clang_tot_official': [
@@ -1115,34 +958,8 @@
       'release_bot_blink',
     ],
 
-    'release_bot_blink_arm64_minimal_symbols_reclient': [
-      'release_bot_blink', 'arm64', 'minimal_symbols',
-    ],
-
-    'release_bot_blink_minimal_symbols_no_nacl_reclient': [
-      'release_bot_blink',
-      'minimal_symbols',
-      'disable_nacl',
-    ],
-
-    'release_bot_blink_minimal_symbols_reclient': [
-      'release_bot_blink', 'minimal_symbols',
-    ],
-
     'release_bot_blink_v8_debug_reclient': [
       'release_bot_blink', 'v8_enable_debugging_features',
-    ],
-
-    'release_bot_blink_x64_minimal_symbols_reclient': [
-      'release_bot_blink', 'x64', 'minimal_symbols',
-    ],
-
-    'release_bot_blink_x86_minimal_symbols_reclient': [
-      'release_bot_blink', 'x86', 'minimal_symbols',
-    ],
-
-    'release_bot_minimal_symbols_reclient': [
-      'release_bot_reclient', 'minimal_symbols',
     ],
 
     'release_bot_reclient': [
@@ -1155,14 +972,6 @@
 
     'release_trybot_blink_do_typecheck': [
       'release_trybot_blink', 'devtools_do_typecheck',
-    ],
-
-    'release_trybot_dcheck_off_reclient': [
-      'release_trybot_dcheck_off_reclient',
-    ],
-
-    'release_trybot_fuchsia_reclient': [
-      'release_trybot_reclient', 'fuchsia',
     ],
 
     'release_trybot_reclient': [
@@ -1181,12 +990,6 @@
   # This is a dict mapping a given 'mixin' name to a dict of settings that
   # mb should use. See //tools/mb/docs/user_guide.md for more information.
   'mixins': {
-    'afl': { 'gn_args': 'use_afl=true' },
-
-    'also_build_ash_chrome': {
-      'gn_args': 'also_build_ash_chrome=true',
-    },
-
     'also_build_lacros_chrome_for_architecture_amd64': {
       'gn_args': 'also_build_lacros_chrome_for_architecture="amd64"',
     },
@@ -1298,8 +1101,6 @@
       'args_file': '//build/config/fuchsia/size_optimized_cast_receiver_args_internal.gn',
     },
 
-    'centipede': { 'gn_args': 'use_centipede=true' },
-
     'cfi': {
       'gn_args': 'is_cfi=true',
     },
@@ -1345,10 +1146,6 @@
       'mixins': ['chromeos_device_reclient', 'arm64-generic-crostoolchain', 'ozone_headless']
     },
 
-    'chromeos_codecs': {
-      'mixins': ['ffmpeg_branding_chromeos', 'proprietary_codecs'],
-    },
-
     'chromeos_device': {
       'gn_args': 'is_chromeos_device=true ozone_platform_headless=true',
       'mixins': ['dcheck_off', 'reclient'],
@@ -1365,14 +1162,6 @@
 
     'chromeos_kevin_reclient': {
       'mixins': ['chromeos_device_reclient', 'kevin', 'ozone_headless']
-    },
-
-    'chromeos_volteer_reclient': {
-      'mixins': ['chromeos_device_reclient', 'volteer', 'ozone_headless']
-    },
-
-    'chromeos_with_codecs': {
-      'mixins': ['chromeos', 'chromeos_codecs'],
     },
 
     'clang': {
@@ -1442,10 +1231,6 @@
       'gn_args': 'is_debug=true',
     },
 
-    'debug_bot': {
-      'mixins': ['debug', 'shared', 'goma', 'minimal_symbols'],
-    },
-
     'debug_bot_blink': {
       'mixins': ['debug', 'shared', 'reclient', 'minimal_symbols', 'chrome_with_codecs'],
     },
@@ -1479,10 +1264,6 @@
       'gn_args': 'ffmpeg_branding="Chrome"',
     },
 
-    'ffmpeg_branding_chromeos': {
-      'gn_args': 'ffmpeg_branding="ChromeOS"',
-    },
-
     'fuchsia': {
       'gn_args': 'target_os="fuchsia"',
     },
@@ -1501,10 +1282,6 @@
 
     'goma': {
       'gn_args': 'use_goma=true',
-    },
-
-    'gpu_fyi_tests': {
-      'mixins': ['gpu_tests'],
     },
 
     'gpu_tests': {
@@ -1548,14 +1325,6 @@
       'gn_args': 'target_os="chromeos" chromeos_is_browser_only=true'
     },
 
-    'lacros_on_linux_release_trybot_reclient': {
-      'mixins': [
-        'lacros_on_linux', 'release_trybot_reclient', 'also_build_ash_chrome', 'no_symbols',
-      ],
-    },
-
-    'libfuzzer': { 'gn_args': 'use_libfuzzer=true' },
-
     'lsan': {
       'gn_args': 'is_lsan=true',
     },
@@ -1564,16 +1333,8 @@
       'gn_args': 'target_os="mac"',
     },
 
-    'mbi_mode_per_render_process_host': {
-      'gn_args': 'mbi_mode=\"per_render_process_host\"',
-    },
-
     'minimal_symbols': {
       'gn_args': 'symbol_level=1',
-    },
-
-    'mojo_fuzzer': {
-      'gn_args': 'enable_mojom_fuzzer=true',
     },
 
     'no_default_afdo': {
@@ -1617,16 +1378,8 @@
         'gn_args': 'build_with_internal_optimization_guide=true'
     },
 
-    'optimize_for_fuzzing': {
-      'gn_args': 'optimize_for_fuzzing=true',
-    },
-
     'ozone_headless': {
       'gn_args': 'ozone_platform_headless=true',
-    },
-
-    'pdf_xfa': {
-      'gn_args': 'pdf_enable_xfa=true',
     },
 
     'pgo_phase_0': {
@@ -1662,10 +1415,6 @@
       'gn_args': 'is_debug=false dcheck_always_on=false',
     },
 
-    'release_bot': {
-      'mixins': ['release', 'static', 'goma'],
-    },
-
     # All bots that run the WPT test suite must have H.264 compiled in,
     # in order to give consistent results for WebRTC codec-dependent tests.
     'release_bot_blink': {
@@ -1674,10 +1423,6 @@
 
     'release_bot_reclient': {
       'mixins': ['release', 'static', 'reclient'],
-    },
-
-    'release_trybot': {
-      'mixins': ['release_bot', 'no_symbols', 'dcheck_always_on'],
     },
 
     'release_trybot_blink': {
@@ -1710,18 +1455,6 @@
 
     'shared': {
       'gn_args': 'is_component_build=true',
-    },
-
-    'shared_release_bot_reclient': {
-      'mixins': ['shared', 'release', 'reclient']
-    },
-
-    'shared_release_trybot_reclient': {
-      'mixins': ['shared_release_bot_reclient', 'no_symbols', 'dcheck_always_on'],
-    },
-
-    'skip_generate_fuzzer_owners': {
-      'gn_args': 'generate_fuzzer_owners=false',
     },
 
     # Ensures we don't have mulitple versions of Trichrome Library installed on
@@ -1768,10 +1501,6 @@
 
     'use_fake_dbus_clients': {
       'gn_args': 'use_real_dbus_clients=false',
-    },
-
-    'use_java_coverage': {
-      'gn_args': 'use_jacoco_coverage=true',
     },
 
     'v8_enable_debugging_features': {

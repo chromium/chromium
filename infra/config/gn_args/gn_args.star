@@ -7,6 +7,13 @@
 load("//lib/gn_args.star", "gn_args")
 
 gn_args.config(
+    name = "afl",
+    args = {
+        "use_afl": True,
+    },
+)
+
+gn_args.config(
     name = "also_build_ash_chrome",
     args = {
         "also_build_ash_chrome": True,
@@ -807,6 +814,13 @@ gn_args.config(
 )
 
 gn_args.config(
+    name = "mbi_mode_per_render_process_host",
+    args = {
+        "mbi_mode": "per_render_process_host",
+    },
+)
+
+gn_args.config(
     name = "minimal_symbols",
     args = {
         "symbol_level": 1,
@@ -1095,6 +1109,13 @@ gn_args.config(
     name = "shared",
     args = {
         "is_component_build": True,
+    },
+)
+
+gn_args.config(
+    name = "skip_generate_fuzzer_owners",
+    args = {
+        "generate_fuzzer_owners": False,
     },
 )
 
