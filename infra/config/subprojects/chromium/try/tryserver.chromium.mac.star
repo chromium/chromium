@@ -503,6 +503,7 @@ try_.builder(
     name = "mac_upload_rust_arm",
     executable = "recipe:chromium_toolchain/package_rust",
     builderless = False,
+    cpu = cpu.ARM64,
     execution_timeout = 6 * time.hour,
 )
 
