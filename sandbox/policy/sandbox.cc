@@ -23,6 +23,8 @@
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
+#include "base/debug/alias.h"
+#include "base/notreached.h"
 #include "base/process/process_info.h"
 #include "sandbox/policy/win/sandbox_win.h"
 #include "sandbox/win/src/sandbox.h"
@@ -59,7 +61,13 @@ bool Sandbox::Initialize(sandbox::mojom::Sandbox sandbox_type,
       // will be broken. This has to run before threads and windows are created.
       ResultCode result = broker_services->CreateAlternateDesktop(
           Desktop::kAlternateWinstation);
-      CHECK(result == SBOX_ALL_OK);
+      if (result != SBOX_ALL_OK) {
+        // TODO(crbug.com/1396219) Gather some extra data when this fails.
+        DWORD gle = GetLastError();
+        base::debug::Alias(&result);
+        base::debug::Alias(&gle);
+        NOTREACHED_NORETURN();
+      }
     }
     return true;
   }
