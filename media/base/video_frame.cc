@@ -1321,10 +1321,10 @@ bool VideoFrame::HasDmaBufs() const {
   return NumDmabufFds() > 0;
 }
 
-const base::ScopedFD& VideoFrame::GetDmabufFd(size_t i) const {
+int VideoFrame::GetDmabufFd(size_t i) const {
   DCHECK_EQ(storage_type_, STORAGE_DMABUFS);
 
-  return dmabuf_fds_->fds()[i];
+  return dmabuf_fds_->fds()[i].get();
 }
 
 bool VideoFrame::IsSameDmaBufsAs(const VideoFrame& frame) const {

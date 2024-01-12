@@ -232,7 +232,7 @@ scoped_refptr<VideoFrame> GenericDmaBufVideoFrameMapper::Map(
     }
 
     uint8_t* mapped_addr =
-        Mmap(mapped_size, video_frame->GetDmabufFd(i).get(), permissions);
+        Mmap(mapped_size, video_frame->GetDmabufFd(i), permissions);
     if (!mapped_addr) {
       VLOGF(1) << "nullptr returned by Mmap";
       MunmapBuffers(chunks, /*video_frame=*/nullptr);

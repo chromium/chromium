@@ -518,7 +518,7 @@ bool V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::EnqueueInputRecord() {
     // additional planes.
     const size_t dmabuf_index = std::min<size_t>(i, num_fds - 1);
     const auto& layout_planes = frame->layout().planes();
-    qbuf.m.planes[i].m.fd = frame->GetDmabufFd(dmabuf_index).get();
+    qbuf.m.planes[i].m.fd = frame->GetDmabufFd(dmabuf_index);
     qbuf.m.planes[i].data_offset = layout_planes[i].offset;
     qbuf.m.planes[i].bytesused += qbuf.m.planes[i].data_offset;
     qbuf.m.planes[i].length =
@@ -549,7 +549,7 @@ bool V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::EnqueueOutputRecord() {
 
   auto& job_record = running_job_queue_.back();
   for (size_t i = 0; i < qbuf.length; i++) {
-    planes[i].m.fd = job_record->output_frame->GetDmabufFd(i).get();
+    planes[i].m.fd = job_record->output_frame->GetDmabufFd(i);
   }
   IOCTL_OR_ERROR_RETURN_FALSE(VIDIOC_QBUF, &qbuf);
   free_output_buffers_.pop_back();
