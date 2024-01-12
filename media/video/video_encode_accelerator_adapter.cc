@@ -431,6 +431,7 @@ void VideoEncodeAcceleratorAdapter::InitializeOnAcceleratorThread(
   profile_ = profile;
   supported_rc_modes_ = supported_rc_modes;
   options_ = options;
+  input_coded_size_ = options.frame_size;
   info_cb_ = std::move(info_cb);
   output_cb_ = std::move(output_cb);
   state_ = State::kWaitingForFirstFrame;
@@ -609,15 +610,9 @@ void VideoEncodeAcceleratorAdapter::ChangeOptionsOnAcceleratorThread(
   DCHECK_CALLED_ON_VALID_SEQUENCE(accelerator_sequence_checker_);
   DCHECK(active_encodes_.empty());
   DCHECK(pending_encodes_.empty());
-  DCHECK_EQ(state_, State::kReadyToEncode);
+  CHECK(state_ == State::kReadyToEncode ||
+        state_ == State::kWaitingForFirstFrame);
 
-  if (options.frame_size != options_.frame_size) {
-    auto status =
-        EncoderStatus(EncoderStatus::Codes::kEncoderInitializationError,
-                      "Resolution change is not supported.");
-    std::move(done_cb).Run(status);
-    return;
-  }
   if (options.bitrate && options_.bitrate &&
       options.bitrate->mode() != options_.bitrate->mode()) {
     std::move(done_cb).Run(
@@ -626,10 +621,36 @@ void VideoEncodeAcceleratorAdapter::ChangeOptionsOnAcceleratorThread(
     return;
   }
 
+  absl::optional<gfx::Size> new_frame_size;
+  if (options.frame_size != options_.frame_size) {
+    if (supports_frame_size_change_) {
+      input_coded_size_ = options.frame_size;
+      input_pool_.reset();
+      gmb_frame_pool_.reset();
+      new_frame_size = options.frame_size;
+    } else {
+      auto status =
+          EncoderStatus(EncoderStatus::Codes::kEncoderInitializationError,
+                        "Resolution change is not supported.");
+      std::move(done_cb).Run(status);
+      return;
+    }
+  }
+
   Bitrate bitrate =
       CreateBitrate(options.bitrate, options.frame_size, supported_rc_modes_);
   uint32_t framerate = base::ClampRound<uint32_t>(
       options.framerate.value_or(VideoEncodeAccelerator::kDefaultFramerate));
+
+  // When frame size is changed, run |done_cb| in |RequireBitstreamBuffers|
+  // after bitstream buffer is re-initialized. At that time, reconfigure is done
+  // and VEA is ready to accept new frames.
+  if (new_frame_size.has_value()) {
+    reconfigure_cb_ = std::move(done_cb);
+  }
+  state_ = State::kReconfiguring;
+  accelerator_->RequestEncodingParametersChange(bitrate, framerate,
+                                                new_frame_size);
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
   if (profile_ >= H264PROFILE_MIN && profile_ <= H264PROFILE_MAX) {
@@ -655,10 +676,10 @@ void VideoEncodeAcceleratorAdapter::ChangeOptionsOnAcceleratorThread(
   options_ = options;
   if (!output_cb.is_null())
     output_cb_ = std::move(output_cb);
-
-  accelerator_->RequestEncodingParametersChange(bitrate, framerate,
-                                                absl::nullopt);
-  std::move(done_cb).Run(EncoderStatus::Codes::kOk);
+  if (!done_cb.is_null()) {
+    state_ = State::kReadyToEncode;
+    std::move(done_cb).Run(EncoderStatus::Codes::kOk);
+  }
 }
 
 void VideoEncodeAcceleratorAdapter::Flush(EncoderStatusCB done_cb) {
@@ -713,15 +734,21 @@ void VideoEncodeAcceleratorAdapter::RequireBitstreamBuffers(
     const gfx::Size& input_coded_size,
     size_t output_buffer_size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(accelerator_sequence_checker_);
-
-  input_coded_size_ = input_coded_size;
+  CHECK(state_ == State::kInitializing || state_ == State::kReconfiguring);
 
   constexpr int kOutputBufferNumber = 2;
   output_buffer_handles_.clear();
   for (int id = 0; id < kOutputBufferNumber; id++) {
     auto handle = output_pool_->MaybeAllocateBuffer(output_buffer_size);
     if (!handle) {
-      InitCompleted(EncoderStatus::Codes::kEncoderInitializationError);
+      if (state_ == State::kInitializing) {
+        InitCompleted(EncoderStatus::Codes::kEncoderInitializationError);
+      } else if (reconfigure_cb_) {
+        std::move(reconfigure_cb_)
+            .Run({EncoderStatus::Codes::kInvalidOutputBuffer,
+                  "Failed to allocate buffer"});
+        state_ = State::kNotInitialized;
+      }
       return;
     }
 
@@ -731,7 +758,14 @@ void VideoEncodeAcceleratorAdapter::RequireBitstreamBuffers(
     output_buffer_handles_.push_back(std::move(handle));
   }
 
-  InitCompleted(EncoderStatus::Codes::kOk);
+  if (state_ == State::kInitializing) {
+    InitCompleted(EncoderStatus::Codes::kOk);
+  } else if (state_ == State::kReconfiguring) {
+    state_ = State::kReadyToEncode;
+    if (reconfigure_cb_) {
+      std::move(reconfigure_cb_).Run(EncoderStatus::Codes::kOk);
+    }
+  }
 }
 
 void VideoEncodeAcceleratorAdapter::BitstreamBufferReady(
@@ -907,6 +941,18 @@ void VideoEncodeAcceleratorAdapter::NotifyErrorStatus(
     return;
   }
 
+  if (state_ == State::kReconfiguring) {
+    if (reconfigure_cb_) {
+      std::move(reconfigure_cb_)
+          .Run(EncoderStatus(EncoderStatus::Codes::kEncoderInitializationError,
+                             "VideoEncodeAccelerator encountered an error")
+                   .WithData("VideoEncodeAccelerator status code",
+                             static_cast<int32_t>(status.code())));
+    }
+    state_ = State::kNotInitialized;
+    return;
+  }
+
   if (state_ == State::kFlushing)
     FlushCompleted(false);
 
@@ -925,6 +971,7 @@ void VideoEncodeAcceleratorAdapter::NotifyErrorStatus(
 void VideoEncodeAcceleratorAdapter::NotifyEncoderInfoChange(
     const VideoEncoderInfo& info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(accelerator_sequence_checker_);
+  supports_frame_size_change_ = info.supports_frame_size_change;
   info_cb_.Run(info);
 }
 

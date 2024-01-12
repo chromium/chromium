@@ -631,10 +631,15 @@ MediaFoundationVideoEncodeAccelerator::
 
 VideoEncodeAccelerator::SupportedProfiles
 MediaFoundationVideoEncodeAccelerator::GetSupportedProfiles() {
-  TRACE_EVENT0("gpu,startup",
-               "MediaFoundationVideoEncodeAccelerator::GetSupportedProfiles");
+  TRACE_EVENT1("gpu,startup",
+               "MediaFoundationVideoEncodeAccelerator::GetSupportedProfiles",
+               "from_cache", supported_profiles_.has_value());
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (supported_profiles_.has_value()) {
+    return supported_profiles_.value();
+  }
 
   std::vector<VideoCodec> supported_codecs(
       {VideoCodec::kH264, VideoCodec::kVP9, VideoCodec::kAV1});
@@ -698,6 +703,8 @@ MediaFoundationVideoEncodeAccelerator::GetSupportedProfiles() {
     }
   }
 
+  supported_profiles_ = profiles;
+
   return profiles;
 }
 
@@ -743,6 +750,7 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
     }
 #endif
   }
+  profile_ = config.output_profile;
 
   if (codec_ == VideoCodec::kUnknown) {
     MEDIA_LOG(ERROR, media_log_)
@@ -756,11 +764,20 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
     return false;
   }
   client_ = client;
+  // Unsupported frame size should be rejected. However, to avoid breaking
+  // existing applications, only a warning is printed.
+  if (!IsFrameSizeAllowed(config.input_visible_size)) {
+    MEDIA_LOG(WARNING, media_log_)
+        << config.input_visible_size.ToString()
+        << " is not supported by profile " << profile_;
+  }
   input_visible_size_ = config.input_visible_size;
-  if (config.initial_framerate.has_value() && config.initial_framerate.value())
+  if (config.initial_framerate.has_value() &&
+      config.initial_framerate.value()) {
     frame_rate_ = config.initial_framerate.value();
-  else
+  } else {
     frame_rate_ = kMaxFrameRateNumerator / kMaxFrameRateDenominator;
+  }
   bitrate_allocation_ = AllocateBitrateForDefaultEncoding(config);
 
   bitstream_buffer_size_ = config.input_visible_size.GetArea();
@@ -930,6 +947,9 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
     encoder_info_.fps_allocation[0] = {kFullFramerate};
   }
 
+  encoder_info_.supports_frame_size_change =
+      !workarounds_.disable_media_foundation_frame_size_change;
+
   return true;
 }
 
@@ -1043,7 +1063,8 @@ void MediaFoundationVideoEncodeAccelerator::RequestEncodingParametersChange(
     uint32_t framerate,
     const absl::optional<gfx::Size>& size) {
   DVLOG(3) << __func__ << ": bitrate=" << bitrate.ToString()
-           << ": framerate=" << framerate;
+           << ": framerate=" << framerate
+           << ": size=" << (size.has_value() ? size->ToString() : "nullopt");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   VideoBitrateAllocation allocation(bitrate.mode());
@@ -1067,7 +1088,8 @@ void MediaFoundationVideoEncodeAccelerator::RequestEncodingParametersChange(
     uint32_t framerate,
     const absl::optional<gfx::Size>& size) {
   DVLOG(3) << __func__ << ": bitrate=" << bitrate_allocation.GetSumBps()
-           << ": framerate=" << framerate;
+           << ": framerate=" << framerate
+           << ": size=" << (size.has_value() ? size->ToString() : "nullopt");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DCHECK(imf_output_media_type_);
@@ -1079,16 +1101,11 @@ void MediaFoundationVideoEncodeAccelerator::RequestEncodingParametersChange(
     return;
   }
 
-  if (size.has_value()) {
-    NotifyErrorStatus({EncoderStatus::Codes::kEncoderUnsupportedConfig,
-                       "Update output frame size is not supported"});
-    return;
-  }
-
   framerate =
       std::clamp(framerate, 1u, static_cast<uint32_t>(kMaxFrameRateNumerator));
 
-  if (framerate == frame_rate_ && bitrate_allocation == bitrate_allocation_) {
+  if (framerate == frame_rate_ && bitrate_allocation == bitrate_allocation_ &&
+      !size.has_value()) {
     return;
   }
 
@@ -1099,36 +1116,165 @@ void MediaFoundationVideoEncodeAccelerator::RequestEncodingParametersChange(
     rate_ctrl_->UpdateRateControl(
         CreateRateControllerConfig(bitrate_allocation_, input_visible_size_,
                                    frame_rate_, num_temporal_layers_, codec_));
+  } else {
+    VARIANT var;
+    var.vt = VT_UI4;
+    HRESULT hr;
+    switch (bitrate_allocation_.GetMode()) {
+      case Bitrate::Mode::kVariable:
+        var.ulVal = AdjustBitrateToFrameRate(bitrate_allocation_.GetPeakBps(),
+                                             configured_frame_rate_, framerate);
+        hr = codec_api_->SetValue(&CODECAPI_AVEncCommonMaxBitRate, &var);
+        if (FAILED(hr)) {
+          NotifyErrorStatus({EncoderStatus::Codes::kSystemAPICallError,
+                             "Couldn't set max bitrate" + PrintHr(hr)});
+          return;
+        }
+        [[fallthrough]];
+      case Bitrate::Mode::kConstant:
+        var.ulVal = AdjustBitrateToFrameRate(bitrate_allocation_.GetSumBps(),
+                                             configured_frame_rate_, framerate);
+        hr = codec_api_->SetValue(&CODECAPI_AVEncCommonMeanBitRate, &var);
+        if (FAILED(hr)) {
+          NotifyErrorStatus({EncoderStatus::Codes::kSystemAPICallError,
+                             "Couldn't set mean bitrate" + PrintHr(hr)});
+          return;
+        }
+        break;
+      case Bitrate::Mode::kExternal:
+        break;
+    }
+  }
+
+  if (size.has_value()) {
+    UpdateFrameSize(size.value());
+  }
+}
+
+bool MediaFoundationVideoEncodeAccelerator::IsFrameSizeAllowed(
+    const gfx::Size& size) {
+  for (const auto& profile : GetSupportedProfiles()) {
+    if (profile.profile == profile_) {
+      if (size.width() <= profile.max_resolution.width() &&
+          size.height() <= profile.max_resolution.height() &&
+          size.width() >= profile.min_resolution.width() &&
+          size.height() >= profile.min_resolution.height()) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  }
+  NOTREACHED();
+  return false;
+}
+
+void MediaFoundationVideoEncodeAccelerator::UpdateFrameSize(
+    const gfx::Size& frame_size) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(imf_output_media_type_);
+  DCHECK(imf_input_media_type_);
+  DCHECK(activate_);
+  DCHECK(encoder_);
+  DCHECK_NE(input_visible_size_, frame_size);
+  DCHECK(pending_input_queue_.empty());
+
+  if (!IsFrameSizeAllowed(frame_size)) {
+    NotifyErrorStatus({EncoderStatus::Codes::kEncoderUnsupportedConfig,
+                       "Unsupported frame size"});
+    return;
+  }
+  input_visible_size_ = frame_size;
+
+  HRESULT hr = S_OK;
+  // As this method is expected to be called after Flush(), it's safe to send
+  // MFT_MESSAGE_COMMAND_FLUSH here. Without MFT_MESSAGE_COMMAND_FLUSH, MFT may
+  // report 0x80004005 (Unspecified error) when encode the first frame after
+  // resolution change on Intel platform.
+  if (vendor_ == DriverVendor::kIntel) {
+    hr = encoder_->ProcessMessage(MFT_MESSAGE_COMMAND_FLUSH, 0);
+    if (FAILED(hr)) {
+      NotifyErrorStatus(
+          {EncoderStatus::Codes::kSystemAPICallError,
+           "Couldn't set ProcessMessage MFT_MESSAGE_COMMAND_FLUSH"});
+      return;
+    }
+  }
+  hr = encoder_->ProcessMessage(MFT_MESSAGE_NOTIFY_END_OF_STREAM, 0);
+  if (FAILED(hr)) {
+    NotifyErrorStatus(
+        {EncoderStatus::Codes::kSystemAPICallError,
+         "Couldn't set ProcessMessage MFT_MESSAGE_NOTIFY_END_OF_STREAM"});
+    return;
+  }
+  hr = encoder_->ProcessMessage(MFT_MESSAGE_NOTIFY_END_STREAMING, 0);
+  if (FAILED(hr)) {
+    NotifyErrorStatus(
+        {EncoderStatus::Codes::kSystemAPICallError,
+         "Couldn't set ProcessMessage MFT_MESSAGE_NOTIFY_END_STREAMING"});
+    return;
+  }
+  hr = encoder_->SetInputType(input_stream_id_, nullptr, 0);
+  if (FAILED(hr)) {
+    NotifyErrorStatus({EncoderStatus::Codes::kSystemAPICallError,
+                       "Couldn't set input stream type to nullptr"});
+    return;
+  }
+  hr = encoder_->SetOutputType(output_stream_id_, nullptr, 0);
+  if (FAILED(hr)) {
+    NotifyErrorStatus({EncoderStatus::Codes::kSystemAPICallError,
+                       "Couldn't set output stream type to nullptr"});
+    return;
+  }
+  hr = MFSetAttributeSize(imf_output_media_type_.Get(), MF_MT_FRAME_SIZE,
+                          input_visible_size_.width(),
+                          input_visible_size_.height());
+  if (FAILED(hr)) {
+    NotifyErrorStatus({EncoderStatus::Codes::kSystemAPICallError,
+                       "Couldn't set output frame size"});
+    return;
+  }
+  hr = encoder_->SetOutputType(output_stream_id_, imf_output_media_type_.Get(),
+                               0);
+  if (FAILED(hr)) {
+    NotifyErrorStatus({EncoderStatus::Codes::kSystemAPICallError,
+                       "Couldn't set output media type"});
+    return;
+  }
+  hr = MFSetAttributeSize(imf_input_media_type_.Get(), MF_MT_FRAME_SIZE,
+                          input_visible_size_.width(),
+                          input_visible_size_.height());
+  if (FAILED(hr)) {
+    NotifyErrorStatus({EncoderStatus::Codes::kSystemAPICallError,
+                       "Couldn't set input frame size"});
+    return;
+  }
+  hr = encoder_->SetInputType(input_stream_id_, imf_input_media_type_.Get(), 0);
+  if (FAILED(hr)) {
+    NotifyErrorStatus({EncoderStatus::Codes::kSystemAPICallError,
+                       "Couldn't set input media type"});
+    return;
+  }
+  hr = encoder_->ProcessMessage(MFT_MESSAGE_NOTIFY_BEGIN_STREAMING, 0);
+  if (FAILED(hr)) {
+    NotifyErrorStatus(
+        {EncoderStatus::Codes::kSystemAPICallError,
+         "Couldn't set ProcessMessage MFT_MESSAGE_NOTIFY_BEGIN_STREAMING"});
+    return;
+  }
+  hr = encoder_->ProcessMessage(MFT_MESSAGE_NOTIFY_START_OF_STREAM, 0);
+  if (FAILED(hr)) {
+    NotifyErrorStatus(
+        {EncoderStatus::Codes::kSystemAPICallError,
+         "Couldn't set ProcessMessage MFT_MESSAGE_NOTIFY_START_OF_STREAM"});
     return;
   }
 
-  VARIANT var;
-  var.vt = VT_UI4;
-  HRESULT hr;
-  switch (bitrate_allocation_.GetMode()) {
-    case Bitrate::Mode::kVariable:
-      var.ulVal = AdjustBitrateToFrameRate(bitrate_allocation_.GetPeakBps(),
-                                           configured_frame_rate_, framerate);
-      hr = codec_api_->SetValue(&CODECAPI_AVEncCommonMaxBitRate, &var);
-      if (FAILED(hr)) {
-        NotifyErrorStatus({EncoderStatus::Codes::kSystemAPICallError,
-                           "Couldn't set max bitrate" + PrintHr(hr)});
-        return;
-      }
-      [[fallthrough]];
-    case Bitrate::Mode::kConstant:
-      var.ulVal = AdjustBitrateToFrameRate(bitrate_allocation_.GetSumBps(),
-                                           configured_frame_rate_, framerate);
-      hr = codec_api_->SetValue(&CODECAPI_AVEncCommonMeanBitRate, &var);
-      if (FAILED(hr)) {
-        NotifyErrorStatus({EncoderStatus::Codes::kSystemAPICallError,
-                           "Couldn't set mean bitrate" + PrintHr(hr)});
-        return;
-      }
-      break;
-    case Bitrate::Mode::kExternal:
-      break;
-  }
+  input_sample_->RemoveAllBuffers();
+  bitstream_buffer_size_ = input_visible_size_.GetArea();
+  bitstream_buffer_queue_.clear();
+  client_->RequireBitstreamBuffers(kNumInputBuffers, input_visible_size_,
+                                   bitstream_buffer_size_);
 }
 
 void MediaFoundationVideoEncodeAccelerator::Destroy() {
@@ -2162,7 +2308,11 @@ HRESULT MediaFoundationVideoEncodeAccelerator::InitializeD3DVideoProcessing(
   D3D11_TEXTURE2D_DESC input_desc = {};
   input_texture->GetDesc(&input_desc);
   if (vp_desc_.InputWidth == input_desc.Width &&
-      vp_desc_.InputHeight == input_desc.Height) {
+      vp_desc_.InputHeight == input_desc.Height &&
+      scaled_d3d11_texture_desc_.Width ==
+          static_cast<UINT>(input_visible_size_.width()) &&
+      scaled_d3d11_texture_desc_.Height ==
+          static_cast<UINT>(input_visible_size_.height())) {
     return S_OK;
   }
 
@@ -2238,6 +2388,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::InitializeD3DVideoProcessing(
   video_context_ = std::move(video_context);
   vp_desc_ = std::move(vp_desc);
   scaled_d3d11_texture_ = std::move(scaled_d3d11_texture);
+  scaled_d3d11_texture_->GetDesc(&scaled_d3d11_texture_desc_);
   vp_output_view_ = std::move(vp_output_view);
   return S_OK;
 }

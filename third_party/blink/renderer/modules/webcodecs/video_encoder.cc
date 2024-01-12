@@ -1159,6 +1159,14 @@ void VideoEncoder::ProcessReconfigure(Request* request) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   request->StartTracing();
 
+  String js_error_message;
+  if (!VerifyCodecSupport(request->config, &js_error_message)) {
+    QueueHandleError(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotSupportedError, js_error_message));
+    request->EndTracing();
+    return;
+  }
+
   auto reconf_done_callback = [](VideoEncoder* self, Request* req,
                                  media::EncoderStatus status) {
     if (!self || self->reset_count_ != req->reset_count) {
@@ -1199,6 +1207,7 @@ void VideoEncoder::ProcessReconfigure(Request* request) {
     }
 
     self->active_config_ = req->config;
+
     auto output_cb =
         ConvertToBaseRepeatingCallback(WTF::CrossThreadBindRepeating(
             &VideoEncoder::CallOutputCallback,

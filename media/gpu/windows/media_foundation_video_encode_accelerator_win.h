@@ -192,6 +192,14 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // process all inputs, produce all outputs and tell us when it's done.
   void DrainEncoder();
 
+  // Check if |size| is supported by current profile. It depends on the result
+  // of |GetSupportedProfiles|. As max resolution is hard coded at this time,
+  // frame size larger than 1920x1088 will be rejected even it could be
+  // supported by hardware and driver.
+  bool IsFrameSizeAllowed(const gfx::Size& size);
+  // Update frame size without re-initializing the encoder.
+  void UpdateFrameSize(const gfx::Size& size);
+
   // Initialize video processing (for scaling).
   HRESULT InitializeD3DVideoProcessing(ID3D11Texture2D* input_texture);
   // Scales `input_texture` to size `input_visible_size_`. On success, the
@@ -243,8 +251,9 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   bool low_latency_mode_ = false;
   int num_temporal_layers_ = 1;
 
-  // Codec type used for encoding.
+  // Codec type and profile used for encoding.
   VideoCodec codec_ = VideoCodec::kUnknown;
+  VideoCodecProfile profile_ = VideoCodecProfile::VIDEO_CODEC_PROFILE_UNKNOWN;
 
   // Vendor of the active video encoder.
   DriverVendor vendor_ = DriverVendor::kOther;
@@ -281,6 +290,7 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   ComD3D11VideoContext video_context_;
   D3D11_VIDEO_PROCESSOR_CONTENT_DESC vp_desc_ = {};
   ComD3D11Texture2D scaled_d3d11_texture_;
+  D3D11_TEXTURE2D_DESC scaled_d3d11_texture_desc_ = {};
   ComD3D11VideoProcessorOutputView vp_output_view_;
   // Destination texture used by the copy operation.
   ComD3D11Texture2D copied_d3d11_texture_;
@@ -313,6 +323,10 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // from the front.
   base::circular_deque<OutOfBandMetadata> sample_metadata_queue_;
   gpu::GpuDriverBugWorkarounds workarounds_;
+
+  // Enumerating supported profiles takes time, so cache the result here for
+  // future requests.
+  absl::optional<SupportedProfiles> supported_profiles_;
 
   // Declared last to ensure that all weak pointers are invalidated before
   // other destructors run.

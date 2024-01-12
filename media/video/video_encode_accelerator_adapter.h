@@ -96,7 +96,8 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
     kWaitingForFirstFrame,
     kInitializing,
     kReadyToEncode,
-    kFlushing
+    kFlushing,
+    kReconfiguring
   };
   struct PendingOp {
     PendingOp();
@@ -189,11 +190,13 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
   Options options_;
   EncoderInfoCB info_cb_;
   OutputCB output_cb_;
+  EncoderStatusCB reconfigure_cb_;
 
   gfx::Size input_coded_size_;
 
   VideoEncodeAccelerator::Config::EncoderType required_encoder_type_ =
       VideoEncodeAccelerator::Config::EncoderType::kHardware;
+  bool supports_frame_size_change_ = false;
 };
 
 }  // namespace media

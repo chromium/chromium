@@ -69,6 +69,7 @@ class FakeVideoEncodeAccelerator : public VideoEncodeAccelerator {
   }
   void SetWillInitializationSucceed(bool will_initialization_succeed);
   void SetWillEncodingSucceed(bool will_encoding_succeed);
+  void SetSupportFrameSizeChange(bool support_frame_size_change);
 
   size_t minimum_output_buffer_size() const { return kMinimumOutputBufferSize; }
 
@@ -101,6 +102,7 @@ class FakeVideoEncodeAccelerator : public VideoEncodeAccelerator {
   void EncodeTask();
   void DoBitstreamBufferReady(BitstreamBuffer buffer,
                               FrameToEncode frame_to_encode) const;
+  void UpdateOutputFrameSize(const gfx::Size& size);
 
   // Our original (constructor) calling message loop used for all tasks.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
@@ -125,6 +127,9 @@ class FakeVideoEncodeAccelerator : public VideoEncodeAccelerator {
 
   // Callback that, if set, does actual frame to buffer conversion.
   EncodingCallback encoding_callback_;
+
+  // Current encoder info. Call |NotifyEncoderInfoChange| when it changes.
+  VideoEncoderInfo encoder_info_;
 
   base::WeakPtrFactory<FakeVideoEncodeAccelerator> weak_this_factory_{this};
 };

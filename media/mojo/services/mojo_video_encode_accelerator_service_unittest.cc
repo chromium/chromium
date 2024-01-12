@@ -281,6 +281,8 @@ TEST_F(MojoVideoEncodeAcceleratorServiceTest,
                              kFrameSizeHeightBase * (i + 1));
     }
 
+    EXPECT_CALL(*mock_mojo_vea_client(),
+                RequireBitstreamBuffers(_, frame_size, _));
     mojo_vea_service()->RequestEncodingParametersChangeWithLayers(
         bitrate_allocation, kNewFramerate, frame_size);
     base::RunLoop().RunUntilIdle();
