@@ -48,6 +48,7 @@ class LayoutBR : public LayoutText {
     return true;
   }
 
+  String OriginalText() const override;
   int CaretMinOffset() const override;
   int CaretMaxOffset() const override;
 

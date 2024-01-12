@@ -95,6 +95,7 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   virtual bool IsWordBreak() const;
 
   virtual String OriginalText() const;
+  unsigned OriginalTextLength() const;
 
   bool HasInlineFragments() const final;
   wtf_size_t FirstInlineFragmentItemIndex() const final;
@@ -145,6 +146,8 @@ class CORE_EXPORT LayoutText : public LayoutObject {
     NOT_DESTROYED();
     return text_.empty();
   }
+  // Returns the length of transformed text.  Do not use this.  This function
+  // is rarely useful, and we can use GetText().length().
   unsigned TextLength() const {
     NOT_DESTROYED();
     return text_.length();
@@ -192,24 +195,22 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   Vector<TextBoxInfo> GetTextBoxInfo() const;
 
   // Returns the Position in DOM that corresponds to the given offset in the
-  // |text_| string.
-  // TODO(layout-dev): Fix it when text-transform changes text length.
+  // original text.
   virtual Position PositionForCaretOffset(unsigned) const;
 
-  // Returns the offset in the |text_| string that corresponds to the given
+  // Returns the offset in the original text that corresponds to the given
   // position in DOM; Returns nullopt is the position is not in this LayoutText.
-  // TODO(layout-dev): Fix it when text-transform changes text length.
   virtual absl::optional<unsigned> CaretOffsetForPosition(
       const Position&) const;
 
-  // Returns true if the offset (0-based in the |text_| string) is next to a
+  // Returns true if the offset (0-based in the original text) is next to a
   // non-collapsed non-linebreak character, or before a forced linebreak (<br>,
   // or segment break in node with style white-space: pre/pre-line/pre-wrap).
   // TODO(editing-dev): The behavior is introduced by crrev.com/e3eb4e in
   // InlineTextBox::ContainsCaretOffset(). Try to understand it.
   bool ContainsCaretOffset(int) const;
 
-  // Return true if the offset (0-based in the |text_| string) is before/after a
+  // Return true if the offset (0-based in the original text) is before/after a
   // non-collapsed character in this LayoutText, respectively.
   bool IsBeforeNonCollapsedCharacter(unsigned) const;
   bool IsAfterNonCollapsedCharacter(unsigned) const;

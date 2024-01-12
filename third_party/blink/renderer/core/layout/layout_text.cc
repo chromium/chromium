@@ -452,6 +452,14 @@ String LayoutText::OriginalText() const {
   return text_node ? text_node->data() : String();
 }
 
+unsigned LayoutText::OriginalTextLength() const {
+  NOT_DESTROYED();
+  if (!RuntimeEnabledFeatures::OffsetMappingUnitVariableEnabled()) {
+    return TextLength();
+  }
+  return OriginalText().length();
+}
+
 String LayoutText::PlainText() const {
   NOT_DESTROYED();
   if (GetNode()) {
@@ -528,7 +536,7 @@ bool LayoutText::MapDOMOffsetToTextContentOffset(const OffsetMapping& mapping,
 
   // Adjust |start| to the next non-collapsed offset if |start| is collapsed.
   Position start_position =
-      PositionForCaretOffset(std::min(*start, TextLength()));
+      PositionForCaretOffset(std::min(*start, OriginalTextLength()));
   Position non_collapsed_start_position =
       mapping.StartOfNextNonCollapsedContent(start_position);
 
@@ -546,7 +554,8 @@ bool LayoutText::MapDOMOffsetToTextContentOffset(const OffsetMapping& mapping,
   *start = mapping.GetTextContentOffset(non_collapsed_start_position).value();
 
   // Adjust |end| to the last non-collapsed offset if |end| is collapsed.
-  Position end_position = PositionForCaretOffset(std::min(*end, TextLength()));
+  Position end_position =
+      PositionForCaretOffset(std::min(*end, OriginalTextLength()));
   Position non_collpased_end_position =
       mapping.EndOfLastNonCollapsedContent(end_position);
 
@@ -1143,7 +1152,7 @@ Position LayoutText::PositionForCaretOffset(unsigned offset) const {
   DCHECK(!IsBR());
   // WBR handling should be done by LayoutWordBreak override.
   DCHECK(!IsWordBreak());
-  DCHECK_LE(offset, TextLength());
+  DCHECK_LE(offset, OriginalTextLength());
   const Node* node = GetNode();
   if (!node)
     return Position();
@@ -1172,11 +1181,11 @@ absl::optional<unsigned> LayoutText::CaretOffsetForPosition(
   DCHECK(GetNode()->IsTextNode());
   if (position.IsBeforeAnchor())
     return 0;
-  // TODO(layout-dev): Support offset change due to text-transform.
   if (position.IsAfterAnchor())
-    return TextLength();
+    return OriginalTextLength();
   DCHECK(position.IsOffsetInAnchor()) << position;
-  DCHECK_LE(position.OffsetInContainerNode(), static_cast<int>(TextLength()))
+  DCHECK_LE(position.OffsetInContainerNode(),
+            static_cast<int>(OriginalTextLength()))
       << position;
   return position.OffsetInContainerNode();
 }
@@ -1204,26 +1213,27 @@ int LayoutText::CaretMaxOffset() const {
   NOT_DESTROYED();
   DCHECK(!GetDocument().NeedsLayoutTreeUpdate());
 
+  const unsigned text_length = OriginalTextLength();
   if (auto* mapping = GetOffsetMapping()) {
-    const Position last_position = PositionForCaretOffset(TextLength());
+    const Position last_position = PositionForCaretOffset(text_length);
     if (last_position.IsNull())
-      return TextLength();
+      return text_length;
     absl::optional<unsigned> candidate = CaretOffsetForPosition(
         mapping->EndOfLastNonCollapsedContent(last_position));
     // Align with the legacy behavior that |TextLenght()| is returned if the
     // entire node contains only collapsed whitespaces.
     const bool fully_collapsed = !candidate || *candidate == 0u;
-    return fully_collapsed ? TextLength() : *candidate;
+    return fully_collapsed ? text_length : *candidate;
   }
 
-  return TextLength();
+  return text_length;
 }
 
 unsigned LayoutText::ResolvedTextLength() const {
   NOT_DESTROYED();
   if (auto* mapping = GetOffsetMapping()) {
     const Position start_position = PositionForCaretOffset(0);
-    const Position end_position = PositionForCaretOffset(TextLength());
+    const Position end_position = PositionForCaretOffset(OriginalTextLength());
     if (start_position.IsNull()) {
       DCHECK(end_position.IsNull()) << end_position;
       return 0;
@@ -1256,14 +1266,17 @@ bool LayoutText::ContainsCaretOffset(int text_offset) const {
   NOT_DESTROYED();
   DCHECK_GE(text_offset, 0);
   if (auto* mapping = GetOffsetMapping()) {
-    if (text_offset > static_cast<int>(TextLength()))
+    const int text_length = static_cast<int>(OriginalTextLength());
+    if (text_offset > text_length) {
       return false;
+    }
     const Position position = PositionForCaretOffset(text_offset);
     if (position.IsNull())
       return false;
-    if (text_offset < static_cast<int>(TextLength()) &&
-        mapping->IsBeforeNonCollapsedContent(position))
+    if (text_offset < text_length &&
+        mapping->IsBeforeNonCollapsedContent(position)) {
       return true;
+    }
     if (!text_offset || !mapping->IsAfterNonCollapsedContent(position))
       return false;
     return *mapping->GetCharacterBefore(position) != kNewlineCharacter;
@@ -1275,8 +1288,9 @@ bool LayoutText::ContainsCaretOffset(int text_offset) const {
 bool LayoutText::IsBeforeNonCollapsedCharacter(unsigned text_offset) const {
   NOT_DESTROYED();
   if (auto* mapping = GetOffsetMapping()) {
-    if (text_offset >= TextLength())
+    if (text_offset >= OriginalTextLength()) {
       return false;
+    }
     const Position position = PositionForCaretOffset(text_offset);
     if (position.IsNull())
       return false;
