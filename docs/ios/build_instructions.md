@@ -209,7 +209,8 @@ to share files and configurations while the `group.${prefix}.common` is shared
 with Chromium and other applications from the same organisation and can be used
 to send commands to Chromium.
 
-`${prefix}.chrome.ios.dev.CredentialProviderExtension` needs the AutoFill
+`${prefix}.chrome.ios.dev` and
+`${prefix}.chrome.ios.dev.CredentialProviderExtension` need the AutoFill
 Credential Provider Entitlement, which corresponds to the key
 `com.apple.developer.authentication-services.autofill-credential-provider`
 Please refer to Apple's documentation on how to set this up.
