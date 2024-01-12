@@ -428,6 +428,7 @@ if (is_mac) {
       script = "scripts/gen_symbol_tools_packager.py"
       _go_sources = [
         "breakpad/src/tools/mac/upload_system_symbols/arch_reader.go",
+        "breakpad/src/tools/mac/upload_system_symbols/extract.go",
         "breakpad/src/tools/mac/upload_system_symbols/upload_system_symbols.go",
       ]
       _extra_sources = [
