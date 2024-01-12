@@ -253,10 +253,12 @@
   }
 
   .inspirations-content {
-    margin: 8px 16px 8px;
+    margin-bottom: 8px;
+    margin-inline-end: 16px;
+    margin-inline-start: 16px;
   }
 
-  .inspirations-title {
+  .inspiration-title {
     /* TODO(b/317382384): Replace color variable with something
     specific to Inspirations. */
     color: var(--color-side-panel-filter-chip-icon);
@@ -265,6 +267,7 @@
     line-height: 16px;
     width: 100%;
     margin-bottom: 8px;
+    margin-top: 8px;
   }
 </style>
 <div class="sp-card">
@@ -423,19 +426,19 @@
       <h2 slot="heading">$i18n{wallpaperSearchInspirationHeader}</h2>
     </sp-heading>
     <div class="inspirations-content">
-      <div class="inspirations-title">
-        $i18n{wallpaperSearchMeadowInspirationTitle}
-      </div>
-      <cr-grid columns="3" disable-arrow-navigation>
-        <template is="dom-repeat" items="[[inspirations_.inspirationA]]">
-          <div class="tile result" on-click="onInspirationImageClick_"
-              tabindex="0" role="button">
-            <div class="image-container">
-            <img is="cr-auto-img" auto-src="[[item.thumbnailUrl.url]]"></img>
+      <template is="dom-repeat" items="[[inspirationGroups_]]">
+        <div class="inspiration-title">[[item.descriptors.subject]]</div>
+        <cr-grid columns="3" disable-arrow-navigation>
+          <template is="dom-repeat" items="[[item.inspirations]]">
+            <div class="tile result" on-click="onInspirationImageClick_"
+                tabindex="0" role="button">
+              <div class="image-container">
+              <img is="cr-auto-img" auto-src="[[item.thumbnailUrl.url]]"></img>
+              </div>
             </div>
-          </div>
-        </template>
-      </cr-grid>
+          </template>
+        </cr-grid>
+      </template>
     </div>
   </div>
 </template>

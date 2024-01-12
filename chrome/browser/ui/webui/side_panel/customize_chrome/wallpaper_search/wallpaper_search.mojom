@@ -42,8 +42,9 @@ struct Inspiration {
   url.mojom.Url thumbnail_url;
 };
 
-struct Inspirations {
-  array<Inspiration> inspiration_a;
+struct InspirationGroup {
+  ResultDescriptors descriptors;
+  array<Inspiration> inspirations;
 };
 
 struct WallpaperSearchResult {
@@ -94,7 +95,7 @@ interface WallpaperSearchHandler {
   GetDescriptors() => (Descriptors? descriptors);
 
   // Retrieves image URLs of example results.
-  GetInspirations() => (Inspirations? inspirations);
+  GetInspirations() => (array<InspirationGroup>? inspirationGroups);
 
   // Searches NTP wallpaper for descriptors.
   // Returns list of sanitized image data.

@@ -8,7 +8,7 @@ import 'chrome://customize-chrome-side-panel.top-chrome/strings.m.js';
 import {CustomizeChromeAction} from 'chrome://customize-chrome-side-panel.top-chrome/common.js';
 import {CustomizeChromePageRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
-import {Descriptors, Inspirations, ResultDescriptors, UserFeedback, WallpaperSearchClientCallbackRouter, WallpaperSearchClientRemote, WallpaperSearchHandlerInterface, WallpaperSearchHandlerRemote, WallpaperSearchStatus} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search.mojom-webui.js';
+import {Descriptors, InspirationGroup, ResultDescriptors, UserFeedback, WallpaperSearchClientCallbackRouter, WallpaperSearchClientRemote, WallpaperSearchHandlerInterface, WallpaperSearchHandlerRemote, WallpaperSearchStatus} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search.mojom-webui.js';
 import {CustomizeChromeCombobox} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search/combobox/customize_chrome_combobox.js';
 import {DESCRIPTOR_D_VALUE, WallpaperSearchElement} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search/wallpaper_search.js';
 import {WallpaperSearchProxy} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search/wallpaper_search_proxy.js';
@@ -36,9 +36,11 @@ suite('WallpaperSearchTest', () => {
 
   async function createWallpaperSearchElement(
       descriptors: Descriptors|null = null,
-      inspirations: Inspirations|null = null): Promise<WallpaperSearchElement> {
+      inspirationGroups: InspirationGroup[]|null =
+          null): Promise<WallpaperSearchElement> {
     handler.setResultFor('getDescriptors', Promise.resolve({descriptors}));
-    handler.setResultFor('getInspirations', Promise.resolve({inspirations}));
+    handler.setResultFor(
+        'getInspirations', Promise.resolve({inspirationGroups}));
     wallpaperSearchElement =
         document.createElement('customize-chrome-wallpaper-search');
     document.body.appendChild(wallpaperSearchElement);
@@ -1490,42 +1492,104 @@ suite('WallpaperSearchTest', () => {
     });
 
     test('inspirations populate correctly', async () => {
-      createWallpaperSearchElement(/*descriptors=*/ null, {
-        inspirationA: [
-          {
-            id: {high: BigInt(10), low: BigInt(1)},
-            backgroundUrl: {url: 'https://example.com/foo_1.png'},
-            thumbnailUrl: {url: 'https://example.com/foo_2.png'},
-          },
-          {
-            id: {high: BigInt(8), low: BigInt(2)},
-            backgroundUrl: {url: 'https://example.com/bar_1.png'},
-            thumbnailUrl: {url: 'https://example.com/bar_2.png'},
-          },
-        ],
-      });
+      createWallpaperSearchElement(
+          /*descriptors=*/ null, /*inspirationGroups=*/[
+            {
+              descriptors: {
+                subject: 'foobar',
+                style: undefined,
+                mood: undefined,
+                color: undefined,
+              },
+              inspirations: [
+                {
+                  id: {high: BigInt(10), low: BigInt(1)},
+                  backgroundUrl: {url: 'https://example.com/foo_1.png'},
+                  thumbnailUrl: {url: 'https://example.com/foo_2.png'},
+                },
+                {
+                  id: {high: BigInt(8), low: BigInt(2)},
+                  backgroundUrl: {url: 'https://example.com/bar_1.png'},
+                  thumbnailUrl: {url: 'https://example.com/bar_2.png'},
+                },
+              ],
+            },
+            {
+              descriptors: {
+                subject: 'baz',
+                style: undefined,
+                mood: undefined,
+                color: undefined,
+              },
+              inspirations: [
+                {
+                  id: {high: BigInt(7), low: BigInt(2)},
+                  backgroundUrl: {url: 'https://example.com/baz_1.png'},
+                  thumbnailUrl: {url: 'https://example.com/baz_2.png'},
+                },
+              ],
+            },
+          ]);
       await flushTasks();
 
+      // Ensure inspiration titles are correct.
+      const inspirationTitles =
+          wallpaperSearchElement.shadowRoot!.querySelectorAll(
+              '#inspirationCard .inspiration-title');
+      assertTrue(!!inspirationTitles);
+      assertEquals(2, inspirationTitles.length);
+      assertEquals(inspirationTitles[0]!.textContent, 'foobar');
+      assertEquals(inspirationTitles[1]!.textContent, 'baz');
+      // Ensure the correct amount of groups show.
+      const inspirationsGroups =
+          wallpaperSearchElement.shadowRoot!.querySelectorAll(
+              '#inspirationCard cr-grid');
+      assertTrue(!!inspirationsGroups);
+      assertEquals(2, inspirationsGroups.length);
+      // Ensure the correct amount of inspirations show.
       const inspirations = wallpaperSearchElement.shadowRoot!.querySelectorAll(
           '#inspirationCard .tile.result');
       assertTrue(!!inspirations);
-      assertEquals(2, inspirations.length);
+      assertEquals(3, inspirations.length);
+      // Ensure that inspirations are populated in the correct group with the
+      // right image.
+      const inspirationGridResults1 =
+          inspirationsGroups[0]!.querySelectorAll('.tile.result');
+      assertEquals(inspirations[0], inspirationGridResults1[0]);
       assertEquals(
           'https://example.com/foo_2.png',
           (inspirations[0]!.querySelector('img')! as CrAutoImgElement).autoSrc);
+      assertEquals(inspirations[1], inspirationGridResults1[1]);
       assertEquals(
           'https://example.com/bar_2.png',
           (inspirations[1]!.querySelector('img')! as CrAutoImgElement).autoSrc);
+      const inspirationGridResults2 =
+          inspirationsGroups[1]!.querySelectorAll('.tile.result');
+      assertEquals(inspirations[2], inspirationGridResults2[0]);
+      assertEquals(
+          'https://example.com/baz_2.png',
+          (inspirations[2]!.querySelector('img')! as CrAutoImgElement).autoSrc);
     });
 
     test('setting inspiration to background calls backend', async () => {
-      createWallpaperSearchElement(/*descriptors=*/ null, {
-        inspirationA: [{
-          id: {high: BigInt(10), low: BigInt(1)},
-          backgroundUrl: {url: 'https://example.com/foo_1.png'},
-          thumbnailUrl: {url: 'https://example.com/foo_2.png'},
-        }],
-      });
+      createWallpaperSearchElement(
+          /*descriptors=*/ null, /*inspirationGroups=*/[
+            {
+              descriptors: {
+                subject: 'foobar',
+                style: undefined,
+                mood: undefined,
+                color: undefined,
+              },
+              inspirations: [
+                {
+                  id: {high: BigInt(10), low: BigInt(1)},
+                  backgroundUrl: {url: 'https://example.com/foo_1.png'},
+                  thumbnailUrl: {url: 'https://example.com/foo_2.png'},
+                },
+              ],
+            },
+          ]);
       await flushTasks();
 
       const result =

@@ -227,8 +227,8 @@ void WallpaperSearchHandler::GetDescriptors(GetDescriptorsCallback callback) {
 }
 
 void WallpaperSearchHandler::GetInspirations(GetInspirationsCallback callback) {
-  callback =
-      mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback), nullptr);
+  callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback),
+                                                         absl::nullopt);
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation(
@@ -270,7 +270,7 @@ void WallpaperSearchHandler::GetInspirations(GetInspirationsCallback callback) {
         })");
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url =
-      GURL(base::StrCat({kGstaticBaseURL, "inspirations.json"}));
+      GURL(base::StrCat({kGstaticBaseURL, "inspirations_en-US.json"}));
   resource_request->request_initiator =
       url::Origin::Create(GURL(chrome::kChromeUINewTabURL));
 
@@ -718,7 +718,7 @@ void WallpaperSearchHandler::OnInspirationsRetrieved(
     // Network errors (i.e. the server did not provide a response).
     DVLOG(1) << "Request failed with error: "
              << inspirations_simple_url_loader_->NetError();
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
@@ -739,49 +739,56 @@ void WallpaperSearchHandler::OnInspirationsRetrieved(
 void WallpaperSearchHandler::OnInspirationsJsonParsed(
     GetInspirationsCallback callback,
     data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.has_value() || !result->is_dict()) {
+  if (!result.has_value() || !result->is_list()) {
     DVLOG(1) << "Parsing JSON failed: " << result.error();
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
-
-  const base::Value::List* inspiration_a =
-      result->GetDict().FindList("inspiration_a");
-  if (!inspiration_a) {
-    DVLOG(1) << "Parsing JSON failed: no valid inspirations.";
-    std::move(callback).Run(nullptr);
-    return;
-  }
-
-  std::vector<side_panel::customize_chrome::mojom::InspirationPtr>
-      mojo_inspiration_a_list;
-  if (inspiration_a) {
-    for (const auto& inspiration : *inspiration_a) {
-      const base::Value::Dict& inspiration_a_dict = inspiration.GetDict();
-      auto* background_image =
-          inspiration_a_dict.FindString("background_image");
-      auto* thumbnail_image = inspiration_a_dict.FindString("thumbnail_image");
+  std::vector<side_panel::customize_chrome::mojom::InspirationGroupPtr>
+      mojo_inspiration_groups;
+  for (const auto& inspiration : result->GetList()) {
+    if (!inspiration.is_dict()) {
+      continue;
+    }
+    const base::Value::Dict& inspiration_dict = inspiration.GetDict();
+    const base::Value::List* images = inspiration_dict.FindList("images");
+    const std::string* descriptor_a =
+        inspiration_dict.FindString("descriptor_a");
+    if (!images || !descriptor_a) {
+      continue;
+    }
+    auto mojo_inspiration_group =
+        side_panel::customize_chrome::mojom::InspirationGroup::New();
+    mojo_inspiration_group->descriptors =
+        side_panel::customize_chrome::mojom::ResultDescriptors::New();
+    mojo_inspiration_group->descriptors->subject = *descriptor_a;
+    std::vector<side_panel::customize_chrome::mojom::InspirationPtr>
+        mojo_inspiration_list;
+    for (const auto& image : *images) {
+      const base::Value::Dict& image_dict = image.GetDict();
+      const std::string* background_image =
+          image_dict.FindString("background_image");
+      const std::string* thumbnail_image =
+          image_dict.FindString("thumbnail_image");
       if (!background_image || !thumbnail_image) {
         continue;
       }
-      auto mojo_inspiration_a =
+      auto mojo_inspiration =
           side_panel::customize_chrome::mojom::Inspiration::New();
-      // TODO(b/317402041): Ensure inspiration images have the same token
-      // everywhere they show in the UI.
-      mojo_inspiration_a->id = base::Token::CreateRandom();
-      mojo_inspiration_a->background_url =
+      mojo_inspiration->id = base::Token::CreateRandom();
+      mojo_inspiration->background_url =
           GURL(base::StrCat({kGstaticBaseURL, *background_image}));
-      mojo_inspiration_a->thumbnail_url =
+      mojo_inspiration->thumbnail_url =
           GURL(base::StrCat({kGstaticBaseURL, *thumbnail_image}));
-      mojo_inspiration_a_list.push_back(std::move(mojo_inspiration_a));
+      mojo_inspiration_list.push_back(std::move(mojo_inspiration));
     }
+    mojo_inspiration_group->inspirations = std::move(mojo_inspiration_list);
+    mojo_inspiration_groups.push_back(std::move(mojo_inspiration_group));
   }
-
-  if (!mojo_inspiration_a_list.empty()) {
-    auto mojo_inspirations =
-        side_panel::customize_chrome::mojom::Inspirations::New();
-    mojo_inspirations->inspiration_a = std::move(mojo_inspiration_a_list);
-    std::move(callback).Run(std::move(mojo_inspirations));
+  if (mojo_inspiration_groups.size() > 0) {
+    std::move(callback).Run(std::move(mojo_inspiration_groups));
+  } else {
+    std::move(callback).Run(absl::nullopt);
   }
 }
 
