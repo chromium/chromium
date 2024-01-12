@@ -155,7 +155,9 @@ ScriptPromise ImageBitmapFactories::CreateImageBitmapFromBlob(
     ImageBitmapSource* bitmap_source,
     absl::optional<gfx::Rect> crop_rect,
     const ImageBitmapOptions* options) {
-  DCHECK(script_state->ContextIsValid());
+  if (!script_state->ContextIsValid()) {
+    return ScriptPromise();
+  }
 
   // imageOrientation: 'from-image' will be used to replace imageOrientation:
   // 'none'. Adding a deprecation warning when 'none' is called in
