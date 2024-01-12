@@ -539,7 +539,10 @@
               >$i18nRaw{onDeviceUsedFooter}
 
           </b>
-          <span inner-h-t-m-l="[[getResultFooterText_()]]"></span>
+          <span hidden="[[!showOnDeviceDogfoodFooter_(response_)]]"
+              >$i18nRaw{dogfoodFooter}</span>
+          <span hidden="[[showOnDeviceDogfoodFooter_(response_)]]"
+              >$i18nRaw{resultFooter}</span>
         </div>
         <cr-feedback-buttons
             on-selected-option-changed="onFeedbackSelectedOptionChanged_"

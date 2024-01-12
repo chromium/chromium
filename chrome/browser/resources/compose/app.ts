@@ -605,13 +605,6 @@ export class ComposeAppElement extends ComposeAppElementBase {
     }
   }
 
-  private getResultFooterText_(): TrustedHTML {
-    if (this.showOnDeviceDogfoodFooter_()) {
-      return this.i18nAdvanced('dogfoodFooter');
-    }
-    return this.i18nAdvanced('resultFooter');
-  }
-
   private saveComposeAppState_() {
     if (this.saveAppStateDebouncer_?.isActive()) {
       this.saveAppStateDebouncer_.flush();
