@@ -488,24 +488,9 @@
       base_feature: "none",
     },
     {
-      name: "BlinkExtensionChromeOSHID",
-      depends_on: ["BlinkExtensionChromeOS"],
-      base_feature: "none",
-    },
-    {
       name: "BlinkExtensionChromeOSKiosk",
       depends_on: ["BlinkExtensionChromeOS"],
       browser_process_read_write_access: true,
-      base_feature: "none",
-    },
-    {
-      name: "BlinkExtensionChromeOSTelemetry",
-      depends_on: ["BlinkExtensionChromeOS"],
-      base_feature: "none",
-    },
-    {
-      name: "BlinkExtensionChromeOSWindowManagement",
-      depends_on: ["BlinkExtensionChromeOS"],
       base_feature: "none",
     },
     {
