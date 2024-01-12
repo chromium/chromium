@@ -401,7 +401,8 @@ std::unique_ptr<ui::NavButtonProvider> QtUi::CreateNavButtonProvider() {
   return nullptr;
 }
 
-ui::WindowFrameProvider* QtUi::GetWindowFrameProvider(bool solid_frame) {
+ui::WindowFrameProvider* QtUi::GetWindowFrameProvider(bool solid_frame,
+                                                      bool tiled) {
   // QT prefers server-side decorations.
   return nullptr;
 }

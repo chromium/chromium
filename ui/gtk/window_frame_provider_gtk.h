@@ -14,7 +14,7 @@ namespace gtk {
 
 class WindowFrameProviderGtk : public ui::WindowFrameProvider {
  public:
-  explicit WindowFrameProviderGtk(bool solid_frame);
+  WindowFrameProviderGtk(bool solid_frame, bool tiled);
 
   WindowFrameProviderGtk(const WindowFrameProviderGtk&) = delete;
   WindowFrameProviderGtk& operator=(const WindowFrameProviderGtk&) = delete;
@@ -29,7 +29,7 @@ class WindowFrameProviderGtk : public ui::WindowFrameProvider {
                         const gfx::Rect& rect,
                         int top_area_height,
                         bool focused,
-                        ui::WindowTiledEdges tiled_edges) override;
+                        const gfx::Insets& input_insets) override;
 
  private:
   // Data and metrics that depend on the scale.
@@ -63,6 +63,7 @@ class WindowFrameProviderGtk : public ui::WindowFrameProvider {
 
   // Input parameters used for drawing.
   const bool solid_frame_;
+  const bool tiled_;
   std::string theme_name_;
 
   // Scale-independent metric calculated based on the bitmaps.

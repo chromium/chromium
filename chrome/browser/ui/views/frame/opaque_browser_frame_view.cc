@@ -585,9 +585,9 @@ bool OpaqueBrowserFrameView::ShouldDrawRestoredFrameShadow() const {
   return false;
 }
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-ui::WindowTiledEdges OpaqueBrowserFrameView::GetTiledEdges() const {
-  return frame()->tiled_edges();
+#if BUILDFLAG(IS_LINUX)
+bool OpaqueBrowserFrameView::IsTiled() const {
+  return frame()->tiled();
 }
 #endif
 

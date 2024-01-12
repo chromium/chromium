@@ -10,6 +10,8 @@
 #include "ui/linux/nav_button_provider.h"
 #include "ui/linux/window_frame_provider.h"
 
+class BrowserFrameViewLayoutLinuxNative;
+
 // A specialization of BrowserFrameViewLinux that is also able to
 // render frame buttons using the native toolkit.
 class BrowserFrameViewLinuxNative : public BrowserFrameViewLinux {
@@ -17,9 +19,8 @@ class BrowserFrameViewLinuxNative : public BrowserFrameViewLinux {
   BrowserFrameViewLinuxNative(
       BrowserFrame* frame,
       BrowserView* browser_view,
-      BrowserFrameViewLayoutLinux* layout,
-      std::unique_ptr<ui::NavButtonProvider> nav_button_provider,
-      ui::WindowFrameProvider* window_frame_provider);
+      BrowserFrameViewLayoutLinuxNative* layout,
+      std::unique_ptr<ui::NavButtonProvider> nav_button_provider);
 
   BrowserFrameViewLinuxNative(const BrowserFrameViewLinuxNative&) = delete;
   BrowserFrameViewLinuxNative& operator=(const BrowserFrameViewLinuxNative&) =
@@ -59,7 +60,7 @@ class BrowserFrameViewLinuxNative : public BrowserFrameViewLinux {
 
   std::unique_ptr<ui::NavButtonProvider> nav_button_provider_;
 
-  const raw_ptr<ui::WindowFrameProvider> window_frame_provider_;
+  const raw_ptr<BrowserFrameViewLayoutLinuxNative> layout_;
 
   DrawFrameButtonParams cache_{0, false, false};
 };

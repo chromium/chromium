@@ -41,17 +41,20 @@ std::string GetThemeName() {
   return theme_string;
 }
 
-GtkCssContext WindowContext(bool solid_frame, bool focused) {
+GtkCssContext WindowContext(bool solid_frame, bool tiled, bool focused) {
   std::string selector = "window.background.";
   selector += solid_frame ? "solid-csd" : "csd";
+  if (tiled) {
+    selector += ".tiled";
+  }
   if (!focused) {
     selector += ":inactive";
   }
   return AppendCssNodeToStyleContext({}, selector);
 }
 
-GtkCssContext DecorationContext(bool solid_frame, bool focused) {
-  auto context = WindowContext(solid_frame, focused);
+GtkCssContext DecorationContext(bool solid_frame, bool tiled, bool focused) {
+  auto context = WindowContext(solid_frame, tiled, focused);
   // GTK4 renders the decoration directly on the window.
   if (!GtkCheckVersion(4)) {
     context = AppendCssNodeToStyleContext(context, "decoration");
@@ -70,8 +73,8 @@ GtkCssContext DecorationContext(bool solid_frame, bool focused) {
   return context;
 }
 
-GtkCssContext HeaderContext(bool solid_frame, bool focused) {
-  auto context = WindowContext(solid_frame, focused);
+GtkCssContext HeaderContext(bool solid_frame, bool tiled, bool focused) {
+  auto context = WindowContext(solid_frame, tiled, focused);
   context =
       AppendCssNodeToStyleContext(context, "headerbar.header-bar.titlebar");
   if (!focused) {
@@ -128,8 +131,8 @@ int ComputeTopCornerRadius() {
   // need to experimentally determine the corner radius by rendering a sample.
   // Additionally, in GTK4, the headerbar corners get clipped by the window
   // rather than the headerbar having its own rounded corners.
-  auto context = GtkCheckVersion(4) ? DecorationContext(false, false)
-                                    : HeaderContext(false, false);
+  auto context = GtkCheckVersion(4) ? DecorationContext(false, false, false)
+                                    : HeaderContext(false, false, false);
   ApplyCssToContext(context, R"(window, headerbar {
     background-image: none;
     background-color: black;
@@ -163,7 +166,7 @@ int ComputeTopCornerRadius() {
 bool HeaderIsTranslucent() {
   // The arbitrary square size to render a sample header.
   constexpr int kHeaderSize = 32;
-  auto context = HeaderContext(false, false);
+  auto context = HeaderContext(false, false, false);
   double opacity = GetOpacityFromContext(context);
   if (opacity < 1.0) {
     return true;
@@ -220,8 +223,8 @@ void WindowFrameProviderGtk::Asset::CloneFrom(
   unfocused_bitmap = src.unfocused_bitmap;
 }
 
-WindowFrameProviderGtk::WindowFrameProviderGtk(bool solid_frame)
-    : solid_frame_(solid_frame) {}
+WindowFrameProviderGtk::WindowFrameProviderGtk(bool solid_frame, bool tiled)
+    : solid_frame_(solid_frame), tiled_(tiled) {}
 
 WindowFrameProviderGtk::~WindowFrameProviderGtk() = default;
 
@@ -240,12 +243,11 @@ gfx::Insets WindowFrameProviderGtk::GetFrameThicknessDip() {
   return frame_thickness_dip_;
 }
 
-void WindowFrameProviderGtk::PaintWindowFrame(
-    gfx::Canvas* canvas,
-    const gfx::Rect& rect_dip,
-    int top_area_height_dip,
-    bool focused,
-    ui::WindowTiledEdges tiled_edges) {
+void WindowFrameProviderGtk::PaintWindowFrame(gfx::Canvas* canvas,
+                                              const gfx::Rect& rect_dip,
+                                              int top_area_height_dip,
+                                              bool focused,
+                                              const gfx::Insets& input_insets) {
   gfx::ScopedCanvas scoped_canvas(canvas);
   float scale = canvas->UndoDeviceScaleFactor();
 
@@ -254,12 +256,11 @@ void WindowFrameProviderGtk::PaintWindowFrame(
   const auto& asset = assets_[ToRoundedScale(scale)];
   DCHECK(asset.valid);
 
+  const auto input_insets_px = gfx::ScaleToRoundedInsets(input_insets, scale);
+  auto effective_frame_thickness_px = asset.frame_thickness_px;
+  effective_frame_thickness_px.SetToMax(input_insets_px);
+
   auto client_bounds_px = gfx::ScaleToRoundedRect(rect_dip, scale);
-  const auto effective_frame_thickness_px = gfx::Insets::TLBR(
-      tiled_edges.top ? 0 : asset.frame_thickness_px.top(),
-      tiled_edges.left ? 0 : asset.frame_thickness_px.left(),
-      tiled_edges.bottom ? 0 : asset.frame_thickness_px.bottom(),
-      tiled_edges.right ? 0 : asset.frame_thickness_px.right());
   client_bounds_px.Inset(effective_frame_thickness_px);
 
   gfx::Rect src_rect(gfx::Size(BitmapSizePx(asset), BitmapSizePx(asset)));
@@ -329,8 +330,9 @@ void WindowFrameProviderGtk::PaintWindowFrame(
   const int top_area_bottom_px = base::ClampCeil(top_area_bottom_dip * scale);
   const int top_area_height_px = top_area_bottom_px - client_bounds_px.y();
 
-  auto header = PaintHeaderbar({client_bounds_px.width(), top_area_height_px},
-                               HeaderContext(solid_frame_, focused), scale);
+  auto header =
+      PaintHeaderbar({client_bounds_px.width(), top_area_height_px},
+                     HeaderContext(solid_frame_, tiled_, focused), scale);
   image = gfx::ImageSkia::CreateFrom1xBitmap(header);
   // In GTK4, the headerbar gets clipped by the window.
   if (GtkCheckVersion(4)) {
@@ -363,7 +365,7 @@ void WindowFrameProviderGtk::MaybeUpdateBitmaps(float scale) {
 
   gfx::Rect frame_bounds_dip(kMaxFrameSizeDip, kMaxFrameSizeDip,
                              2 * kMaxFrameSizeDip, 2 * kMaxFrameSizeDip);
-  auto focused_context = DecorationContext(solid_frame_, true);
+  auto focused_context = DecorationContext(solid_frame_, tiled_, true);
   frame_bounds_dip.Inset(-GtkStyleContextGetPadding(focused_context));
   frame_bounds_dip.Inset(-GtkStyleContextGetBorder(focused_context));
   gfx::Size bitmap_size(BitmapSizePx(asset), BitmapSizePx(asset));
@@ -371,7 +373,7 @@ void WindowFrameProviderGtk::MaybeUpdateBitmaps(float scale) {
                                      focused_context, scale);
   asset.unfocused_bitmap =
       PaintBitmap(bitmap_size, gfx::RectF(frame_bounds_dip),
-                  DecorationContext(solid_frame_, false), scale);
+                  DecorationContext(solid_frame_, tiled_, false), scale);
 
   // In GTK4, there's no way to obtain the frame thickness from CSS values
   // directly, so we must determine it experimentally based on the drawn

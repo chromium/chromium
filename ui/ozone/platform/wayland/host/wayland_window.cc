@@ -675,7 +675,7 @@ std::string WaylandWindow::WindowStates::ToString() const {
   } else {
     base::TrimString(states, " ", &states);
   }
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
   states += "; tiled_edges: ";
   std::string tiled = "";
   if (tiled_edges.left) {

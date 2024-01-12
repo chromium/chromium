@@ -115,8 +115,8 @@ class OpaqueBrowserFrameView : public BrowserNonClientFrameView,
   void UpdateWindowControlsOverlay(
       const gfx::Rect& bounding_rect) const override;
   bool ShouldDrawRestoredFrameShadow() const override;
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  ui::WindowTiledEdges GetTiledEdges() const override;
+#if BUILDFLAG(IS_LINUX)
+  bool IsTiled() const override;
 #endif
   int WebAppButtonHeight() const override;
 

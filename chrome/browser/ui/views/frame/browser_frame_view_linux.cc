@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/desktop_browser_frame_aura_linux.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/shadow_value.h"
 #include "ui/linux/linux_ui.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/views/layout/layout_provider.h"
@@ -76,11 +77,17 @@ void BrowserFrameViewLinux::OnWindowButtonOrderingChange() {
 
 void BrowserFrameViewLinux::PaintRestoredFrameBorder(
     gfx::Canvas* canvas) const {
+#if BUILDFLAG(IS_LINUX)
+  const bool tiled = frame()->tiled();
+#else
+  const bool tiled = false;
+#endif
+  auto shadow_values =
+      tiled ? gfx::ShadowValues() : GetShadowValues(ShouldPaintAsActive());
   PaintRestoredFrameBorderLinux(
       *canvas, *this, frame_background(), GetRestoredClipRegion(),
       ShouldDrawRestoredFrameShadow(), ShouldPaintAsActive(),
-      layout_->MirroredFrameBorderInsets(),
-      GetShadowValues(ShouldPaintAsActive()));
+      layout_->MirroredFrameBorderInsets(), shadow_values, tiled);
 }
 
 void BrowserFrameViewLinux::GetWindowMask(const gfx::Size& size,
@@ -96,8 +103,13 @@ bool BrowserFrameViewLinux::ShouldDrawRestoredFrameShadow() const {
 }
 
 float BrowserFrameViewLinux::GetRestoredCornerRadiusDip() const {
-  if (!UseCustomFrame() ||
-      !ui::OzonePlatform::GetInstance()->IsWindowCompositingSupported()) {
+#if BUILDFLAG(IS_LINUX)
+  const bool tiled = frame()->tiled();
+#else
+  const bool tiled = false;
+#endif
+  if (tiled || !UseCustomFrame() ||
+      !views::Widget::IsWindowCompositingSupported()) {
     return 0;
   }
   return ChromeLayoutProvider::Get()->GetCornerRadiusMetric(

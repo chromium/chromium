@@ -110,7 +110,8 @@ class GtkUi : public ui::LinuxUiAndTheme {
   bool PreferDarkTheme() const override;
   void SetDarkTheme(bool dark) override;
   std::unique_ptr<ui::NavButtonProvider> CreateNavButtonProvider() override;
-  ui::WindowFrameProvider* GetWindowFrameProvider(bool solid_frame) override;
+  ui::WindowFrameProvider* GetWindowFrameProvider(bool solid_frame,
+                                                  bool tiled) override;
 
  private:
   using TintMap = std::map<int, color_utils::HSL>;
@@ -200,9 +201,10 @@ class GtkUi : public ui::LinuxUiAndTheme {
 
   // Paints a native window frame.  Typically only one of these will be
   // non-null.  The exception is when the user starts or stops their compositor
-  // while Chrome is running.
-  std::unique_ptr<ui::WindowFrameProvider> solid_frame_provider_;
-  std::unique_ptr<ui::WindowFrameProvider> transparent_frame_provider_;
+  // while Chrome is running.  This 2D array is indexed first by whether the
+  // frame is translucent (0) or solid(1), then by whether the frame is normal
+  // (0) or tiled (1).
+  std::unique_ptr<ui::WindowFrameProvider> frame_providers_[2][2];
 
   // Objects to notify when the window frame button order changes.
   base::ObserverList<ui::WindowButtonOrderObserver>::Unchecked

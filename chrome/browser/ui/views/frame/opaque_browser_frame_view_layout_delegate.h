@@ -94,10 +94,9 @@ class OpaqueBrowserFrameViewLayoutDelegate {
   // Returns true if a client-side shadow should be drawn for restored windows.
   virtual bool ShouldDrawRestoredFrameShadow() const = 0;
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Returns which edges of the window are snapped to the edges of the desktop
-  // (or "tiled").
-  virtual ui::WindowTiledEdges GetTiledEdges() const = 0;
+#if BUILDFLAG(IS_LINUX)
+  // Returns whether the window is in a tiled state.
+  virtual bool IsTiled() const = 0;
 #endif
 
   // Returns the (preferred) heights of buttons in the web app frame toolbar. If

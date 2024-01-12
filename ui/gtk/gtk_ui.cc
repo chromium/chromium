@@ -520,11 +520,12 @@ std::unique_ptr<ui::NavButtonProvider> GtkUi::CreateNavButtonProvider() {
   return std::make_unique<gtk::NavButtonProviderGtk>();
 }
 
-ui::WindowFrameProvider* GtkUi::GetWindowFrameProvider(bool solid_frame) {
-  auto& provider =
-      solid_frame ? solid_frame_provider_ : transparent_frame_provider_;
+ui::WindowFrameProvider* GtkUi::GetWindowFrameProvider(bool solid_frame,
+                                                       bool tiled) {
+  auto& provider = frame_providers_[solid_frame][tiled];
   if (!provider) {
-    provider = std::make_unique<gtk::WindowFrameProviderGtk>(solid_frame);
+    provider =
+        std::make_unique<gtk::WindowFrameProviderGtk>(solid_frame, tiled);
   }
   return provider.get();
 }

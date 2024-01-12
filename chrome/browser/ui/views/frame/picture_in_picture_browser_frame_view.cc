@@ -190,17 +190,10 @@ class WindowEventObserver : public ui::EventObserver {
     // is not necessary the same as the local bounds on Linux.
     if (pip_browser_frame_view_->ShouldDrawFrameShadow()) {
       gfx::Insets insets = pip_browser_frame_view_->MirroredFrameBorderInsets();
-      const auto tiled_edges = pip_browser_frame_view_->frame()->tiled_edges();
-      if (tiled_edges.left)
-        insets.set_left(0);
-      if (tiled_edges.right)
-        insets.set_right(0);
-      if (tiled_edges.top)
-        insets.set_top(0);
-      if (tiled_edges.bottom)
-        insets.set_bottom(0);
-
-      input_bounds.Inset(insets + pip_browser_frame_view_->GetInputInsets());
+      if (pip_browser_frame_view_->frame()->tiled()) {
+        insets = gfx::Insets();
+      }
+      input_bounds.Inset(insets - pip_browser_frame_view_->GetInputInsets());
     }
 #endif
 
@@ -847,7 +840,7 @@ gfx::Insets PictureInPictureBrowserFrameView::MirroredFrameBorderInsets()
 }
 
 gfx::Insets PictureInPictureBrowserFrameView::GetInputInsets() const {
-  return gfx::Insets(ShouldDrawFrameShadow() ? -kResizeBorder : 0);
+  return gfx::Insets(ShouldDrawFrameShadow() ? kResizeBorder : 0);
 }
 
 SkRRect PictureInPictureBrowserFrameView::GetRestoredClipRegion() const {
@@ -1097,7 +1090,7 @@ void PictureInPictureBrowserFrameView::OnPaint(gfx::Canvas* canvas) {
   if (window_frame_provider_) {
     window_frame_provider_->PaintWindowFrame(
         canvas, GetLocalBounds(), GetTopAreaHeight(), ShouldPaintAsActive(),
-        frame()->tiled_edges());
+        GetInputInsets());
   } else {
     DCHECK(frame_background_);
     frame_background_->set_frame_color(
@@ -1113,7 +1106,7 @@ void PictureInPictureBrowserFrameView::OnPaint(gfx::Canvas* canvas) {
     PaintRestoredFrameBorderLinux(
         *canvas, *this, frame_background_.get(), GetRestoredClipRegion(),
         ShouldDrawFrameShadow(), ShouldPaintAsActive(),
-        MirroredFrameBorderInsets(), GetShadowValues());
+        MirroredFrameBorderInsets(), GetShadowValues(), frame()->tiled());
   }
 #endif
   BrowserNonClientFrameView::OnPaint(canvas);
@@ -1218,18 +1211,15 @@ gfx::Insets PictureInPictureBrowserFrameView::FrameBorderInsets() const {
 #if BUILDFLAG(IS_LINUX)
   if (window_frame_provider_) {
     const auto insets = window_frame_provider_->GetFrameThicknessDip();
-    const auto tiled_edges = frame()->tiled_edges();
+    const bool tiled = frame()->tiled();
 
     // If edges of the window are tiled and snapped to the edges of the desktop,
     // window_frame_provider_ will skip drawing.
-    return gfx::Insets::TLBR(tiled_edges.top ? 0 : insets.top(),
-                             tiled_edges.left ? 0 : insets.left(),
-                             tiled_edges.bottom ? 0 : insets.bottom(),
-                             tiled_edges.right ? 0 : insets.right());
+    return tiled ? gfx::Insets() : insets;
   }
-  return GetRestoredFrameBorderInsetsLinux(
-      ShouldDrawFrameShadow(), gfx::Insets(kFrameBorderThickness),
-      frame()->tiled_edges(), GetShadowValues(), kResizeBorder);
+  return GetRestoredFrameBorderInsetsLinux(ShouldDrawFrameShadow(),
+                                           gfx::Insets(kFrameBorderThickness),
+                                           GetShadowValues(), kResizeBorder);
 #else
   return gfx::Insets();
 #endif
