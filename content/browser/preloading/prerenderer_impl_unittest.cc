@@ -64,6 +64,16 @@ class PrerendererTest : public RenderViewHostTestHarness {
     candidate->action = blink::mojom::SpeculationAction::kPrerender;
     candidate->url = url;
     candidate->referrer = blink::mojom::Referrer::New();
+    candidate->eagerness = blink::mojom::SpeculationEagerness::kEager;
+    return candidate;
+  }
+
+  blink::mojom::SpeculationCandidatePtr CreatePrerenderCandidateWithEagerness(
+      const GURL& url,
+      blink::mojom::SpeculationEagerness eagerness) {
+    blink::mojom::SpeculationCandidatePtr candidate =
+        CreatePrerenderCandidate(url);
+    candidate->eagerness = eagerness;
     return candidate;
   }
 
@@ -116,6 +126,53 @@ TEST_F(PrerendererTest, ProcessFirstSameOriginPrerenderCandidate) {
       registry->FindHostByUrlForTesting(kSecondPrerenderingUrlSameOrigin));
 }
 
+class PrerenderHostRegistryObserver : public PrerenderHostRegistry::Observer {
+ public:
+  explicit PrerenderHostRegistryObserver(
+      PrerenderHostRegistry* prerender_host_registry) {
+    observation_.Observe(prerender_host_registry);
+  }
+
+  void OnTrigger(const GURL& url) override { trigger_sequence_.push_back(url); }
+
+  void OnRegistryDestroyed() override { observation_.Reset(); }
+
+  const std::vector<GURL>& GetTriggerSequence() { return trigger_sequence_; }
+
+ private:
+  base::ScopedObservation<PrerenderHostRegistry,
+                          PrerenderHostRegistry::Observer>
+      observation_{this};
+
+  std::vector<GURL> trigger_sequence_;
+};
+
+// Test that ProcessCandidatesForPrerender will trigger candidates in the same
+// order as the input of the candidate list (crbug.com/1505301).
+TEST_F(PrerendererTest, TriggerPrerenderWithInsertionOrder) {
+  PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
+  PrerenderHostRegistryObserver observer{registry};
+  PrerendererImpl prerenderer(*GetRenderFrameHost());
+
+  std::vector<GURL> urls = {
+      GetSameOriginUrl("/empty.html?a"),
+      GetSameOriginUrl("/empty.html?c"),
+      GetSameOriginUrl("/empty.html?b"),
+  };
+
+  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
+  for (const auto& url : urls) {
+    candidates.push_back(CreatePrerenderCandidate(url));
+  }
+
+  prerenderer.ProcessCandidatesForPrerender(std::move(candidates));
+
+  for (const auto& url : urls) {
+    ASSERT_TRUE(registry->FindHostByUrlForTesting(url));
+  }
+  EXPECT_EQ(observer.GetTriggerSequence(), urls);
+}
+
 // Tests that Prerenderer will remove the rendered host, if the url is removed
 // from candidates list.
 TEST_F(PrerendererTest, RemoveRendererHostAfterCandidateRemoved) {
@@ -156,15 +213,6 @@ class PrerendererNewLimitAndSchedulerTest : public PrerendererTest {
   }
 
   int MaxNumOfRunningSpeculationRulesNonEagerPrerenders() { return 2; }
-
-  blink::mojom::SpeculationCandidatePtr CreatePrerenderCandidateWithEagerness(
-      const GURL& url,
-      blink::mojom::SpeculationEagerness eagerness) {
-    blink::mojom::SpeculationCandidatePtr candidate =
-        CreatePrerenderCandidate(url);
-    candidate->eagerness = eagerness;
-    return candidate;
-  }
 
  private:
   base::test::ScopedFeatureList feature_list_;
