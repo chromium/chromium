@@ -332,6 +332,7 @@ ForcedColors WebThemeEngineDefault::GetForcedColors() const {
              : ForcedColors::kNone;
 }
 
+// TODO(samomekarajr): Remove this when fully migrated to the color pipeline.
 void WebThemeEngineDefault::OverrideForcedColorsTheme(bool is_dark_theme) {
   // Colors were chosen based on Windows 10 default light and dark high contrast
   // themes.

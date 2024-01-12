@@ -162,6 +162,8 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   static void ColorSchemeChanged();
   static void ColorProvidersChanged();
 
+  void EmulateForcedColors(bool is_dark_theme);
+  void DisableEmulatedForcedColors();
   void UpdateColorProviders(
       const ColorProviderColorMaps& color_provider_colors);
   void UpdateColorProvidersForTest();
@@ -590,6 +592,10 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   std::unique_ptr<ui::ColorProvider> light_color_provider_;
   std::unique_ptr<ui::ColorProvider> dark_color_provider_;
   std::unique_ptr<ui::ColorProvider> forced_colors_color_provider_;
+
+  // This provider is used when forced color emulation is enabled via DevTools,
+  // overriding the light, dark or forced colors color providers.
+  std::unique_ptr<ui::ColorProvider> emulated_forced_colors_provider_;
 
   HeapHashSet<WeakMember<PluginsChangedObserver>> plugins_changed_observers_;
 
