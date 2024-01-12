@@ -314,6 +314,9 @@ NET_EXPORT BASE_DECLARE_FEATURE(kSupportPartitionedBlobUrl);
 // Feature to enable consideration of 3PCD Support settings.
 NET_EXPORT BASE_DECLARE_FEATURE(kTpcdSupportSettings);
 
+// Feature to enable consideration of top-level 3PCD Support settings.
+NET_EXPORT BASE_DECLARE_FEATURE(kTopLevelTpcdSupportSettings);
+
 // Whether to enable the use of 3PC based on 3PCD metadata grants delivered via
 // component updater.
 NET_EXPORT BASE_DECLARE_FEATURE(kTpcdMetadataGrants);
