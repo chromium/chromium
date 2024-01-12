@@ -11,6 +11,7 @@
     position: relative;
     width: 100%;
   }
+
   sea-pen-input-query,
   sea-pen-template-query {
     background-color: var(--cros-sys-app_base_shaded);
@@ -20,11 +21,13 @@
     top: 56px;
     z-index: 1;
   }
+
   #seaPenBottomContainer {
     background-color: var(--cros-bg-color);
     grid-area: imagegrid;
     padding: 10px 0;
   }
+
   div[class$='spacertop'] {
     background-color: var(--cros-sys-app_base_shaded);
     position: sticky;
@@ -76,7 +79,7 @@
       <sea-pen-recent-wallpapers></sea-pen-recent-wallpapers>
     </template>
     <template is="dom-if" if="[[shouldShowSeaPenImages_(relativePath_)]]">
-      <sea-pen-images template-id="[[queryParams.seaPenTemplateId]]">
+      <sea-pen-images template-id="[[getTemplateIdFromQueryParams_(queryParams_.seaPenTemplateId)]]">
       </sea-pen-images>
     </template>
   </div>

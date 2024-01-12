@@ -21,6 +21,7 @@ import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {getSeaPenTemplates, SeaPenTemplate} from 'chrome://resources/ash/common/sea_pen/constants.js';
 import {isSeaPenEnabled} from 'chrome://resources/ash/common/sea_pen/load_time_booleans.js';
+import {SeaPenTemplateId} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
 import {isNonEmptyArray} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
@@ -230,7 +231,7 @@ export class PersonalizationBreadcrumbElement extends WithPersonalizationStore {
         breadcrumbs.push(this.i18n('seaPenLabel'));
         if (this.seaPenTemplateId && isNonEmptyArray(this.seaPenTemplates_)) {
           const template = this.seaPenTemplates_.find(
-              template => template.id === this.seaPenTemplateId);
+              template => template.id.toString() === this.seaPenTemplateId);
           if (template) {
             breadcrumbs.push(template.title);
           }
@@ -316,9 +317,9 @@ export class PersonalizationBreadcrumbElement extends WithPersonalizationStore {
     return path === Paths.SEA_PEN_RESULTS && !!template;
   }
 
-  private getAriaSelected_(templateId: string, seaPenTemplateId: string):
-      'true'|'false' {
-    return templateId === seaPenTemplateId ? 'true' : 'false';
+  private getAriaSelected_(
+      templateId: SeaPenTemplateId, seaPenTemplateId: string): 'true'|'false' {
+    return templateId.toString() === seaPenTemplateId ? 'true' : 'false';
   }
 
   private onHomeIconClick_() {

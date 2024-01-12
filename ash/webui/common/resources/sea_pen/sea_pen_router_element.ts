@@ -12,8 +12,9 @@ import './sea_pen_images_element.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {QUERY} from './constants.js';
+import {Query} from './constants.js';
 import {isSeaPenEnabled, isSeaPenTextInputEnabled} from './load_time_booleans.js';
+import {SeaPenTemplateId} from './sea_pen.mojom-webui.js';
 import {getTemplate} from './sea_pen_router_element.html.js';
 
 export enum SeaPenPaths {
@@ -73,8 +74,8 @@ export class SeaPenRouterElement extends PolymerElement {
     instance = null;
   }
 
-  selectSeaPenTemplate(templateId: string) {
-    this.goToRoute(SeaPenPaths.ROOT, {seaPenTemplateId: templateId});
+  selectSeaPenTemplate(templateId: SeaPenTemplateId|Query) {
+    this.goToRoute(SeaPenPaths.ROOT, {seaPenTemplateId: templateId.toString()});
   }
 
   goToRoute(path: SeaPenPaths, queryParams: SeaPenQueryParams = {}) {
@@ -125,14 +126,14 @@ export class SeaPenRouterElement extends PolymerElement {
     return isSeaPenTextInputEnabled() &&
         (relativePath === SeaPenPaths.ROOT ||
          relativePath === SeaPenPaths.RESULTS) &&
-        templateId === QUERY;
+        templateId === 'Query';
   }
 
   private shouldShowTemplateQuery_(
       relativePath: string|null, templateId: string|null): boolean {
     return (relativePath === SeaPenPaths.ROOT ||
             relativePath === SeaPenPaths.RESULTS) &&
-        (!!templateId && templateId !== QUERY);
+        (!!templateId && templateId !== 'Query');
   }
 
   private shouldShowSeaPenRoot_(relativePath: string|null): boolean {
@@ -147,6 +148,14 @@ export class SeaPenRouterElement extends PolymerElement {
       return false;
     }
     return relativePath === SeaPenPaths.RESULTS;
+  }
+
+  private getTemplateIdFromQueryParams_(templateId: string): SeaPenTemplateId
+      |Query {
+    if (templateId === 'Query') {
+      return 'Query';
+    }
+    return parseInt(templateId) as SeaPenTemplateId;
   }
 }
 

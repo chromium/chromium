@@ -71,7 +71,7 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
   static get properties() {
     return {
       templateId: {
-        type: String,
+        type: SeaPenTemplateId,
       },
 
       path: String,
@@ -120,7 +120,7 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
   private computeSeaPenTemplate_(templateId: string|null) {
     const seaPenTemplates = getSeaPenTemplates();
     const correctTemplate = seaPenTemplates.find(
-        (seaPenTemplate) => seaPenTemplate.id === templateId);
+        (seaPenTemplate) => seaPenTemplate.id.toString() === templateId);
     return correctTemplate as SeaPenTemplate;
   }
 

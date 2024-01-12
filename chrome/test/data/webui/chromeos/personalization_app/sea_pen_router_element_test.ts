@@ -5,6 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 
 import {SeaPenInputQueryElement, SeaPenPaths, SeaPenRecentWallpapersElement, SeaPenRouterElement, SeaPenTemplateQueryElement, SeaPenTemplatesElement} from 'chrome://personalization/js/personalization_app.js';
+import {SeaPenTemplateId} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -37,7 +38,7 @@ suite('SeaPenRouterElementTest', function() {
         !!router.shadowRoot!.querySelector(SeaPenTemplateQueryElement.is),
         'no template query element on root');
 
-    router.selectSeaPenTemplate('123');
+    router.selectSeaPenTemplate(0 as SeaPenTemplateId);
     await waitAfterNextRender(router);
 
     assertTrue(

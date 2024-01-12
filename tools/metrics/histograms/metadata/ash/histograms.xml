@@ -252,6 +252,20 @@ chromium-metrics-reviews@google.com.
   <variant name="Projector" summary="Projector initiated capture mode"/>
 </variants>
 
+<variants name="SeaPenTemplateName">
+  <variant name="Art" summary="Template Art"/>
+  <variant name="Characters" summary="Template Characters"/>
+  <variant name="Curious" summary="Template Curious"/>
+  <variant name="Dreamscapes" summary="Template Dreamscapes"/>
+  <variant name="Flower" summary="Template Airbrush"/>
+  <variant name="Landscape" summary="Template Landscape"/>
+  <variant name="Mineral" summary="Template Minerals"/>
+  <variant name="Query" summary="Free-form text query"/>
+  <variant name="Scifi" summary="Template Scifi"/>
+  <variant name="Terrain" summary="Template Terrain"/>
+  <variant name="Translucent" summary="Template Translucent"/>
+</variants>
+
 <variants name="SnapActionSource">
   <variant name="AutoSnapInSplitView"
       summary="Auto snap a window in split view"/>
@@ -5998,6 +6012,17 @@ chromium-metrics-reviews@google.com.
     second is achieved during the animations. 0% should not happen. This metric
     is recorded exactly once when the user rotates the screen.
   </summary>
+</histogram>
+
+<histogram name="Ash.SeaPen.{TemplateName}.UserFeedback" enum="Boolean"
+    expires_after="2024-12-31">
+  <owner>pzliu@google.com</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Record the thumbs up/thumbs down feedback for SeaPen template {TemplateName}
+    from the user. Emits true if the feedback is positive, false otherwise.
+  </summary>
+  <token key="TemplateName" variants="SeaPenTemplateName"/>
 </histogram>
 
 <histogram name="Ash.Search.DriveFileSuggestDataValidation.Status"

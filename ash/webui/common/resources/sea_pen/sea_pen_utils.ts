@@ -23,3 +23,9 @@ export function isNonEmptyFilePath(obj: unknown): obj is FilePath {
   return !!obj && typeof obj === 'object' && 'path' in obj &&
       typeof obj.path === 'string' && !!obj.path;
 }
+
+export function logSeaPenTemplateFeedback(
+    templateName: string, positiveFeedback: boolean) {
+  chrome.metricsPrivate.recordBoolean(
+      `Ash.SeaPen.${templateName}.UserFeedback`, positiveFeedback);
+}
