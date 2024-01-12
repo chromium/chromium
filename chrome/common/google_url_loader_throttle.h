@@ -56,11 +56,14 @@ class GoogleURLLoaderThrottle final : public blink::URLLoaderThrottle {
       std::vector<std::string>* to_be_removed_headers,
       net::HttpRequestHeaders* modified_headers,
       net::HttpRequestHeaders* modified_cors_exempt_headers) override;
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   void WillProcessResponse(const GURL& response_url,
                            network::mojom::URLResponseHead* response_head,
                            bool* defer) override;
-#endif
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  void WillOnCompleteWithError(const network::URLLoaderCompletionStatus& status,
+                               bool* defer) override;
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+
  private:
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   void OnDeferRequestForBoundSessionCompleted(
@@ -72,6 +75,9 @@ class GoogleURLLoaderThrottle final : public blink::URLLoaderThrottle {
       bound_session_request_throttled_handler_;
   absl::optional<base::TimeTicks> bound_session_request_throttled_start_time_;
   bool is_main_frame_navigation_ = false;
+  // `true` if at least one URL in the redirect chain was affected.
+  bool is_covered_by_bound_session_ = false;
+  bool is_deferred_for_bound_session_ = false;
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

@@ -168,6 +168,11 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Should show"/>
 </enum>
 
+<enum name="BooleanWasDeferred">
+  <int value="0" label="Was not deferred"/>
+  <int value="1" label="Was deferred"/>
+</enum>
+
 <enum name="BoundSessionCredentialsCookieRotationResult">
   <int value="0" label="Success"/>
   <int value="1" label="Connection error"/>
