@@ -37,6 +37,7 @@
 # [1] https://chromium.googlesource.com/chromium/src/+/main/docs/testing/web_tests.md#testing-runtime-flags
 
 andruud@chromium.org
+dbaron@chromium.org
 dom@chromium.org
 flackr@chromium.org
 ikilpatrick@chromium.org
