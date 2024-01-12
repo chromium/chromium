@@ -111,7 +111,6 @@ BASE_DECLARE_FEATURE(kPwaRestoreUi);
 BASE_DECLARE_FEATURE(kOpenDownloadDialog);
 BASE_DECLARE_FEATURE(kPartnerCustomizationsUma);
 BASE_DECLARE_FEATURE(kQuickDeleteForAndroid);
-BASE_DECLARE_FEATURE(kReachedCodeProfiler);
 BASE_DECLARE_FEATURE(kReadAloud);
 BASE_DECLARE_FEATURE(kReadAloudInOverflowMenuInCCT);
 BASE_DECLARE_FEATURE(kReadAloudPlayback);

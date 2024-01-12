@@ -89,7 +89,6 @@ public class LegacyChromePreferenceKeys {
                 ChromePreferenceKeys.PRIVACY_METRICS_IN_SAMPLE,
                 ChromePreferenceKeys.PROFILES_BOOT_TIMESTAMP,
                 ChromePreferenceKeys.PROMOS_SKIPPED_ON_FIRST_START,
-                ChromePreferenceKeys.REACHED_CODE_PROFILER_GROUP,
                 ChromePreferenceKeys.RLZ_NOTIFIED,
                 ChromePreferenceKeys.SEARCH_ENGINE_CHOICE_DEFAULT_TYPE_BEFORE,
                 ChromePreferenceKeys.SEARCH_ENGINE_CHOICE_PRESENTED_VERSION,

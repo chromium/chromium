@@ -12,7 +12,6 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.FieldTrialList;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.back_press.BackPressManager;
@@ -48,8 +47,6 @@ public class ChromeCachedFlags {
     private static final ChromeCachedFlags INSTANCE = new ChromeCachedFlags();
 
     private boolean mIsFinishedCachingNativeFlags;
-
-    private static String sReachedCodeProfilerTrialGroup;
 
     /**
      * A list of field trial parameters that will be cached when starting minimal browser mode. See
@@ -174,49 +171,13 @@ public class ChromeCachedFlags {
      * Do not add new simple boolean flags here, add them to {@link #cacheNativeFlags} instead.
      */
     public static void cacheAdditionalNativeFlags() {
-        cacheReachedCodeProfilerTrialGroup();
-
-        // Propagate REACHED_CODE_PROFILER feature value to LibraryLoader. This can't be done in
-        // LibraryLoader itself because it lives in //base and can't depend on ChromeFeatureList.
-        LibraryLoader.setReachedCodeProfilerEnabledOnNextRuns(
-                ChromeFeatureList.isEnabled(ChromeFeatureList.REACHED_CODE_PROFILER),
-                ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                        ChromeFeatureList.REACHED_CODE_PROFILER, "sampling_interval_us", 0));
-
-        // Similarly, propagate the BACKGROUND_THREAD_POOL feature value to LibraryLoader.
+        // Propagate the BACKGROUND_THREAD_POOL feature value to LibraryLoader.
         LibraryLoader.setBackgroundThreadPoolEnabledOnNextRuns(
                 ChromeFeatureList.isEnabled(ChromeFeatureList.BACKGROUND_THREAD_POOL));
 
         // Propagate the CACHE_ACTIVITY_TASKID feature value to ApplicationStatus.
         ApplicationStatus.setCachingEnabled(
                 ChromeFeatureList.isEnabled(ChromeFeatureList.CACHE_ACTIVITY_TASKID));
-    }
-
-    /** Caches the trial group of the reached code profiler feature to be using on next startup. */
-    private static void cacheReachedCodeProfilerTrialGroup() {
-        // Make sure that the existing value is saved in a static variable before overwriting it.
-        if (sReachedCodeProfilerTrialGroup == null) {
-            getReachedCodeProfilerTrialGroup();
-        }
-
-        ChromeSharedPreferences.getInstance()
-                .writeString(
-                        ChromePreferenceKeys.REACHED_CODE_PROFILER_GROUP,
-                        FieldTrialList.findFullName(ChromeFeatureList.REACHED_CODE_PROFILER));
-    }
-
-    /**
-     * @return The trial group of the reached code profiler.
-     */
-    @CalledByNative
-    public static String getReachedCodeProfilerTrialGroup() {
-        if (sReachedCodeProfilerTrialGroup == null) {
-            sReachedCodeProfilerTrialGroup =
-                    ChromeSharedPreferences.getInstance()
-                            .readString(ChromePreferenceKeys.REACHED_CODE_PROFILER_GROUP, "");
-        }
-
-        return sReachedCodeProfilerTrialGroup;
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)

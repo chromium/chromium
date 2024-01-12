@@ -345,7 +345,6 @@ public abstract class ChromeFeatureList {
     public static final String QUERY_TILES_IN_ZPS_ON_NTP = "OmniboxQueryTilesInZPSOnNTP";
     public static final String QUICK_DELETE_FOR_ANDROID = "QuickDeleteForAndroid";
     public static final String QUIET_NOTIFICATION_PROMPTS = "QuietNotificationPrompts";
-    public static final String REACHED_CODE_PROFILER = "ReachedCodeProfiler";
     public static final String READALOUD = "ReadAloud";
     public static final String READALOUD_IN_OVERFLOW_MENU_IN_CCT = "ReadAloudInOverflowMenuInCCT";
     public static final String READALOUD_PLAYBACK = "ReadAloudPlayback";

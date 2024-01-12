@@ -3567,8 +3567,6 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
     switches::kDisallowNonExactResourceReuse,
 #if BUILDFLAG(IS_ANDROID)
     switches::kDisableMediaSessionAPI,
-    switches::kEnableReachedCodeProfiler,
-    switches::kReachedCodeSamplingIntervalUs,
     switches::kRendererWaitForJavaDebugger,
 #endif
 #if BUILDFLAG(IS_WIN)

@@ -61,18 +61,9 @@ public class LibraryLoader {
     // Constant guarding debug logging in this class.
     static final boolean DEBUG = false;
 
-    // Shared preferences key for the reached code profiler.
-    private static final String DEPRECATED_REACHED_CODE_PROFILER_KEY =
-            "reached_code_profiler_enabled";
-    private static final String REACHED_CODE_SAMPLING_INTERVAL_KEY =
-            "reached_code_sampling_interval";
-
     // Compile time switch for sharing RELRO between the browser and the app zygote.
     // TODO(crbug.com/1154224): remove when the issue is closed.
     private static final boolean ALLOW_CHROMIUM_LINKER_IN_ZYGOTE = true;
-
-    // Default sampling interval for reached code profiler in microseconds.
-    private static final int DEFAULT_REACHED_CODE_SAMPLING_INTERVAL_US = 10000;
 
     // Shared preferences key for the background thread pool setting.
     private static final String BACKGROUND_THREAD_POOL_KEY = "background_thread_pool_enabled";
@@ -675,46 +666,6 @@ public class LibraryLoader {
     }
 
     /**
-     * Enables the reached code profiler. The value comes from "ReachedCodeProfiler"
-     * finch experiment, and is pushed on every run. I.e. the effect of the finch experiment
-     * lags by one run, which is the best we can do considering that the profiler has to be enabled
-     * before finch is initialized. Note that since LibraryLoader is in //base, it can't depend
-     * on ChromeFeatureList, and has to rely on external code pushing the value.
-     *
-     * @param enabled whether to enable the reached code profiler.
-     * @param samplingIntervalUs the sampling interval for reached code profiler.
-     */
-    public static void setReachedCodeProfilerEnabledOnNextRuns(
-            boolean enabled, int samplingIntervalUs) {
-        // Store 0 if the profiler is not enabled, otherwise store the sampling interval in
-        // microseconds.
-        if (enabled && samplingIntervalUs == 0) {
-            samplingIntervalUs = DEFAULT_REACHED_CODE_SAMPLING_INTERVAL_US;
-        } else if (!enabled) {
-            samplingIntervalUs = 0;
-        }
-        SharedPreferences.Editor editor = ContextUtils.getAppSharedPreferences().edit();
-        editor.remove(DEPRECATED_REACHED_CODE_PROFILER_KEY);
-        editor.putInt(REACHED_CODE_SAMPLING_INTERVAL_KEY, samplingIntervalUs).apply();
-    }
-
-    /**
-     * @return sampling interval for reached code profiler, or 0 when the profiler is disabled. (see
-     *         setReachedCodeProfilerEnabledOnNextRuns()).
-     */
-    @VisibleForTesting
-    public static int getReachedCodeSamplingIntervalUs() {
-        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            if (ContextUtils.getAppSharedPreferences()
-                    .getBoolean(DEPRECATED_REACHED_CODE_PROFILER_KEY, false)) {
-                return DEFAULT_REACHED_CODE_SAMPLING_INTERVAL_US;
-            }
-            return ContextUtils.getAppSharedPreferences()
-                    .getInt(REACHED_CODE_SAMPLING_INTERVAL_KEY, 0);
-        }
-    }
-
-    /**
      * Enables the background priority thread pool group. The value comes from the
      * "BackgroundThreadPool" finch experiment, and is pushed on every run, to take effect on the
      * subsequent run. I.e. the effect of the finch experiment lags by one run, which is the best we
@@ -864,19 +815,7 @@ public class LibraryLoader {
         assert mLibraryProcessType != LibraryProcessType.PROCESS_UNINITIALIZED;
 
         if (mLibraryProcessType == LibraryProcessType.PROCESS_BROWSER) {
-            // Add a switch for the reached code profiler as late as possible since it requires a
-            // read from the shared preferences. At this point the shared preferences are usually
-            // warmed up.
-            int reachedCodeSamplingIntervalUs = getReachedCodeSamplingIntervalUs();
-            if (reachedCodeSamplingIntervalUs > 0) {
-                CommandLine.getInstance().appendSwitch(BaseSwitches.ENABLE_REACHED_CODE_PROFILER);
-                CommandLine.getInstance()
-                        .appendSwitchWithValue(
-                                BaseSwitches.REACHED_CODE_SAMPLING_INTERVAL_US,
-                                Integer.toString(reachedCodeSamplingIntervalUs));
-            }
-
-            // Similarly, append a switch to enable the background thread pool group if the cached
+            // Append a switch to enable the background thread pool group if the cached
             // preference indicates it should be enabled.
             if (isBackgroundThreadPoolEnabled()) {
                 CommandLine.getInstance().appendSwitch(BaseSwitches.ENABLE_BACKGROUND_THREAD_POOL);

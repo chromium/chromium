@@ -653,12 +653,6 @@ public final class ChromePreferenceKeys {
     public static final String SEARCH_RESUMPTION_MODULE_COLLAPSE_ON_NTP =
             "Chrome.SearchResumptionModule.Collapse";
 
-    /**
-     * Contains a trial group that was used to determine whether the reached code profiler should be
-     * enabled.
-     */
-    public static final String REACHED_CODE_PROFILER_GROUP = "reached_code_profiler_group";
-
     public static final String RLZ_NOTIFIED = "rlz_first_search_notified";
 
     /** Key used to store the default Search Engine Type before choice is presented. */

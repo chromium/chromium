@@ -234,7 +234,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kOmniboxNoopEditUrlSuggestionClicks,
     &kPartnerCustomizationsUma,
     &kQuickDeleteForAndroid,
-    &kReachedCodeProfiler,
     &kReadAloud,
     &kReadAloudInOverflowMenuInCCT,
     &kReadAloudPlayback,
@@ -702,10 +701,6 @@ BASE_FEATURE(kPartnerCustomizationsUma,
 
 BASE_FEATURE(kQuickDeleteForAndroid,
              "QuickDeleteForAndroid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kReachedCodeProfiler,
-             "ReachedCodeProfiler",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kReadAloud, "ReadAloud", base::FEATURE_DISABLED_BY_DEFAULT);

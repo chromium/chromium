@@ -367,10 +367,6 @@ bool UtilityProcessHost::StartProcess() {
       switches::kUseGL,
       switches::kV,
       switches::kVModule,
-#if BUILDFLAG(IS_ANDROID)
-      switches::kEnableReachedCodeProfiler,
-      switches::kReachedCodeSamplingIntervalUs,
-#endif
       switches::kEnableExperimentalWebPlatformFeatures,
       // These flags are used by the audio service:
       switches::kAudioBufferSize,

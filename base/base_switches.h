@@ -49,8 +49,6 @@ extern const char kEnableCrashReporterForTesting[];
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-extern const char kEnableReachedCodeProfiler[];
-extern const char kReachedCodeSamplingIntervalUs[];
 extern const char kDefaultCountryCodeAtInstall[];
 extern const char kEnableIdleTracing[];
 extern const char kForceFieldTrialParams[];

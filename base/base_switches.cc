@@ -143,14 +143,6 @@ const char kEnableCrashReporterForTesting[] =
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-// Enables the reached code profiler that samples all threads in all processes
-// to determine which functions are almost never executed.
-const char kEnableReachedCodeProfiler[] = "enable-reached-code-profiler";
-
-// Specifies the profiling interval in microseconds for reached code profiler.
-const char kReachedCodeSamplingIntervalUs[] =
-    "reached-code-sampling-interval-us";
-
 // Default country code to be used for search engine localization.
 const char kDefaultCountryCodeAtInstall[] = "default-country-code";
 

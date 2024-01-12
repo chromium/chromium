@@ -1198,10 +1198,6 @@ component("base") {
       "android/pre_freeze_background_memory_trimmer.h",
       "android/radio_utils.cc",
       "android/radio_utils.h",
-      "android/reached_addresses_bitset.cc",
-      "android/reached_addresses_bitset.h",
-      "android/reached_code_profiler.cc",
-      "android/reached_code_profiler.h",
       "android/scoped_hardware_buffer_fence_sync.cc",
       "android/scoped_hardware_buffer_fence_sync.h",
       "android/scoped_hardware_buffer_handle.cc",
@@ -1283,12 +1279,6 @@ component("base") {
         "profiler/frame_pointer_unwinder.cc",
         "profiler/frame_pointer_unwinder.h",
       ]
-    }
-
-    if (current_cpu != "arm" && current_cpu != "arm64") {
-      # The reached code profiler is only supported on Android arm arch.
-      sources -= [ "android/reached_code_profiler.cc" ]
-      sources += [ "android/reached_code_profiler_stub.cc" ]
     }
 
     # This is actually a linker script, but it can be added to the link in the
@@ -3724,7 +3714,6 @@ test("base_unittests") {
       "android/path_utils_unittest.cc",
       "android/pre_freeze_background_memory_trimmer_unittest.cc",
       "android/radio_utils_unittest.cc",
-      "android/reached_addresses_bitset_unittest.cc",
       "android/scoped_java_ref_unittest.cc",
       "android/sys_utils_unittest.cc",
       "android/unguessable_token_android_unittest.cc",
