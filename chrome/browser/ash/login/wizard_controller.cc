@@ -1046,11 +1046,9 @@ void WizardController::ShowEnterOldPasswordScreen() {
 }
 
 void WizardController::ShowEnrollmentScreen() {
-  if (wizard_context_->quick_start_setup_ongoing) {
-    quickstart_controller_->AbortFlow(
-        quick_start::QuickStartController::AbortFlowReason::
-            ENTERPRISE_ENROLLMENT);
-  }
+  MaybeAbortQuickStartFlow(quick_start::QuickStartController::AbortFlowReason::
+                               ENTERPRISE_ENROLLMENT);
+
   // Update the enrollment configuration and start the screen.
   GetLoginDisplayHost()->GetOobeMetricsHelper()->RecordEnrollingUserType();
   prescribed_enrollment_config_ =
@@ -1279,6 +1277,9 @@ void WizardController::OnUserCreationScreenExit(
                UserCreationScreen::GetResultString(result));
   switch (result) {
     case UserCreationScreen::Result::SIGNIN_SCHOOL:
+      MaybeAbortQuickStartFlow(
+          quick_start::QuickStartController::AbortFlowReason::SIGNIN_SCHOOL);
+      [[fallthrough]];
     case UserCreationScreen::Result::SIGNIN_TRIAGE:
       GetLocalState()->SetBoolean(prefs::kOobeIsConsumerSegment, true);
       StartupUtils::SaveScreenAfterConsumerUpdate(GaiaView::kScreenId.name);
@@ -3385,6 +3386,13 @@ void WizardController::ResetCurrentScreen() {
   if (current_screen_) {
     current_screen_->Hide();
     current_screen_ = nullptr;
+  }
+}
+
+void WizardController::MaybeAbortQuickStartFlow(
+    quick_start::QuickStartController::AbortFlowReason reason) {
+  if (wizard_context_->quick_start_setup_ongoing) {
+    quickstart_controller_->AbortFlow(reason);
   }
 }
 

@@ -58,6 +58,7 @@ class QuickStartController
   enum class AbortFlowReason {
     USER_CLICKED_BACK,
     USER_CLICKED_CANCEL,
+    SIGNIN_SCHOOL,
     ENTERPRISE_ENROLLMENT,
     QUICK_START_FLOW_COMPLETE,
     ERROR,

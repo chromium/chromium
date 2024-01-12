@@ -83,6 +83,8 @@ ConnectionClosedReasonFromAbortFlowReason(
       [[fallthrough]];
     case QuickStartController::AbortFlowReason::USER_CLICKED_BACK:
       [[fallthrough]];
+    case QuickStartController::AbortFlowReason::SIGNIN_SCHOOL:
+      [[fallthrough]];
     case QuickStartController::AbortFlowReason::ENTERPRISE_ENROLLMENT:
       return TargetDeviceBootstrapController::ConnectionClosedReason::
           kUserAborted;
