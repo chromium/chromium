@@ -400,7 +400,6 @@ crbug.com/1499775 external/wpt/html/user-activation/activation-trigger-pointerev
 crbug.com/1499775 external/wpt/html/user-activation/propagation-same-and-cross-origin.sub.html [ Timeout ]
 crbug.com/1499775 external/wpt/html/webappapis/scripting/event-loops/fully_active_document.window.html [ Failure ]  # Flaky output
 crbug.com/1499775 external/wpt/infrastructure/assumptions/ahem.html [ Failure ]  # Reftest image failure
-crbug.com/1499775 external/wpt/infrastructure/testdriver/test_win_open_with_interaction.html [ Timeout ]
 crbug.com/1499775 external/wpt/long-animation-frame/tentative/loaf-first-ui-event.html [ Skip Timeout ]
 crbug.com/1499775 external/wpt/mathml/relations/css-styling/mozilla-393760-2.xml [ Failure ]  # Reftest image failure
 crbug.com/1499775 external/wpt/mathml/relations/html5-tree/tabindex-002.html [ Skip Timeout ]
