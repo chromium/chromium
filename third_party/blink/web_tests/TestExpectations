@@ -5129,7 +5129,6 @@ crbug.com/1038139 [ Mac ] virtual/gpu-rasterization/images/2-comp.html [ Failure
 # Failures cause by SwiftShader not working on arm-based Macs
 crbug.com/1295317 [ Mac11-arm64 ] compositing/geometry/video-opacity-overlay.html [ Failure ]
 crbug.com/1295317 [ Mac11-arm64 ] compositing/video/video-controls-squashing.html [ Failure ]
-crbug.com/1295317 [ Mac11-arm64 ] virtual/exotic-color-space/images/color-jpeg-with-color-profile.html [ Failure ]
 crbug.com/1295317 [ Mac11-arm64 ] virtual/exotic-color-space/images/color-profile-background-image-cover.html [ Failure ]
 crbug.com/1295317 [ Mac11-arm64 ] virtual/exotic-color-space/images/color-profile-image-canvas-svg.html [ Failure ]
 crbug.com/1295317 [ Mac11-arm64 ] virtual/exotic-color-space/images/color-profile-image-filter-all.html [ Failure ]
@@ -6418,7 +6417,8 @@ crbug.com/1450020 [ Mac12-arm64 Release ] compositing/geometry/preserve-3d-switc
 # Sheriff 2023-06-07
 crbug.com/1451210 [ Mac ] external/wpt/scroll-to-text-fragment/iframe-scroll.sub.html [ Failure Pass ]
 crbug.com/1452222 [ Debug Linux ] http/tests/devtools/sources/debugger-breakpoints/breakpoint-manager-listeners-count.js [ Failure Pass ]
-crbug.com/1453235 [ Mac ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-video.https.html [ Failure Pass Timeout ]
+crbug.com/1453235 [ Debug Mac13 ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-video.https.html [ Failure Pass Timeout ]
+crbug.com/1453235 [ Mac Release ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-video.https.html [ Failure Pass Timeout ]
 
 # Since HTTPS upgrades run in the //chrome layer, these will fail when ran in content shell.
 external/wpt/https-upgrades/tentative/upgrade.https.sub.html [ Timeout ]
@@ -6573,7 +6573,7 @@ crbug.com/1464614 [ Win11-arm64 ] http/tests/images/force-reload.html [ Failure 
 crbug.com/1464614 [ Win11-arm64 ] css3/blending/svg-blend-multiply.html [ Failure ]  # Reftest image failure
 crbug.com/1464614 [ Win11-arm64 ] css3/blending/svg-blend-exclusion.html [ Failure ]  # Reftest image failure
 
-crbug.com/1411760 [ Mac ] virtual/composite-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-animation-fixed-position.html [ Failure Pass ]
+crbug.com/1411760 [ Debug Mac13-arm64 ] virtual/composite-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-animation-fixed-position.html [ Failure Pass ]
 
 # Gardener 2023-07-26
 crbug.com/1364187 http/tests/misc/scroll-cross-origin-iframes.html [ Failure Pass ]
@@ -6736,7 +6736,9 @@ crbug.com/1493455 external/wpt/pointerevents/pointerevent_pointerrawupdate.html 
 crbug.com/1494133 media/controls/video-overlay-cast-light-rendering.html [ Failure Pass ]
 
 # Gardener 2023-10-20
-crbug.com/1494242 [ Mac ] external/wpt/background-fetch/fetch.https.window.html [ Failure Timeout ]
+crbug.com/1494242 [ Mac11 Release ] external/wpt/background-fetch/fetch.https.window.html [ Failure Timeout ]
+crbug.com/1494242 [ Mac12 Release ] external/wpt/background-fetch/fetch.https.window.html [ Failure Timeout ]
+crbug.com/1494242 [ Mac13 Release ] external/wpt/background-fetch/fetch.https.window.html [ Failure Timeout ]
 
 # Gardener 2023-10-23
 crbug.com/1363683 [ Mac10.15 ] virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-2d-drawImage.html [ Failure ]
