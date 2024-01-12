@@ -3,3 +3,5 @@
 Diagnostics:
   UnusedIncludes: None
   MissingIncludes: None
+CompileFlags:
+  Remove: [-cfg=*, -exec_root=*]
