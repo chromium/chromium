@@ -3562,7 +3562,7 @@
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Доступно 1 USB-устройство}one{Доступно # USB-устройство}few{Доступно # USB-устройства}many{Доступно # USB-устройств}other{Доступно # USB-устройства}}</translation>
 <translation id="3764753550716962406">Разрешить Google доступ к корзине, чтобы искать скидки?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{Отправляем <ph name="ATTACHMENTS" /> на устройство "<ph name="DEVICE_NAME" />"…}one{Отправляем <ph name="ATTACHMENTS" /> на устройство "<ph name="DEVICE_NAME" />"…}few{Отправляем <ph name="ATTACHMENTS" /> на устройство "<ph name="DEVICE_NAME" />"…}many{Отправляем <ph name="ATTACHMENTS" /> на устройство "<ph name="DEVICE_NAME" />"…}other{Отправляем <ph name="ATTACHMENTS" /> на устройство "<ph name="DEVICE_NAME" />"…}}</translation>
-<translation id="3765055238058255342">Этот тип карточек</translation>
+<translation id="3765055238058255342">карточки этого типа</translation>
 <translation id="3765246971671567135">Не удалось прочитать политику работы офлайн в демонстрационном режиме.</translation>
 <translation id="3765696567014520261">Сайты не смогут использовать файлы cookie, чтобы отслеживать ваши действия в браузере, например для показа персонализированной рекламы. Функции некоторых сайтов могут стать недоступными.</translation>
 <translation id="3766687283066842296">Подробнее о функции "Управление телефоном"</translation>

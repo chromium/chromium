@@ -240,7 +240,7 @@
 <translation id="1429080515485835353">ସେଲ୍ଫ-ଆଡେସିଭ ଫିଲ୍ମ</translation>
 <translation id="1430915738399379752">ପ୍ରିଣ୍ଟ କରନ୍ତୁ</translation>
 <translation id="1432187715652018471">ପୃଷ୍ଠାଟି ଏକ ସେବା ହ୍ୟାଣ୍ଡଲର ଇନଷ୍ଟଲ କରିବାକୁ ଚାହୁଁଛି।</translation>
-<translation id="1432581352905426595">ସନ୍ଧାନ ଇଞ୍ଜିନ୍‌ଗୁଡ଼ିକ ପରିଚାଳନା କରନ୍ତୁ</translation>
+<translation id="1432581352905426595">ସର୍ଚ୍ଚ ଇଞ୍ଜିନଗୁଡ଼ିକ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="1433225466058025572">ଆପଣଙ୍କ ଫାଇଲଗୁଡ଼ିକୁ ପୁଣି ମୁଭ କରିବା ପାଇଁ ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="1434317006812369578">ଆପଣ ବ୍ରାଉଜ କରିବା ସମୟରେ ଆପଣଙ୍କୁ ସୁରକ୍ଷିତ ରଖିବା ପାଇଁ Chromeରେ Google ସୁରକ୍ଷିତ ବ୍ରାଉଜିଂ ପରି ବିଲ୍ଟ-ଇନ ସୁରକ୍ଷା ଫିଚରଗୁଡ଼ିକ ଅଛି। ସୁରକ୍ଷିତ ବ୍ରାଉଜିଂ ବର୍ତ୍ତମାନ <ph name="BEGIN_LINK" /><ph name="SITE" />ରେ ମାଲୱେର ପାଇଛି<ph name="END_LINK" />, ଯାହାକୁ ଆପଣ ଭିଜିଟ କରିବାକୁ ଚେଷ୍ଟା କରୁଥିବା ସାଇଟରେ ଏମ୍ବେଡ କରାଯାଇଛି।</translation>
 <translation id="1435940442311036198">ଗୋଟିଏ ଭିନ୍ନ ଡିଭାଇସରେ ଏକ ପାସକୀ ବ୍ୟବହାର କରନ୍ତୁ</translation>
@@ -1269,7 +1269,7 @@
 <translation id="3576616784287504635"><ph name="SITE" />ରେ ଏକ ଏମ୍ବେଡ୍‌ ହୋ‍ଇଥିବା ପୃଷ୍ଠା କହେ ଯେ</translation>
 <translation id="3577473026931028326">କିଛି ତ୍ରୁଟି ହୋଇଛି। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="3577902790357386792">ଜିମ୍ନାଷ୍ଟିକ୍ସ</translation>
-<translation id="3581089476000296252">ଯେତେବେଳେ ଏହି ପୃଷ୍ଠା ପ୍ରସ୍ତୁତ ହୋଇଯିବ, ସେତେବେଳେ Chrome ଆପଣଙ୍କୁ ସୂଚିତ କରିଦେବ। &lt;a&gt;ବାତିଲ୍ କରନ୍ତୁ&lt;/a&gt;</translation>
+<translation id="3581089476000296252">ଏହି ପୃଷ୍ଠା ପ୍ରସ୍ତୁତ ହୋଇଗଲେ Chrome ଆପଣଙ୍କୁ ଜଣେଇବ। &lt;a&gt;ବାତିଲ କରନ୍ତୁ&lt;/a&gt;</translation>
 <translation id="3582930987043644930">ନାମ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="3583757800736429874">&amp;ଘୁଞ୍ଚାଇବା କାର୍ଯ୍ୟଟି ପୁଣିଥରେ କରନ୍ତୁ</translation>
 <translation id="3584299510153766161">ତଳ ପଟରେ ଦୁଇଟି ପଞ୍ଚ୍</translation>
@@ -1913,7 +1913,7 @@
 <translation id="4877422487531841831"><ph name="TEXT" /> ସନ୍ଧାନ କରନ୍ତୁ</translation>
 <translation id="4877521229462766300">ଏମ୍ବେଡ କରାଯାଇଥିବା ବିଷୟବସ୍ତୁକୁ ଅନୁମତି ଦେବେ?</translation>
 <translation id="4879491255372875719">ସ୍ୱଚାଳିତ (ଡିଫଲ୍ଟ)</translation>
-<translation id="4880827082731008257">ସନ୍ଧାନ ଇତିହାସ</translation>
+<translation id="4880827082731008257">ସର୍ଚ୍ଚ ଇତିହାସ</translation>
 <translation id="4881695831933465202">ଖୋଲନ୍ତୁ</translation>
 <translation id="4881808915112408168">24 x 31.5 ଇଞ୍ଚ</translation>
 <translation id="4882314601499260499">କୌଣସି ୟୁଜର ନୀତି ଲାଗୁ କରାଯାଇନାହିଁ। ୟୁଜର ନୀତିଗୁଡ଼ିକ ଯୋଗ କରିବା ପାଇଁ, ଆପଣଙ୍କ ସଂସ୍ଥା <ph name="LINK_BEGIN" />ଆପଣଙ୍କ ଡୋମେନକୁ ଯାଞ୍ଚ କରିବା<ph name="LINK_END" /> ଆବଶ୍ୟକ।</translation>
@@ -2811,7 +2811,7 @@
 <translation id="6709133671862442373">News</translation>
 <translation id="6709888928011386878">ବାଦ୍ୟ ଯନ୍ତ୍ରଗୁଡ଼ିକ</translation>
 <translation id="6710213216561001401">ପୂର୍ବବର୍ତ୍ତୀ</translation>
-<translation id="6710594484020273272">&lt;ସନ୍ଧାନ ପଦ ଟାଇପ୍ କରନ୍ତୁ&gt;</translation>
+<translation id="6710594484020273272">&lt;ସର୍ଚ୍ଚ ଶବ୍ଦ ଟାଇପ କରନ୍ତୁ&gt;</translation>
 <translation id="671076103358959139">ନାମାଙ୍କିତ ଟୋକନ୍:</translation>
 <translation id="6711464428925977395">ପ୍ରକ୍ସି ସର୍ଭରରେ କିଛି ତ୍ରୁଟି ଅଛି କିମ୍ବା ଠିକଣା ଭୁଲ୍ ଅଛି।</translation>
 <translation id="6716672519412350405"><ph name="URL" /> ଆପଣଙ୍କ ପରିପାର୍ଶ୍ୱର ଏକ 3D ମ୍ୟାପ୍ ତିଆରି କରିବା ଏବଂ କ୍ୟାମେରା ସ୍ଥିତି ଟ୍ରାକ୍ କରିବାକୁ ଚାହୁଁଛି</translation>
