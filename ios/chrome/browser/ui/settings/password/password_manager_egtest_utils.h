@@ -78,6 +78,12 @@ id<GREYMatcher> ReauthenticationController();
 // Matcher for the TableView inside the Password Settings UI.
 id<GREYMatcher> PasswordSettingsTableView();
 
+// Matcher for the Password Details View.
+id<GREYMatcher> PasswordDetailsTableViewMatcher();
+
+// Matcher for the Share button in password details view.
+id<GREYMatcher> PasswordDetailsShareButtonMatcher();
+
 // GREYElementInteraction* for the item on the password issues list
 // with the given `matcher`. It scrolls in `direction` if necessary to ensure
 // that the matched item is interactable.

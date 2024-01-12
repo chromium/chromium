@@ -84,6 +84,7 @@ using password_manager_test_utils::kScrollAmount;
 using password_manager_test_utils::NavigationBarEditButton;
 using password_manager_test_utils::OpenPasswordManager;
 using password_manager_test_utils::PasswordDetailPassword;
+using password_manager_test_utils::PasswordDetailsTableViewMatcher;
 using password_manager_test_utils::PasswordSettingsTableView;
 using password_manager_test_utils::PasswordTextfieldForUsernameAndSites;
 using password_manager_test_utils::ReauthenticationController;
@@ -136,7 +137,7 @@ GREYElementInteraction* GetInteractionForPasswordDetailItem(
   return [[EarlGrey
       selectElementWithMatcher:grey_allOf(matcher, grey_interactable(), nil)]
          usingSearchAction:grey_scrollToContentEdge(kGREYContentEdgeTop)
-      onElementWithMatcher:grey_accessibilityID(kPasswordDetailsTableViewID)];
+      onElementWithMatcher:PasswordDetailsTableViewMatcher()];
 }
 
 // Returns the GREYElementInteraction* for the item on the deletion alert
@@ -1243,8 +1244,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
       performAction:grey_tap()];
 
   // Check that the current view is still the detail view.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kPasswordDetailsTableViewID)]
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsTableViewMatcher()]
       assertWithMatcher:grey_notNil()];
 
   // Verify that the deletion did not happen.
@@ -1723,7 +1723,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
                                                kRemoteIndex]]]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown,
                                                   kScrollAmount)
-      onElementWithMatcher:grey_accessibilityID(kPasswordDetailsTableViewID)]
+      onElementWithMatcher:PasswordDetailsTableViewMatcher()]
       assertWithMatcher:grey_notNil()];
 
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
@@ -2874,8 +2874,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   // still one more password left on the view.
   ConditionBlock condition = ^{
     NSError* error = nil;
-    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                            kPasswordDetailsTableViewID)]
+    [[EarlGrey selectElementWithMatcher:PasswordDetailsTableViewMatcher()]
         assertWithMatcher:grey_notNil()
                     error:&error];
     return error == nil;

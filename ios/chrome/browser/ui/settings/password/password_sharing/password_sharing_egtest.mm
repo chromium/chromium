@@ -32,6 +32,8 @@ namespace {
 using base::test::ios::kWaitForActionTimeout;
 using password_manager_test_utils::kScrollAmount;
 using password_manager_test_utils::OpenPasswordManager;
+using password_manager_test_utils::PasswordDetailsShareButtonMatcher;
+using password_manager_test_utils::PasswordDetailsTableViewMatcher;
 using password_manager_test_utils::SavePasswordFormToProfileStore;
 
 constexpr char kGoogleHelpCenterURL[] = "support.google.com";
@@ -55,16 +57,6 @@ id<GREYMatcher> FamilyPickerTableViewMatcher() {
 // Matcher for the Password Picker View.
 id<GREYMatcher> PasswordPickerViewMatcher() {
   return grey_accessibilityID(kPasswordPickerViewID);
-}
-
-// Matcher for the Password Details View.
-id<GREYMatcher> PasswordDetailsTableViewMatcher() {
-  return grey_accessibilityID(kPasswordDetailsTableViewID);
-}
-
-// Matcher for the Share button in password details view.
-id<GREYMatcher> PasswordDetailsShareButtonMatcher() {
-  return grey_accessibilityID(kPasswordShareButtonID);
 }
 
 }  // namespace
