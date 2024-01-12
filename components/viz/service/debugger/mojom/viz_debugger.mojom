@@ -1,0 +1,17 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module viz.mojom;
+
+import "mojo/public/mojom/base/values.mojom";
+
+// This interface provides mechanism for the Viz Debugger to output data.
+// It lives in the browser process and is implemented by GpuHostImpl
+// (//components/viz/host/gpu_host_impl.h).
+// Its methods is called by the viz service process, eg VizDebugger::AddFrame().
+[EnableIf=use_viz_debugger]
+interface VizDebugOutput {
+ // Called by the VizDebugger instance at the end of each frame.
+ LogFrame(mojo_base.mojom.Value frameData);
+};
