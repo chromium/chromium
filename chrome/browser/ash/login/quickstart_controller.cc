@@ -313,12 +313,12 @@ void QuickStartController::OnStatusChanged(
       // device. No action required.
       return;
     case Step::ERROR:
-      AbortFlow(AbortFlowReason::ERROR);
       if (absl::holds_alternative<ErrorCode>(status.payload)) {
         QS_LOG(ERROR) << absl::get<ErrorCode>(status.payload);
       } else {
         QS_LOG(ERROR) << "Missing ErrorCode.";
       }
+      AbortFlow(AbortFlowReason::ERROR);
 
       return;
   }
