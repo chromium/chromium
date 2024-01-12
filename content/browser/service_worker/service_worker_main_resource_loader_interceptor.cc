@@ -31,6 +31,7 @@
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "net/base/isolation_info.h"
+#include "net/base/url_util.h"
 #include "net/cookies/site_for_cookies.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -189,8 +190,10 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
           handle_->parent_container_host();
       if (parent_container_host &&
           tentative_resource_request.url.SchemeIsBlob()) {
-        container_host->InheritControllerFrom(*parent_container_host,
-                                              tentative_resource_request.url);
+        // TODO(crbug.com/1509923): add a test to check this path.
+        container_host->InheritControllerFrom(
+            *parent_container_host,
+            net::SimplifyUrlForRequest(tentative_resource_request.url));
         inherit_controller_only = true;
       }
     }
